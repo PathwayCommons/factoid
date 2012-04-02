@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<!-- convenience ant script for quick redeploy the webapp since the tomcat plugin for maven doesn't seem to redeploy properly -->
+<project name="factoid" basedir="." default="info">
+
+    <!-- 
+         This file should be created by each user when he/she needs to override particular values. 
+         Do NOT place it under version control.
+    -->
+    <property file="local.properties"/>
+    
+    <property file="default.properties"/>
+	
+	<property environment="env"/>
+	
+	<condition property="is.windows">
+		<os family="windows"/>
+	</condition>
+	
+	<condition property="is.osx">
+		<and>
+			<os family="mac"/>
+			<os family="unix"/>
+		</and>
+	</condition>
+	
+    <property name="deploy.dir" value="${tomcat.home}/webapps/factoid"/>
+    <property name="webinf.src.dir" value="target/factoid/WEB-INF"/>
+    <property name="classes.src.dir" value="target/factoid/WEB-INF/classes"/>
+    <property name="lib.src.dir" value="target/factoid/WEB-INF/lib"/>
+    <property name="web.src.dir" value="src/main/webapp"/>
+    <property name="resources.dir" value="src/main/resources"/>
+    <property name="web.target.dir" value="target/factoid"/>
+	<tstamp>
+		<format property="timestamp" pattern="yyyy-MM-dd-HH-mm-ss" />
+	</tstamp>
+	<property name="debug.extension" value="antdebug-${timestamp}" />
+	
+	<target name="deploy">
+		<delete quiet="true">
+			<fileset dir="${deploy.dir}/WEB-INF/jsp" includes="**/**"/>
+			<fileset dir="${deploy.dir}/WEB-INF" includes="**/applicationContext.xml"/>
+		</delete>
+		<copy todir="${deploy.dir}">
+			<fileset dir="${web.src.dir}" includes="**/**"/>
+		</copy>
+		<copy todir="${deploy.dir}/WEB-INF">
+			<fileset dir="${webinf.src.dir}" includes="**/*.xml"/>
+		</copy>
+		<copy todir="${deploy.dir}/WEB-INF/classes">
+			<fileset dir="${classes.src.dir}" includes="**/*.class"/>
+		</copy>
+		<copy todir="${deploy.dir}/WEB-INF/lib">
+			<fileset dir="${lib.src.dir}" includes="**/*.jar"/>
+		</copy>
+		<copy todir="${deploy.dir}/WEB-INF/classes">
+			<fileset dir="${resources.dir}" includes="**/*.properties"/>
+			<fileset dir="${resources.dir}" includes="**/*.xml"/>
+			<fileset dir="${resources.dir}" includes="**/*.xsl"/>
+		</copy>
+		<antcall target="minify"/>
+
+		<!-- replace tokens -->
+		<replace file="${deploy.dir}/WEB-INF/applicationContext.xml" token="${version}" value="${debug.extension}"/>
+		<replace file="${deploy.dir}/js/ga.js" token="${GA_ACCT_NR}" value="UA-387720-5"/>
+		<replace dir="${deploy.dir}/WEB-INF/jsp" token="${version}" value="${debug.extension}"/>
+		<replace dir="${deploy.dir}/WEB-INF/jsp" token="${minification.extension}" value=""/>
+	</target>
+	
+	<target name="minify">
+		<!-- copy i18n -->
+		<copy todir="${deploy.dir}/i18n">
+			<fileset dir="${resources.dir}" includes="**/messages*.properties"/>
+		</copy>
+		
+		<delete failonerror="false">
+			<fileset dir="${deploy.dir}/js" includes="script.*.js"/>
+		</delete>
+		<concat destfile="${deploy.dir}/js/script.${debug.extension}.js" append="true">
+			<fileset dir="${web.src.dir}/js/plugins" includes="jquery-*.js"/>
+			<fileset dir="${web.src.dir}/js/plugins" includes="**/*.js" excludes="jquery-*.js" />
+			<fileset dir="${web.src.dir}/js/init" includes="**/*.js" />
+			<fileset dir="${web.src.dir}/js/start" includes="**/*.js" />
+			<fileset dir="${web.src.dir}/js" includes="**/*.js" excludes="plugins/**,init/**,start/**,end/**,lib/**" />
+			<fileset dir="${web.src.dir}/js/end" includes="**/*.js" />
+		</concat>
+		<delete failonerror="false">
+			<fileset dir="${deploy.dir}/css" includes="style.*.css"/>
+		</delete>
+		<concat destfile="${deploy.dir}/css/style.${debug.extension}.css" append="true">
+			<fileset dir="${web.src.dir}/css" includes="plugins/custom-theme/jquery-ui*.custom.css"/>
+			<fileset dir="${web.src.dir}/css/plugins" includes="**/*.css" excludes="custom-theme/**" />
+			<fileset dir="${web.src.dir}/css/fonts" includes="**/font-*.css" />
+			<fileset dir="${web.src.dir}/css" includes="main.css"/>
+		</concat>
+		<copy file="${web.src.dir}/css/main.ie.css" tofile="${deploy.dir}/css/main.ie.${debug.extension}.css" />
+		<copy file="${web.src.dir}/css/noscript.css" tofile="${deploy.dir}/css/noscript.${debug.extension}.css" />
+	</target>
+	
+	<target name="clean">
+		<delete quiet="true" dir="${deploy.dir}" />
+	</target>
+	
+	<target name="clean-mvn">
+		<exec executable="mvn" searchpath="true">
+			<arg line="-P local clean"/>
+		</exec>
+	</target>
+	
+	<target name="package-mvn">
+		<exec executable="mvn" searchpath="true">
+			<arg line="-P local package"/>
+		</exec>
+	</target>
+	
+	<target name="deploy-all" depends="package-mvn,deploy">
+	</target>
+	
+	<target name="clean-all" depends="clean-mvn,clean">
+	</target>
+
+	
+	<target name="info">
+		<echo>OS: ${os.name}</echo>
+		<echo>Ant Tomcat: ${tomcat.home}</echo>
+		<echo>Env Tomcat: ${env.TOMCAT_HOME}</echo>
+		<echo>******************************************************************</echo>
+	    <echo>*   This script deploys factoid webapp to Tomcat               *</echo>
+	    <echo>*   Following targets are available in this script:              *</echo>
+	    <echo>*     deploy - deploys the app in exploded format                *</echo>
+	    <echo>*     info - (default) prints this text                          *</echo>
+	    <echo>******************************************************************</echo>
+	</target>
+	
+</project>

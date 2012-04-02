@@ -1,0 +1,115 @@
+.ui-textselect-cursor {
+	height: 1.5em;
+	margin-top: -0.75em;
+	width: 1px;
+	background: #000;
+	position: absolute;
+	z-index: 9999;
+}
+
+.ui-textselect-cursor-top {
+}
+
+.ui-textselect *::selection {
+	background-color: transparent;
+}
+
+.ui-textselect *::-moz-selection {
+	background-color: transparent;
+}
+
+.ui-textselect-cursor-right .ui-textselect-cursor-bottom,
+.ui-textselect-cursor-left .ui-textselect-cursor-top {
+	position: absolute;
+	left: 0;
+	height: 7px;
+	width: 7px;
+	border-radius: 1em;
+	background: #000;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#808080), to(#000000));
+	beackground: -moz-linear-gradient(0% 100% 90deg,#000000, #808080);
+	margin-left: -4px;
+	border: 1px solid rgba(255, 255, 255, 0.75);
+	box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.5);
+}
+
+.ui-textselect-cursor-left .ui-textselect-cursor-top {
+	top: -5px;
+}
+
+.ui-textselect-cursor-left.ui-state-selected .ui-textselect-cursor-top {
+	background: #f9ad1c;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f9ad1c), to(#e59e16));
+	beackground: -moz-linear-gradient(0% 100% 90deg,#e59e16, #f9ad1c);
+}
+
+.ui-textselect-cursor-right .ui-textselect-cursor-bottom {
+	bottom: -5px;
+}
+
+.ui-textselect-cursor-right.ui-state-selected .ui-textselect-cursor-bottom {
+	background: #f9ad1c;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f9ad1c), to(#e59e16));
+	beackground: -moz-linear-gradient(0% 100% 90deg,#e59e16, #f9ad1c);
+}
+
+.ui-textselect-cursor-left {
+	border-left: 1px solid #666;
+	margin-left: -1px;
+}
+
+.ui-textselect-cursor-right {
+	border-right: 1px solid #666;
+}
+
+.ui-textselect ::selection,
+.ui-textselect ::-moz-selection {
+	background: transparent !important;
+}
+
+.ui-textselect .ui-state-selected {
+	background: #f9ad1c;
+}
+
+.ui-textselect .ui-state-unselected {
+	background: transparent !important;
+}
+
+.ui-textselect .ui-textselect-match span {
+	background: #FFDE46;
+	cursor: pointer;
+}
+
+.ui-textselect .ui-textselect-match..ui-textselect-highlight span {
+	cursor: auto;
+}
+
+.ui-textselect-highlight * {
+	background: #f9ad1c !important;
+}
+
+.ui-textselect-close {
+	position: absolute;
+	height: 21px;
+	width: 21px;
+	background: #a61818;
+	border-radius: 20px;
+	z-index: 9999;
+	border: 2px solid #fff;
+	margin-top: -11px;
+	cursor: pointer;
+	margin-left: 5px;
+	box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.5);
+}
+
+.ui-textselect-close-icon {
+	height: 16px;
+	width: 16px;
+	background-image: url(plugins/custom-theme/images/ui-icons_ffffff_256x240.png) !important;
+	background-position: -64px -128px;
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	background-color: transparent !important;
+	background-repeat: no-repeat;
+}

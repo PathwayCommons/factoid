@@ -73,7 +73,7 @@
 		    	},
 		    	select: function(){
 		    		$.operation.exec("delete", {
-		    			elements: cy.elements(":selected")
+		    			elements: cy.$("node:selected")
 		    		});
 		    	},
 		    },
@@ -132,7 +132,7 @@
 		var $del = $("#menubar-delete");
 		
 		function set(){
-			if( cy.elements(":selected").size() > 0 ){
+			if( cy.$("node:selected").size() > 0 ){
 				$del.menubar("enable");
 			} else {
 				$del.menubar("disable");

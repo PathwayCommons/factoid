@@ -18,6 +18,13 @@ $(function(){
 			$(".entity-tooltip").not(".ui-tooltip-dragged").commandtip("remove");
 		});
 		
+		cy.edges().live("click", function(evt){
+			var interactionId = this.data("interaction");
+			var interaction = cy.$("#" + interactionId);
+			
+			interaction.trigger("click");
+		});
+		
 	});
 	
 });

@@ -1,3 +1,7 @@
 
 local.properties
 *.svn-base
+.project
+.classpath
+.settings
+target

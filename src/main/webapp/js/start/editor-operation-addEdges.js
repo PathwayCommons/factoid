@@ -12,8 +12,8 @@ $(function(){
 			var tgt = util.name( options.targets.eq(0) );
 			var n = options.targets.size();
 	
-			return src + " connected to " + tgt +
-				( n > 1 ? " and " + (n - 1) + " other " + (n - 1 == 1 ? "entity" : "entities") : "" );
+			return src + " has been connected to " + tgt +
+				( n > 1 ? " and " + (n - 1) + " other " + (n - 1 == 1 ? "entity" : "entities") : "" ) + ".";
 		},
 		
 		exec: function(options){

@@ -17,7 +17,10 @@ ui.load_network = function(json){
 			handleSize: 12,
 			handleColor: "#d18aa1",
 			edgeType: function(source, target){
-				if( source.add(target).filter("[type='Interaction']").size() > 0 ){
+				if( source.edgesWith(target).size() > 0 ){
+					console.log("already edges");
+					return null; // don't add edges if there's one already
+				} else if( source.add(target).filter("[type='Interaction']").size() > 0 ){
 					return "flat";
 				} else {
 					return "node";

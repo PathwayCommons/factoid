@@ -18,7 +18,6 @@ ui.load_network = function(json){
 			handleColor: "#d18aa1",
 			edgeType: function(source, target){
 				if( source.edgesWith(target).size() > 0 ){
-					console.log("already edges");
 					return null; // don't add edges if there's one already
 				} else if( source.add(target).filter("[type='Interaction']").size() > 0 ){
 					return "flat";
@@ -37,7 +36,16 @@ ui.load_network = function(json){
 				return {
 					data: { type: "Interaction" }
 				}
-			}
+			},
+			
+			complete: function( sourceNode, targetNodes, addedEntities ){
+				$.operation.exec("addEdges", {
+					record: true, // just record the already performed op
+					source: sourceNode,
+					targets: targetNodes,
+					added: addedEntities
+				});
+			},
 		});
 		
 		// initial counts update

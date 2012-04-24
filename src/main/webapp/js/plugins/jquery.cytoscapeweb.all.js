@@ -2,7 +2,7 @@
 /* jquery.cytoscapeweb.all.js */
 
 /**
- * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.04.24-14.02.39.
+ * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.04.24-17.16.07.
  * 
  * Cytoscape Web is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by the Free
@@ -722,26 +722,27 @@
 							}
 						}
 						
-						// step all currently running anis
-						$.each(current, function(i, ani){
-							step( ele, ani, now );
-						});
-						
-						// remove done anis in current
+						// step and remove if done
 						var completes = [];
 						for(var i = 0; i < current.length; i++){
+							var ani = current[i];
+							step( ele, ani, now );
+
 							if( current[i].done ){
-								completes.push( current[i].params.complete );
+								completes.push( ani );
 								
+								// remove current[i]
 								current.splice(i, 1);
 								i--;
 							}
 						}
 						
 						// call complete callbacks
-						$.each(completes, function(i, fn){
+						$.each(completes, function(i, ani){
+							var complete = ani.params.complete;
+
 							if( $$.is.fn(complete) ){
-								complete.apply( ele );
+								complete.apply( ele, [ now ] );
 							}
 						});
 						
@@ -2126,11 +2127,12 @@
 	});
 	
 	$$.fn.collection({
-		delay: function( time ){
+		delay: function( time, complete ){
 			return this.animate({
 				delay: time
 			}, {
-				duration: time
+				duration: time,
+				complete: complete
 			});
 		}
 	});

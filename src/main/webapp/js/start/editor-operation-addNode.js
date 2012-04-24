@@ -77,13 +77,12 @@ $(function(){
 
 			options.renderedPosition = position;
 
-			cy.add({
+			var node = cy.add({
 				data: options.data,
 				group: options.group,
 				renderedPosition: options.renderedPosition,
 				classes: options.classes + " brand-new"
 			});
-			var node = cy.nodes("#" + id);
 			
 			node.bypass({
 				borderColor: "#AED1E5",

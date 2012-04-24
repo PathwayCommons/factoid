@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- convenience ant script for quick redeploy the webapp since the tomcat plugin for maven doesn't seem to redeploy properly -->
-<project name="factoid" basedir="." default="info">
+<project name="factoid" basedir="." default="deploy">
 
     <!-- 
          This file should be created by each user when he/she needs to override particular values. 

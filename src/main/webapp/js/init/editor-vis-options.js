@@ -59,8 +59,8 @@ $(function(){
 					opacity: 0.25
 				},
 				"node.brand-new": {
-					fillColor: "#5995ae",
-					labelOutlineColor: "#5995ae"
+					fillColor: "#105876",
+					labelOutlineColor: "#105876"
 				},
 				
 				"node.ui-cytoscapeweb-edgehandles-hover": {

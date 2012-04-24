@@ -12,7 +12,7 @@ $(function(){
 			var tgt = util.name( options.targets.eq(0) );
 			var n = options.targets.size();
 	
-			return src + " has been connected to " + tgt +
+			return "Interaction" + (n > 1 ? "s" : "") + " added between " + src + " and " + tgt +
 				( n > 1 ? " and " + (n - 1) + " other " + (n - 1 == 1 ? "entity" : "entities") : "" ) + ".";
 		},
 		

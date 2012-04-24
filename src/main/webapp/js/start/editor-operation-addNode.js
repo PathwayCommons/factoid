@@ -4,7 +4,6 @@ $(function(){
 		
 		defaults: {
 			data: {
-				label: "New entity",
 				type: "Entity"
 			},
 			classes: "entity",

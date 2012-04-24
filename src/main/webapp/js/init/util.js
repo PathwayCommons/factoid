@@ -80,9 +80,9 @@ util.name = function(node, name){
 		
 		if( ret == null || ret == "" ){
 			if( type.interaction ){
-				return "An interaction";
+				return "an interaction";
 			}
-			return "Unnamed entity";
+			return "unnamed entity";
 		} else {
 			return ret;
 		}

@@ -340,7 +340,7 @@ body.editor {
 	background: transparent;
 }
 
-#side .sentence .sentence-expand-button {
+#side .sentence-expand-button {
 	display: none;
 }
 
@@ -348,7 +348,7 @@ body.editor {
 	display: block;
 }
 
-#side .sentence.no-matches .sentence-type-button {
+#side .sentence-type-button {
 	display: none;
 }
 

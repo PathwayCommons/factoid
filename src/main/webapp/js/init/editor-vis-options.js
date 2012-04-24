@@ -19,8 +19,8 @@ $(function(){
 				"node": {
 					height: 40,
 					width: 40,
-					fillColor: "#777",
-					labelOutlineColor: "#777",
+					fillColor: "#555",
+					labelOutlineColor: "#555",
 					labelValign: "middle",
 					labelHalign: "middle",
 					labelFontSize: "0.85em",
@@ -59,8 +59,8 @@ $(function(){
 					opacity: 0.25
 				},
 				"node.brand-new": {
-					labelOutlineColor: "#000",
-					fillColor: "#000"
+					fillColor: "#5995ae",
+					labelOutlineColor: "#5995ae"
 				},
 				
 				"node.ui-cytoscapeweb-edgehandles-hover": {

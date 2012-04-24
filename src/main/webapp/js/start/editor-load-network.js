@@ -15,26 +15,30 @@ ui.load_network = function(json){
 			lineType: "straight",
 			preview: true,
 			handleSize: 12,
-			handleColor: "#d18aa1",
+			handleColor: "#4097c9",
 			edgeType: function(source, target){
 				if( source.edgesWith(target).size() > 0 ){
 					return null; // don't add edges if there's one already
-				} else if( source.add(target).filter("[type='Interaction']").size() > 0 ){
+				} else if( source.add(target).filter(".interaction").size() > 0 ){
 					return "flat";
 				} else {
 					return "node";
 				}
 			},
+			
 			nodeParams: function(){
 				return {
 					data: {
 						type: "Interaction"
-					}
+					},
+					classes: "interaction"
 				};
 			},
 			edgeParams: function(){
 				return {
-					data: { type: "Interaction" }
+					data: {
+						type: "Interaction"
+					}
 				}
 			},
 			

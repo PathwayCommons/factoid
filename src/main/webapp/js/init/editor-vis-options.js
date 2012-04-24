@@ -7,8 +7,7 @@ $(function(){
 
 	$("#vis").cytoscapeweb({
 		layout: {
-//			name: "grid",
-			name: "arbor",
+			name: util.debug() ? "grid" : "arbor",
 			maxSimulationTime: 7000
 		},
 		ready: function(cy){
@@ -20,7 +19,6 @@ $(function(){
 				"node": {
 					height: 40,
 					width: 40,
-					borderWidth: 0,
 					fillColor: "#888",
 					labelOutlineColor: "#888",
 					labelValign: "middle",
@@ -40,17 +38,15 @@ $(function(){
 						}
 					}
 				},
-				"edge": {
-					width: 1.5
-				},
-				"node[type='Interaction']": {
-					fillColor: "#f1b7ca",
-					shape: "rectangle",
+				"node.interaction": {
+					fillColor: "#aaa",
+					shape: "roundrectangle",
 					height: 15,
 					width: 15
 				},
-				"edge[type='Interaction']": {
-					lineColor: "#f1b7ca"
+				"edge": {
+					lineColor: "#aaa",
+					width: 1
 				},
 				"node:selected": {
 					borderWidth: 3,
@@ -63,8 +59,8 @@ $(function(){
 					opacity: 0.25
 				},
 				"node.brand-new": {
-					labelOutlineColor: "#555",
-					fillColor: "#555"
+					labelOutlineColor: "#000",
+					fillColor: "#0"
 				},
 				
 				"node.ui-cytoscapeweb-edgehandles-hover": {
@@ -72,19 +68,18 @@ $(function(){
 				},
 				
 				"node.ui-cytoscapeweb-edgehandles-target": {
-					borderColor: "#d18aa1",
+					borderColor: "#4097c9",
 					borderWidth: 3,
 					borderOpacity: 0.75
 				},
 				
 				".ui-cytoscapeweb-edgehandles-preview": {
-					fillColor: "#d18aa1",
-					lineColor: "#d18aa1",
-					sourceArrowColor: "#d18aa1",
-					targetArrowColor: "#d18aa1",
+					fillColor: "#4097c9",
+					lineColor: "#4097c9",
+					sourceArrowColor: "#4097c9",
+					targetArrowColor: "#4097c9",
 					opacity: 0.75,
-					labelText: "",
-					style: "dash"
+					labelText: ""
 				}
 			}
 		}

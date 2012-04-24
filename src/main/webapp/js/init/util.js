@@ -138,3 +138,7 @@ util.other_id_in_edge = function(edge, id){
 util.in_editor = function(){
 	return $("#editor").size() != 0;
 };
+
+util.debug = function(){
+	return $("html").attr("version").match(/^antdebug.+/);
+};

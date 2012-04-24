@@ -5,3 +5,4 @@ local.properties
 .classpath
 .settings
 target
+.externalToolBuilders/Factoid ant.launch

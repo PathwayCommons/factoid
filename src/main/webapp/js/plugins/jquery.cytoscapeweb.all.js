@@ -2,7 +2,7 @@
 /* jquery.cytoscapeweb.all.js */
 
 /**
- * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.03.29-02.14.07.
+ * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.04.24-14.02.39.
  * 
  * Cytoscape Web is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by the Free
@@ -1827,6 +1827,7 @@
 			style: {}, // the rendered style populated by the renderer
 			removed: true, // whether it's inside the vis; true if removed (set true here since we call restore)
 			selected: params.selected ? true : false, // whether it's selected
+			selectable: params.selectable || params.selectable === undefined ? true : false, // whether it's selectable
 			locked: params.locked ? true : false, // whether the element is locked (cannot be moved)
 			grabbed: false, // whether the element is grabbed by the mouse; renderer sets this privately
 			grabbable: params.grabbable || params.grabbable === undefined ? true : false, // whether the element can be grabbed
@@ -1950,7 +1951,7 @@
 				
 				// set id and validate
 				if( this._private.data.id == null ){
-					this._private.data.id = idFactory.generate( this, this._private.group );
+					this._private.data.id = idFactory.generate( this );
 				} else if( this.cy().getElementById( this._private.data.id ).size() != 0 ){
 					$$.console.error("Can not create element: an element in the visualisation already has ID `%s`", this.element()._private.data.id);
 					return this;
@@ -3557,10 +3558,16 @@
 			
 			// e.g. cy.nodes().select()
 			else if( args.length == 0 ){
+				var selected = new $$.CyCollection( this.cy() );
+				
 				this.each(function(){
-					this.element()._private[params.field] = params.value;
+					if( params.ableField == null || this.element()._private[params.ableField] ){
+						this.element()._private[params.field] = params.value;
+						
+						selected = selected.add( this );
+					}
 				});
-				this.rtrigger(params.event);
+				selected.rtrigger(params.event);
 			}
 
 			return this;
@@ -3585,6 +3592,7 @@
 			impl( params.on, defineSwitchFunction({
 					event: params.on,
 					field: params.field,
+					ableField: params.ableField,
 					value: true
 				})
 			)
@@ -3594,6 +3602,7 @@
 			impl( params.off, defineSwitchFunction({
 					event: params.off,
 					field: params.field,
+					ableField: params.ableField,
 					value: false
 				})
 			)
@@ -3614,8 +3623,15 @@
 	
 	defineSwitchSet({
 		field: "selected",
+		ableField: "selectable",
 		on: "select",
 		off: "unselect"
+	});
+	
+	defineSwitchSet({
+		field: "selectable",
+		on: "selectify",
+		off: "unselectify"
 	});
 	
 	$$.fn.collection({
@@ -4689,8 +4705,9 @@
 		maxPan: -1 >>> 1,
 		minPan: (-(-1>>>1)-1),
 		selectionToPanDelay: 500,
+		dragToSelect: true,
+		dragToPan: true,
 			
-		// TODO add more styles
 		style: {
 			selectors: {
 				"node": {
@@ -5139,8 +5156,21 @@
 				var selectionSquare = null;
 				var selectionBounds = {};
 				
-				var panning = false;
+				var panning = true;
 				var selecting = true;
+				
+				if( !self.options.dragToSelect ){
+					selecting = false;
+				}
+				
+				if( !self.options.dragToPan ){
+					panning = false;
+				}
+				
+				if( panning && selecting ){
+					panning = false;
+					selecting = true;
+				}
 				
 				var originX = mousedownEvent.pageX;
 				var originY = mousedownEvent.pageY;
@@ -5150,22 +5180,27 @@
 				var selectDx = 0;
 				var selectDy = 0;
 				
-				var panDelayTimeout = setTimeout(function(){
-					if( !self.cy.panning() ){
-						return;
-					}
+				var _setPanCursor = false;
+				function setPanCursor(){
+					if( _setPanCursor ){ return; }
 					
-					panning = true;
-					selecting = false;
-					
+					_setPanCursor = true;
 					self.svg.change(svgDomElement, {
 						cursor: cursor(self.style.global.panCursor)
 					});
-					
-					// TODO why do we have this scroll thing here?
-					self.cy.container().scrollLeft(100);
-					
-				}, panDelay);
+				}
+				
+				if( self.options.dragToPan ){
+					var panDelayTimeout = setTimeout(function(){
+						if( !self.cy.panning() ){
+							return;
+						}
+						
+						panning = true;
+						selecting = false;
+						
+					}, panDelay);
+				}
 				
 				var dragHandler = function(dragEvent){
 					clearTimeout(panDelayTimeout);
@@ -5183,6 +5218,8 @@
 					if( panning ){	
 						self.translation.x += dx;
 						self.translation.y += dy;
+						
+						setPanCursor();
 						
 						self.pan(self.translation);
 					}
@@ -6780,7 +6817,7 @@
 			"pointer-events": "visible", // if visibility:hidden, no events
 			fill: color(style.fillColor),
 			fillOpacity: percent(style.fillOpacity),
-			stroke: color(style.borderColor),
+			stroke: number(style.borderWidth) > 0 ? color(style.borderColor) : "none",
 			strokeWidth: number(style.borderWidth),
 			strokeDashArray: lineStyle(style.borderStyle).array,
 			strokeOpacity: percent(style.borderOpacity),
@@ -6849,7 +6886,9 @@
 		var text = element.renderer().svgLabel.textContent;
 		
 		// update node label x, y
-		this.positionSvgNodeLabel(element);
+		if( element.isNode() ){
+			this.positionSvgNodeLabel(element);
+		}
 		
 		var textAnchor;
 		var styleAttr;

@@ -7,7 +7,7 @@ $(function(){
 				label: "New entity",
 				type: "Entity"
 			},
-			classes: "",
+			classes: "entity",
 			group: "nodes",
 			renderedPosition: {
 				x: 75,

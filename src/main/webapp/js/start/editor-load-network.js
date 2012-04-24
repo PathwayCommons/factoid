@@ -44,6 +44,12 @@ ui.load_network = function(json){
 			},
 			
 			complete: function( sourceNode, targetNodes, addedEntities ){
+				addedEntities.edges().each(function(i, edge){
+					var interaction = edge.neighborhood(".interaction");
+
+					edge.data( "interaction", interaction.id() );
+				});
+
 				$.operation.exec("addEdges", {
 					record: true, // just record the already performed op
 					source: sourceNode,

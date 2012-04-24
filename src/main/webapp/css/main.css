@@ -258,7 +258,7 @@ body.editor {
 }
 
 #side-status .complete-entity-text {
-	background: #f9f6aa;
+	background: #d0d0d0;
 }
 
 #side-status .incomplete-entity-text {
@@ -317,7 +317,7 @@ body.editor {
 }
 
 #side .ui-textselect .ui-textselect-match.not-brand-new span {
-	background: #f9f6aa;
+	background: #d0d0d0;
 }
 
 #side .highlighted {

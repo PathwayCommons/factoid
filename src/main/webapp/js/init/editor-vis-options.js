@@ -7,7 +7,7 @@ $(function(){
 
 	$("#vis").cytoscapeweb({
 		layout: {
-			name: util.debug() ? "arbor" : "arbor",
+			name: util.debug() ? "grid" : "arbor",
 			maxSimulationTime: 7000
 		},
 		ready: function(cy){
@@ -19,8 +19,8 @@ $(function(){
 				"node": {
 					height: 40,
 					width: 40,
-					fillColor: "#888",
-					labelOutlineColor: "#888",
+					fillColor: "#777",
+					labelOutlineColor: "#777",
 					labelValign: "middle",
 					labelHalign: "middle",
 					labelFontSize: "0.85em",
@@ -60,7 +60,7 @@ $(function(){
 				},
 				"node.brand-new": {
 					labelOutlineColor: "#000",
-					fillColor: "#0"
+					fillColor: "#000"
 				},
 				
 				"node.ui-cytoscapeweb-edgehandles-hover": {
@@ -68,16 +68,16 @@ $(function(){
 				},
 				
 				"node.ui-cytoscapeweb-edgehandles-target": {
-					borderColor: "#4097c9",
+					borderColor: "#5CC2ED",
 					borderWidth: 3,
 					borderOpacity: 0.75
 				},
 				
 				".ui-cytoscapeweb-edgehandles-preview": {
-					fillColor: "#4097c9",
-					lineColor: "#4097c9",
-					sourceArrowColor: "#4097c9",
-					targetArrowColor: "#4097c9",
+					fillColor: "#5CC2ED",
+					lineColor: "#5CC2ED",
+					sourceArrowColor: "#5CC2ED",
+					targetArrowColor: "#5CC2ED",
 					opacity: 0.75,
 					labelText: ""
 				}

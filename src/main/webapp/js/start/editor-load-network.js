@@ -16,7 +16,7 @@ ui.load_network = function(json){
 			lineType: "straight",
 			preview: true,
 			handleSize: 12,
-			handleColor: "#4097c9",
+			handleColor: "#5CC2ED",
 			edgeType: function(source, target){
 				if( source.edgesWith(target).size() > 0 ){
 					return null; // don't add edges if there's one already

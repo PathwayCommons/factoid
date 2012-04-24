@@ -38,9 +38,7 @@
 }
 
 .ui-textselect-cursor-left.ui-state-selected .ui-textselect-cursor-top {
-	background: #f9ad1c;
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f9ad1c), to(#e59e16));
-	beackground: -moz-linear-gradient(0% 100% 90deg,#e59e16, #f9ad1c);
+	background: #5CC2ED;
 }
 
 .ui-textselect-cursor-right .ui-textselect-cursor-bottom {
@@ -48,9 +46,7 @@
 }
 
 .ui-textselect-cursor-right.ui-state-selected .ui-textselect-cursor-bottom {
-	background: #f9ad1c;
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f9ad1c), to(#e59e16));
-	beackground: -moz-linear-gradient(0% 100% 90deg,#e59e16, #f9ad1c);
+	background: #5CC2ED;
 }
 
 .ui-textselect-cursor-left {
@@ -68,7 +64,7 @@
 }
 
 .ui-textselect .ui-state-selected {
-	background: #f9ad1c;
+	background: #a4d7ed;
 }
 
 .ui-textselect .ui-state-unselected {
@@ -85,7 +81,7 @@
 }
 
 .ui-textselect-highlight * {
-	background: #f9ad1c !important;
+	background: #a4d7ed !important;
 }
 
 .ui-textselect-close {

@@ -1,5 +1,9 @@
 $(function(){
 	
+	if( !util.debug() ){
+		return;
+	}
+
 	$("#debug").dialog({
 		title: "Debugging tools"
 	}).dialog("close");

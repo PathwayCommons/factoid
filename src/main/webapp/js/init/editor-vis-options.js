@@ -7,7 +7,7 @@ $(function(){
 
 	$("#vis").cytoscapeweb({
 		layout: {
-			name: util.debug() ? "grid" : "arbor",
+			name: util.debug() ? "arbor" : "arbor",
 			maxSimulationTime: 7000
 		},
 		ready: function(cy){
@@ -40,7 +40,7 @@ $(function(){
 				},
 				"node.interaction": {
 					fillColor: "#aaa",
-					shape: "roundrectangle",
+					shape: "rectangle",
 					height: 15,
 					width: 15
 				},

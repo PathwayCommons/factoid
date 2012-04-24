@@ -12,6 +12,7 @@ ui.load_network = function(json){
 		});
 		
 		$("#vis").cytoscapewebEdgehandles({
+			enabled: false, // gets enabled on layoutstop
 			lineType: "straight",
 			preview: true,
 			handleSize: 12,

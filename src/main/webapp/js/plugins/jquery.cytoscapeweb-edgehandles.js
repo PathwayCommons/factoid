@@ -2,7 +2,7 @@
 /* jquery.cytoscapeweb-edgehandles.js */
 
 /**
- * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.04.24-14.38.05.
+ * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.04.24-15.19.05.
  * 
  * Cytoscape Web is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by the Free
@@ -25,6 +25,7 @@
 		handleColor: "red",
 		handleLineWidth: 1,
 		hoverDelay: 100,
+		enabled: true,
 		lineType: "draw", // can be "straight" or "draw"
 		edgeType: function( sourceNode, targetNode ){
 			return "node"; // can return "flat" for flat edges between nodes or "node" for intermediate node between them
@@ -90,11 +91,21 @@
 					options[ name ] = value;
 				}
 				
+				$container.data("cyedgehandles", data);
+
 				return $container;
+			},
+
+			disable: function(){
+				return functions.option.apply(this, ["enabled", false]);
+			},
+
+			enable: function(){
+				return functions.option.apply(this, ["enabled", true]);
 			},
 				
 			init: function(){
-				var options = $.extend(true, {}, defaults, params); 
+				var opts = $.extend(true, {}, defaults, params); 
 				var $container = $(this);
 				var svg, cy;
 				var handle;
@@ -109,8 +120,20 @@
 				if( data == null ){
 					data = {};
 				}
-				data.options = options;
+				data.options = opts;
 				
+				function options(){
+					return $container.data("cyedgehandles").options;
+				}
+
+				function enabled(){
+					return options().enabled;
+				}
+
+				function disabled(){
+					return !enabled();
+				}
+
 				function svgIsInCy( svgDomElement ){
 					var $ele = $(svgDomElement);
 					var inside = false;
@@ -175,10 +198,10 @@
 					}
 					
 					// just remove preview class if we already have the edges
-					if( !preview && options.preview ){
+					if( !preview && options().preview ){
 						added = cy.elements(".ui-cytoscapeweb-edgehandles-preview").removeClass("ui-cytoscapeweb-edgehandles-preview");
 						
-						options.complete( source, targets, added );
+						options().complete( source, targets, added );
 						return;
 					} else {
 						// remove old previews
@@ -186,7 +209,7 @@
 					}
 					
 					targets.each(function(i, target){
-						switch( options.edgeType( source, target ) ){
+						switch( options().edgeType( source, target ) ){
 						case "node":
 							
 							var p1 = source.position(false);
@@ -199,7 +222,7 @@
 							var interNode = cy.add($.extend( true, {
 								group: "nodes",
 								position: p
-							}, options.nodeParams(source, target) )).addClass(classes);
+							}, options().nodeParams(source, target) )).addClass(classes);
 
 							var source2inter = cy.add($.extend( true, {
 								group: "edges",
@@ -207,7 +230,7 @@
 									source: source.id(),
 									target: interNode.id()
 								}
-							}, options.edgeParams(source, target) )).addClass(classes);
+							}, options().edgeParams(source, target) )).addClass(classes);
 							
 							var inter2target = cy.add($.extend( true, {
 								group: "edges",
@@ -215,7 +238,7 @@
 									source: interNode.id(),
 									target: target.id()
 								}
-							}, options.edgeParams(source, target) )).addClass(classes);
+							}, options().edgeParams(source, target) )).addClass(classes);
 							
 							added = added.add( interNode ).add( source2inter ).add( inter2target );
 							
@@ -228,7 +251,7 @@
 									source: source.id(),
 									target: target.id()
 								}
-							}, options.edgeParams(source, target) )).addClass(classes);
+							}, options().edgeParams(source, target) )).addClass(classes);
 						
 							added = added.add( edge );
 						
@@ -241,7 +264,7 @@
 					});
 					
 					if( !preview ){
-						options.complete( source, targets, added );
+						options().complete( source, targets, added );
 					}
 				}
 				
@@ -256,7 +279,7 @@
 					
 					var startHandler, hoverHandler, leaveHandler, grabNodeHandler, freeNodeHandler;
 					cy.nodes().live("mouseover", startHandler = function(e){
-						if( mdownOnHandle || grabbingNode || this.hasClass("ui-cytoscapeweb-edgehandles-preview") ){
+						if( disabled() || mdownOnHandle || grabbingNode || this.hasClass("ui-cytoscapeweb-edgehandles-preview") ){
 							return; // don't override existing handle that's being dragged
 							// also don't trigger when grabbing a node
 						} 
@@ -273,11 +296,11 @@
 						
 						hx = p.x;
 						hy = p.y - d.height/2;
-						hr = options.handleSize/2;
+						hr = options().handleSize/2;
 						
 						// add new handle
 						handle = svg.circle(hx, hy, hr, {
-							fill: options.handleColor
+							fill: options().handleColor
 						});
 						var $handle = $(handle);
 						
@@ -310,13 +333,13 @@
 								makeEdges();
 								resetToDefaultState();
 								
-								options.stop( node );
+								options().stop( node );
 							}
 							
 							$(window).one("mouseup blur", doneMoving).bind("mousemove", moveHandler);
 							cy.zooming(false).panning(false);
 							
-							options.start( node );
+							options().start( node );
 						}
 						
 						function moveHandler(e){
@@ -328,14 +351,14 @@
 							safelyRemoveCySvgChild( line );
 							
 							var style = {
-								stroke: options.handleColor,
-								strokeWidth: options.handleLineWidth,
+								stroke: options().handleColor,
+								strokeWidth: options().handleLineWidth,
 								fill: "none",
 								"pointer-events": "none"
 							};
 							
 							// draw line based on type
-							switch( options.lineType ){
+							switch( options().lineType ){
 							case "straight":
 								
 								line = svg.line(hx, hy, x, y, style);
@@ -380,7 +403,7 @@
 						var node = this;
 						var target = this;
 
-						if( this.hasClass("ui-cytoscapeweb-edgehandles-preview") ){
+						if( disabled() || this.hasClass("ui-cytoscapeweb-edgehandles-preview") ){
 							return; // ignore preview nodes
 						}
 						
@@ -391,13 +414,13 @@
 								var source = cy.nodes(".ui-cytoscapeweb-edgehandles-source");
 								
 								var isLoop = node.hasClass("ui-cytoscapeweb-edgehandles-source");
-								var loopAllowed = options.loopAllowed( node );
+								var loopAllowed = options().loopAllowed( node );
 								
 								if( !isLoop || (isLoop && loopAllowed) ){
 									node.addClass("ui-cytoscapeweb-edgehandles-hover");
 									node.toggleClass("ui-cytoscapeweb-edgehandles-target");
 									
-									if( options.preview ){
+									if( options().preview ){
 										if( node.hasClass("ui-cytoscapeweb-edgehandles-target") ){
 											makePreview( source, target );
 										} else {
@@ -405,7 +428,7 @@
 										}
 									}
 								}
-							}, options.hoverDelay);
+							}, options().hoverDelay);
 						}
 					}).live("mouseout", leaveHandler = function(){
 						this.removeClass("ui-cytoscapeweb-edgehandles-hover");

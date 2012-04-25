@@ -175,5 +175,16 @@
 		
 		set(); // initial set
 	});
+
+	// set up layout listening to enable/disable the 
+	$("#vis").cy(function(){
+		var $layout = $("#menubar-layout");
+		
+		cy.bind("layoutstart", function(){
+			$layout.menubar("disable");
+		}).bind("layoutstop", function(){
+			$layout.menubar("enable");
+		});
+	});
 	
 });

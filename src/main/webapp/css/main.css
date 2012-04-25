@@ -702,4 +702,31 @@ body.editor {
 	display: block !important;
 }
 
+/**************************************************************************/
+/* chrome frame */
+/**************************************************************************/
+/*
+.chromeFrameOverlayContent
+      .chromeFrameOverlayContent iframe
+      .chromeFrameOverlayCloseBar
+      */
 
+.chromeFrameOverlayContent {
+	width: auto;
+}  
+
+.chromeFrameOverlayUnderlay {
+	display: block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background: #fff;
+	opacity: 0.85;
+	filter: alpha(opacity=85);
+} 
+
+.chromeFrameOverlayCloseBar {
+	display: none;
+}

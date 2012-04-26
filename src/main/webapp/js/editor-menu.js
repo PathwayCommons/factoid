@@ -143,7 +143,7 @@
 		}
 		
 		// set on selection changed
-		cy.elements().live("select unselect", function(){
+		cy.elements().live("select unselect add remove", function(){
 			set();
 		});
 		

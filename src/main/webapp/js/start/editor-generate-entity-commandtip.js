@@ -231,8 +231,9 @@ ui.generate_entity_commandtip = function(node, tip_div, callback){
 						
 						var organism = $('<span class="organism"></span>');
 						button.append(organism);
-						$.each(match.organismName, function(i, name){
-							organism.append(name.toLowerCase() + (i < match.organismName.length - 1 ? ", " : ""));
+						
+						$.each(match.organism, function(i, org){
+							organism.append(match.organismName[i].toLowerCase() + (i < match.organism.length - 1 ? ", " : ""));
 						});
 						
 						if( match.name.length > 1 ){

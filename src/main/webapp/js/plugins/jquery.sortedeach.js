@@ -3,11 +3,11 @@
 	$.sortedEach = function(set, fn, sortfn){
 		if( typeof set == "object" ){
 
-			if( $.isArray(set) ){
+			if( set.length != null ){
 				
 				var sorted = [];
-				for(var i in set){
-					sorted.push(set[i]);
+				for(var i = 0; i < set.length; i++){
+					sorted.push( set[i] );
 				}
 				sorted.sort(sortfn);
 				$.each(sorted, fn);

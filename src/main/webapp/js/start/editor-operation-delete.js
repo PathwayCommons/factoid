@@ -6,23 +6,23 @@ $(function(){
 		message: function(options){
 			var els = options.elements.nodes();
 			
+			if( els.size() == 0 ){
+				els = options.elements;
+			}
+
 			if( els.size() == 1 ){
-				return '' + util.name( els.eq(0) ) + ' has been deleted.';
+				return '' + util.name( els.eq(0) ) + ' has been deleted';
 			} else {
-				return '' + util.name( els.eq(0) ) + ' and ' + (els.size() - 1) + ' other elements have been deleted.';
+				return '' + util.name( els.eq(0) ) + ' and ' + (els.size() - 1) + ' other elements have been deleted';
 			}
 		},
 		
 		exec: function(options){
 			var eles = options.elements;
 			
-			$(".qtip").each(function(){
-				$(this).qtip("api").hide();
-			});
-			
 			function remove_tooltips(){
-				eles.each(function(i, node){
-					
+				eles.nodes().each(function(i, node){
+
 					var tip_div = $(".tip[node=" + node.data("id") + "]");
 					if( tip_div.size() > 0 ){
 						tip_div.menucommandtip("close");
@@ -39,7 +39,7 @@ $(function(){
 					options.matchesAsSpans.push( $spans );
 				}
 				
-				eles.each(function(i, node){
+				eles.nodes().each(function(i, node){
 					var matchStr = (node.data("match") || "").toLowerCase();
 					var $matches = $("#side .ui-textselect-match[match='"+ matchStr +"']");
 					
@@ -62,7 +62,7 @@ $(function(){
 				remove_matches();
 				
 				eles.remove();
-				ui.update_commandtips( neighbors );
+				//ui.update_commandtips( neighbors );
 			}
 			
 			remove();

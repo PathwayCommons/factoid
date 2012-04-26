@@ -1,18 +1,8 @@
 ui.generate_interaction_commandtip = function(node, tip_div, callback){
 	var ret = $('<div></div>');
+	var data = node.data();
 	
-	ret.append('TODO revise these based on new draw-line edge UI.');
-	
-	callback(ret);
-	return;
-	
-	
-	// TODO revise for new UI
-	
-	
-	
-	
-	var type = NodeType.fromVal(node.data.type);
+	var type = NodeType.fromVal(data.type);
 	
 	/////////////////////////////////////////////////////
 	// type
@@ -24,8 +14,8 @@ ui.generate_interaction_commandtip = function(node, tip_div, callback){
 	/////////////////////////////////////////////////////
 	
 	var title = $('<input type="text" value="' + util.name(node) + '"/>');	
-	ret.append('<div class="subtitle">Name</div>');
-	ret.append(title);
+	// ret.append('<div class="subtitle">Name</div>');
+	// ret.append(title);
 	
 	var timeout;
 	title.bind("keyup", function(){
@@ -45,10 +35,6 @@ ui.generate_interaction_commandtip = function(node, tip_div, callback){
 		}, 500);
 	});
 	
-	
-	
-	
-	
 	function add_to_table(table, n, e){
 		
 		var tr = $('<tr></tr>');
@@ -60,7 +46,7 @@ ui.generate_interaction_commandtip = function(node, tip_div, callback){
 		
 		tr.append('<td class="name">' + util.name(n) + '</td>');
 		
-		var other_n_id = util.other_id_in_edge(e, node.data.id);
+		var other_n_id = util.other_id_in_edge(e, data.id);
 		
 		if( type.val == NodeType.CONVERSION.val ||	type.val == NodeType.TEMPLATE_REACTION.val ){
 			
@@ -245,10 +231,14 @@ ui.generate_interaction_commandtip = function(node, tip_div, callback){
 			text: false,
 			label: ""
 		}).click(function(){
-			ui.delete_edge(e);
+			$.operation.exec("delete", {
+				elements: e
+			});
+
+			tr.remove();
 		});
 		remove_td.append(remove);
-		tr.append(remove_td);
+		tr.prepend(remove_td);
 	}
 	
 	function add_table(edges, title){
@@ -257,7 +247,9 @@ ui.generate_interaction_commandtip = function(node, tip_div, callback){
 		// add each participant to the table
 		var added_header = false;
 		$.sortedEach(edges, function(i, edge){
-			if( edge.data.interaction == node.data.id ){
+			var edgedata = edge.data();
+
+			if( edgedata.interaction == data.id ){
 				
 				if( !added_header ){
 					ret.append('<div class="subtitle">'+ title +'</div>');
@@ -265,12 +257,12 @@ ui.generate_interaction_commandtip = function(node, tip_div, callback){
 					added_header = true;
 				}
 				
-				var connected_to_edge = vis.node( edge.data.source != edge.data.interaction ? edge.data.source : edge.data.target );
+				var connected_to_edge = cy.getElementById( edgedata.source != edgedata.interaction ? edgedata.source : edgedata.target );
 				add_to_table(partipants_table, connected_to_edge, edge);
 			}
 		}, function(e1, e2){
-			var n1 = util.name( util.other_id_in_edge(e1, node.data.id) );
-			var n2 = util.name( util.other_id_in_edge(e2, node.data.id) );
+			var n1 = util.name( util.other_id_in_edge(e1, data.id) ).toLowerCase();
+			var n2 = util.name( util.other_id_in_edge(e2, data.id) ).toLowerCase();
 			
 			if( n1 < n2 ){
 				return -1;
@@ -282,18 +274,19 @@ ui.generate_interaction_commandtip = function(node, tip_div, callback){
 		});
 	}
 	
-	var edges = vis.firstNeighbors([ node ]).edges;
-	if( node.data.type == NodeType.PATHWAY.val ){
+	var edges = node.connectedEdges();
+	if( data.type == NodeType.PATHWAY.val ){
 		add_table(edges, "First step");
-	} else if( node.data.type == NodeType.PATHWAY_STEP.val ){
+	} else if( data.type == NodeType.PATHWAY_STEP.val ){
 		
 		var next_step = [];
 		var interaction = [];
 		
 		$.each(edges, function(i, edge){
-			if( edge.data.type == NodeType.PATHWAY.val ){
+			var edgedata = edge.data();
+			if( edgedata.type == NodeType.PATHWAY.val ){
 				next_step.push(edge);
-			} else if( edge.data.type == NodeType.PATHWAY_STEP.val ) {
+			} else if( edgedata.type == NodeType.PATHWAY_STEP.val ) {
 				interaction.push(edge);
 			}
 		});

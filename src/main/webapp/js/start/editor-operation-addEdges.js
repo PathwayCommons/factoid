@@ -13,7 +13,7 @@ $(function(){
 			var n = options.targets.size();
 	
 			return "Interaction" + (n > 1 ? "s" : "") + " added between " + src + " and " + tgt +
-				( n > 1 ? " and " + (n - 1) + " other " + (n - 1 == 1 ? "entity" : "entities") : "" ) + ".";
+				( n > 1 ? " and " + (n - 1) + " other " + (n - 1 == 1 ? "entity" : "entities") : "" ) + "";
 		},
 		
 		exec: function(options){

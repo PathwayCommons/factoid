@@ -25,7 +25,7 @@ $(function(){
 				name = $(options.match).attr("match");
 			}
 			
-			return name + " has been added.";
+			return name + " has been added";
 		},
 		
 		exec: function(options){

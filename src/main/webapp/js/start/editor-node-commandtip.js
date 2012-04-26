@@ -31,7 +31,7 @@ ui.open_node_commandtip = function(node){
 		title: title(),
 		content: content(),
 		menuClose: false,
-		draggable: true,
+		draggable: false,
 		ready: function(){
 			options.generate(function(html){
 				$(tip_div).menucommandtip("tooltip").find(".node-tooltip-content").empty().append( html );

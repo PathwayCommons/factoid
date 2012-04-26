@@ -46,7 +46,12 @@ util.name = function(node, name){
 	
 	if( typeof node == typeof "" ){
 		var id = node;
-		node = cy.nodes().filter("#" + id);
+		node = cy.$("#" + id);
+	}
+
+	if( node.isEdge && node.isEdge() ){
+		var e = node;
+		return "connection between " + util.name( e.source() ) + " and " + util.name( e.target() );
 	}
 	
 	var node_ref = node;
@@ -132,7 +137,7 @@ util.generate_interaction_name = function(node){
 };
 
 util.other_id_in_edge = function(edge, id){
-	return edge.data.source != id ? edge.data.source : edge.data.target;
+	return edge.data("source") != id ? edge.data("source") : edge.data("target");
 };
 
 util.in_editor = function(){

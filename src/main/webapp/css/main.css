@@ -286,7 +286,8 @@ body.editor {
 	background: transparent !important;
 }
 
-#side .ui-button {
+#side .ui-button,
+.interaction-tooltip .ui-button {
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -299,21 +300,29 @@ body.editor {
 	font-size: 0.85em;
 }
 
-#side .ui-button .ui-icon {
+#side .ui-button .ui-icon,
+.interaction-tooltip  .ui-button .ui-icon{
 	background-image: url(plugins/custom-theme/images/ui-icons_888888_256x240.png) !important;
 }
 
-#side .ui-button.ui-state-hover {
+.interaction-tooltip .ui-button {
+	padding: 0.25em 0;
+}
+
+#side .ui-button.ui-state-hover,
+.interaction-tooltip .ui-button.ui-state-hover{
 	border-color: #555 !important;
 	color: #fff !important;
 	background: #555 !important;
 }
 
-#side .ui-button.ui-state-hover .ui-icon  {
+#side .ui-button.ui-state-hover .ui-icon,
+.interaction-tooltip  .ui-button.ui-state-hover .ui-icon{
 	background-image: url(plugins/custom-theme/images/ui-icons_ffffff_256x240.png) !important;
 }
 
-#side .ui-button .ui-button-text {
+#side .ui-button .ui-button-text,
+.interaction-tooltip .ui-button-text{
 	padding: 0;
 }
 
@@ -425,7 +434,7 @@ body.editor {
 }
 
 .node-tooltip {
-	width: 465px;
+	width: 300px;
 }
 
 .entity-tooltip {

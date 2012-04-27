@@ -40,7 +40,11 @@ public class NormalizationService {
 			String line = br.readLine();
 			if (!line.matches("^\\s*#.+$")) {
 				String[] cols = line.split("\t");
-
+				
+				if( "".equals( cols[0] ) || "".equals( cols[1] ) ){
+					continue;
+				}
+				
 				String id = cols[0];
 				int start = Integer.parseInt(cols[1]);
 				int end = Integer.parseInt(cols[2]);

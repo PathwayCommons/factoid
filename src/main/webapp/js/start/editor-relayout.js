@@ -1,5 +1,8 @@
 ui.relayout = function(){
 	
-	cy.layout();
+	cy.layout({
+		name: util.debug() ? "grid" : "arbor",
+		gravity: true
+	});
 	
 };

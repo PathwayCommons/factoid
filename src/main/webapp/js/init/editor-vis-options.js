@@ -7,8 +7,7 @@ $(function(){
 
 	$("#vis").cytoscapeweb({
 		layout: {
-			name: util.debug() ? "grid" : "arbor",
-			maxSimulationTime: 7000
+			name: "null"
 		},
 		ready: function(cy){
 			window.cy = cy;

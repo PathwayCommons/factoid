@@ -4,6 +4,8 @@ $(function(){
 		return;
 	}
 
+	return; // disable for now
+
 	$("#debug").dialog({
 		title: "Debugging tools"
 	}).dialog("close");

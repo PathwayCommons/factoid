@@ -6,6 +6,11 @@ ui.load_network = function(json){
 	// when we load the graph
 	$("#vis").trigger("resizelayout");
 	
+	// when null layout is done, load the real layout
+	cy.one("layoutstop", function(){
+		ui.relayout();
+	});
+
 	cy.load(json, function(){
 		$("#vis").cytoscapewebPanzoom({
 			staticPosition: true
@@ -56,12 +61,12 @@ ui.load_network = function(json){
 					targets: targetNodes,
 					added: addedEntities
 				});
-			},
+			}
 		});
 		
 		// initial counts update
 		ui.update_entity_counts();
-		
+
 		setTimeout(function(){
 			$.loadingdialog("destroy");
 		}, 100);

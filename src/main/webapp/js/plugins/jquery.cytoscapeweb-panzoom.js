@@ -2,7 +2,7 @@
 /* jquery.cytoscapeweb-panzoom.js */
 
 /**
- * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.04.26-13.22.05.
+ * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.04.27-16.38.08.
  * 
  * Cytoscape Web is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by the Free
@@ -18,21 +18,34 @@
  * Cytoscape Web. If not, see <http://www.gnu.org/licenses/>.
  */
  
+
+/*
+
+Cytoscape Web panzoom UI plugin
+
+Depends on
+- jQuery UI core
+	- draggable
+	- slider
+	- Theme Roller UI icons (if you want)
+
+*/
+
 ;(function($){
 	
 	var defaults = {
-		zoomFactor: 0.05,
-		zoomDelay: 16,
-		minZoom: 0.1,
-		maxZoom: 10,
-		panSpeed: 10,
-		panDistance: 10,
-		panDragAreaSize: 75,
-		panMinPercentSpeed: 0.25,
-		panInactiveArea: 8,
-		panIndicatorMinOpacity: 0.65,
-		staticPosition: true,
-		autodisableForMobile: true
+		zoomFactor: 0.05, // zoom factor per zoom tick
+		zoomDelay: 16, // how many ms between zoom ticks
+		minZoom: 0.1, // min zoom level
+		maxZoom: 10, // max zoom level
+		panSpeed: 10, // how many ms in between pan ticks
+		panDistance: 10, // max pan distance per tick
+		panDragAreaSize: 75, // the length of the pan drag box in which the vector for panning is calculated (bigger = finer control of pan speed and direction)
+		panMinPercentSpeed: 0.25, // the slowest speed we can pan by (as a percent of panSpeed)
+		panInactiveArea: 8, // radius of inactive area in pan drag box
+		panIndicatorMinOpacity: 0.65, // min opacity of pan indicator (the draggable nib); scales from this to 1.0
+		staticPosition: true, // should the panzoom control be static (like Google Maps) or in a draggable control (like VLC)
+		autodisableForMobile: true // disable the panzoom completely for mobile (since we don't really need it with gestures like pinch to zoom)
 	};
 	
 	$.fn.cytoscapewebPanzoom = function(params){
@@ -150,6 +163,17 @@
 						});
 					}
 					
+					var zx, zy;
+					function zoomTo(level){
+						cy.zoom({
+							level: level,
+							renderedPosition: {
+								x: zx,
+								y: zy
+							}
+						});
+					}
+
 					var panInterval;
 					
 					var handler = function(e){
@@ -214,13 +238,7 @@
 						
 						clearTimeout(sliderTimeout);
 						sliderTimeout = null;
-						cy.zoom({
-							level: zoom,
-							renderedPosition: {
-								x: $container.width()/2,
-								y: $container.height()/2
-							}
-						});
+						zoomTo(zoom);
 					}
 					
 					$slider.slider({
@@ -243,6 +261,9 @@
 					function startSliding(){
 						sliderMdown = true;
 						
+						zx = $container.width()/2;
+						zy = $container.height()/2;
+
 						sliderHandler();
 						
 						$(window).unbind("mousemove", sliderHandler);
@@ -322,6 +343,9 @@
 								return;
 							}
 							
+							zx = $container.width()/2;
+							zy = $container.height()/2;
+
 							var cy = $container.cytoscapeweb("get");
 							
 							zoomInterval = setInterval(function(){
@@ -342,13 +366,7 @@
 									return;
 								}
 								
-								cy.zoom({
-									level: lvl,
-									renderedPosition: {
-										x: $container.width()/2,
-										y: $container.height()/2
-									}
-								});
+								zoomTo(lvl);
 							}, options.zoomDelay);
 							
 							return false;

@@ -2,7 +2,7 @@
 /* jquery.cytoscapeweb-edgehandles.js */
 
 /**
- * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.04.26-13.22.05.
+ * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.04.27-16.38.08.
  * 
  * Cytoscape Web is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by the Free
@@ -383,7 +383,7 @@
 						
 						function removeHandler(e){							
 							var newTargetIsHandle = e.toElement == handle;
-							var newTargetIsNode = e.toElement == node._private.renderer.svg;
+							var newTargetIsNode = e.toElement == node.renscratch("svg"); // TODO plugin shouldn't use ele.renscratch
 							
 							if( newTargetIsHandle || newTargetIsNode || mdownOnHandle ){
 								return; // don't consider mouseout

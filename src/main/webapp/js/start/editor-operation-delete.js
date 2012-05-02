@@ -62,6 +62,13 @@ $(function(){
 				remove_matches();
 				
 				eles.remove();
+
+				var dangling = neighbors.filter(".interaction{degree <= 1}");
+				dangling = dangling.add( dangling.connectedEdges() );
+				options.dangling = dangling;
+
+				dangling.remove();
+
 				//ui.update_commandtips( neighbors );
 			}
 			
@@ -74,6 +81,7 @@ $(function(){
 		undo: function(options){
 			// restore elements
 			options.elements.restore();
+			options.dangling.restore();
 			options.edges.restore();
 			
 			// restore matches

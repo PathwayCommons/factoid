@@ -2,7 +2,7 @@
 /* jquery.cytoscapeweb.layout.arbor.js */
 
 /**
- * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.04.27-16.38.08.
+ * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.05.02-15.29.09.
  * 
  * Cytoscape Web is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by the Free
@@ -23,56 +23,80 @@
 	var defaults = {
 		liveUpdate: true,
 		ready: undefined,
-		maxSimulationTime: 8000,
+		maxSimulationTime: 4000,
 		fit: true,
 		padding: [ 50, 50, 50, 50 ],
 		ungrabifyWhileSimulating: true,
 		repulsion: undefined,
 		stiffness: undefined,
 		friction: undefined,
-		gravity: undefined,
-		fps: 9999,
-		dt: undefined,
+		gravity: true,
+		fps: undefined,
 		precision: undefined,
 		nodeMass: undefined,
-		edgeLength: undefined
+		edgeLength: undefined,
+		stepSize: 1,
+		stableEnergy: function( energy ){
+			var e = energy; 
+			return (e.max <= 7) || (e.mean <= 5);
+		}
 	};
 	
-	function ArborLayout(){
-		$.cytoscapeweb("debug", "Creating force-directed layout");
+	function ArborLayout(options){
+		this.options = $.extend(true, {}, defaults, options);
 	}
-	
-	function exec(fn){
-		if( fn != null && typeof fn == typeof function(){} ){
-			fn();
-		}
-	}
-	
-	ArborLayout.prototype.run = function(params){
-		var options = $.extend(true, {}, defaults, params);
-		$.cytoscapeweb("debug", "Running force-directed layout with options (%o)", options);
 		
+	ArborLayout.prototype.run = function(){
+		var options = this.options;
 		var cy = options.cy;
 		var nodes = cy.nodes();
 		var edges = cy.edges();
-		var container = cy.container();
+		var $container = cy.container();
 		
-		var sys = window.sys = arbor.ParticleSystem(options.repulsion, options.stiffness, options.friction, options.gravity, options.fps, options.dt, options.precision);
+		// arbor doesn't work with just 1 node
+		if( cy.nodes().size() <= 1 ){
+			if( options.fit ){
+				cy.reset();
+			}
+
+			cy.nodes().position({
+				x: $container.width()/2,
+				y: $container.height()/2
+			});
+
+			cy.one("layoutstop", options.stop);
+			cy.trigger("layoutstop");
+
+			cy.one("layoutstop", options.stop);
+			cy.trigger("layoutstop");
+
+			return;
+		}
+
+		var sys = this.system = arbor.ParticleSystem(options.repulsion, options.stiffness, options.friction, options.gravity, options.fps, options.dt, options.precision);
 		
 		if( options.liveUpdate && options.fit ){
 			cy.reset();
 		};
 		
-		var framesToDoneCheck = 3;
-		var doneTime = Math.max(100, framesToDoneCheck * 1000/options.fps);
+		var doneTime = 250;
 		var doneTimeout;
 		
 		var ready = false;
 		
+		var lastDraw = +new Date;
 		var sysRenderer = {
 			init: function(system){
 			},
 			redraw: function(){
+				var energy = sys.energy();
+
+				// if we're stable (according to the client), we're done
+				if( options.stableEnergy != null && energy != null && options.stableEnergy(energy) ){
+					sys.stop();
+					return;
+				}
+
 				clearTimeout(doneTimeout);
 				doneTimeout = setTimeout(doneHandler, doneTime);
 				
@@ -96,31 +120,40 @@
 					}
 				});
 				
-				if( options.liveUpdate && movedNodes.size() > 0 ){
+
+				var timeToDraw = (+new Date - lastDraw) >= 16;
+				if( options.liveUpdate && movedNodes.size() > 0 && timeToDraw ){
 					movedNodes.rtrigger("position");
+					lastDraw = +new Date;
 				}
+
 				
 				if( !ready ){
 					ready = true;
+					cy.one("layoutready", options.ready);
 					cy.trigger("layoutready");
-					exec( params.ready );
 				}
 			}
 			
 		};
 		sys.renderer = sysRenderer;
 		
-		var width = container.width();
-		var height = container.height();
+		var width = $container.width();
+		var height = $container.height();
 		
 		sys.screenSize( width, height );
 		sys.screenPadding( options.padding[0], options.padding[1], options.padding[2], options.padding[3] );
-		
+		sys.screenStep( options.stepSize );
+
 		function calculateValueForElement(element, value){
 			if( value == null ){
 				return undefined;
 			} else if( typeof value == typeof function(){} ){
-				return value.apply(element, [element.data()]); 
+				return value.apply(element, [element.data(), {
+					nodes: nodes.size(),
+					edges: edges.size(),
+					element: element
+				}]); 
 			} else {
 				return value;
 			}
@@ -234,9 +267,9 @@
 				if( options.ungrabifyWhileSimulating ){
 					grabbableNodes.grabify();
 				}
-				
+
+				cy.one("layoutstop", options.stop);
 				cy.trigger("layoutstop");
-				exec( params.stop );
 			}
 		};
 		
@@ -244,6 +277,13 @@
 		setTimeout(function(){
 			sys.stop();
 		}, options.maxSimulationTime);
+		
+	};
+
+	ArborLayout.prototype.stop = function(){
+		if( this.system != null ){
+			system.stop();
+		}
 	};
 	
 	$.cytoscapeweb("layout", "arbor", ArborLayout);

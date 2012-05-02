@@ -2,7 +2,7 @@
 /* jquery.cytoscapeweb-edgehandles.js */
 
 /**
- * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.04.27-16.38.08.
+ * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.05.02-15.29.09.
  * 
  * Cytoscape Web is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by the Free

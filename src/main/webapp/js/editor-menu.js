@@ -8,7 +8,7 @@
 	$("#menubar").menubar({
 		items: [
 		    {
-		    	icon: "ui-icon-noun ui-icon-upload-alt-1",
+		    	icon: "ui-icon-noun ui-icon-upload",
 		    	//name: $.i18n("menu.save.name"),
 		    	//disabled: true,
 		    	attr: {
@@ -21,7 +21,7 @@
 		    },
 		    
 		    {
-		    	icon: "ui-icon-noun ui-icon-arrow-alt-7",
+		    	icon: "ui-icon-noun ui-icon-undo",
 		    	//name: $.i18n("menu.undo.name"),
 		    	attr: {
 		    		id: "menubar-undo"
@@ -35,7 +35,7 @@
 		    },
 		    
 		    {
-		    	icon: "ui-icon-noun ui-icon-arrow",
+		    	icon: "ui-icon-noun ui-icon-redo",
 		    	//name: $.i18n("menu.undo.name"),
 		    	attr: {
 		    		id: "menubar-redo"
@@ -49,7 +49,7 @@
 		    },
 		    
 		    {
-		    	icon: "ui-icon-noun ui-icon-plus",
+		    	icon: "ui-icon-noun ui-icon-add",
 		    	//name: $.i18n("menu.add_entity.name"),
 		    	attr: {
 		    		id: "menubar-add-entity"
@@ -79,7 +79,7 @@
 		    },
 
 		    { 
-				icon: "ui-icon-noun ui-icon-share",
+				icon: "ui-icon-noun ui-icon-layout",
 				attr: {
 					id: "menubar-layout"
 				},
@@ -111,7 +111,7 @@
 			},
 
 			{
-				icon: "ui-icon-noun ui-icon-information-alt-2",
+				icon: "ui-icon-noun ui-icon-information",
 				attr: {
 					id: "menubar-info"
 				},

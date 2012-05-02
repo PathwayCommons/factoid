@@ -1,0 +1,15 @@
+<svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="100" height="100" viewBox="0 0 100 100">
+
+<title/>
+<script type="text/javascript">
+var metadata = {
+	"Designer": "Anas Ramadan",
+	"Organization": "RichStyle.org",
+	"Year": "2012",
+	"Country": "Syria",
+	"License": "CC-BY-3.0"
+   }
+</script>
+
+<path d="M 51.4375 0 A 50 50 0 0 0 0 50 A 50 50 0 0 0 100 50 A 50 50 0 0 0 51.4375 0 z M 43 22 L 57 22 L 57 43 L 78 43 L 78 57 L 57 57 L 57 78 L 43 78 L 43 57 L 22 57 L 22 43 L 43 43 L 43 22 z "/>
+</svg>

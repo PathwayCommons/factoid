@@ -2,7 +2,7 @@
 /* jquery.cytoscapeweb.all.js */
 
 /**
- * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.04.27-17.07.30.
+ * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.05.02-15.29.09.
  * 
  * Cytoscape Web is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by the Free
@@ -606,7 +606,6 @@
 						var element = new $$.CyElement( cy, params );
 					});
 				}
-
 			}
 			
 			function callback(){				
@@ -619,16 +618,10 @@
 						style: cy._private.style
 					});
 
-					if( $$.is.fn(onload) ){
-						onload.apply(cy, [cy]);
-					}
-					
+					cy.one("load", onload);
 					cy.trigger("load");
 				}).one("layoutstop", function(){
-					if( $$.is.fn(ondone) ){
-						ondone.apply(cy, [cy]);
-					}
-					
+					cy.one("done", ondone);
 					cy.trigger("done");
 				});
 				
@@ -984,11 +977,17 @@
 			var cy = this;
 			var listeners = cy._private.listeners;
 			
+			// if data is not defined, switch params
 			if( handler === undefined ){
 				handler = data;
 				data = undefined;
 			}
 			
+			// if we have no handler callback, then we can't really do anything
+			if( handler == null ){
+				return cy;
+			}
+
 			events = events.split(/\s+/);
 			$.each(events, function(i, event){
 				if( $$.is.emptyString(event) ){ return; }
@@ -1023,7 +1022,7 @@
 			var listeners = cy._private.listeners;
 			
 			if( listeners[ params.target ] == null ){
-				return;
+				return cy;
 			}
 			
 			events = events.split(/\s+/);
@@ -1033,7 +1032,7 @@
 				// unbind all
 				if( handler === undefined ){
 					delete listeners[ params.target ][ event ];
-					return;
+					return cy;
 				}
 				
 				// unbind specific handler
@@ -1062,49 +1061,50 @@
 		return function( event, data ){
 			var cy = this;
 			var listeners = cy._private.listeners;
-			var types;
 			var target = params.target;
+			var type;
 			
 			if( $$.is.plainObject(event) ){
-				types = [ event.type ];
+				type = event.type;
 			} else {
-				types = event.split(/\s+/);
+				type = event;
 			}
 			
-			$.each(types, function(t, type){
-				if( listeners[target] == null || listeners[target][type] == null ){
-					return;
+			if( listeners[target] == null || listeners[target][type] == null ){
+				return;
+			}
+			
+			for(var i = 0; i < listeners[target][type].length; i++){
+				var listener = listeners[target][type][i];
+				
+				var eventObj;
+				if( $$.is.plainObject(event) ){
+					eventObj = event;
+				} else {
+					eventObj = $.Event(event);
+				}
+				eventObj.data = listener.data;
+				eventObj.cy = eventObj.cytoscapeweb = cy;
+				
+				var args = [ eventObj ];
+				
+				if( data != null ){
+					if( !$$.is.array(data) ){
+						data = [ data ];
+					}
+
+					$.each(data, function(i, arg){
+						args.push(arg);
+					});
 				}
 				
-				for(var i = 0; i < listeners[target][type].length; i++){
-					var listener = listeners[target][type][i];
-					
-					var eventObj;
-					if( $$.is.plainObject(event) ){
-						eventObj = event;
-						event = eventObj.type;
-					} else {
-						eventObj = $.Event(event);
-					}
-					eventObj.data = listener.data;
-					eventObj.cy = eventObj.cytoscapeweb = cy;
-					
-					var args = [ eventObj ];
-					
-					if( data != null ){
-						$.each(data, function(i, arg){
-							args.push(arg);
-						});
-					}
-					
-					if( listener.one ){
-						listeners[target][type].splice(i, 1);
-						i--;
-					}
-					
-					listener.callback.apply(cy, args);
+				if( listener.one ){
+					listeners[target][type].splice(i, 1);
+					i--;
 				}
-			});
+				
+				listener.callback.apply(cy, args);
+			}
 		}
 	}
 		
@@ -1114,20 +1114,29 @@
 	
 	$$.fn.core({
 		
-		exportTo: function(params){
-			var format = params.name;
-			var exporterDefn = $$.extension("exporter", format);
+		json: function(params){
+			var json = {};
+			var cy = this;
 			
-			if( exporterDefn == null ){
-				$$.console.error("No exporter with name `%s` found; did you remember to register it?", format);
-			} else {
-				var exporter = new exporterDefn({
-					cy: cy,
-					renderer: this.renderer()
-				});
+			json.elements = {};
+			cy.elements().each(function(i, ele){
+				var group = ele.group();
 				
-				return exporter.run();
-			}
+				if( json.elements[group] == null ){
+					json.elements[group] = [];
+				}
+				
+				json.elements[group].push( ele.json() );
+			});
+
+			json.style = cy.style();
+			json.scratch = $$.util.copy( cy.scratch() );
+			json.zoomEnabled = cy._private.zoomEnabled;
+			json.panEnabled = cy._private.panEnabled;
+			json.layout = $$.util.copy( cy._private.options.layout );
+			json.renderer = $$.util.copy( cy._private.options.renderer );
+			
+			return json;
 		}
 		
 	});	
@@ -1150,10 +1159,7 @@
 			
 			cy.trigger("layoutstart");
 			
-			this._private.layout.run( $.extend({}, params, {
-				renderer: cy._private.renderer,
-				cy: cy
-			}) );
+			this._private.layout.run();
 			
 			return this;
 			
@@ -1178,7 +1184,10 @@
 				return;
 			}
 			
-			this._private.layout = new layoutProto();
+			this._private.layout = new layoutProto( $.extend({}, options, {
+				renderer: this._private.renderer,
+				cy: this
+			}) );
 			this._private.options.layout = options; // save options
 		}
 		
@@ -1270,13 +1279,10 @@
 							} else if( styleVal.discreteMapper != null ){
 								
 								var attrName = styleVal.discreteMapper.attr;
-								var entries = styleVal.discreteMapper.entries;
+								var entries = styleVal.discreteMapper.mapped;
 								var elementVal = element.data(attrName);
 								
-								$.each(entries, function(i, entry){
-									var attrVal = entry.attrVal;
-									var mappedVal = entry.mappedVal;
-									
+								$.each(entries, function(attrVal, mappedVal){								
 									if( attrVal == elementVal ){
 										ret = mappedVal;
 									}
@@ -1818,6 +1824,7 @@
 		this.length = 1;
 		this[0] = this;
 		
+		// NOTE: when something is added here, add also to ele.json()
 		this._private = {
 			cy: cy,
 			data: $$.util.copy( params.data ) || {}, // data object
@@ -1934,6 +1941,38 @@
 	// Functions
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	$$.fn.collection({
+		json: function(){
+			var p = this.element()._private;
+			
+			var json = $$.util.copy({
+				data: p.data,
+				position: p.position,
+				group: p.group,
+				bypass: p.bypass,
+				removed: p.removed,
+				selected: p.selected,
+				selectable: p.selectable,
+				locked: p.locked,
+				grabbed: p.grabbed,
+				grabbable: p.grabbable,
+				classes: "",
+				scratch: p.scratch
+			});
+			
+			var classes = [];
+			$.each(p.classes, function(cls, bool){
+				classes.push(cls);
+			});
+			
+			$.each(classes, function(i, cls){
+				json.classes += cls + ( i < classes.length - 1 ? " " : "" );
+			});
+			
+			return json;
+		}
+	});
+
 	$$.fn.collection({
 		restore: function( notifyRenderer ){
 			var restored = new CyCollection(this.cy());
@@ -2657,37 +2696,6 @@
 		})
 	});
 	
-	$$.fn.collection({
-		json: function(){
-			var p = this.element()._private;
-			
-			var json = $$.util.copy({
-				data: p.data,
-				position: p.position,
-				group: p.group,
-				bypass: p.bypass,
-				removed: p.removed,
-				selected: p.selected,
-				locked: p.locked,
-				grabbed: p.grabbed,
-				grabbable: p.grabbable,
-				classes: "",
-				scratch: p.scratch
-			});
-			
-			var classes = [];
-			$.each(p.classes, function(cls, bool){
-				classes.push(cls);
-			});
-			
-			$.each(classes, function(i, cls){
-				json.classes += cls + ( i < classes.length - 1 ? " " : "" );
-			});
-			
-			return json;
-		}
-	});
-	
 	// Generic metacode for defining data function behaviour follows
 	//////////////////////////////////////////////////////////////////////////////////////
 	
@@ -2797,7 +2805,7 @@
 			// CASE: no parameters
 			// get whole attribute object
 			if( key === undefined ){
-				return objGetter(false);
+				return objGetter();
 			}
 			
 			// if passed false, just get the whole object without copying
@@ -3098,6 +3106,10 @@
 						var args = [eventData];
 						
 						if( data != null ){
+							if( !$$.is.array(data) ){
+								data = [data];
+							}
+
 							$.each(data, function(i, arg){
 								args.push(arg);
 							});
@@ -3311,9 +3323,15 @@
 		return function(events, data, callback){
 			var self = this;
 			
+			// if data is undefined (middle param), then switch param order
 			if( callback === undefined ){
 				callback = data;
 				data = undefined;
+			}
+
+			// if there isn't a callback, we can't really do anything
+			if( callback == null ){
+				return this;
 			}
 			
 			$.each(events.split(/\s+/), function(i, event){
@@ -3975,35 +3993,6 @@
 	}
 	
 })(jQuery, jQuery.cytoscapeweb);
-
-;(function($){
-	
-	// define the json exporter
-	function JsonExporter(options){
-		this.options = options;
-		this.cy = options.cy;
-		this.renderer = options.renderer;
-	}
-	
-	JsonExporter.prototype.run = function(){
-		var elements = {};
-		
-		this.cy.elements().each(function(i, ele){
-			var group = ele.group();
-			
-			if( elements[group] == null ){
-				elements[group] = [];
-			}
-			
-			elements[group].push( ele.json() );
-		});
-		
-		return elements;
-	};
-	
-	$.cytoscapeweb("exporter", "json", JsonExporter);
-	
-})(jQuery);
 
 ;(function($, $$){
 		
@@ -4856,6 +4845,34 @@
 		// generate the shape svg
 		svg: function(svg, parent, edge, position, style){
 			return svg.circle(parent, 0.5, 0.5, 0.5);
+		},
+		
+		centerPoint: {
+			x: 0.5,
+			y: 0.5
+		}
+	});
+
+	registerEdgeArrowShape({
+		name: "diamond",
+		
+		// generate the shape svg
+		svg: function(svg, parent, edge, position, style){
+			return svg.polygon(parent, [[0.5, 0], [1, 0.5], [0.5, 1], [0, 0.5]]);
+		},
+		
+		centerPoint: {
+			x: 0.5,
+			y: 0.5
+		}
+	});
+
+	registerEdgeArrowShape({
+		name: "tee",
+		
+		// generate the shape svg
+		svg: function(svg, parent, edge, position, style){
+			return svg.rect(parent, 0, 0, 1, 0.5);
 		},
 		
 		centerPoint: {
@@ -7162,7 +7179,7 @@
 				element.removeRenscratch("svgGroup");
 				element.removeRenscratch("svgSourceArrow");
 				element.removeRenscratch("svgTargetArrow");
-				// TODO add delete other svg children like labels
+				element.removeRenscratch("svgLabel");
 			} else {
 				$$.console.debug("Element with group `%s` and ID `%s` has no associated SVG element", element.group(), element.id());
 			}
@@ -7171,6 +7188,16 @@
 		if( self.selectedElements != null ){
 			self.selectedElements = self.selectedElements.not(collection);
 		}
+
+		var edgesToReposition = self.cy.collection();
+		collection.edges().each(function(i, edge){
+			var src = edge.source();
+			var tgt = edge.target();
+
+			edgesToReposition = edgesToReposition.add( src.edgesWith( tgt ) );
+		});
+
+		self.updatePosition( edgesToReposition );
 		
 		if( updateMappers ){
 			this.updateMapperBounds( collection );
@@ -7259,15 +7286,16 @@
 
 ;(function($, $$){
 		
-	function NullLayout(){
-		$.cytoscapeweb("debug", "Creating null layout");
+	var defaults = {};
+
+	function NullLayout( options ){
+		this.options = $.extend(true, {}, defaults, options); 
 	}
 	
 	// puts all nodes at (0, 0)
-	NullLayout.prototype.run = function(params){
-		$.cytoscapeweb("debug", "Running null layout with options (%o)", params);
-		
-		var cy = params.cy;
+	NullLayout.prototype.run = function(){
+		var options = this.options;
+		var cy = options.cy;
 		
 		cy.nodes().positions(function(){
 			return {
@@ -7276,17 +7304,15 @@
 			};
 		});
 		
-		function exec(fn){
-			if( fn != null && typeof fn == typeof function(){} ){
-				fn();
-			}
-		}
-		
+		cy.one("layoutready", options.ready);
 		cy.trigger("layoutready");
-		exec( params.ready );
 		
+		cy.one("layoutstop", options.stop);
 		cy.trigger("layoutstop");
-		exec( params.stop );
+	};
+
+	NullLayout.prototype.stop = function(){
+		// not a continuous layout
 	};
 	
 	$.cytoscapeweb("layout", "null", NullLayout);
@@ -7296,27 +7322,26 @@
 ;(function($, $$){
 	
 	var defaults = {
-		fit: true
+		ready: undefined, // callback on layoutready
+		stop: undefined, // callback on layoutstop
+		fit: true // whether to fit to viewport
 	};
 	
-	function RandomLayout(){
-		$.cytoscapeweb("debug", "Creating random layout with options");
+	function RandomLayout( options ){
+		this.options = $.extend(true, {}, defaults, options);
 	}
 	
-	RandomLayout.prototype.run = function(params){
-		var options = $.extend(true, {}, defaults, params);
-		var cy = params.cy;
+	RandomLayout.prototype.run = function(){
+		var options = this.options;
+		var cy = options.cy;
 		var nodes = cy.nodes();
 		var edges = cy.edges();
-		var container = cy.container();
+		var $container = cy.container(); // the container div for cytoscapeweb
 		
-		$.cytoscapeweb("debug", "Running random layout with options (%o)", params);
+		var width = $container.width();
+		var height = $container.height();
 		
-		var width = container.width();
-		var height = container.height();
-			
-		$.cytoscapeweb("debug", "Random layout found (w, h, d) = (%i, %i)", width, height);
-		
+
 		nodes.positions(function(i, element){
 			
 			if( element.locked() ){
@@ -7328,25 +7353,31 @@
 				y: Math.round( Math.random() * height )
 			};
 		});
-
-		function exec(fn){
-			if( fn != null && typeof fn == typeof function(){} ){
-				fn();
-			}
-		}
 		
+		// layoutready should be triggered when the layout has set each node's
+		// position at least once
+		cy.one("layoutready", options.ready);
 		cy.trigger("layoutready");
-		exec( params.ready );
 		
 		if( options.fit ){
 			cy.fit();
 		}
 		
+		// layoutstop should be triggered when the layout stops running
+		cy.one("layoutstop", options.stop);
 		cy.trigger("layoutstop");
-		exec( params.stop );
 	};
 	
-	$.cytoscapeweb("layout", "random", RandomLayout);
+	RandomLayout.prototype.stop = function(){
+		// stop the layout if it were running continuously
+	};
+
+	// register the layout
+	$.cytoscapeweb(
+		"layout", // we're registering a layout
+		"random", // the layout name
+		RandomLayout // the layout prototype
+	);
 	
 })(jQuery, jQuery.cytoscapeweb);
 
@@ -7358,24 +7389,24 @@
 		columns: undefined
 	};
 	
-	function GridLayout(){
-		$.cytoscapeweb("debug", "Creating grid layout");
+	function GridLayout( options ){
+		this.options = $.extend({}, defaults, options);
 	}
 	
-	GridLayout.prototype.run = function(params){
-		var options = $.extend(true, {}, defaults, params);
+	GridLayout.prototype.run = function(){
+		var params = options = this.options;
 		
 		var cy = params.cy;
 		var nodes = cy.nodes();
 		var edges = cy.edges();
-		var container = cy.container();
+		var $container = cy.container();
 		
-		$.cytoscapeweb("debug", "Running grid layout with options (%o)", options);
+		$$.console.debug("Running grid layout with options (%o)", options);
 		
-		var width = container.width();
-		var height = container.height();
+		var width = $container.width();
+		var height = $container.height();
 
-		$.cytoscapeweb("debug", "Running grid layout on container of size (w, h) = (%i, %i) with %i nodes", width, height, nodes.size());
+		$$.console.debug("Running grid layout on container of size (w, h) = (%i, %i) with %i nodes", width, height, nodes.size());
 		
 		if( height == 0 || width == 0){
 			$.cytoscapeweb("warn", "Running grid layout on container of size 0");
@@ -7392,7 +7423,7 @@
 			var rows = Math.round( splits );
 			var cols = Math.round( width/height * splits );
 			
-			$.cytoscapeweb("debug", "Grid layout decided on initial (cols, rows) = (%i, %i)", cols, rows);
+			$$.console.debug("Grid layout decided on initial (cols, rows) = (%i, %i)", cols, rows);
 			
 			function small(val){
 				if( val == undefined ){
@@ -7401,10 +7432,10 @@
 					var min = Math.min(rows, cols);
 					if( min == rows ){
 						rows = val;
-						$.cytoscapeweb("debug", "Grid layout set small number of rows to %i", rows);
+						$$.console.debug("Grid layout set small number of rows to %i", rows);
 					} else {
 						cols = val;
-						$.cytoscapeweb("debug", "Grid layout set small number of columns to %i", cols);
+						$$.console.debug("Grid layout set small number of columns to %i", cols);
 					}
 				}
 			}
@@ -7416,10 +7447,10 @@
 					var max = Math.max(rows, cols);
 					if( max == rows ){
 						rows = val;
-						$.cytoscapeweb("debug", "Grid layout set large number of rows to %i", rows);
+						$$.console.debug("Grid layout set large number of rows to %i", rows);
 					} else {
 						cols = val;
-						$.cytoscapeweb("debug", "Grid layout set large number of columns to %i", cols);
+						$$.console.debug("Grid layout set large number of columns to %i", cols);
 					}
 				}
 			}
@@ -7443,7 +7474,7 @@
 				var sm = small();
 				var lg = large();
 				
-				$.cytoscapeweb("debug", "Grid layout is looking to make a reduction");
+				$$.console.debug("Grid layout is looking to make a reduction");
 				
 				// reducing the small side takes away the most cells, so try it first
 				if( (sm - 1) * lg >= cells ){
@@ -7453,7 +7484,7 @@
 				} 
 			} else {
 				
-				$.cytoscapeweb("debug", "Grid layout is looking to make an increase");
+				$$.console.debug("Grid layout is looking to make an increase");
 				
 				// if rounding was too low, add rows or columns
 				while( cols * rows < cells ){
@@ -7469,7 +7500,7 @@
 				}
 			}
 			
-			$.cytoscapeweb("debug", "Grid layout split area into cells (cols, rows) = (%i, %i)", cols, rows);
+			$$.console.debug("Grid layout split area into cells (cols, rows) = (%i, %i)", cols, rows);
 			
 			var cellWidth = width / cols;
 			var cellHeight = height / rows;
@@ -7496,21 +7527,19 @@
 			});
 		}
 		
-		if( options.fit ){
+		if( params.fit ){
 			cy.reset();
 		} 
 		
-		function exec(fn){
-			if( fn != null && typeof fn == typeof function(){} ){
-				fn();
-			}
-		}
-		
+		cy.one("layoutready", params.ready);
 		cy.trigger("layoutready");
-		exec( params.ready );
 		
+		cy.one("layoutstop", params.stop);
 		cy.trigger("layoutstop");
-		exec( params.stop );
+	};
+
+	GridLayout.prototype.stop = function(){
+		// not a continuous layout
 	};
 	
 	$.cytoscapeweb("layout", "grid", GridLayout);
@@ -7523,15 +7552,13 @@
 		fit: true
 	};
 	
-	function PresetLayout(){
-		$.cytoscapeweb("debug", "Creating preset layout with options");
+	function PresetLayout( options ){
+		this.options = $.extend(true, {}, defaults, options);
 	}
 	
-	PresetLayout.prototype.run = function(params){
-		var options = $.extend(true, {}, defaults, params);
-		$.cytoscapeweb("debug", "Running preset layout with options (%o)", options);
-
-		var cy = params.cy;
+	PresetLayout.prototype.run = function(){
+		var options = this.options;
+		var cy = options.cy;
 		var nodes = cy.nodes();
 		var edges = cy.edges();
 		var container = cy.container();
@@ -7549,7 +7576,6 @@
 		}
 		
 		nodes.positions(function(i, node){
-			
 			var position = getPosition(node);
 			
 			if( node.locked() || position == null ){
@@ -7557,46 +7583,42 @@
 			}
 			
 			return position;
-			
 		});
 		
-		function exec(fn){
-			if( fn != null && typeof fn == typeof function(){} ){
-				fn();
-			}
+		if( options.pan != null ){
+			cy.pan( options.pan );
+			cy.zoom( options.zoom );
 		}
-		
+
+		cy.one("layoutready", options.ready);
 		cy.trigger("layoutready");
-		exec( params.ready );
 		
 		if( options.fit ){
 			cy.fit();
 		}
 		
+		cy.one("layoutstop", options.stop);
 		cy.trigger("layoutstop");
-		exec( params.stop );
 	};
 	
 	$.cytoscapeweb("layout", "preset", PresetLayout);
 	
-	function PresetExporter(options){
-		this.options = options;
-		this.cy = options.cy;
-		this.renderer = options.renderer;
-	}
-	
-	PresetExporter.prototype.run = function(){
+	$.cytoscapeweb("core", "presetLayout", function(){
+		var cy = this;
+		var layout = {};
 		var elements = {};
 		
-		this.cy.elements().each(function(i, ele){
+		cy.nodes().each(function(i, ele){
 			elements[ ele.data("id") ] = ele.position();
 		});
 		
-		return elements;
-	};
-	
-	$.cytoscapeweb("exporter", "preset", PresetExporter);
-	
+		layout.positions = elements;
+		layout.name = "preset";
+		layout.zoom = cy.zoom();
+		layout.pan = cy.pan();
+
+		return layout;
+	});
 	
 })(jQuery, jQuery.cytoscapeweb);
 

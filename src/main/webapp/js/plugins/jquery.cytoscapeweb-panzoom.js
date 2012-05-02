@@ -2,7 +2,7 @@
 /* jquery.cytoscapeweb-panzoom.js */
 
 /**
- * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.04.27-16.38.08.
+ * This file is part of Cytoscape Web 2.0-prerelease-snapshot-2012.05.02-15.29.09.
  * 
  * Cytoscape Web is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by the Free
@@ -38,6 +38,7 @@ Depends on
 		zoomDelay: 16, // how many ms between zoom ticks
 		minZoom: 0.1, // min zoom level
 		maxZoom: 10, // max zoom level
+		fitPadding: 50, // padding when fitting
 		panSpeed: 10, // how many ms in between pan ticks
 		panDistance: 10, // max pan distance per tick
 		panDragAreaSize: 75, // the length of the pan drag box in which the vector for panning is calculated (bigger = finer control of pan speed and direction)
@@ -387,6 +388,18 @@ Depends on
 						
 						var cy = $container.cytoscapeweb("get");
 						cy.fit();
+
+						var length = Math.max( $container.width(), $container.height() );
+						var zoom = cy.zoom() * (length - options.fitPadding*2)/length;
+
+						cy.zoom({
+							level: zoom,
+							renderedPosition: {
+								x: $container.width()/2,
+								y: $container.height()/2
+							}
+						});
+
 						return false;
 					});
 					

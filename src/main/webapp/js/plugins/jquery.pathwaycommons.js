@@ -77,7 +77,7 @@
 	$.pathwaycommons.search = function(opts){
 		
 		$.pathwaycommons.query( $.extend({}, opts, {
-			url: "http://www.pathwaycommons.org/pc2/find.json",
+			url: "http://awabi.cbio.mskcc.org/cpath2/search.json",
 			varVal: opts.search,
 			varName: "q",
 			dataType: "json"
@@ -88,7 +88,7 @@
 	$.pathwaycommons.biopax = function(opts){
 		
 		$.pathwaycommons.query($.extend({}, opts, {
-			url: "http://www.pathwaycommons.org/pc2/get",
+			url: "http://awabi.cbio.mskcc.org/cpath2/get",
 			varVal: opts.uri,
 			varName: "uri",
 			dataType: "text"

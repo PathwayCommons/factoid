@@ -226,7 +226,7 @@ ui.generate_entity_commandtip = function(node, tip_div, callback){
 						
 						var button = $('<button class="match-selection"></button>');
 						ret.append(button);
-						button.append(match.name[ match.name.length - 1 ]);
+						button.append(match.name);
 						button.append('<span class="type">' + type.name() + '</span>');
 						
 						var organism = $('<span class="organism"></span>');

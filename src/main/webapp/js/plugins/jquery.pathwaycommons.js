@@ -49,7 +49,7 @@
 				$.ajax({
 					url: util.absolute_url("proxy"),
 					data: {
-						url: options.url + "?" + options.varName + "=" + options.varVal
+						url: options.url + "?" + options.varName + "=" + ("" + options.varVal).replace(/ /g, "%20")
 					},
 					type: "GET",
 					dataType: options.dataType,

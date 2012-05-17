@@ -1,0 +1,13 @@
+{
+  "name": "factoid",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "2.5.8",
+    "jade": ">= 0.0.1",
+    "piler": "~0.3.4",
+    "socket.io": "~0.9.5",
+    "less": "~1.3.0",
+    "underscore": "~1.3.3"
+  }
+}

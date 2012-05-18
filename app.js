@@ -8,6 +8,7 @@ var app = module.exports = express.createServer();
 var piler = require("piler");
 var io = require('socket.io').listen(app);
 var routes = require("./routes");
+var textmining = require("./textmining");
 
 var js = piler.createJSManager();
 var css = piler.createCSSManager();
@@ -49,10 +50,18 @@ app.configure('development', function(){
 	
 	// use socket.io to live update css in the browser
 	js.liveUpdate( css, io );
+
+	textmining.configure({
+		caching: false
+	});
 });
 
 app.configure('production', function(){
 	app.use(express.errorHandler());
+
+	textmining.configure({
+		caching: true
+	});
 });
 
 // define the routes

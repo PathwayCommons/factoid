@@ -25,6 +25,8 @@ function mine( options, callback ){
 				"Content-Length": postData.length
 			}
 		}, function( res ){
+			res.setEncoding('utf8');
+
 			res.on("data", function( id ){
 				parse( id, callback );
 			});
@@ -55,8 +57,26 @@ function mine( options, callback ){
 				"Content-Length": postData.length
 			}
 		}, function( res ){
+			res.setEncoding('utf8');
+
 			res.on("data", function( data ){
-				// TODO handle data
+				var matches = JSON.parse( data );
+				var ret = [];
+
+				us.each(matches, function(match){
+					var start = match[0];
+					var end = match[1];
+					var something = match[2];
+					var name = match[3];
+					var type = match[4];
+
+					ret.push({
+						name: name,
+						type: type
+					});
+				});
+
+				callback( ret );
 			});
 
 			res.on("error", function(){

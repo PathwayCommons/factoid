@@ -1,0 +1,18 @@
+Setup
+================================================================================
+
+This project requires that you install node.js on your system.  All other
+dependencies for running the project are included in node_modules, so you can 
+just run `node app` in the terminal to start the server.
+
+
+Tests
+================================================================================
+
+Tests use the nodeunit library, which you can install: 
+
+	sudo npm install -g nodeunit
+
+And then you can run the tests:
+
+	nodeunit tests.js

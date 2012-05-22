@@ -15,4 +15,7 @@ Tests use the nodeunit library, which you can install:
 
 And then you can run the tests:
 
-	nodeunit tests.js
+	nodeunit tests
+
+Add tests in the tests directory.  Tests for module `foo` should be in
+`tests/foo.js`, for example.

@@ -1,11 +1,11 @@
 var http = require("http");
-var us = require("underscore");
+var $_ = require("underscore");
 var querystring = require("querystring");
 
 var globals = {};
 
 function mine( options, callback ){
-	options = us.defaults(options, {
+	options = $_.defaults(options, {
 
 	});
 
@@ -63,7 +63,7 @@ function mine( options, callback ){
 				var matches = JSON.parse( data );
 				var ret = [];
 
-				us.each(matches, function(match){
+				$_.each(matches, function(match){
 					var start = match[0];
 					var end = match[1];
 					var something = match[2];
@@ -91,7 +91,7 @@ function mine( options, callback ){
 	}
 
 	function error( options, callback ){
-		callback( us.defaults(options, {
+		callback( $_.defaults(options, {
 			error: true,
 			reason: "Nothing specific"
 		}) );
@@ -102,7 +102,7 @@ function mine( options, callback ){
 
 // configure global textmining options (useful for things like debug/production configs)
 function configure( options ){
-	globals = us.defaults(options, {
+	globals = $_.defaults(options, {
 		caching: false
 	});
 }

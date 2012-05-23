@@ -9,6 +9,7 @@ var piler = require("piler");
 var io = require('socket.io').listen(app);
 var routes = require("./routes");
 var textmining = require("./textmining");
+var model = require("./public/javascripts/model");
 
 var js = piler.createJSManager();
 var css = piler.createCSSManager();
@@ -37,11 +38,18 @@ app.configure(function(){
 	
 	// js
 	var jsdir = __dirname + "/public/javascripts";
-	js.addFile( jsdir + "/jquery-1.7.2.js" );
-	js.addFile( jsdir + "/modernizr-2.5.3.js" );
+	js.addFile( jsdir + "/lib/jquery-1.7.2.js" );
+	js.addFile( jsdir + "/lib/modernizr-2.5.3.js" );
+	js.addFile( jsdir + "/lib/chai.js" );
+	js.addFile( jsdir + "/lib/underscore.js" );
+	js.addFile( jsdir + "/lib/backbone.js" );
+	js.addFile( jsdir + "/lib/require-stub.js" );
 	
 	// editor js
-	//js.addFile( "editor", jsdir + "/editor.js" );
+	js.addFile( "editor", jsdir + "/model/uidable.js" );
+	js.addFile( "editor", jsdir + "/model/entity.js" );
+	js.addFile( "editor", jsdir + "/model/interaction.js" );
+
 	
 });
 

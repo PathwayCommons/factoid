@@ -46,9 +46,10 @@ app.configure(function(){
 	js.addFile( jsdir + "/lib/require-stub.js" );
 	
 	// editor js
-	js.addFile( "editor", jsdir + "/model/uidable.js" );
-	js.addFile( "editor", jsdir + "/model/entity.js" );
-	js.addFile( "editor", jsdir + "/model/interaction.js" );
+	var modeldir = __dirname + "/model";
+	js.addFile( "editor", modeldir + "/uidable.js" );
+	js.addFile( "editor", modeldir + "/entity.js" );
+	js.addFile( "editor", modeldir + "/interaction.js" );
 
 	
 });

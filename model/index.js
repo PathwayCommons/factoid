@@ -6,7 +6,6 @@
 		// we can export everything here, since we don't have to
 		// worry about kb on the server side
 
-		exports.Uidable = require("./uidable").Uidable;
 		exports.Entity = require("./entity").Entity;
 		exports.Entities = require("./entity").Entities;
 		exports.Interaction = require("./interaction").Interaction;

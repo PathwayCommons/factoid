@@ -4,8 +4,9 @@
 	var __ = require("underscore");
 	var Backbone = require("backbone");
 	var model = require("../model");
+	var parent = model.Entity;
 
-	exports.Interaction = model.Uidable.extend({
+	exports.Interaction = parent.extend({
 		defaults: {
 		},
 
@@ -13,8 +14,8 @@
 			this.attributes.participants = new model.Entities();
 		},
 
-		validate: function( attrs ){
-			
+		validate: function( attrs, options ){
+			return parent.prototype.validate.call( this, attrs, options );
 		},
 
 		connect: function( entity ){

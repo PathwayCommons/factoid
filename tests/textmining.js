@@ -1,7 +1,7 @@
 // this tests the textmining module
 
 var textmining = require("../textmining");
-var $_ = require("underscore");
+var __ = require("underscore");
 
 module.exports = {
 	
@@ -13,7 +13,7 @@ module.exports = {
 		textmining.mine({
 			text: text
 		}, function( matches ){
-			test.ok( $_.any(matches, function(match){
+			test.ok( __.any(matches, function(match){
 				return match.name.toLowerCase() == "rad51";
 			}) );
 
@@ -30,7 +30,7 @@ module.exports = {
 		textmining.mine({
 			text: text
 		}, function( matches ){
-			test.ok( $_.any(matches, function(match){
+			test.ok( __.any(matches, function(match){
 				return match.name.toLowerCase() == "rad51";
 			}) );
 
@@ -47,7 +47,7 @@ module.exports = {
 		textmining.mine({
 			text: text
 		}, function( matches ){
-			test.ok( $_.any(matches, function(match){
+			test.ok( __.any(matches, function(match){
 				return match.name.toLowerCase() == "rad51";
 			}) );
 

@@ -15,14 +15,14 @@ module.exports = {
 		}, function( matches ){
 			test.ok( __.any(matches, function(match){
 				return match.name.toLowerCase() == "rad51";
-			}) );
+			}), "rad51 matched" );
 
 			test.done();
 		});
 
 	},
 
-	"entity as text": function( test ){
+	"RAD51 recognised": function( test ){
 		test.expect(1);
 
 		var text = "RAD51";
@@ -32,14 +32,14 @@ module.exports = {
 		}, function( matches ){
 			test.ok( __.any(matches, function(match){
 				return match.name.toLowerCase() == "rad51";
-			}) );
+			}), "rad51 found" );
 
 			test.done();
 		});
 
 	},
 
-	"entity as text lowercase": function( test ){
+	"rad51 lowercase recognised": function( test ){
 		test.expect(1);
 
 		var text = "rad51";
@@ -49,11 +49,39 @@ module.exports = {
 		}, function( matches ){
 			test.ok( __.any(matches, function(match){
 				return match.name.toLowerCase() == "rad51";
-			}) );
+			}), "rad51 found" );
 
 			test.done();
 		});
 
+	},
+
+	"p53 recognised in `MDM2 inhibits P53`": function( test ){
+		test.expect(1);
+
+		textmining.mine({
+			text: "MDM2 inhibits P53"
+		}, function( matches ){
+			test.ok( __.any(matches, function(match){
+				return match.name.toLowerCase() == "p53";
+			}), "p53 found" );
+
+			test.done();
+		});
+	},
+
+	"p53 recognised in `P53 is inhibited by MDM2`": function( test ){
+		test.expect(1);
+
+		textmining.mine({
+			text: "P53 is inhibited by MDM2"
+		}, function( matches ){
+			test.ok( __.any(matches, function(match){
+				return match.name.toLowerCase() == "p53";
+			}), "p53 found" );
+
+			test.done();
+		});
 	}
 
 };

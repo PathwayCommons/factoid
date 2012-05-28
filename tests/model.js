@@ -16,37 +16,48 @@ module.exports = {
 	},
 
 	"entity name": function( test ){
-		test.expect(1);
+		test.expect(3);
 
 		var entity = new model.Entity({
 			name: "pcna"
 		});
+		var interaction = new model.Interaction();
 
 		try {
 			entity.set("name", null);
 		} catch(e){}
-
 		test.equal( entity.get("name"), "pcna", "entity name unchanged" );
+
+		test.ok( interaction.get("name") != null, "interaction has a default name" );
+		test.ok( interaction.get("interactions") != null, "interaction has parent interactions list" );
 
 		test.done();
 	},
 
 	"connect interaction to entity": function( test ){
-		test.expect(4);
+		test.expect(5);
+		var changed;
+		var added;
 
 		var entity = new model.Entity();
 		var interaction = new model.Interaction();
 
 		// connect
+		added = false;
+		interaction.get("participants").on("add", function(){
+			added = true;
+		});
+
 		interaction.connect( entity );
 		test.equal( interaction.get("participants").at(0), entity, "interaction has entity" );
+		test.ok( added, "participants `add` event triggered" );
 
-		var changed = false;
+		changed = false;
 		interaction.on("change", function(){
 			changed = true;
 		});
 
-		var added = false;
+		added = false;
 		interaction.get("participants").on("add", function(){
 			added = true;
 		});

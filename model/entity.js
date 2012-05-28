@@ -6,14 +6,12 @@
 	var model = require("../model");
 
 	exports.Entity = Backbone.Model.extend({
-		defaults: {
-			name: "unnamed entity", // name of entity
-			uid: null, // unique id of entity according to uidsrc
-			uidsrc: null // the name of the source of the uid (e.g. "uniprot")
-		},
-
-		initialize: function(){
-			this.attributes.interactions = new model.Interactions();
+		defaults: function(){
+			return {
+				name: "unnamed entity", // name of entity
+				uid: null, // unique id of entity according to uidsrc
+				uidsrc: null, // the name of the source of the uid (e.g. "uniprot")
+			};
 		},
 
 		validate: function( attrs, options ){

@@ -6,16 +6,15 @@
 	var model = require("../model");
 	var parent = model.Entity;
 
-	exports.Interaction = parent.extend({
-		defaults: {
-		},
-
-		initialize: function(){
-			this.attributes.participants = new model.Entities();
+	var Interaction = exports.Interaction = parent.extend({
+		defaults: function(){
+			return __.defaults({
+				participants: []
+			}, parent.prototype.defaults.call(this) );
 		},
 
 		validate: function( attrs, options ){
-			return parent.prototype.validate.call( this, attrs, options );
+			return parent.prototype.validate.apply( this, arguments ); // super()
 		},
 
 		connect: function( entity ){
@@ -31,7 +30,7 @@
 		}
 	});
 
-	exports.Interactions = Backbone.Collection.extend({
+	var Interactions = exports.Interactions = Backbone.Collection.extend({
 		model: model.Interaction
 	});
 

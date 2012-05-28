@@ -8,8 +8,6 @@ var app = module.exports = express.createServer();
 var piler = require("piler");
 var io = require('socket.io').listen(app);
 var routes = require("./routes");
-var textmining = require("./textmining");
-var model = require("./public/javascripts/model");
 
 var js = piler.createJSManager();
 var css = piler.createCSSManager();
@@ -47,7 +45,6 @@ app.configure(function(){
 	
 	// editor js
 	var modeldir = __dirname + "/model";
-	js.addFile( "editor", modeldir + "/uidable.js" );
 	js.addFile( "editor", modeldir + "/entity.js" );
 	js.addFile( "editor", modeldir + "/interaction.js" );
 

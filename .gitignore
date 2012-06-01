@@ -6,3 +6,4 @@ local.properties
 .settings
 target
 .externalToolBuilders/Factoid ant.launch
+npm-debug.log

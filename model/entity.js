@@ -8,6 +8,7 @@
 	exports.Entity = Backbone.Model.extend({
 		defaults: function(){
 			return {
+				type: "entity",
 				name: "unnamed entity", // name of entity
 				uid: null, // unique id of entity according to uidsrc
 				uidsrc: null, // the name of the source of the uid (e.g. "uniprot")

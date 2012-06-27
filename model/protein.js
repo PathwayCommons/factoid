@@ -7,22 +7,15 @@
 	var parent = model.Entity;
 
 	exports.Protein = parent.extend({
-		defaults: {
-			uidsrc: "uniprot"
-		},
-
-		initialize: function(){
+		defaults: function(){
+			return __.defaults({
+				type: "protein"
+			}, parent.prototype.defaults.call(this) );
 		},
 
 		validate: function( attrs, options ){
 			var pret = parent.prototype.validate.call( this, attrs, options );
 			if( pret ){ return pret; }
-
-			var uidsrcSet = attrs.uidsrc != null;
-			var uidsrcIsUniprot = attrs.uidsrc == "uniprot";
-			if( uidsrcSet && !uidsrcIsUniprot ){
-				return "A protein must have a uniprot uidsrc";
-			}
 		}
 	});
 

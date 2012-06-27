@@ -16,7 +16,7 @@ module.exports = {
 	},
 
 	"entity name": function( test ){
-		test.expect(3);
+		test.expect(2);
 
 		var entity = new model.Entity({
 			name: "pcna"
@@ -26,10 +26,30 @@ module.exports = {
 		try {
 			entity.set("name", null);
 		} catch(e){}
-		test.equal( entity.get("name"), "pcna", "entity name unchanged" );
+		test.equal( entity.get("name"), "pcna", "entity name unchanged, i.e. can't be set to null" );
 
 		test.ok( interaction.get("name") != null, "interaction has a default name" );
-		test.ok( interaction.get("interactions") != null, "interaction has parent interactions list" );
+
+		test.done();
+	},
+
+	"protein retains type in entities collection": function( test ){
+		test.expect(5);
+
+		var entities = new model.Entities();
+		var entity = new model.Entity();
+		var protein = new model.Protein();
+		var interaction = new model.Interaction();
+
+		entities.add( entity );
+		entities.add( protein );
+		interaction.connect( protein );
+
+		test.ok( entities.at(0) instanceof model.Entity, "entity is type entity" );
+		test.ok( entities.at(1) instanceof model.Entity, "protein is type entity" );
+		test.ok( entities.at(1) instanceof model.Protein, "protein is type protein" );
+		test.ok( interaction.get("participants").at(0) instanceof model.Entity, "connected protein is type entity" );
+		test.ok( interaction.get("participants").at(0) instanceof model.Protein, "connected protein is type protein" );
 
 		test.done();
 	},

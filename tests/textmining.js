@@ -12,7 +12,7 @@ module.exports = {
 
 		textmining.mine({
 			text: text
-		}, function( matches ){
+		}, function( error, matches ){
 			test.ok( __.any(matches, function(match){
 				return match.name.toLowerCase() == "rad51";
 			}), "rad51 matched" );
@@ -29,7 +29,7 @@ module.exports = {
 
 		textmining.mine({
 			text: text
-		}, function( matches ){
+		}, function( error, matches ){
 			test.ok( __.any(matches, function(match){
 				return match.name.toLowerCase() == "rad51";
 			}), "rad51 found" );
@@ -46,7 +46,7 @@ module.exports = {
 
 		textmining.mine({
 			text: text
-		}, function( matches ){
+		}, function( error, matches ){
 			test.ok( __.any(matches, function(match){
 				return match.name.toLowerCase() == "rad51";
 			}), "rad51 found" );
@@ -61,7 +61,7 @@ module.exports = {
 
 		textmining.mine({
 			text: "MDM2 inhibits P53"
-		}, function( matches ){
+		}, function( error, matches ){
 			test.ok( __.any(matches, function(match){
 				return match.name.toLowerCase() == "p53";
 			}), "p53 found" );
@@ -75,7 +75,7 @@ module.exports = {
 
 		textmining.mine({
 			text: "P53 is inhibited by MDM2"
-		}, function( matches ){
+		}, function( error, matches ){
 			test.ok( __.any(matches, function(match){
 				return match.name.toLowerCase() == "p53";
 			}), "p53 found" );

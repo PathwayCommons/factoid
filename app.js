@@ -8,6 +8,7 @@ var app = module.exports = express.createServer();
 var piler = require("piler");
 var io = require('socket.io').listen(app);
 var routes = require("./routes");
+var textmining = require("./textmining");
 
 var js = piler.createJSManager();
 var css = piler.createCSSManager();

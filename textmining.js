@@ -6,11 +6,11 @@ var globals = {};
 
 function mine( options, callback ){
 	options = $_.defaults(options, {
-
+		text: "" // text to mine
 	});
 
 	// submit paper to system
-	function submit( callback ){
+	function submit( success ){
 		var postData = querystring.stringify({
 			"_format": "raw",
 			"text": options.text
@@ -28,13 +28,11 @@ function mine( options, callback ){
 			res.setEncoding('utf8');
 
 			res.on("data", function( id ){
-				parse( id, callback );
+				success(id);
 			});
 
-			res.on("error", function(){
-				error({
-					reason: "Could not submit text"
-				}, callback);
+			res.on("error", function(e){
+				callback( new Error("Could not submit text for textmining") );
 			});
 		});
 
@@ -42,7 +40,7 @@ function mine( options, callback ){
 		req.end();
 	}
 
-	function parse( id, callback ){
+	function parse( id, success ){
 		 var postData = querystring.stringify({
 			"_format": "json",
 			"docid": id
@@ -60,8 +58,16 @@ function mine( options, callback ){
 			res.setEncoding('utf8');
 
 			res.on("data", function( data ){
-				var matches = JSON.parse( data );
+				var matches;				
 				var ret = [];
+
+				// the json data we get could be malformed
+				try {
+					matches = JSON.parse( data );
+				} catch(e){
+					callback(e);
+					return;
+				}
 
 				$_.each(matches, function(match){
 					var start = match[0];
@@ -76,13 +82,11 @@ function mine( options, callback ){
 					});
 				});
 
-				callback( ret );
+				success( ret );
 			});
 
-			res.on("error", function(){
-				error({
-					reason: "Could not parse text"
-				}, callback);
+			res.on("error", function(e){
+				callback( new Error("Could not parse text for textmining") );
 			});
 		});
 
@@ -90,15 +94,18 @@ function mine( options, callback ){
 		req.end();
 	}
 
-	function error( options, callback ){
-		callback( $_.defaults(options, {
-			error: true,
-			reason: "Nothing specific"
-		}) );
-	}
+	// submit paper
+	submit(function(id){
 
-	submit( callback );
+		// parse paper results, and send off to the callback
+		parse(id, function(matches){
+			callback(null, matches);
+		});
+	});
 }
+
+// TODO entity recognition from ensembl
+function recognize(  ){}
 
 // configure global textmining options (useful for things like debug/production configs)
 function configure( options ){

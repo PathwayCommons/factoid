@@ -9,7 +9,8 @@
 	var Interaction = exports.Interaction = parent.extend({
 		defaults: function(){
 			return __.defaults({
-				participants: []
+				type: "interaction",
+				participants: new model.Entities()
 			}, parent.prototype.defaults.call(this) );
 		},
 
@@ -24,9 +25,9 @@
 		},
 
 		disconnect: function( entity ){
-			expect( entity ).to.be.an.instanceof( model.Entity );
+			expect( entity ).to.be.an.instanceof( entity );
 
-			this.get("participants").remove( entity );
+			this.get("participants").remove( entity.get("id") );
 		}
 	});
 

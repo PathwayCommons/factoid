@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<link href="/style.css" rel="stylesheet" type="text/css">
+		<title>ShareJS Examples</title>
+
+		<style>
+			body {
+			}
+			a.demo {
+				display: table;
+				text-decoration: none;
+
+				border: 1px solid black;
+				border-radius: 20px;
+				background-color: #ddd;
+				margin: 30px;
+				color: black;
+				width: 400px;
+				height: 4em;
+				box-shadow: 5px 5px 5px #888;
+				font-size: 1.2em;
+				position: relative;
+			}
+
+			a.demo > p {
+				display: table-cell;
+				vertical-align: middle;
+			}
+
+			p.name {
+				border-right: 1px solid black;
+				padding-right: 20px;
+				width: 80px;
+				background-color: #aaa;
+				border-radius: 20px 0px 0px 20px;
+				font-family: monospace;
+			}
+
+			p.desc {
+				padding-right: 10px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<a href="http://github.com/josephg/ShareJS"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://d3nwyuy0nl342s.cloudfront.net/img/7afbc8b248c68eb468279e8c17986ad46549fb71/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub"></a>
+		<div id="container">
+			<div id='text' class='content'>
+				<h1>ShareJS Demo Gallery</h1>
+
+				<h2>Hello world demos</h2>
+				<a href="hello-ace.html" class='demo'>
+					<p class='name'>hello ace</p>
+					<p class='desc'>Use the ace editor to edit the 'hello' document</p>
+				</a>
+
+				<a href="textarea.html" class='demo'>
+					<p class='name'>textarea</p>
+					<p class='desc'>Use a plain textarea to edit the 'hello' document</p>
+				</a>
+
+				<a href='hello-readonly.html' class='demo'>
+					<p class='name'>hello readonly</p>
+					<p class='desc'>View the 'hello' document statically</p>
+				</a>
+
+				<h2>Readonly examples</h2>
+				<a href='readonly/html.html' class='demo'>
+					<p class='name'>readonly html</p>
+					<p class='desc'>View the 'html' document as html</p>
+				</a>
+				<a href='readonly/markdown.html' class='demo'>
+					<p class='name'>readonly markdown</p>
+					<p class='desc'>View the 'markdown' document as markdown</p>
+				</a>
+
+				<h2>Static renderer</h2>
+				<a href='static/html' class='demo'>
+					<p class='name'>static</p>
+					<p class='desc'>Statically render the 'html' doc on the server.</p>
+				</a>
+
+				<h2>Complex stuffs</h2>
+				<a href='ace/' class='demo'>
+					<p class='name'>general editor</p>
+					<p class='desc'>Edit any document</p>
+				</a>
+
+				<a href='wiki/' class='demo'>
+					<p class='name'>wiki</p>
+					<p class='desc'>A simple Wiki using markdown.</p>
+				</a>
+
+				<a href='pad/' class='demo'>
+					<p class='name'>pad</p>
+					<p class='desc'>Make a new etherpad-style notepad</p>
+				</a>
+
+				<a href='hex.html' class='demo'>
+					<p class='name'>board game</p>
+					<p class='desc'>a board game using JSON OT</p>
+				</a>
+			</div>
+		</div>
+	</body>
+</html>	
+

@@ -58,8 +58,12 @@ p {
 	margin: 0;
 	line-height: @lineHeight;
 	
-	&:active {
+	&:active:not([disabled]) {
 		background: darken(@bgColor, 10%);
+	}
+
+	&[disabled] {
+		cursor: default;
 	}
 }
 
@@ -108,9 +112,11 @@ a {
 	text-decoration: none;
 	outline: none;
 	cursor: pointer;
+	border-radius: 0.25em;
 	
-	&:hover {
-		text-decoration: underline;
+	&:active {
+		background: darken(@linkColor, 10%);
+		color: #fff;
 	}
 	
 	&.button {

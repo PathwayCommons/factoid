@@ -8,3 +8,4 @@ target
 .externalToolBuilders/Factoid ant.launch
 npm-debug.log
 public/gen
+node_modules

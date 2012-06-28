@@ -7,3 +7,4 @@ local.properties
 target
 .externalToolBuilders/Factoid ant.launch
 npm-debug.log
+public/gen

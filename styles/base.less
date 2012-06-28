@@ -1,10 +1,7 @@
-@import "reset";
-@import "nib";
-
-$bg = #ededed;
-$textColor = #000;
-$lineHeight = 1.5;
-$linkColor = #0094d6;
+@bg: #ededed;
+@textColor: #000;
+@lineHeight: 1.5;
+@linkColor: #0094d6;
 
 html {
 	margin: 0;
@@ -15,9 +12,9 @@ body {
 	margin: 0;
 	padding: 1em;
 	font: 12pt Helvetica Neue, Helvetica, Arial, sans-serif;
-	background: $bg;
-	line-height: $lineHeight;
-	color: $textColor;
+	background: @bg;
+	line-height: @lineHeight;
+	color: @textColor;
 }
 
 h1, h2, h3 {
@@ -40,7 +37,7 @@ p {
 	margin: 1em 0;
 }
 
-widgetted() {
+.widgetted {
 
 	font: inherit;
 
@@ -49,8 +46,25 @@ widgetted() {
 	}
 }
 
-textinputted() {
-	widgetted();
+.buttoned(@bgColor: @linkColor) {
+	.widgetted;
+	color: #fff;
+	display: inline-block;
+	background: @bgColor;
+	border: 0;
+	border-radius: 0.25em;
+	padding: 0.15em 0.5em;
+	cursor: pointer;
+	margin: 0;
+	line-height: @lineHeight;
+	
+	&:active {
+		background: darken(@bgColor, 10%);
+	}
+}
+
+.textinputted {
+	.widgetted;
 	background: #fff;
 	padding: 0;
 	margin: 0;
@@ -60,7 +74,7 @@ textinputted() {
 	border-right: 1px solid #c1c1c1;
 	border-bottom: 1px solid #e1e1e1;
 	box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
-	line-height: $lineHeight;
+	line-height: @lineHeight;
 	width: 15em;
 }
 
@@ -73,43 +87,34 @@ button::-moz-focus-inner {
 button, 
 input[type=submit],
 input[type=button] {
-	widgetted();
-	color: #333;
-	display: inline-block;
-	background: $linkColor;
-	border: 0;
-	border-radius: 0.25em;
-	padding: 0.15em 1em;
-	cursor: pointer;
-	margin: 0;
-	line-height: $lineHeight;
-	
-	&:active {
-		background: darken($linkColor, 10%);
-	}
+	.buttoned;
 }
 
 input[type=text],
 input[type=password] {
-	textinputted();
+	.textinputted;
 	padding: 0.15em 0; // proper way to make text box match button height
 	height: 1.5em; // hack for ff https://bugzilla.mozilla.org/show_bug.cgi?id=349259
 }
 
 textarea {
-	textinputted();
+	.textinputted;
 	resize: none;
-	height: 3em*$lineHeight;
+	height: 3em*@lineHeight;
 }
 
 a {
-	color: $linkColor;
+	color: @linkColor;
 	text-decoration: none;
 	outline: none;
 	cursor: pointer;
 	
 	&:hover {
 		text-decoration: underline;
+	}
+	
+	&.button {
+		.buttoned;
 	}
 }
 
@@ -119,4 +124,12 @@ em {
 
 strong {
 	font-weight: bold;
+}
+
+#enable-js {
+	display: none;
+}
+
+html.no-js #enable-js {
+	display: block;
 }

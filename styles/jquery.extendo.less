@@ -12,10 +12,10 @@
 	position: fixed;
 	margin: 0.5em;
 	z-index: 9999;
-	overflow: hidden;
-	padding: @extendoButtonSize/4 0;
 	height: @extendoButtonSize + 2*@extendoPadding;
 	font-size: 1.125em;
+	min-width: @extendoButtonSize;
+	min-height: @extendoButtonSize;
 
 	// override animation time from animation.css
 	.animated {
@@ -87,7 +87,8 @@
 			//&.right .extendo-container { .animated; .fadeOutRight; }
 
 			.extendo-container {
-				visibility: hidden
+				position: absolute;
+				left: -9999px;
 			}
 		}
 

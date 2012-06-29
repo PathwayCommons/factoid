@@ -1,0 +1,53 @@
+@boxPadding: 0.5em;
+@linkColor: #0094d6;
+
+#entities-list {
+	.entity,
+	.interaction {
+		border: 1px solid #cacaca;
+		margin: 0.25em;
+		padding: 0.125em @boxPadding;
+		position: relative;
+	}
+
+	.entity {
+		border-radius: 1em;
+	}
+
+	[class^="icon-"],
+	[class*=" icon-"] {
+		cursor: pointer;
+		color: #666;
+		font-size: 1em;
+		display: inline-block;
+	}
+
+	.icons {
+		position: absolute;
+		right: @boxPadding;
+		top: 50%;
+		margin-top: -0.75em;
+		
+		& > * {
+			margin-left: 0.5em;
+		}
+	}
+
+	.name {
+		margin: 0 0.25em;
+	}
+}
+
+.participants-list {
+	.entity {
+		cursor: pointer;
+		color: @linkColor;
+		border-radius: 0.25em;
+		margin: 0.25em 0;
+
+		&.connected {
+			background: @linkColor;
+			color: #fff;
+		}
+	}
+}

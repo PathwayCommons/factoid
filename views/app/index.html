@@ -32,17 +32,28 @@
 
     <div id="entities-list">
       {#each _entities}
-        <div class="{.type} type" id="{.id}">
-          <span class="edit-name icon-edit"></span>
-          <span class="name">{.name}</span>
-          <span class="icons">
-            {#if .interaction}
-              <span class="edit-participants icon-share"></span>
-            {/if}
-            <span class="remove icon-remove"></span>
-          </span>
-        </div>
+        <app:entity>
       {/each}
     </div>
 
+  </div>
+
+  <div id="foo">this is the content</div>
+
+<entity:>
+  <div class="{.type} entity-instance" data-id="{.id}">
+    <span class="edit-name icon-edit"></span>
+    <span class="name">{.name}</span>
+    <span class="icons">
+      {#if .interaction}
+        <span class="edit-participants icon-share"></span>
+      {/if}
+      <span class="remove icon-remove"></span>
+    </span>
+
+  </div>
+
+<participantsList:>
+  <div class="participants">
+    
   </div>

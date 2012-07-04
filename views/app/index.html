@@ -31,7 +31,7 @@
     </div>
 
     <div id="entities-list">
-      {#each _entities}
+      {#each _populatedEntities}
         <app:entity>
       {/each}
     </div>
@@ -51,9 +51,14 @@
       <span class="remove icon-remove"></span>
     </span>
 
+    {#if .interaction}
+      <app:participantsList>
+    {/if}
   </div>
 
 <participantsList:>
-  <div class="participants">
-    
+  <div class="participants" id="participants-for-{.id}">
+    {#each participants}
+      <div class="participant" data-id="{id}">{name}</div>
+    {/each}
   </div>

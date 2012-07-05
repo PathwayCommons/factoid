@@ -1,12 +1,13 @@
 @boxPadding: 0.5em;
 @linkColor: #0094d6;
+@borderColor: #cacaca;
 
 #entities-list {
 	.entity,
 	.interaction {
-		border: 1px solid #cacaca;
-		margin: 0.25em;
-		padding: 0.125em @boxPadding;
+		border: 1px solid @borderColor;
+		margin: @boxPadding/2;
+		padding: @boxPadding/4 @boxPadding;
 		position: relative;
 	}
 
@@ -18,15 +19,13 @@
 	[class*=" icon-"] {
 		cursor: pointer;
 		color: #666;
-		font-size: 1em;
 		display: inline-block;
 	}
 
 	.icons {
 		position: absolute;
 		right: @boxPadding;
-		top: 50%;
-		margin-top: -0.75em;
+		top: 0.2em;
 		
 		& > * {
 			margin-left: 0.5em;
@@ -34,20 +33,11 @@
 	}
 
 	.name {
-		margin: 0 0.25em;
+		margin: 0 @boxPadding/2;
 	}
-}
 
-.participants-list {
-	.entity {
-		cursor: pointer;
-		color: @linkColor;
-		border-radius: 0.25em;
-		margin: 0.25em 0;
-
-		&.connected {
-			background: @linkColor;
-			color: #fff;
-		}
+	.participants-list {
+		font-size: 0.8em;
+		margin: 0 @boxPadding*3;
 	}
 }

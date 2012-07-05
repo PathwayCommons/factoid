@@ -14,11 +14,12 @@
   Pre-defined templates are automatically included when the page is rendered.
 -->
 
+<import: src="qunit">
+
 <Title:>
   Factoid demo
 
 <Header:>
-
 
 <Body:>
   <div id="graph"></div>
@@ -52,13 +53,13 @@
     </span>
 
     {#if .interaction}
-      <app:participantsList>
+      <app:participants>
     {/if}
   </div>
 
-<participantsList:>
-  <div class="participants" id="participants-for-{.id}">
+<participants:>
+  <div class="participants-list" id="participants-for-{id}">
     {#each participants}
-      <div class="participant" data-id="{id}">{name}</div>
+      <div class="participant {type}" data-id="{id}">{name}</div>
     {/each}
   </div>

@@ -38,6 +38,14 @@
 #entities-list {
 	.entities;
 
+	.entity-instance {
+		&.highlighted {
+			@colour: #fdb722;
+			border-color: @colour;
+			background-color: lighten(@colour, 35%);
+		}
+	}
+
 	.participants-list {
 		font-size: 0.8em;
 		margin: 0 @boxPadding*1.6 0 @boxPadding*3;
@@ -66,6 +74,10 @@
 		button {
 			font-size: 0.8em;
 		}
+	}
+
+	.no-entities-message {
+		font-size: 0.8em;
 	}
 
 }

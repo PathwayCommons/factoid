@@ -2,7 +2,7 @@
 @linkColor: #0094d6;
 @borderColor: #cacaca;
 
-#entities-list {
+.entities {
 	.entity,
 	.interaction {
 		border: 1px solid @borderColor;
@@ -33,6 +33,10 @@
 	.name {
 		margin: 0 @boxPadding/2;
 	}
+}
+
+#entities-list {
+	.entities;
 
 	.participants-list {
 		font-size: 0.8em;
@@ -44,4 +48,24 @@
 			line-height: 1.125em;
 		}
 	}
+
+	.add-participants-list {
+		display: none;
+	}
+}
+
+.add-participants-list {
+	.entities;
+
+	.participant {}
+
+	.adders {
+		float: right;
+		margin-left: 0.5em;
+
+		button {
+			font-size: 0.8em;
+		}
+	}
+
 }

@@ -51,7 +51,7 @@
   </div>
 
 <entity:>
-  <div class="{.type} entity-instance" data-id="{.id}">
+  <div class="{.type} entity-instance" data-id="{.id}" id="entity-{id}">
     <span class="edit icon-edit"></span>
     <span class="name">{.name}</span>
     <span class="icons">
@@ -63,11 +63,12 @@
 
     {#if .interaction}
       <app:participants>
+      <app:addParticipants>
     {/if}
   </div>
 
 <participants:>
-  <div class="participants-list">
+  <div class="participants-list" id="participants-list-for-{id}">
     {#each participants}
       <div class="participant {type}" data-id="{id}">
         <span class="name">{name}</span>
@@ -79,13 +80,17 @@
   </div>
 
 <addParticipants:>
-  <div class="add-participants-list" id="add-participants-for-{id}">
-    {#each participants}
-      <div class="participant {type}" data-id="{id}">
-        <span class="name">{name}</span>
-        <span class="icons">
-          <span class="remove icon-remove-sign"></span>
-        </span>
-      </div>
-    {/each}
+  <div class="add-participants-list" data-interaction-id="{id}" id="add-participants-list-for-{id}">
+    {#if potentialParticipants}
+      {#each potentialParticipants}
+        <div class="participant {type}" data-id="{id}">
+          <span class="name">{name}</span>
+          <span class="adders">
+            <button class="add-participant"><span class="icon-plus-sign"></span> Participant</button>
+          </span>
+        </div>
+      {/each}
+    {else}
+      There are no other entities in the document to add.
+    {/if}
   </div>

@@ -38,10 +38,11 @@
 		position: relative;
 		padding: 0.25em 0.5em;
 		overflow: hidden;
+		max-height: 300px;
 
 		text-align: left;
 		word-wrap: break-word;
-		overflow: hidden;
+		overflow: auto;
 	}
 
 	.ui-tooltip-titlebar{
@@ -49,10 +50,9 @@
 		min-height: 1em;
 		padding: 0.125em 0.25em;
 		overflow: hidden;
-
-		border-width: 0 0 1px;
+		font-weight: 200;
+		border-bottom: 1px solid #eee;
 	}
-
 	.ui-tooltip-titlebar + .ui-tooltip-content{ border-top-width: 0px !important; }
 
 		/*! Default close button class */
@@ -82,7 +82,7 @@
 }
 
 	.ui-tooltip-default .ui-tooltip-titlebar{
-		background-color: #fff;
+		background-color: transparent;
 	}
 
 /* Tips plugin */

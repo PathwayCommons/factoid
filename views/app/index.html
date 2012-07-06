@@ -43,11 +43,11 @@
 
 <entity:>
   <div class="{.type} entity-instance" data-id="{.id}">
-    <span class="edit-name icon-edit"></span>
+    <span class="edit icon-edit"></span>
     <span class="name">{.name}</span>
     <span class="icons">
       {#if .interaction}
-        <span class="edit-participants icon-plus-sign"></span>
+        <span class="add-participants icon-plus-sign"></span>
       {/if}
       <span class="remove icon-remove"></span>
     </span>
@@ -58,7 +58,19 @@
   </div>
 
 <participants:>
-  <div class="participants-list" id="participants-for-{id}">
+  <div class="participants-list">
+    {#each participants}
+      <div class="participant {type}" data-id="{id}">
+        <span class="name">{name}</span>
+        <span class="icons">
+          <span class="remove icon-remove-sign"></span>
+        </span>
+      </div>
+    {/each}
+  </div>
+
+<addParticipants:>
+  <div class="add-participants-list" id="add-participants-for-{id}">
     {#each participants}
       <div class="participant {type}" data-id="{id}">
         <span class="name">{name}</span>

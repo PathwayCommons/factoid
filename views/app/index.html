@@ -47,7 +47,7 @@
     <span class="name">{.name}</span>
     <span class="icons">
       {#if .interaction}
-        <span class="edit-participants icon-share"></span>
+        <span class="edit-participants icon-plus-sign"></span>
       {/if}
       <span class="remove icon-remove"></span>
     </span>
@@ -60,6 +60,11 @@
 <participants:>
   <div class="participants-list" id="participants-for-{id}">
     {#each participants}
-      <div class="participant {type}" data-id="{id}">{name}</div>
+      <div class="participant {type}" data-id="{id}">
+        <span class="name">{name}</span>
+        <span class="icons">
+          <span class="remove icon-remove-sign"></span>
+        </span>
+      </div>
     {/each}
   </div>

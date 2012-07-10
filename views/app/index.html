@@ -32,9 +32,15 @@
     </div>
 
     <div id="entities-list">
-      {#each _populatedEntities}
-        <app:entity>
-      {/each}
+      {#if _populatedEntities}
+        {#each _populatedEntities}
+          <app:entity>
+        {/each}
+      {else}
+        <div class="info">
+          <span class="icon-info-sign"></span> There are not yet any entities in the current document.  You can add entities with the buttons above.
+        </div>
+      {/if}
     </div>
 
   </div>

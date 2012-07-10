@@ -2,6 +2,7 @@
 @textColor: #000;
 @lineHeight: 1.5;
 @linkColor: #0094d6;
+@highlightColor: #fdb722;
 
 html {
 	margin: 0;
@@ -84,6 +85,17 @@ p {
 	box-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
 	line-height: @lineHeight;
 	width: 15em;
+}
+
+.info {
+	@color: lighten(@linkColor, 50%);
+	border: 1px solid darken(@color, 5%);
+	background-color: @color;
+	color: darken(@color, 65%);
+	border-radius: 1em;
+	padding: 0.5em;
+	font-size: 0.8em;
+	margin: 0.5em;
 }
 
 // remove bogus padding and border on ff buttons

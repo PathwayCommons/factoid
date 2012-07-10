@@ -9,17 +9,17 @@
 		margin: @boxPadding/2;
 		padding: @boxPadding/4 @boxPadding;
 		position: relative;
+
+		[class^="icon-"],
+		[class*=" icon-"] {
+			cursor: pointer;
+			display: inline-block;
+			color: #666;
+		}
 	}
 
 	.entity {
 		border-radius: 1em;
-	}
-
-	[class^="icon-"],
-	[class*=" icon-"] {
-		cursor: pointer;
-		color: #666;
-		display: inline-block;
 	}
 
 	.icons {

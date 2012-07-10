@@ -6,7 +6,6 @@
 	.entity,
 	.interaction {
 		border: 1px solid @borderColor;
-		margin: @boxPadding/2;
 		padding: @boxPadding/4 @boxPadding;
 		position: relative;
 
@@ -39,6 +38,8 @@
 	.entities;
 
 	.entity-instance {
+		margin: @boxPadding/2;
+
 		&.highlighted {
 			@colour: #fdb722;
 			border-color: @colour;
@@ -60,12 +61,18 @@
 	.add-participants-list {
 		display: none;
 	}
+
+	.info {
+		margin: 0.25em 0.5em;
+	}
 }
 
 .add-participants-list {
 	.entities;
 
-	.participant {}
+	.participant + .participant {
+		margin-top: 0.25em;
+	}
 
 	.adders {
 		float: right;

@@ -7,7 +7,8 @@
     "derby": ">=0.3.11",
     "express": ">=3.0.0beta4",
     "gzippo": ">=0.1.4",
-    "debug": ">=0.7.0"
+    "debug": ">=0.7.0",
+    "ql.io-engine": ">=0.7.2"
   },
   "private": true
 }

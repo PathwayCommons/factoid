@@ -57,8 +57,12 @@
   </div>
 
 <entity:>
-  <div class="{.type} entity-instance" data-id="{.id}" id="entity-{id}">
-    <span class="edit icon-edit"></span>
+  <div class="{.type} entity-instance associated-{.associated}" data-id="{.id}" id="entity-{id}">
+    {#if .associated}
+      <span class="edit icon-ok"></span>
+    {else}
+      <span class="edit icon-edit"></span>
+    {/if}
     <span class="name">{.name}</span>
     <span class="icons">
       {#if .interaction}

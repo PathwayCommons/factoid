@@ -49,12 +49,17 @@
 
 	.participants-list {
 		font-size: 0.8em;
-		margin: 0 @boxPadding*1.6 0 @boxPadding*3;
+		margin: 0 @boxPadding*2.1 0 @boxPadding*3;
+		padding-bottom: @boxPadding/2;
 
 		.icons,
 		.icons * {
 			font-size: 1.125em;
 			line-height: 1.125em;
+		}
+
+		.participant + .participant {
+			margin-top: @boxPadding/2;
 		}
 	}
 

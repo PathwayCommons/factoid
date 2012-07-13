@@ -56,6 +56,31 @@
     </div>
   </div>
 
+  <div id="textmining">
+   {#if _textminingEntities}
+     <div class="results">
+        <div class="info"><span class="icon-info-sign"></span> The following entities and interactions have been found.</div>
+
+        <div class="potential-entities">
+            {#each _textminingEntities}
+              <app:entity>
+            {/each}
+        </div>
+
+        <button class="prev"><span class="icon-arrow-left"></span> Previous</button>
+        <button class="add"><span class="icon-plus"></span> Add to document</button>
+     </div>
+    {else}
+      <div class="text-entry">
+        <div class="info"><span class="icon-info-sign"></span> The text you enter below will be used to automatically populate the document with the specified entities and interactions.</div>
+
+        <textarea>{_textminingText}</textarea>
+
+        <button class="next">Next <span class="icon-arrow-right"></span></button>
+     </div>
+    {/if}
+  </div>
+
 <entity:>
   <div class="{.type} entity-instance associated-{.associated}" data-id="{.id}" id="entity-{id}">
     {#if .associated}

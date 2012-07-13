@@ -1,0 +1,101 @@
+.edit-entity-qtip {
+	min-width: 14em;
+
+	.ui-tooltip-content {
+		overflow: hidden;
+	}
+
+	.name-input {
+		margin-bottom: 0.25em;
+	}
+
+	.entity-info-button {
+		text-align: center;
+		line-height: 1;
+		display: block;
+		position: relative;
+		width: 100%;
+
+		.small {
+			font-size: 0.8em;
+		}
+
+		.name {
+			margin-top: 0.125em;
+			text-align: center;
+		}
+
+		.full-name {
+			font-size: 0.6em;
+			display: block;
+			margin-bottom: 0.5em;
+
+			&:before {
+				content: 'a.k.a. ';
+			}
+		}
+
+		.meta {
+			text-align: left;
+		}
+
+		.organism,
+		.type {
+			.small;
+			.meta;
+		}
+	}
+
+	.entity-info {
+		overflow: auto;
+		max-height: 12em;
+
+		.summary {
+			.entity-info-button;
+			border: 1px dashed #bbb;
+			margin: 0.25em;
+			border-radius: 0.25em;
+			width: auto;
+			padding: 0.25em;
+		}
+
+		&.loading {
+			height: 1.5em;
+			background-image: url('/img/small-loader-white-bg.gif');
+			background-position: left center;
+			background-repeat: no-repeat;
+			padding-left: 24px;
+
+			&:after {
+				content: 'Loading...';
+			}
+		}
+	}
+
+	.associations {
+		overflow: auto;
+		max-height: 12em;
+		padding: 0 0.25em;
+
+		.associate-button {
+			.entity-info-button;
+		}
+
+		.associate-button + * {
+			margin-top: 0.25em;
+		}
+	}
+
+	.loading {
+		.name-input {
+			background-image: url('/img/small-loader-white-bg.gif');
+			background-position: right center;
+			background-repeat: no-repeat;
+		}
+
+		.associations {
+			display: none;
+		}
+	}
+	
+}

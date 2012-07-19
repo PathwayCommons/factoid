@@ -28,7 +28,7 @@
     <div class="button-panel">
       <button id="add-entity-button"><span class="icon-plus"></span> Entity</button>
       <button id="add-interaction-button"><span class="icon-plus"></span> Interaction</button>
-      <button id="textmining-button"><span class="icon-plus"></span> Smart</button>
+      <button id="textmining-button"><span class="icon-plus"></span> Text</button>
     </div>
 
     <div id="entities-list">
@@ -100,6 +100,14 @@
       <app:participants>
       <app:addParticipants>
     {/if}
+
+    <div class="association-ui">
+      {#if .associated}
+        <app:associatedInfo>
+      {else}
+        <app:associateEntity>
+      {/if}
+    </div>
   </div>
 
 <participants:>
@@ -128,4 +136,26 @@
     {else}
       <div class="info no-entities-message"><span class="icon-info-sign"></span> There are no other entities in the document to add.</div>
     {/if}
+  </div>
+
+<associateEntity:>
+  <div class="associate-ui loading-potentials-{loadingPotentialAssociations}">
+    <h3>Specify entity</h3>
+    <input value="{name}" data-id="{.id}" class="name-input" type="text"></input>
+    
+    <div class="associations">
+      {#each potentialAssociation}
+        <button class="associate-button" data-entity-id="{..id}" data-db="{db}" data-db-id="{dbId}" data-name="{name}">
+          <div class="name"><span class="icon-ok"></span> {name}</div>
+          <div class="full-name">{fullName}</div>
+          <div class="organism">{organismName}</div>
+          <div class="type">{type}</div>
+        </button>
+      {/each}
+    </div>
+  </div>
+
+<associatedInfo:>
+  <div class="associated-info-ui">
+    Associated info UI
   </div>

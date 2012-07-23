@@ -101,7 +101,7 @@
       <app:addParticipants>
     {/if}
 
-    <div class="association-ui">
+    <div id="association-ui-for-{id}" class="association-ui">
       {#if .associated}
         <app:associatedInfo>
       {else}
@@ -139,19 +139,22 @@
   </div>
 
 <associateEntity:>
-  <div class="associate-ui loading-potentials-{loadingPotentialAssociations}">
-    <h3>Specify entity</h3>
-    <input value="{name}" data-id="{.id}" class="name-input" type="text"></input>
-    
+  <div class="associate-ui">   
     <div class="associations">
-      {#each potentialAssociation}
-        <button class="associate-button" data-entity-id="{..id}" data-db="{db}" data-db-id="{dbId}" data-name="{name}">
-          <div class="name"><span class="icon-ok"></span> {name}</div>
-          <div class="full-name">{fullName}</div>
-          <div class="organism">{organismName}</div>
-          <div class="type">{type}</div>
-        </button>
-      {/each}
+      {#if potentialAssociations}
+        {#each potentialAssociations}
+          <button class="associate-button" data-entity-id="{..id}" data-db="{db}" data-db-id="{dbId}" data-name="{name}">
+            <div class="name"><span class="icon-ok"></span> {name}</div>
+            <div class="full-name">aka {fullName}</div>
+            <div class="organism">{organismName}</div>
+            <div class="type">{type}</div>
+          </button>
+        {/each}
+      {else}
+        <div class="info">
+          No entities matching the specified name were found.  Please revise your search above.
+        </div>
+      {/if}
     </div>
   </div>
 

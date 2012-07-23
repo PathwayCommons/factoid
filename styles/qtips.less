@@ -5,7 +5,11 @@
 		overflow: hidden;
 	}
 
+	@contentWidth: 15em;
+	@maxContentHeight: 12em;
+
 	.name-input {
+		width: @contentWidth;
 		margin-bottom: 0.25em;
 	}
 
@@ -29,10 +33,6 @@
 			font-size: 0.6em;
 			display: block;
 			margin-bottom: 0.5em;
-
-			&:before {
-				content: 'a.k.a. ';
-			}
 		}
 
 		.meta {
@@ -48,7 +48,7 @@
 
 	.entity-info {
 		overflow: auto;
-		max-height: 12em;
+		max-height: @maxContentHeight;
 
 		.summary {
 			.entity-info-button;
@@ -72,9 +72,13 @@
 		}
 	}
 
+	.association-ui {
+		width: @contentWidth;
+	}
+
 	.associations {
 		overflow: auto;
-		max-height: 12em;
+		max-height: @maxContentHeight;
 		padding: 0 0.25em;
 
 		.associate-button {
@@ -87,6 +91,10 @@
 	}
 
 	.loading {
+		.text-clear-icon {
+			display: none;
+		}
+
 		.name-input {
 			background-image: url('/img/small-loader-white-bg.gif');
 			background-position: right center;

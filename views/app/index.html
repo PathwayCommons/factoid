@@ -101,7 +101,7 @@
       <app:addParticipants>
     {/if}
 
-    <div id="association-ui-for-{id}" class="association-ui">
+    <div id="association-ui-for-{id}" class="association-ui associated-{.associated}">
       {#if .associated}
         <app:associatedInfo>
       {else}
@@ -140,10 +140,10 @@
 
 <associateEntity:>
   <div class="associate-ui">   
-    <div class="associations">
+    <div class="associations" data-entity-id="{id}">
       {#if potentialAssociations}
         {#each potentialAssociations}
-          <button class="associate-button" data-entity-id="{..id}" data-db="{db}" data-db-id="{dbId}" data-name="{name}">
+          <button class="associate-button" data-db="{db}" data-db-id="{dbId}" data-name="{name}">
             <div class="name"><span class="icon-ok"></span> {name}</div>
             <div class="full-name">aka {fullName}</div>
             <div class="organism">{organismName}</div>

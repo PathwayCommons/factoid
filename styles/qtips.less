@@ -76,6 +76,14 @@
 		width: @contentWidth;
 	}
 
+	.specify {
+		position: relative;
+	}
+
+	&.associated-true .specify {
+		display: none;
+	}
+
 	.associations {
 		overflow: auto;
 		max-height: @maxContentHeight;
@@ -85,8 +93,8 @@
 			.entity-info-button;
 		}
 
-		.associate-button + * {
-			margin-top: 0.25em;
+		.associate-button {
+			margin: 0.25em 0;
 		}
 	}
 

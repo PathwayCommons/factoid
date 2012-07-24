@@ -99,15 +99,16 @@
     {#if .interaction}
       <app:participants>
       <app:addParticipants>
+    {else}
+      <div id="association-ui-for-{id}" class="association-ui associated-{.associated}">
+        {#if .associated}
+          <app:associatedInfo>
+        {else}
+          <app:associateEntity>
+        {/if}
+      </div>
     {/if}
-
-    <div id="association-ui-for-{id}" class="association-ui associated-{.associated}">
-      {#if .associated}
-        <app:associatedInfo>
-      {else}
-        <app:associateEntity>
-      {/if}
-    </div>
+    
   </div>
 
 <participants:>
@@ -152,7 +153,7 @@
         {/each}
       {else}
         <div class="info">
-          No entities matching the specified name were found.  Please revise your search above.
+          <span class="icon-info-sign"></span> No entities matching the specified name were found.  Please revise your search above.
         </div>
       {/if}
     </div>

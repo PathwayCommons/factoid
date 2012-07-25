@@ -92,24 +92,37 @@ p {
 	line-height: @lineHeight;
 	width: 15em;
 
-	&:focus {
-		box-shadow:
-			inset 0 1px 2px rgba(0,0,0,0.25),
-			0 0 2px 2px #fdb722
-		;
-	}
-
-	&.with-remove-icon {
+	&.with-right-icon {
 		padding-right: 1em;
 		width: 14em;
 	}
+
+	&.with-left-icon {
+		padding-left: 1.25em;
+		width: 13.75em;
+	}
+
+	&.with-left-icon.with-right-icon {
+		width: 12.75em;
+	}
+}
+
+.text-icon {
+	position: absolute;
+	padding: 0 0.25em;
+	line-height: 2em;
+	color: #888;
+}
+
+.text-search-icon {
+	.text-icon;
+	left: 0;
+	cursor: text;
 }
 
 .text-clear-icon {
-	position: absolute;
+	.text-icon;
 	right: 0;
-	padding: 0 0.25em;
-	line-height: 2em;
 	cursor: pointer;
 }
 

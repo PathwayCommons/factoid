@@ -10,7 +10,6 @@
 
 	.name-input {
 		width: @contentWidth;
-		margin-bottom: 0.25em;
 	}
 
 	.entity-info-button {
@@ -88,13 +87,14 @@
 		overflow: auto;
 		max-height: @maxContentHeight;
 		padding: 0 0.25em;
+		margin-top: 0.25em;
 
 		.associate-button {
 			.entity-info-button;
 		}
 
-		.associate-button {
-			margin: 0.25em 0;
+		.associate-button + .associate-button {
+			margin-top: 0.25em;
 		}
 	}
 

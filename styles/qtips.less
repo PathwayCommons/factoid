@@ -6,7 +6,7 @@
 	}
 
 	@contentWidth: 15em;
-	@maxContentHeight: 12em;
+	@maxContentHeight: 12.5em;
 
 	.name-input {
 		width: @contentWidth;
@@ -84,6 +84,7 @@
 	}
 
 	.associations {
+		position: relative;
 		overflow: auto;
 		max-height: @maxContentHeight;
 		padding: 0 0.25em;
@@ -93,8 +94,8 @@
 			.entity-info-button;
 		}
 
-		.associate-button + .associate-button {
-			margin-top: 0.25em;
+		.associate-button {
+			margin: 0.25em 0;
 		}
 	}
 

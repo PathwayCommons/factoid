@@ -83,7 +83,7 @@
 
 <entity:>
   <div class="{.type} entity-instance associated-{.associated}" data-id="{.id}" id="entity-{id}">
-    {#if .associated}
+    {#if .association}
       <span class="edit icon-ok"></span>
     {else}
       <span class="edit icon-edit"></span>
@@ -113,7 +113,7 @@
 
 <participants:>
   <div class="participants-list" id="participants-list-for-{id}">
-    {#each _participants[id]}
+    {#each participants}
       <div class="participant {type}" data-id="{id}">
         <span class="name">{name}</span>
         <span class="icons">
@@ -142,8 +142,8 @@
 <associateEntity:>
   <div class="associate-ui">   
     <div class="associations" data-entity-id="{id}">
-      {#if potentialAssociations}
-        {#each potentialAssociations}
+      {#if _potentialAssociations}
+        {#each _potentialAssociations}
           <button class="associate-button" data-db="{db}" data-db-id="{dbId}" data-name="{name}">
             <div class="name"><span class="icon-ok"></span> {name}</div>
             <div class="full-name">aka {fullName}</div>
@@ -152,9 +152,15 @@
           </button>
         {/each}
       {else}
-        <div class="info">
-          <span class="icon-info-sign"></span> No entities matching the specified name were found.  Please revise your search above.
-        </div>
+        {#if _changedName}
+          <div class="info">
+            <span class="icon-info-sign"></span> No entities matching the specified name were found.  Please revise your search above.
+          </div>
+        {else}
+          <div class="info">
+            <span class="icon-info-sign"></span> When you modify the name of this entity, known entities matching that name will be displayed here.  You can select a known entity to indicate the identity of this entity.
+          </div>
+        {/if}
       {/if}
     </div>
   </div>

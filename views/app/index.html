@@ -82,27 +82,31 @@
   </div>
 
 <entity:>
-  <div class="{.type} entity-instance associated-{.associated}" data-id="{.id}" id="entity-{id}">
-    {#if .association}
+  <div class="{type} entity-instance associated-{nonempty(associated)}" data-id="{id}" id="entity-{id}">
+    {#if association}
       <span class="edit icon-ok"></span>
     {else}
       <span class="edit icon-edit"></span>
     {/if}
-    <span class="name">{.name}</span>
+    <span class="name">{name}</span>
     <span class="icons">
-      {#if .interaction}
+      {#if interaction}
         <span class="add-participants icon-plus-sign"></span>
       {/if}
       <span class="remove icon-remove"></span>
     </span>
 
-    {#if .interaction}
+    {#if interaction}
       <app:participants>
       <app:addParticipants>
     {else}
-      <div id="association-ui-for-{id}" class="association-ui associated-{.associated}">
-        {#if .associated}
-          <app:associatedInfo>
+      <div id="association-ui-for-{id}" class="association-ui associated-{associated}">
+        {#if association}
+          {#if _associatedInfo}
+            <app:associatedInfo>
+          {else}
+            Loading...
+          {/if}
         {else}
           <app:associateEntity>
         {/if}

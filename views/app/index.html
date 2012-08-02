@@ -105,7 +105,7 @@
           {#if _associatedInfo}
             <app:associatedInfo>
           {else}
-            Loading...
+            <span class="loading-spinner-icon"></span> Loading entity information...
           {/if}
         {else}
           <app:associateEntity>
@@ -171,5 +171,14 @@
 
 <associatedInfo:>
   <div class="associated-info-ui">
-    Associated info UI
+    {#with _associatedInfo}
+      <div class="entity-info">
+        <div class="summary">
+          <div class="name">{name}</div>
+          <div class="full-name">aka {fullName}</div>
+          <div class="organism">{organismName}</div>
+          <div class="type">{type}</div>
+        </div>
+      </div>
+    {/with}
   </div>

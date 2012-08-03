@@ -46,16 +46,19 @@
 	}
 
 	.entity-info {
-		overflow: auto;
 		max-height: @maxContentHeight;
 
 		.summary {
 			.entity-info-button;
 			border: 1px dashed #bbb;
-			margin: 0.25em;
 			border-radius: 0.25em;
 			width: auto;
 			padding: 0.25em;
+		}
+
+		a.link {
+			font-size: 0.8em;
+			float: right;
 		}
 
 		&.loading {
@@ -116,6 +119,25 @@
 
 		.info {
 			display: none;
+		}
+	}
+
+	.associated-info-ui {
+		padding: 0.25em;
+		overflow: auto;
+
+		h3 {
+			display: inline-block;
+			margin-right: 0.25em;
+			margin-top: 0.5em;
+
+			&:after {
+				content: ' : ';
+			}
+		}
+
+		span.text {
+			font-size: 0.8em;
 		}
 	}
 	

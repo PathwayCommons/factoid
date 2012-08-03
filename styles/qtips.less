@@ -148,9 +148,12 @@
 
 
 .textmining-qtip {
+
 	.entities;
 
-	
+	.association-ui {
+		display: none;
+	}
 
 	.entity-instance {
 		margin: 0.25em 0;
@@ -161,7 +164,8 @@
 	}
 
 	.ui-tooltip-content {
-		width: 16em;
+		width: 17em;
+		overflow: hidden;
 	}
 
 	.loading {
@@ -193,6 +197,10 @@
 	}
 
 	.results {
+		overflow: auto;
+		max-height: 14em;
+		padding: 0 0.25em;
+
 		.potential-entities {
 			margin: 0.5em 0;
 		}

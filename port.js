@@ -1,3 +1,5 @@
 // this just lets us know the port used for the server
 
-module.exports = 3000;
+var packageJson = require('./package.json');
+
+module.exports = packageJson.port;

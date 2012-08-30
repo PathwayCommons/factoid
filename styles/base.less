@@ -133,14 +133,42 @@ p {
 	background: url('/img/small-loader-white-bg.gif');
 }
 
-.info {
-	@color: lighten(@linkColor, 50%);
+.messageArea( @color ){
 	border: 1px solid darken(@color, 5%);
 	background-color: @color;
 	color: darken(@color, 65%);
 	border-radius: 1em;
-	padding: 0.5em;
+	padding: 0.25em 0.5em;
 	font-size: 0.8em;
+}
+
+.info {
+	.messageArea( lighten(@linkColor, 50%) );
+}
+
+.alert {
+	.messageArea( #FFF8AD );
+}
+
+.alert-bubble {
+	background: red;
+	border: 2px solid #fff;
+	box-shadow: 0 0.125em 0.25em rgba(0, 0, 0, 0.5);
+
+	font-size: 0.8em;
+	font-weight: bold;
+	@size: 1em;
+	padding: 0.2em;
+	text-align: center;
+	line-height: @size;
+	border-radius: @size;
+	position: absolute;
+	right: 0;
+	top: 0;
+	height: @size;
+	min-width: @size;
+	margin-top: @size/-3;
+	margin-right: @size/-3;
 }
 
 // remove bogus padding and border on ff buttons

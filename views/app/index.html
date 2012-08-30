@@ -28,7 +28,7 @@
     <div class="button-panel">
       <button id="add-entity-button"><span class="icon-plus"></span> Entity</button>
       <button id="add-interaction-button"><span class="icon-plus"></span> Interaction</button>
-      <button id="textmining-button"><span class="icon-plus"></span> Text</button>
+      <button id="textmining-button"><div class="alert-bubble"></div><span class="icon-plus"></span> Text</button>
     </div>
 
     <div id="entities-list">
@@ -56,32 +56,31 @@
     </div>
   </div>
 
-  <div id="textmining">
-   {#if _textminingEntities}
-     <div class="results">
-        <div class="info"><span class="icon-info-sign"></span> The following entities and interactions have been found.</div>
+  <div id="textmining-input" class="textmining-input">
+    <div class="info"><span class="icon-info-sign"></span> The text you enter below will be used to automatically populate the document with the specified entities and interactions.</div>
 
-        <div class="potential-entities">
-            {#each _textminingEntities}
-              <app:entity>
-            {/each}
-        </div>
-     </div>
+    <textarea></textarea>
 
-     <div class="button-panel">
-      <button class="prev"><span class="icon-arrow-left"></span> Previous</button>
+    <div class="alert no-entities-message"><span class="icon-info-sign"></span> Nothing found.  Please check your text.</div>
+
+    <button class="next">Next <span class="icon-arrow-right"></span></button>
+  </div>
+
+  <div id="textmining-entities" class="textmining-entities">
+    <div class="results">
+      <div class="info"><span class="icon-info-sign"></span> The following entities and interactions have been found.</div>
+
+      <div class="potential-entities">
+          {#each _textminingEntities}
+            <app:entity>
+          {/each}
+      </div>
+    </div>
+
+    <div class="button-panel">
+      <button class="prev"><span class="icon-arrow-left"></span> Back</button>
       <button class="add"><span class="icon-plus"></span> Add to document</button>
-     </div>
-     
-    {else}
-      <div class="text-entry">
-        <div class="info"><span class="icon-info-sign"></span> The text you enter below will be used to automatically populate the document with the specified entities and interactions.</div>
-
-        <textarea>{_textminingText}</textarea>
-
-        <button class="next">Next <span class="icon-arrow-right"></span></button>
-     </div>
-    {/if}
+    </div>
   </div>
 
 <entity:>

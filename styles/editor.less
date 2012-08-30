@@ -38,5 +38,15 @@ body {
 
 	button {
 		margin: 0.125em;
+		position: relative;
+	}
+
+	#textmining-button {
+		.alert-bubble { display: none; }
+
+		&.have-entities {
+			.alert-bubble { display: block; }
+		}
+	
 	}
 }

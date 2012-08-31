@@ -6,7 +6,7 @@
 	}
 
 	@contentWidth: 15em;
-	@maxContentHeight: 12.5em;
+	@maxContentHeight: 20em;
 
 	.name-input {
 		width: @contentWidth;
@@ -56,7 +56,7 @@
 			padding: 0.25em;
 		}
 
-		a.link {
+		.link-area {
 			font-size: 0.8em;
 		}
 
@@ -166,7 +166,10 @@
 	.entity-instance {
 		margin: 0.25em 0;
 
-		.edit {
+		.edit,
+		.add-participants,
+		.add-participants-list,
+		.participants-list .remove {
 			display: none;
 		}
 	}
@@ -207,13 +210,21 @@
 		height: 15em;
 	}
 
-	.results {
-		overflow: auto;
+	.potential-entities {
+		margin: 0.5em 0;
+	}
+
+	.scrollable-area {
 		max-height: 18em;
 		padding: 0 0.25em;
+	}
+}
 
-		.potential-entities {
-			margin: 0.5em 0;
-		}
+.info-qtip {
+	max-width: 20em;
+
+	.scrollable-area {
+		max-height: 20em;
+		padding-right: 0.25em;
 	}
 }

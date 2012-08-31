@@ -15,6 +15,8 @@
 			display: inline-block;
 			color: #666;
 		}
+
+		clear: both;
 	}
 
 	.entity {
@@ -32,10 +34,6 @@
 	.name {
 		margin: 0 @boxPadding/2;
 	}
-}
-
-#entities-list {
-	.entities;
 
 	.entity-instance {
 		margin: @boxPadding/2;
@@ -49,7 +47,7 @@
 
 	.participants-list {
 		font-size: 0.8em;
-		margin: 0 @boxPadding*2.1 0 @boxPadding*3;
+		margin: 0 @boxPadding*1.8 0 @boxPadding*3;
 
 		.icons,
 		.icons * {
@@ -61,6 +59,10 @@
 			margin: @boxPadding/2 0;
 		}
 	}
+}
+
+#entities-list {
+	.entities;
 
 	.add-participants-list,
 	.association-ui {

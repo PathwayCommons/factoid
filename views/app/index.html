@@ -156,7 +156,7 @@
         {#each _potentialAssociations}
           <button class="associate-button" data-index="{index}">
             <div class="name"><span class="icon-ok"></span> {name}</div>
-            <div class="full-name">aka {fullName}</div>
+            <div class="full-name">aka {fullName} ({officialName})</div>
             <div class="organism">{organismName}</div>
             <div class="type">{type}</div>
           </button>
@@ -181,7 +181,7 @@
       <div class="entity-info">
         <div class="summary">
           <div class="name">{name}</div>
-          <div class="full-name">aka {fullName}</div>
+          <div class="full-name">aka {fullName} ({officialName})</div>
           <div class="organism">{organismName}</div>
           <div class="type">{type}</div>
         </div>
@@ -191,7 +191,7 @@
         </div>
 
         <div class="function">
-          <span class="text">{function}</span>
+          <div class="text">{function}</div>
         </div>
       </div>
     {/with}

@@ -14,6 +14,20 @@
 			cursor: pointer;
 			display: inline-block;
 			color: #666;
+
+			&:active {
+				background: rgba(0, 0, 0, 0.25);
+				border-radius: 0.125em;
+				box-shadow: 0 0 0 0.25em rgba(0, 0, 0, 0.25);
+
+				.animated;
+				.animation-speed-fast;
+				.pulse;
+			}
+
+			&.open-true {
+				color: @linkColor !important;
+			}
 		}
 
 		clear: both;
@@ -48,13 +62,16 @@
 	.add-participants-popover {
 		right: 0;
 
-		padding-left: 0.875em;
-		padding-right: 0.4em;
 		margin-bottom: 0.5em;
 
 		.arrow {
 			left: auto;
 			right: 1em;
+		}
+
+		.participant {
+			margin-left: 1em;
+			margin-right: 0.5em;
 		}
 	}
 
@@ -99,12 +116,10 @@
 		margin-left: 0.5em;
 		font-size: 1.125*1.125em;
 		line-height: 1.125*1.125em;
-
-		color: @linkColor !important;
 	}
 
-	.no-entities-message {
-		font-size: 0.8em;
+	.info {
+		font-size: 1em;
 	}
 
 }

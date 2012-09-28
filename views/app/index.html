@@ -88,7 +88,7 @@
   </div>
 
 <entity:>
-  <div class="{type} entity-instance associated-{nonempty(associated)}" data-id="{id}" id="entity-{id}">
+  <div class="{type} entity-instance associated-{nonempty(associated)}" data-id="{id}" id="entity-{id}" data-popover-keep-open>
     {#if association}
       <span class="edit icon-ok"></span>
     {else}
@@ -103,8 +103,13 @@
     </span>
 
     {#if interaction}
+      <div class="popover-hidden-{not(_showAddParticipants)} popover-animated-{_showAddParticipantsAnimated}">
+        <app:popover classes="add-participants-popover">
+          <app:addParticipants>
+        </app:popover>
+      </div>
+
       <app:participants>
-      <app:addParticipants>
     {else}
       <div id="association-ui-for-{id}" class="association-ui associated-{associated}">
         {#if association}
@@ -139,8 +144,8 @@
       {#each potentialParticipants}
         <div class="participant {type}" data-id="{id}">
           <span class="name">{name}</span>
-          <span class="adders">
-            <button class="add-participant"><span class="icon-plus-sign"></span> Participant</button>
+          <span class="icons">
+            <span class="add-participant icon-plus-sign"></span>
           </span>
         </div>
       {/each}
@@ -168,7 +173,7 @@
           </div>
         {else}
           <div class="info">
-            <span class="icon-info-sign"></span> When you modify the name of this entity, known entities matching that name will be displayed here.  Selecting one indicates the indentity of this entity.
+            <span class="icon-info-sign"></span> When you modify the name of this entity, known entities matching that name will be displayed here.  Selecting one indicates the identity of this entity.
           </div>
         {/if}
       {/if}
@@ -196,3 +201,18 @@
       </div>
     {/with}
   </div>
+
+  <popover: nonvoid>
+    <div class="popover bottom {{{classes}}}">
+      <div class="arrow"></div>
+
+      {{{#if title}}}
+        <div class="popover-title">
+          {{{title}}}
+        </div>
+      {{{/if}}}
+
+      <div class="popover-content">
+        {{{content}}}
+      </div>
+    </div>

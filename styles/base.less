@@ -137,7 +137,12 @@ p {
 .messageArea( @color ){
 	border: 1px solid darken(@color, 5%);
 	background-color: @color;
-	color: darken(@color, 65%);
+	color: darken(@color, 65%) !important;
+
+	* {
+		color: darken(@color, 65%) !important;
+	}
+
 	border-radius: 1em;
 	padding: 0.25em 0.5em;
 	font-size: 0.8em;

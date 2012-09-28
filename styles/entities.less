@@ -45,6 +45,19 @@
 		}
 	}
 
+	.add-participants-popover {
+		right: 0;
+
+		padding-left: 0.875em;
+		padding-right: 0.4em;
+		margin-bottom: 0.5em;
+
+		.arrow {
+			left: auto;
+			right: 1em;
+		}
+	}
+
 	.participants-list {
 		font-size: 0.8em;
 		margin: 0 @boxPadding*1.8 0 @boxPadding*3;
@@ -66,7 +79,7 @@
 
 	.add-participants-list,
 	.association-ui {
-		display: none;
+		//display: none;
 	}
 
 	.info {
@@ -77,17 +90,18 @@
 .add-participants-list {
 	.entities;
 
+	font-size: 0.8em;
+
 	.participant + .participant {
 		margin-top: 0.25em;
 	}
 
-	.adders {
-		float: right;
+	.icons {
 		margin-left: 0.5em;
+		font-size: 1.125*1.125em;
+		line-height: 1.125*1.125em;
 
-		button {
-			font-size: 0.8em;
-		}
+		color: @linkColor !important;
 	}
 
 	.no-entities-message {

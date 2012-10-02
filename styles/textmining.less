@@ -1,4 +1,42 @@
-#textmining-input, 
-#textmining-entities {
-	display: none;
+#info .textmining-popover {
+	text-align: left;
+
+	margin-left: 0.25em;
+	margin-right: 0.25em;
+	margin-bottom: 1em;
+
+	.arrow {
+		margin-left: 5.25em;
+	}
+}
+
+#textmining-input {
+	&.loading #textmining-text {
+		background: url('/img/large-loader-white-bg.gif') bottom right no-repeat;
+	}
+
+	.buttons {
+		text-align: right;
+	}
+
+	.no-entities-message {
+		display: none;
+	}
+
+	#textmining-text {
+		display: block;
+		font-size: 0.8em;
+		width: 100%;
+		min-height: 10em;
+		margin: 0.5em 0;
+	}
+
+	.alert {
+		display: none;
+		margin: 0.5em 0;
+	}
+
+	&.no-results .alert {
+		display: block;
+	}
 }

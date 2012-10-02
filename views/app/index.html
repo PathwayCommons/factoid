@@ -31,6 +31,12 @@
       <button id="textmining-button"><div class="alert-bubble"></div><span class="icon-plus"></span> Text</button>
     </div>
 
+    <div class="popover-hidden-{not(_showTextmining)} popover-animated-{_showTextminingAnimated}">
+      <app:popover classes="textmining-popover">
+        <app:textmining>
+      </app:popover>
+    </div>
+
     <div id="entities-list">
       {#if _populatedEntities}
         {#each _populatedEntities}
@@ -58,31 +64,17 @@
     </div>
   </div>
 
-  <div id="textmining-input" class="textmining-input">
+<textmining:>
+  <div id="textmining-input">
     <div class="info"><span class="icon-info-sign"></span> The text you enter below will be used to automatically populate the document with the specified entities and interactions.</div>
 
-    <textarea></textarea>
+    <textarea id="textmining-text"></textarea>
 
-    <div class="alert no-entities-message"><span class="icon-info-sign"></span> Nothing found.  Please check your text.</div>
-
-    <button class="next">Next <span class="icon-arrow-right"></span></button>
-  </div>
-
-  <div id="textmining-entities" class="textmining-entities">
-    <div class="scrollable-area">
-      <div class="textmining-results" id="textmining-results">
-        <div class="info"><span class="icon-info-sign"></span> The following entities and interactions have been found.</div>
-
-        <div class="potential-entities">
-            {#each _populatedTextminingEntities}
-              <app:entity>
-            {/each}
-        </div>
-      </div>
+    <div class="alert">
+      <span class="icon-info-sign"></span> Nothing could be found in your text.  Please revise it, and try again.
     </div>
 
-    <div class="button-panel">
-      <button class="prev"><span class="icon-arrow-left"></span> Back</button>
+    <div class="buttons">
       <button class="add"><span class="icon-plus"></span> Add to document</button>
     </div>
   </div>

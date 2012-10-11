@@ -45,6 +45,23 @@
   line-height: 1;
 }
 
+[class^="icon-"],
+[class*=" icon-"] {
+  &.tappable {
+    cursor: pointer;
+
+    &:active {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 0.125em;
+      box-shadow: 0 0 0 0.25em rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  &.open-true {
+    color: @linkColor !important;
+  }
+}
+
 button {
   [class^="icon-"]:before,
   button [class*=" icon-"]:before {

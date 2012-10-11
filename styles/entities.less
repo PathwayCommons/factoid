@@ -11,19 +11,8 @@
 
 		[class^="icon-"],
 		[class*=" icon-"] {
-			cursor: pointer;
 			display: inline-block;
 			color: #666;
-
-			&:active {
-				background: rgba(0, 0, 0, 0.25);
-				border-radius: 0.125em;
-				box-shadow: 0 0 0 0.25em rgba(0, 0, 0, 0.25);
-			}
-
-			&.open-true {
-				color: @linkColor !important;
-			}
 		}
 
 		clear: both;
@@ -43,6 +32,21 @@
 
 	.name {
 		margin: 0 @boxPadding/2;
+
+		input {
+			margin-top: -1px;
+			margin-left: -1px;
+			display: inline-block;
+			width: 13.25em;
+		}
+	}
+
+	.editing-true {
+		.display-name { display: none; }
+	}
+
+	.editing-false {
+		.edit-name { display: none; }
 	}
 
 	.entity-instance {
@@ -62,7 +66,7 @@
 
 		.arrow {
 			left: auto;
-			right: 1em;
+			right: 0.95em;
 		}
 
 		.participant {
@@ -85,14 +89,144 @@
 			margin: @boxPadding/2 0;
 		}
 	}
+
+	.association-popover {
+		.arrow {
+			left: 2em;
+		}
+
+		margin-bottom: 0.5em;
+	}
+
+	.entity-info-button {
+		text-align: center;
+		line-height: 1;
+		display: block;
+		position: relative;
+		width: 100%;
+
+		.small {
+			font-size: 0.8em;
+		}
+
+		.name {
+			margin-top: 0.125em;
+			text-align: center;
+		}
+
+		.full-name {
+			font-size: 0.6em;
+			display: block;
+			margin-bottom: 0.5em;
+		}
+
+		.meta {
+			text-align: left;
+		}
+
+		.organism,
+		.type {
+			.small;
+			.meta;
+		}
+	}
+
+	.entity-info {
+
+		.summary {
+			.entity-info-button;
+			border: 1px dashed #bbb;
+			border-radius: 0.25em;
+			width: auto;
+			padding: 0.25em;
+		}
+
+		.link-area {
+			font-size: 0.8em;
+		}
+
+		.function {
+			margin-top: 0.5em;
+		}
+
+		&.loading {
+			height: 1.5em;
+			background-image: url('/img/small-loader-white-bg.gif');
+			background-position: left center;
+			background-repeat: no-repeat;
+			padding-left: 24px;
+
+			&:after {
+				content: 'Loading...';
+			}
+		}
+	}
+
+	.specify {
+		position: relative;
+	}
+
+	&.associated-true .specify {
+		display: none;
+	}
+
+	.associations {
+		position: relative;
+		overflow: auto;
+		padding: 0 0.25em;
+		margin-top: 0.25em;
+
+		.associate-button {
+			.entity-info-button;
+		}
+
+		.associate-button {
+			margin: 0.25em 0;
+		}
+	}
+
+	.loading {
+		.text-clear-icon {
+			display: none;
+		}
+
+		.name-input {
+			background-image: url('/img/small-loader-white-bg.gif');
+			background-position: right center;
+			background-repeat: no-repeat;
+		}
+
+		.associations {
+			display: none;
+		}
+
+		.info {
+			display: none;
+		}
+	}
+
+	.associated-info-ui {
+		padding: 0.25em;
+		overflow: auto;
+
+		h3 {
+			display: inline-block;
+			margin-right: 0.25em;
+			margin-top: 0.5em;
+
+			&:after {
+				content: ' : ';
+			}
+		}
+
+		.text {
+			font-size: 0.8em;
+		}
+	}
 }
 
 #entities-list {
 	.entities;
-
-	.association-ui {
-		display: none;
-	}
 
 	.info {
 		margin: 0.25em 0.5em;

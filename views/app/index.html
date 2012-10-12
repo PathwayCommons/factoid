@@ -80,7 +80,7 @@
   </div>
 
 <entity:>
-  <div class="{:entity.type} entity-instance associated-{nonempty(:entity.associated)}" data-id="{{:entity.id}}" id="entity-{{:entity.id}}">
+  <div class="{:entity.type} entity-instance associated-{nonempty(:entity.associat)}" data-id="{{:entity.id}}" id="entity-{{:entity.id}}">
     
     {#if :entity.association}
       <span class="edit icon-ok associated-true tappable open-{bool(:entity._showEdit)}"></span>
@@ -200,21 +200,21 @@
 
 <associatedInfo:>
   <div class="associated-info-ui">
-    {#with ._associatedInfo as :info}
+    {#with :entity._associatedInfo}
       <div class="entity-info">
         <div class="summary">
-          <div class="name">{:info.name}</div>
-          <div class="full-name">aka {:info:.fullName} ({:info:.officialName})</div>
-          <div class="organism">{:info.organismName}</div>
-          <div class="type">{:info.type}</div>
+          <div class="name">{name}</div>
+          <div class="full-name">aka {fullName} ({officialName})</div>
+          <div class="organism">{organismName}</div>
+          <div class="type">{type}</div>
         </div>
 
         <div class="link-area">
-          <a class="link" target="_blank" href="{:info.link}">Full details at UniProt <span class="icon-external-link"></span></a>
+          <a class="link" target="_blank" href="{link}">Full details at UniProt <span class="icon-external-link"></span></a>
         </div>
 
         <div class="function">
-          <div class="text">{:info.function}</div>
+          <div class="text">{function}</div>
         </div>
       </div>
     {/with}

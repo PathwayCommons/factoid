@@ -92,9 +92,13 @@
       {#if :entity.association}
         {:entity.name}
       {else}
-        <input class="edit-name-input input-like with-right-icon plain-{not(bool(:entity._showEdit))} loading-{bool(:entity._loadingPotentialAssociations)}" id="edit-name-input-{{:entity.id}}" data-id="{{:entity.id}}" type="text" value="{:entity.name}" />
+        {#if :entity.interaction}
+          {:entity.name}
+        {else}
+          <input class="edit-name-input input-like with-right-icon plain-{not(bool(:entity._showEdit))} loading-{bool(:entity._loadingPotentialAssociations)}" id="edit-name-input-{{:entity.id}}" data-id="{{:entity.id}}" type="text" value="{:entity.name}" />
 
-        <span class="text-clear-icon icon-remove-sign right-input-icon tappable" data-for="edit-name-input-{{:entity.id}}"></span>
+          <span class="text-clear-icon icon-remove-sign right-input-icon tappable" data-for="edit-name-input-{{:entity.id}}"></span>
+        {/if}
       {/if}
     </span>
 
@@ -105,7 +109,13 @@
       <span class="remove icon-remove tappable"></span>
     </span>
 
-    {#if interaction}
+    {#if :entity.interaction}
+      <div class="popover-hidden-{not(:entity._showEdit)}">
+        <app:popover classes="edit-interaction-popover">
+          Future interaction edit UI.
+        </app:popover>
+      </div>
+
       <div class="popover-hidden-{not(:entity._showAddParticipants)}">
         <app:popover classes="add-participants-popover">
           <app:addParticipants>
@@ -113,23 +123,24 @@
       </div>
 
       <app:participants>
-    {/if}
 
-    <div class="popover-hidden-{not(:entity._showEdit)}">
-      <app:popover classes="association-popover">
-        <div id="association-ui-for-{:entity.id}" class="association-ui associated-{:entity.associated}">
-          {#if :entity.association}
-            {#if :entity._associatedInfo}
-              <app:associatedInfo>
+    {else}
+      <div class="popover-hidden-{not(:entity._showEdit)}">
+        <app:popover classes="association-popover">
+          <div id="association-ui-for-{:entity.id}" class="association-ui associated-{:entity.associated}">
+            {#if :entity.association}
+              {#if :entity._associatedInfo}
+                <app:associatedInfo>
+              {else}
+                <span class="loading-spinner-icon"></span> Loading entity information...
+              {/if}
             {else}
-              <span class="loading-spinner-icon"></span> Loading entity information...
+              <app:associateEntity>
             {/if}
-          {else}
-            <app:associateEntity>
-          {/if}
-        </div>
-      </app:popover>
-    </div>
+          </div>
+        </app:popover>
+      </div>
+    {/if}
 
   </div>
 

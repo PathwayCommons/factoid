@@ -89,9 +89,13 @@
     {/if}
     
     <span class="name">
-      <input class="edit-name-input input-like with-right-icon plain-{not(bool(:entity._showEdit))} loading-{bool(:entity._loadingPotentialAssociations)}" id="edit-name-input-{{:entity.id}}" data-id="{{:entity.id}}" type="text" value="{:entity.name}" />
+      {#if :entity.association}
+        {:entity.name}
+      {else}
+        <input class="edit-name-input input-like with-right-icon plain-{not(bool(:entity._showEdit))} loading-{bool(:entity._loadingPotentialAssociations)}" id="edit-name-input-{{:entity.id}}" data-id="{{:entity.id}}" type="text" value="{:entity.name}" />
 
-      <span class="text-clear-icon icon-remove-sign right-input-icon tappable" data-for="edit-name-input-{{:entity.id}}"></span>
+        <span class="text-clear-icon icon-remove-sign right-input-icon tappable" data-for="edit-name-input-{{:entity.id}}"></span>
+      {/if}
     </span>
 
     <span class="icons">

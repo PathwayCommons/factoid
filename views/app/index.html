@@ -127,12 +127,14 @@
     {else}
       <div class="popover-hidden-{not(:entity._showEdit)}">
         <app:popover classes="association-popover">
-          <div id="association-ui-for-{:entity.id}" class="association-ui associated-{:entity.associated}">
+          <div id="association-ui-for-{:entity.id}" class="association-ui associated-{bool(:entity.association)}">
             {#if :entity.association}
               {#if :entity._associatedInfo}
                 <app:associatedInfo>
               {else}
-                <span class="loading-spinner-icon"></span> Loading entity information...
+                <span class="loading-message">
+                  <span class="loading-spinner-icon"></span> Loading entity information...
+                </span>
               {/if}
             {else}
               <app:associateEntity>

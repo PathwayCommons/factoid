@@ -83,7 +83,7 @@
   <div class="{:entity.type} entity-instance associated-{nonempty(:entity.associated)}" data-id="{{:entity.id}}" id="entity-{{:entity.id}}">
     
     {#if :entity.association}
-      <span class="edit icon-ok tappable"></span>
+      <span class="edit icon-ok associated-true tappable open-{bool(:entity._showEdit)}"></span>
     {else}
       <span class="edit icon-edit tappable open-{bool(:entity._showEdit)}"></span>
     {/if}

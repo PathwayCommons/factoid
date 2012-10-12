@@ -41,12 +41,10 @@
 		}
 	}
 
-	.editing-true {
-		.display-name { display: none; }
-	}
-
-	.editing-false {
-		.edit-name { display: none; }
+	.edit {
+		&.associated-true {
+			color: @completedColor;
+		}
 	}
 
 	.entity-instance {

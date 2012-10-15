@@ -148,20 +148,22 @@
 
 <participants:>
   <div class="participants-list" id="participants-list-for-{:entity.id}">
-    {#each :entity.participants as :part}
-      <div class="participant {:part.type}" data-id="{:part.id}">
-        <span class="name">{:part.name}</span>
-        <span class="icons">
-          <span class="remove icon-remove-sign tappable"></span>
-        </span>
-      </div>
+    {#each :entity.participantIds as :pid}
+      {#with entities[:pid]}
+        <div class="participant {type}" data-id="{id}">
+          <span class="name">{name}</span>
+          <span class="icons">
+            <span class="remove icon-remove-sign tappable"></span>
+          </span>
+        </div>
+      {/with}
     {/each}
   </div>
 
 <addParticipants:>
   <div class="add-participants-list" data-interaction-id="{:entity.id}" id="add-participants-list-for-{:entity.id}">
-    {#if :entity.potentialParticipants}
-      {#each :entity.potentialParticipants as :part}
+    {#if :entity._potentialParticipants}
+      {#each :entity._potentialParticipants as :part}
         <div class="participant {:part.type}" data-id="{:part.id}">
           <span class="name">{.name}</span>
           <span class="icons">

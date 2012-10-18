@@ -80,7 +80,7 @@
   </div>
 
 <entity:>
-  <div class="{:entity.type} entity-instance associated-{nonempty(:entity.associat)}" data-id="{{:entity.id}}" id="entity-{{:entity.id}}">
+  <div class="{:entity.type} entity-instance associated-{nonempty(:entity.association)} moving-down-{bool(:entity._movingDown)} just-added-{bool(:entity._justAdded)}"  data-id="{{:entity.id}}" id="entity-{{:entity.id}}">
     
     {#if :entity.association}
       <span class="edit icon-ok associated-true tappable open-{bool(:entity._showEdit)}"></span>
@@ -148,15 +148,13 @@
 
 <participants:>
   <div class="participants-list" id="participants-list-for-{:entity.id}">
-    {#each :entity.participantIds as :pid}
-      {#with entities[:pid]}
-        <div class="participant {type}" data-id="{id}">
-          <span class="name">{name}</span>
-          <span class="icons">
-            <span class="remove icon-remove-sign tappable"></span>
-          </span>
-        </div>
-      {/with}
+    {#each :entity._participants as :part}
+      <div class="participant {:part.type}" data-id="{:part.id}">
+        <span class="name">{:part.name}</span>
+        <span class="icons">
+          <span class="remove icon-remove-sign tappable"></span>
+        </span>
+      </div>
     {/each}
   </div>
 

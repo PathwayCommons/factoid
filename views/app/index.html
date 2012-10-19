@@ -31,7 +31,7 @@
       <button id="textmining-button"><div class="alert-bubble"></div><span class="icon-plus"></span> Text</button>
     </div>
 
-    <div class="popover-hidden-{not(_showTextmining)}">
+    <div class="popover-hidden-{not(_showTextmining)} popover-animated-{bool(_showTextminingAnimated)}">
       <app:popover classes="textmining-popover">
           <app:textmining>
       </app:popover>
@@ -110,13 +110,13 @@
     </span>
 
     {#if :entity.interaction}
-      <div class="popover-hidden-{not(:entity._showEdit)}">
+      <div class="popover-hidden-{not(:entity._showEdit)} popover-animated-{bool(:entity._showEditAnimated)}">
         <app:popover classes="edit-interaction-popover">
           Future interaction edit UI.
         </app:popover>
       </div>
 
-      <div class="popover-hidden-{not(:entity._showAddParticipants)}">
+      <div class="popover-hidden-{not(:entity._showAddParticipants)} popover-animated-{bool(:entity._showAddParticipantsAnimated)}">
         <app:popover classes="add-participants-popover">
           <app:addParticipants>
         </app:popover>
@@ -125,7 +125,7 @@
       <app:participants>
 
     {else}
-      <div class="popover-hidden-{not(:entity._showEdit)}">
+      <div class="popover-hidden-{not(:entity._showEdit)} popover-animated-{bool(:entity._showEditAnimated)}">
         <app:popover classes="association-popover">
           <div id="association-ui-for-{:entity.id}" class="association-ui associated-{bool(:entity.association)}">
             {#if :entity.association}

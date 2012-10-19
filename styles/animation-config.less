@@ -8,10 +8,22 @@
 }
 
 .animation-speed-medium {
-	-webkit-animation-duration: 0.25s;
-	   -moz-animation-duration: 0.25s;
-	    -ms-animation-duration: 0.25s;
-	     -o-animation-duration: 0.25s;
-	        animation-duration: 0.25s;
+	-webkit-animation-duration: 0.35s;
+	   -moz-animation-duration: 0.35s;
+	    -ms-animation-duration: 0.35s;
+	     -o-animation-duration: 0.35s;
+	        animation-duration: 0.35s;
 }
 
+.not-animated {
+	transition: all 0 none !important;
+	-moz-transition: all 0 none !important;
+	-webkit-transition: all 0 none !important;
+	-o-transition: all 0 none !important;
+	-ms-transition: all 0 none !important;
+	-webkit-animation-fill-mode: none !important;
+	   -moz-animation-fill-mode: none !important;
+	    -ms-animation-fill-mode: none !important;
+	     -o-animation-fill-mode: none !important;
+	        animation-fill-mode: none !important;
+}

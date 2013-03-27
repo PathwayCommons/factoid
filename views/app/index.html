@@ -80,7 +80,7 @@
   </div>
 
 <entity:>
-  <div class="{:entity.type} entity-instance associated-{nonempty(:entity.association)} moving-down-{bool(:entity._movingDown)} just-added-{bool(:entity._justAdded)}"  data-id="{{:entity.id}}" id="entity-{{:entity.id}}">
+  <div class="{:entity.type} entity-instance associated-{nonempty(:entity.association)} selected-{bool(:entity._selected)} moving-down-{bool(:entity._movingDown)} just-added-{bool(:entity._justAdded)}"  data-id="{{:entity.id}}" id="entity-{{:entity.id}}">
     
     {#if :entity.association}
       <span class="edit icon-ok associated-true tappable open-{bool(:entity._showEdit)}"></span>

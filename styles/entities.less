@@ -68,10 +68,21 @@
 
 	.entity-instance {
 		margin: @boxPadding/2;
+		@colour: #fdb722;
 
 		&.selected-true {
-			@colour: #fdb722;
-			border-color: lighten(@colour, 15%);
+			//border-color: lighten(@colour, 15%);
+		}
+
+		&.selected-true .selection-indicator {
+			position: absolute;
+			left: -0.35em;
+			top: 0.5em;
+			background: @colour;
+			width: 0.75em;
+			height: 0.75em;
+			border-radius: 1em;
+			//display: none;
 		}
 	}
 

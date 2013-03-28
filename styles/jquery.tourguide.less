@@ -1,5 +1,6 @@
 .tourguide {
 	width: 16em;
+	cursor: pointer;
 
 	/* in case you want to use animate.css (it's kinda slow by default) */
 	-webkit-animation-duration: 0.5s !important;
@@ -28,6 +29,9 @@
 	box-shadow: 0 0 99999px 99999px rgba(0, 0, 0, 0.5);
 	max-width: 100%;
 	max-height: 100%;
+
+	.animated;
+	.fadeIn;
 }
 
 .tourguide-modal-inactive-maker {
@@ -38,4 +42,39 @@
 	left: 0;
 	top: 0;
 	background: transparent;
+}
+
+.tourguide {
+	
+	width: 20em;
+	font-size: 0.8em;
+
+	.button-nav {
+		float: right;
+		margin: 0.5em 0 0 0;
+		font-size: 1.25em;
+	}
+
+	&.first-tourguide .tourguide-prev {
+		display: none;
+	}
+
+	.tourguide-done {
+		font-size: 0.8em;
+		display: none;
+	}
+
+	&.last-tourguide .tourguide-done {
+		display: inline;
+	}
+	
+	&.last-tourguide .tourguide-next {
+		display: none;
+	}
+
+	.skip-nav {
+		float: left;
+		margin: 1em 0 0 0;
+	}
+
 }

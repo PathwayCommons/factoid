@@ -20,6 +20,8 @@
   Factoid demo
 
 <Header:>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="HandheldFriendly" content="true" />
 
 <Body:>
   <div id="graph"></div>
@@ -87,9 +89,9 @@
     <div class="selection-indicator"></div>
 
     {#if :entity.association}
-      <span class="edit icon-ok associated-true tappable open-{bool(:entity._showEdit)}"></span>
+      <button class="edit icon-ok associated-true tappable open-{bool(:entity._showEdit)}"></button>
     {else}
-      <span class="edit icon-edit tappable open-{bool(:entity._showEdit)}"></span>
+      <button class="edit icon-edit tappable open-{bool(:entity._showEdit)}"></button>
     {/if}
     
     <span class="name">
@@ -101,16 +103,16 @@
         {else}
           <input class="edit-name-input input-like with-right-icon plain-{not(bool(:entity._showEdit))} loading-{bool(:entity._loadingPotentialAssociations)}" id="edit-name-input-{{:entity.id}}" data-id="{{:entity.id}}" type="text" value="{:entity.name}" />
 
-          <span class="text-clear-icon icon-remove-sign right-input-icon tappable" data-for="edit-name-input-{{:entity.id}}"></span>
+          <button class="text-clear-icon icon-remove-sign right-input-icon tappable" data-for="edit-name-input-{{:entity.id}}"></button>
         {/if}
       {/if}
     </span>
 
     <span class="icons">
       {#if :entity.interaction}
-        <span class="add-participants icon-plus-sign tappable open-{:entity._showAddParticipants}"></span>
+        <button class="add-participants icon-plus-sign tappable open-{:entity._showAddParticipants}"></button>
       {/if}
-      <span class="remove icon-remove tappable"></span>
+      <button class="remove icon-remove tappable"></button>
     </span>
 
     {#if :entity.interaction}

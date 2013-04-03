@@ -1,0 +1,32 @@
+[class^="icon-"],
+[class*=" icon-"] {
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+
+  &.tappable {
+    cursor: pointer;
+
+    &:active {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 0.125em;
+      box-shadow: 0 0 0 0.25em rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  &.open-true {
+    color: @linkColor !important;
+  }
+}
+
+button {
+  [class^="icon-"]:before,
+  button [class*=" icon-"]:before {
+    color: #fff;
+  }
+}
+
+button[class^="icon-"],
+button[class*=" icon-"] {
+  background: transparent;
+  color: #666;
+}

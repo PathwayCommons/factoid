@@ -6,10 +6,11 @@
 @completedColor: #2EA35F;
 
 html {
+	height: 100%;
+	width: 100%;
 	margin: 0;
 	padding: 0;
-	width: 100%;
-	height: 100%;
+	-webkit-tap-highlight-color: transparent !important;
 }
 
 body {
@@ -21,6 +22,7 @@ body {
 	background: @bg;
 	line-height: @lineHeight;
 	color: @textColor;
+	overflow: auto;
 }
 
 h1, h2, h3 {
@@ -138,6 +140,7 @@ p {
 	padding: 0.125em 0;
 	margin-top: 0.125em;
 	margin-left: -1em;
+	z-index: 999;
 }
 
 .text-search-icon {

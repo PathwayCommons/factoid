@@ -97,23 +97,35 @@
 
 		.arrow {
 			left: auto;
-			right: 0.95em;
+			right: 2.1em;
 		}
 
 		.participant {
+			margin: 0 1.6em;
+		}
+
+		.name {
 			margin-left: 1em;
-			margin-right: 0.5em;
+		}
+
+		.icons,
+		.icons * {
+			line-height: 1;
 		}
 	}
 
 	.participants-list {
 		font-size: 0.8em;
-		margin: 0 @boxPadding*1.8 0 @boxPadding*3;
+		margin: 0 2em;
+
+		.name {
+			margin-left: 1em;
+		}
 
 		.icons,
 		.icons * {
 			font-size: 1.125em;
-			line-height: 1.125em;
+			line-height: 1;
 		}
 
 		.participant + .participant {
@@ -123,7 +135,7 @@
 
 	.association-popover {
 		.arrow {
-			left: 2em;
+			left: 3em;
 		}
 
 		margin-bottom: 0.5em;

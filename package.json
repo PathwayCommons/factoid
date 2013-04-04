@@ -5,10 +5,10 @@
   "version": "0.0.0",
   "main": "./server.js",
   "dependencies": {
-    "derby": "0.3.13",
+    "derby": "0.3.14",
     "express": "3.0.0beta4",
     "gzippo": "0.1.7",
-    "ql.io-engine": "0.7.2",
+    "ql.io-engine": "0.8.7",
     "socket.io": "0.9",
     "underscore": "1.3.3"
   },

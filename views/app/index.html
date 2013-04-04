@@ -238,16 +238,16 @@
   </div>
 
   <popover: nonvoid>
-    <div class="popover bottom {{{classes}}}">
+    <div class="popover bottom {{@classes}}">
       <div class="arrow"></div>
 
-      {{{#if title}}}
+      {{#if @title}}
         <div class="popover-title">
-          {{{title}}}
+          {{@title}}
         </div>
-      {{{/if}}}
+      {{/if}}
 
       <div class="popover-content">
-        {{{content}}}
+        {{@content}}
       </div>
     </div>

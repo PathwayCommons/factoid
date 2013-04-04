@@ -37,7 +37,7 @@
 		color: #666;
 		float: right;
 		
-		& > span {
+		button + button {
 			margin-left: 0.5em;
 		}
 	}
@@ -92,30 +92,31 @@
 
 	.add-participants-popover {
 		right: 0;
-		padding: 0 1.25em;
+		margin-left: 1.25em;
+		margin-right: 1.25em;
 		margin-bottom: 0.5em;
 
 		.arrow {
 			left: auto;
-			right: 2.1em;
+			right: 1.35em;
 		}
 
 		.participant {
-			margin: @boxPadding/2 0;
+			margin: @boxPadding 0;
+			padding: 0;
 		}
 
 		.name {
-			margin-left: 1em;
+			margin-left: 0.6em;
+		}
+
+		.icons {
+			margin-right: 0.7em;
 		}
 
 		.icons,
 		.icons * {
-			line-height: 1;
-		}
-
-		.icons * {
-			padding-top: 0.15em;
-			padding-bottom: 0.15em;
+			line-height: 1.2;
 		}
 	}
 
@@ -123,23 +124,23 @@
 		font-size: 0.8em;
 		margin: 0 1.9em;
 
+		.participant {
+			padding: 0;
+			margin: @boxPadding 0;
+		}
+
 		.name {
-			margin-left: 1em;
+			margin-left: 0.6em;
+		}
+
+		.icons {
+			margin-right: 0.8em;
 		}
 
 		.icons,
 		.icons * {
 			font-size: 1.125em;
-			line-height: 1;
-		}
-
-		.icons * {
-			padding-top: 0.15em;
-			padding-bottom: 0.15em;
-		}
-
-		.participant + .participant {
-			margin: @boxPadding/2 0;
+			line-height: 1.2;
 		}
 	}
 

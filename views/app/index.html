@@ -158,6 +158,10 @@
 
 <participants:>
   <div class="participants-list" id="participants-list-for-{:entity.id}">
+    {#if :entity._participants}
+      <div class="small-title">Participants</div>
+    {/if}
+    
     {#each :entity._participants as :part}
       <div class="participant {:part.type}" data-id="{:part.id}">
         <span class="name">{:part.name}</span>
@@ -171,6 +175,7 @@
 <addParticipants:>
   <div class="add-participants-list" data-interaction-id="{:entity.id}" id="add-participants-list-for-{:entity.id}">
     {#if :entity._potentialParticipants}
+      <div class="small-title">Select participants to add</div>
       {#each :entity._potentialParticipants as :part}
         <div class="participant {:part.type}" data-id="{:part.id}">
           <span class="name">{.name}</span>

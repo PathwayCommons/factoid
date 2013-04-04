@@ -95,6 +95,7 @@
 		margin-left: 1.25em;
 		margin-right: 1.25em;
 		margin-bottom: 0.5em;
+		padding: 0 0.75em;
 
 		.arrow {
 			left: auto;
@@ -107,11 +108,7 @@
 		}
 
 		.name {
-			margin-left: 0.6em;
-		}
-
-		.icons {
-			margin-right: 0.7em;
+			margin-left: 0.5em;
 		}
 
 		.icons,
@@ -122,25 +119,29 @@
 
 	.participants-list {
 		font-size: 0.8em;
-		margin: 0 1.9em;
+		margin: 0 2.9em 0 2.75em;
 
 		.participant {
 			padding: 0;
+		}
+
+		.participant + .participant {
 			margin: @boxPadding 0;
 		}
 
 		.name {
-			margin-left: 0.6em;
-		}
-
-		.icons {
-			margin-right: 0.8em;
+			margin-left: 0.5em;
 		}
 
 		.icons,
 		.icons * {
 			font-size: 1.125em;
 			line-height: 1.2;
+		}
+
+		.small-title {
+			margin-top: 0.5em;
+			margin-bottom: 0.25em;
 		}
 	}
 

@@ -224,9 +224,13 @@
         {/each}
       {else}
         {#if :entity.changedName}
-          <div class="info">
-            <span class="icon-info-sign"></span> No entities matching the specified name were found.  Please revise your search above.
-          </div>
+          {#if :entity._loadingPotentialAssociations}
+            Searching for entities
+          {else}
+            <div class="info">
+              <span class="icon-info-sign"></span> No entities matching the specified name were found.  Please revise your search above.
+            </div>
+          {/if}
         {else}
           <div class="info">
             <span class="icon-info-sign"></span> When you modify the name of this entity, known entities matching that name will be displayed here.  Selecting one indicates the identity of this entity.

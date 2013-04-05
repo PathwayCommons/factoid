@@ -27,52 +27,6 @@ body {
 	border: 1px solid #d5d5d5;
 }
 
-#graph-layout-overlay {
-	display: none;
-	position: fixed;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: @infoWidth;
-	height: auto;
-	width: auto;
-	z-index: 1;
-	background: rgba(0, 0, 0, 0.25);
-	text-align: center;
-
-	.animation-speed-medium;
-
-	&.shown {
-		.animated;
-		.fadeIn;
-		display: block;
-	}
-	
-	&.hidden {
-		.animated;
-		.fadeOut;	
-	}
-}
-
-.overlay-popup {
-	display: inline-block;
-	background: rgba(0, 0, 0, 0.85);
-	border-radius: 0.5em;
-	color: #fff;
-	padding: 1em;
-	line-height: 2em;
-	margin-top: 50%;
-	position: relative;
-	top: -2em;
-
-	[class^="icon-"],
-	[class*=" icon-"] {
-		font-size: 2em;
-		float: left;
-		margin-right: 0.5em;
-	}
-}
-
 .button-panel {
 	padding: 0.125em;
 	text-align: center;

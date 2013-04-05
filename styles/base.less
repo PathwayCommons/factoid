@@ -242,6 +242,7 @@ a,
 	outline: none;
 	cursor: pointer;
 	border-radius: 0.25em;
+	border: 0;
 	
 	&:active {
 		background: darken(@linkColor, 10%);
@@ -282,4 +283,47 @@ strong {
 	right: 0;
 	margin: 0 0.25em;
 	opacity: 0.5;
+}
+
+.overlay  {
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	z-index: 999999;
+	background: rgba(0, 0, 0, 0.25);
+	text-align: center;
+	display: none;
+
+	&.shown {
+		.animation-speed-fast;
+		.animated;
+		.fadeIn;
+		display: table;
+	}
+	
+	&.hidden {
+		.animated;
+		.fadeOut;	
+	}
+}
+
+.overlay-wrapper {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.overlay-popup {
+	display: inline-block;
+	background: rgba(0, 0, 0, 0.85);
+	border-radius: 0.5em;
+	color: #fff;
+	padding: 1em;
+	line-height: 2em;
+
+	[class^="icon-"],
+	[class*=" icon-"] {
+		font-size: 2em;
+		float: left;
+		margin-right: 0.5em;
+	}
 }

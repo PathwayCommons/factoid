@@ -231,6 +231,12 @@
             <div class="organism">{:assoc.organismName}</div>
             <div class="type">{:assoc.type}</div>
           </button>
+
+          {#if :assoc._alreadyExists}
+            <app:popover classes="bottom popover-alert">
+              <span class="icon-info-sign"></span> There is already an entity associated to this.  Each entity in the document must be unique.
+            </app:popover>
+          {/if}
         {/each}
       {else}
         {#if :entity.changedName}

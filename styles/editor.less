@@ -66,3 +66,24 @@ body {
 	-webkit-transform:rotate(-45deg); /* Safari and Chrome */
 	-o-transform:rotate(-45deg); /* Opera */
 }
+
+#ui-loading-overlay {
+	.not-animated;
+
+	&.fade-out {
+		.animated;
+		.animation-speed-medium;
+		.fadeOut;
+	}
+
+	background: #000;
+
+	.overlay-popup {
+		background: #fff;
+		color: #000;
+
+		& > span {
+			font-size: 2em;
+		}
+	}
+}

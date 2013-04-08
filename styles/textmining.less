@@ -5,7 +5,7 @@
 	margin-right: 0.25em;
 	margin-bottom: 1em;
 
-	.arrow {
+	& > .arrow {
 		margin-left: -6.5em;
 	}
 }
@@ -24,12 +24,24 @@
 		font-size: 0.8em;
 		width: 100%;
 		min-height: 10em;
-		margin: 0.5em 0;
+		margin: 0em 0 0.5em 0;
 	}
 
 	.alert {
 		display: none;
-		margin: 0.5em 0;
+		margin: 0 0 0.5em 0;
+	}
+
+	.textmining-info {
+		display: none;
+		position: absolute;
+		top: 2em;
+		left: -19.75em;
+		width: 18em;
+	}
+
+	#textmining-text:focus + .textmining-info {
+		display: block;
 	}
 
 	&.no-results .alert {

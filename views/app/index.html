@@ -24,15 +24,17 @@
   <meta name="HandheldFriendly" content="true" />
 
 <Body:>
+  <body class="foo">
 
-  <div id="ui-loading-overlay" class="overlay shown">
+<!--
+  <div id="ui-loading-overlay" class="overlay ui-loaded-{bool(_doc._loadedUi)}">
     <div class="overlay-wrapper">
       <div class="overlay-popup">
         Loading the Factoid editor... 
       </div>
     </div>
   </div>
-
+-->
   <div id="graph-layout-overlay" class="overlay">
     <div class="overlay-wrapper">
       <div class="overlay-popup">
@@ -48,8 +50,6 @@
       </div>
     </div>
   </div>
-
-  <div id="graph"></div>
 
   <div id="info">
     <div class="button-panel">

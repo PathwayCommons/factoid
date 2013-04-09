@@ -80,6 +80,12 @@ body {
 #ui-loading-overlay {
 	.not-animated;
 
+	display: table;
+
+	&.ui-loaded-true {
+		display: none !important;
+	}
+
 	&.fade-out {
 		.animated;
 		.animation-speed-medium;
@@ -93,4 +99,8 @@ body {
 			font-size: 2em;
 		}
 	}
+}
+
+body.loaded #ui-loading-overlay {
+	display: none;
 }

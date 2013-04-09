@@ -51,16 +51,18 @@
   </div>
 
   <div id="info">
-    <div class="button-panel">
-      <button id="textmining-button" data-tooltip="Add entities and interactions from text"><div class="alert-bubble"></div><span class="icon-plus"></span> Text</button>
-      <button id="add-entity-button" data-tooltip="Add entity"><span class="icon-plus"></span> Entity</button>
-      <button id="add-interaction-button" data-tooltip="Add interaction"><span class="icon-plus"></span> Interaction</button>
-    </div>
+    <div id="tools">
+      <div class="button-panel">
+        <button id="textmining-button" data-tooltip="Add entities and interactions from text"><div class="alert-bubble"></div><span class="icon-plus"></span> Text</button>
+        <button id="add-entity-button" data-tooltip="Add entity"><span class="icon-plus"></span> Entity</button>
+        <button id="add-interaction-button" data-tooltip="Add interaction"><span class="icon-plus"></span> Interaction</button>
+      </div>
 
-    <div class="popover-hidden-{not(_showTextmining)} popover-animated-{bool(_showTextminingAnimated)}">
-      <app:popover classes="bottom textmining-popover">
-          <app:textmining>
-      </app:popover>
+      <div class="popover-hidden-{not(_showTextmining)} popover-animated-{bool(_showTextminingAnimated)}">
+        <app:popover classes="bottom textmining-popover">
+            <app:textmining>
+        </app:popover>
+      </div>
     </div>
 
     <div id="entities-list">

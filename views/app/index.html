@@ -26,7 +26,7 @@
 <Body:>
   <body class="">
 
-  <div id="logo-link">
+  <div id="logo-link" data-tooltip="Factoid home">
     <a href="https://github.com/PathwayCommons/factoid" target="_blank">
       <span class="factoid-logo">FACT<span class="o">O</span>ID</span>
       &nbsp;
@@ -85,6 +85,18 @@
       {/if}
     </div>
 
+  </div>
+
+  <div id="organism-select">
+    <div class="info">
+      <span class="icon-info-sign"></span> Please select the organisms relevant to the document.
+    </div>
+    
+    {#if organisms}
+      {#each organisms as :organism}
+        <app:organism>
+      {/each}
+    {/if}
   </div>
 
   <div id="description">
@@ -194,6 +206,12 @@
       </div>
     {/if}
 
+  </div>
+
+<organism:>
+  <div class="organism enabled-{bool(:organism._enabled)}">
+    <span class="icon-org-{:organism.id}"></span>
+    <span class="name">{:organism.sciName}</span>
   </div>
 
 <participants:>

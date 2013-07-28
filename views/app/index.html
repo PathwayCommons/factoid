@@ -28,9 +28,7 @@
 
   <div id="logo-link" data-tooltip="Factoid home">
     <a href="https://github.com/PathwayCommons/factoid" target="_blank">
-      <span class="factoid-logo">FACT<span class="o">O</span>ID</span>
-      &nbsp;
-      <span class="icon-home"></span>
+      <span class="factoid-logo">FACT<span class="o">O</span>ID&nbsp;</span><span class="icon-home"></span>
     </a>
   </div>
 
@@ -168,7 +166,7 @@
       {#if :entity.interaction}
         <button class="add-participants icon-plus-sign tappable open-{:entity._showAddParticipants}"></button>
       {/if}
-      <button class="remove icon-remove tappable"></button>
+      <button class="remove icon-remove tappable destructive"></button>
     </span>
 
     {#if :entity.interaction}

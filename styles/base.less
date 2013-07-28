@@ -4,6 +4,7 @@
 @linkColor: #0094d6;
 @highlightColor: #fdb722;
 @completedColor: #2EA35F;
+@destructiveColor: #B36464;
 
 ::selection {
 	background: rgba(0, 0, 0, 0); 
@@ -70,6 +71,10 @@ p {
 	&:disabled {
 		opacity: 0.35;
 	}
+}
+
+.destructive {
+	color: @destructiveColor !important;
 }
 
 .buttoned(@bgColor: @linkColor) {

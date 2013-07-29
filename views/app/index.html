@@ -256,7 +256,7 @@
             <div class="full-name">aka {:assoc.fullName} ({:assoc.officialName})</div>
             <div class="organism">{:assoc.organismName}</div>
             <div class="type">{:assoc.type}</div>
-            {#if :assoc.organismSupported}
+            {#if :assoc._organismSupported}
               <img class="organism-icon" src="/img/organisms/{:assoc.organismId}.png" />
             {/if}
           </button>

@@ -87,7 +87,7 @@
 
   <div id="organism-select">
     <div class="info">
-      <span class="icon-info-sign"></span> Please select the organisms relevant to the document.
+      <span class="icon-info-sign"></span> Please select the organisms relevant to the document.  This helps to refine entity searches.
     </div>
     
     {#if organisms}
@@ -207,8 +207,9 @@
   </div>
 
 <organism:>
-  <div class="organism enabled-{bool(:organism._enabled)}">
-    <span class="icon-org-{:organism.id}"></span>
+  <div class="organism enabled-{bool(:organism._enabled)}" data-id="{:organism.id}">
+    <span class="icon-ok enabled-icon"></span>
+    <img class="icon" src="/img/organisms/{:organism.id}.png" />
     <span class="name">{:organism.sciName}</span>
   </div>
 
@@ -255,8 +256,9 @@
             <div class="full-name">aka {:assoc.fullName} ({:assoc.officialName})</div>
             <div class="organism">{:assoc.organismName}</div>
             <div class="type">{:assoc.type}</div>
-            <img class="organism-icon" src="/img/organisms/{:assoc.organismId}.png" />
-
+            {#if :assoc.organismSupported}
+              <img class="organism-icon" src="/img/organisms/{:assoc.organismId}.png" />
+            {/if}
           </button>
 
           {#if :assoc._alreadyExists}

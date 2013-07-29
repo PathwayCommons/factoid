@@ -1,0 +1,50 @@
+.organism-qtip {
+
+	max-width: 14em;
+
+	.info {
+		margin-bottom: 0.5em;
+	}
+
+	.organism {
+		display: inline-block;
+		margin: 0.25em;
+		padding: 0.125em;
+		width: 5em;
+		background: #fff;
+		border-radius: 0.5em;
+		line-height: 1;
+		text-align: center;
+		cursor: pointer;
+		border: 0.125em solid transparent;
+		position: relative;
+
+		.enabled-icon {
+			display: none;
+		}
+
+		&.enabled-true {
+			border-color: @linkColor;
+
+			.enabled-icon {
+				display: inline-block;
+			}
+		}
+	}
+
+	.icon {
+		width: 5em;
+		height: 5em;
+	}
+
+	.name {
+		font-size: 0.8em;
+	}
+
+	.enabled-icon {
+		color: @linkColor;
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
+}

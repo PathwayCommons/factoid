@@ -256,7 +256,7 @@
         {#each :entity._potentialAssociations as :assoc}
           <button class="associate-button" data-index="{:assoc.index}">
             <div class="name"><span class="icon-ok"></span> {:assoc.name}</div>
-            <div class="full-name">aka {:assoc.fullName} ({:assoc.officialName})</div>
+            <div class="full-name">{:assoc.fullName}</div>
             <div class="organism">{:assoc.organismName}</div>
             <div class="type">{:assoc.type}</div>
             {#if :assoc._organismSupported}
@@ -296,7 +296,7 @@
       <div class="entity-info">
         <div class="summary">
           <div class="name">{name}</div>
-          <div class="full-name">aka {fullName} ({officialName})</div>
+          <div class="full-name">{fullName}</div>
           <div class="organism">{organismName}</div>
           <div class="type">{type}</div>
           <img class="organism-icon" src="/img/organisms/{organismId}.png" />

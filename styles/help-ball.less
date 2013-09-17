@@ -1,0 +1,101 @@
+.help-ball {
+	position: absolute;
+	right: 24em;
+	top: 1em;
+	width: 3em;
+	height: 3em;
+	border-radius: 4em;
+	background: #333;
+	z-index: 9999;
+	border: 2px solid #ddd;
+	box-shadow: 0 0 1em rgba(0, 0, 0, 0.66),
+		inset 0 0 1.5em #000,
+		inset 0 10px 10px #666
+		!important
+	;
+	cursor: pointer;
+
+	&.left .left-icon,
+	&.right .right-icon,
+	&.up .up-icon,
+	&.down .down-icon,
+	&.good .good-icon,
+	&.bad .bad-icon,
+	&.done .done-icon{
+		display: inline-block;
+	}
+
+	.indicator {
+		@size: 66%;
+
+		color: #ffaaaa;
+		line-height: 2em;
+		text-align: center;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		margin-left: -@size/2;
+		margin-top: -@size/2;
+		height: @size;
+		width: @size;
+		border-radius: 3em;
+		background: red;
+		box-shadow: inset 0 0 1em black,
+			0 0 0.25em #ff0000
+			!important
+		;
+
+		span {
+			font-size: 1.75em;
+			display: none;
+		}
+	}
+
+	&.done .indicator,
+	&.good .indicator {
+		color: #aaffaa;
+		background: green;
+		box-shadow: inset 0 0 1em black,
+			0 0 0.25em #006600
+			!important
+		;
+	}
+}
+
+.help-content {
+	display: none;
+}
+
+.help-ball-qtip {
+	max-width: 18em;
+
+	h2 small {
+		display: inline-block;
+		font-size: 0.4em;
+		font-weight: normal;
+		height: 2em;
+		width: 8em;
+		line-height: 1;
+		color: #888;
+	}
+
+	.qtip-content {
+		max-height: 24em;
+		overflow: auto;
+	}
+
+	ul.faq {
+		li { margin-top: 0.5em; }
+		.question { font-weight: bold; }
+		.answer { font-size: 0.8em; }
+	}
+
+	.contact {
+		label { margin-top: 0.5em; font-size: 0.8em; color: #888; }
+		button { margin-top: 0.5em; }
+		* { display: block; }
+		input, textarea { width: 100%; } 
+		textarea { font-size: 0.8em; height: 8em; }
+	}
+}
+

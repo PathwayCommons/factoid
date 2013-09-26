@@ -196,21 +196,16 @@ small {
 }
 
 .messageArea( @color ){
-	border: 1px solid darken(@color, 5%);
+	border: 1px solid darken(@color, 10%);
 	background-color: @color;
-	color: darken(@color, 65%) !important;
-
-	* {
-		color: darken(@color, 65%) !important;
-	}
-
 	border-radius: 1em;
 	padding: 0.25em 0.5em;
 	font-size: 0.8em;
 }
 
 .info {
-	.messageArea( lighten(@linkColor, 50%) );
+	.messageArea( #e0e0e0 );
+	color: #333;
 }
 
 .alert {

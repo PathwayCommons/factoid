@@ -3,13 +3,13 @@
 @borderColor: #cacaca;
 
 .organism-icon {
-	height: 3.25em;
-	width: 3.25em;
+	height: 1.666em;
+	width: 1.666em;
 	position: absolute;
-	top: 0;
+	bottom: 0.7em;
 	right: 0;
 	z-index: 0;
-	opacity: 0.2;
+	opacity: 0.333;
 	background: transparent !important;
 	margin: 0.333em;
 	border: 1px solid #555;
@@ -177,6 +177,16 @@
 		display: block;
 		position: relative;
 		width: 100%;
+		padding: 0.15em 0.333em;
+
+		@bg: lighten(@linkColor, 50%);
+		background: @bg;
+		border: 1px solid darken(@bg, 10%);
+		color: #000;
+
+		&:active {
+			background: desaturate( darken(@bg, 15%), 50%);
+		}
 
 		.small {
 			font-size: 0.8em;
@@ -191,6 +201,8 @@
 			font-size: 0.6em;
 			display: block;
 			margin-bottom: 0.5em;
+			text-align: left;
+			max-width: 29em;
 		}
 
 		.meta {
@@ -202,6 +214,12 @@
 			.small;
 			.meta;
 		}
+
+		.organism {
+			float: right;
+		}
+
+
 	}
 
 	.entity-info {

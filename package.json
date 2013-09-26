@@ -2,7 +2,7 @@
   "name": "factoid",
   "port": 3000,
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./server.js",
   "dependencies": {
     "derby": "0.3.19",
@@ -15,5 +15,12 @@
     "form-data": ">=0.1.1"
   },
   "engine": "node >=0.10.1",
-  "private": true
+  "private": true,
+  "subdomain": "factoid",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": "0.10.x"
+  }
 }

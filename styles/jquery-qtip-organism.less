@@ -2,37 +2,28 @@
 	display: none; // hide the non-clone
 }
 
-.organism-qtip {
+.organism-toggle {
+	display: inline-block;
+	margin: 0.25em;
+	padding: 0.125em;
+	width: 5em;
+	background: #fff;
+	border-radius: 0.5em;
+	line-height: 1;
+	text-align: center;
+	cursor: pointer;
+	border: 0.125em solid transparent;
+	position: relative;
 
-	max-width: 14em;
-
-	.info {
-		margin-bottom: 0.5em;
+	.enabled-icon {
+		display: none;
 	}
 
-	.organism {
-		display: inline-block;
-		margin: 0.25em;
-		padding: 0.125em;
-		width: 5em;
-		background: #fff;
-		border-radius: 0.5em;
-		line-height: 1;
-		text-align: center;
-		cursor: pointer;
-		border: 0.125em solid transparent;
-		position: relative;
+	&.enabled-true {
+		border-color: @linkColor;
 
 		.enabled-icon {
-			display: none;
-		}
-
-		&.enabled-true {
-			border-color: @linkColor;
-
-			.enabled-icon {
-				display: inline-block;
-			}
+			display: inline-block;
 		}
 	}
 
@@ -54,5 +45,14 @@
 		background: #fff;
 		border-top-left-radius: 0.5em;
 		border-bottom-right-radius: 0.5em;
+	}
+}
+
+.organism-qtip {
+
+	max-width: 14em;
+
+	.info {
+		margin-bottom: 0.5em;
 	}
 }

@@ -49,4 +49,19 @@
 		font-size: 0.8em;
 		margin: 0.5em 0;
 	}
+
+	.organism-preview {
+		float: left;
+		margin-top: -0.125em;
+
+		label {
+			display: none;
+		}
+
+		@size: 1.4em;
+		.organism { width: @size; height: @size; margin: 0; margin-right: 0.333em; }
+		.icon { height: @size; width: @size; border-radius: 0.25em; }
+		.enabled-icon { background: transparent; margin-left: -0.5em; margin-top: -0.5em; text-shadow: 0.0625em 0.125em 0 #fff; }
+		.name { display: none; }
+	}
 }

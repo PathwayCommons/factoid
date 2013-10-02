@@ -57,7 +57,7 @@
 	}
 
 	.name {
-		margin: 0 @boxPadding/2;
+		margin: 0 @boxPadding/2 0 0;
 
 		input {
 			margin-top: -1px;
@@ -172,7 +172,7 @@
 	}
 
 	.entity-info-button {
-		text-align: center;
+		text-align: left;
 		line-height: 1;
 		display: block;
 		position: relative;
@@ -194,7 +194,7 @@
 
 		.name {
 			margin-top: 0.125em;
-			text-align: center;
+			text-align: left;
 		}
 
 		.full-name {
@@ -232,6 +232,25 @@
 			border-radius: 0.25em;
 			width: auto;
 			padding: 0.25em;
+
+			&:active {
+				background: #fcfcfc;
+			}
+
+		}
+
+		.disassociate {
+			margin: 0;
+			cursor: pointer;
+			line-height: 1;
+			position: relative;
+			text-align: right;
+			float: right;
+
+			.active-area {  }
+			.label { font-size: 0.8em; color: #888; }
+			.associate-icon { color: #888; }
+			.remove-icon { font-size: 1.25em; margin-left: -0.333em; }
 		}
 
 		.link-area {

@@ -83,11 +83,6 @@ small {
 	}
 }
 
-.plain {
-	background: transparent;
-	border-color: transparent;
-}
-
 :focus {
 	box-shadow: 0 0 1px 3px rgba(237, 167, 17, 0.5) !important;
 }
@@ -112,7 +107,14 @@ small {
 	margin: 0;
 	line-height: @lineHeight;
 	
-	&:active:not([disabled]) {
+	&.plain {
+		background: transparent;
+		border-color: transparent;
+		font: inherit;
+		color: inherit;
+	}
+
+	&:active:not([disabled]):not(.plain) {
 		background: darken(@bgColor, 10%);
 	}
 
@@ -122,7 +124,7 @@ small {
 
 	&:focus {
 		box-shadow: 0 0 2px 2px #fdb722;
-		outline: 0			;
+		outline: 0;
 	}
 }
 
@@ -282,8 +284,9 @@ a,
 	border: 0;
 	
 	&:active {
-		background: darken(@linkColor, 10%);
 		color: #fff;
+		background: darken( @linkColor, 10% );
+		box-shadow: 0 0 0 0.25em darken( @linkColor, 10% ) !important;
 	}
 	
 	&.button {

@@ -184,7 +184,7 @@
     <textarea id="textmining-text"></textarea>
 
     <div id="textmining-examples" class="examples">
-      <span class="example link-like" data-text="The 90-kDa cellular protein encoded by the mouse mdm-2 oncogene binds to the p53 protein in vivo and inhibits its transactivation function (J. Momand, G. P. Zambetti, D. C. Olson, D. George, and A. J. Levine, Cell 69:1237-1245, 1992). cDNA clones encoding the human homolog of the mdm-2 protein (also called hdm-2) were isolated from a HeLa cell cDNA library. A series of monoclonal antibodies have been generated against human mdm-2 protein, and the epitopes recognized by these antibodies have been mapped. By construction of a series of deletion mutants, the region of the mdm-2 protein that is critical for complex formation with the p53 protein has been mapped to the N-terminal portion of the human mdm-2 protein. Interestingly, a monoclonal antibody with an epitope located in this same region failed to immunoprecipitate the mdm-2-p53 complex and appeared to recognize only free mdm-2 protein. The domain of the p53 protein that is sufficient for interaction with human mdm-2 protein has been mapped to the N-terminal 52 amino acid residues of the p53 protein. This region contains the transactivation domain of p53, suggesting that mdm-2 may inhibit p53 function by disrupting its interaction with the general transcription machinery."><span class="icon-paste"></span> Paste example abstract PMID:7686617</span> (from <a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/7686617">PubMed</a>)
+      <a class="example prevent-default" tabindex="0" data-text="The 90-kDa cellular protein encoded by the mouse mdm-2 oncogene binds to the p53 protein in vivo and inhibits its transactivation function (J. Momand, G. P. Zambetti, D. C. Olson, D. George, and A. J. Levine, Cell 69:1237-1245, 1992). cDNA clones encoding the human homolog of the mdm-2 protein (also called hdm-2) were isolated from a HeLa cell cDNA library. A series of monoclonal antibodies have been generated against human mdm-2 protein, and the epitopes recognized by these antibodies have been mapped. By construction of a series of deletion mutants, the region of the mdm-2 protein that is critical for complex formation with the p53 protein has been mapped to the N-terminal portion of the human mdm-2 protein. Interestingly, a monoclonal antibody with an epitope located in this same region failed to immunoprecipitate the mdm-2-p53 complex and appeared to recognize only free mdm-2 protein. The domain of the p53 protein that is sufficient for interaction with human mdm-2 protein has been mapped to the N-terminal 52 amino acid residues of the p53 protein. This region contains the transactivation domain of p53, suggesting that mdm-2 may inhibit p53 function by disrupting its interaction with the general transcription machinery."><span class="icon-paste"></span> Paste example abstract PMID:7686617</a> (from <a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/7686617">PubMed</a>)
     </div>
 
     <div class="organism-preview">
@@ -273,11 +273,11 @@
   </div>
 
 <organism:>
-  <div class="organism organism-toggle enabled-{bool(:organism._enabled)}" data-id="{:organism.id}">
+  <button class="plain organism organism-toggle enabled-{bool(:organism._enabled)}" data-id="{:organism.id}">
     <span class="icon-ok enabled-icon"></span>
     <img class="icon" src="/img/organisms/{:organism.id}.png" />
     <span class="name">{:organism.sciName}</span>
-  </div>
+  </button>
 
 <participants:>
   <div class="participants-list" id="participants-list-for-{:entity.id}">
@@ -374,11 +374,11 @@
         </div>
 
         <div class="disassociate">
-          <span class="active-area tappable" data-entity-id="{id}">
+          <button class="active-area plain tappable" data-entity-id="{id}">
             <span class="label">Disassociate </span>
             <span class="associate-icon"><span class="icon-ok"></span></span>
             <span class="remove-icon"><span class="icon-remove"></span></span>
-          </span>
+          </button>
         </div>
       </div>
     {/with}

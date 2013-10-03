@@ -179,13 +179,13 @@
 		width: 100%;
 		padding: 0.15em 0.333em;
 
-		@bg: lighten(@linkColor, 50%);
+		@bg: desaturate( lighten(@linkColor, 50%), 50% );
 		background: @bg;
 		border: 1px solid darken(@bg, 10%);
 		color: #000;
 
 		&:active {
-			background: desaturate( darken(@bg, 15%), 50%);
+			background: desaturate( darken(@bg, 15%), 25%);
 		}
 
 		.small {

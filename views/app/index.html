@@ -119,6 +119,13 @@
       </div>
     </div>
 
+    <button class="delete-all tappable plain">
+      <span class="label">Delete all </span>
+      <span class="icon-1 icon-remove"></span>
+      <span class="icon-2 icon-remove"></span>
+      <span class="icon-3 icon-remove"></span>
+    </button>
+
     <div id="entities-list">
       {#if _entities}
         {#each _entities as :entity}
@@ -129,13 +136,6 @@
           <span class="icon-info-sign"></span> There are not yet any entities in the current document.  You can add entities with the buttons above.
         </div>
       {/if}
-    </div>
-
-    <div class="delete-all tappable">
-        <span class="label">Delete all </span>
-        <span class="icon-1 icon-remove"></span>
-        <span class="icon-2 icon-remove"></span>
-        <span class="icon-3 icon-remove"></span>
     </div>
 
   </div>
@@ -184,7 +184,7 @@
     <textarea id="textmining-text"></textarea>
 
     <div id="textmining-examples" class="examples">
-      <span class="example link-like" data-text="Chromosomal double-strand breaks (DSBs) have the potential to permanently arrest cell cycle progression and endanger cell survival. They must therefore be efficiently repaired to preserve genome integrity and functionality. Homologous recombination (HR) provides an important error-free mechanism for DSB repair in mammalian cells. In addition to RAD51, the central recombinase activity in mammalian cells, a family of proteins known as the RAD51 paralogs and consisting of five proteins (RAD51B, RAD51C, RAD51D, XRCC2 and XRCC3), play an essential role in the DNA repair reactions through HR. The RAD51 paralogs act to transduce the DNA damage signal to effector kinases and to promote break repair. However, their precise cellular functions are not fully elucidated. Here we discuss recent advances in our understanding of how these factors mediate checkpoint responses and act in the HR repair process. In addition, we highlight potential functional similarities with the BRCA2 tumour suppressor, through the recently reported links between RAD51 paralog deficiencies and tumorigenesis triggered by genome instability."><span class="icon-paste"></span> Paste example abstract PMID:21821141</span> (from <a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/21821141">PubMed</a>)
+      <span class="example link-like" data-text="The 90-kDa cellular protein encoded by the mouse mdm-2 oncogene binds to the p53 protein in vivo and inhibits its transactivation function (J. Momand, G. P. Zambetti, D. C. Olson, D. George, and A. J. Levine, Cell 69:1237-1245, 1992). cDNA clones encoding the human homolog of the mdm-2 protein (also called hdm-2) were isolated from a HeLa cell cDNA library. A series of monoclonal antibodies have been generated against human mdm-2 protein, and the epitopes recognized by these antibodies have been mapped. By construction of a series of deletion mutants, the region of the mdm-2 protein that is critical for complex formation with the p53 protein has been mapped to the N-terminal portion of the human mdm-2 protein. Interestingly, a monoclonal antibody with an epitope located in this same region failed to immunoprecipitate the mdm-2-p53 complex and appeared to recognize only free mdm-2 protein. The domain of the p53 protein that is sufficient for interaction with human mdm-2 protein has been mapped to the N-terminal 52 amino acid residues of the p53 protein. This region contains the transactivation domain of p53, suggesting that mdm-2 may inhibit p53 function by disrupting its interaction with the general transcription machinery."><span class="icon-paste"></span> Paste example abstract PMID:7686617</span> (from <a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed/7686617">PubMed</a>)
     </div>
 
     <div class="organism-preview">

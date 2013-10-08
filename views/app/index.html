@@ -225,6 +225,7 @@
       {#if :entity.interaction}
         <button class="add-participants icon-plus-sign tappable open-{:entity._showAddParticipants}"></button>
       {/if}
+      <button class="annotations icon-comment-alt tappable open-{:entity._showAnnotations}"></button>
       <button class="remove icon-remove tappable destructive"></button>
     </span>
 
@@ -263,7 +264,16 @@
       </div>
     {/if}
 
+    <div class="popover-hidden-{not(:entity._showAnnotations)} popover-animated-{bool(:entity._showAnnotationsAnimated)}">
+      <app:popover classes="bottom annotations-popover">
+        <app:annotations>
+      </app:popover>
+    </div>
+
   </div>
+
+<annotations:>
+  <div>This is where the annotations will go.</div>
 
 <organism:>
   <button class="plain organism organism-toggle enabled-{bool(:organism._enabled)}" data-id="{:organism.id}">

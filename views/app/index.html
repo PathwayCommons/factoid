@@ -222,11 +222,10 @@
     </span>
 
     <span class="icons">
-      {#if :entity.annotation}
-        <button class="annotations icon-comment tappable open-{:entity._showAnnotations}"></button>
-      {else}
-        <button class="annotations icon-comment-alt tappable open-{:entity._showAnnotations}"></button>
-      {/if}
+      <span class="buttonset annotation-icons with-{nonempty(:entity.annotation)}">
+        <button class="annotations icon-with-false icon-comment-alt tappable open-{:entity._showAnnotations}"></button>
+        <button class="annotations icon-with-true icon-comment tappable open-{:entity._showAnnotations}"></button>
+      </span>
       
       {#if :entity.interaction}
         <button class="add-participants icon-plus-sign tappable open-{:entity._showAddParticipants}"></button>

@@ -51,8 +51,20 @@
 		color: #666;
 		float: right;
 		
-		button + button {
-			margin-left: 0.5em;
+		button {
+			margin-right: 0.5em;
+		}
+
+		.buttonset {
+			margin-right: 0.5em;
+
+			button {
+				margin: 0;
+			}
+		}
+
+		& :last-child {
+			margin-right: 0;
 		}
 	}
 
@@ -127,6 +139,15 @@
 		.icons,
 		.icons * {
 			line-height: 0.8;
+		}
+	}
+
+	.annotation-icons {
+		.icon-with-true { display: none; }
+
+		&.with-true {
+			.icon-with-true { display: inline-block; }
+			.icon-with-false { display: none; }
 		}
 	}
 

@@ -84,7 +84,7 @@ small {
 }
 
 :focus {
-	box-shadow: 0 0 1px 3px rgba(237, 167, 17, 0.5) !important;
+	box-shadow: 0 0 0px 4px rgba(237, 167, 17, 0.5) !important;
 }
 
 .destructive {
@@ -115,17 +115,17 @@ small {
 		color: inherit;
 	}
 
-	&:active:not([disabled]):not(.plain) {
-		background: darken(@bgColor, 10%);
-	}
-
 	&[disabled] {
 		cursor: default;
 	}
 
 	&:focus {
-		box-shadow: 0 0 2px 2px #fdb722;
 		outline: 0;
+	}
+
+	&:active {
+		box-shadow: 
+			0 0 0 4px rgba(0, 0, 0, 0.25) !important;
 	}
 }
 
@@ -285,9 +285,7 @@ a,
 	border: 0;
 	
 	&:active {
-		color: #fff;
-		background: darken( @linkColor, 10% );
-		box-shadow: 0 0 0 0.25em darken( @linkColor, 10% ) !important;
+		box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.25) !important;
 	}
 	
 	&.button {
@@ -299,9 +297,8 @@ a,
     cursor: pointer;
 
     &:active {
-      background: rgba(0, 0, 0, 0.25) !important;
-      border-radius: 0.125em;
-      box-shadow: 0 0 0 0.25em rgba(0, 0, 0, 0.25) !important;
+      //background: rgba(0, 0, 0, 0.25) !important;
+      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.25) !important;
     }
   }
 

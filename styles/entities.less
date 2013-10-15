@@ -1,6 +1,6 @@
 @boxPadding: 0.5em;
 @linkColor: #0094d6;
-@borderColor: #cacaca;
+@borderColor: #c0c0c0;
 
 .organism-icon {
 	height: 1.666em;
@@ -37,8 +37,9 @@
 	.moving-down-true {
 		.animated;
 		.fadeOutDownBig;
-		.animation-speed-slow;
-		position: absolute;
+		.animation-speed-very-slow;
+		z-index: 999;
+		background: @bg;
 	}
 
 	.just-added-true {
@@ -48,7 +49,7 @@
 	}
 
 	.icons {
-		color: #666;
+		//color: #666;
 		float: right;
 		
 		button {
@@ -89,7 +90,7 @@
 	}
 
 	.edit {
-		color: #666;
+		//color: #666;
 
 		&.associated-true {
 			
@@ -229,12 +230,9 @@
 
 		@bg: desaturate( lighten(@linkColor, 50%), 50% );
 		background: @bg;
-		border: 1px solid darken(@bg, 10%);
+		border: 1px solid darken(@bg, 5%);
 		color: #000;
 
-		&:active {
-			background: desaturate( darken(@bg, 15%), 25%);
-		}
 
 		.small {
 			font-size: 0.8em;
@@ -275,15 +273,12 @@
 		.summary {
 			overflow: hidden;
 			.entity-info-button;
-			border: 1px solid #f0f0f0;
-			background: #fcfcfc;
+			background: #e0e0e0;
+			border-color: darken(#e0e0e0, 5%);
+
 			border-radius: 0.25em;
 			width: auto;
 			padding: 0.25em;
-
-			&:active {
-				background: #fcfcfc;
-			}
 
 		}
 

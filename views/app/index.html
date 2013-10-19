@@ -26,24 +26,22 @@
 <Body:>
   <body class="">
 
-  <div id="help-init" class="help-ball right" data-stage="init">
-    <div class="indicator">
+  <app:help stage="textmining" icon="icon-arrow-right">
 
-      <span class="up-icon icon-arrow-up"></span>
-      <span class="left-icon icon-arrow-left"></span>
-      <span class="right-icon icon-arrow-right"></span>
-      <span class="down-icon icon-arrow-down"></span>
-      <span class="done-icon icon-ok"></span>
-      <span class="good-icon icon-thumbs-up"></span>
-      <span class="bad-icon icon-thumbs-down"></span>
-    </div>
-  </div>
+  <app:help stage="organisms" icon="icon-arrow-up">
 
-  <div class="help-content" data-for-stage="init">
-    <div class="info"><span class="icon-info-sign"></span> The area to the right contains the list of entities and interactions in the document.  The goal here is to make sure each biological entity is properly identified, indicated by the checkmark.</div>
+  <app:help stage="entities" icon="icon-arrow-right">
+
+  <div class="help-content" data-for-stage="textmining">
+    <h2>Enter abstract</h2>
+
+    <div class="alert"><span class="icon-info-sign"></span> Enter your paper's abstract in the area to the right.  Factoid will find biological entities and interactions from your abstract and add them to the document.</div>
+
+    <p><strong>N.B.</strong>: Although the help guides you through Factoid in a linear fashion, you are free to explore and use any part of Factoid in any order you wish.</p>
 
     <hr />
 
+<!--
     <h2>FAQ</h2>
 
     <ul class="faq">
@@ -55,34 +53,51 @@
     </ul>
 
     <hr />
+-->
 
-    <h2>Contact us <small>(feedback, questions, etc)</small></h2>
-
-    <div class="contact">
-      <label>Your email</label>
-      <input type="email" />
-
-      <label>Your message</label>
-      <textarea>
-        I was using the biological entities list on the right, and I wanted to mention this: &#10;&#10;
-      </textarea>
-      <button>Send <span class="icon-arrow-right"></span></button>
-    </div>
-
+    <app:contact>
+    
   </div>
 
-  <div id="logo-link" data-tooltip="Factoid home">
-    <a href="https://github.com/PathwayCommons/factoid" target="_blank">
-      <span class="factoid-logo">FACT<span class="o">O</span>ID&nbsp;</span><span class="icon-home"></span>
-    </a>
+  <div class="help-content" data-for-stage="organisms">
+    <h2>Choose organisms</h2>
+
+    <div class="alert"><span class="icon-info-sign"></span> Factoid has automatically found organisms relevant to your abstract, but you may want to manually adjust them above.  The enabled organisms are used to refine entity searches.</div>
+
+    <p><strong>N.B.</strong>: Although the help guides you through Factoid in a linear fashion, you are free to explore and use any part of Factoid in any order you wish.</p>
+
+    <p class="skip"><button class="skip-button plain">Proceed to next step <span class="icon-fast-forward"></span></button></p>
+
+    <hr />
+
+    <app:contact>
+    
+  </div>
+
+  <div class="help-content" data-for-stage="entities">
+    <h2>Refine entities &amp; interactions</h2>
+
+    <div class="alert">
+      <span class="icon-info-sign"></span> Now that you have the basis of your document from your abstract and your chosen organisms, you can refine your list of biological entities and interactions:
+
+      <ul>
+        <li>Ensure that the identity of each entity is confirmed, indicated by a checkmark to the left of its name.</li>
+        <li>Ensure that the list of participants for each interaction is correct.</li>
+        <li>Add and remove entities and interactions to make certain that your document accurately represents your paper.</li>
+      </ul>
+    </div>
+
+    <p><strong>N.B.</strong>: Although the help guides you through Factoid in a linear fashion, you are free to explore and use any part of Factoid in any order you wish.</p>
+
+    <hr />
+
+    <app:contact>
+    
   </div>
 
   <div id="ui-loading-overlay" class="overlay ui-loaded-{bool(_loadedUi)}">
     <div class="overlay-wrapper">
       <div class="overlay-popup">
-        <div class="factoid-logo">
-          FACT<span class="o">O</span>ID
-        </div>
         Loading the Factoid editor... 
       </div>
     </div>
@@ -91,7 +106,7 @@
   <div id="graph-layout-overlay" class="overlay">
     <div class="overlay-wrapper">
       <div class="overlay-popup">
-        <span class="icon-refresh icon-spin"></span> <span>Auto-rearranging entities</span>
+        <span class="icon-refresh icon-spin"></span> <span>Repositioning entities</span>
       </div>
     </div>
   </div>
@@ -107,7 +122,7 @@
   <div id="info">
     <div id="tools">
       <div class="button-panel">
-        <button id="textmining-button" data-tooltip="Add entities and interactions from text"><div class="alert-bubble"></div><span class="icon-plus"></span><span class="icon-file-text"></span> Text</button>
+        <button id="textmining-button" data-tooltip="Add entities and interactions from text"><div class="alert-bubble"></div><span class="icon-plus"></span><span class="icon-file-text"></span> Abstract</button>
         <button id="add-entity-button" data-tooltip="Add entity"><span class="icon-plus"></span><span class="icon-circle"></span> Entity</button>
         <button id="add-interaction-button" data-tooltip="Add interaction"><span class="icon-plus"></span><span class="icon-stop"></span> Interaction</button>
       </div>
@@ -170,14 +185,18 @@
       <span class="icon-info-sign"></span> The text you enter here will be used to automatically populate the document with the specified entities and interactions.
     </div>
 
-    <textarea id="textmining-text"></textarea>
-
     <div id="textmining-examples" class="examples">
       <a class="example prevent-default" tabindex="0" data-text="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.  PCNA and RAD51 do this.  MSH1 and MSH2 do that.  And MRE11A and MSH2 and RAD51 do the other in human."><span class="icon-paste"></span> Paste example abstract</a>
     </div>
 
+    <div class="alert">
+      <span class="icon-info-sign"></span> Nothing could be found in your text.  Please revise it, and try again.
+    </div>
+
+    <textarea id="textmining-text"></textarea>
+
     <div class="organism-preview">
-      <label>Found organisms:</label>
+      <label>Relevant organisms:</label>
       <div class="organisms">
         {#if organisms}
           {#each organisms as :organism}
@@ -191,13 +210,10 @@
       <button class="add"><span class="icon-plus"></span><span class="icon-circle"></span><span class="icon-stop"></span> Add to document</button>
     </div>
 
-      <div class="output-info">
-        <img src="/img/textmining-output.png"></img>
-      </div>
+    <button class="output-info plain" tabindex="-1">
+      <img src="/img/textmining-output.png"></img>
+    </button>
 
-    <div class="alert">
-      <span class="icon-info-sign"></span> Nothing could be found in your text.  Please revise it, and try again.
-    </div>
   </div>
 
 <entity:>
@@ -281,6 +297,28 @@
       </div>
     {/if}
 
+  </div>
+
+<help:>
+  <div class="help-ball" data-stage="{{@stage}}" data-current-stage="{_doc.stage}">
+    <div class="label">Help</div>
+
+    <div class="indicator">
+      <span class="{{@icon}}"></span>
+    </div>
+  </div>
+
+<contact:>
+  <h2>Contact us <small>(feedback, questions, etc)</small></h2>
+  <div class="contact">
+    <label>Your email</label>
+    <input type="email" class="from" />
+
+    <label>Your message</label>
+    <textarea class="message">
+      {{@message}}
+    </textarea>
+    <button class="send">Send <span class="icon-arrow-right"></span></button> <span class="sending-icon loading-spinner-icon"></span><span class="sent-icon icon-ok"></span>
   </div>
 
 <annotations:>

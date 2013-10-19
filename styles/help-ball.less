@@ -1,7 +1,6 @@
 .help-ball {
+	display: none;
 	position: absolute;
-	right: 24em;
-	top: 1em;
 	width: 3em;
 	height: 3em;
 	border-radius: 4em;
@@ -16,14 +15,32 @@
 	;
 	cursor: pointer;
 
-	&.left .left-icon,
-	&.right .right-icon,
-	&.up .up-icon,
-	&.down .down-icon,
-	&.good .good-icon,
-	&.bad .bad-icon,
-	&.done .done-icon{
-		display: inline-block;
+	.animated;
+	.fadeIn;
+
+	&[data-stage="textmining"][data-current-stage="textmining"]{
+		right: 24em;
+		top: 1em;
+		display: block;
+	}
+
+	&[data-stage="organisms"][data-current-stage="organisms"]{
+		left: 17.25em;
+		top: 4em;
+		display: block;
+	}
+
+	&[data-stage="entities"][data-current-stage="entities"]{
+		right: 22.75em;
+		top: 50%;
+		margin-top: -1.5em;
+		display: block;
+	}
+
+	.label {
+		font-size: 0.8em;
+		margin-top: -1.25em;
+		text-align: center;
 	}
 
 	.indicator {
@@ -48,7 +65,6 @@
 
 		span {
 			font-size: 1.75em;
-			display: none;
 		}
 	}
 
@@ -70,6 +86,11 @@
 .help-ball-qtip {
 	max-width: 18em;
 
+	h2 {
+		line-height: 1;
+		margin: 0.25em 0;
+	}
+
 	h2 small {
 		display: inline-block;
 		font-size: 0.4em;
@@ -85,6 +106,14 @@
 		overflow: auto;
 	}
 
+	.alert ul {
+		list-style-type: disc;
+
+		li {
+			margin-left: 1.5em;
+		}
+	}
+
 	ul.faq {
 		li { margin-top: 0.5em; }
 		.question { font-weight: bold; }
@@ -97,6 +126,26 @@
 		* { display: inline-block; }
 		input, textarea { width: 100%; } 
 		textarea { font-size: 0.8em; height: 8em; }
+
+		.sending-icon,
+		.sent-icon {
+			display: none;
+		}
+
+		&.sending {
+			.sending-icon { display: inline-block; }
+			.sent-icon { display: none; }
+		}
+
+		&.sent {
+			.sending-icon { display: none; }
+			.sent-icon { display: inline-block; }
+		}
+	}
+
+	.skip {
+		font-size: 0.8em;
+		text-align: right;
 	}
 }
 

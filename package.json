@@ -2,7 +2,7 @@
   "name": "factoid",
   "port": 3000,
   "description": "",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "main": "./server.js",
   "dependencies": {
     "derby": "0.3.19",

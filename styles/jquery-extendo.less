@@ -153,8 +153,10 @@
 				.button;
 
 				z-index: 1;
-				margin: 0 @extendoButtonSize/4;
+				margin: 0 0.25em;
+				width: @extendoButtonSize*1.5;
 				color: @extendoTextColor;
+				position: relative;
 				//text-shadow: rgba(255, 255, 255, 0.01) 0 1px;
 				-webkit-tap-highlight-color: transparent;
 
@@ -179,6 +181,24 @@
 
 				&.extendo-state-hidden {
 					display: none;
+				}
+
+				label {
+					font-size: 0.5em;
+					width: 100%;
+					position: absolute;
+					top: -1.333em;
+					left: 0;
+					display: block;
+					//background: rgba(200, 200, 200, 0.8);
+					line-height: 1;
+					color: #000;
+					font-weight: 200;
+					//border-radius: 0.25em;
+					//border-bottom-left-radius: 0;
+					//border-bottom-right-radius: 0;
+					//border-left: 1px solid rgba(127, 127, 127, 0.5);
+					//border-right: 1px solid rgba(127, 127, 127, 0.5);
 				}
 			}
 

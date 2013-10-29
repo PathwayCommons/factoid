@@ -1,6 +1,7 @@
 {
   "name": "factoid",
   "port": 3000,
+  "tmUrlBase": "http://webservice.baderlab.org:3001/Factoid",
   "description": "",
   "version": "0.3.0",
   "main": "./server.js",

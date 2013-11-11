@@ -327,7 +327,7 @@
   <textarea id="edit-annotation-{:entity.id}">{:entity.annotation}</textarea>
 
 <organism:>
-  <button class="plain organism organism-toggle enabled-{bool(:organism._enabled)}" data-id="{:organism.id}">
+  <button class="plain organism organism-toggle enabled-{bool(:organism.documents[_doc.id].enabled)}" data-id="{:organism.id}">
     <span class="icon-ok enabled-icon"></span>
     <img class="icon" src="/img/organisms/{:organism.id}.png" />
     <span class="name">{:organism.sciName}</span>

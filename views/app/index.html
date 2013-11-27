@@ -389,6 +389,7 @@
           {#if :entity._loadingPotentialAssociations}
             <span class="loading-message">
               <span class="loading-spinner-icon"></span> Searching for entities...
+              <button class="retry-association-search" data-id=":entity.id"><span class="icon-refresh"></span> Retry search</button>
             </span>
           {else}
             <div class="info">

@@ -33,9 +33,25 @@
   <div class="help-content" data-for-stage="textmining">
     <h2>Enter abstract</h2>
 
-    <div class="alert"><span class="icon-info-sign"></span> Enter your paper's abstract in the area to the right.  Factoid will find biological entities and interactions from your abstract and add them to the document.</div>
+    <div class="alert"><span class="icon-info-sign"></span> Enter your paper's abstract in the area to the right.  Factoid will find biological entities and interactions in your abstract and add them to the view on the left.</div>
 
-    <p><strong>N.B.</strong>: Although the help guides you through Factoid in a linear fashion, you are free to explore and use any part of Factoid in any order you wish.</p>
+    <p><strong>Note</strong>: We initially guide you through Factoid in steps, but you can use any part of Factoid in any order.</p>
+
+    <hr />
+
+<!--
+    <h2>FAQ</h2>
+
+    <ul class="faq">
+        <li><span class="question">What if this?</span> <span class="answer">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</span></li>
+        
+        <li><span class="question">What if that?</span> <span class="answer">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</span></li>
+
+        <li><span class="question">What if the other?</span> <span class="answer">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</span></li>
+    </ul>
+
+    <hr />
+-->
 
     <app:contact>
     
@@ -44,9 +60,9 @@
   <div class="help-content" data-for-stage="organisms">
     <h2>Choose organisms</h2>
 
-    <div class="alert"><span class="icon-info-sign"></span> Factoid has automatically found organisms relevant to your abstract, but you may want to manually adjust them above.  The enabled organisms are used to refine entity searches.</div>
+    <div class="alert"><span class="icon-info-sign"></span> Factoid has automatically found organisms relevant to your abstract, but you may want to manually adjust them above.  Selected organisms are used to refine searches.</div>
 
-    <p><strong>N.B.</strong>: Although the help guides you through Factoid in a linear fashion, you are free to explore and use any part of Factoid in any order you wish.</p>
+    <p><strong>Note</strong>: We initially guide you through Factoid in steps, but you can use any part of Factoid in any order.</p>
 
     <p class="skip"><button class="skip-button plain">Proceed to next step <span class="icon-fast-forward"></span></button></p>
 
@@ -60,16 +76,16 @@
     <h2>Refine entities &amp; interactions</h2>
 
     <div class="alert">
-      <span class="icon-info-sign"></span> Now that you have the basis of your document from your abstract and your chosen organisms, you can refine your list of biological entities and interactions:
+      <span class="icon-info-sign"></span> Now that your network document is seeded based on your abstract and chosen organisms, you can refine your list of biological entities (e.g. proteins) and interactions:
 
       <ul>
-        <li>Ensure that the identity of each entity is confirmed, indicated by a checkmark to the left of its name.</li>
-        <li>Ensure that the list of participants for each interaction is correct.</li>
-        <li>Add and remove entities and interactions to make certain that your document accurately represents your paper.</li>
+        <li>Confirm the identity of each entity, indicated by a checkmark to the left of its name.</li>
+        <li>Confirm the list of participants for each interaction.</li>
+        <li>Add missing and remove erroneous entities and interactions related to your paper.</li>
       </ul>
     </div>
 
-    <p><strong>N.B.</strong>: Although the help guides you through Factoid in a linear fashion, you are free to explore and use any part of Factoid in any order you wish.</p>
+    <p><strong>Note</strong>: We initially guide you through Factoid in steps, but you can use any part of Factoid in any order.</p>
 
     <hr />
 
@@ -123,7 +139,7 @@
         {/each}
       {else}
         <div class="info">
-          <span class="icon-info-sign"></span> There are not yet any entities in the current document.  You can add entities with the buttons above.
+          <span class="icon-info-sign"></span> The document is empty.  You can add entities with the buttons above.
         </div>
       {/if}
     </div>
@@ -143,14 +159,14 @@
   </div>
 
   <div id="description">
-    <h1 id="description-title">Factoid: Building the future of scientific publishing</h1>
+    <h1 id="description-title">Factoid: Supporting the future of scientific publishing</h1>
     <div id="description-content">
       <div class="scrollable-area">
-        <p>Factoid helps authors to translate their written scientific text into formal descriptions of biological processes useful for sharing their results with others, bioinformatics analysis and integrating with other data to help build a more complete model of a cell.</p>
+        <p>Factoid helps authors translate their written scientific text into formal descriptions of biological processes. This is useful for sharing results with others, bioinformatics analysis and integrating with other data to help build a more complete model of a cell.</p>
 
-        <p>Factoid aims to be part of the publication process.  With the author's help, it will extract pathway and related information from a paper as it is submitted, submit the resulting diagram as a visual abstract for peer-review along with the paper and finally, publish the information in a shareable and computable format accompanying the paper for others to use.</p>
+        <p>Factoid aims to be part of the publication process.  With the author's help, it will extract pathway and interaction information from a paper, produce a network view as a visual and interactive abstract and publish the result in a shareable and computable format.</p>
 
-        <p>Factoid 1.0 helps turn text into a simple and editable network model of a biological process. Text is automatically converted to a first draft of a network which can then be corrected using easy to use editing functions.  Future versions will have more advanced text mining functionality to improve the 'first draft', will allow saving the results in standard formats for sharing and will make it easier to add text and edit the network.</p>
+        <p>Factoid 1.0 helps turn text into a simple and editable network model of a biological process. Text is automatically converted to a first draft network which can then be corrected using the Factoid editor.  We plan to improve the amount, accuracy and detail of the information Factoid can automatically find in a paper in future software versions.</p>
       </div>
 
       <div class="factoid-logo watermark-bottom-right">
@@ -164,7 +180,7 @@
 <textmining:>
   <div id="textmining-input">
     <div class="info">
-      <span class="icon-info-sign"></span> The text you enter here will be used to automatically populate the document with the specified entities and interactions.
+      <span class="icon-info-sign"></span> The text you enter here will be analyzed by Factoid to find interactions involving genes and their products.
     </div>
 
     <div id="textmining-examples" class="examples">
@@ -172,7 +188,7 @@
     </div>
 
     <div class="alert">
-      <span class="icon-info-sign"></span> Nothing could be found in your text.  Please revise it, and try again.
+      <span class="icon-info-sign"></span>Sorry, we couldn't find interactions in your text.  You can try again with revised text.
     </div>
 
     <textarea id="textmining-text"></textarea>
@@ -367,7 +383,7 @@
 
           {#if :assoc._alreadyExists}
             <app:popover classes="bottom popover-alert">
-              <span class="icon-info-sign"></span> There is already an entity associated to this.  Each entity in the document must be unique.
+              <span class="icon-info-sign"></span> There is already an entity associated to this name.  Each entity in the document must be unique.
             </app:popover>
           {/if}
         {/each}
@@ -379,12 +395,12 @@
             </span>
           {else}
             <div class="info">
-              <span class="icon-info-sign"></span> No entities matching the specified name were found.  Please revise your search above.
+              <span class="icon-info-sign"></span> No entities matching the specified name were found.  Please revise your search.
             </div>
           {/if}
         {else}
           <div class="info">
-            <span class="icon-info-sign"></span> When you modify the name of this entity, known entities matching that name will be displayed here.  Selecting one indicates the identity of this entity.
+            <span class="icon-info-sign"></span> Type in a name to search for a protein then select one from the resulting list.
           </div>
         {/if}
       {/if}
@@ -405,14 +421,13 @@
 
         <div class="disassociate">
           <button class="active-area plain tappable" data-entity-id="{id}">
-            <span class="label">Disassociate</span>
+            Disassociate
           </button>
         </div>
 
         <div class="link-area">
           <a class="link" target="_blank" href="{link}">Full details at UniProt <span class="icon-external-link"></span></a>
         </div>
-
       </div>
     {/with}
   </div>

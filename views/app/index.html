@@ -39,21 +39,7 @@
 
     <hr />
 
-<!--
-    <h2>FAQ</h2>
-
-    <ul class="faq">
-        <li><span class="question">What if this?</span> <span class="answer">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</span></li>
-        
-        <li><span class="question">What if that?</span> <span class="answer">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</span></li>
-
-        <li><span class="question">What if the other?</span> <span class="answer">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</span></li>
-    </ul>
-
-    <hr />
--->
-
-    <app:contact>
+    <button class="contact-open-button"><span class="icon-envelope"></span> Contact us</button>
     
   </div>
 
@@ -68,7 +54,7 @@
 
     <hr />
 
-    <app:contact>
+    <button class="contact-open-button"><span class="icon-envelope"></span> Contact us</button>
     
   </div>
 
@@ -89,7 +75,7 @@
 
     <hr />
 
-    <app:contact>
+    <button class="contact-open-button"><span class="icon-envelope"></span> Contact us</button>
     
   </div>
 
@@ -104,7 +90,7 @@
   <div id="graph-layout-overlay" class="overlay">
     <div class="overlay-wrapper">
       <div class="overlay-popup">
-        <span class="icon-refresh icon-spin"></span> <span>Repositioning entities</span>
+        <span class="loading-icon icon-refresh icon-spin"></span> <span>Repositioning entities</span>
       </div>
     </div>
   </div>
@@ -112,7 +98,15 @@
   <div id="textmining-overlay" class="overlay">
     <div class="overlay-wrapper">
       <div class="overlay-popup">
-        <span class="icon-cog icon-spin"></span> <span>Analysing text</span>
+        <span class="loading-icon icon-cog icon-spin"></span> <span>Analysing text</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="contact-overlay" class="overlay">
+    <div class="overlay-wrapper">
+      <div class="overlay-popup">
+        <app:contact>
       </div>
     </div>
   </div>
@@ -309,8 +303,11 @@
   </div>
 
 <contact:>
-  <h2>Contact us <small>(feedback, questions, etc)</small></h2>
   <div class="contact">
+    <button class="close plain"><span class="icon-remove"></span></button>
+
+    <h2>Contact us <small>(feedback, questions, etc)</small></h2>
+
     <label>Your email</label>
     <input type="email" class="from" />
 

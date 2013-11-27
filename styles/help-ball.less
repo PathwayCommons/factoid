@@ -120,32 +120,66 @@
 		.answer { font-size: 0.8em; }
 	}
 
-	.contact {
-		label { margin-top: 0.5em; font-size: 0.8em; color: #888; }
-		button { margin-top: 0.5em; }
-		* { display: inline-block; }
-		input, textarea { width: 100%; } 
-		textarea { font-size: 0.8em; height: 8em; }
-
-		.sending-icon,
-		.sent-icon {
-			display: none;
-		}
-
-		&.sending {
-			.sending-icon { display: inline-block; }
-			.sent-icon { display: none; }
-		}
-
-		&.sent {
-			.sending-icon { display: none; }
-			.sent-icon { display: inline-block; }
-		}
-	}
-
 	.skip {
 		font-size: 0.8em;
 		text-align: right;
+	}
+}
+
+#contact-overlay .overlay-popup {
+	background: #fff;
+	color: #000;
+}
+
+.contact {
+	position: relative;
+	width: 20em;
+
+	&, h2 { text-align: left; }
+
+	h2 {
+		line-height: 1;
+		margin: 0.25em 0;
+	}
+
+	h2 small {
+		display: inline-block;
+		font-size: 0.4em;
+		font-weight: normal;
+		height: 2em;
+		width: 8em;
+		line-height: 1;
+		color: #888;
+	}
+
+	label { margin-top: 0.5em; font-size: 0.8em; color: #888; }
+	.send { margin-top: 0.5em; }
+	label, input, textarea, button { display: inline-block; }
+	input, textarea { width: 100%; } 
+	textarea { font-size: 0.8em; height: 12em; }
+
+	.sending-icon,
+	.sent-icon {
+		display: none;
+	}
+
+	&.sending {
+		.sending-icon { display: inline-block; }
+		.sent-icon { display: none; }
+	}
+
+	&.sent {
+		.sending-icon { display: none; }
+		.sent-icon { display: inline-block; }
+	}
+
+	.close {
+		line-height: 1;
+		position: absolute;
+		right: -0.5em;
+		top: -1em;
+		cursor: pointer;
+		padding: 0.25em;
 	}
 }
 

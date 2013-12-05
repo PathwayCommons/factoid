@@ -6,13 +6,13 @@
 @completedColor: #2EA35F;
 @destructiveColor: #B36464;
 
-::selection {
-	background: rgba(0, 0, 0, 0); 
-}
+//:not(input, textarea)::selection {
+//	background: rgba(0, 0, 0, 0); 
+//}
 
-::-moz-selection {
-	background: rgba(0, 0, 0, 0); 
-}
+//:not(input, textarea)::-moz-selection {
+//	background: rgba(0, 0, 0, 0); 
+//}
 
 html {
 	height: 100%;
@@ -345,15 +345,15 @@ strong {
 	display: none;
 
 	&.shown {
-		.animation-speed-fast;
-		.animated;
-		.fadeIn;
+		//.animation-speed-fast;
+		//.animated;
+		//.fadeIn;
 		display: table;
 	}
 	
 	&.hidden {
-		.animated;
-		.fadeOut;	
+		//.animated;
+		//.fadeOut;	
 	}
 }
 

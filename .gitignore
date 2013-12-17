@@ -1,11 +1,4 @@
-
-local.properties
-*.svn-base
-.project
-.classpath
-.settings
-target
-.externalToolBuilders/Factoid ant.launch
+*.swp
 npm-debug.log
 public/gen
 node_modules
@@ -13,3 +6,5 @@ node_modules
 .DS_Store
 supervise
 node.log
+
+reqlog.txt

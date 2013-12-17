@@ -1,15 +1,30 @@
 {
   "name": "factoid",
-  "port": 3000,
-  "tmUrlBase": "http://webservice.baderlab.org:3001/Factoid",
   "description": "",
-  "version": "0.3.0",
-  "main": "./server.js",
+  "version": "0.5.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PathwayCommons/factoid.git"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
   "dependencies": {
-    "derby": "0.3.19",
-    "express": ">=3.0.0beta4",
+    "derby": "~0.5.10",
+    "racer": "~0.5.10",
+    "share": "~0.7.0",
+    "livedb": "~0.2.0",
+    "livedb-mongo": "~0.2.0",
+    "racer-browserchannel": "~0.1.1",
+    "browserchannel": "~1.0.7",
+    "express": "~3.4.0",
+    "connect-mongo": "~0.3.3",
+    "derby-ui-boot": "~0.1.0",
+    "nodetime": "~0.8.13",
+    "webkit-devtools-agent": "~0.1.2",
+    "hiredis": "~0.1.15",
+    "redis": "~0.8.6",
     "gzippo": ">=0.1.7",
-    "ql.io-engine": ">=0.8.7",
     "socket.io": ">=0.9",
     "underscore": ">=1.3.3",
     "request": ">=2.27.0",
@@ -17,13 +32,11 @@
     "nodemailer": ">=0.5.3",
     "node-uuid": "1.4.1"
   },
-  "engine": "node >=0.10.1",
   "private": true,
-  "subdomain": "factoid",
   "scripts": {
     "start": "node server.js"
   },
-  "engines": {
-    "node": "0.10.x"
-  }
+  "port": 3000,
+  "mongoUrl": "mongodb://localhost:27017/factoid",
+  "tmUrlBase": "http://webservice.baderlab.org:3001/Factoid"
 }

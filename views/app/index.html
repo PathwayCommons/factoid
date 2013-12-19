@@ -22,6 +22,7 @@
 <Header:>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="HandheldFriendly" content="true" />
+  <script src="/socket.io/socket.io.js"></script>
 
 <Body:>
   <body class="">
@@ -79,7 +80,7 @@
     
   </div>
 
-  <div id="ui-loading-overlay" class="overlay ui-loaded-{bool(_loadedUi)}">
+  <div id="ui-loading-overlay" class="overlay ui-loaded-{bool(_page.loadedUi)}">
     <div class="overlay-wrapper">
       <div class="overlay-popup">
         Loading the Factoid editor... 

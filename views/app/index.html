@@ -128,8 +128,8 @@
     </div>
 
     <div id="entities-list">
-      {#if _entities}
-        {#each _entities as :entity}
+      {#if _page.entities}
+        {#each _page.entities as :entity}
           <app:entity>
         {/each}
       {else}

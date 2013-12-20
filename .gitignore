@@ -8,3 +8,5 @@ supervise
 node.log
 
 reqlog.txt
+
+dump.rdb

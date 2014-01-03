@@ -333,18 +333,20 @@
 
 <participants:>
   <div class="participants-list" id="participants-list-for-{:entity.id}">
-    {#if :entity._participants}
+    {#if _page.participants[:entity.id] }
+
       <div class="small-title">Participants</div>
-    {/if}
     
-    {#each :entity._participants as :part}
-      <div class="participant {:part.type}" data-id="{:part.id}">
-        <span class="name">{:part.name}</span>
-        <span class="icons">
-          <button class="remove icon-remove-sign tappable"></button>
-        </span>
-      </div>
-    {/each}
+      {#each _page.participants[:entity.id] as :part}
+        <div class="participant {:part.type}" data-id="{:part.id}">
+          <span class="name">{:part.name}</span>
+          <span class="icons">
+            <button class="remove icon-remove-sign tappable"></button>
+          </span>
+        </div>
+      {/each}
+
+    {/if}
   </div>
 
 <addParticipants:>

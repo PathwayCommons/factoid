@@ -217,9 +217,9 @@
     <div class="selection-indicator"></div>
 
     {#if :entity.association}
-      <button class="edit icon-ok associated-true tappable open-{bool(:entity._showEdit)}"></button>
+      <button class="edit icon-ok associated-true tappable open-{bool(_page.popovers.edit[:entity.id])}"></button>
     {else}
-      <button class="edit icon-edit tappable open-{bool(:entity._showEdit)}"></button>
+      <button class="edit icon-edit tappable open-{bool(_page.popovers.edit[:entity.id])}"></button>
     {/if}
     
     <span class="name">
@@ -229,7 +229,7 @@
         {#if :entity.interaction}
           {:entity.name}
         {else}
-          <input class="edit-name-input input-like with-right-icon plain-{not(bool(:entity._showEdit))} loading-{bool(:entity._loadingPotentialAssociations)}" id="edit-name-input-{{:entity.id}}" data-id="{{:entity.id}}" type="text" value="{:entity.name}" />
+          <input class="edit-name-input input-like with-right-icon plain-{not(bool(_page.popovers.edit[:entity.id]))} loading-{bool(:entity._loadingPotentialAssociations)}" id="edit-name-input-{{:entity.id}}" data-id="{{:entity.id}}" type="text" value="{:entity.name}" />
 
           <button class="text-clear-icon icon-remove-sign right-input-icon tappable" data-for="edit-name-input-{{:entity.id}}"></button>
         {/if}
@@ -238,8 +238,8 @@
 
     <span class="icons">
       <span class="buttonset annotation-icons with-{nonempty(:entity.annotation)}">
-        <button class="annotations icon-with-false icon-comment-alt tappable open-{_page.popovers.showAnnotations[:entity.id]}"></button>
-        <button class="annotations icon-with-true icon-comment tappable open-{_page.popovers.showAnnotations[:entity.id]}"></button>
+        <button class="annotations icon-with-false icon-comment-alt tappable open-{_page.popovers.annotations[:entity.id]}"></button>
+        <button class="annotations icon-with-true icon-comment tappable open-{_page.popovers.annotations[:entity.id]}"></button>
       </span>
       
       {#if :entity.interaction}
@@ -251,20 +251,20 @@
       <button class="remove icon-remove tappable destructive"></button>
     </span>
 
-    <div class="popover-hidden-{not(_page.popovers.showAnnotations[:entity.id])}">
+    <div class="popover-hidden-{not(_page.popovers.annotations[:entity.id])}">
       <app:popover classes="bottom annotations-popover">
         <app:annotations>
       </app:popover>
     </div>
 
     {#if :entity.interaction}
-      <div class="popover-hidden-{not(:entity._showEdit)}">
+      <div class="popover-hidden-{not(_page.popovers.edit[:entity.id])}">
         <app:popover classes="bottom edit-interaction-popover">
           Future interaction edit UI.
         </app:popover>
       </div>
 
-      <div class="popover-hidden-{not(:entity._showAddParticipants)}">
+      <div class="popover-hidden-{not(_page.popovers.showAddParticipants[:entity.id])}">
         <app:popover classes="bottom add-participants-popover">
           <app:addParticipants>
         </app:popover>
@@ -273,7 +273,7 @@
       <app:participants>
 
     {else}
-      <div class="popover-hidden-{not(:entity._showEdit)}">
+      <div class="popover-hidden-{not(_page.popovers.edit[:entity.id])}">
         <app:popover classes="bottom association-popover">
           <div id="association-ui-for-{:entity.id}" class="association-ui associated-{bool(:entity.association)}">
             {#if :entity.association}

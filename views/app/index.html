@@ -243,7 +243,7 @@
       </span>
       
       {#if :entity.interaction}
-        <button class="add-participants icon-plus-sign tappable open-{:entity._showAddParticipants}"></button>
+        <button class="add-participants icon-plus-sign tappable open-{:entity._addParticipants}"></button>
       {else}
         <button class="icon-stop spacer-icon"></button>
       {/if}
@@ -264,7 +264,7 @@
         </app:popover>
       </div>
 
-      <div class="popover-hidden-{not(_page.popovers.showAddParticipants[:entity.id])}">
+      <div class="popover-hidden-{not(_page.popovers.addParticipants[:entity.id])}">
         <app:popover classes="bottom add-participants-popover">
           <app:addParticipants>
         </app:popover>

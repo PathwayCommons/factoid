@@ -120,7 +120,7 @@
         <button id="add-interaction-button" data-tooltip="Add interaction"><span class="icon-plus"></span><span class="icon-stop"></span> Interaction</button>
       </div>
 
-      <div class="popover-hidden-{not(_showTextmining)} popover-animated-{bool(_showTextminingAnimated)}">
+      <div class="popover-hidden-{not(_page.popovers.textmining)}">
         <app:popover classes="bottom textmining-popover">
             <app:textmining>
         </app:popover>
@@ -146,8 +146,8 @@
       <span class="icon-info-sign"></span> Please select the organisms relevant to the document.  This helps to refine entity searches.
     </div>
     
-    {#if organisms}
-      {#each organisms as :organism}
+    {#if _page.organisms}
+      {#each _page.organisms as :organism}
         <app:organism>
       {/each}
     {/if}
@@ -191,8 +191,8 @@
     <div class="organism-preview">
       <label>Relevant organisms:</label>
       <div class="organisms">
-        {#if organisms}
-          {#each organisms as :organism}
+        {#if _page.organisms}
+          {#each _page.organisms as :organism}
             <app:organism>
           {/each}
         {/if}
@@ -325,9 +325,9 @@
   <textarea id="edit-annotation-{:entity.id}">{:entity.annotation}</textarea>
 
 <organism:>
-  <button class="plain organism organism-toggle enabled-{bool(:organism.documents[_doc.id].enabled)}" data-id="{:organism.id}">
+  <button class="plain organism organism-toggle enabled-{bool(_page.doc.organismEnabled[:organism.id])}" data-id="{:organism.ncbiId}">
     <span class="icon-ok enabled-icon"></span>
-    <img class="icon" src="/img/organisms/{:organism.id}.png" />
+    <img class="icon" src="/img/organisms/{:organism.ncbiId}.png" />
     <span class="name">{:organism.sciName}</span>
   </button>
 

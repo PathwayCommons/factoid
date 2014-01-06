@@ -238,8 +238,8 @@
 
     <span class="icons">
       <span class="buttonset annotation-icons with-{nonempty(:entity.annotation)}">
-        <button class="annotations icon-with-false icon-comment-alt tappable open-{:entity._showAnnotations}"></button>
-        <button class="annotations icon-with-true icon-comment tappable open-{:entity._showAnnotations}"></button>
+        <button class="annotations icon-with-false icon-comment-alt tappable open-{_page.popovers.showAnnotations[:entity.id]}"></button>
+        <button class="annotations icon-with-true icon-comment tappable open-{_page.popovers.showAnnotations[:entity.id]}"></button>
       </span>
       
       {#if :entity.interaction}
@@ -251,20 +251,20 @@
       <button class="remove icon-remove tappable destructive"></button>
     </span>
 
-    <div class="popover-hidden-{not(:entity._showAnnotations)} popover-animated-{bool(:entity._showAnnotationsAnimated)}">
+    <div class="popover-hidden-{not(_page.popovers.showAnnotations[:entity.id])}">
       <app:popover classes="bottom annotations-popover">
         <app:annotations>
       </app:popover>
     </div>
 
     {#if :entity.interaction}
-      <div class="popover-hidden-{not(:entity._showEdit)} popover-animated-{bool(:entity._showEditAnimated)}">
+      <div class="popover-hidden-{not(:entity._showEdit)}">
         <app:popover classes="bottom edit-interaction-popover">
           Future interaction edit UI.
         </app:popover>
       </div>
 
-      <div class="popover-hidden-{not(:entity._showAddParticipants)} popover-animated-{bool(:entity._showAddParticipantsAnimated)}">
+      <div class="popover-hidden-{not(:entity._showAddParticipants)}">
         <app:popover classes="bottom add-participants-popover">
           <app:addParticipants>
         </app:popover>
@@ -273,7 +273,7 @@
       <app:participants>
 
     {else}
-      <div class="popover-hidden-{not(:entity._showEdit)} popover-animated-{bool(:entity._showEditAnimated)}">
+      <div class="popover-hidden-{not(:entity._showEdit)}">
         <app:popover classes="bottom association-popover">
           <div id="association-ui-for-{:entity.id}" class="association-ui associated-{bool(:entity.association)}">
             {#if :entity.association}

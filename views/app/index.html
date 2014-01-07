@@ -212,7 +212,7 @@
   </div>
 
 <entity:>
-  <div class="{:entity.type} entity-instance associated-{nonempty(:entity.association)} selected-{bool(_page.entitySelected[:entity.id])} moving-down-{bool(:entity._movingDown)} just-added-{bool(:entity._justAdded)}"  data-id="{{:entity.id}}" id="entity-{{:entity.id}}">
+  <div class="{:entity.type} entity-instance associated-{nonempty(:entity.association)} selected-{bool(_page.entitySelected[:entity.id])} moving-down-{bool(_page.movingDown[:entity.id])} just-added-{bool(_page.justAdded[:entity.id])}"  data-id="{{:entity.id}}" id="entity-{{:entity.id}}">
     
     <div class="selection-indicator"></div>
 
@@ -276,17 +276,19 @@
       <div class="popover-hidden-{not(_page.popovers.edit[:entity.id])}">
         <app:popover classes="bottom association-popover">
           <div id="association-ui-for-{:entity.id}" class="association-ui associated-{bool(:entity.association)}">
-            {#if :entity.association}
-              {#if _page.associatedInfo[:entity.id] }
-                <app:associatedInfo>
-              {else}
+            
+            {#if _page.associatedInfo[:entity.id] }
+              <app:associatedInfo>
+            {else}
+              {#if :entity.association}
                 <span class="loading-message">
                   <span class="loading-spinner-icon"></span> Loading entity information...
                 </span>
+              {else}
+                <app:associateEntity>
               {/if}
-            {else}
-              <app:associateEntity>
             {/if}
+            
           </div>
         </app:popover>
       </div>

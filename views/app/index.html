@@ -229,7 +229,7 @@
         {#if :entity.interaction}
           {:entity.name}
         {else}
-          <input class="edit-name-input input-like with-right-icon plain-{not(bool(_page.popovers.edit[:entity.id]))} loading-{bool(:entity._loadingPotentialAssociations)}" id="edit-name-input-{{:entity.id}}" data-id="{{:entity.id}}" type="text" value="{:entity.name}" />
+          <input class="edit-name-input input-like with-right-icon plain-{not(bool(_page.popovers.edit[:entity.id]))} loading-{bool(_page.loadingPotentialAssociations[:entity.id])}" id="edit-name-input-{{:entity.id}}" data-id="{{:entity.id}}" type="text" value="{:entity.name}" />
 
           <button class="text-clear-icon icon-remove-sign right-input-icon tappable" data-for="edit-name-input-{{:entity.id}}"></button>
         {/if}

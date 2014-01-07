@@ -277,7 +277,7 @@
         <app:popover classes="bottom association-popover">
           <div id="association-ui-for-{:entity.id}" class="association-ui associated-{bool(:entity.association)}">
             {#if :entity.association}
-              {#if :entity._associatedInfo}
+              {#if _page.associatedInfo[ :entity.id ] }
                 <app:associatedInfo>
               {else}
                 <span class="loading-message">
@@ -369,19 +369,19 @@
 <associateEntity:>
   <div class="associate-ui">   
     <div class="associations" data-entity-id="{:entity.id}">
-      {#if :entity._potentialAssociations}
-        {#each :entity._potentialAssociations as :assoc}
+      {#if _page.potentialAssociations[ :entity.id ] }
+        {#each _page.potentialAssociations[ :entity.id ] as :assoc}
           <button class="associate-button" data-index="{:assoc.index}">
             <div class="name"><span class="icon-ok"></span> {:assoc.name}</div>
             <div class="full-name">{:assoc.fullName}</div>
             <div class="organism">{:assoc.organismName}</div>
             <div class="type">{:assoc.type}</div>
-            {#if :assoc._organismSupported}
+            {#if :assoc.organismSupported}
               <img class="organism-icon" src="/img/organisms/{:assoc.organismId}.png" />
             {/if}
           </button>
 
-          {#if :assoc._alreadyExists}
+          {#if :assoc.alreadyExists}
             <app:popover classes="bottom popover-alert">
               <span class="icon-info-sign"></span> There is already an entity associated to this name.  Each entity in the document must be unique.
             </app:popover>
@@ -389,7 +389,7 @@
         {/each}
       {else}
         {#if :entity.changedName}
-          {#if :entity._loadingPotentialAssociations}
+          {#if _page.loadingPotentialAssociations[ :entity.id ] }
             <span class="loading-message">
               <span class="loading-spinner-icon"></span> Searching for entities...
               <button class="retry-association-search" data-id=":entity.id"><span class="icon-refresh"></span> Retry search</button>
@@ -410,7 +410,7 @@
 
 <associatedInfo:>
   <div class="associated-info-ui">
-    {#with :entity._associatedInfo}
+    {#with _page.associatedInfo[ :entity.id ] }
       <div class="entity-info">
         <div class="summary">
           <div class="name">{name}</div>

@@ -243,7 +243,7 @@
       </span>
       
       {#if :entity.interaction}
-        <button class="add-participants icon-plus-sign tappable open-{:entity._addParticipants}"></button>
+        <button class="add-participants icon-plus-sign tappable open-{_page.popovers.addParticipants[:entity.id]}"></button>
       {else}
         <button class="icon-stop spacer-icon"></button>
       {/if}
@@ -357,20 +357,22 @@
 
 <addParticipants:>
   <div class="add-participants-list" data-interaction-id="{:entity.id}" id="add-participants-list-for-{:entity.id}">
-    {#if _page.potentialParticipantIds}
-      <div class="small-title">Select participants to add</div>
-      {#each _page.potentialParticipantIds as :id}
-      {#if _page.doc.entities[:id]}
-      {#with _page.doc.entities[:id]}
-        <div class="participant {type}" data-id="{id}">
-          <span class="name">{name}</span>
-          <span class="icons">
-            <button class="add-participant icon-plus-sign tappable"></button>
-          </span>
-        </div>
-      {/with}
+    {#if nonempty(_page.potentialParticipantIds)}
+      {#if _page.isPotentialPartcipantsInteraction[:entity.id]}
+        <div class="small-title">Select participants to add</div>
+        {#each _page.potentialParticipantIds as :id}
+        {#if _page.doc.entities[:id]}
+        {#with _page.doc.entities[:id]}
+          <div class="participant {type}" data-id="{id}">
+            <span class="name">{name}</span>
+            <span class="icons">
+              <button class="add-participant icon-plus-sign tappable"></button>
+            </span>
+          </div>
+        {/with}
+        {/if}
+        {/each}
       {/if}
-      {/each}
     {else}
       <div class="info no-entities-message"><span class="icon-info-sign"></span> There are no other entities in the document to add.</div>
     {/if}

@@ -335,17 +335,21 @@
 
 <participants:>
   <div class="participants-list" id="participants-list-for-{:entity.id}">
-    {#if _page.participants[:entity.id] }
+    {#if :entity.participantIds }
 
       <div class="small-title">Participants</div>
     
-      {#each _page.participants[:entity.id] as :part}
-        <div class="participant {:part.type}" data-id="{:part.id}">
-          <span class="name">{:part.name}</span>
+      {#each :entity.participantIds as :pid}
+      {#if _page.doc.entities[:pid]}
+      {#with _page.doc.entities[:pid]}
+        <div class="participant {type}" data-id="{id}">
+          <span class="name">{name}</span>
           <span class="icons">
             <button class="remove icon-remove-sign tappable"></button>
           </span>
         </div>
+      {/with}
+      {/if}
       {/each}
 
     {/if}
@@ -353,15 +357,19 @@
 
 <addParticipants:>
   <div class="add-participants-list" data-interaction-id="{:entity.id}" id="add-participants-list-for-{:entity.id}">
-    {#if _page.potentialParticipants}
+    {#if _page.potentialParticipantIds}
       <div class="small-title">Select participants to add</div>
-      {#each _page.potentialParticipants as :part}
-        <div class="participant {:part.type}" data-id="{:part.id}">
-          <span class="name">{:part.name}</span>
+      {#each _page.potentialParticipantIds as :id}
+      {#if _page.doc.entities[:id]}
+      {#with _page.doc.entities[:id]}
+        <div class="participant {type}" data-id="{id}">
+          <span class="name">{name}</span>
           <span class="icons">
             <button class="add-participant icon-plus-sign tappable"></button>
           </span>
         </div>
+      {/with}
+      {/if}
       {/each}
     {else}
       <div class="info no-entities-message"><span class="icon-info-sign"></span> There are no other entities in the document to add.</div>

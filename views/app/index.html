@@ -353,11 +353,11 @@
 
 <addParticipants:>
   <div class="add-participants-list" data-interaction-id="{:entity.id}" id="add-participants-list-for-{:entity.id}">
-    {#if :entity._potentialParticipants}
+    {#if _page.potentialParticipants}
       <div class="small-title">Select participants to add</div>
-      {#each :entity._potentialParticipants as :part}
+      {#each _page.potentialParticipants as :part}
         <div class="participant {:part.type}" data-id="{:part.id}">
-          <span class="name">{.name}</span>
+          <span class="name">{:part.name}</span>
           <span class="icons">
             <button class="add-participant icon-plus-sign tappable"></button>
           </span>

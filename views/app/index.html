@@ -24,6 +24,27 @@
   <meta name="HandheldFriendly" content="true" />
   <script src="/socket.io/socket.io.js"></script>
 
+<!--
+  Workaround: Place all JS-generated content here
+
+  Derby replaces all HTML within the <body> tag specified in the <Body:> portion
+  of the template.  For elements that are not to be replaced by the templating
+  engine, specify them in <Tail:>.  Though this is not the intended purpose of
+  <Tail:>, it is a better place to put JS-generated content (e.g. cytoscape.js)
+  than under <html> for the reason that <html> is only meant to contain the
+  <body> tag.  Placing content directly under the <html> tag may work in many 
+  cases, but it is error prone depending on the platform.
+-->
+<Tail:>
+  <div style="position: absolute; left: 0; top: 0; z-index: 999999;">this is the tail</div>
+  <div id="js-generated-content"></div>
+
+<!--
+  Place all template-updated content here
+
+  NB: This content can be replaced completely by the templating engine, so no
+  JS-generated content should be placed herein.
+-->
 <Body:>
   <body class="">
 

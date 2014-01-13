@@ -88,6 +88,10 @@
 
   <app:help stage="entities" icon="icon-arrow-right">
 
+  <div class="popover-hidden-{not(_page.popovers.textmining)}">
+    <app:help stage="organisms" icon="icon-arrow-right">
+  </div>
+
   <div class="help-content" data-for-stage="textmining">
     <h2>Enter abstract</h2>
 
@@ -260,8 +264,6 @@
       <button class="add"><span class="icon-plus"></span><span class="icon-circle"></span><span class="icon-stop"></span> Add to document</button>
     </div>
 
-    <app:help stage="organisms" icon="icon-arrow-up">
-
   </div>
 
 <entity:>
@@ -350,7 +352,7 @@
   </div>
 
 <help:>
-  <div class="help-ball" data-stage="{{@stage}}" data-current-stage="{_doc.stage}">
+  <div class="help-ball" data-stage="{{@stage}}" data-current-stage="{_page.doc.stage}">
     <div class="label">Help</div>
 
     <div class="indicator">

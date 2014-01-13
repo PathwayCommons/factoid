@@ -66,10 +66,13 @@
 
       <div class="extendo-item-section">
         <button id="extendo-organism" class="extendo-item">
-          <span class="icon-male"></span><label>Organisms</label>
+          <span class="icon-remove"></span><label>Organisms</label>
         </button>
 
-        
+        <app:ptip classes="bottom organism-ptip">
+          this is a ptip
+        </app:ptip>
+
       </div>
     </div>
   </div>
@@ -488,21 +491,40 @@
     {/with}
   </div>
 
-  <popover: nonvoid>
-    <div class="popover {{@classes}}">
+<ptip: nonvoid>
+  <div class="popover ptip {{@classes}}">
 
-      <div class="arrow">
-        <div class="arrow-before"></div>
-        <div class="arrow-after"></div>
-      </div>
-
-      {{#if @title}}
-        <div class="popover-title">
-          {{@title}}
-        </div>
-      {{/if}}
-
-      <div class="popover-content">
-        {{@content}}
-      </div>
+    <div class="arrow">
+      <div class="arrow-before"></div>
+      <div class="arrow-after"></div>
     </div>
+
+    {{#if @title}}
+      <div class="popover-title">
+        {{@title}}
+      </div>
+    {{/if}}
+
+    <div class="popover-content">
+      {{@content}}
+    </div>
+  </div>
+
+<popover: nonvoid>
+  <div class="popover {{@classes}}">
+
+    <div class="arrow">
+      <div class="arrow-before"></div>
+      <div class="arrow-after"></div>
+    </div>
+
+    {{#if @title}}
+      <div class="popover-title">
+        {{@title}}
+      </div>
+    {{/if}}
+
+    <div class="popover-content">
+      {{@content}}
+    </div>
+  </div>

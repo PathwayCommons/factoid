@@ -270,9 +270,9 @@
     <div class="selection-indicator"></div>
 
     {#if :entity.association}
-      <button class="edit icon-ok associated-true tappable open-{bool(_page.popovers.edit[:entity.id])}"></button>
+      <button data-id="{:entity.id}" class="edit icon-ok associated-true tappable open-{bool(_page.popovers.edit[:entity.id])}"></button>
     {else}
-      <button class="edit icon-edit tappable open-{bool(_page.popovers.edit[:entity.id])}"></button>
+      <button data-id="{:entity.id}" class="edit icon-edit tappable open-{bool(_page.popovers.edit[:entity.id])}"></button>
     {/if}
     
     <span class="name">

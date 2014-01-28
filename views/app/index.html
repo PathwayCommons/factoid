@@ -437,6 +437,9 @@
       {#if _page.potentialAssociations[:entity.id] }
         {#each _page.potentialAssociations[:entity.id] as :assoc}
           <button class="associate-button" data-index="{:assoc.index}">
+            {#if :assoc.alreadyExists}
+              <div class="merge-with"><span class="icon-arrow-right"></span><span class="icon-arrow-left"></span> merge with existing</div>
+            {/if}
             <div class="name"><span class="icon-ok"></span> {:assoc.name}</div>
             <div class="full-name">{:assoc.fullName}</div>
             <div class="organism">{:assoc.organismName}</div>
@@ -445,12 +448,6 @@
               <img class="organism-icon" src="/img/organisms/{:assoc.organismId}.png" />
             {/if}
           </button>
-
-          {#if :assoc.alreadyExists}
-            <app:popover classes="bottom popover-alert">
-              <span class="icon-info-sign"></span> There is already an entity associated to this name.  Each entity in the document must be unique.
-            </app:popover>
-          {/if}
         {/each}
       {else}
         {#if :entity.changedName}

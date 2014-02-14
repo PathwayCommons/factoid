@@ -373,12 +373,18 @@ strong {
 	}
 }
 
+.overlay.light .overlay-popup {
+	background: #fff;
+	color: #000;
+}
+
 .overlay-wrapper {
 	display: table-cell;
 	vertical-align: middle;
 }
 
 .overlay-popup {
+	position: relative;
 	display: inline-block;
 	background: rgba(0, 0, 0, 0.85);
 	border-radius: 0.5em;
@@ -391,4 +397,23 @@ strong {
 		float: left;
 		margin-right: 0.5em;
 	}
+}
+
+.overlay-popup-content {
+	position: relative;
+}
+
+.overlay-popup .close {
+	line-height: 1;
+	position: absolute;
+	right: 0.333em;
+	top: 0.333em;
+	cursor: pointer;
+	padding: 0.25em;
+}
+
+#info-overlay .overlay-popup {
+	max-width: 30em;
+	line-height: 1.5;
+	text-align: left;
 }

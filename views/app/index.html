@@ -139,6 +139,24 @@
     
   </div>
 
+  <div id="info-overlay" class="overlay light shown">
+    <div class="overlay-wrapper">
+      <div class="overlay-popup">
+        <button class="close plain"><span class="icon-remove"></span></button>
+        
+        <div class="overlay-popup-content">
+          <h2>Factoid: Building the future of scientific publishing</h2>
+
+          <p>Factoid helps authors translate their written scientific text into formal descriptions of biological processes. This is useful for sharing results with others, bioinformatics analysis and integrating with other data to help build a more complete model of a cell.</p>
+
+          <p>Factoid aims to be part of the publication process.  With the author's help, it will extract pathway and interaction information from a paper, produce a network view as a visual and interactive abstract and publish the result in a shareable and computable format.</p>
+
+          <p>Factoid 1.0 helps turn text into a simple and editable network model of a biological process. Text is automatically converted to a first draft network which can then be corrected using the Factoid editor.  We plan to improve the amount, accuracy and detail of the information Factoid can automatically find in a paper in future software versions.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="ui-loading-overlay" class="overlay ui-loaded-{bool(_page.loadedUi)}">
     <div class="overlay-wrapper">
       <div class="overlay-popup">
@@ -163,10 +181,23 @@
     </div>
   </div>
 
-  <div id="contact-overlay" class="overlay">
+  <div id="contact-overlay" class="overlay light">
     <div class="overlay-wrapper">
       <div class="overlay-popup">
-        <app:contact>
+        <button class="close plain"><span class="icon-remove"></span></button>
+
+        <div class="contact overlay-popup-content">
+          <h2>Contact us <small>(feedback, questions, etc)</small></h2>
+
+          <label>Your email</label>
+          <input type="email" class="from" />
+
+          <label>Your message</label>
+          <textarea class="message">
+            {{@message}}
+          </textarea>
+          <button class="send">Send <span class="icon-arrow-right"></span></button> <span class="sending-icon loading-spinner-icon"></span><span class="sent-icon icon-ok"></span>
+        </div>
       </div>
     </div>
   </div>
@@ -212,24 +243,6 @@
     {/if}
   </div>
 
-  <div id="description">
-    <h1 id="description-title">Factoid: Supporting the future of scientific publishing</h1>
-    <div id="description-content">
-      <div class="scrollable-area">
-        <p>Factoid helps authors translate their written scientific text into formal descriptions of biological processes. This is useful for sharing results with others, bioinformatics analysis and integrating with other data to help build a more complete model of a cell.</p>
-
-        <p>Factoid aims to be part of the publication process.  With the author's help, it will extract pathway and interaction information from a paper, produce a network view as a visual and interactive abstract and publish the result in a shareable and computable format.</p>
-
-        <p>Factoid 1.0 helps turn text into a simple and editable network model of a biological process. Text is automatically converted to a first draft network which can then be corrected using the Factoid editor.  We plan to improve the amount, accuracy and detail of the information Factoid can automatically find in a paper in future software versions.</p>
-      </div>
-
-      <div class="factoid-logo watermark-bottom-right">
-        FACT<span class="o">O</span>ID
-      </div>
-
-      <button class="close-qtip-button">Done</button>
-    </div>
-  </div>
 
 <textmining:>
   <div id="textmining-input" class="clearfix">
@@ -356,22 +369,6 @@
     <div class="indicator">
       <span class="{{@icon}}"></span>
     </div>
-  </div>
-
-<contact:>
-  <div class="contact">
-    <button class="close plain"><span class="icon-remove"></span></button>
-
-    <h2>Contact us <small>(feedback, questions, etc)</small></h2>
-
-    <label>Your email</label>
-    <input type="email" class="from" />
-
-    <label>Your message</label>
-    <textarea class="message">
-      {{@message}}
-    </textarea>
-    <button class="send">Send <span class="icon-arrow-right"></span></button> <span class="sending-icon loading-spinner-icon"></span><span class="sent-icon icon-ok"></span>
   </div>
 
 <annotations:>

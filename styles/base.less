@@ -360,7 +360,8 @@ strong {
 	text-align: center;
 	display: none;
 
-	&.shown {
+	&.shown,
+	&.overlay-shown-true {
 		//.animation-speed-fast;
 		//.animated;
 		//.fadeIn;
@@ -416,4 +417,51 @@ strong {
 	max-width: 30em;
 	line-height: 1.5;
 	text-align: left;
+}
+
+#about-bar {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	height: 3.5em;
+	background: rgba(0, 0, 0, 0.666);
+	color: #fff;
+	z-index: 9999;
+	overflow: hidden;
+	padding: 0.25em;
+
+	h2 {
+		font-size: 1em;
+	}
+
+	.show-more {
+		position: absolute;
+		right: 0.125em;
+		top: 50%;
+		margin-top: -0.875em;
+		font-size: 2em;
+		cursor: pointer;
+	}
+
+	&.shown-false {
+		display: none;
+	}
+}
+
+#extendo-info,
+#about-bar {
+	display: none;
+}
+
+.option-1 #extendo-info {
+	display: inline-block;
+}
+
+.option-2 #info-overlay {
+	display: table;
+}
+
+.option-3 #about-bar {
+	display: block;
 }

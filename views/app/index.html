@@ -88,7 +88,7 @@
 
   <app:help stage="entities" icon="icon-arrow-right">
 
-  <app:help stage="organisms" icon="icon-arrow-left">
+  <app:help stage="organisms" icon="icon-arrow-up">
 
   <div class="help-content" data-for-stage="textmining">
     <h2>Enter abstract</h2>
@@ -139,19 +139,13 @@
     
   </div>
 
-  <div id="info-overlay" class="overlay light shown">
+  <div id="info-overlay" class="overlay light overlay-shown-{bool(_page.showAbout)}">
     <div class="overlay-wrapper">
       <div class="overlay-popup">
         <button class="close plain"><span class="icon-remove"></span></button>
         
         <div class="overlay-popup-content">
-          <h2>Factoid: Building the future of scientific publishing</h2>
-
-          <p>Factoid helps authors translate their written scientific text into formal descriptions of biological processes. This is useful for sharing results with others, bioinformatics analysis and integrating with other data to help build a more complete model of a cell.</p>
-
-          <p>Factoid aims to be part of the publication process.  With the author's help, it will extract pathway and interaction information from a paper, produce a network view as a visual and interactive abstract and publish the result in a shareable and computable format.</p>
-
-          <p>Factoid 1.0 helps turn text into a simple and editable network model of a biological process. Text is automatically converted to a first draft network which can then be corrected using the Factoid editor.  We plan to improve the amount, accuracy and detail of the information Factoid can automatically find in a paper in future software versions.</p>
+          <app:about>
         </div>
       </div>
     </div>
@@ -200,6 +194,12 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div id="about-bar" class="shown-{not(_page.hideAboutBar)}">
+    <app:about>
+
+    <button class="show-more plain"><span class="icon-ellipsis-horizontal"></span></button>
   </div>
 
   <div id="info">
@@ -529,3 +529,12 @@
       {{@content}}
     </div>
   </div>
+
+<about: >
+  <h2>Factoid: Building the future of scientific publishing</h2>
+
+  <p>Factoid helps authors translate their written scientific text into formal descriptions of biological processes. This is useful for sharing results with others, bioinformatics analysis and integrating with other data to help build a more complete model of a cell.</p>
+
+  <p>Factoid aims to be part of the publication process.  With the author's help, it will extract pathway and interaction information from a paper, produce a network view as a visual and interactive abstract and publish the result in a shareable and computable format.</p>
+
+  <p>Factoid 1.0 helps turn text into a simple and editable network model of a biological process. Text is automatically converted to a first draft network which can then be corrected using the Factoid editor.  We plan to improve the amount, accuracy and detail of the information Factoid can automatically find in a paper in future software versions.</p>

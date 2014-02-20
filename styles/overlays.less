@@ -1,0 +1,118 @@
+.overlay  {
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	left: 0;
+	top: 0;
+	z-index: 999999;
+	background: rgba(0, 0, 0, 0.25);
+	text-align: center;
+	display: none;
+
+	&.shown,
+	&.overlay-shown-true {
+		//.animation-speed-fast;
+		//.animated;
+		//.fadeIn;
+		display: table;
+	}
+	
+	&.hidden,
+	&.overlay-shown-false {
+		//.animated;
+		//.fadeOut;	
+		display: none !important;
+	}
+}
+
+.overlay.light .overlay-popup {
+	background: #fff;
+	color: #000;
+}
+
+.overlay-wrapper {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.overlay-popup {
+	position: relative;
+	display: inline-block;
+	background: rgba(0, 0, 0, 0.85);
+	border-radius: 0.5em;
+	color: #fff;
+	padding: 1em;
+	line-height: 2em;
+
+	.loading-icon {
+		font-size: 2em;
+		float: left;
+		margin-right: 0.5em;
+	}
+}
+
+.overlay-popup-content {
+	position: relative;
+}
+
+.overlay-popup .close {
+	line-height: 1;
+	position: absolute;
+	right: 0.333em;
+	top: 0.333em;
+	cursor: pointer;
+	padding: 0.25em;
+}
+
+#info-overlay .overlay-popup {
+	max-width: 30em;
+	line-height: 1.5;
+	text-align: left;
+}
+
+#about-bar {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	height: 3.5em;
+	background: rgba(0, 0, 0, 0.666);
+	color: #fff;
+	z-index: 9999;
+	overflow: hidden;
+	padding: 0.25em;
+
+	h2 {
+		font-size: 1em;
+	}
+
+	.show-more {
+		position: absolute;
+		right: 0.125em;
+		top: 50%;
+		margin-top: -0.875em;
+		font-size: 2em;
+		cursor: pointer;
+	}
+
+	&.shown-false {
+		display: none !important;
+	}
+}
+
+#extendo-info,
+#about-bar {
+	display: none;
+}
+
+.option-1 #extendo-info {
+	display: inline-block;
+}
+
+.option-2 #info-overlay {
+	display: table;
+}
+
+.option-3 #about-bar {
+	display: block;
+}

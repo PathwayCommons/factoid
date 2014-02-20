@@ -139,7 +139,7 @@
     
   </div>
 
-  <div id="info-overlay" class="overlay light overlay-shown-{bool(_page.showAbout)}">
+  <div id="info-overlay" data-overlay-id="about" data-overlay-closeable="true" class="overlay light overlay-shown-{bool(_page.showOverlay.about)}">
     <div class="overlay-wrapper">
       <div class="overlay-popup">
         <button class="close plain"><span class="icon-remove"></span></button>
@@ -159,7 +159,7 @@
     </div>
   </div>
 
-  <div id="graph-layout-overlay" class="overlay">
+  <div id="graph-layout-overlay" data-overlay-id="layout" class="overlay overlay-shown-{bool(_page.showOverlay.layout)}">
     <div class="overlay-wrapper">
       <div class="overlay-popup">
         <span class="loading-icon icon-refresh icon-spin"></span> <span>Repositioning entities</span>
@@ -167,7 +167,7 @@
     </div>
   </div>
 
-  <div id="textmining-overlay" class="overlay">
+  <div id="textmining-overlay" data-overlay-id="textmining" class="overlay overlay-shown-{bool(_page.showOverlay.textmining)}">
     <div class="overlay-wrapper">
       <div class="overlay-popup">
         <span class="loading-icon icon-cog icon-spin"></span> <span>Analysing text</span>
@@ -175,7 +175,7 @@
     </div>
   </div>
 
-  <div id="contact-overlay" class="overlay light">
+  <div id="contact-overlay" data-overlay-id="contact" data-overlay-closeable="true" class="overlay light overlay-shown-{bool(_page.showOverlay.contact)}">
     <div class="overlay-wrapper">
       <div class="overlay-popup">
         <button class="close plain"><span class="icon-remove"></span></button>

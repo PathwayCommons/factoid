@@ -139,7 +139,7 @@
     
   </div>
 
-  <div id="info-overlay" data-overlay-id="about" data-overlay-closeable="true" class="overlay light overlay-shown-{bool(_page.showOverlay.about)}">
+  <div id="info-overlay" data-overlay-id="about" data-overlay-closeable="true" class="overlay splash light overlay-shown-{bool(_page.showOverlay.about)}">
     <div class="overlay-wrapper">
       <div class="overlay-popup">
         <button class="close plain"><span class="icon-remove"></span></button>
@@ -194,12 +194,6 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <div id="about-bar" class="shown-{not(_page.hideAboutBar)}">
-    <app:about>
-
-    <button class="show-more plain"><span class="icon-ellipsis-horizontal"></span></button>
   </div>
 
   <div id="info">
@@ -531,10 +525,18 @@
   </div>
 
 <about: >
-  <h2>Factoid: Building the future of scientific publishing</h2>
+  <h2>Factoid helps authors share their knowledge with the world</h2>
 
-  <p>Factoid helps authors translate their written scientific text into formal descriptions of biological processes. This is useful for sharing results with others, bioinformatics analysis and integrating with other data to help build a more complete model of a cell.</p>
+  <p>Factoid translates written scientific text into formal descriptions of biological processes that are useful for sharing results with others, bioinformatics analysis and integrating with other data to help build a more complete model of a cell.</p>
 
-  <p>Factoid aims to be part of the publication process.  With the author's help, it will extract pathway and interaction information from a paper, produce a network view as a visual and interactive abstract and publish the result in a shareable and computable format.</p>
+  <p>Factoid 1.0 helps turn text into a simple and editable network model of a biological process in three easy steps:</p>
 
-  <p>Factoid 1.0 helps turn text into a simple and editable network model of a biological process. Text is automatically converted to a first draft network which can then be corrected using the Factoid editor.  We plan to improve the amount, accuracy and detail of the information Factoid can automatically find in a paper in future software versions.</p>
+    <ol>
+      <li>Factoid will find genes and simple interactions in text you enter</li>
+      <li>You select relevant organisms</li>
+      <li>Correct mistakes Factoid has made</li>
+    </ol>
+
+  <p>Click or tap anywhere to close this window and get started using Factoid. Follow the online prompts that take you through these steps.</p>
+
+  <p>Note: Factoid currently supports human and mouse.</p>

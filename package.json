@@ -38,5 +38,7 @@
   },
   "port": 3000,
   "mongoUrl": "mongodb://localhost:27017/factoid",
-  "tmUrlBase": "http://webservice.baderlab.org:3001/Factoid"
+  "tmUrlBase": "http://webservice.baderlab.org:3001/Factoid",
+  "serviceMonitorInterval": 300000,
+  "serviceTimeout": 60000
 }

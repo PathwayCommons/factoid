@@ -2,8 +2,4 @@
 
 var packageJson = require('./package.json');
 
-module.exports = {
-	port: packageJson.port,
-	tmUrlBase: packageJson.tmUrlBase,
-	mongoUrl: packageJson.mongoUrl
-};
+module.exports = packageJson;

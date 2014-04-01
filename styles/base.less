@@ -6,13 +6,13 @@
 @completedColor: #2EA35F;
 @destructiveColor: #B36464;
 
-//:not(input, textarea)::selection {
-//	background: rgba(0, 0, 0, 0); 
-//}
-
-//:not(input, textarea)::-moz-selection {
-//	background: rgba(0, 0, 0, 0); 
-//}
+*:not(input):not(textarea) {
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
 
 html {
 	height: 100%;

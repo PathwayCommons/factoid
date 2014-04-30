@@ -4,7 +4,7 @@
 	margin-left: 0.25em;
 	margin-right: 0.25em;
 	margin-bottom: 1em;
-	margin-top: 0.5em;
+	margin-top: 0.25em;
 
 	& > .arrow {
 		margin-left: -7.5em;
@@ -13,6 +13,20 @@
 
 #textmining-input {
 	position: relative;
+
+	.loading-indicator {
+		display: none;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		margin-left: -0.5em;
+		margin-top: -0.5em;
+		font-size: 2em;
+	}
+
+	&.loading .loading-indicator {
+		display: block;
+	}
 
 	.buttons {
 		text-align: right;
@@ -59,6 +73,9 @@
 	.examples {
 		font-size: 0.8em;
 		margin: 0.5em 0;
+		margin-left: 0.25em;
+		display: inline;
+		float: left;
 	}
 
 	.output-info {
@@ -71,21 +88,5 @@
 			width: 100%;
 
 		}
-	}
-
-	.organism-preview {
-		float: left;
-		margin-top: -0.125em;
-
-		label {
-			font-size: 0.8em;
-			color: #888;
-		}
-
-		@size: 1.4em;
-		.organism { width: @size + 0.5em; height: @size + 0.5em; margin: 0; margin-right: 0.333em; }
-		.icon { height: @size; width: @size; border-radius: 0.25em; }
-		.enabled-icon { background: transparent; margin-left: -0.5em; margin-top: -0.5em; text-shadow: 0.0625em 0.125em 0 #fff; }
-		.name { display: none; }
 	}
 }

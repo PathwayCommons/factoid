@@ -87,7 +87,7 @@
 
   <app:help stage="entities" icon="icon-arrow-right">
 
-  <app:help stage="organisms" icon="icon-arrow-up">
+  <app:help stage="organisms" icon="icon-arrow-right">
 
   <div class="help-content" data-for-stage="textmining">
     <h2>Enter abstract</h2>
@@ -197,6 +197,17 @@
 
   <div id="info">
     <div id="tools">
+      <div class="organism-preview">
+        <label>Relevant organisms:</label>
+        <div class="organisms">
+          {#if _page.organisms}
+            {#each _page.organisms as :organism}
+              <app:organism>
+            {/each}
+          {/if}
+        </div>
+      </div>
+
       <div class="button-panel">
         <button id="textmining-button" data-tooltip="Add entities and interactions from text"><div class="alert-bubble"></div><span class="icon-plus"></span><span class="icon-file-text"></span> Abstract</button>
         <button id="add-entity-button" data-tooltip="Add entity"><span class="icon-plus"></span><span class="icon-circle"></span> Entity</button>
@@ -243,9 +254,7 @@
       <span class="icon-info-sign"></span> The text you enter here will be analyzed by Factoid to find interactions involving genes and their products.
     </div>
 
-    <div id="textmining-examples" class="examples">
-      <a class="example prevent-default" tabindex="0" data-text="Chromosomal double-strand breaks (DSBs) have the potential to permanently arrest cell cycle progression and endanger cell survival. They must therefore be efficiently repaired to preserve genome integrity and functionality. Homologous recombination (HR) provides an important error-free mechanism for DSB repair in mammalian cells. In addition to RAD51, the central recombinase activity in mammalian cells, a family of proteins known as the RAD51 paralogs and consisting of five proteins (RAD51B, RAD51C, RAD51D, XRCC2 and XRCC3), play an essential role in the DNA repair reactions through HR. The RAD51 paralogs act to transduce the DNA damage signal to effector kinases and to promote break repair. However, their precise cellular functions are not fully elucidated. Here we discuss recent advances in our understanding of how these factors mediate checkpoint responses and act in the HR repair process. In addition, we highlight potential functional similarities with the BRCA2 tumour suppressor, through the recently reported links between RAD51 paralog deficiencies and tumorigenesis triggered by genome instability."><span class="icon-paste"></span> Paste example abstract</a>
-    </div>
+    <div class="loading-indicator icon-refresh icon-spin"></div>
 
     <div class="alert">
       <span class="icon-info-sign"></span> Sorry, we couldn't find interactions in your text.  You can try again with revised text.
@@ -257,15 +266,8 @@
 
     <textarea id="textmining-text">{_page.texminingText}</textarea>
 
-    <div class="organism-preview">
-      <label>Relevant organisms:</label>
-      <div class="organisms">
-        {#if _page.organisms}
-          {#each _page.organisms as :organism}
-            <app:organism>
-          {/each}
-        {/if}
-      </div>
+    <div id="textmining-examples" class="examples">
+      <a class="example prevent-default" tabindex="0" data-text="Chromosomal double-strand breaks (DSBs) have the potential to permanently arrest cell cycle progression and endanger cell survival. They must therefore be efficiently repaired to preserve genome integrity and functionality. Homologous recombination (HR) provides an important error-free mechanism for DSB repair in mammalian cells. In addition to RAD51, the central recombinase activity in mammalian cells, a family of proteins known as the RAD51 paralogs and consisting of five proteins (RAD51B, RAD51C, RAD51D, XRCC2 and XRCC3), play an essential role in the DNA repair reactions through HR. The RAD51 paralogs act to transduce the DNA damage signal to effector kinases and to promote break repair. However, their precise cellular functions are not fully elucidated. Here we discuss recent advances in our understanding of how these factors mediate checkpoint responses and act in the HR repair process. In addition, we highlight potential functional similarities with the BRCA2 tumour suppressor, through the recently reported links between RAD51 paralog deficiencies and tumorigenesis triggered by genome instability."><span class="icon-paste"></span> Paste example</a>
     </div>
 
     <div class="buttons">

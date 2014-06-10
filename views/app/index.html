@@ -98,8 +98,6 @@
 
     <div class="alert"><span class="icon-info-sign"></span> Enter your paper's abstract in the area to the right.  Factoid will find biological entities and interactions in your abstract and add them to the view on the left.</div>
 
-    <p><strong>Note</strong>: We initially guide you through Factoid in steps, but you can use any part of Factoid in any order.</p>
-
     <hr />
 
     <button class="contact-open-button"><span class="icon-envelope"></span> Contact us</button>
@@ -110,10 +108,6 @@
     <h2>Choose organisms</h2>
 
     <div class="alert"><span class="icon-info-sign"></span> Factoid has automatically found organisms relevant to your abstract, but you may want to manually adjust them above.  Selected organisms are used to refine searches.</div>
-
-    <p><strong>Note</strong>: We initially guide you through Factoid in steps, but you can use any part of Factoid in any order.</p>
-
-    <p class="skip"><button class="skip-button plain">Proceed to next step <span class="icon-fast-forward"></span></button></p>
 
     <hr />
 
@@ -133,8 +127,6 @@
         <li>Add missing and remove erroneous entities and interactions related to your paper.</li>
       </ul>
     </div>
-
-    <p><strong>Note</strong>: We initially guide you through Factoid in steps, but you can use any part of Factoid in any order.</p>
 
     <hr />
 
@@ -201,7 +193,7 @@
 
   <div id="info">
     <div id="tools">
-      <div class="organism-preview">
+      <div id="tools-organisms" class="organism-preview">
         <label>Relevant organisms:</label>
         <div class="organisms">
           {#if _page.organisms}

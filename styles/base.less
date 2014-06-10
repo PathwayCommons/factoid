@@ -243,8 +243,8 @@ small {
 }
 
 .alert {
-	.messageArea( #FFF8AD );
-	border-color: #EDE698;
+	.messageArea( #FFF2F2 );
+	border-color: #E6DADA;
 }
 
 .error {
@@ -358,5 +358,23 @@ strong {
 	right: 0;
 	margin: -0.125em 0.125em;
 	opacity: 0.5;
+}
+
+
+.highlight:before {
+	content: " ";
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: rgba(191, 2, 2, 0.12);
+	border-radius: 0.25em;
+	padding: 0.5em;
+	margin: -0.5em;
+	z-index: 999999;
+	pointer-events: none;
+
+	.animated;
+	.animation-speed-slow;
+	.slideInLeft;
 }
 

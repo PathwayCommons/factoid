@@ -5,6 +5,7 @@
 
 You can install these dependencies using your system's package manager, such as `apt-get` or `brew`. **These dependencies must be installed prior to running the system.**
 
+* `node.js`: The JS environment this all runs in; works best on 0.10.20-0.10.26
 * `redis` (>=v2.6): The redis DB which is used for managing transactions by `racer` (http://redis.io)
 * `daemontools` : To manage and supervise Unix services (http://cr.yp.to/daemontools.html)
 * `mongodb` : To persist the model to disk (http://www.mongodb.org)

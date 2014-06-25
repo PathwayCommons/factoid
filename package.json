@@ -28,7 +28,8 @@
     "request": "~2.36.0",
     "form-data": "~0.1.3",
     "nodemailer": "~0.7.0",
-    "node-uuid": "1.4.1"
+    "node-uuid": "1.4.1",
+    "libxmljs": "^0.10.0"
   },
   "private": true,
   "scripts": {

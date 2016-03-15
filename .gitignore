@@ -1,12 +1,5 @@
-*.swp
-npm-debug.log
-public/gen
 node_modules
-*.DS_Store
 .DS_Store
-supervise
-node.log
-
-reqlog.txt
-
-dump.rdb
+*.swp
+.idea*
+/public/derby

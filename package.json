@@ -1,43 +1,51 @@
 {
   "name": "factoid",
+  "version": "0.0.0",
   "description": "",
-  "version": "0.5.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/PathwayCommons/factoid.git"
-  },
-  "engines": {
-    "node": "0.10.x"
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "mocha"
   },
   "dependencies": {
-    "derby": "~0.5.16",
-    "racer": "~0.5.14",
-    "livedb": "~0.2.7",
-    "livedb-mongo": "~0.2.6",
-    "racer-browserchannel": "~0.1.1",
-    "browserchannel": "~1.0.8",
-    "express": "~3.4.8",
-    "connect-mongo": "~0.3.3",
-    "nodetime": "~0.8.15",
-    "webkit-devtools-agent": "~0.1.2",
-    "hiredis": "~0.1.17",
-    "redis": "~0.8.6",
-    "gzippo": "~0.2.0",
-    "socket.io": "~1.0.5",
-    "underscore": "~1.6.0",
-    "request": "~2.36.0",
-    "form-data": "~0.1.3",
-    "nodemailer": "~0.7.0",
-    "node-uuid": "1.4.1",
-    "libxmljs": "^0.10.0"
+    "bcrypt": "^0.8.6",
+    "bcryptjs": "^2.3.0",
+    "bluebird": "^3.4.0",
+    "body-parser": "^1.15.0",
+    "chalk": "^1.1.1",
+    "coffee-script": "^1.10.0",
+    "coffeeify": "^2.0.1",
+    "compression": "^1.6.1",
+    "connect-mongo": "^0.8.2",
+    "cookie-parser": "^1.4.1",
+    "derby": "^0.8.0",
+    "derby-debug": "^0.1.0",
+    "derby-login": "^1.0.1",
+    "derby-router": "^0.3.3",
+    "express": "^4.13.4",
+    "express-session": "^1.13.0",
+    "passport-facebook": "^2.1.0",
+    "passport-github": "^1.1.0",
+    "passport-google-oauth": "^1.0.0",
+    "passport-linkedin": "^1.0.0",
+    "racer-bundle": "^0.2.4",
+    "racer-highway": "^7.0.0",
+    "redis-url": "^1.2.1",
+    "scrypt": "^6.0.3",
+    "scryptsy": "^2.0.0",
+    "serve-favicon": "^2.3.0",
+    "serve-static": "^1.10.2",
+    "sharedb-mongo": "^0.8.7",
+    "sharedb-redis-pubsub": "^0.3.1"
   },
-  "private": true,
-  "scripts": {
-    "start": "node server.js"
+  "author": {
+    "name": "Max Franz",
+    "email": "maxkfranz@gmail.com"
   },
-  "port": 3000,
-  "mongoUrl": "mongodb://localhost:27017/factoid",
-  "tmUrlBase": "http://webservice.baderlab.org:3001/Factoid",
-  "serviceMonitorInterval": 300000,
-  "serviceTimeout": 60000
+  "license": "",
+  "readme": "factoid\n",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "mocha": "^2.5.3"
+  }
 }

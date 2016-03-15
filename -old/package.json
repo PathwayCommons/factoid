@@ -1,0 +1,43 @@
+{
+  "name": "factoid",
+  "description": "",
+  "version": "0.5.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PathwayCommons/factoid.git"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "dependencies": {
+    "derby": "~0.5.16",
+    "racer": "~0.5.14",
+    "livedb": "~0.2.7",
+    "livedb-mongo": "~0.2.6",
+    "racer-browserchannel": "~0.1.1",
+    "browserchannel": "~1.0.8",
+    "express": "~3.4.8",
+    "connect-mongo": "~0.3.3",
+    "nodetime": "~0.8.15",
+    "webkit-devtools-agent": "~0.1.2",
+    "hiredis": "~0.1.17",
+    "redis": "~0.8.6",
+    "gzippo": "~0.2.0",
+    "socket.io": "~1.0.5",
+    "underscore": "~1.6.0",
+    "request": "~2.36.0",
+    "form-data": "~0.1.3",
+    "nodemailer": "~0.7.0",
+    "node-uuid": "1.4.1",
+    "libxmljs": "^0.10.0"
+  },
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "port": 3000,
+  "mongoUrl": "mongodb://localhost:27017/factoid",
+  "tmUrlBase": "http://webservice.baderlab.org:3001/Factoid",
+  "serviceMonitorInterval": 300000,
+  "serviceTimeout": 60000
+}

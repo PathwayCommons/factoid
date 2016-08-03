@@ -1,4 +1,0 @@
-#!/bin/bash
-
-node server &>> node.log
-

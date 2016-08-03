@@ -1,8 +1,0 @@
-{
-  "NODE_ENV": "development",
-  "PORT": 3000,
-  "MONGO_URL": "mongodb://localhost:27017/factoid",
-  "REDIS_URL": "redis://localhost:6379",
-  "SESSION_SECRET": "3b4f141e1e1662507fa88f263a3aec2b1fe6d718",
-  "SESSION_COOKIE": "915cb5eebd5201fe2bce69d890f7946b8b4755e5"
-}

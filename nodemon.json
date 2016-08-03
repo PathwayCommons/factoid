@@ -1,0 +1,7 @@
+{
+  "watch": [
+    "./src/model",
+    "./src/server",
+    "./src/util"
+  ]
+}

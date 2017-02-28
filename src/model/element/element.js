@@ -1,61 +1,118 @@
-let { fill, passthrough } = require('../../util');
+let { mixin } = require('../../util');
 let _ = require('lodash');
-let is = require('is');
-let Synched = require('../synched');
-let { subscribe } = require('./pubsub');
-let acl = require('../acl');
+let Syncher = require('../syncher');
+let EventEmitterMixin = require('../event-emitter-mixin');
 
-let defaults = {
-  position: {
-    x: 0,
-    y: 0
-  },
+const TYPE = 'element';
+
+const DEFAULTS = Object.freeze({
+  position: { x: 0, y: 0 },
   name: '',
-  collection: new Mongo.Collection('element')
-};
+  type: TYPE
+});
 
-let collectionIsLive = collection => collection === defaults.collection;
+const sanitizePosition = pos => _.pick( pos, _.keys( DEFAULTS.position ) );
 
-class Element extends Synched {
-  constructor( opts ){
-    super( _.assign( {
-      collection: defaults.collection
-    }, opts ) );
+/**
+A generic biological element of no specific type
 
-    fill({
-      obj: this,
-      from: opts,
-      defs: defaults
+For all objects of (sub)class `Element`, it is important to specify a `Syncher`.
+This allows for reading and writing on the DB and keeping the object synched
+with remote updates.
+*/
+class Element {
+  constructor( opts = {} ){
+    EventEmitterMixin.call( this ); // defines this.emitter
+
+    let data = _.defaultsDeep( {}, opts.data, DEFAULTS );
+
+    sanitizePosition( data.position );
+
+    let synchedOpts = _.assign( {}, opts, { data } );
+
+    this.syncher = new Syncher( synchedOpts );
+
+    this.syncher.forward( this );
+
+    this.on('remoteupdate', ( changes, old ) => {
+      if( changes.position != null ){
+        this.emit( 'reposition', changes.position, old.position );
+      }
+
+      if( changes.name != null ){
+        this.emit( 'rename', changes.name, old.name );
+      }
     });
+  }
 
-    if( Meteor.isClient && collectionIsLive( this.collection ) ){
-      subscribe( this.id );
+  filled(){
+    return this.syncher.filled;
+  }
+
+  static type(){ return TYPE; }
+
+  type(){
+    return this.syncher.get('type');
+  }
+
+  isEntity(){
+    return false;
+  }
+
+  isInteraction(){
+    return false;
+  }
+
+  id(){
+    return this.syncher.get('id');
+  }
+
+  rename( newName ){
+    let updatePromise = this.syncher.update( 'name', newName );
+
+    this.emit( 'rename', newName );
+
+    return updatePromise;
+  }
+
+  name( newName ){
+    if( newName != null ){
+      return this.rename( newName );
+    } else {
+      return this.syncher.get('name');
     }
   }
 
-  static get collection(){ return defaults.collection; }
+  reposition( newPos = {} ){
+    let synched = this.syncher;
 
-  get fields(){ return super.fields.concat( _.keys( defaults ) ).concat(['type']); }
+    newPos = sanitizePosition( newPos );
 
-  static get type(){ return 'element'; }
+    newPos = _.assign( {}, synched.get('position'), newPos );
 
-  get type(){ return Object.getPrototypeOf( this ).type; }
+    let updatePromise = synched.update( 'position', newPos );
 
-  rename( newName ){
-    return this.update( 'name', newName ).then( passthrough(() => {
-      this.emit('rename');
-    }) );
+    this.emit( 'reposition', newPos );
+
+    return updatePromise;
   }
 
-  reposition( newPos = {} ){
-    _.assign( this.position, newPos );
-
-    return this.update('position').then( passthrough(() => {
-      this.emit('reposition');
-    }) );
+  position( newPos ){
+    if( newPos != null ){
+      return this.reposition( newPos );
+    } else {
+      return this.syncher.get('position');
+    }
   }
 }
 
-acl( Element.collection );
+mixin( Element.prototype, EventEmitterMixin.prototype );
+
+// aliases of common syncher functions (just to save typing `.syncher` for common ops)
+['create', 'load', 'update', 'destroy', 'synch', 'json'].forEach( fn => {
+  Element.prototype[ fn ] = function( ...args ){
+    return this.syncher[ fn ]( ...args );
+  };
+} );
 
 module.exports = Element;

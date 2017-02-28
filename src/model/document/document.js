@@ -1,75 +1,104 @@
-let uuid = require('uuid');
 let _ = require('lodash');
-let { fill } = require('../../util');
-let ElementFactory = require('../element');
-let Synched = require('../synched');
-let acl = require('../acl');
+let Syncher = require('../syncher');
+let EventEmitterMixin = require('../event-emitter-mixin');
+let ElementSet = require('../element-set');
+let ElementCache = require('../element-cache');
+var { assertOneOfFieldsDefined, mixin } = require('../../util');
 
-let defaults = {
-  elementIds: [],
-};
+const DEFAULTS = Object.freeze({
+  entries: [], // used by elementSet
+  name: ''
+});
 
-class Document extends Synched {
-  constructor( opts ){
-    super( _.assign( {
-      collection: defaults.collection
-    }, opts ) );
+/**
+A document that contains a set of biological elements (i.e. entities and interactions).
 
-    fill({
-      obj: this,
-      from: opts,
-      defs: defaults
+A document can be thought as a "factoid" --- it contains a unit of biological information,
+usually associated with a particular piece of research.
+*/
+class Document {
+  constructor( opts = {} ){
+    EventEmitterMixin.call( this ); // defines this.emitter
+
+    let data = _.defaultsDeep( {}, opts.data, DEFAULTS );
+
+    opts = _.assign( {}, opts, { data } );
+
+    assertOneOfFieldsDefined( opts, ['factory', 'cache'] );
+
+    this.syncher = new Syncher( opts );
+
+    this.syncher.forward( this );
+
+    let cache = opts.cache || new ElementCache({
+      secret: data.secret,
+      factory: opts.factory
     });
 
-    this.elements = [];
+    this.elementSet = new ElementSet({
+      syncher: this.syncher,
+      emitter: this.emitter,
+      cache: cache
+    });
   }
 
-  static get collection(){ return defaults.collection; }
+  filled(){
+    return this.syncher.filled;
+  }
 
-  get fields(){ return super.fields.concat( _.keys( defaults ) ); }
+  id(){
+    return this.syncher.get('id');
+  }
 
-  // login temporarily via a private edit id (instead of a user account)
-  login( privateId ){
-    // TODO
+  cache(){
+    return this.elementSet.cache;
   }
 
   load( setup = _.noop ){
-    let makeEle = id => ElementFactory({ id });
-    let loadEle = ele => ele.load();
-    let addEle = ele => this.add( ele );
-    let loadThenAddEle = ele => loadEle( ele ).then( addEle );
-    let getLoadedEleFromId = id => loadThenAddEle( makeEle( id ) );
-
-    return super.load(() => {
-      return Promise.all( this.elementIds.map( getLoadedEleFromId ) );
-    }).then( setup ).then( () => {
-      return this;
+    return this.syncher.load( () => {
+      return this.elementSet.load().then( setup );
     } );
   }
 
-  add( ele ){
-    this.elements.push( ele );
-    this.elementIds.push( ele.id );
+  rename( newName ){
+    let updatePromise = this.syncher.update( 'name', newName );
 
-    return this.update('elementIds').then( passthrough(() => {
-      this.emit( 'add', ele );
+    this.emit( 'rename', newName );
 
-      return ele;
-    }) );
+    return updatePromise;
   }
 
-  remove( ele ){
-    _.pull( this.elements, ele );
-    _.pull( this.elementIds, ele.id );
+  name( newName ){
+    if( newName != null ){
+      return this.rename( newName );
+    } else {
+      return this.syncher.get('name');
+    }
+  }
 
-    return this.update('elementIds').then( passthrough(() => {
-      this.emit( 'remove', ele );
+  entities(){
+    return this.elements().filter( el => el.isEntity() );
+  }
 
-      return ele;
-    }) );
+  interactions(){
+    return this.elements().filter( el => el.isInteraction() );
   }
 }
 
-acl( Document.collection );
+mixin( Document.prototype, EventEmitterMixin.prototype );
+
+// forward common calls to the element set
+['add', 'remove', 'has', 'get', 'size', 'elements'].forEach( name => {
+  Document.prototype[ name ] = function( ...args ){
+    return this.elementSet[ name ]( ...args );
+  };
+} );
+
+// aliases of common syncher functions (just to save typing `.syncher` for common ops)
+['create', 'update', 'destroy', 'synch', 'json'].forEach( fn => {
+  Document.prototype[ fn ] = function( ...args ){
+    return this.syncher[ fn ]( ...args );
+  };
+} );
 
 module.exports = Document;

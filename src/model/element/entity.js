@@ -1,26 +1,28 @@
-let { fill } = require('../../util');
 let Element = require('./element');
 let _ = require('lodash');
+let { fill } = require('../../util');
 
-let defaults = {
-};
+const TYPE = 'entity';
 
+const DEFAULTS = Object.freeze({
+  type: TYPE
+});
+
+/**
+A generic biological entity
+*/
 class Entity extends Element {
-  constructor( opts ){
-    super( opts );
+  constructor( opts = {} ){
+    let data = _.defaultsDeep( {}, opts.data, DEFAULTS );
 
-    fill({
-      obj: this,
-      from: opts,
-      defs: defaults
-    });
+    opts = _.assign( {}, opts, { data } );
+
+    super( opts );
   }
 
-  get fields(){ return super.fields.concat( _.keys( defaults ) ); }
+  static type(){ return TYPE; }
 
-  static get type(){ return 'entity'; }
-
-  get isEntity(){ return true; }
+  isEntity(){ return true; }
 }
 
 module.exports = Entity;

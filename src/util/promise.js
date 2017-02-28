@@ -1,3 +1,7 @@
+var { error } = require('./obj');
+
+let slice = ( arr, i, j ) => Array.prototype.slice.call( arr, i, j );
+
 function passthrough( fn ){
   return function( val ){
     fn( val ); // also pass just in case you want to use the val
@@ -13,8 +17,6 @@ function promisify( fn, options ){
       context: this,
       multiArgs: false
     }, options );
-
-    let slice = ( arr, i, j ) => Array.prototype.slice.call( arr, i, j );
 
     let args = slice( arguments );
 
@@ -34,4 +36,26 @@ function promisify( fn, options ){
   };
 }
 
-module.exports = { passthrough, promisify };
+function promisifyEmit( emitter ){
+  return (function(){
+    let args = slice( arguments );
+
+    return new Promise( ( resolve, reject ) => {
+      args.push( ( err, val ) => {
+        if( err ){
+          reject( error(err) );
+        } else {
+          resolve( val );
+        }
+      } );
+
+      emitter.emit.apply( emitter, args );
+    } );
+  });
+}
+
+function promiseOn( emitter, evt ){
+  return new Promise( resolve => emitter.once( evt, resolve ) );
+}
+
+module.exports = { passthrough, promisify, promisifyEmit, promiseOn };

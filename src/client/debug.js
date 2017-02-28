@@ -1,4 +1,4 @@
-let domReady = require('./dom-ready');
+let domReady = require('fready');
 let livereload = require('./livereload');
 
 let debug = {

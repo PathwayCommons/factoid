@@ -1,0 +1,10 @@
+{
+  "ignoreFiles": [
+    "./node_modules/**/*",
+    "./src/styles/vendor/**/*"
+  ],
+  "extends": "stylelint-config-standard",
+  "rules": {
+
+  }
+}

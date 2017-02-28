@@ -37,4 +37,56 @@ function fill( opts ){
   return tgt;
 }
 
-module.exports = { firstDefined, fill };
+function error( err ){
+  if( _.isString( err ) ){
+    return new Error( err );
+  } else if( err instanceof Error ){
+    return err;
+  } else if( _.isObject( err ) ){
+    let obj = err;
+
+    err = new Error();
+
+    _.assign( err, obj );
+
+    return err;
+  } else {
+    return new Error();
+  }
+}
+
+function getId( idOrObj ){
+  let id;
+
+  if( _.isString( idOrObj ) ){
+    id = idOrObj;
+  } else if( _.isObject( idOrObj ) ) {
+    let obj = idOrObj;
+
+    if( _.isFunction( obj.id ) ){
+      id = obj.id();
+    } else {
+      id = obj.id;
+    }
+  }
+
+  return id;
+}
+
+function ensureArray( valOrArr ){
+  if( _.isArray( valOrArr ) ){
+    return valOrArr;
+  } else if( valOrArr == null ){
+    return [];
+  } else {
+    return [ valOrArr ];
+  }
+}
+
+function mixin( proto, obj, opts = {} ){
+  let sanitized = _.omit( obj, ['constructor'].concat( opts.not ) );
+
+  _.extend( proto, sanitized );
+}
+
+module.exports = { firstDefined, fill, error, getId, ensureArray, mixin };

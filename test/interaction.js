@@ -1,4 +1,4 @@
-require('./util/conf');
+let conf = require('./util/conf');
 
 let expect = require('chai').expect;
 let Syncher = require('../src/model/syncher');
@@ -22,6 +22,8 @@ describe('Interaction', function(){
   let socketEnt = new MockSocket();
   let tableUtil;
   let tableUtilEnt;
+
+  this.timeout( conf.defaultTimeout );
 
   function describeCommonTests(){
     describe('type', function(){
@@ -412,6 +414,8 @@ describe('Interaction', function(){
         expect( intnC2.participants().length, 'number of participants (add)' ).to.equal( 1 );
         expect( intnC2.participants()[0].id(), 'pid' ).to.equal( entC2.id() );
         expect( intnC2.participants()[0], 'participant' ).to.equal( entC2 );
+
+        intnC1.remove( entC1 );
       });
 
       intnC2.on('remove', function(){
@@ -420,11 +424,7 @@ describe('Interaction', function(){
         done();
       });
 
-      Promise.resolve().then( () => {
-        return intnC1.add( entC1 );
-      } ).then( () => {
-        return intnC1.remove( entC1 );
-      } );
+      intnC1.add( entC1 );
     });
 
     it('adds and removes (by id) participant on client1, resolves on client2', function( done ){
@@ -432,6 +432,8 @@ describe('Interaction', function(){
         expect( intnC2.participants().length, 'number of participants (add)' ).to.equal( 1 );
         expect( intnC2.participants()[0].id(), 'pid' ).to.equal( entC2.id() );
         expect( intnC2.participants()[0], 'participant' ).to.equal( entC2 );
+
+        intnC1.remove( entC1.id() );
       });
 
       intnC2.on('remove', function(){
@@ -440,11 +442,7 @@ describe('Interaction', function(){
         done();
       });
 
-      Promise.resolve().then( () => {
-        return intnC1.add( entC1 );
-      } ).then( () => {
-        return intnC1.remove( entC1.id() );
-      } );
+      intnC1.add( entC1 );
     });
 
     it('adds participant on client1, removes participant on client2, resolves on both', function( done ){
@@ -452,6 +450,8 @@ describe('Interaction', function(){
         expect( intnC2.participants().length, 'number of participants (client2)' ).to.equal( 1 );
         expect( intnC2.participants()[0].id(), 'pid' ).to.equal( entC2.id() );
         expect( intnC2.participants()[0], 'participant' ).to.equal( entC2 );
+
+        intnC2.remove( entC2 );
       });
 
       intnC1.on('remove', function(){
@@ -461,31 +461,29 @@ describe('Interaction', function(){
         done();
       });
 
-      Promise.resolve().then( () => {
-        return intnC1.add( entC1 );
-      } ).then( () => {
-        return intnC2.remove( entC2 );
-      } );
+      intnC1.add( entC1 );
     });
 
-    it('removes participant on client1, adds participant on client2, resolves on both', function( done ){
-      intnC1.on('add', function(){
-        expect( intnC1.participants().length, 'number of participants (client1)' ).to.equal( 1 );
-        expect( intnC1.participants()[0].id(), 'pid' ).to.equal( entC1.id() );
-        expect( intnC1.participants()[0], 'participant' ).to.equal( entC1 );
-      });
+    it('removes participant on client1, adds participant on client2, resolves on both', function(){
+      return Promise.resolve().then( () => {
+        let onAdd = when( intnC1, 'add' );
 
-      intnC2.on('remove', function(){
-        expect( intnC1.participants().length, 'number of participants (client1)' ).to.equal( 0 );
-        expect( intnC2.participants().length, 'number of participants (client2)' ).to.equal( 0 );
+        intnC2.add( entC2 );
 
-        done();
-      });
-
-      Promise.resolve().then( () => {
-        return intnC2.add( entC2 );
+        return onAdd.then(function(){
+          expect( intnC1.participants().length, 'number of participants (client1)' ).to.equal( 1 );
+          expect( intnC1.participants()[0].id(), 'pid' ).to.equal( entC1.id() );
+          expect( intnC1.participants()[0], 'participant' ).to.equal( entC1 );
+        });
       } ).then( () => {
-        return intnC1.remove( entC1 );
+        let onRm = when( intnC2, 'remove' );
+
+        intnC1.remove( entC1 );
+
+        return onRm.then(function(){
+          expect( intnC1.participants().length, 'number of participants (client1)' ).to.equal( 0 );
+          expect( intnC2.participants().length, 'number of participants (client2)' ).to.equal( 0 );
+        });
       } );
     });
 

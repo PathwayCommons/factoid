@@ -1,4 +1,4 @@
-require('./util/conf');
+let conf = require('./util/conf');
 
 let { expect, assert } = require('chai');
 let Syncher = require('../src/model/syncher');
@@ -19,6 +19,8 @@ describe('Syncher', function(){
   let serverside = false;
 
   let tableUtil;
+
+  this.timeout( conf.defaultTimeout );
 
   let whenAllRemoteupdates = ( synchers, n ) => whenAll( synchers, 'remoteupdate', n );
 
@@ -1089,7 +1091,7 @@ describe('Syncher', function(){
           let seqStr = seq.join(',');
           let expStr = seqExpected.join(',');
 
-          expect( seqStr ).to.equal( expStr );
+          expect( seqStr, 'all events' ).to.equal( expStr );
           if( seqStr === expStr ){ done(); }
         }, 500 );
 
@@ -1099,12 +1101,22 @@ describe('Syncher', function(){
         sc2.on('update', function(){ update.regular(2); });
         sc2.on('remoteupdate', function(){ update.remote(2); });
 
+        // NB must use events for phases, because promises only let you know if
+        // your write was acked by the server -- not whether other clients heard it
+
         sc.create().then(function(){
-          return sc2.load();
+          return sc2.load(); // prep
         }).then(function(){
-          return sc.update('foo', 'foo2');
-        }).then(function(){
-          return sc2.update('foo', 'foo3');
+          sc2.once('update', function(){
+            let seqStr = seq.join(',');
+            let expStr = seqExpected.slice(0, 3).join(',');
+
+            expect( seqStr, 'first three events' ).to.equal( expStr );
+
+            sc2.update('foo', 'foo3'); // kick off second 3 events
+          });
+
+          sc.update('foo', 'foo2'); // kick off first 3 events
         });
       });
 

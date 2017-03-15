@@ -1,4 +1,4 @@
-require('./util/conf');
+let conf = require('./util/conf');
 
 let expect = require('chai').expect;
 let Syncher = require('../src/model/syncher');
@@ -25,6 +25,8 @@ describe('Document', function(){
   let socketDoc = new MockSocket();
   let tableUtil;
   let tableUtilEle;
+
+  this.timeout( conf.defaultTimeout );
 
   function describeCommonTests(){
     describe('json', function(){
@@ -457,8 +459,6 @@ describe('Document', function(){
 
           let getIds = ents => ents.map( ent => ent.id() ).sort();
 
-          console.dir( getIds( docC3.elements() ) );
-
           expect( getIds( docC3.elements() ) ).to.deep.equal( getIds([ entC1, ent2C1 ]) );
         } )
       ;
@@ -493,6 +493,8 @@ describe('Document', function(){
         expect( docC2.elements().length, 'number of elements (add)' ).to.equal( 1 );
         expect( docC2.elements()[0].id(), 'pid' ).to.equal( entC2.id() );
         expect( docC2.elements()[0], 'element' ).to.equal( entC2 );
+
+        docC1.remove( entC1 );
       });
 
       docC2.on('remove', function(){
@@ -501,21 +503,16 @@ describe('Document', function(){
         done();
       });
 
-      Promise.resolve().then( () => {
-        return docC1.add( entC1 );
-      } ).then( () => {
-        return docC1.remove( entC1 );
-      } );
+      docC1.add( entC1 );
     });
-
-
-
 
     it('adds and removes (by id) element on client1, resolves on client2', function( done ){
       docC2.on('add', function(){
         expect( docC2.elements().length, 'number of elements (add)' ).to.equal( 1 );
         expect( docC2.elements()[0].id(), 'pid' ).to.equal( entC2.id() );
         expect( docC2.elements()[0], 'element' ).to.equal( entC2 );
+
+        docC1.remove( entC1.id() );
       });
 
       docC2.on('remove', function(){
@@ -524,11 +521,7 @@ describe('Document', function(){
         done();
       });
 
-      Promise.resolve().then( () => {
-        return docC1.add( entC1 );
-      } ).then( () => {
-        return docC1.remove( entC1.id() );
-      } );
+      docC1.add( entC1 );
     });
 
     it('adds element on client1, removes element on client2, resolves on both', function( done ){
@@ -536,6 +529,8 @@ describe('Document', function(){
         expect( docC2.elements().length, 'number of elements (client2)' ).to.equal( 1 );
         expect( docC2.elements()[0].id(), 'pid' ).to.equal( entC2.id() );
         expect( docC2.elements()[0], 'element' ).to.equal( entC2 );
+
+        docC2.remove( entC2 );
       });
 
       docC1.on('remove', function(){
@@ -545,11 +540,7 @@ describe('Document', function(){
         done();
       });
 
-      Promise.resolve().then( () => {
-        return docC1.add( entC1 );
-      } ).then( () => {
-        return docC2.remove( entC2 );
-      } );
+      docC1.add( entC1 );
     });
 
     it('removes element on client1, adds element on client2, resolves on both', function( done ){
@@ -557,6 +548,8 @@ describe('Document', function(){
         expect( docC1.elements().length, 'number of elements (client1)' ).to.equal( 1 );
         expect( docC1.elements()[0].id(), 'pid' ).to.equal( entC1.id() );
         expect( docC1.elements()[0], 'element' ).to.equal( entC1 );
+
+        docC1.remove( entC1 )
       });
 
       docC2.on('remove', function(){
@@ -566,11 +559,7 @@ describe('Document', function(){
         done();
       });
 
-      Promise.resolve().then( () => {
-        return docC2.add( entC2 );
-      } ).then( () => {
-        return docC1.remove( entC1 );
-      } );
+      docC2.add( entC2 );
     });
 
     it('adds element on both clients simultaneously', function(){

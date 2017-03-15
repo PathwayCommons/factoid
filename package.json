@@ -4,7 +4,6 @@
   "scripts": {
     "start": "forever ./src/server",
     "stop": "forever stop ./src/server",
-    "postinstall": "npm run build-prod",
     "test": "mocha",
     "build": "gulp build",
     "build-prod": "gulp build-prod",

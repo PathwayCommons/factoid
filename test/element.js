@@ -1,4 +1,4 @@
-require('./util/conf');
+let conf = require('./util/conf');
 
 let expect = require('chai').expect;
 let Syncher = require('../src/model/syncher');
@@ -14,6 +14,8 @@ describe('Element', function(){
   let ele;
   let socket = new MockSocket();
   let tableUtil;
+
+  this.timeout( conf.defaultTimeout );
 
   function describeCommonTests(){
     describe('name', function(){

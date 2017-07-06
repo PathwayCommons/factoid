@@ -992,7 +992,7 @@ describe('Syncher', function(){
 
         return sc.create().then(function(){
           return sc2.create();
-        }).then(function( ret ){
+        }).then(function(){
           fail = false;
         }).catch(function(){
           fail = true;
@@ -1534,18 +1534,21 @@ describe('Syncher', function(){
 
       it('pulls by id simultaneously on each client', function( done ){
         sc.get().foo = [
-          { id: 'bar1', a: 1 },
+          { id: 'bar1', a: 1 }, // rm 1
           { id: 'bar2', a: 2 },
-          { id: 'bar3', a: 3 },
-          { id: 'bar4', a: 4 },
-          { id: 'bar5', a: 5 },
+          { id: 'bar3', a: 3 }, // rm 2
+          { id: 'bar4', a: 4 }, // rm 1
+          { id: 'bar5', a: 5 }, // rm 2
           { id: 'bar6', a: 6 }
         ];
 
         sc.create().then(function(){
           return sc2.load();
         }).then(function(){
-          let updated = whenAllRemoteupdates( [ sc, sc2 ], 2 );
+          let updated = Promise.all([
+            when( sc, 'remoteupdate', 2 ),
+            when( sc2, 'remoteupdate', 2 )
+          ]);
 
           sc.pullById( 'foo', 'bar1');
           sc2.pullById('foo', 'bar5');
@@ -1554,11 +1557,12 @@ describe('Syncher', function(){
 
           return updated;
         }).then(function(){
-          expect(  sc.get('foo') ).to.deep.equal([
+          expect(  sc.get('foo'), 'client1' ).to.deep.equal([
             { id: 'bar2', a: 2 },
             { id: 'bar6', a: 6 }
           ]);
-          expect( sc2.get('foo') ).to.deep.equal([
+          
+          expect( sc2.get('foo'), 'client2' ).to.deep.equal([
             { id: 'bar2', a: 2 },
             { id: 'bar6', a: 6 }
           ]);

@@ -1,0 +1,15 @@
+.interaction-info {
+  width: 100%;
+}
+
+.interaction-info-type-select {
+  width: 100%;
+  margin-bottom: 0.5em;
+}
+
+textarea.interaction-info-description {
+  width: 100%;
+  height: 5em;
+  resize: none;
+  overflow: scroll;
+}

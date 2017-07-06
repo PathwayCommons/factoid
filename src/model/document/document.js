@@ -1,13 +1,17 @@
 let _ = require('lodash');
+let Promise = require('bluebird');
 let Syncher = require('../syncher');
 let EventEmitterMixin = require('../event-emitter-mixin');
 let ElementSet = require('../element-set');
 let ElementCache = require('../element-cache');
-var { assertOneOfFieldsDefined, mixin } = require('../../util');
+let ElementFactory = require('../element');
+let { assertOneOfFieldsDefined, mixin, getId } = require('../../util');
+let Organism = require('../organism');
 
 const DEFAULTS = Object.freeze({
   entries: [], // used by elementSet
-  name: ''
+  name: '',
+  organisms: [] // list of ids
 });
 
 /**
@@ -20,25 +24,86 @@ class Document {
   constructor( opts = {} ){
     EventEmitterMixin.call( this ); // defines this.emitter
 
+    let doc = this;
+
     let data = _.defaultsDeep( {}, opts.data, DEFAULTS );
 
     opts = _.assign( {}, opts, { data } );
 
-    assertOneOfFieldsDefined( opts, ['factory', 'cache'] );
+    assertOneOfFieldsDefined( opts, ['cache', 'factory', 'factoryOptions'] );
 
     this.syncher = new Syncher( opts );
 
     this.syncher.forward( this );
 
-    let cache = opts.cache || new ElementCache({
-      secret: data.secret,
-      factory: opts.factory
-    });
+    let cache;
+
+    if( opts.cache != null ){ // manual option for shared cache
+      cache = opts.cache;
+    } else if( opts.factory != null ){ // manual option for shared factory
+      cache = new ElementCache({
+        secret: data.secret,
+        factory: opts.factory
+      });
+    } else if( opts.factoryOptions != null ){ // more automatic option if the doc has its own cache and factory (normal case)
+      let factory = new ElementFactory();
+
+      cache = new ElementCache({ factory, secret: data.secret });
+
+      factory.set({ cache }); // factory needs a ref to the cache
+      factory.set({ data: { secret: data.secret } }); // eles created by the factory should use the doc secret
+      factory.set( opts.factoryOptions ); // overrides or other options (like socket, db refs)
+    }
 
     this.elementSet = new ElementSet({
       syncher: this.syncher,
       emitter: this.emitter,
       cache: cache
+    });
+
+    this.syncher.on('remoteupdate', ( changes, old ) => {
+      if( changes.organisms ){
+        let addedIds = _.difference( changes.organisms, old.organisms );
+        let rmedIds = _.difference( old.organisms, changes.organisms );
+        let emit = ( id, on ) => {
+          let org = Organism.fromId(id);
+
+          this.emit('toggleorganism', org, on);
+          this.emit('remotetoggleorganism', org, on);
+        };
+
+        addedIds.forEach( id => emit( id, true ) );
+        rmedIds.forEach( id => emit( id, false ) );
+      }
+    });
+
+    let onAssocChange = function(){
+      let el = this;
+
+      if( doc.has(el) ){
+        doc.replaceElementWithSubtype( el );
+      }
+    };
+
+    let addAssocListeners = el => {
+      el.once('associated', onAssocChange);
+      el.once('unassociated', onAssocChange);
+    };
+
+    let rmAssocListeners = el => {
+      el.removeListener('associated', onAssocChange);
+      el.removeListener('unassociated', onAssocChange);
+    };
+
+    this.on('load', () => {
+      this.elements().forEach( addAssocListeners );
+    });
+
+    this.on('add', addAssocListeners);
+    this.on('remove', rmAssocListeners);
+    this.on('replace', ( oldEl, newEl ) => {
+      rmAssocListeners( oldEl );
+      addAssocListeners( newEl );
     });
   }
 
@@ -46,17 +111,53 @@ class Document {
     return this.syncher.filled;
   }
 
+  live(){
+    return this.syncher.live;
+  }
+
   id(){
     return this.syncher.get('id');
+  }
+
+  secret(){
+    return this.syncher.get('secret');
+  }
+
+  editable(){
+    return this.secret() != null;
+  }
+
+  publicUrl(){
+    return [ '/document', this.id() ].join('/');
+  }
+
+  privateUrl(){
+    if( this.editable() ){
+      return [ '/document', this.id(), this.secret() ].join('/');
+    } else {
+      return this.publicUrl();
+    }
   }
 
   cache(){
     return this.elementSet.cache;
   }
 
+  factory(){
+    return this.cache().factory;
+  }
+
   load( setup = _.noop ){
     return this.syncher.load( () => {
       return this.elementSet.load().then( setup );
+    } );
+  }
+
+  synch( enable ){
+    return Promise.try( () => {
+      return this.syncher.synch( enable );
+    } ).then( () => {
+      return this.elementSet.synch( enable );
     } );
   }
 
@@ -83,19 +184,158 @@ class Document {
   interactions(){
     return this.elements().filter( el => el.isInteraction() );
   }
+
+  organisms(){
+    let orgIds = this.syncher.get('organisms');
+
+    if( orgIds != null ){
+      return orgIds.map( id => Organism.fromId( id ) );
+    } else {
+      return [];
+    }
+  }
+
+  toggleOrganism( org, toggleOn ){
+    let orgId = getId( org );
+    let orgIds = this.syncher.get('organisms') || [];
+    let has = orgIds.find( id => id === orgId );
+
+    if( toggleOn === undefined ){
+      toggleOn = !has;
+    }
+
+    if( toggleOn ){
+      if( has ){
+        return Promise.resolve();
+      } else {
+        let update = this.syncher.push('organisms', orgId);
+
+        this.emit('toggleorganism', Organism.fromId(orgId), toggleOn);
+
+        return update;
+      }
+    } else {
+      if( has ){
+        let update = this.syncher.pull('organisms', orgId);
+
+        this.emit('toggleorganism', Organism.fromId(orgId), toggleOn);
+
+        return update;
+      } else {
+        return Promise.resolve();
+      }
+    }
+  }
+
+  add( el ){
+    let add = el => this.elementSet.add( el );
+
+    let addEnt = el => add( el );
+
+    let addEle = el => {
+      if( this.has( el ) ){
+        return Promise.resolve();
+      } else if( el.isInteraction() ){
+        return addIntn( el );
+      } else {
+        return addEnt( el );
+      }
+    };
+
+    let addIntn = el => {
+      let addPpts = () => Promise.all( el.participants().map( addEle ) );
+      let addSelf = () => add( el );
+
+      return Promise.all([ addPpts(), addSelf() ]);
+    };
+
+    return addEle( el );
+  }
+
+  remove( el ){
+    let rmFromIntn = intn => {
+      if( intn.has( el ) ){
+        return intn.remove( el );
+      } else {
+        return Promise.resolve();
+      }
+    };
+
+    let rmFromIntns = () => Promise.all( this.interactions().map( rmFromIntn ) );
+
+    let rm = () => this.elementSet.remove( el );
+
+    return Promise.all([ rmFromIntns(), rm() ]);
+  }
+
+  replaceElementWithSubtype( el ){
+    let reloadCache = () => this.cache().reload( el ); // gets the new type
+
+    let replaceInSet = newEl => this.elementSet.replace( el, newEl );
+
+    let synchEl = el => this.live() ? el.synch() : Promise.resolve();
+
+    let unsynchEl = el => el.synch( false );
+
+    let replaceInInteractions = newEl => {
+      let replaceInInteraction = intn => intn.elementSet.replace( el, newEl );
+
+      return Promise.all([ this.interactions().map( replaceInInteraction ) ]);
+    };
+
+    let replaceEl = newEl => {
+      return (
+        Promise.try( () => unsynchEl( el ) )
+        .then( () => replaceInSet( newEl ) )
+        .then( () => replaceInInteractions( newEl ) )
+        .then( () => synchEl( newEl ) )
+      );
+    };
+
+    return reloadCache().then( replaceEl );
+  }
+
+  json(){
+    let toJson = obj => obj.json();
+
+    return {
+      id: this.id(),
+      secret: this.secret(),
+      organisms: this.organisms().map( toJson ),
+      elements: this.elements().map( toJson )
+    };
+  }
+
+  fromJson( json ){
+    let els = json.elements || [];
+    let makeEl = json => Promise.try( () => this.factory().make({ data: json }) );
+    let createEl = el => el.create();
+    let addEl = el => this.add( el );
+    let handleEl = json => makeEl( json ).then( createEl ).then( addEl );
+    let handleEls = () => Promise.all( els.map( handleEl ) );
+
+    let orgIds = json.organisms || [];
+    let addOrganism = id => this.toggleOrganism( id, true );
+    let addOrganisms = () => Promise.all( orgIds.map( addOrganism ) );
+
+    return Promise.all([
+      handleEls(),
+      addOrganisms()
+    ]);
+  }
 }
 
 mixin( Document.prototype, EventEmitterMixin.prototype );
 
 // forward common calls to the element set
-['add', 'remove', 'has', 'get', 'size', 'elements'].forEach( name => {
+['has', 'get', 'size', 'elements'].forEach( name => {
   Document.prototype[ name ] = function( ...args ){
     return this.elementSet[ name ]( ...args );
   };
 } );
 
 // aliases of common syncher functions (just to save typing `.syncher` for common ops)
-['create', 'update', 'destroy', 'synch', 'json'].forEach( fn => {
+['create', 'update', 'destroy', 'creationTimestamp'].forEach( fn => {
   Document.prototype[ fn ] = function( ...args ){
     return this.syncher[ fn ]( ...args );
   };

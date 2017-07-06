@@ -1,0 +1,146 @@
+.entity-info {
+  width: 100%;
+}
+
+.entity-info-name-input {
+  width: 100%;
+}
+
+.entity-info-matches-loading {
+  height: 1.5em;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  flex-direction: row;
+  font-size: 1.5em;
+  color: #aaa;
+}
+
+.entity-info-matches-loading-active {
+  color: #000;
+}
+
+.entity-info-matches {
+  margin-top: 0.5em;
+  max-height: calc(100vh - 8em);
+  overflow: auto;
+  transition: opacity 500ms ease-out;
+  opacity: 1;
+}
+
+.entity-info-match-empty {
+  font-size: 0.8em;
+  margin: 1em 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--widgetBorderColor);
+
+  & i {
+    font-size: 2em;
+  }
+}
+
+.entity-info-match-instructions {
+  margin-top: 0.5em;
+  font-size: 0.8em;
+  height: 70vh;
+  display: flex;
+  align-items: center;
+}
+
+.entity-info-match-spacer {
+  margin-top: 0.5em;
+  font-size: 0.8em;
+  height: 70vh;
+}
+
+.entity-info-matches-replacing {
+  opacity: 0.5;
+}
+
+.entity-info-match {
+  width: 100%;
+  position: relative;
+  padding: 0.25em 0;
+  animation: fadeIn 500ms ease-out;
+
+  & + * {
+    margin-top: 0.25em;
+  }
+}
+
+.entity-info-match-target {
+  box-sizing: border-box;
+  display: block;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  transition: border-color 500ms ease-out;
+
+  &:hover {
+    border-color: var(--widgetBorderColor);
+  }
+
+  &:active {
+    border-color: var(--buttonActiveColor);
+  }
+}
+
+.entity-info-name {
+  display: block;
+  font-weight: 600;
+  margin: 0.25em 0;
+}
+
+.entity-info-match-link {
+  font-size: 0.8em;
+  display: block;
+
+  & a {
+    display: inline-block;
+    padding: 0.125em 0.125em 0.125em 0;
+  }
+}
+
+.entity-info-gene-names,
+.entity-info-protein-names,
+.entity-info-organism-section {
+  display: block;
+  font-size: 0.8em;
+  margin: 0.25em 0;
+}
+
+.entity-info-gene-names-title,
+.entity-info-protein-names-title,
+.entity-info-organism-name-title {
+  font-weight: 600;
+  margin-right: 0.5em;
+}
+
+.entity-info-gene-name,
+.entity-info-protein-name,
+.entity-info-organism-name {
+  display: inline;
+
+  & + *::before {
+    content: ', ';
+  }
+}
+
+.entity-info-organism-toggles {
+  margin-top: 0.5em;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.entity-info-unassoc {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 0.25em;
+}

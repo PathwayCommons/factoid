@@ -1,8 +1,9 @@
-let { fill, error, promisifyEmit, mixin, ensureArray, getId, assert } = require('../util');
+let { fill, error, promisifyEmit, mixin, ensureArray, assert } = require('../util');
 let Promise = require('bluebird');
 let EventEmitterMixin = require('./event-emitter-mixin');
 let _ = require('lodash');
 let uuid = require('uuid');
+let EventEmitter = require('eventemitter3');
 
 const OP_TYPE = Object.freeze({
   CREATE: 'CREATE',
@@ -23,6 +24,13 @@ const RDB_TYPE = Object.freeze({
   OBJECT: 'OBJECT'
 });
 
+// check status of db r/w op
+let checkStatus = status => {
+  if( status.errors > 0 ){
+    throw error( status.first_error );
+  }
+};
+
 /**
 A CRUD JSON object that is synched between the clientside and serverside via Socket.io and RethinkDB
   - All functions return a promise, fulfilled when the op is synched
@@ -36,13 +44,13 @@ class Syncher {
   unsynchedFields(){ return ['socket', 'table', 'conn', 'emitter', 'forwardedEmitters', 'isPrivate']; }
 
   // fields that should not be sent to the clientside
-  privateFields(){ return ['secret']; }
+  privateFields(){ return ['secret', '_ops']; }
 
   // fields that can't be mutated in the db (i.e. .update() ops)
   constRemoteFields(){ return ['id', 'secret']; }
 
   // fields that can't be mutated locally (i.e. .load(), live synched .update() ops)
-  constLocalFields(){ return ['id', 'secret', 'liveId']; }
+  constLocalFields(){ return ['id', 'secret', 'liveId', '_ops', '_newestOp']; }
 
   constructor( opts = {} ){
     assert( opts.socket || ( opts.rethink && opts.table && opts.conn ), `An instance of Syncher must have a 'socket' (client) or a 'rethink' with a 'table' and a connection 'conn' (server)` );
@@ -62,20 +70,34 @@ class Syncher {
       ]
     });
 
-    this.data = _.assign( {
+    this.data = _.defaults( {}, opts.data, {
       id: uuid(),
       liveId: uuid(), // to determine the origin of live updates
       secret: 'read-only' // secret must match the secret stored in the db to make writes
-    }, opts.data );
+    } );
 
     this.localOps = [];
 
     // handle live sync updates from the serverside
     if( this.socket ){
-      let canUpdate = ( obj ) => this.live && this.filled && this.data.liveId !== obj.liveId;
+      let canUpdate = obj => this.live && this.filled && this.data.liveId !== obj.liveId && this.data.id === obj.id;
+      let canRemoveLocalOp = obj => this.live && this.filled && this.data.liveId === obj.liveId && this.data.id === obj.id;
+      let canUpdateOnCreate = canRemoveLocalOp;
 
       this.socket
+        .on('create', ( obj ) => {
+          if( !canUpdateOnCreate( obj ) ){ return; }
+
+          let sanitizedCopyOfChanges = _.cloneDeep( _.omit( obj, this.constLocalFields() ) );
+
+          _.assign( this.data, sanitizedCopyOfChanges );
+        })
+
         .on('update', ( diff ) => {
+          if( canRemoveLocalOp( diff.new ) ){
+            this.removeLocalOp( diff.new._newestOp.id );
+          }
+
           if( !canUpdate( diff.new ) ){ return; }
 
           // use the new values but re-apply local updates so they aren't lost
@@ -97,10 +119,16 @@ class Syncher {
         })
 
         .on('error', ( err ) => {
-          // TODO log (and possibly handle) error
+          Syncher.errorEmitter.emit( 'socket', err );
         })
       ;
     }
+  }
+
+  static get errorEmitter(){
+    Syncher._errorEmitter = Syncher._errorEmitter || new EventEmitter();
+
+    return Syncher._errorEmitter;
   }
 
   static synch( opts ){
@@ -114,7 +142,7 @@ class Syncher {
       socket
         .on('create', ( data, send ) => {
           syncher( data ).create()
-            .then( s => send() )
+            .then( () => send() )
             .catch( err => send( jsonErr(err) ) )
           ;
         })
@@ -128,13 +156,13 @@ class Syncher {
         })
         .on('update', ( id, secret, liveId, opId, type, obj, send ) => {
           syncher({ id, secret, liveId }).update( obj, { type, id: opId } )
-            .then( s => send() )
+            .then( () => send() )
             .catch( err => send( jsonErr(err) ) )
           ;
         })
         .on('destroy', ( id, secret, liveId, send ) => {
           syncher({ id, secret, liveId }).destroy()
-            .then( s => send() )
+            .then( () => send() )
             .catch( err => send( jsonErr(err) ) )
           ;
         })
@@ -147,7 +175,7 @@ class Syncher {
           send();
         })
         .on('error', ( err ) => {
-          // TODO log error
+          Syncher.errorEmitter.emit( 'socket', err );
         })
       ;
     });
@@ -182,7 +210,9 @@ class Syncher {
 
         let id = (diff.new_val || diff.old_val).id;
 
-        if( type === 'remove' ){
+        if( type === 'add' ){
+          io.to( id ).emit( 'create', sdiff.new );
+        } else if( type === 'remove' ){
           io.to( id ).emit( 'destroy', sdiff.old );
         } else if( type === 'change' ){
           if( diff.new_val.destroyed ){
@@ -195,22 +225,33 @@ class Syncher {
     } );
   }
 
-  synch( enable ){
-    enable = enable === undefined || enable;
-
+  synch( enable = true ){
     if( this.socket ){
       let emitServer = promisifyEmit( this.socket );
+      let live = this.live;
 
       this.live = enable;
 
       if( enable ){
-        return emitServer( 'synch', this.data.id );
-      } else {
-        return emitServer( 'unsynch', this.data.id );
+        if( !live ){
+          return emitServer( 'synch', this.data.id ).catch( () => this.live = false );
+        } else {
+          return Promise.resolve();
+        }
+      } else if( !enable ){
+        if( live ){
+          return emitServer( 'unsynch', this.data.id ).catch( this.live = true );
+        } else {
+          return Promise.resolve();
+        }
       }
     } else {
       return Promise.reject( error('A Syncher object can not be synch()ed without a socket to a server') );
     }
+  }
+
+  synched(){
+    return this.live;
   }
 
   create( setup = _.noop ){
@@ -222,9 +263,12 @@ class Syncher {
     if( this.table ){
       insert = () => {
         let op = this.timestampOp( this.getOp( data, { type: OP_TYPE.CREATE } ) );
-        let insertion = _.assign( {}, data, { _ops: [ op ] } );
+        let insertion = _.assign( {}, data, {
+          _ops: [ op ],
+          _creationTimestamp: op.timestamp
+        } );
 
-        return this.table.insert( insertion ).run( this.conn ).then( fill ).then( emitSelf );
+        return this.table.insert( insertion ).run( this.conn ).then( checkStatus ).then( fill ).then( emitSelf );
       };
     } else {
       insert = () => {
@@ -261,11 +305,7 @@ class Syncher {
       };
     }
 
-    let log = val => {
-      return val;
-    };
-
-    return Promise.try( find ).then( log ).then( assign ).then( setup ).then( () => {
+    return Promise.try( find ).then( assign ).then( setup ).then( () => {
       this.filled = true;
 
       this.emit('load');
@@ -360,11 +400,11 @@ class Syncher {
       return this.update( data, options );
     };
 
-    let remoteOps = this.data._ops || [];
-    let remoteOpIds = new Set( remoteOps.map( args => args.id ) );
-    let isNotRemotelyApplied = args => !remoteOpIds.has( args.id );
+    this.localOps.forEach( applyOp );
+  }
 
-    this.localOps.filter( isNotRemotelyApplied ).forEach( applyOp );
+  creationTimestamp(){
+    return this.data._creationTimestamp;
   }
 
   timestampOp( op ){
@@ -498,7 +538,9 @@ class Syncher {
         r.row('_ops').default( null ).typeOf().eq( RDB_TYPE.ARRAY ), // if
         r.row('_ops').append( opToWrite ), // then
         [ opToWrite ] // else => just put the op if empty/null/not-an-array
-      )
+      ),
+
+      _newestOp: opToWrite
     } );
 
     return this.table.get( this.data.id ).update( change ).run( this.conn );
@@ -526,13 +568,16 @@ class Syncher {
     }
 
     let changes = _.pick( this.data, objKeys );
-    let emitSelf = () => this.emit( 'update', changes, old );
+    let emitSelf = () => {
+      this.emit( 'localupdate', changes, old );
+      this.emit( 'update', changes, old );
+    };
     let update;
 
     if( this.table ){
       let write = () => this.updateDatabaseWithOp( op, obj );
 
-      update = () => this.confirmSecret().then( write ).then( emitSelf );
+      update = () => this.confirmSecret().then( write ).then( checkStatus ).then( emitSelf );
     } else if( !this.filled ){ // only a local (not yet synched) instance
       update = () => Promise.resolve().then( emitSelf );
     } else {
@@ -601,7 +646,7 @@ class Syncher {
       let markDb = () => this.table.get( this.data.id ).update({ destroyed: true, liveId: this.data.liveId }).run( this.conn );
       let del = () => this.table.get( this.data.id ).delete().run( this.conn );
 
-      remove = () => this.confirmSecret().then( markDb ).then( del ).then( markDestroyed ).then( emitSelf );
+      remove = () => this.confirmSecret().then( markDb ).then( checkStatus ).then( del ).then( checkStatus ).then( markDestroyed ).then( emitSelf );
     } else if( !this.filled ){ // i.e. local instance, yet unsynched
       remove = () => Promise.resolve().then( markDestroyed ).then( emitSelf );
     } else {

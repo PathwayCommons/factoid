@@ -145,6 +145,8 @@ describe('Element', function(){
     let eleS, eleC1, eleC2;
 
     before(function(){
+      io.start();
+
       // set up serverside part of synch
       Syncher.synch({
         rethink: tableUtil.rethink,
@@ -152,6 +154,10 @@ describe('Element', function(){
         conn: tableUtil.conn,
         io: io.server( NS )
       });
+    });
+
+    after(function(){
+      io.stop();
     });
 
     beforeEach(function( done ){

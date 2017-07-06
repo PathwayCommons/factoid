@@ -5,14 +5,14 @@ let Syncher = require('../src/model/syncher');
 let ElementFactory = require('../src/model/element/factory');
 let Entity = require('../src/model/element/entity');
 let Interaction = require('../src/model/element/interaction');
+let Protein = require('../src/model/element/protein');
 let Document = require('../src/model/document');
-let _ = require('lodash');
 let MockSocket = require('./mock/socket');
 let ElementCache = require('../src/model/element-cache');
 let MockCache = require('./mock/cache');
 let TableUtil = require('./util/table');
 let io = require('./util/socket-io');
-let { when, whenAll } = require('./util/when');
+let { whenAll } = require('./util/when');
 
 const NS = 'document_tests';
 const NS_ELE = 'document_tests_elements';
@@ -20,7 +20,7 @@ const NS_ELE = 'document_tests_elements';
 describe('Document', function(){
   let doc;
   let intn;
-  let ent;
+  let ent, ent2;
   let socketEnt = new MockSocket();
   let socketDoc = new MockSocket();
   let tableUtil;
@@ -34,8 +34,8 @@ describe('Document', function(){
         expect( doc.json() ).to.have.property('id');
       });
 
-      it('contains entries"', function(){
-        expect( doc.json() ).to.have.property('entries');
+      it('contains elements"', function(){
+        expect( doc.json() ).to.have.property('elements');
       });
     });
 
@@ -141,7 +141,14 @@ describe('Document', function(){
     afterEach(function( done ){
       tableUtilEle.deleteEntry( intn.id(), function(){
         tableUtilEle.deleteEntry( ent.id(), function(){
-          tableUtil.deleteEntry( doc.id(), done );
+          tableUtil.deleteEntry( doc.id(), function(){
+            if( ent2 ){
+              tableUtilEle.deleteEntry( ent2.id(), done );
+              ent2 = null;
+            } else {
+              done();
+            }
+          } );
         } );
       } );
     });
@@ -211,19 +218,28 @@ describe('Document', function(){
     before(function(){
       // set up serverside part of synch
 
+      io.start();
+
+      let ioDoc = io.server( NS );
+      let ioEle = io.server( NS_ELE );
+
       Syncher.synch({
         rethink: tableUtil.rethink,
         table: tableUtil.table,
         conn: tableUtil.conn,
-        io: io.server( NS )
+        io: ioDoc
       });
 
       Syncher.synch({
         rethink: tableUtilEle.rethink,
         table: tableUtilEle.table,
         conn: tableUtilEle.conn,
-        io: io.server( NS_ELE )
+        io: ioEle
       });
+    });
+
+    after(function(){
+      io.stop();
     });
 
     beforeEach(function(){
@@ -256,7 +272,7 @@ describe('Document', function(){
         }
       });
 
-      ent2S = new Entity({ // server
+      ent2 = ent2S = new Entity({ // server
         rethink: tableUtilEle.rethink,
         table: tableUtilEle.table,
         conn: tableUtilEle.conn,
@@ -549,7 +565,7 @@ describe('Document', function(){
         expect( docC1.elements()[0].id(), 'pid' ).to.equal( entC1.id() );
         expect( docC1.elements()[0], 'element' ).to.equal( entC1 );
 
-        docC1.remove( entC1 )
+        docC1.remove( entC1 );
       });
 
       docC2.on('remove', function(){
@@ -566,11 +582,11 @@ describe('Document', function(){
       return Promise.resolve().then( () => {
         let updated = whenAll( [ docC1, docC2 ], 'add', 2 );
 
-        docC1.on('remove', ( ele, group ) => {
+        docC1.on('remove', () => {
           throw new Error(`docC1 should not have anything removed`);
         });
 
-        docC2.on('remove', ( ele, group ) => {
+        docC2.on('remove', () => {
           throw new Error(`docC2 should not have anything removed`);
         });
 
@@ -601,11 +617,11 @@ describe('Document', function(){
       } ).then( () => {
         let updated = whenAll( [ docC1, docC2 ], 'remove', 2 );
 
-        docC1.on('add', ( ele, group ) => {
+        docC1.on('add', () => {
           throw new Error(`docC1 should not have anything added`);
         });
 
-        docC2.on('add', ( ele, group ) => {
+        docC2.on('add', () => {
           throw new Error(`docC2 should not have anything added`);
         });
 
@@ -617,6 +633,66 @@ describe('Document', function(){
         expect( docC1.elements().length, 'number of elements (client1)' ).to.equal( 0 );
         expect( docC2.elements().length, 'number of elements (client2)' ).to.equal( 0 );
       } );
+    });
+
+    it('associates entity on client1, resolves on client2', function( next ){
+      let assoc = {
+        name: 'p53',
+        id: 43289543859,
+        organism: 9606,
+        type: 'protein'
+      };
+
+      let replaced = [ true, false, false ]; // index 0 is nothing
+
+      let replace = i => {
+        replaced[i] = true;
+        checkDone();
+      };
+
+      let associated = [ true, false, false ]; // index 0 is nothing
+
+      let associate = i => {
+        associated[i] = true;
+        checkDone();
+      };
+
+      let checkDone = () => {
+        let isDone = arr => !arr.some( val => !val );
+
+        if( isDone( associated ) && isDone( replaced ) ){
+          next();
+        }
+      };
+
+      entC1.on('associated', () => associate(1));
+
+      docC1.on('replace', function( oldEnt, newEnt ){
+        expect( oldEnt, 'old ent 1' ).to.equal( entC1 );
+        expect( newEnt instanceof Protein, 'new ent 1 is protein' ).to.be.true;
+        expect( newEnt.name(), 'new name 1' ).to.equal('p53');
+
+        replace(1);
+      });
+
+      entC2.on('associated', () => associate(2));
+
+      docC2.on('replace', function( oldEnt, newEnt ){
+        expect( oldEnt, 'old ent 2' ).to.equal( entC2 );
+        expect( newEnt instanceof Protein, 'new ent 2 is protein' ).to.be.true;
+        expect( newEnt.name(), 'new name 2' ).to.equal('p53');
+
+        replace(2);
+      });
+
+      Promise.all([
+        docC1.add( entC1 ),
+        docC2.add( entC2 )
+      ]).then( () => {
+        entC1.associate( assoc );
+
+        expect( entC1.association(), 'association' ).to.deep.equal( assoc );
+      });
     });
   });
 });

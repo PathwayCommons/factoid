@@ -1,13 +1,9 @@
 var express = require('express');
 var http = express.Router();
-var io = require('./socket.io').router();
-var path = require('path');
 
-/* GET home page. */
-http.get('/', function(req, res, next) {
-  res.render('index.ejs', {
-    development: req.app.get('env') === 'development'
-  });
+// get the app ui
+http.get('*', function(req, res) {
+  res.render('index');
 });
 
-module.exports = { http, io };
+module.exports = http;

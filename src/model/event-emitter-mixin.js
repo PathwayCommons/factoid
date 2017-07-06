@@ -13,19 +13,19 @@ let EventEmitterMixin = m = function(){
 
 _.extend( m.prototype, {
   on: function( name, listener ){
-    this.emitter.on( name, listener );
+    this.emitter.on( name, listener, this );
 
     return this;
   },
 
   once: function( name, listener ){
-    this.emitter.once( name, listener );
+    this.emitter.once( name, listener, this );
 
     return this;
   },
 
   removeListener: function( name, listener ){
-    this.emitter.removeListener( name, listener );
+    this.emitter.removeListener( name, listener, this );
 
     return this;
   },

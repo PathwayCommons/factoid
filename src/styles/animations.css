@@ -1,0 +1,19 @@
+@keyframes spin {
+  0% {
+    transform: rotate(45deg);
+  }
+
+  100% {
+    transform: rotate(404deg);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

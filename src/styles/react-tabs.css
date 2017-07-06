@@ -1,0 +1,38 @@
+.react-tabs__tab-list {
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 0.25em;
+  line-height: inherit;
+}
+
+.react-tabs__tab {
+  display: flex;
+  position: relative;
+  flex-grow: 1;
+  margin: 0;
+  padding: 0 0.25em;
+  border-bottom: 2px solid #ccc;
+  color: #888;
+  cursor: pointer;
+  justify-content: center;
+  transition-property: border-bottom-color, color;
+  transition-duration: 500ms;
+  transition-timing-function: linear;
+  text-align: center;
+}
+
+.react-tabs__tab--selected,
+.react-tabs__tab:active {
+  border-bottom-color: #000;
+  color: #000;
+}
+
+.react-tabs__tab--selected {
+}
+
+.react-tabs__tab-panel {
+
+}

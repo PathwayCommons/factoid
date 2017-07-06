@@ -1,0 +1,20 @@
+/* tippy theme overrides */
+
+.tippy-popper .tippy-tooltip.light-theme {
+  text-align: inherit;
+  color: inherit;
+}
+
+.tippy,
+.tippy-popper,
+.tippy-tooltip {
+  font-size: inherit;
+}
+
+.tippy-popper .tippy-tooltip.light-theme {
+  box-shadow: 0 4px 20px 4px rgba(0, 20, 60, 0.2), 0 4px 80px -8px rgba(0, 20, 60, 0.3);
+}
+
+.tippy-popper {
+  z-index: 999999 !important;
+}

@@ -1,5 +1,6 @@
 let Element = require('./element');
 let _ = require('lodash');
+let Promise = require('bluebird');
 let ElementSet = require('../element-set');
 var { assertFieldsDefined } = require('../../util');
 
@@ -43,7 +44,19 @@ class Interaction extends Element {
 
   load( setup = _.noop ){
     return super.load( () => {
-      return this.elementSet.load().then( setup );
+      return this.postload().then( setup );
+    } );
+  }
+
+  postload(){
+    return this.elementSet.load();
+  }
+
+  synch( enable ){
+    return Promise.try( () => {
+      return super.synch( enable );
+    } ).then( () => {
+      return this.elementSet.synch( enable );
     } );
   }
 
@@ -62,12 +75,25 @@ class Interaction extends Element {
   regroupParticipant( ele, opts ){
     return this.regroup( ele, opts );
   }
+
+  json(){
+    return _.assign( {}, super.json(), {
+      elements: this.elements().map( el => el.json() )
+    } );
+  }
 }
 
 // forward common calls to the element set
-['add', 'remove', 'has', 'get', 'size', 'elements', 'regroup'].forEach( name => {
+['has', 'get', 'size', 'elements'].forEach( name => {
   Interaction.prototype[ name ] = function( ...args ){
     return this.elementSet[ name ]( ...args );
+  };
+} );
+
+// forward promise-returning calls to the element set
+['add', 'remove', 'regroup'].forEach( name => {
+  Interaction.prototype[ name ] = function( ...args ){
+    return this.elementSet[ name ]( ...args ).then( () => this ); // resolve self
   };
 } );
 

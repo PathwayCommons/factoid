@@ -1,0 +1,41 @@
+.element-info {
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  padding: 0.5em;
+  min-width: 300px;
+  max-width: 100vw;
+  width: 33vw;
+}
+
+.element-info-controls {
+  position: absolute;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: -2em;
+  z-index: 99999;
+}
+
+/* works around qtip making these eles flicker on chrome */
+.element-info-controls {
+  background: rgba(255, 255, 255, 0.001);
+  padding-left: 1px;
+}
+
+.element-info-control {
+  width: 1.75em;
+  height: 1.7em;
+  border-radius: 1.75em;
+  background: #fff;
+  margin: 0.125em 0;
+  border-right-color: color(var(--widgetBorderColor) lightness(+15%));
+  border-top-color: color(var(--widgetBorderColor) lightness(+10%));
+  border-bottom-color: color(var(--widgetBorderColor) lightness(+8%));
+}
+
+.element-info-message {
+  color: #888;
+  text-align: center;
+}

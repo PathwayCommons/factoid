@@ -58,7 +58,7 @@ function error( err ){
 function getId( idOrObj ){
   let id;
 
-  if( _.isString( idOrObj ) ){
+  if( _.isString( idOrObj ) || _.isNumber( idOrObj ) ){
     id = idOrObj;
   } else if( _.isObject( idOrObj ) ) {
     let obj = idOrObj;

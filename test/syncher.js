@@ -7,7 +7,7 @@ let Promise = require('bluebird');
 let MockSocket = require('./mock/socket');
 let TableUtil = require('./util/table');
 let io = require('./util/socket-io');
-let { when, whenAll } = require('./util/when');
+let { when, whenAll, delay } = require('./util/when');
 
 let NS = 'syncher_tests';
 
@@ -524,6 +524,8 @@ describe('Syncher', function(){
     serverPrePost();
 
     before(function(){
+      io.start();
+
       // set up serverside part of synch
       Syncher.synch({
         rethink: tableUtil.rethink,
@@ -531,6 +533,10 @@ describe('Syncher', function(){
         conn: tableUtil.conn,
         io: io.server( NS )
       });
+    });
+
+    after(function(){
+      io.stop();
     });
 
     beforeEach(function( done ){
@@ -981,6 +987,20 @@ describe('Syncher', function(){
         });
       });
 
+      it('fails to overwrite existing object with same id', function(){
+        let fail;
+
+        return sc.create().then(function(){
+          return sc2.create();
+        }).then(function( ret ){
+          fail = false;
+        }).catch(function(){
+          fail = true;
+        }).finally(function(){
+          expect( fail, 'fail' ).to.be.true;
+        });
+      });
+
       it('creates on client1, loads on client2', function(){
         return sc.update('foo', 'foo2').then(function(){
         }).then(function(){
@@ -1118,6 +1138,53 @@ describe('Syncher', function(){
 
           sc.update('foo', 'foo2'); // kick off first 3 events
         });
+      });
+
+      it('gets remote updates only for the same id with same socket', function( done ){
+        sc2.data.id = sc.data.id;
+        sc2.data.obj = { a: 1 };
+        sc.data.obj = { a: 1 };
+
+        let s2c2 = new Syncher({
+          socket: sc2.socket,
+          data: {
+            id: 'id2',
+            secret: 'secret',
+            foo: 'foo',
+            bar: 'bar',
+            baz: 321,
+            liveId: sc2.data.liveId,
+            obj: { a: 2 }
+          }
+        });
+
+        s2c2.on('remoteupdate', () => {
+          throw new Error('Got unexpected remote update');
+        });
+
+        s2c2.on('update', () => {
+          throw new Error('Got unexpected update');
+        });
+
+        Promise.resolve().then( () => {
+          return s2c2.synch( true );
+        } ).then( () => {
+          return Promise.all([ sc.create(), s2c2.create() ]);
+        } ).then( () => {
+          return sc2.load();
+        } ).then( () => {
+          return delay( 300 );
+        } ).then( () => {
+          return sc.update('obj', { a: 3 });
+        } ).then( () => {
+          return delay( 300 );
+        } ).then( () => {
+          s2c2.synch( false );
+
+          expect( s2c2.get('obj') ).to.deep.equal({ a: 2 });
+
+          done();
+        } );
       });
 
       it('merges on client1, heard by client2', function( done ){

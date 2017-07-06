@@ -1,0 +1,66 @@
+.editor {
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+}
+
+.editor-buttons {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  display: inline-flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.5);
+  border-bottom-right-radius: 8px;
+}
+
+.editor-menu {
+  z-index: 1;
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: rgba(255, 255, 255, 0.5);
+  border-bottom-left-radius: 8px;
+}
+
+.editor-button {
+  margin: 0.25em;
+  width: 1.75em;
+  height: 1.75em;
+  font-size: 1.25em;
+}
+
+.editor-graph {
+  z-index: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.editor-menu-content {
+  min-width: 14em;
+  max-width: 40em;
+  width: 33vw;
+}
+
+.editor-menu-tab-content {
+  max-height: calc(100vh - 6em);
+  overflow: auto;
+}
+
+.editor-menu-tab-title {
+  display: inline-block;
+  width: 100%;
+  padding-bottom: 0.25em;
+}
+
+.editor-menu-content .popover-target {
+  width: 100%;
+}
+
+.editor-linkout-address-url {
+  width: calc(100% - 2em);
+}

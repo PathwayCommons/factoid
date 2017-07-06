@@ -1,0 +1,10 @@
+/* custom classes to use with fa */
+
+/* normalises fa with md icon size */
+.fa-md {
+  font-size: 0.8em;
+  vertical-align: 0.08em;
+  display: inline-block;
+  width: calc(1/0.8em);
+  text-align: center;
+}

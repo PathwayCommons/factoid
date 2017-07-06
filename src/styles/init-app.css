@@ -1,0 +1,28 @@
+.init-app {
+  position: fixed;
+  z-index: 999999999;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background: #fff;
+}
+
+.init-app-icon {
+  font-size: 2em;
+}
+
+.init-app-initted {
+  transition-property: opacity;
+  transition-duration: 250ms;
+  transition-timing-function: ease-out;
+  pointer-events: none;
+  opacity: 0;
+
+  & .icon {
+    animation: none;
+  }
+}

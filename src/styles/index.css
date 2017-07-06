@@ -1,4 +1,26 @@
 @import "normalize.css";
-@import "./vendor/skeleton.css";
+@import "./vars.css";
 
-/* import other css here */
+/* fonts */
+@import "./vendor/open-sans.css";
+@import "./vendor/inconsolata.css";
+@import "./vendor/font-awesome.css";
+/*@import "./vendor/font-awesome-form.css";*/
+@import "./vendor/font-awesome-custom.css";
+@import "./vendor/material-icons.css";
+@import "./vendor/material-form.css";
+@import "./vendor/bio-icons.css";
+
+/* app styles */
+@import "./animations.css";
+@import "./base.css";
+/*@import "./vendor/jquery.qtip.css";*/
+@import "./qtip.css";
+@import "tippy.js/dist/tippy.css";
+@import "./tippy.css";
+@import "./popover.css";
+@import "./tooltip.css";
+@import "./react-tabs.css";
+@import "./init-app.css";
+@import "./app.css";
+@import "./editor";

@@ -1,5 +1,4 @@
-let _ = require('lodash');
-let serverIo = require('socket.io')(54321);
+let serverIo;
 let clientIo = require('socket.io-client');
 
 let client = (function( ns ){
@@ -10,4 +9,14 @@ let server = (function( ns ){
   return serverIo.of('/' + ns);
 });
 
-module.exports = { client, server };
+let stop = function(){
+  serverIo.close();
+};
+
+let start = function(){
+  serverIo = require('socket.io')(54321);
+
+  return serverIo;
+};
+
+module.exports = { client, server, start, stop };

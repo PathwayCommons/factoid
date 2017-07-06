@@ -1,0 +1,13 @@
+:root {
+  --widgetBorderColor: #aaa;
+  --widgetBorderRadius: 4px;
+  --widgetDisabledBorderColor: #ddd;
+  --widgetDisabledTextColor: #888;
+  --widgetActiveColor: #aaa;
+  --widgetToggleColor: #ccc;
+  --buttonActiveColor: #000;
+  --widgetHeight: 1.75em;
+  --defaultWidgetWidth: 12em;
+  --activeColor: #3193fd;
+  --invalidColor: #c20e0e;
+}

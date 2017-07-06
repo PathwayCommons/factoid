@@ -4,3 +4,6 @@ npm-debug.log
 /build
 /rethinkdb_data
 .vagrant
+warn.log
+error.log
+debug.log

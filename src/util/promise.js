@@ -7,32 +7,6 @@ function passthrough( fn ){
     fn( val ); // also pass just in case you want to use the val
 
     return val;
-  }
-}
-
-// reimpl of Bluebird.promisify()
-function promisify( fn, options ){
-  return function(){
-    let options = Object.assign( {
-      context: this,
-      multiArgs: false
-    }, options );
-
-    let args = slice( arguments );
-
-    return new Promise(( resolve, reject ) => {
-      let callback = ( err, val ) => {
-        if( err != null ){
-          reject( err );
-        } else {
-          resolve( options.multiArgs ? slice( arguments, 1 ) : val );
-        }
-      };
-
-      args.push( callback );
-
-      fn.apply( options.context, args );
-    });
   };
 }
 
@@ -58,4 +32,14 @@ function promiseOn( emitter, evt ){
   return new Promise( resolve => emitter.once( evt, resolve ) );
 }
 
-module.exports = { passthrough, promisify, promisifyEmit, promiseOn };
+function delay( duration ){
+  return new Promise( resolve => setTimeout( () => resolve(), duration ) );
+}
+
+function delayPassthrough( duration ){
+  return function( val ){
+    return delay( duration ).then( () => val );
+  };
+}
+
+module.exports = { passthrough, promisifyEmit, promiseOn, delay, delayPassthrough };

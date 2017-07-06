@@ -1,0 +1,45 @@
+input[type="radio"],
+input[type="checkbox"] {
+  position: absolute;
+  opacity: 0.00001;
+  pointer-events: none;
+}
+
+input[type="radio"] + label::before,
+input[type="checkbox"] + label::before {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  width: 1.28571429em;
+  text-align: center;
+  color: var(--widgetBorderColor);
+  cursor: pointer;
+}
+
+input + label {
+  cursor: pointer;
+}
+
+input[type="checkbox"] + label::before {
+  content: '\f096';
+}
+
+input[type="checkbox"]:checked + label::before {
+  /*content: '\f14a';*/
+  content: '\f046';
+  position: relative;
+  left: 0.05em;
+  color: var(--widgetActiveColor);
+}
+
+input[type="radio"] + label::before {
+  content: '\f1db';
+}
+
+input[type="radio"]:checked + label::before {
+  content: '\f192';
+  color: var(--widgetActiveColor);
+}

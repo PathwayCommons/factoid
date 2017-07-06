@@ -1,0 +1,62 @@
+input[type="radio"],
+input[type="checkbox"] {
+  position: absolute;
+  opacity: 0.00001;
+  pointer-events: none;
+}
+
+input[type="radio"] + label:before,
+input[type="checkbox"] + label::before {
+  font: normal normal normal 24px/1 'Material Icons';
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: inherit;
+  vertical-align: bottom;
+  transition-property: color;
+  transition-duration: 250ms;
+  transition-timing-function: ease-in-out;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+
+  display: inline-block;
+  width: 1.28571429em;
+  text-align: center;
+  color: var(--widgetBorderColor);
+
+  cursor: pointer;
+}
+
+input + label,
+input + label {
+  cursor: pointer;
+}
+
+input[type="checkbox"] + label::before {
+  content: '\e835';
+}
+
+input[type="checkbox"]:checked + label::before {
+  content: '\e834';
+  color: inherit;
+}
+
+input[type="radio"] + label::before {
+  content: '\e836';
+}
+
+input[type="radio"]:checked + label::before {
+  content: '\e837';
+  color: inherit;
+}

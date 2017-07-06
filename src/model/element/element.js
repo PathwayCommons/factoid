@@ -8,6 +8,7 @@ const TYPE = 'element';
 const DEFAULTS = Object.freeze({
   position: { x: 0, y: 0 },
   name: '',
+  description: '',
   type: TYPE
 });
 
@@ -37,16 +38,27 @@ class Element {
     this.on('remoteupdate', ( changes, old ) => {
       if( changes.position != null ){
         this.emit( 'reposition', changes.position, old.position );
+        this.emit( 'remotereposition', changes.position, old.position );
       }
 
       if( changes.name != null ){
         this.emit( 'rename', changes.name, old.name );
+        this.emit( 'remoterename', changes.name, old.name );
+      }
+
+      if( changes.description != null ){
+        this.emit( 'redescribe', changes.description, old.description );
+        this.emit( 'remoteredescribe', changes.description, old.description );
       }
     });
   }
 
   filled(){
     return this.syncher.filled;
+  }
+
+  live(){
+    return this.syncher.live;
   }
 
   static type(){ return TYPE; }
@@ -67,6 +79,14 @@ class Element {
     return this.syncher.get('id');
   }
 
+  secret(){
+    return this.syncher.get('secret');
+  }
+
+  postload(){
+    return Promise.resolve();
+  }
+
   rename( newName ){
     let updatePromise = this.syncher.update( 'name', newName );
 
@@ -76,7 +96,7 @@ class Element {
   }
 
   name( newName ){
-    if( newName != null ){
+    if( newName !== undefined ){
       return this.rename( newName );
     } else {
       return this.syncher.get('name');
@@ -98,20 +118,53 @@ class Element {
   }
 
   position( newPos ){
-    if( newPos != null ){
+    if( newPos !== undefined ){
       return this.reposition( newPos );
     } else {
       return this.syncher.get('position');
     }
+  }
+
+  redescribe( descr ){
+    let updatePromise = this.syncher.update( 'description', descr );
+
+    this.emit( 'redescribe', descr );
+
+    return updatePromise;
+  }
+
+  description( descr ){
+    if( descr !== undefined ){
+      return this.redescribe( descr );
+    } else {
+      return this.syncher.get('description');
+    }
+  }
+
+  json(){
+    return {
+      id: this.id(),
+      secret: this.secret(),
+      type: this.type(),
+      name: this.name(),
+      description: this.description()
+    };
   }
 }
 
 mixin( Element.prototype, EventEmitterMixin.prototype );
 
 // aliases of common syncher functions (just to save typing `.syncher` for common ops)
-['create', 'load', 'update', 'destroy', 'synch', 'json'].forEach( fn => {
+['creationTimestamp'].forEach( fn => {
   Element.prototype[ fn ] = function( ...args ){
     return this.syncher[ fn ]( ...args );
+  };
+} );
+
+// promise aliases
+['create', 'load', 'update', 'destroy', 'synch'].forEach( fn => {
+  Element.prototype[ fn ] = function( ...args ){
+    return this.syncher[ fn ]( ...args ).then( () => this );
   };
 } );
 

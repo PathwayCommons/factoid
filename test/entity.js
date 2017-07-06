@@ -3,7 +3,6 @@ let conf = require('./util/conf');
 let expect = require('chai').expect;
 let Syncher = require('../src/model/syncher');
 let Entity = require('../src/model/element/entity');
-let _ = require('lodash');
 let MockSocket = require('./mock/socket');
 let TableUtil = require('./util/table');
 let io = require('./util/socket-io');
@@ -92,9 +91,11 @@ describe('Entity', function(){
   describe('(client-client live synch)', function(){
     serverPrePost();
 
-    let eleS, eleC1, eleC2;
+    let eleS, eleC1, eleC2; // eslint-disable-line
 
     before(function(){
+      io.start();
+
       // set up serverside part of synch
       Syncher.synch({
         rethink: tableUtil.rethink,
@@ -102,7 +103,11 @@ describe('Entity', function(){
         conn: tableUtil.conn,
         io: io.server( NS )
       });
-    })
+    });
+
+    after(function(){
+      io.stop();
+    });
 
     beforeEach(function( done ){
       ele = eleS = new Entity({ // server

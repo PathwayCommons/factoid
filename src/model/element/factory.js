@@ -2,6 +2,7 @@ let _ = require('lodash');
 let Syncher = require('../syncher');
 let Entity = require('./entity');
 let Element = require('./element');
+let Protein = require('./protein');
 let Interaction = require('./interaction');
 let Promise = require('bluebird');
 
@@ -22,9 +23,11 @@ class ElementFactory {
     this.config = _.defaults( {}, opts, {
       types: [
         Entity,
+        Protein,
         Interaction
       ],
-      defaultType: Entity
+      defaultType: Entity,
+      data: {}
     } );
   }
 
@@ -32,22 +35,44 @@ class ElementFactory {
     return this.config.types.find( t => t.type() === typeStr );
   }
 
+  set( opts ){
+    _.assign( this.config, _.pick( opts, this.configFields() ) );
+    _.assign( this.config.data, _.get( opts, 'data' ) );
+  }
+
+  configFields(){
+    return ['rethink', 'table', 'conn', 'socket', 'cache'];
+  }
+
   defaultTypeOptions(){
-    return _.pick( this.config, ['rethink', 'table', 'conn', 'socket'] );
+    return _.pick( this.config, this.configFields() );
+  }
+
+  defaultData(){
+    return this.config.data;
+  }
+
+  fillOptions( opts ){
+    let o;
+
+    o = _.assign( {}, this.defaultTypeOptions(), opts );
+    o.data = _.assign( {}, this.defaultData(), _.get( opts, 'data' ) );
+
+    return o;
   }
 
   make( opts ){
     if( opts instanceof Element ){ return opts; }
 
-    let Type = this.getType( opts.type ) || this.config.defaultType;
+    opts = this.fillOptions( opts );
 
-    opts = _.assign( this.defaultTypeOptions(), opts );
+    let Type = this.getType( opts.data.type ) || this.config.defaultType;
 
     return new Type( opts );
   }
 
   load( opts ){
-    opts = _.assign( this.defaultTypeOptions(), opts );
+    opts = this.fillOptions( opts );
 
     // just treat as generic syncher json obj b/c we don't know the type yet
     let genObj = new Syncher( opts );
@@ -62,7 +87,8 @@ class ElementFactory {
       // filled instead of .load()ing twice
       ele.syncher.filled = true;
 
-      return ele;
+      // similarly, we need to do any post-load steps because we didn't call Type.load()
+      return ele.postload().then( () => ele );
     } );
   }
 }

@@ -5,7 +5,6 @@ let Syncher = require('../src/model/syncher');
 let ElementFactory = require('../src/model/element/factory');
 let Entity = require('../src/model/element/entity');
 let Interaction = require('../src/model/element/interaction');
-let _ = require('lodash');
 let MockSocket = require('./mock/socket');
 let MockCache = require('./mock/cache');
 let TableUtil = require('./util/table');
@@ -17,7 +16,7 @@ const NS_ENT = 'interaction_tests';
 
 describe('Interaction', function(){
   let intn;
-  let ent;
+  let ent, ent2;
   let socket = new MockSocket();
   let socketEnt = new MockSocket();
   let tableUtil;
@@ -109,7 +108,14 @@ describe('Interaction', function(){
 
     afterEach(function( done ){
       tableUtil.deleteEntry( intn.id(), function(){
-        tableUtilEnt.deleteEntry( ent.id(), done );
+        tableUtilEnt.deleteEntry( ent.id(), function(){
+          if( ent2 ){
+            tableUtilEnt.deleteEntry( ent2.id(), done );
+            ent2 = null;
+          } else {
+            done();
+          }
+        } );
       } );
     });
 
@@ -162,6 +168,8 @@ describe('Interaction', function(){
     let unsynch = obj => obj.synch( false );
 
     before(function(){
+      io.start();
+
       // set up serverside part of synch
       Syncher.synch({
         rethink: tableUtil.rethink,
@@ -178,6 +186,10 @@ describe('Interaction', function(){
           io: io.server( NS_ENT )
         });
       }
+    });
+
+    after(function(){
+      io.stop();
     });
 
     beforeEach(function(){
@@ -210,7 +222,7 @@ describe('Interaction', function(){
         }
       });
 
-      ent2S = new Entity({ // server
+      ent2 = ent2S = new Entity({ // server
         rethink: tableUtilEnt.rethink,
         table: tableUtilEnt.table,
         conn: tableUtilEnt.conn,

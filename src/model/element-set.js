@@ -65,14 +65,22 @@ class ElementSet {
             add( f.ele, f.entry );
 
             this.emitter.emit( 'add', f.ele, f.entry.group );
+            this.emitter.emit( 'remoteadd', f.ele, f.entry.group );
           } );
 
           filledRemoved.forEach( f => {
             remove( f.ele, f.entry );
 
             this.emitter.emit( 'remove', f.ele, f.entry.group );
+            this.emitter.emit( 'remoteremove', f.ele, f.entry.group );
           } );
         } );
+      }
+    });
+
+    this.emitter.on('add', ele => {
+      if( this.syncher.live && !ele.live() ){
+        ele.synch( true );
       }
     });
   }
@@ -83,6 +91,10 @@ class ElementSet {
     let fillInEntry = entry => loadEle( entry ).then( add );
 
     return Promise.all( this.syncher.get('entries').map( fillInEntry ) );
+  }
+
+  synch( enable ){
+    return Promise.all([ this.elements().map( el => el.synch( enable ) ) ]);
   }
 
   add( ele, opts = {} ){
@@ -114,6 +126,10 @@ class ElementSet {
     let id = getId( ele );
     let { silent } = opts;
 
+    if( id === ele ){
+      ele = this.get( id ); // we need to make sure to emit the proper ele obj later
+    }
+
     this.elementsById.delete( id );
 
     let entry = this.syncher.get('entries').find( en => en.id === id );
@@ -126,6 +142,24 @@ class ElementSet {
     }
 
     return updatePromise;
+  }
+
+  // replace ele with new ele obj (representing the same ele)
+  // - assumes the element is just of another (sub)type, e.g. generic element => protein
+  // - synchronous op
+  replace( oldEle, newEle, opts = {} ){
+    if( !this.has( oldEle ) ){ return; } // can't replace nonexistant
+
+    let id = getId( oldEle );
+    let { silent } = opts;
+
+    this.elementsById.set( id, newEle );
+
+    if( !silent ){
+      this.emitter.emit( 'replace', oldEle, newEle );
+    }
+
+    return Promise.resolve();
   }
 
   has( ele ){

@@ -45,6 +45,14 @@ class ElementCache {
     this.source.delete( getId( ele ) );
   }
 
+  reload( ele ){
+    let id = getId( ele );
+
+    this.remove( ele );
+
+    return this.load( id );
+  }
+
   load( id, opts ){
     let secret = this.secret;
     let get = () => this.get( id );

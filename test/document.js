@@ -687,7 +687,7 @@ describe('Document', function(){
 
       Promise.all([
         docC1.add( entC1 ),
-        docC2.add( entC2 )
+        new Promise( resolve => docC2.on('add', resolve) )
       ]).then( () => {
         entC1.associate( assoc );
 

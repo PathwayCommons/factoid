@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "start": "forever ./src/server",
-    "stop": "forever stop ./src/server",
+    "stop": "forever stopall",
     "test": "mocha",
     "debug": "node --inspect --debug-brk ./src/server",
     "build": "gulp build",

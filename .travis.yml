@@ -5,4 +5,4 @@ node_js:
   - "stable"
 sudo: false
 addons:
-  rethinkdb: '2'
+  rethinkdb: '2.3.5'

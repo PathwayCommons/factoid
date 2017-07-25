@@ -107,7 +107,6 @@
     "fready",
     "react",
     "react-dom",
-    "winston",
     "hyperscript-helpers",
     "react-hyperscript",
     "hyperscript",

@@ -15,7 +15,7 @@ function makeCyEles( docEls ){
 function makeCyElesForEle( docEl ){
   let els = [];
 
-  els.push({
+  let el = {
     data: {
       id: docEl.id(),
       name: docEl.name(),
@@ -25,10 +25,14 @@ function makeCyElesForEle( docEl ){
       associated: docEl.isEntity() ? docEl.associated() : undefined
     },
     position: _.clone( docEl.position() )
-  });
+  };
+
+  els.push( el );
 
   if( docEl.isInteraction() ){ // add edges connecting participants to interaction node
-    els.push( ...makePptEdges( docEl ) );
+    let edges = makePptEdges( docEl );
+
+    els.push( ...edges );
   }
 
   return els;

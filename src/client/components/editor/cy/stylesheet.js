@@ -35,10 +35,26 @@ function makeStylesheet(){
     {
       selector: 'node[?isInteraction]',
       style: {
+        'shape': 'ellipse',
+        'width': 3,
+        'height': 3,
+        'label': '',
+        'border-width': 3 * (interactionNodeSize - 2),
+        'border-opacity': 0.0001
+      }
+    },
+    {
+      selector: 'node[?isInteraction][arity][arity < 2]',
+      style: {
         'shape': 'roundrectangle',
         'width': interactionNodeSize,
-        'height': interactionNodeSize,
-        'label': ''
+        'height': interactionNodeSize
+      }
+    },
+    {
+      selector: 'node[?isInteraction].drop-target',
+      style: {
+        'border-width': 4 * (interactionNodeSize - 2),
       }
     },
     {
@@ -51,7 +67,7 @@ function makeStylesheet(){
     {
       selector: 'edge',
       style: {
-        'width': 2,
+        'width': 3,
         'curve-style': 'bezier',
         'line-color': defaultColor,
         'target-arrow-color': defaultColor,

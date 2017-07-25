@@ -8,8 +8,6 @@ const Promise = require('bluebird');
 const logger = require('../../logger');
 const makeCytoscape = require('./cy');
 const Document = require('../../../model/document');
-const ElementFactory = require('../../../model/element');
-const ElementCache = require('../../../model/element-cache');
 const debug = require('../../debug');
 const defs = require('./defs');
 const { getId } = require('../../../util');
@@ -58,7 +56,8 @@ class Editor extends React.Component {
       bus: bus,
       document: doc,
       drawMode: false,
-      newElementShift: 0
+      newElementShift: 0,
+      allowDisconnectedInteractions: false
     });
 
     logger.info('Checking if doc with id %s already exists', doc.id());
@@ -78,6 +77,10 @@ class Editor extends React.Component {
       .then( () => logger.info('Document synch active') )
       .catch( (err) => logger.error('An error occurred livening the doc', err) )
     ;
+  }
+
+  allowDisconnectedInteractions(){
+    return this.state.allowDisconnectedInteractions;
   }
 
   editable(){
@@ -134,7 +137,7 @@ class Editor extends React.Component {
   }
 
   addInteraction( data = {} ){
-    if( !this.editable() ){ return; }
+    if( !this.editable() || !this.state.allowDisconnectedInteractions ){ return; }
 
     return this.addElement( _.assign({
       type: 'interaction',

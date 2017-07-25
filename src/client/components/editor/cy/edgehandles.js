@@ -18,7 +18,15 @@ module.exports = function({ bus, cy, document, controller }){
     handleOutlineWidth: 1,
     toggleOffOnLeave: true,
     edgeType: function( source, target ){
-      if( source.edgesWith( target ).length > 0 ){
+      let alreadyConnectedByEdge = source.edgesWith( target ).length > 0;
+      let srcDocEl = document.get( source.id() );
+      let tgtDocEl = document.get( target.id() );
+      let alreadyConnectedByIntn = document.interactions().some( intn => {
+        return intn.has( srcDocEl ) && intn.has( tgtDocEl );
+      } );
+      let alreadyConnected = alreadyConnectedByEdge || alreadyConnectedByIntn;
+
+      if( alreadyConnected ){
         return null;
       } if( isInteraction( source ) || isInteraction( target ) ){
         return 'flat';
@@ -35,7 +43,8 @@ module.exports = function({ bus, cy, document, controller }){
           id: uuid(),
           type: 'interaction',
           isInteraction: true,
-          isEntity: false
+          isEntity: false,
+          arity: 2
         }
       };
 

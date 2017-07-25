@@ -140,7 +140,7 @@ function listenToDoc({ bus, cy, document }){
 
   let schedulePositionUpdate = _.debounce( function(){
     for( let el of nodesPosQ.values() ){
-      let docEl = document.get( el.id() );
+      let docEl = getDocEl( el );
 
       updateFromCyPos( docEl, el );
     }
@@ -209,17 +209,29 @@ function listenToDoc({ bus, cy, document }){
     addEleListeners( newDocEl );
   };
 
-  let onDocAddPpt = function( docPpt ){
-    onDoc( this, function( docEl/*, el*/ ){
-      let edges = cy.add( makePptEdges( docEl, docPpt ) );
+  let updateIntnArity = function( docIntn ){
+    onDoc( docIntn, function( docEl, el ){
+      if( document.has( docIntn ) ){  
+        el.data('arity', docIntn.participants().length );
+      }
+    } );
+  };
 
-      edges.forEach( edge => onAddNewEle( docEl, edge ) );
+  let onDocAddPpt = function( docPpt ){
+    onDoc( this, function( docIntn/*, el*/ ){
+      let edges = cy.add( makePptEdges( docIntn, docPpt ) );
+
+      edges.forEach( edge => onAddNewEle( docIntn, edge ) );
+
+      updateIntnArity( docIntn );
     } );
   };
 
   let onDocRmPpt = function( docPpt ){
     onDoc( this, function( docIntn ){
       onRmPpt( docPpt, docIntn );
+
+      updateIntnArity( docIntn );
     } );
   };
 
@@ -232,6 +244,10 @@ function listenToDoc({ bus, cy, document }){
       addEleListeners( docEl, el );
 
       onAddNewEle( docEl, el );
+
+      if( docEl.isInteraction() ){
+        updateIntnArity( docEl );
+      }
     }
   };
 
@@ -243,15 +259,15 @@ function listenToDoc({ bus, cy, document }){
     let timestamp = docEl.creationTimestamp();
     let isNew = timestamp != null && moment( timestamp ).isAfter( moment().subtract(5, 'seconds') );
 
-    if( !isNew ){ return; }
-
-    el.style({ 'opacity': 0 }).animation({
-      style: { 'opacity': 1 },
-      duration: defs.addRmAnimationDuration,
-      easing: defs.addRmAnimationEasing
-    }).play().promise().then( () => {
-      el.removeStyle('opacity');
-    } );
+    if( isNew ){
+      el.style({ 'opacity': 0 }).animation({
+        style: { 'opacity': 1 },
+        duration: defs.addRmAnimationDuration,
+        easing: defs.addRmAnimationEasing
+      }).play().promise().then( () => {
+        el.removeStyle('opacity');
+      } );
+    }
   };
 
   let animateRm = function( el ){
@@ -313,6 +329,10 @@ function listenToDoc({ bus, cy, document }){
     let intn = cyGet( docIntn.id() );
     let edge = ppt.edgesWith( intn );
 
+    if( docIntn.participants().length <= 1 ){
+      document.remove( docIntn );
+    }
+
     animateRm( edge );
   };
 
@@ -320,16 +340,16 @@ function listenToDoc({ bus, cy, document }){
     let rm = docEl => document.remove( docEl );
 
     let rmNode = el => {
-      let docEl = document.get( el.id() );
+      let docEl = getDocEl( el );
 
       if( docEl ){ rm( docEl ); }
     };
 
     let rmFromIntn = (intn, ppt) => {
-      let docIntn = document.get( intn.id() );
-      let docPpt = document.get( ppt.id() );
+      let docIntn = getDocEl( intn );
+      let docPpt = getDocEl( ppt );
 
-      if( docIntn.isInteraction() && docIntn.has( docPpt ) ){
+      if( docIntn != null && docIntn.isInteraction() && docIntn.has( docPpt ) ){
         docIntn.remove( docPpt );
       }
     };
@@ -368,6 +388,14 @@ function listenToDoc({ bus, cy, document }){
 
     return { x, y };
   };
+
+  cy.on('cyedgehandles.start', function(){
+    cy.nodes().addClass('drop-target');
+  });
+
+  cy.on('cyedgehandles.stop', function(){
+    cy.nodes().removeClass('drop-target');
+  });
 
   // keys
 

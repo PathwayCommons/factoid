@@ -144,3 +144,14 @@
   top: 0;
   margin: 0.25em;
 }
+
+.entity-info-mod-label {
+  display: block;
+  font-weight: bold;
+  font-size: 0.8em;
+  margin-top: 1em;
+}
+
+.entity-info-mod-select {
+  font-size: 0.8em;
+}

@@ -397,6 +397,18 @@ class EntityInfo extends React.Component {
       ]) );
 
       children.push( h('div.entity-info-assoc', allAssoc( assoc )) );
+
+      children.push( h('label.entity-info-mod-label', { htmlFor: 'entity-info-mod-select-' + el.id() }, 'Modification') );
+
+      children.push( h('select.entity-info-mod-select', {
+        id: 'entity-info-mod-select-' + el.id(),
+        defaultValue: el.modification().value,
+        onChange: (evt) => el.modify( evt.target.value )
+      }, el.ORDERED_MODIFICATIONS.map( mod => {
+        return h('option', {
+          value: mod.value
+        }, mod.displayValue);
+      } )) );
     } else if( !doc.editable() ){
       children.push( h('div.entity-info-no-assoc', [
         h('div.element-info-message', [

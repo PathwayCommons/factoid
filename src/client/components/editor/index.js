@@ -137,7 +137,7 @@ class Editor extends React.Component {
   }
 
   addInteraction( data = {} ){
-    if( !this.editable() || !this.state.allowDisconnectedInteractions ){ return; }
+    if( !this.editable() ){ return; }
 
     return this.addElement( _.assign({
       type: 'interaction',

@@ -49,7 +49,6 @@ class Editor extends React.Component {
 
     bus.on('drawtoggle', () => this.toggleDrawMode());
     bus.on('addelement', data => this.addElement( data ));
-    bus.on('addinteraction', data => this.addInteraction( data ));
     bus.on('remove', docEl => this.remove( docEl ));
 
     this.state = ({
@@ -59,6 +58,10 @@ class Editor extends React.Component {
       newElementShift: 0,
       allowDisconnectedInteractions: false
     });
+
+    if( this.state.allowDisconnectedInteractions ){
+      bus.on('addinteraction', data => this.addInteraction( data ));
+    }
 
     logger.info('Checking if doc with id %s already exists', doc.id());
 

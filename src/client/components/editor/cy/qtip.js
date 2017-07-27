@@ -54,6 +54,8 @@ module.exports = function({ bus, cy, document }){
       clearTimeout( timeout );
     };
 
+    node.addClass('tooltip-target');
+
     node.qtip({
       content: {
         text: function( /*event, qtipApi*/ ){
@@ -70,7 +72,7 @@ module.exports = function({ bus, cy, document }){
         my: 'left center',
         at: 'right center',
         adjust: {
-          method: 'flip shift',
+          method: 'flip shift'
         },
         effect: function( qtipApi, pos ){
           let domEl = getQtipDomEle( qtipApi );
@@ -115,6 +117,8 @@ module.exports = function({ bus, cy, document }){
           height: 8
         }
       }
-    }).trigger('showqtip');
+    });
+
+    node.trigger('showqtip').removeClass('tooltip-target');
   });
 };

@@ -54,14 +54,27 @@ function makeStylesheet(){
     {
       selector: 'node[?isInteraction].drop-target',
       style: {
-        'border-width': 4 * (interactionNodeSize - 2),
+        'border-width': 4 * (interactionNodeSize - 2)
+      }
+    },
+    {
+      selector: 'node[?isInteraction].tooltip-target',
+      style: {
+        'border-width': 0
       }
     },
     {
       selector: 'node:selected',
       style: {
         'background-color': activeColor,
-        'text-outline-color': activeColor,
+        'text-outline-color': activeColor
+      }
+    },
+    {
+      selector: 'node[?isInteraction]:selected',
+      style: {
+        'background-color': defaultColor,
+        'text-outline-color': defaultColor
       }
     },
     {

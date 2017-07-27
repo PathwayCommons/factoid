@@ -1,8 +1,9 @@
-let { makeCyEles, makePptEdges } = require('./make-cy-eles');
-let _ = require('lodash');
-let defs = require('./defs');
-let moment = require('moment');
-let onKey = require('./on-key');
+const { makeCyEles, makePptEdges } = require('./make-cy-eles');
+const _ = require('lodash');
+const defs = require('./defs');
+const moment = require('moment');
+const onKey = require('./on-key');
+const Promise = require('bluebird');
 
 function listenToDoc({ bus, cy, document }){
   let getCyEl = function( docEl ){
@@ -211,7 +212,7 @@ function listenToDoc({ bus, cy, document }){
 
   let updateIntnArity = function( docIntn ){
     onDoc( docIntn, function( docEl, el ){
-      if( document.has( docIntn ) ){  
+      if( document.has( docIntn ) ){
         el.data('arity', docIntn.participants().length );
       }
     } );
@@ -260,24 +261,40 @@ function listenToDoc({ bus, cy, document }){
     let isNew = timestamp != null && moment( timestamp ).isAfter( moment().subtract(5, 'seconds') );
 
     if( isNew ){
-      el.style({ 'opacity': 0 }).animation({
-        style: { 'opacity': 1 },
-        duration: defs.addRmAnimationDuration,
-        easing: defs.addRmAnimationEasing
-      }).play().promise().then( () => {
-        el.removeStyle('opacity');
-      } );
+      if( docEl.isInteraction() && el.isNode() ){
+        el.style({ 'opacity': 0 });
+
+        Promise.delay( defs.addRmAnimationDuration ).then( () => {
+          el.removeStyle('opacity');
+        } );
+      } else {
+        el.style({ 'opacity': 0 }).animation({
+          style: { 'opacity': 1 },
+          duration: defs.addRmAnimationDuration,
+          easing: defs.addRmAnimationEasing
+        }).play().promise().then( () => {
+          el.removeStyle('opacity');
+        } );
+      }
     }
   };
 
   let animateRm = function( el ){
-    el.animation({
-      style: { 'opacity': 0 },
-      duration: defs.addRmAnimationDuration,
-      easing: defs.addRmAnimationEasing
-    }).play().promise().then( () => {
-      el.remove();
-    } );
+    if( el.data('isInteraction') ){
+      el.style('opacity', 0);
+
+      Promise.delay( defs.addRmAnimationDuration ).then( () => {
+        el.remove();
+      } );
+    } else {
+      el.animation({
+        style: { 'opacity': 0 },
+        duration: defs.addRmAnimationDuration,
+        easing: defs.addRmAnimationEasing
+      }).play().promise().then( () => {
+        el.remove();
+      } );
+    }
   };
 
   let onRmEle = function( docEl ){

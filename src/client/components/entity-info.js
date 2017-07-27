@@ -152,6 +152,7 @@ class EntityInfo extends React.Component {
     let s = this.state;
     let el = s.element;
 
+    el.modify( el.MODIFICATIONS.UNMODIFIED );
     el.unassociate();
 
     this.setState({

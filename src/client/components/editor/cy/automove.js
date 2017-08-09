@@ -1,6 +1,6 @@
 let isPreviewEle = ele => ele.hasClass('edgehandles-preview') || ele.hasClass('edgehandles-ghost');
 let notIsPreviewEle = ele => !isPreviewEle( ele );
-let isInteractionNode = node => node.data('isInteraction');
+let { isInteractionNode } = require('../../../../util');
 
 module.exports = function( { cy, document } ){
   let update = node => {

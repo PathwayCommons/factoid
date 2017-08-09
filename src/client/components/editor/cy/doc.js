@@ -4,6 +4,7 @@ const defs = require('./defs');
 const moment = require('moment');
 const onKey = require('./on-key');
 const Promise = require('bluebird');
+const { isInteractionNode } = require('../../../../util');
 
 function listenToDoc({ bus, cy, document }){
   let getCyEl = function( docEl ){
@@ -280,7 +281,7 @@ function listenToDoc({ bus, cy, document }){
   };
 
   let animateRm = function( el ){
-    if( el.data('isInteraction') ){
+    if( isInteractionNode(el) ){
       el.style('opacity', 0);
 
       Promise.delay( defs.addRmAnimationDuration ).then( () => {

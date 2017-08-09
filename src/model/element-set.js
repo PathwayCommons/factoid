@@ -181,6 +181,14 @@ class ElementSet {
     return this.syncher.get('entries').filter( matches ).map( getEle );
   }
 
+  group( ele ){
+    if( !this.has( ele ) ){ return undefined; }
+
+    let id = getId( ele );
+
+    return this.syncher.get('entries').filter( ent => ent.id === id )[0].group;
+  }
+
   regroup( ele, opts ){
     if( !this.has( ele ) ){ return Promise.resolve(); } // can't remove nonexistant
 
@@ -191,7 +199,7 @@ class ElementSet {
       group = null;
     }
 
-    let updatePromise = this.syncher.updateById({ entries: { [id]: { group } } }, { silent });
+    let updatePromise = this.syncher.mergeById({ entries: { id, group } }, { silent });
 
     if( !silent ){
       this.emitter.emit( 'regroup', ele, group );

@@ -72,6 +72,14 @@ class Interaction extends Element {
     return this.remove( ele, opts );
   }
 
+  group( ele ){
+    return this.elementSet.group( ele );
+  }
+
+  participantGroup( ele ){
+    return this.group( ele );
+  }
+
   regroupParticipant( ele, opts ){
     return this.regroup( ele, opts );
   }

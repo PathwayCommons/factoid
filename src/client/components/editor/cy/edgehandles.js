@@ -4,7 +4,7 @@ let uuid = require('uuid');
 let _ = require('lodash');
 let Promise = require('bluebird');
 
-let isInteraction = node => node.data('isInteraction') ? true : false;
+let { isInteractionNode } = require('../../../../util');
 
 module.exports = function({ bus, cy, document, controller }){
   if( !document.editable() ){ return; }
@@ -28,7 +28,7 @@ module.exports = function({ bus, cy, document, controller }){
 
       if( alreadyConnected ){
         return null;
-      } if( isInteraction( source ) || isInteraction( target ) ){
+      } if( isInteractionNode( source ) || isInteractionNode( target ) ){
         return 'flat';
       } else  {
         return 'node';
@@ -58,7 +58,7 @@ module.exports = function({ bus, cy, document, controller }){
     complete: function( source, target, addedEles ){
       let addedNodes = addedEles.nodes();
       let createdIntnNode = addedNodes.nonempty();
-      let intnNode = createdIntnNode ? addedNodes : isInteraction( source ) ? source : target;
+      let intnNode = createdIntnNode ? addedNodes : isInteractionNode( source ) ? source : target;
       let idIsNotIntn = el => el.id() !== intnNode.id();
       let pptNodes = source.add( target ).filter( idIsNotIntn );
 

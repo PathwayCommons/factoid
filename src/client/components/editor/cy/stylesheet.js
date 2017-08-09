@@ -90,9 +90,17 @@ function makeStylesheet(){
       }
     },
     {
+      selector: 'edge[group="activation"]',
+      style: {
+        'target-arrow-shape': 'triangle',
+        'target-endpoint': 'outside-to-node'
+      }
+    },
+    {
       selector: 'edge:selected',
       style: {
-        'line-color': activeColor
+        'line-color': activeColor,
+        'target-arrow-color': activeColor
       }
     },
     {

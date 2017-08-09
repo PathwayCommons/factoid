@@ -1,8 +1,9 @@
 let on = require('./on-key');
 let defs = require('./defs');
 let _ = require('lodash');
+let { isInteractionNode } = require('../../../../util');
 
-let isInteraction = n => n.data('isInteraction');
+let isInteraction = isInteractionNode;
 
 let isNotInteraction = n => !isInteraction( n );
 

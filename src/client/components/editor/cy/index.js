@@ -18,7 +18,11 @@ function makeCytoscape( opts ){
     style: makeStylesheet(),
     minZoom: defs.minZoom,
     maxZoom: defs.maxZoom,
-    elements: makeCyEles( opts.document.elements() )
+    elements: makeCyEles( opts.document.elements() ),
+    layout: {
+      name: 'preset',
+      fit: false
+    }
   });
 
   if( debug.enabled() ){

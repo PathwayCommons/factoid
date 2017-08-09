@@ -27,7 +27,7 @@ class EntityInfo extends React.Component {
     }
 
     this.debouncedRename = _.debounce( name => {
-      el.rename( name );
+      this.state.element.rename( name );
 
       this.updateMatches( name );
     }, defs.updateDelay );
@@ -94,6 +94,7 @@ class EntityInfo extends React.Component {
         oldEle.removeListener('remoterename', this.onRemoteRename);
         newEle.on('remoterename', this.onRemoteRename);
 
+        this.state.element = newEle;
         this.setState({ element: newEle });
       }
     };
@@ -290,7 +291,6 @@ class EntityInfo extends React.Component {
   render(){
     let s = this.state;
     let p = this.props;
-    let el = s.element;
     let doc = p.document;
     let children = [];
 
@@ -298,7 +298,7 @@ class EntityInfo extends React.Component {
       loading ? h('i.icon.icon-spinner') : h('i.material-icons', 'brightness_1')
     ]);
 
-    if( !el.associated() && doc.editable() ){
+    if( !s.element.associated() && doc.editable() ){
 
       if( s.loadingMatches ){
         children.push( h('span.input-icon', [
@@ -351,8 +351,8 @@ class EntityInfo extends React.Component {
 
     if( s.match != null ){
       assoc = s.match;
-    } else if( el.associated() ){
-      assoc = el.association();
+    } else if( s.element.associated() ){
+      assoc = s.element.association();
     } else {
       assoc = null;
     }
@@ -399,13 +399,13 @@ class EntityInfo extends React.Component {
 
       children.push( h('div.entity-info-assoc', allAssoc( assoc )) );
 
-      children.push( h('label.entity-info-mod-label', { htmlFor: 'entity-info-mod-select-' + el.id() }, 'Modification') );
+      children.push( h('label.entity-info-mod-label', { htmlFor: 'entity-info-mod-select-' + s.element.id() }, 'Modification') );
 
       children.push( h('select.entity-info-mod-select', {
-        id: 'entity-info-mod-select-' + el.id(),
-        defaultValue: el.modification().value,
-        onChange: (evt) => el.modify( evt.target.value )
-      }, el.ORDERED_MODIFICATIONS.map( mod => {
+        id: 'entity-info-mod-select-' + s.element.id(),
+        defaultValue: s.element.modification().value,
+        onChange: (evt) => s.element.modify( evt.target.value )
+      }, s.element.ORDERED_MODIFICATIONS.map( mod => {
         return h('option', {
           value: mod.value
         }, mod.displayValue);

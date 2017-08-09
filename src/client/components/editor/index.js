@@ -39,7 +39,7 @@ class Editor extends React.Component {
       window.doc = doc;
     }
 
-    let removeAllListeners = el => el.removeAllListeners( el );
+    let removeAllListeners = el => el.removeAllListeners();
 
     // just to make sure that we don't have dangling listeners causing issues
     doc.on('remove', ( el ) => removeAllListeners( el ));

@@ -153,6 +153,10 @@ class ElementSet {
     let id = getId( oldEle );
     let { silent } = opts;
 
+    if( id === oldEle ){
+      oldEle = this.get( id ); // make sure we have a real ele ref
+    }
+
     this.elementsById.set( id, newEle );
 
     if( !silent ){
@@ -190,10 +194,14 @@ class ElementSet {
   }
 
   regroup( ele, opts ){
-    if( !this.has( ele ) ){ return Promise.resolve(); } // can't remove nonexistant
+    if( !this.has( ele ) ){ return Promise.resolve(); } // can't regroup nonexistant
 
     let id = getId( ele );
     let { silent, group } = opts;
+
+    if( id === ele ){
+      ele = this.get( id ); // make sure we have a real ele ref
+    }
 
     if( group === undefined ){ // db should store null, not undefined
       group = null;

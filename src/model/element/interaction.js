@@ -11,6 +11,12 @@ const DEFAULTS = Object.freeze({
   entries: [] // used by elementSet
 });
 
+const GROUP = Object.freeze({
+  UNDIRECTED: { value: 'undirected', name: 'General' },
+  ACTIVATION: { value: 'activation', name: 'Activation' },
+  REPRESSION: { value: 'repression', name: 'Repression' }
+});
+
 /**
 A generic biological interaction between [0, N] elements
 
@@ -36,6 +42,18 @@ class Interaction extends Element {
       emitter: this.emitter,
       cache: opts.cache
     });
+  }
+
+  static get GROUP(){ return GROUP; }
+
+  get GROUP(){ return GROUP; }
+
+  static get GROUPS(){
+    return _.keys( GROUP ).map( k => GROUP[k] );
+  }
+
+  get GROUPS(){
+    return Interaction.GROUPS;
   }
 
   static type(){ return TYPE; }

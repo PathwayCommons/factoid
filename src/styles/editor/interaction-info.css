@@ -4,7 +4,7 @@
 
 .interaction-info-type-select {
   width: 100%;
-  margin-bottom: 0.5em;
+  margin-bottom: 1em;
 }
 
 textarea.interaction-info-description {
@@ -12,4 +12,11 @@ textarea.interaction-info-description {
   height: 5em;
   resize: none;
   overflow: scroll;
+}
+
+.interaction-info-description-label,
+.interaction-info-type-select-label {
+  display: block;
+  font-weight: bold;
+  font-size: 0.8em;
 }

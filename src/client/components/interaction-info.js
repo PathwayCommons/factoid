@@ -71,38 +71,53 @@ class InteractionInfo extends React.Component {
     let evtTgt = p.eventTarget;
 
     if( evtTgt.isEdge() ){
+      let selectId = 'interaction-info-type-select-' + el.id();
       let pptNode = evtTgt.connectedNodes().filter( el => !isInteractionNode(el) );
       let ppt = doc.get( pptNode.id() );
 
+      children.push( h('label.interaction-info-type-select-label', {
+        htmlFor: selectId
+      }, 'Type') );
+
       children.push( h('select.interaction-info-type-select', {
+        id: selectId,
         onChange: event => {
           let group = event.target.value;
+          let regroupToNull = ppt => el.regroup( ppt, { group: null } );
+
+          el.participants().forEach( regroupToNull );
 
           el.regroup( ppt, { group } );
-        }
-      }, [
-        h('option', { value: `undirected` }, `General`),
-        h('option', { value: `activation` }, `Activation`),
-        h('option', { value: `repression` }, `Repression`)
-      ]) );
+        },
+        defaultValue: el.group( ppt ),
+        disabled: !doc.editable()
+      }, el.GROUPS.map( gr => h('option', { value: gr.value }, gr.name) )) );
     }
 
-    children.push( h('div.interaction-info-details', (
-      doc.editable() ? [
-        h('textarea.interaction-info-description', {
-          placeholder: 'Interaction description',
-          value: s.description,
-          onChange: event => this.redescribe( event.target.value )
-        })
-      ] : [
-        h('div.interaction-info-description', s.description || [
-          h('div.element-info-message', [
-            h('i.material-icons', 'info'),
-            h('span', ' This interaction has no description.')
-          ])
+    let descrId = 'interaction-info-description' + el.id();
+
+    let descrDom;
+
+    if( doc.editable() ){
+      descrDom = h('textarea.interaction-info-description', {
+        id: descrId,
+        placeholder: 'Interaction description',
+        value: s.description,
+        onChange: event => this.redescribe( event.target.value )
+      });
+    } else {
+      descrDom = h('div.interaction-info-description', s.description || [
+        h('div.element-info-message', [
+          h('i.material-icons', 'info'),
+          h('span', ' This interaction has no description.')
         ])
-      ]
-    ) ) );
+      ]);
+    }
+
+    children.push( h('div.interaction-info-details', [
+      h('label.interaction-info-description-label', { htmlFor: descrId }, 'Description'),
+      descrDom
+    ] ) );
 
     return h('div.interaction-info', children);
   }

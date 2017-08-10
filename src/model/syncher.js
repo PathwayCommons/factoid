@@ -40,14 +40,14 @@ A CRUD JSON object that is synched between the clientside and serverside via Soc
 */
 class Syncher {
 
-  // fields that aren't synched
-  unsynchedFields(){ return ['socket', 'table', 'conn', 'emitter', 'forwardedEmitters', 'isPrivate']; }
+  // fields that aren't synched (they are ignored by create() and the constructor options)
+  unsynchedFields(){ return ['socket', 'table', 'conn', 'emitter', 'forwardedEmitters', 'isPrivate', '_hasCorrectSecret']; }
 
   // fields that should not be sent to the clientside
   privateFields(){ return ['secret', '_ops']; }
 
   // fields that can't be mutated in the db (i.e. .update() ops)
-  constRemoteFields(){ return ['id', 'secret']; }
+  constRemoteFields(){ return ['id', 'secret', '_hasCorrectSecret']; }
 
   // fields that can't be mutated locally (i.e. .load(), live synched .update() ops)
   constLocalFields(){ return ['id', 'secret', 'liveId', '_ops', '_newestOp']; }
@@ -146,8 +146,8 @@ class Syncher {
             .catch( err => send( jsonErr(err) ) )
           ;
         })
-        .on('load', ( id, send ) => {
-          syncher({ id }).load()
+        .on('load', ( id, secret, send ) => {
+          syncher({ id, secret }).load()
             .then( s => {
               return send( null, s.json() );
             } )
@@ -228,19 +228,20 @@ class Syncher {
   synch( enable = true ){
     if( this.socket ){
       let emitServer = promisifyEmit( this.socket );
+      let emitSelf = () => this.emit( enable ? 'synched' : 'unsynched' );
       let live = this.live;
 
       this.live = enable;
 
       if( enable ){
         if( !live ){
-          return emitServer( 'synch', this.data.id ).catch( () => this.live = false );
+          return emitServer( 'synch', this.data.id ).then( emitSelf ).catch( () => this.live = false );
         } else {
           return Promise.resolve();
         }
       } else if( !enable ){
         if( live ){
-          return emitServer( 'unsynch', this.data.id ).catch( this.live = true );
+          return emitServer( 'unsynch', this.data.id ).then( emitSelf ).catch( this.live = true );
         } else {
           return Promise.resolve();
         }
@@ -257,7 +258,10 @@ class Syncher {
   create( setup = _.noop ){
     let data = _.omit( this.data, this.unsynchedFields() );
     let insert;
-    let fill = () => this.filled = true;
+    let fill = () => {
+      this.filled = true;
+      this.data._hasCorrectSecret = true; // let the client know that it owns the obj, i.e. syncher.hasCorrectSecret()
+    };
     let emitSelf = () => this.emit('create');
 
     if( this.table ){
@@ -294,14 +298,21 @@ class Syncher {
         if( json == null ){
           throw error(`No response from database for ID ${this.data.id}`);
         } else {
-          return _.omit( json, this.privateFields() );
+          let _hasCorrectSecret = json.secret === this.data.secret;
+
+          let res = json;
+
+          res = _.omit( res, this.privateFields() );
+          res = _.assign( {}, res, { _hasCorrectSecret } );
+
+          return res;
         }
       } );
     } else {
       find = () => {
         let emitServer = promisifyEmit( this.socket );
 
-        return emitServer( 'load', this.data.id );
+        return emitServer( 'load', this.data.id, this.data.secret );
       };
     }
 
@@ -312,6 +323,10 @@ class Syncher {
 
       return this;
     } );
+  }
+
+  hasCorrectSecret(){
+    return this.data._hasCorrectSecret;
   }
 
   confirmSecret(){

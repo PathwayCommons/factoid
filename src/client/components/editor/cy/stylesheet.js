@@ -97,6 +97,13 @@ function makeStylesheet(){
       }
     },
     {
+      selector: 'edge[group="repression"]',
+      style: {
+        'target-arrow-shape': 'tee',
+        'target-endpoint': 'outside-to-node'
+      }
+    },
+    {
       selector: 'edge:selected',
       style: {
         'line-color': activeColor,

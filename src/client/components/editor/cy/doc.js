@@ -186,6 +186,16 @@ function listenToDoc({ bus, cy, document }){
     } );
   };
 
+  let onDocRegroupPpt = function( docEl, group ){
+    onDoc( this, function( docIntn, intnNode ){
+      let edges = intnNode.connectedEdges();
+      let isElNode = n => n.id() === docEl.id();
+      let tgtEdge = edges.filter( e => e.connectedNodes().some( isElNode ) );
+
+      tgtEdge.data('group', group);
+    } );
+  };
+
   let reapplyAssocToCy = function( docEl, el ){
     el.data({
       associated: docEl.associated(),
@@ -321,6 +331,7 @@ function listenToDoc({ bus, cy, document }){
     docEl.on('remove', onDocRmPpt);
     docEl.on('associate', onDocAssoc);
     docEl.on('unassociate', onDocUnassoc);
+    docEl.on('regroup', onDocRegroupPpt);
     el.on('drag', onCyPos);
     el.on('automove', onCyAutomove);
   };
@@ -337,6 +348,7 @@ function listenToDoc({ bus, cy, document }){
     docEl.removeListener('remove', onDocRmPpt);
     docEl.removeListener('associate', onDocAssoc);
     docEl.removeListener('unassociate', onDocUnassoc);
+    docEl.removeListener('regroup', onDocRegroupPpt);
     el.removeListener('drag', onCyPos);
     el.removeListener('automove', onCyAutomove);
   };

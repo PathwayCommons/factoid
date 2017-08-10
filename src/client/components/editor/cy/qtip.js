@@ -33,28 +33,29 @@ module.exports = function({ bus, cy, document }){
     let node = tgt.isNode() ? tgt : connectedNodes.filter( isInteractionNode );
     let docEl = document.get( node.id() );
     let qapi;
-    let shiftPos = {};
-
-    if( isInteractionNode( node ) && tgt.isEdge() ){
-      let intn = connectedNodes.filter( isInteractionNode );
-      let ent = connectedNodes.not( intn );
-
-      let pi = intn.renderedPosition();
-      let pe = ent.renderedPosition();
-
-      let wi = 2/3;
-      let we = 1/3;
-
-      shiftPos = {
-        x: pi.x * wi + pe.x * we,
-        y: pi.y * wi + pe.y * we
-      };
-    }
-
     let timeout;
     let dimsCheckTime = 200;
     let lastHeight = -1;
     let heightThreshold = 4;
+    let qPos = {
+      my: 'left center',
+      at: 'right center'
+    };
+
+    if( tgt.isEdge() ){
+      let condNodes = tgt.connectedNodes();
+      let intnNode = condNodes.filter( isInteractionNode );
+      let entNode = condNodes.not( intnNode );
+      let posDiff = entNode.renderedPosition().x - intnNode.renderedPosition().x;
+      let threshold = 10;
+
+      if( posDiff > threshold ){
+        qPos = {
+          my: 'right center',
+          at: 'left center'
+        };
+      }
+    }
 
     let updateDims = () => {
       clearTimeout( timeout );
@@ -75,14 +76,14 @@ module.exports = function({ bus, cy, document }){
       clearTimeout( timeout );
     };
 
-    tgt.addClass('tooltip-target');
+    node.addClass('tooltip-target');
 
-    tgt.qtip({
+    node.qtip({
       content: {
         text: function( /*event, qtipApi*/ ){
           let div = hh('div');
 
-          tgt.scratch('_qtipReactDiv', div);
+          node.scratch('_qtipReactDiv', div);
 
           ReactDom.render( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ), div );
 
@@ -90,11 +91,11 @@ module.exports = function({ bus, cy, document }){
         }
       },
       position: {
-        my: 'left center',
-        at: 'right center',
-        adjust: _.assign( {
+        my: qPos.my,
+        at: qPos.at,
+        adjust: {
           method: 'flip shift'
-        }, shiftPos ),
+        },
         effect: function( qtipApi, pos ){
           let domEl = getQtipDomEle( qtipApi );
 
@@ -118,13 +119,13 @@ module.exports = function({ bus, cy, document }){
           updateDims();
         },
         hide: function( hideEvent, qtipApi ){
-          let div = tgt.scratch('_qtipReactDiv');
+          let div = node.scratch('_qtipReactDiv');
 
           if( div != null && div.children.length > 0 ){
             ReactDom.unmountComponentAtNode( div );
           }
 
-          tgt.scratch('_qtipReactDiv', null);
+          node.scratch('_qtipReactDiv', null);
 
           cancelUpdateDims();
 
@@ -140,6 +141,6 @@ module.exports = function({ bus, cy, document }){
       }
     });
 
-    tgt.trigger('showqtip').removeClass('tooltip-target');
+    node.trigger('showqtip').removeClass('tooltip-target');
   });
 };

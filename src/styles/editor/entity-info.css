@@ -152,6 +152,11 @@
   margin-top: 1em;
 }
 
-.entity-info-mod-select {
+.entity-info-mod-select,
+.entity-info-mod-text {
   font-size: 0.8em;
+}
+
+.entity-info-mod-text {
+  margin-top: 0.333em;
 }

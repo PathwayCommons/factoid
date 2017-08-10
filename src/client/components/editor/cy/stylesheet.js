@@ -90,14 +90,14 @@ function makeStylesheet(){
       }
     },
     {
-      selector: 'edge[group="activation"]',
+      selector: 'edge[type="activation"]',
       style: {
         'target-arrow-shape': 'triangle',
         'target-endpoint': 'outside-to-node'
       }
     },
     {
-      selector: 'edge[group="repression"]',
+      selector: 'edge[type="inhibition"]',
       style: {
         'target-arrow-shape': 'tee',
         'target-endpoint': 'outside-to-node'

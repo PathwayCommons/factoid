@@ -67,35 +67,8 @@ class InteractionInfo extends React.Component {
     let el = p.element;
     let s = this.state;
     let doc = p.document;
-
     let evtTgt = p.eventTarget;
-
-    if( evtTgt.isEdge() ){
-      let selectId = 'interaction-info-type-select-' + el.id();
-      let pptNode = evtTgt.connectedNodes().filter( el => !isInteractionNode(el) );
-      let ppt = doc.get( pptNode.id() );
-
-      children.push( h('label.interaction-info-type-select-label', {
-        htmlFor: selectId
-      }, 'Type') );
-
-      children.push( h('select.interaction-info-type-select', {
-        id: selectId,
-        onChange: event => {
-          let group = event.target.value;
-          let regroupToNull = ppt => el.regroup( ppt, { group: null } );
-
-          el.participants().forEach( regroupToNull );
-
-          el.regroup( ppt, { group } );
-        },
-        defaultValue: el.group( ppt ),
-        disabled: !doc.editable()
-      }, el.GROUPS.map( gr => h('option', { value: gr.value }, gr.name) )) );
-    }
-
     let descrId = 'interaction-info-description' + el.id();
-
     let descrDom;
 
     if( doc.editable() ){
@@ -107,8 +80,7 @@ class InteractionInfo extends React.Component {
       });
     } else {
       descrDom = h('div.interaction-info-description', s.description || [
-        h('div.element-info-message', [
-          h('i.material-icons', 'info'),
+        h('div.element-info-no-data', [
           h('span', ' This interaction has no description.')
         ])
       ]);
@@ -118,6 +90,47 @@ class InteractionInfo extends React.Component {
       h('label.interaction-info-description-label', { htmlFor: descrId }, 'Description'),
       descrDom
     ] ) );
+
+    if( evtTgt.isEdge() ){
+      let selectId = 'interaction-info-type-select-' + el.id();
+      let pptNode = evtTgt.connectedNodes().filter( el => !isInteractionNode(el) );
+      let ppt = doc.get( pptNode.id() );
+      let otherPpts = el.participants().filter( p => p !== ppt );
+      let otherPptNames = otherPpts[0].name();
+
+      if( otherPpts.length > 1 ){
+        otherPptNames = '(' + otherPptNames + ', ...)';
+      }
+
+      children.push( h('label.interaction-info-type-select-label', {
+        htmlFor: selectId
+      }, [
+        h('span', 'Type'),
+        h('span.interaction-info-type-select-label-dir', [
+          h('span', otherPptNames),
+          h('i.material-icons', 'arrow_forward'),
+          h('span', ppt.name())
+        ])
+      ]) );
+
+      if( doc.editable() ){
+        children.push( h('select.interaction-info-type-select', {
+          id: selectId,
+          onChange: event => {
+            let type = event.target.value;
+            let retypeToNull = ppt => el.participantType( ppt, null );
+
+            el.participants().forEach( retypeToNull );
+
+            el.participantType( ppt, type );
+          },
+          defaultValue: el.participantType( ppt ).value,
+          disabled: !doc.editable()
+        }, el.PARTICIPANT_TYPES.map( type => h('option', { value: type.value }, type.displayValue) )) );
+      } else {
+        children.push( h('div.interaction-info-type-text', el.participantType( ppt ).displayValue ) );
+      }
+    }
 
     return h('div.interaction-info', children);
   }

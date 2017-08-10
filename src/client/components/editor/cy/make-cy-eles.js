@@ -44,7 +44,7 @@ function makePptEdges( docIntn, docPpt ){
 
   ppts.forEach( ppt => {
     els.push({
-      data: { source: docIntn.id(), target: ppt.id(), group: docIntn.group( ppt ) }
+      data: { source: docIntn.id(), target: ppt.id(), type: docIntn.participantType( ppt ).value }
     });
   } );
 

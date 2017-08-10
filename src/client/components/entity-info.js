@@ -411,20 +411,27 @@ class EntityInfo extends React.Component {
 
       children.push( h('div.entity-info-assoc', allAssoc( assoc )) );
 
-      children.push( h('label.entity-info-mod-label', { htmlFor: 'entity-info-mod-select-' + s.element.id() }, 'Modification') );
+      let selectId = 'entity-info-mod-select-' + s.element.id();
 
-      children.push( h('select.entity-info-mod-select', {
-        id: 'entity-info-mod-select-' + s.element.id(),
-        defaultValue: s.element.modification().value,
-        onChange: (evt) => s.element.modify( evt.target.value )
-      }, s.element.ORDERED_MODIFICATIONS.map( mod => {
-        return h('option', {
-          value: mod.value
-        }, mod.displayValue);
-      } )) );
+      children.push( h('label.entity-info-mod-label', { htmlFor: selectId }, 'Modification') );
+
+      if( doc.editable() ){
+        children.push( h('select.entity-info-mod-select', {
+          id: selectId,
+          defaultValue: s.element.modification().value,
+          onChange: (evt) => s.element.modify( evt.target.value ),
+          disabled: !doc.editable()
+        }, s.element.ORDERED_MODIFICATIONS.map( mod => {
+          return h('option', {
+            value: mod.value
+          }, mod.displayValue);
+        } )) );
+      } else {
+        children.push( h('div.entity-info-mod-text', s.element.modification().displayValue) );
+      }
     } else if( !doc.editable() ){
       children.push( h('div.entity-info-no-assoc', [
-        h('div.element-info-message', [
+        h('div.element-info-message.element-info-no-data', [
           h('i.material-icons', 'info'),
           h('span', ' This entity has no data associated with it.')
         ])

@@ -95,22 +95,11 @@ class InteractionInfo extends React.Component {
       let selectId = 'interaction-info-type-select-' + el.id();
       let pptNode = evtTgt.connectedNodes().filter( el => !isInteractionNode(el) );
       let ppt = doc.get( pptNode.id() );
-      let otherPpts = el.participants().filter( p => p !== ppt );
-      let otherPptNames = otherPpts[0].name();
-
-      if( otherPpts.length > 1 ){
-        otherPptNames = '(' + otherPptNames + ', ...)';
-      }
 
       children.push( h('label.interaction-info-type-select-label', {
         htmlFor: selectId
       }, [
-        h('span', 'Type'),
-        h('span.interaction-info-type-select-label-dir', [
-          h('span', otherPptNames),
-          h('i.material-icons', 'arrow_forward'),
-          h('span', ppt.name())
-        ])
+        h('span', 'Type')
       ]) );
 
       if( doc.editable() ){

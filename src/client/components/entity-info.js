@@ -11,6 +11,13 @@ const OrganismToggle = require('./organism-toggle');
 const Organism = require('../../model/organism');
 const Tooltip = require('./tooltip');
 
+const animateDomForEdit = domEle => anime({
+  targets: domEle,
+  backgroundColor: [defs.editAnimationWhite, defs.editAnimationColor, defs.editAnimationWhite],
+  duration: defs.editAnimationDuration,
+  easing: defs.editAnimationEasing
+});
+
 let associationCache = new WeakMap();
 
 class EntityInfo extends React.Component {
@@ -36,6 +43,7 @@ class EntityInfo extends React.Component {
       element: el,
       name: el.name(),
       oldName: el.name(),
+      modification: el.modification(),
       matches: cache.matches,
       limit: defs.associationSearchLimit,
       offset: cache.offset
@@ -68,6 +76,7 @@ class EntityInfo extends React.Component {
   componentDidMount(){
     let root = ReactDom.findDOMNode( this );
     let input = root.querySelector('.entity-info-name-input');
+    let modSel = root.querySelector('.entity-info-mod-select');
     let p = this.props;
     let s = this.data;
     let doc = p.document;
@@ -83,15 +92,22 @@ class EntityInfo extends React.Component {
         this.remRenameAni.pause();
       }
 
-      this.remRenameAni = anime({
-        targets: input,
-        backgroundColor: [defs.editAnimationWhite, defs.editAnimationColor, defs.editAnimationWhite],
-        duration: defs.editAnimationDuration,
-        easing: defs.editAnimationEasing
-      });
+      this.remRenameAni = animateDomForEdit( input );
     };
 
     s.element.on('remoterename', this.onRemoteRename);
+
+    this.onRemoteModify = () => {
+      this.setData({ modification: s.element.modification() });
+
+      if( this.remModAni ){
+        this.remModAni.pause();
+      }
+
+      this.remModAni = animateDomForEdit( modSel );
+    };
+
+    s.element.on('remotemodify', this.onRemoteModify);
 
     this.onToggleOrganism = () => {
       associationCache = new WeakMap(); // all entities invalidated
@@ -105,6 +121,9 @@ class EntityInfo extends React.Component {
       if( oldEle.id() === this.data.element.id() ){
         oldEle.removeListener('remoterename', this.onRemoteRename);
         newEle.on('remoterename', this.onRemoteRename);
+
+        oldEle.removeListener('remotemodify', this.onRemoteModify);
+        newEle.on('remotemodify', this.onRemoteModify);
 
         this.data.element = newEle;
         this.setData({ element: newEle });
@@ -124,6 +143,8 @@ class EntityInfo extends React.Component {
 
     element.removeListener('remoterename', this.onRemoteRename);
 
+    element.removeListener('remotemodify', this.onModifyEle);
+
     document.removeListener('toggleorganism', this.onToggleOrganism);
 
     document.removeListener('replace', this.onReplaceEle);
@@ -131,6 +152,12 @@ class EntityInfo extends React.Component {
     if( update ){ update.cancel(); }
 
     this._unmounted = true;
+  }
+
+  modify( mod ){
+    this.data.element.modify( mod );
+
+    this.setData({ modification: mod });
   }
 
   rename( name ){
@@ -164,13 +191,15 @@ class EntityInfo extends React.Component {
   unassociate(){
     let s = this.data;
     let el = s.element;
+    let mod = el.MODIFICATIONS.UNMODIFIED;
 
-    el.modify( el.MODIFICATIONS.UNMODIFIED );
+    el.modify( mod );
     el.unassociate();
 
     this.setData({
       name: '',
       matches: [],
+      modification: mod,
       match: null
     });
 
@@ -418,8 +447,8 @@ class EntityInfo extends React.Component {
       if( doc.editable() ){
         children.push( h('select.entity-info-mod-select', {
           id: selectId,
-          defaultValue: s.element.modification().value,
-          onChange: (evt) => s.element.modify( evt.target.value ),
+          value: s.modification.value,
+          onChange: (evt) => this.modify( evt.target.value ),
           disabled: !doc.editable()
         }, s.element.ORDERED_MODIFICATIONS.map( mod => {
           return h('option', {

@@ -326,6 +326,7 @@ function listenToDoc({ bus, cy, document }){
     docEl.on('remoterename', onEdit);
     docEl.on('remoteredescribe', onEdit);
     docEl.on('remoteassociate', onEdit);
+    docEl.on('remotemodify', onEdit);
     docEl.on('rename', onDocRename);
     docEl.on('add', onDocAddPpt);
     docEl.on('remove', onDocRmPpt);
@@ -343,6 +344,7 @@ function listenToDoc({ bus, cy, document }){
     docEl.removeListener('remoterename', onEdit);
     docEl.removeListener('remoteredescribe', onEdit);
     docEl.removeListener('remoteassociate', onEdit);
+    docEl.removeListener('remotemodify', onEdit);
     docEl.removeListener('rename', onDocRename);
     docEl.removeListener('add', onDocAddPpt);
     docEl.removeListener('remove', onDocRmPpt);

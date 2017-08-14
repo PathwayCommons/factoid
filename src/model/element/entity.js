@@ -60,7 +60,7 @@ class Entity extends Element {
         this.emit( 'remoteassociated', changes.association, old.association );
       }
 
-      if( changes.association == null && old.association != null ){
+      if( changes.association === null && old.association != null ){
         this.emit( 'unassociate', old.association );
         this.emit( 'remoteunassociate', old.association );
         this.emit( 'unassociated', old.association );

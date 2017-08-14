@@ -1,8 +1,10 @@
-let anime = require('animejs');
-let ReactDom = require('react-dom');
-let h = require('react-hyperscript');
-let hh = require('hyperscript');
-let ElementInfo = require('../../element-info');
+const anime = require('animejs');
+const ReactDom = require('react-dom');
+const h = require('react-hyperscript');
+const hh = require('hyperscript');
+const ElementInfo = require('../../element-info');
+const _ = require('lodash');
+const { isInteractionNode } = require('../../../../util');
 
 let getQtipDomEle = qtipApi => qtipApi.elements.tooltip[0];
 
@@ -23,17 +25,37 @@ module.exports = function({ bus, cy, document }){
   bus.on('drawstart', () => drawing = true);
   bus.on('drawstop', () => drawing = false);
 
-  cy.on('tap', 'node', function( e ){
+  cy.on('tap', 'node, edge', function( e ){
     if( drawing || e.originalEvent.shiftKey ){ return; }
 
-    let node = e.target;
+    let tgt = e.target;
+    let connectedNodes = tgt.connectedNodes();
+    let node = tgt.isNode() ? tgt : connectedNodes.filter( isInteractionNode );
     let docEl = document.get( node.id() );
     let qapi;
-
     let timeout;
     let dimsCheckTime = 200;
     let lastHeight = -1;
     let heightThreshold = 4;
+    let qPos = {
+      my: 'left center',
+      at: 'right center'
+    };
+
+    if( tgt.isEdge() ){
+      let condNodes = tgt.connectedNodes();
+      let intnNode = condNodes.filter( isInteractionNode );
+      let entNode = condNodes.not( intnNode );
+      let posDiff = entNode.renderedPosition().x - intnNode.renderedPosition().x;
+      let threshold = 10;
+
+      if( posDiff > threshold ){
+        qPos = {
+          my: 'right center',
+          at: 'left center'
+        };
+      }
+    }
 
     let updateDims = () => {
       clearTimeout( timeout );
@@ -54,6 +76,8 @@ module.exports = function({ bus, cy, document }){
       clearTimeout( timeout );
     };
 
+    node.addClass('tooltip-target');
+
     node.qtip({
       content: {
         text: function( /*event, qtipApi*/ ){
@@ -61,16 +85,16 @@ module.exports = function({ bus, cy, document }){
 
           node.scratch('_qtipReactDiv', div);
 
-          ReactDom.render( h( ElementInfo, { element: docEl, bus, document } ), div );
+          ReactDom.render( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ), div );
 
           return div;
         }
       },
       position: {
-        my: 'left center',
-        at: 'right center',
+        my: qPos.my,
+        at: qPos.at,
         adjust: {
-          method: 'flip shift',
+          method: 'flip shift'
         },
         effect: function( qtipApi, pos ){
           let domEl = getQtipDomEle( qtipApi );
@@ -115,6 +139,8 @@ module.exports = function({ bus, cy, document }){
           height: 8
         }
       }
-    }).trigger('showqtip');
+    });
+
+    node.trigger('showqtip').removeClass('tooltip-target');
   });
 };

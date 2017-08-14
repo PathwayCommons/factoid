@@ -8,11 +8,9 @@ const Promise = require('bluebird');
 const logger = require('../../logger');
 const makeCytoscape = require('./cy');
 const Document = require('../../../model/document');
-const ElementFactory = require('../../../model/element');
-const ElementCache = require('../../../model/element-cache');
 const debug = require('../../debug');
 const defs = require('./defs');
-const { getId } = require('../../../util');
+const { getId, defer } = require('../../../util');
 const Menu = require('./menu');
 const Buttons = require('./buttons');
 
@@ -41,7 +39,7 @@ class Editor extends React.Component {
       window.doc = doc;
     }
 
-    let removeAllListeners = el => el.removeAllListeners( el );
+    let removeAllListeners = el => el.removeAllListeners();
 
     // just to make sure that we don't have dangling listeners causing issues
     doc.on('remove', ( el ) => removeAllListeners( el ));
@@ -51,15 +49,23 @@ class Editor extends React.Component {
 
     bus.on('drawtoggle', () => this.toggleDrawMode());
     bus.on('addelement', data => this.addElement( data ));
-    bus.on('addinteraction', data => this.addInteraction( data ));
     bus.on('remove', docEl => this.remove( docEl ));
 
-    this.state = ({
+    this.data = ({
       bus: bus,
       document: doc,
       drawMode: false,
-      newElementShift: 0
+      newElementShift: 0,
+      allowDisconnectedInteractions: false,
+      mountDeferred: defer(),
+      initted: false
     });
+
+    this.state = _.assign( {}, this.data );
+
+    if( this.data.allowDisconnectedInteractions ){
+      bus.on('addinteraction', data => this.addInteraction( data ));
+    }
 
     logger.info('Checking if doc with id %s already exists', doc.id());
 
@@ -76,12 +82,43 @@ class Editor extends React.Component {
       } )
       .then( () => doc.synch(true) )
       .then( () => logger.info('Document synch active') )
+      .then( () => {
+        this.setData({ initted: true });
+
+        logger.info('The editor is initialising');
+      } )
+      .then( () => this.data.mountDeferred.promise )
+      .then( () => {
+        let graphCtr = ReactDom.findDOMNode(this).querySelector('#editor-graph');
+
+        this.data.cy = makeCytoscape({
+          container: graphCtr,
+          document: this.data.document,
+          bus: this.data.bus,
+          controller: this
+        });
+
+        logger.info('Initialised Cytoscape on mounted editor');
+      } )
+      .then( () => {
+        logger.info('The editor has initialised');
+      } )
       .catch( (err) => logger.error('An error occurred livening the doc', err) )
     ;
   }
 
+  setData( obj, callback ){
+    _.assign( this.data, obj );
+
+    this.setState( obj, callback );
+  }
+
+  allowDisconnectedInteractions(){
+    return this.data.allowDisconnectedInteractions;
+  }
+
   editable(){
-    return this.state.document.editable();
+    return this.data.document.editable();
   }
 
   toggleDrawMode(){
@@ -89,19 +126,19 @@ class Editor extends React.Component {
 
     let on = !this.drawMode();
 
-    this.state.bus.emit( on ? 'drawon' : 'drawoff' );
+    this.data.bus.emit( on ? 'drawon' : 'drawoff' );
 
-    return new Promise( resolve => this.setState({ drawMode: on }, resolve) );
+    return new Promise( resolve => this.setData({ drawMode: on }, resolve) );
   }
 
   drawMode(){
-    return this.state.drawMode;
+    return this.data.drawMode;
   }
 
   addElement( data = {} ){
     if( !this.editable() ){ return; }
 
-    let cy = this.state.cy;
+    let cy = this.data.cy;
     let pan = cy.pan();
     let zoom = cy.zoom();
     let getPosition = rpos => ({
@@ -110,13 +147,13 @@ class Editor extends React.Component {
     });
     let shift = ( pos, delta ) => ({ x: pos.x + delta.x, y: pos.y + delta.y });
     let shiftSize = defs.newElementShift;
-    let shiftI = this.state.newElementShift;
+    let shiftI = this.data.newElementShift;
     let delta = { x: 0, y: shiftSize * shiftI };
     let pos = getPosition( shift( _.clone( defs.newElementPosition ), delta ) );
 
-    this.setState({ newElementShift: (shiftI + 1) % defs.newElementMaxShifts });
+    this.setData({ newElementShift: (shiftI + 1) % defs.newElementMaxShifts });
 
-    let doc = this.state.document;
+    let doc = this.data.document;
 
     let el = doc.factory().make({
       data: _.assign( {
@@ -145,7 +182,7 @@ class Editor extends React.Component {
   remove( docElOrId ){
     if( !this.editable() ){ return; }
 
-    let doc = this.state.document;
+    let doc = this.data.document;
     let docEl = doc.get( getId( docElOrId ) ); // in case id passed
     let rmPpt = intn => intn.has( docEl ) ? intn.remove( docEl ) : Promise.resolve();
     let allIntnsRmPpt = () => Promise.all( doc.interactions().map( rmPpt ) );
@@ -157,43 +194,36 @@ class Editor extends React.Component {
   layout(){
     if( !this.editable() ){ return; }
 
-    this.state.bus.emit('layout');
+    this.data.bus.emit('layout');
   }
 
   fit(){
-    this.state.bus.emit('fit');
+    this.data.bus.emit('fit');
   }
 
   removeSelected(){
     if( !this.editable() ){ return; }
 
-    this.state.bus.emit('removeselected');
+    this.data.bus.emit('removeselected');
   }
 
   render(){
-    let document = this.state.document;
+    let document = this.data.document;
     let controller = this;
 
-    return h('div.editor', [
+    return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), this.state.initted ? [
       h(Buttons, { controller, document }),
       h(Menu, { document }),
       h('div.editor-graph#editor-graph')
-    ]);
+    ] : []);
   }
 
   componentDidMount(){
-    let graphCtr = ReactDom.findDOMNode(this).querySelector('#editor-graph');
-
-    this.state.cy = makeCytoscape({
-      container: graphCtr,
-      document: this.state.document,
-      bus: this.state.bus,
-      controller: this
-    });
+    this.data.mountDeferred.resolve();
   }
 
   componentWillUnmount(){
-    this.state.cy.destroy();
+    this.data.cy.destroy();
   }
 }
 

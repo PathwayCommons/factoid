@@ -35,23 +35,52 @@ function makeStylesheet(){
     {
       selector: 'node[?isInteraction]',
       style: {
+        'shape': 'ellipse',
+        'width': 3,
+        'height': 3,
+        'label': '',
+        'border-width': 3 * (interactionNodeSize - 2),
+        'border-opacity': 0.0001
+      }
+    },
+    {
+      selector: 'node[?isInteraction][arity][arity < 2]',
+      style: {
         'shape': 'roundrectangle',
         'width': interactionNodeSize,
-        'height': interactionNodeSize,
-        'label': ''
+        'height': interactionNodeSize
+      }
+    },
+    {
+      selector: 'node[?isInteraction].drop-target',
+      style: {
+        'border-width': 4 * (interactionNodeSize - 2)
+      }
+    },
+    {
+      selector: 'node[?isInteraction].tooltip-target',
+      style: {
+        'border-width': 0
       }
     },
     {
       selector: 'node:selected',
       style: {
         'background-color': activeColor,
-        'text-outline-color': activeColor,
+        'text-outline-color': activeColor
+      }
+    },
+    {
+      selector: 'node[?isInteraction]:selected',
+      style: {
+        'background-color': defaultColor,
+        'text-outline-color': defaultColor
       }
     },
     {
       selector: 'edge',
       style: {
-        'width': 2,
+        'width': 3,
         'curve-style': 'bezier',
         'line-color': defaultColor,
         'target-arrow-color': defaultColor,
@@ -61,9 +90,24 @@ function makeStylesheet(){
       }
     },
     {
+      selector: 'edge[type="activation"]',
+      style: {
+        'target-arrow-shape': 'triangle',
+        'target-endpoint': 'outside-to-node'
+      }
+    },
+    {
+      selector: 'edge[type="inhibition"]',
+      style: {
+        'target-arrow-shape': 'tee',
+        'target-endpoint': 'outside-to-node'
+      }
+    },
+    {
       selector: 'edge:selected',
       style: {
-        'line-color': activeColor
+        'line-color': activeColor,
+        'target-arrow-color': activeColor
       }
     },
     {

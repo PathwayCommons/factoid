@@ -36,6 +36,9 @@
 }
 
 .element-info-message {
-  color: #888;
   text-align: center;
+}
+
+.element-info-no-data {
+  color: var(--widgetDisabledTextColor);
 }

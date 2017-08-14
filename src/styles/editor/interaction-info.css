@@ -4,7 +4,15 @@
 
 .interaction-info-type-select {
   width: 100%;
-  margin-bottom: 0.5em;
+}
+
+.interaction-info-type-select-label {
+  margin-top: 1em;
+}
+
+.interaction-info-type-select-label-dir {
+  color: var(--fadedColor);
+  margin-left: 0.5em;
 }
 
 textarea.interaction-info-description {
@@ -12,4 +20,20 @@ textarea.interaction-info-description {
   height: 5em;
   resize: none;
   overflow: scroll;
+}
+
+.interaction-info-description-label,
+.interaction-info-type-select-label {
+  display: block;
+  font-weight: bold;
+  font-size: var(--smallFontSize);
+}
+
+.interaction-info-type-select,
+.interaction-info-type-text {
+  font-size: var(--smallFontSize);
+}
+
+.interaction-info-type-text {
+  margin-top: 0.333em;
 }

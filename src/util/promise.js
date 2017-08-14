@@ -42,4 +42,17 @@ function delayPassthrough( duration ){
   };
 }
 
-module.exports = { passthrough, promisifyEmit, promiseOn, delay, delayPassthrough };
+function defer() {
+  var resolve, reject;
+  var promise = new Promise(function() {
+    resolve = arguments[0];
+    reject = arguments[1];
+  });
+  return {
+    resolve: resolve,
+    reject: reject,
+    promise: promise
+  };
+}
+
+module.exports = { passthrough, promisifyEmit, promiseOn, delay, delayPassthrough, defer };

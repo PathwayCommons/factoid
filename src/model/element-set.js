@@ -45,6 +45,7 @@ class ElementSet {
 
         let addedEntries = _.differenceBy( changes.entries, old.entries, getEntryId );
         let removedEntries = _.differenceBy( old.entries, changes.entries, getEntryId );
+        let sameEntries = _.intersectionBy( changes.entries, old.entries, getEntryId );
 
         let fillEntry = entry => load( getId( entry ) ).then( ele => ({ ele, entry }) );
         let fillEntries = entries => Promise.all( entries.map( fillEntry ) );
@@ -73,6 +74,19 @@ class ElementSet {
 
             this.emitter.emit( 'remove', f.ele, f.entry.group );
             this.emitter.emit( 'remoteremove', f.ele, f.entry.group );
+          } );
+        } ).then( () => {
+          sameEntries.forEach( ent => {
+            let id = ent.id;
+            let ele = get( id );
+            let sameId = e => e.id === id;
+            let oldEnt = old.entries.find( sameId );
+            let newEnt = changes.entries.find( sameId );
+
+            if( newEnt.group !== oldEnt.group ){
+              this.emitter.emit( 'regroup', ele, newEnt.group, oldEnt.group );
+              this.emitter.emit( 'remoteregroup', ele, newEnt.group, oldEnt.group );
+            }
           } );
         } );
       }
@@ -153,6 +167,10 @@ class ElementSet {
     let id = getId( oldEle );
     let { silent } = opts;
 
+    if( id === oldEle ){
+      oldEle = this.get( id ); // make sure we have a real ele ref
+    }
+
     this.elementsById.set( id, newEle );
 
     if( !silent ){
@@ -181,20 +199,33 @@ class ElementSet {
     return this.syncher.get('entries').filter( matches ).map( getEle );
   }
 
-  regroup( ele, opts ){
-    if( !this.has( ele ) ){ return Promise.resolve(); } // can't remove nonexistant
+  group( ele ){
+    if( !this.has( ele ) ){ return undefined; }
 
     let id = getId( ele );
+
+    return this.syncher.get('entries').filter( ent => ent.id === id )[0].group;
+  }
+
+  regroup( ele, opts ){
+    if( !this.has( ele ) ){ return Promise.resolve(); } // can't regroup nonexistant
+
+    let oldGroup = this.group( ele );
+    let id = getId( ele );
     let { silent, group } = opts;
+
+    if( id === ele ){
+      ele = this.get( id ); // make sure we have a real ele ref
+    }
 
     if( group === undefined ){ // db should store null, not undefined
       group = null;
     }
 
-    let updatePromise = this.syncher.updateById({ entries: { [id]: { group } } }, { silent });
+    let updatePromise = this.syncher.mergeById({ entries: { id, group } }, { silent });
 
     if( !silent ){
-      this.emitter.emit( 'regroup', ele, group );
+      this.emitter.emit( 'regroup', ele, group, oldGroup );
     }
 
     return updatePromise;

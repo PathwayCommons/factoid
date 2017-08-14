@@ -7,7 +7,7 @@ const DEFAULTS = Object.freeze({
   separatorWidth: 8
 });
 
-module.exports = function({ cy, document, bus }){
+module.exports = function({ cy, document, bus, controller }){
   if( !document.editable() ){ return; }
 
   let drawCmd = {
@@ -76,10 +76,19 @@ module.exports = function({ cy, document, bus }){
     commands: [ rmElCmd ]
   } ) );
 
+  let bgCmds = [ addEntCmd, drawModeCmd, layoutCmd, fitCmd, rmSelCmd ];
+
+  if( controller.allowDisconnectedInteractions() ){
+    bgCmds = [ addEntCmd, drawModeCmd, layoutCmd, fitCmd, rmSelCmd, addIntnCmd ];
+  } else {
+    // bgCmds = [ fitCmd, rmSelCmd, addEntCmd, drawModeCmd, layoutCmd ];
+    bgCmds = [ layoutCmd, drawModeCmd, addEntCmd, rmSelCmd, fitCmd ];
+  }
+
   cy.cxtmenu( _.assign( {}, DEFAULTS, {
     selector: 'core',
     openMenuEvents: 'cxttapstart',
-    commands: [ addEntCmd, drawModeCmd, layoutCmd, fitCmd, rmSelCmd, addIntnCmd ]
+    commands: bgCmds
   } ) );
 
   cy.on('cxttapstart taphold', 'node, edge', function( evt ){

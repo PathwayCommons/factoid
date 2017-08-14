@@ -11,16 +11,14 @@ class ElementInfo extends React.Component {
 
   render(){
     let p = this.props;
-    let element = p.element;
-    let bus = p.bus;
-    let document = p.document;
+    let { element, bus, document } = p;
     let component;
-    let showControls = false && document.editable(); // TODO disabled for now; maybe these could be useful? 
+    let showControls = false && document.editable(); // TODO disabled for now; maybe these could be useful?
 
     if( element.isEntity() ){
-      component = h( EntityInfo, { element, bus, document } );
+      component = h( EntityInfo, p );
     } else if( element.isInteraction() ){
-      component = h( InteractionInfo, { element, bus, document } );
+      component = h( InteractionInfo, p );
     }
 
     return (

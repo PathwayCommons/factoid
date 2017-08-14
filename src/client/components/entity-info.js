@@ -11,6 +11,13 @@ const OrganismToggle = require('./organism-toggle');
 const Organism = require('../../model/organism');
 const Tooltip = require('./tooltip');
 
+const animateDomForEdit = domEle => anime({
+  targets: domEle,
+  backgroundColor: [defs.editAnimationWhite, defs.editAnimationColor, defs.editAnimationWhite],
+  duration: defs.editAnimationDuration,
+  easing: defs.editAnimationEasing
+});
+
 let associationCache = new WeakMap();
 
 class EntityInfo extends React.Component {
@@ -27,19 +34,32 @@ class EntityInfo extends React.Component {
     }
 
     this.debouncedRename = _.debounce( name => {
-      el.rename( name );
+      this.data.element.rename( name );
 
       this.updateMatches( name );
     }, defs.updateDelay );
 
-    this.state = {
+    this.data = {
       element: el,
       name: el.name(),
       oldName: el.name(),
+      modification: el.modification(),
       matches: cache.matches,
       limit: defs.associationSearchLimit,
       offset: cache.offset
     };
+
+    this.state = _.assign( {}, this.data );
+  }
+
+  setData( name, value ){
+    if( _.isObject(name) ){
+      _.assign( this.data, name );
+    } else {
+      this.data[ name ] = value;
+    }
+
+    this.setState( this.data );
   }
 
   focusNameInput(){
@@ -56,8 +76,9 @@ class EntityInfo extends React.Component {
   componentDidMount(){
     let root = ReactDom.findDOMNode( this );
     let input = root.querySelector('.entity-info-name-input');
+    let modSel = root.querySelector('.entity-info-mod-select');
     let p = this.props;
-    let s = this.state;
+    let s = this.data;
     let doc = p.document;
 
     if( input != null ){
@@ -65,36 +86,47 @@ class EntityInfo extends React.Component {
     }
 
     this.onRemoteRename = () => {
-      this.setState({ name: this.state.element.name() });
+      this.setData({ name: this.data.element.name() });
 
       if( this.remRenameAni ){
         this.remRenameAni.pause();
       }
 
-      this.remRenameAni = anime({
-        targets: input,
-        backgroundColor: [defs.editAnimationWhite, defs.editAnimationColor, defs.editAnimationWhite],
-        duration: defs.editAnimationDuration,
-        easing: defs.editAnimationEasing
-      });
+      this.remRenameAni = animateDomForEdit( input );
     };
 
     s.element.on('remoterename', this.onRemoteRename);
 
+    this.onRemoteModify = () => {
+      this.setData({ modification: s.element.modification() });
+
+      if( this.remModAni ){
+        this.remModAni.pause();
+      }
+
+      this.remModAni = animateDomForEdit( modSel );
+    };
+
+    s.element.on('remotemodify', this.onRemoteModify);
+
     this.onToggleOrganism = () => {
       associationCache = new WeakMap(); // all entities invalidated
 
-      this.updateMatches( this.state.name, s.offset, true );
+      this.updateMatches( this.data.name, s.offset, true );
     };
 
     doc.on('toggleorganism', this.onToggleOrganism);
 
     this.onReplaceEle = ( oldEle, newEle ) => {
-      if( oldEle.id() === this.state.element.id() ){
+      if( oldEle.id() === this.data.element.id() ){
         oldEle.removeListener('remoterename', this.onRemoteRename);
         newEle.on('remoterename', this.onRemoteRename);
 
-        this.setState({ element: newEle });
+        oldEle.removeListener('remotemodify', this.onRemoteModify);
+        newEle.on('remotemodify', this.onRemoteModify);
+
+        this.data.element = newEle;
+        this.setData({ element: newEle });
       }
     };
 
@@ -107,9 +139,11 @@ class EntityInfo extends React.Component {
 
   componentWillUnmount(){
     let { document, element } = this.props;
-    let update = this.state.updatePromise;
+    let update = this.data.updatePromise;
 
     element.removeListener('remoterename', this.onRemoteRename);
+
+    element.removeListener('remotemodify', this.onModifyEle);
 
     document.removeListener('toggleorganism', this.onToggleOrganism);
 
@@ -120,51 +154,60 @@ class EntityInfo extends React.Component {
     this._unmounted = true;
   }
 
+  modify( mod ){
+    this.data.element.modify( mod );
+
+    this.setData({ modification: mod });
+  }
+
   rename( name ){
     let p = this.props;
-    let s = this.state;
+    let s = this.data;
     let el = s.element;
 
     this.debouncedRename( name );
 
     p.bus.emit('renamedebounce', el, name);
 
-    this.setState({
+    this.setData({
       name: name,
       updateDirty: true
     });
   }
 
   associate( match ){
-    let s = this.state;
+    let s = this.data;
     let el = s.element;
 
     el.associate( match );
 
     // this indicates to render the match immediately though the data on the server may not be updated yet
-    this.setState({
+    this.setData({
       match: match,
       name: match.name
     });
   }
 
   unassociate(){
-    let s = this.state;
+    let s = this.data;
     let el = s.element;
+    let mod = el.MODIFICATIONS.UNMODIFIED;
 
+    el.modify( mod );
     el.unassociate();
 
-    this.setState({
+    this.setData({
       name: '',
       matches: [],
+      modification: mod,
       match: null
     });
 
     delay(0).then( () => this.focusNameInput() );
   }
 
-  updateMatches( name = this.state.name, offset = this.state.offset, changedOrganisms = false ){
-    let s = this.state;
+  updateMatches( name = this.data.name, offset = this.data.offset, changedOrganisms = false ){
+    let s = this.data;
     let p = this.props;
     let el = s.element;
     let doc = p.document;
@@ -222,7 +265,7 @@ class EntityInfo extends React.Component {
             offset: offset
           } );
 
-          this.setState({
+          this.setData({
             matches: s.matches,
             replacingMatches: false,
             loadingMatches: false,
@@ -245,12 +288,12 @@ class EntityInfo extends React.Component {
 
       associationCache.set( el, { matches: [], offset: 0 } );
 
-      this.setState({
+      this.setData({
         updateDirty: false
       });
     }
 
-    this.setState({
+    this.setData({
       loadingMatches: name ? true : false,
       oldName: name,
       updatePromise: update,
@@ -262,19 +305,19 @@ class EntityInfo extends React.Component {
     return update;
   }
 
-  getMoreMatches( numMore = this.state.limit ){
-    let s = this.state;
+  getMoreMatches( numMore = this.data.limit ){
+    let s = this.data;
 
     if( !s.name || s.gettingMoreMatches || this._unmounted ){ return Promise.resolve(); }
 
     let offset = s.offset + numMore;
 
-    this.setState({
+    this.setData({
       gettingMoreMatches: true
     });
 
     return this.updateMatches( s.name, offset ).then( () => {
-      this.setState({
+      this.setData({
         gettingMoreMatches: false
       });
     } );
@@ -283,13 +326,12 @@ class EntityInfo extends React.Component {
   clear(){
     this.rename('');
 
-    this.setState({ matches: [] });
+    this.setData({ matches: [] });
   }
 
   render(){
     let s = this.state;
     let p = this.props;
-    let el = s.element;
     let doc = p.document;
     let children = [];
 
@@ -297,7 +339,7 @@ class EntityInfo extends React.Component {
       loading ? h('i.icon.icon-spinner') : h('i.material-icons', 'brightness_1')
     ]);
 
-    if( !el.associated() && doc.editable() ){
+    if( !s.element.associated() && doc.editable() ){
 
       if( s.loadingMatches ){
         children.push( h('span.input-icon', [
@@ -350,8 +392,8 @@ class EntityInfo extends React.Component {
 
     if( s.match != null ){
       assoc = s.match;
-    } else if( el.associated() ){
-      assoc = el.association();
+    } else if( s.element.associated() ){
+      assoc = s.element.association();
     } else {
       assoc = null;
     }
@@ -397,9 +439,28 @@ class EntityInfo extends React.Component {
       ]) );
 
       children.push( h('div.entity-info-assoc', allAssoc( assoc )) );
+
+      let selectId = 'entity-info-mod-select-' + s.element.id();
+
+      children.push( h('label.entity-info-mod-label', { htmlFor: selectId }, 'Modification') );
+
+      if( doc.editable() ){
+        children.push( h('select.entity-info-mod-select', {
+          id: selectId,
+          value: s.modification.value,
+          onChange: (evt) => this.modify( evt.target.value ),
+          disabled: !doc.editable()
+        }, s.element.ORDERED_MODIFICATIONS.map( mod => {
+          return h('option', {
+            value: mod.value
+          }, mod.displayValue);
+        } )) );
+      } else {
+        children.push( h('div.entity-info-mod-text', s.element.modification().displayValue) );
+      }
     } else if( !doc.editable() ){
       children.push( h('div.entity-info-no-assoc', [
-        h('div.element-info-message', [
+        h('div.element-info-message.element-info-no-data', [
           h('i.material-icons', 'info'),
           h('span', ' This entity has no data associated with it.')
         ])

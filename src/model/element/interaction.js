@@ -2,7 +2,8 @@ let Element = require('./element');
 let _ = require('lodash');
 let Promise = require('bluebird');
 let ElementSet = require('../element-set');
-var { assertFieldsDefined } = require('../../util');
+let { assertFieldsDefined } = require('../../util');
+let freeze = obj => Object.freeze( obj );
 
 const TYPE = 'interaction';
 
@@ -10,6 +11,20 @@ const DEFAULTS = Object.freeze({
   type: TYPE,
   entries: [] // used by elementSet
 });
+
+const pptType = ( value, displayValue ) => freeze({ value, displayValue });
+
+const PARTICIPANT_TYPE = freeze({
+  UNDIRECTED: pptType('undirected', 'General'),
+  ACTIVATION: pptType('activation', 'Activation'),
+  INHIBITION: pptType('inhibition', 'Inhibition')
+});
+
+const PARTICIPANT_TYPES = _.keys( PARTICIPANT_TYPE ).map( k => PARTICIPANT_TYPE[k] );
+
+const getPptTypeByVal = val => {
+  return PARTICIPANT_TYPES.find( type => type.value === val ) || PARTICIPANT_TYPE.UNDIRECTED;
+};
 
 /**
 A generic biological interaction between [0, N] elements
@@ -36,7 +51,23 @@ class Interaction extends Element {
       emitter: this.emitter,
       cache: opts.cache
     });
+
+    this.on('remoteregroup', ( el, newGroup, oldGroup ) => {
+      let oldType = getPptTypeByVal( oldGroup );
+      let newType = getPptTypeByVal( newGroup );
+
+      this.emit( 'retype', el, newType, oldType );
+      this.emit( 'remoteretype', el, newType, oldType );
+    });
   }
+
+  static get PARTICIPANT_TYPE(){ return PARTICIPANT_TYPE; }
+
+  get PARTICIPANT_TYPE(){ return PARTICIPANT_TYPE; }
+
+  static get PARTICIPANT_TYPES(){ return PARTICIPANT_TYPES; }
+
+  get PARTICIPANT_TYPES(){ return PARTICIPANT_TYPES; }
 
   static type(){ return TYPE; }
 
@@ -72,8 +103,48 @@ class Interaction extends Element {
     return this.remove( ele, opts );
   }
 
-  regroupParticipant( ele, opts ){
-    return this.regroup( ele, opts );
+  getParticipantType( ele ){
+    return getPptTypeByVal( this.elementSet.group( ele ) );
+  }
+
+  setParticipantType( ele, type ){
+    let oldType = this.getParticipantType( ele );
+    let typeVal;
+
+    if( type === null || _.isString(type) ){
+      typeVal = type;
+    } else {
+      typeVal = type.value;
+    }
+
+    // undirected means no ppt has a type
+    if( typeVal === PARTICIPANT_TYPE.UNDIRECTED.value ){
+      typeVal = null;
+    }
+
+    type = getPptTypeByVal( typeVal );
+
+    if( _.isString( ele ) ){ // in case id passed
+      ele = this.get( ele );
+    }
+
+    let updatePromise = this.elementSet.regroup( ele, { group: typeVal } );
+
+    this.emit( 'retype', ele, type, oldType );
+
+    return updatePromise;
+  }
+
+  retypeParticipant( ele, type ){
+    return this.setParticipantType( ele, type );
+  }
+
+  participantType( ele, type ){
+    if( type === undefined ){
+      return this.getParticipantType( ele );
+    } else {
+      return this.setParticipantType( ele, type );
+    }
   }
 
   json(){
@@ -91,7 +162,7 @@ class Interaction extends Element {
 } );
 
 // forward promise-returning calls to the element set
-['add', 'remove', 'regroup'].forEach( name => {
+['add', 'remove'].forEach( name => {
   Interaction.prototype[ name ] = function( ...args ){
     return this.elementSet[ name ]( ...args ).then( () => this ); // resolve self
   };

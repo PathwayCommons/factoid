@@ -32,6 +32,8 @@ class Document {
 
     assertOneOfFieldsDefined( opts, ['cache', 'factory', 'factoryOptions'] );
 
+    this.hasCorrectSecret = false;
+
     this.syncher = new Syncher( opts );
 
     this.syncher.forward( this );
@@ -124,7 +126,7 @@ class Document {
   }
 
   editable(){
-    return this.secret() != null;
+    return this.syncher.hasCorrectSecret();
   }
 
   publicUrl(){

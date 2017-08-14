@@ -4,7 +4,7 @@ let uuid = require('uuid');
 let _ = require('lodash');
 let Promise = require('bluebird');
 
-let isInteraction = node => node.data('isInteraction') ? true : false;
+let { isInteractionNode } = require('../../../../util');
 
 module.exports = function({ bus, cy, document, controller }){
   if( !document.editable() ){ return; }
@@ -18,9 +18,17 @@ module.exports = function({ bus, cy, document, controller }){
     handleOutlineWidth: 1,
     toggleOffOnLeave: true,
     edgeType: function( source, target ){
-      if( source.edgesWith( target ).length > 0 ){
+      let alreadyConnectedByEdge = source.edgesWith( target ).length > 0;
+      let srcDocEl = document.get( source.id() );
+      let tgtDocEl = document.get( target.id() );
+      let alreadyConnectedByIntn = document.interactions().some( intn => {
+        return intn.has( srcDocEl ) && intn.has( tgtDocEl );
+      } );
+      let alreadyConnected = alreadyConnectedByEdge || alreadyConnectedByIntn;
+
+      if( alreadyConnected ){
         return null;
-      } if( isInteraction( source ) || isInteraction( target ) ){
+      } if( isInteractionNode( source ) || isInteractionNode( target ) ){
         return 'flat';
       } else  {
         return 'node';
@@ -35,7 +43,8 @@ module.exports = function({ bus, cy, document, controller }){
           id: uuid(),
           type: 'interaction',
           isInteraction: true,
-          isEntity: false
+          isEntity: false,
+          arity: 2
         }
       };
 
@@ -49,7 +58,7 @@ module.exports = function({ bus, cy, document, controller }){
     complete: function( source, target, addedEles ){
       let addedNodes = addedEles.nodes();
       let createdIntnNode = addedNodes.nonempty();
-      let intnNode = createdIntnNode ? addedNodes : isInteraction( source ) ? source : target;
+      let intnNode = createdIntnNode ? addedNodes : isInteractionNode( source ) ? source : target;
       let idIsNotIntn = el => el.id() !== intnNode.id();
       let pptNodes = source.add( target ).filter( idIsNotIntn );
 

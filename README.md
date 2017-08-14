@@ -13,8 +13,15 @@
 
 The following environment variables can be used to configure the server:
 
-- `NODE_ENV` : the environment mode, either `production` or `development` (default)
-- `PORT` : the port on which the server runs (default 3000)
+- `NODE_ENV` : the environment mode; either `production` or `development` (default)
+- `PORT` : the port on which the server runs (default `3000`)
+- `LOG_LEVEL` : minimum log level; one of `info` (default), `warn`, `error`
+- `DB_NAME` : name of the db (default `factoid`)
+- `DB_HOST` : hostname or ip address of the database host (default `localhost`)
+- `DB_PORT` : port where the db can be accessed (default `28015`, the RethinkDB default)
+- `DB_USER` : username if the db uses auth (undefined by default)
+- `DB_PASS` : password if the db uses auth (undefined by default)
+- `DB_CERT` : local file path to certificate (cert) file if the db uses ssl (undefined by default)
 
 
 
@@ -44,6 +51,12 @@ Run the container:
 
 ```
 docker run -it -p 12345:3000 -u "node" -e "NODE_ENV=production" -e "PORT=3000" --name "factoid" factoid
+```
+
+Or run with an env file that defines the environment variables:
+
+```
+docker run -it -p 12345:3000 -u "node" --env-file prod.env --name "factoid" factoid
 ```
 
 Notes:

@@ -9,4 +9,8 @@ function isServer(){
   return !isClient();
 }
 
-module.exports = { isClient, isServer };
+function isInteractionNode( el ){
+  return el.data('isInteraction') === true;
+}
+
+module.exports = { isClient, isServer, isInteractionNode };

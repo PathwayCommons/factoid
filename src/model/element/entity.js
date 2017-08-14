@@ -66,6 +66,14 @@ class Entity extends Element {
         this.emit( 'unassociated', old.association );
         this.emit( 'remoteunassociated', old.association );
       }
+
+      if( changes.modification != null ){
+        let newMod = getModByValue( changes.modification ) ;
+        let oldMod = getModByValue( old.modification );
+
+        this.emit( 'modify', newMod, oldMod );
+        this.emit( 'remotemodify', newMod, oldMod );
+      }
     });
   }
 

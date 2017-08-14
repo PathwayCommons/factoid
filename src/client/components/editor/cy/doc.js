@@ -196,6 +196,16 @@ function listenToDoc({ bus, cy, document }){
     } );
   };
 
+  let onDocRemRetypePpt = function( docEl, type ){
+    onDoc( this, function( docIntn, intnNode ){
+      let edges = intnNode.connectedEdges();
+      let isElNode = n => n.id() === docEl.id();
+      let tgtEdge = edges.filter( e => e.connectedNodes().some( isElNode ) );
+
+      applyEditAnimation( tgtEdge );
+    } );
+  };
+
   let reapplyAssocToCy = function( docEl, el ){
     el.data({
       associated: docEl.associated(),
@@ -327,6 +337,7 @@ function listenToDoc({ bus, cy, document }){
     docEl.on('remoteredescribe', onEdit);
     docEl.on('remoteassociate', onEdit);
     docEl.on('remotemodify', onEdit);
+    docEl.on('remoteretype', onDocRemRetypePpt);
     docEl.on('rename', onDocRename);
     docEl.on('add', onDocAddPpt);
     docEl.on('remove', onDocRmPpt);
@@ -345,6 +356,7 @@ function listenToDoc({ bus, cy, document }){
     docEl.removeListener('remoteredescribe', onEdit);
     docEl.removeListener('remoteassociate', onEdit);
     docEl.removeListener('remotemodify', onEdit);
+    docEl.removeListener('remoteretype', onDocRemRetypePpt);
     docEl.removeListener('rename', onDocRename);
     docEl.removeListener('add', onDocAddPpt);
     docEl.removeListener('remove', onDocRmPpt);

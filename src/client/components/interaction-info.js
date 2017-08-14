@@ -1,10 +1,17 @@
-let React = require('react');
-let h = require('react-hyperscript');
-let ReactDom = require('react-dom');
-let { delay, isInteractionNode } = require('../../util');
-let _ = require('lodash');
-let defs = require('../defs');
-let anime = require('animejs');
+const React = require('react');
+const h = require('react-hyperscript');
+const ReactDom = require('react-dom');
+const { delay, isInteractionNode } = require('../../util');
+const _ = require('lodash');
+const defs = require('../defs');
+const anime = require('animejs');
+
+const animateDomForEdit = domEle => anime({
+  targets: domEle,
+  backgroundColor: [defs.editAnimationWhite, defs.editAnimationColor, defs.editAnimationWhite],
+  duration: defs.editAnimationDuration,
+  easing: defs.editAnimationEasing
+});;
 
 class InteractionInfo extends React.Component {
   constructor( props ){
@@ -30,8 +37,10 @@ class InteractionInfo extends React.Component {
 
   componentDidMount(){
     let el = this.props.element;
+    let ppt = this.state.ppt;
     let root = ReactDom.findDOMNode( this );
     let comment = root.querySelector('.interaction-info-description');
+    let typeSel = root.querySelector('.interaction-info-type-select');
 
     delay(0).then( () => comment.focus() );
 
@@ -42,21 +51,32 @@ class InteractionInfo extends React.Component {
         this.remRedescrAni.pause();
       }
 
-      this.remRedescrAni = anime({
-        targets: comment,
-        backgroundColor: [defs.editAnimationWhite, defs.editAnimationColor, defs.editAnimationWhite],
-        duration: defs.editAnimationDuration,
-        easing: defs.editAnimationEasing
-      });
+      this.remRedescrAni = animateDomForEdit( comment );
     };
 
     el.on('remoteredescribe', this.onRemoteRedescribe);
+
+    this.onRemoteRetype = ( retypedPpt, newType ) => {
+      if( retypedPpt.id() === ppt.id() ){
+        this.setState({ pptType: newType });
+      }
+
+      if( this.remRetypeAni ){
+        this.remRetypeAni.pause();
+      }
+
+      this.remRetypeAni = animateDomForEdit( typeSel );
+    };
+
+    el.on('remoteretype', this.onRemoteRetype);
   }
 
   componentWillUnmount(){
     let el = this.props.element;
 
     el.removeListener('remoteredescribe', this.onRemoteRedescribe);
+
+    el.removeListener('remoteretype', this.onRemoteRetype);
   }
 
   redescribe( descr ){

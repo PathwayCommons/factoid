@@ -14,8 +14,17 @@ class InteractionInfo extends React.Component {
       this.props.element.redescribe( descr );
     }, defs.updateDelay );
 
+    let p = this.props;
+    let el = p.element;
+    let doc = p.document;
+    let evtTgt = p.eventTarget;
+    let pptNode = evtTgt.connectedNodes().filter( el => !isInteractionNode(el) );
+    let ppt = doc.get( pptNode.id() );
+
     this.state = {
-      description: props.element.description()
+      description: props.element.description(),
+      ppt: ppt,
+      pptType: el.participantType( ppt )
     };
   }
 
@@ -52,13 +61,25 @@ class InteractionInfo extends React.Component {
 
   redescribe( descr ){
     let p = this.props;
-    let el = this.element;
+    let el = p.element;
 
     this.debouncedRedescribe( descr );
 
     p.bus.emit('redescribedebounce', el, descr);
 
     this.setState({ description: descr });
+  }
+
+  retype( ppt, type ){
+    let p = this.props;
+    let el = p.element;
+    let retypeToNull = ppt => el.participantType( ppt, null );
+
+    el.participants().forEach( retypeToNull );
+
+    el.participantType( ppt, type );
+
+    this.setState({ pptType: type });
   }
 
   render(){
@@ -70,6 +91,7 @@ class InteractionInfo extends React.Component {
     let evtTgt = p.eventTarget;
     let descrId = 'interaction-info-description' + el.id();
     let descrDom;
+    let ppt = s.ppt;
 
     if( doc.editable() ){
       descrDom = h('textarea.interaction-info-description', {
@@ -93,8 +115,6 @@ class InteractionInfo extends React.Component {
 
     if( evtTgt.isEdge() ){
       let selectId = 'interaction-info-type-select-' + el.id();
-      let pptNode = evtTgt.connectedNodes().filter( el => !isInteractionNode(el) );
-      let ppt = doc.get( pptNode.id() );
 
       children.push( h('label.interaction-info-type-select-label', {
         htmlFor: selectId
@@ -105,15 +125,8 @@ class InteractionInfo extends React.Component {
       if( doc.editable() ){
         children.push( h('select.interaction-info-type-select', {
           id: selectId,
-          onChange: event => {
-            let type = event.target.value;
-            let retypeToNull = ppt => el.participantType( ppt, null );
-
-            el.participants().forEach( retypeToNull );
-
-            el.participantType( ppt, type );
-          },
-          defaultValue: el.participantType( ppt ).value,
+          onChange: event => this.retype( ppt, event.target.value ),
+          value: this.state.pptType.value,
           disabled: !doc.editable()
         }, el.PARTICIPANT_TYPES.map( type => h('option', { value: type.value }, type.displayValue) )) );
       } else {

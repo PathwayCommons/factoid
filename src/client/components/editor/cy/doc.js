@@ -1,10 +1,9 @@
-const { makeCyEles, makePptEdges } = require('./make-cy-eles');
 const _ = require('lodash');
 const defs = require('./defs');
 const moment = require('moment');
 const onKey = require('./on-key');
 const Promise = require('bluebird');
-const { isInteractionNode } = require('../../../../util');
+const { isInteractionNode, makeCyEles, makePptEdges } = require('../../../../util');
 
 function listenToDoc({ bus, cy, document }){
   let getCyEl = function( docEl ){
@@ -186,6 +185,12 @@ function listenToDoc({ bus, cy, document }){
     } );
   };
 
+  let onDocModify = function( mod ){
+    onDoc( this, function( docEl, el ){
+      el.data( 'modification', mod.value );
+    } );
+  };
+
   let onDocRetypePpt = function( docEl, type ){
     onDoc( this, function( docIntn, intnNode ){
       let edges = intnNode.connectedEdges();
@@ -344,6 +349,7 @@ function listenToDoc({ bus, cy, document }){
     docEl.on('associate', onDocAssoc);
     docEl.on('unassociate', onDocUnassoc);
     docEl.on('retype', onDocRetypePpt);
+    docEl.on('modify', onDocModify);
     el.on('drag', onCyPos);
     el.on('automove', onCyAutomove);
   };
@@ -363,6 +369,7 @@ function listenToDoc({ bus, cy, document }){
     docEl.removeListener('associate', onDocAssoc);
     docEl.removeListener('unassociate', onDocUnassoc);
     docEl.removeListener('retype', onDocRetypePpt);
+    docEl.removeListener('modify', onDocModify);
     el.removeListener('drag', onCyPos);
     el.removeListener('automove', onCyAutomove);
   };

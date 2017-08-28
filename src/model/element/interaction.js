@@ -83,6 +83,16 @@ class Interaction extends Element {
     return this.elementSet.load();
   }
 
+  create( setup = _.noop ){
+    return super.create( () => {
+      return this.postcreate().then( setup );
+    } );
+  }
+
+  postcreate(){
+    return this.elementSet.create();
+  }
+
   synch( enable ){
     return Promise.try( () => {
       return super.synch( enable );

@@ -2,8 +2,10 @@ const Document = require('../../../../model/document');
 const db = require('../../../db');
 const Promise = require('bluebird');
 const _ = require('lodash');
-const provider = require('./null');
+const provider = require('./reach');
 const uuid = require('uuid');
+const { makeCyEles, getCyLayoutOpts } = require('../../../../util');
+const Cytoscape = require('cytoscape');
 
 let newDoc = ({ docDb, eleDb, id, secret }) => {
   return new Document( _.assign( {}, docDb, {
@@ -41,6 +43,37 @@ let fillDoc = ( doc, text ) => {
   } ).then( () => doc );
 };
 
+// run cytoscape layout on server side so that the document looks ok on first open
+let runLayout = doc => {
+  let cy = new Cytoscape({
+    elements: makeCyEles( doc.elements() ),
+    layout: { name: 'grid' },
+    // styleEnabled: true // TODO cy 3.2 bug if style enabled
+  });
+
+  let runLayout = () => {
+    let layout = cy.layout( _.assign( {}, getCyLayoutOpts(), {
+      animate: false
+    } ) );
+
+    let layoutDone = layout.promiseOn('layoutstop');
+
+    layout.run();
+
+    return layoutDone;
+  };
+
+  let savePositions = () => Promise.all( doc.elements().map( docEl => {
+    let el = cy.getElementById( docEl.id() );
+
+    return docEl.reposition( _.clone( el.position() ) );
+  } ) );
+
+  let getDoc = () => doc;
+
+  return Promise.try( runLayout ).then( savePositions ).then( getDoc );
+};
+
 module.exports = function( http ){
   // get existing doc
   http.get('/document/:id', function( req, res ){
@@ -62,6 +95,7 @@ module.exports = function( http ){
     ( Promise.try( loadTables )
       .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret }) )
       .then( doc => fillDoc( doc, text ) )
+      .then( runLayout )
       .then( getDocJson )
       .then( json => res.json( json ) )
     );

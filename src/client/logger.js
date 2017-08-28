@@ -73,6 +73,12 @@ class Logger {
     this.history.splice( 0, this.history.length );
   }
 
+  shift(){
+    let hist = this.history;
+
+    hist.splice( 0, hist.length - this.maxEntries );
+  }
+
   static get LEVELS(){ return LEVELS; }
 }
 

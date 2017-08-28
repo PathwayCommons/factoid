@@ -223,7 +223,9 @@ class Editor extends React.Component {
   }
 
   componentWillUnmount(){
-    this.data.cy.destroy();
+    if( this.data.cy ){
+      this.data.cy.destroy();
+    }
   }
 }
 

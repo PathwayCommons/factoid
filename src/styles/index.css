@@ -24,3 +24,6 @@
 @import "./init-app.css";
 @import "./app.css";
 @import "./editor";
+@import "./home.css";
+@import "./document-linkout.css";
+@import "./document-filler.css";

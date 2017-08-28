@@ -4,5 +4,6 @@ module.exports = Object.assign(
   require('./promise'),
   require('./is'),
   require('./assert'),
-  require('./dom')
+  require('./dom'),
+  require('./cy')
 );

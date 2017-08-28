@@ -3,7 +3,7 @@ const Popover = require('../popover');
 const Tooltip = require('../tooltip');
 const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
 const Help = require('./help');
-const Linkout = require('./linkout');
+const Linkout = require('../document-linkout');
 
 module.exports = function({ document }){
   return h('div.editor-menu', [

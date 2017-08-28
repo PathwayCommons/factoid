@@ -35,6 +35,10 @@ class ElementFactory {
     return this.config.types.find( t => t.type() === typeStr );
   }
 
+  isTypeSupported( typeStr ){
+    return this.getType( typeStr ) != null;
+  }
+
   set( opts ){
     _.assign( this.config, _.pick( opts, this.configFields() ) );
     _.assign( this.config.data, _.get( opts, 'data' ) );

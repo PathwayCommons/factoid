@@ -87,6 +87,10 @@ class Element {
     return Promise.resolve();
   }
 
+  postcreate(){
+    return Promise.resolve();
+  }
+
   rename( newName ){
     let updatePromise = this.syncher.update( 'name', newName );
 

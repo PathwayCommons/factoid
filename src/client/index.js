@@ -13,10 +13,10 @@ let Router = require('./router');
 let ReactDom = require('react-dom');
 let h = require('react-hyperscript');
 let hh = require('hyperscript');
-let { $ } = require('../util');
+let { $, regCyExts } = require('../util');
 
-// register cytoscape extensions
-require('./cytoscape-extensions')();
+// make sure cytoscape extensions are registered for the client side
+regCyExts();
 
 if( debug.enabled() ){
   debug.init();

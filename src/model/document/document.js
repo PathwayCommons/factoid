@@ -304,7 +304,9 @@ class Document {
       id: this.id(),
       secret: this.secret(),
       organisms: this.organisms().map( toJson ),
-      elements: this.elements().map( toJson )
+      elements: this.elements().map( toJson ),
+      publicUrl: this.publicUrl(),
+      privateUrl: this.privateUrl()
     };
   }
 

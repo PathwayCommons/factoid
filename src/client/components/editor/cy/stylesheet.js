@@ -1,4 +1,4 @@
-let defs = require('./defs');
+const defs = require('./defs');
 
 function makeStylesheet(){
   let { activeColor, defaultColor, labelColor, nodeSize, interactionNodeSize } = defs;
@@ -10,7 +10,16 @@ function makeStylesheet(){
         'background-color': defaultColor,
         'width': nodeSize,
         'height': nodeSize,
-        'label': 'data(name)',
+        'label': function( node ){
+          let name = node.data('name');
+          let mod = node.data('modification');
+
+          if( mod == null || mod === 'unmodified' ){
+            return name;
+          } else {
+            return mod.charAt(0).toLowerCase() + '-' + name;
+          }
+        },
         'text-outline-width': 2,
         'text-outline-color': defaultColor,
         'color': labelColor,

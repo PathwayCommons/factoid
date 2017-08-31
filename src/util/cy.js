@@ -71,8 +71,13 @@ function makePptEdges( docIntn, docPpt ){
 function getCyLayoutOpts(){
   return {
     name: 'cose-bilkent',
+    animateFilter: node => !isInteractionNode( node ),
     randomize: false
   };
 }
 
-module.exports = { makeCyEles, makePptEdges, regCyExts, regCyLayouts, getCyLayoutOpts };
+function isInteractionNode( el ){
+  return el.data('isInteraction') === true;
+}
+
+module.exports = { makeCyEles, makePptEdges, regCyExts, regCyLayouts, getCyLayoutOpts, isInteractionNode };

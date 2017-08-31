@@ -99,11 +99,9 @@ module.exports = {
           enableOrg( org );
         }
 
-        if( typeIsSupported && orgIsSupported ){
-          ent.name = frame.text;
+        ent.name = frame.text;
 
-          addElement( ent, frame );
-        }
+        addElement( ent, frame );
       } );
 
       // add explicit organisms

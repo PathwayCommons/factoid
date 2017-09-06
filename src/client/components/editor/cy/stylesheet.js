@@ -99,14 +99,14 @@ function makeStylesheet(){
       }
     },
     {
-      selector: 'edge[type="activation"]',
+      selector: 'edge[type="positive"]',
       style: {
         'target-arrow-shape': 'triangle',
         'target-endpoint': 'outside-to-node'
       }
     },
     {
-      selector: 'edge[type="inhibition"]',
+      selector: 'edge[type="negative"]',
       style: {
         'target-arrow-shape': 'tee',
         'target-endpoint': 'outside-to-node'

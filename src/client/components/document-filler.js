@@ -55,7 +55,7 @@ class DocumentFiller extends React.Component {
 
   render(){
     let rootChildren = [
-      h('label.document-filler-text-label', 'Document description'),
+      h('label.document-filler-text-label', 'Document text'),
       h('textarea.document-filler-text'),
       h('div.document-filler-submit-line', [
         h('button.document-filler-submit', {

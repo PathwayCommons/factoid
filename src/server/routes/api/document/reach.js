@@ -9,25 +9,6 @@ const Organism = require('../../../../model/organism');
 const REACH_URL = 'http://agathon.sista.arizona.edu:8080/odinweb/api/text';
 
 module.exports = {
-  getExample: function(){
-    let id1 = uuid();
-    let id2 = uuid();
-
-    return Promise.resolve({
-      elements: [
-        { type: 'entity', name: 'PCNA', id: id1 },
-        { type: 'entity', name: 'RAD51', id: id2 },
-        { type: 'interaction', elements: [
-          { id: id1 },
-          { id: id2 }
-        ] }
-      ],
-      organisms: [
-        { id: 9606 }
-      ]
-    });
-  },
-
   get: function( text ){
     let makeRequest = () => fetch(REACH_URL, {
       method: 'POST',
@@ -58,6 +39,7 @@ module.exports = {
 
       let entFrames = _.get( res, ['entities', 'frames'] ) || [];
       let evtFrames = _.get( res, ['events', 'frames'] ) || [];
+      let senFrames = _.get( res, ['sentences', 'frames'] ) || [];
 
       let frames = new Map();
       let getFrame = id => frames.get( id );
@@ -68,6 +50,16 @@ module.exports = {
       let frameIsEvent = frame => frame['frame-type'] === 'event-mention';
       let getArgId = arg => arg.arg;
 
+      let getSentenceText = id => {
+        let f = getFrame(id);
+        let i1 = _.get(f, ['start-pos', 'offset']);
+        let i2 = _.get(f, ['end-pos', 'offset']);
+
+        if( i1 != null && i2 != null ){
+          return text.substr( i1, i2 );
+        }
+      };
+
       let addElement = (el, frame) => {
         elements.push( el );
         elementsMap.set( el.id, el );
@@ -76,6 +68,7 @@ module.exports = {
 
       entFrames.forEach( addFrame );
       evtFrames.forEach( addFrame );
+      senFrames.forEach( addFrame );
 
       // add bio entities
       entFrames.forEach( frame => {
@@ -138,7 +131,8 @@ module.exports = {
           if( argsAreEnts || isBinaryCollapsible ){
             let intn = {
               id: uuid(),
-              type: 'interaction'
+              type: 'interaction',
+              description: getSentenceText( frame.sentence )
             };
 
             if( argsAreEnts ){

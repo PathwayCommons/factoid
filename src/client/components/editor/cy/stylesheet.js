@@ -1,4 +1,4 @@
-let defs = require('./defs');
+const defs = require('./defs');
 
 function makeStylesheet(){
   let { activeColor, defaultColor, labelColor, nodeSize, interactionNodeSize } = defs;
@@ -10,7 +10,16 @@ function makeStylesheet(){
         'background-color': defaultColor,
         'width': nodeSize,
         'height': nodeSize,
-        'label': 'data(name)',
+        'label': function( node ){
+          let name = node.data('name');
+          let mod = node.data('modification');
+
+          if( mod == null || mod === 'unmodified' ){
+            return name;
+          } else {
+            return mod.charAt(0).toLowerCase() + '-' + name;
+          }
+        },
         'text-outline-width': 2,
         'text-outline-color': defaultColor,
         'color': labelColor,
@@ -90,14 +99,14 @@ function makeStylesheet(){
       }
     },
     {
-      selector: 'edge[type="activation"]',
+      selector: 'edge[type="positive"]',
       style: {
         'target-arrow-shape': 'triangle',
         'target-endpoint': 'outside-to-node'
       }
     },
     {
-      selector: 'edge[type="inhibition"]',
+      selector: 'edge[type="negative"]',
       style: {
         'target-arrow-shape': 'tee',
         'target-endpoint': 'outside-to-node'

@@ -51,7 +51,7 @@
 .editor-menu-content {
   min-width: 14em;
   max-width: 40em;
-  width: 33vw;
+  width: 40vw;
 }
 
 .editor-menu-tab-content {
@@ -67,8 +67,4 @@
 
 .editor-menu-content .popover-target {
   width: 100%;
-}
-
-.editor-linkout-address-url {
-  width: calc(100% - 2em);
 }

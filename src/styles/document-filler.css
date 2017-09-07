@@ -1,0 +1,67 @@
+.document-filler-page {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.document-filler {
+  width: 40em;
+  max-width: calc(100vw - 2em);
+  margin: 1em;
+}
+
+.document-filler-text {
+  width: 100%;
+  height: 20em;
+  resize: vertical;
+}
+
+.document-filler-text-label {
+  font-weight: bold;
+  font-size: var(--smallFontSize);
+}
+
+.document-filler-submit-line {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.document-filler-submit {
+  margin: 0.5em 0;
+}
+
+.document-filler-submit-spinner {
+  margin-left: 0.5em;
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: 500ms;
+}
+
+.document-filler-spinner-submitting {
+  opacity: 1;
+}
+
+.document-filler-arrow {
+  font-size: 2em;
+  text-align: center;
+  color: var(--fadedColor);
+}
+
+.document-filler-linkout {
+  margin-top: 1em;
+  padding: 0.125em 1.5em;
+  border-radius: 0.25em;
+  box-shadow: 0 4px 20px 4px rgba(0, 20, 60, 0.2), 0 4px 80px -8px rgba(0, 20, 60, 0.3);
+}
+
+.document-filler-open {
+  color: var(--fadedColor);
+  font-size: 2em;
+  margin-top: 0.5em;
+  text-align: center;
+}

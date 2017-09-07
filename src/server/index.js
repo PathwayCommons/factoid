@@ -9,6 +9,7 @@ let http = require('http');
 let Promise = require('bluebird');
 let stream = require('stream');
 let fs = require('fs');
+let { regCyLayouts } = require('../util');
 
 let config = require('../config');
 let app = express();
@@ -17,6 +18,9 @@ let io = require('socket.io')(server);
 
 let db = require('./db');
 let Syncher = require('../model/syncher');
+
+// make sure cytoscape layouts are registered for server-side use
+regCyLayouts();
 
 // view engine setup
 app.set('views', path.join(__dirname, '../', 'views'));

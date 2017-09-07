@@ -99,12 +99,20 @@ class ElementSet {
     });
   }
 
-  load(){
+  loadElements(){
     let loadEle = entry => this.cache.load( entry.id );
     let add = ele => this.elementsById.set( ele.id(), ele );
     let fillInEntry = entry => loadEle( entry ).then( add );
 
     return Promise.all( this.syncher.get('entries').map( fillInEntry ) );
+  }
+
+  load(){
+    return this.loadElements();
+  }
+
+  create(){
+    return this.loadElements();
   }
 
   synch( enable ){

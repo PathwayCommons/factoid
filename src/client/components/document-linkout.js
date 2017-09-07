@@ -2,7 +2,7 @@ const React = require('react');
 const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
 const Clipboard = require('clipboard');
-const Tooltip = require('../tooltip');
+const Tooltip = require('./tooltip');
 
 class Address extends React.Component {
   constructor( props ){
@@ -18,11 +18,11 @@ class Address extends React.Component {
     let { name, url, descr } = this.props;
     let formedUrl = location.protocol + '//' + location.host + url;
 
-    return h('div.editor-linkout-address', [
-      h('h3.editor-linkout-address-name', name),
-      h('p.editor-linkout-address-descr', descr),
-      h('p.editor-linkout-address-val', [
-        h('input.editor-linkout-address-url.input-joined.code', { type: 'text', value: formedUrl, readOnly: true }),
+    return h('div.document-linkout-address', [
+      h('h3.document-linkout-address-name', name),
+      h('p.document-linkout-address-descr', descr),
+      h('p.document-linkout-address-val', [
+        h('input.document-linkout-address-url.input-joined.code', { type: 'text', value: formedUrl, readOnly: true }),
         h(Tooltip, {
           tippy: {
             html: function(){ return h('span', copied ? 'Link copied' : 'Copy link'); },
@@ -32,7 +32,7 @@ class Address extends React.Component {
             sticky: true
           }
         }, [
-          h('button.button-joined.editor-linkout-address-copy', [
+          h('button.button-joined.document-linkout-address-copy', [
             h('i.material-icons', 'content_paste')
           ])
         ])
@@ -69,17 +69,26 @@ class Linkout extends React.Component {
 
   render(){
     let doc = this.props.document;
+    let docJson = this.props.documentJson;
 
-    return h('div.editor-linkout', [
+    if( doc != null ){
+      docJson = {
+        publicUrl: doc.publicUrl(),
+        privateUrl: doc.privateUrl(),
+        editable: doc.editable()
+      };
+    }
+
+    return h('div.document-linkout', [
       h(Address, {
         name: 'Public address',
-        url: doc.publicUrl(),
+        url: docJson.publicUrl,
         descr: 'This is a read-only link for this document.  Share this link with anyone.'
       })
-    ].concat( doc.editable() ? [
+    ].concat( docJson.editable ? [
       h(Address, {
         name: 'Private address',
-        url: doc.privateUrl(),
+        url: docJson.privateUrl,
         descr: 'This is a read-and-write link for this document.  Share this link only with fellow editors.'
       })
     ] : [] ));

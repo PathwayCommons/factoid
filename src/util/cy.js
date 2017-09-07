@@ -1,4 +1,20 @@
 let _ = require('lodash');
+let Cytoscape = require('cytoscape');
+let edgehandles = require('cytoscape-edgehandles');
+let cxtmenu = require('cytoscape-cxtmenu');
+let qtip = require('cytoscape-qtip');
+let automove = require('cytoscape-automove');
+let cose = require('cytoscape-cose-bilkent');
+
+function regCyExts(){
+  regCyLayouts();
+
+  [ edgehandles, cxtmenu, qtip, automove ].forEach( ext => Cytoscape.use( ext ) );
+}
+
+function regCyLayouts(){
+  [ cose ].forEach( ext => Cytoscape.use( ext ) );
+}
 
 function makeCyEles( docEls ){
   if( !Array.isArray( docEls ) ){
@@ -19,6 +35,7 @@ function makeCyElesForEle( docEl ){
     data: {
       id: docEl.id(),
       name: docEl.name(),
+      modification: docEl.isEntity() ? docEl.modification().value : null,
       type: docEl.type(),
       isEntity: docEl.isEntity(),
       isInteraction: docEl.isInteraction(),
@@ -51,4 +68,16 @@ function makePptEdges( docIntn, docPpt ){
   return els;
 }
 
-module.exports = { makeCyEles, makePptEdges };
+function getCyLayoutOpts(){
+  return {
+    name: 'cose-bilkent',
+    animateFilter: node => !isInteractionNode( node ),
+    randomize: false
+  };
+}
+
+function isInteractionNode( el ){
+  return el.data('isInteraction') === true;
+}
+
+module.exports = { makeCyEles, makePptEdges, regCyExts, regCyLayouts, getCyLayoutOpts, isInteractionNode };

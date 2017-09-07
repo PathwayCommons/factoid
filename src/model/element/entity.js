@@ -8,7 +8,7 @@ const MODS = Object.freeze( (() => {
 
   let map = {
     UNMODIFIED: 'unmodified',
-    PHOSPHORILATED: 'phosphorilated',
+    PHOSPHORYLATED: 'phosphorylated',
     METHYLATED: 'methylated',
     UBIQUINATED: 'ubiquinated'
   };
@@ -25,7 +25,7 @@ const MODS = Object.freeze( (() => {
 
 const ORDERED_MODS = Object.freeze( [
   MODS.UNMODIFIED,
-  MODS.PHOSPHORILATED,
+  MODS.PHOSPHORYLATED,
   MODS.METHYLATED,
   MODS.UBIQUINATED
 ] );

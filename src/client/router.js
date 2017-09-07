@@ -1,18 +1,19 @@
-let { BrowserRouter, Route, Redirect } = require('react-router-dom');
-let h = require('react-hyperscript');
-let _ = require('lodash');
-let uuid = require('uuid');
+const { BrowserRouter, Route, Redirect } = require('react-router-dom');
+const h = require('react-hyperscript');
+const _ = require('lodash');
+const uuid = require('uuid');
 
-let Editor = require('./components/editor');
+const Editor = require('./components/editor');
+const Home = require('./components/home');
+const DocumentFiller = require('./components/document-filler');
 
-let App = () => (
-  h('div', 'Factoid')
-);
 
 let routes = [
   {
     path: '/',
-    component: App
+    render: () => {
+      return h(Home);
+    }
   },
   {
     path: '/new-document',
@@ -25,6 +26,14 @@ let routes = [
           pathname: `/document/${id}/${secret}`
         }
       } );
+    }
+  },
+  {
+    path: '/new-document/fill',
+    render: () => {
+      return h('div.document-filler-page', [
+        h( DocumentFiller )
+      ]);
     }
   },
   {

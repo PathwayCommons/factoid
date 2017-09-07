@@ -69,7 +69,10 @@ class EntityInfo extends React.Component {
     let input = root.querySelector('.entity-info-name-input');
 
     if( input != null ){
+      let len = input.value.length;
+
       input.focus();
+      input.setSelectionRange( len, len );
     }
   }
 

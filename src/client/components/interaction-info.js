@@ -5,13 +5,14 @@ const { delay, isInteractionNode } = require('../../util');
 const _ = require('lodash');
 const defs = require('../defs');
 const anime = require('animejs');
+const uuid = require('uuid');
 
 const animateDomForEdit = domEle => anime({
   targets: domEle,
   backgroundColor: [defs.editAnimationWhite, defs.editAnimationColor, defs.editAnimationWhite],
   duration: defs.editAnimationDuration,
   easing: defs.editAnimationEasing
-});;
+});
 
 class InteractionInfo extends React.Component {
   constructor( props ){
@@ -134,21 +135,32 @@ class InteractionInfo extends React.Component {
     ] ) );
 
     if( evtTgt.isEdge() ){
-      let selectId = 'interaction-info-type-select-' + el.id();
-
-      children.push( h('label.interaction-info-type-select-label', {
-        htmlFor: selectId
-      }, [
+      children.push( h('label.interaction-info-type-select-label', [
         h('span', 'Type')
       ]) );
 
       if( doc.editable() ){
-        children.push( h('select.interaction-info-type-select', {
-          id: selectId,
-          onChange: event => this.retype( ppt, event.target.value ),
-          value: this.state.pptType.value,
-          disabled: !doc.editable()
-        }, el.PARTICIPANT_TYPES.map( type => h('option', { value: type.value }, type.displayValue) )) );
+        let radioName = 'interaction-info-type-radioset-' + el.id();
+        let radiosetChildren = [];
+
+        el.PARTICIPANT_TYPES.forEach( type => {
+          let radioId = 'interaction-info-type-radioset-item-' + uuid();
+
+          radiosetChildren.push( h('input.interaction-info-type-radio', {
+            type: 'radio',
+            onChange: () => this.retype( ppt, type ),
+            id: radioId,
+            name: radioName,
+            checked: this.state.pptType.value === type.value
+          }) );
+
+          radiosetChildren.push( h('label.interaction-info-type-label', {
+            htmlFor: radioId,
+            dangerouslySetInnerHTML: { __html: type.icon }
+          }) );
+        } );
+
+        children.push( h('div.radioset.interaction-info-type-radioset', radiosetChildren) );
       } else {
         children.push( h('div.interaction-info-type-text', el.participantType( ppt ).displayValue ) );
       }

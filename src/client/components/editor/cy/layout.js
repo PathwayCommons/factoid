@@ -1,7 +1,7 @@
 let on = require('./on-key');
 let defs = require('./defs');
 let _ = require('lodash');
-let { isInteractionNode } = require('../../../../util');
+let { isInteractionNode, getCyLayoutOpts } = require('../../../../util');
 
 let isInteraction = isInteractionNode;
 
@@ -13,11 +13,9 @@ module.exports = function( { bus, cy, document } ){
   let layout = () => {
     if( !document.editable() ){ return; }
 
-    let opts = {
-      name: 'cose-bilkent',
-      padding: defs.padding,
-      randomize: false,
-    };
+    let opts = _.assign( {}, getCyLayoutOpts(), {
+      padding: defs.padding
+    } );
 
     if( lastLayout ){
       lastLayout.stop();

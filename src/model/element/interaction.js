@@ -12,18 +12,18 @@ const DEFAULTS = Object.freeze({
   entries: [] // used by elementSet
 });
 
-const pptType = ( value, displayValue ) => freeze({ value, displayValue });
+const pptType = ( value, displayValue, icon ) => freeze({ value, displayValue, icon });
 
 const PARTICIPANT_TYPE = freeze({
-  UNDIRECTED: pptType('undirected', 'General'),
-  ACTIVATION: pptType('activation', 'Activation'),
-  INHIBITION: pptType('inhibition', 'Inhibition')
+  UNSIGNED: pptType('unsigned', '–', '<i class="material-icons">remove</i>'),
+  POSITIVE: pptType('positive', '→', '<i class="material-icons">arrow_forward</i>'),
+  NEGATIVE: pptType('negative', '⊣', '<i class="material-icons icon-rot-90">title</i>')
 });
 
 const PARTICIPANT_TYPES = _.keys( PARTICIPANT_TYPE ).map( k => PARTICIPANT_TYPE[k] );
 
 const getPptTypeByVal = val => {
-  return PARTICIPANT_TYPES.find( type => type.value === val ) || PARTICIPANT_TYPE.UNDIRECTED;
+  return PARTICIPANT_TYPES.find( type => type.value === val ) || PARTICIPANT_TYPE.UNSIGNED;
 };
 
 /**
@@ -83,6 +83,16 @@ class Interaction extends Element {
     return this.elementSet.load();
   }
 
+  create( setup = _.noop ){
+    return super.create( () => {
+      return this.postcreate().then( setup );
+    } );
+  }
+
+  postcreate(){
+    return this.elementSet.create();
+  }
+
   synch( enable ){
     return Promise.try( () => {
       return super.synch( enable );
@@ -118,7 +128,7 @@ class Interaction extends Element {
     }
 
     // undirected means no ppt has a type
-    if( typeVal === PARTICIPANT_TYPE.UNDIRECTED.value ){
+    if( typeVal === PARTICIPANT_TYPE.UNSIGNED.value ){
       typeVal = null;
     }
 

@@ -8,7 +8,6 @@ let addCxtMenu = require('./cxtmenu');
 let addQtip = require('./qtip');
 let addAutomove = require('./automove');
 let handleDoc = require('./doc');
-let { makeCyEles } = require('./make-cy-eles');
 let debug = require('../../../debug');
 let defs = require('./defs');
 

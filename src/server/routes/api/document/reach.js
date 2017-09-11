@@ -25,6 +25,7 @@ module.exports = {
       let elements = [];
       let elementsMap = new Map();
       let elementsReachMap = new Map();
+      let groundReachMap = new Map();
       let organisms = [];
 
       let enableOrg = org => {
@@ -35,6 +36,7 @@ module.exports = {
         }
       };
 
+      let mergeEntitiesWithSameGround = true;
       let allowImplicitOrgSpec = false;
 
       let entFrames = _.get( res, ['entities', 'frames'] ) || [];
@@ -49,6 +51,7 @@ module.exports = {
       let frameIsEntity = frame => frame['frame-type'] === 'entity-mention';
       let frameIsEvent = frame => frame['frame-type'] === 'event-mention';
       let getArgId = arg => arg.arg;
+      let groundIsSame = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
 
       let getSentenceText = id => {
         let f = getFrame(id);
@@ -60,10 +63,35 @@ module.exports = {
         }
       };
 
-      let addElement = (el, frame) => {
-        elements.push( el );
-        elementsMap.set( el.id, el );
-        elementsReachMap.set( getReachId( frame ), el );
+      let addElement = (el, frame, ground) => {
+        let foundMerge = false;
+
+        if( mergeEntitiesWithSameGround && ground != null ){
+          let prevGround, prevReachId;
+
+          groundReachMap.forEach( ( gnd, rid ) => {
+            if( groundIsSame( gnd, ground ) ){
+              foundMerge = true;
+              prevGround = gnd;
+              prevReachId = rid;
+            }
+          } );
+
+          if( foundMerge ){
+            el = elementsReachMap.get( prevReachId );
+            ground = prevGround;
+          }
+        }
+
+        let reachId = getReachId( frame );
+
+        if( !foundMerge ){
+          elements.push( el );
+          elementsMap.set( el.id, el );
+        }
+
+        elementsReachMap.set( reachId, el );
+        groundReachMap.set( reachId, ground );
       };
 
       entFrames.forEach( addFrame );
@@ -94,7 +122,7 @@ module.exports = {
 
         ent.name = frame.text;
 
-        addElement( ent, frame );
+        addElement( ent, frame, ground );
       } );
 
       // add explicit organisms

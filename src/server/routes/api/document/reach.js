@@ -7,9 +7,9 @@ const FormData = require('form-data');
 const Organism = require('../../../../model/organism');
 
 const REACH_URL = 'http://agathon.sista.arizona.edu:8080/odinweb/api/text';
-const mergeEntitiesWithSameGround = true;
-const allowImplicitOrgSpec = false;
-const removeDisconnectedEntities = true;
+const MERGE_ENTS_WITH_SAME_GROUND = true;
+const ALLOW_IMPLICIT_ORG_SPEC = false;
+const REMOVE_DISCONNECTED_ENTS = true;
 
 module.exports = {
   get: function( text ){
@@ -67,7 +67,7 @@ module.exports = {
       let addElement = (el, frame, ground) => {
         let foundMerge = false;
 
-        if( mergeEntitiesWithSameGround && ground != null ){
+        if( MERGE_ENTS_WITH_SAME_GROUND && ground != null ){
           let prevGround, prevReachId;
 
           groundReachMap.forEach( ( gnd, rid ) => {
@@ -117,7 +117,7 @@ module.exports = {
         let orgIsSupported = org != null && org !== Organism.OTHER;
 
         // implicit mention of org
-        if( orgIsSupported && allowImplicitOrgSpec ){
+        if( orgIsSupported && ALLOW_IMPLICIT_ORG_SPEC ){
           enableOrg( org );
         }
 
@@ -183,7 +183,7 @@ module.exports = {
         }
       } );
 
-      if( removeDisconnectedEntities ){
+      if( REMOVE_DISCONNECTED_ENTS ){
         let interactions = elements.filter( elIsIntn );
         let pptIds = ( () => {
           let set = new Set();

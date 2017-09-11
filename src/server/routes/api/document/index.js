@@ -48,7 +48,7 @@ let runLayout = doc => {
   let cy = new Cytoscape({
     elements: makeCyEles( doc.elements() ),
     layout: { name: 'grid' },
-    // styleEnabled: true // TODO cy 3.2 bug if style enabled
+    styleEnabled: true
   });
 
   let runLayout = () => {

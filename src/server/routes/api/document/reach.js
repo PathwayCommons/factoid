@@ -7,6 +7,9 @@ const FormData = require('form-data');
 const Organism = require('../../../../model/organism');
 
 const REACH_URL = 'http://agathon.sista.arizona.edu:8080/odinweb/api/text';
+const mergeEntitiesWithSameGround = true;
+const allowImplicitOrgSpec = false;
+const removeDisconnectedEntities = true;
 
 module.exports = {
   get: function( text ){
@@ -36,9 +39,6 @@ module.exports = {
         }
       };
 
-      let mergeEntitiesWithSameGround = true;
-      let allowImplicitOrgSpec = false;
-
       let entFrames = _.get( res, ['entities', 'frames'] ) || [];
       let evtFrames = _.get( res, ['events', 'frames'] ) || [];
       let senFrames = _.get( res, ['sentences', 'frames'] ) || [];
@@ -52,6 +52,7 @@ module.exports = {
       let frameIsEvent = frame => frame['frame-type'] === 'event-mention';
       let getArgId = arg => arg.arg;
       let groundIsSame = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
+      let elIsIntn = el => el.entries != null;
 
       let getSentenceText = id => {
         let f = getFrame(id);
@@ -181,6 +182,20 @@ module.exports = {
           }
         }
       } );
+
+      if( removeDisconnectedEntities ){
+        let interactions = elements.filter( elIsIntn );
+        let pptIds = ( () => {
+          let set = new Set();
+
+          interactions.forEach( intn => intn.entries.forEach( en => set.add( en.id ) ) );
+
+          return set;
+        } )();
+        let elIsInSomeIntn = el => pptIds.has( el.id );
+
+        elements = elements.filter( el => elIsIntn(el) || elIsInSomeIntn(el) );
+      }
 
       return {
         elements,

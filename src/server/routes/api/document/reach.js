@@ -7,6 +7,9 @@ const FormData = require('form-data');
 const Organism = require('../../../../model/organism');
 
 const REACH_URL = 'http://agathon.sista.arizona.edu:8080/odinweb/api/text';
+const MERGE_ENTS_WITH_SAME_GROUND = true;
+const ALLOW_IMPLICIT_ORG_SPEC = false;
+const REMOVE_DISCONNECTED_ENTS = true;
 
 module.exports = {
   get: function( text ){
@@ -25,6 +28,7 @@ module.exports = {
       let elements = [];
       let elementsMap = new Map();
       let elementsReachMap = new Map();
+      let groundReachMap = new Map();
       let organisms = [];
 
       let enableOrg = org => {
@@ -34,8 +38,6 @@ module.exports = {
           organisms.push({ id: org.id() });
         }
       };
-
-      let allowImplicitOrgSpec = false;
 
       let entFrames = _.get( res, ['entities', 'frames'] ) || [];
       let evtFrames = _.get( res, ['events', 'frames'] ) || [];
@@ -49,6 +51,8 @@ module.exports = {
       let frameIsEntity = frame => frame['frame-type'] === 'entity-mention';
       let frameIsEvent = frame => frame['frame-type'] === 'event-mention';
       let getArgId = arg => arg.arg;
+      let groundIsSame = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
+      let elIsIntn = el => el.entries != null;
 
       let getSentenceText = id => {
         let f = getFrame(id);
@@ -60,10 +64,35 @@ module.exports = {
         }
       };
 
-      let addElement = (el, frame) => {
-        elements.push( el );
-        elementsMap.set( el.id, el );
-        elementsReachMap.set( getReachId( frame ), el );
+      let addElement = (el, frame, ground) => {
+        let foundMerge = false;
+
+        if( MERGE_ENTS_WITH_SAME_GROUND && ground != null ){
+          let prevGround, prevReachId;
+
+          groundReachMap.forEach( ( gnd, rid ) => {
+            if( groundIsSame( gnd, ground ) ){
+              foundMerge = true;
+              prevGround = gnd;
+              prevReachId = rid;
+            }
+          } );
+
+          if( foundMerge ){
+            el = elementsReachMap.get( prevReachId );
+            ground = prevGround;
+          }
+        }
+
+        let reachId = getReachId( frame );
+
+        if( !foundMerge ){
+          elements.push( el );
+          elementsMap.set( el.id, el );
+        }
+
+        elementsReachMap.set( reachId, el );
+        groundReachMap.set( reachId, ground );
       };
 
       entFrames.forEach( addFrame );
@@ -88,13 +117,13 @@ module.exports = {
         let orgIsSupported = org != null && org !== Organism.OTHER;
 
         // implicit mention of org
-        if( orgIsSupported && allowImplicitOrgSpec ){
+        if( orgIsSupported && ALLOW_IMPLICIT_ORG_SPEC ){
           enableOrg( org );
         }
 
         ent.name = frame.text;
 
-        addElement( ent, frame );
+        addElement( ent, frame, ground );
       } );
 
       // add explicit organisms
@@ -153,6 +182,20 @@ module.exports = {
           }
         }
       } );
+
+      if( REMOVE_DISCONNECTED_ENTS ){
+        let interactions = elements.filter( elIsIntn );
+        let pptIds = ( () => {
+          let set = new Set();
+
+          interactions.forEach( intn => intn.entries.forEach( en => set.add( en.id ) ) );
+
+          return set;
+        } )();
+        let elIsInSomeIntn = el => pptIds.has( el.id );
+
+        elements = elements.filter( el => elIsIntn(el) || elIsInSomeIntn(el) );
+      }
 
       return {
         elements,

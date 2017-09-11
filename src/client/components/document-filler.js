@@ -36,8 +36,10 @@ class DocumentFiller extends React.Component {
 
     let toJson = res => res.json();
 
-    let animateResult = () => { return;
+    let animateResult = () => {
       let linkout = ReactDom.findDOMNode(this).querySelector('.document-filler-linkout');
+
+      linkout.style.opacity = 0;
 
       if( linkout ){
         anime({ targets: linkout, opacity: [0, 1], duration: 2000, easing: 'linear' });

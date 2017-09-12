@@ -71,7 +71,7 @@ module.exports = {
           let prevGround, prevReachId;
 
           groundReachMap.forEach( ( gnd, rid ) => {
-            if( groundIsSame( gnd, ground ) ){
+            if( gnd != null && groundIsSame( gnd, ground ) ){
               foundMerge = true;
               prevGround = gnd;
               prevReachId = rid;

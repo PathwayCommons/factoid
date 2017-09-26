@@ -39,6 +39,20 @@ class EntityInfo extends React.Component {
       this.updateMatches( name );
     }, defs.updateDelay );
 
+    this.debouncedFocusNameInput = _.debounce( () => {
+      if( this._unmounted ){ return; }
+
+      let root = ReactDom.findDOMNode( this );
+      let input = root.querySelector('.entity-info-name-input');
+
+      if( input != null ){
+        let len = input.value.length;
+
+        input.focus();
+        input.setSelectionRange( len, len );
+      }
+    }, 500 );
+
     this.data = {
       element: el,
       name: el.name(),
@@ -65,17 +79,7 @@ class EntityInfo extends React.Component {
   }
 
   focusNameInput(){
-    if( this._unmounted ){ return; }
-
-    let root = ReactDom.findDOMNode( this );
-    let input = root.querySelector('.entity-info-name-input');
-
-    if( input != null ){
-      let len = input.value.length;
-
-      input.focus();
-      input.setSelectionRange( len, len );
-    }
+    this.debouncedFocusNameInput();
   }
 
   componentDidMount(){

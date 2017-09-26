@@ -10,7 +10,7 @@ module.exports = Object.freeze({
     position: 'bottom',
     animation: 'fade',
     animateFill: false,
-    duration: [ 0, 0 ],
+    duration: [ 250, 0 ],
     delay: [ 0, 0 ],
     hideDuration: 0,
     arrow: true,

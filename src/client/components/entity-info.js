@@ -52,14 +52,16 @@ class EntityInfo extends React.Component {
     this.state = _.assign( {}, this.data );
   }
 
-  setData( name, value ){
+  setData( name, value, callback ){
     if( _.isObject(name) ){
+      callback = value;
+
       _.assign( this.data, name );
     } else {
       this.data[ name ] = value;
     }
 
-    this.setState( this.data );
+    this.setState( this.data, callback );
   }
 
   focusNameInput(){
@@ -85,7 +87,7 @@ class EntityInfo extends React.Component {
     let doc = p.document;
 
     if( input != null ){
-      delay(0).then( () => this.focusNameInput() );
+      this.focusNameInput();
     }
 
     this.onRemoteRename = () => {
@@ -204,9 +206,7 @@ class EntityInfo extends React.Component {
       matches: [],
       modification: mod,
       match: null
-    });
-
-    delay(0).then( () => this.focusNameInput() );
+    }, () =>  this.focusNameInput());
   }
 
   updateMatches( name = this.data.name, offset = this.data.offset, changedOrganisms = false ){

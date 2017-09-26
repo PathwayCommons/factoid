@@ -52,6 +52,8 @@
   min-width: 14em;
   max-width: 40em;
   width: 40vw;
+  padding: 0.5em;
+  padding-bottom: 0;
 }
 
 .editor-menu-tab-content {

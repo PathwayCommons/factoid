@@ -1,5 +1,9 @@
 /* tippy theme overrides */
 
+.tippy-tooltip {
+  padding: 0;
+}
+
 .tippy-popper .tippy-tooltip.light-theme {
   text-align: inherit;
   color: inherit;
@@ -17,4 +21,12 @@
 
 .tippy-popper {
   z-index: 999999 !important;
+}
+
+.popover-content {
+
+}
+
+.tooltip-content {
+  padding: 0.333em;
 }

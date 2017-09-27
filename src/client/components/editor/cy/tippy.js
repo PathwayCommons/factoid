@@ -5,13 +5,12 @@ const ElementInfo = require('../../element-info');
 const { isInteractionNode } = require('../../../../util');
 const Tippy = require('tippy.js');
 const _ = require('lodash');
-const { delay } = require('../../../../util');
 const { tippyDefaults } = require('../../../defs');
 
 module.exports = function({ bus, cy, document }){
   let hideAllTippies = () => {
     cy.nodes().emit('hidetippy');
-  }
+  };
 
   bus.on('closetip', function( el ){
     if( el != null ){
@@ -32,26 +31,26 @@ module.exports = function({ bus, cy, document }){
   bus.on('drawstop', () => drawing = false);
 
   let destroyTippy = ele => {
-    let div = ele.scratch('_tippyDiv');
+    let tippies = ele.scratch('_tippies');
 
-    ele.scratch('_tippy', null);
-    ele.scratch('_popper', null);
-    ele.scratch('_tippyDiv', null);
+    ele.scratch('_tippies', null);
 
-    if( div != null ){
-      div.parentNode.removeChild( div );
+    if( tippies != null ){
+      tippies.forEach( t => {
+        let div = t.content;
 
-      ReactDom.unmountComponentAtNode( div );
+        div.parentNode.removeChild( div );
+        ReactDom.unmountComponentAtNode( div );
+      } );
     }
   };
 
   cy.on('hidetippy', 'node, edge', function(e){
     let ele = e.target;
-    let tip = ele.scratch('_tippy');
-    let pop = ele.scratch('_popper');
+    let tippies = ele.scratch('_tippies');
 
-    if( tip != null && pop != null ){
-      tip.hide( pop );
+    if( tippies != null ){
+      tippies.forEach( t => t.tippy.hide( t.popper ) );
     }
   });
 
@@ -65,8 +64,6 @@ module.exports = function({ bus, cy, document }){
 
     let getContentDiv = () => {
       let div = hh('div');
-
-      node.scratch('_tippyDiv', div);
 
       ReactDom.render( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ), div );
 
@@ -89,12 +86,15 @@ module.exports = function({ bus, cy, document }){
       return div;
     };
 
-    let popper = node.scratch('_popper', popper);
-    let tippy = node.scratch('_tippy', tippy);
+    let tippies = node.scratch('_tippies');
 
-    if( tippy != null && popper != null ){
-      tippy.hide( popper );
+    if( tippies != null ){
+      tippies.forEach( t => t.tippy.hide( t.popper ) );
     } else {
+      tippies = [];
+
+      node.scratch('_tippies', tippies);
+
       let options = {
         position: 'right',
         hideOnClick: false,
@@ -104,17 +104,15 @@ module.exports = function({ bus, cy, document }){
       let ref = getRef();
       let content = getContentDiv();
 
-      tippy = new Tippy( ref, _.assign( {}, tippyDefaults, options, {
+      let tippy = new Tippy( ref, _.assign( {}, tippyDefaults, options, {
         html: content
       } ) );
 
-      node.scratch('_tippy', tippy);
+      let popper = tippy.getPopperElement( ref );
 
-      popper = tippy.getPopperElement( ref );
+      tippies.push({ tippy, popper, content });
 
-      node.scratch('_popper', popper);
-
-      delay(0).then( () => tippy.show( popper ) );
+      tippy.show( popper );
     }
 
   });

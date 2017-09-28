@@ -2,7 +2,7 @@ let clientDefs = require('../../../defs');
 
 module.exports = Object.freeze({
   padding: 50,
-  minZoom: 0.05,
+  minZoom: 0.5,
   maxZoom: 3,
   layoutAnimationDuration: clientDefs.updateDelay * 2/3,
   layoutAnimationEasing: 'ease-in-out-quint', // spring(500, 35)

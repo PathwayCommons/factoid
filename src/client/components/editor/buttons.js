@@ -35,7 +35,7 @@ module.exports = function({ controller, document }){
           h('i.material-icons', 'keyboard_tab')
         ])
       ]),
-      h(Tooltip, { description: 'Relayout', shortcut: 'l' }, [
+      h(Tooltip, { description: 'Re-arrange all entities', shortcut: 'r' }, [
         h('button.editor-button.plain-button', { onClick: () => controller.layout() }, [
           h('i.material-icons', 'shuffle')
         ])
@@ -44,7 +44,7 @@ module.exports = function({ controller, document }){
   }
 
   btns.push(
-    h(Tooltip, { description: 'Fit', shortcut: 'f' }, [
+    h(Tooltip, { description: 'Fit to screen', shortcut: 'f' }, [
       h('button.editor-button.plain-button', { onClick: () => controller.fit() }, [
         h('i.material-icons', 'zoom_out_map')
       ])

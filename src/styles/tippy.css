@@ -22,11 +22,3 @@
 .tippy-popper {
   z-index: 999999 !important;
 }
-
-.popover-content {
-
-}
-
-.tooltip-content {
-  padding: 0.333em;
-}

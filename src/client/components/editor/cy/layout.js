@@ -40,6 +40,6 @@ module.exports = function( { bus, cy, document } ){
     lastLayout.run();
   };
 
-  on('l', layout);
+  on('r', layout);
   bus.on('layout', layout);
 };

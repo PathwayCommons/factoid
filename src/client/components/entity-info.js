@@ -1,7 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const ReactDom = require('react-dom');
-const { delay } = require('../../util');
+const { focusDomElement } = require('../../util');
 const _ = require('lodash');
 const defs = require('../defs');
 const anime = require('animejs');
@@ -46,10 +46,7 @@ class EntityInfo extends React.Component {
       let input = root.querySelector('.entity-info-name-input');
 
       if( input != null ){
-        let len = input.value.length;
-
-        input.focus();
-        input.setSelectionRange( len, len );
+        focusDomElement( input );
       }
     }, 500 );
 

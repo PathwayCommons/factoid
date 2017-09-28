@@ -22,6 +22,8 @@
 }
 
 .entity-info-matches {
+  box-sizing: border-box;
+  padding: 0.25em;
   margin-top: 0.5em;
   max-height: calc(100vh - 8em);
   overflow: auto;

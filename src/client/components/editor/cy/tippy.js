@@ -2,6 +2,7 @@ const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
 const hh = require('hyperscript');
 const ElementInfo = require('../../element-info');
+const ParticipantInfo = require('../../participant-info');
 const { isInteractionNode } = require('../../../../util');
 const Tippy = require('tippy.js');
 const _ = require('lodash');
@@ -62,24 +63,43 @@ module.exports = function({ bus, cy, document }){
     let node = tgt.isNode() ? tgt : connectedNodes.filter( isInteractionNode );
     let docEl = document.get( node.id() );
 
-    let getContentDiv = () => {
+    let getContentDiv = component => {
       let div = hh('div');
 
-      ReactDom.render( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ), div );
+      ReactDom.render( component, div );
 
       return div;
     };
 
-    let getRef = () => {
-      let bb = isInteractionNode(node) ? node.connectedEdges().renderedBoundingBox() : node.renderedBoundingBox({ includeLabels: false });
-      let width = bb.w;
-      let height = bb.h;
-      let left = bb.x1;
-      let top = bb.y1;
+    let getRef = (bb, el) => {
+      let bbFn;
 
-      let div = hh('div.tippy-dummy-ref', {
-        style: `position: absolute; left: ${left}px; top: ${top}px; width: ${width}px; height: ${height}px; z-index: -1; pointer-events: none;`
-      });
+      if( _.isFunction(bb) ){
+        bbFn = bb;
+        bb = bb();
+      }
+
+      let updateStyle = div => {
+        if( bbFn != null ){
+          bb = bbFn();
+        }
+
+        let width = bb.w;
+        let height = bb.h;
+        let left = bb.x1;
+        let top = bb.y1;
+        let style = `position: absolute; left: ${left}px; top: ${top}px; width: ${width}px; height: ${height}px; z-index: -1; pointer-events: none;`;
+
+        div.setAttribute( 'style',style );
+      };
+
+      let div = hh('div.tippy-dummy-ref');
+
+      updateStyle( div );
+
+      if( el != null ){
+        el.on( 'position', _.debounce( () => updateStyle(div), 500 ) );
+      }
 
       cy.container().appendChild( div );
 
@@ -101,18 +121,93 @@ module.exports = function({ bus, cy, document }){
         onHidden: _.debounce( () => destroyTippy( node ), 100 ) // debounce allows toggling a tippy on an ele
       };
 
-      let ref = getRef();
-      let content = getContentDiv();
+      let makeTippy = ({ ref, content, overrides }) => {
+        let tippy = new Tippy( ref, _.assign( {}, tippyDefaults, options, overrides, {
+          html: content
+        } ) );
 
-      let tippy = new Tippy( ref, _.assign( {}, tippyDefaults, options, {
-        html: content
-      } ) );
+        let popper = tippy.getPopperElement( ref );
 
-      let popper = tippy.getPopperElement( ref );
+        tippies.push({ tippy, popper, content });
 
-      tippies.push({ tippy, popper, content });
+        tippy.show( popper );
+      };
 
-      tippy.show( popper );
+      if( docEl.isInteraction() ){
+        let bottomOfCyBb = {
+          w: cy.width(),
+          h: 1,
+          x1: 0,
+          x2: cy.width(),
+          y1: cy.height() - 1,
+          y2: cy.height()
+        };
+
+        makeTippy({
+          ref: getRef( bottomOfCyBb ),
+          content: getContentDiv( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ) ),
+          overrides: {
+            position: 'bottom',
+            arrow: false
+          }
+        });
+
+        let pan = cy.pan();
+        let zoom = cy.zoom();
+
+        let modelToRenderedPt = p => {
+          return {
+            x: p.x * zoom + pan.x,
+            y: p.y * zoom + pan.y
+          };
+        };
+
+        docEl.participants().forEach( ppt => {
+          let pptNode = cy.getElementById( ppt.id() );
+          let edge = pptNode.edgesWith( cy.getElementById( docEl.id() ) );
+
+          let getArrowBb = () => {
+            let arrowPos = modelToRenderedPt( edge.targetEndpoint() );
+
+            let arrowBb = {
+              w: 3,
+              h: 3,
+              x1: arrowPos.x - 1,
+              x2: arrowPos.x + 1,
+              y1: arrowPos.y - 1,
+              y2: arrowPos.y + 1
+            };
+
+            return arrowBb;
+          };
+
+          let pos;
+          let pSrc = edge.source().position();
+          let pTgt = edge.target().position();
+          let dx = pTgt.x - pSrc.x;
+          let dy = pTgt.y - pSrc.y;
+
+          if( Math.abs(dx) > Math.abs(dy) ){
+            pos = 'top';
+          } else {
+            pos = 'right';
+          }
+
+          makeTippy({
+            ref: getRef( getArrowBb, pptNode ),
+            content: getContentDiv( h( ParticipantInfo, { interaction: docEl, participant: ppt, bus, document, eventTarget: tgt } ) ),
+            overrides: {
+              distance: 5 * zoom,
+              position: pos
+            }
+          });
+        } );
+      } else {
+        makeTippy({
+          ref: getRef( () => node.renderedBoundingBox({ includeLabels: false }), node ),
+          content: getContentDiv( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ) )
+        });
+      }
     }
 
   });

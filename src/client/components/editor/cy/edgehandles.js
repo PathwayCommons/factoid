@@ -16,6 +16,17 @@ module.exports = function({ bus, cy, document, controller }){
     handleColor: defs.activeColor,
     handleOutlineColor: '#fff',
     handleOutlineWidth: 1,
+    handleIcon: ( () => {
+      let svg = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="M11.59 7.41L15.17 11H1v2h14.17l-3.59 3.59L13 18l6-6-6-6-1.41 1.41zM20 6v12h2V6h-2z"/></svg>';
+      let dataUri = 'data:image/svg+xml;utf8,' + encodeURIComponent( svg );
+      let img = new Image();
+
+      img.src = dataUri;
+      img.width = 7;
+      img.height = 7;
+
+      return img;
+    } )(),
     toggleOffOnLeave: true,
     edgeType: function( source, target ){
       let alreadyConnectedByEdge = source.edgesWith( target ).length > 0;

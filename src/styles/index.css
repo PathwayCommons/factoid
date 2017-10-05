@@ -3,7 +3,6 @@
 /* app styles */
 @import "./animations.css";
 @import "./base.css";
-@import "tippy.js/dist/tippy.css";
 @import "./tippy.css";
 @import "./popover.css";
 @import "./tooltip.css";

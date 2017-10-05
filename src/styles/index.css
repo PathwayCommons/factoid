@@ -1,21 +1,8 @@
-@import "normalize.css";
 @import "./vars.css";
-
-/* fonts */
-@import "./vendor/open-sans.css";
-@import "./vendor/inconsolata.css";
-@import "./vendor/font-awesome.css";
-/*@import "./vendor/font-awesome-form.css";*/
-@import "./vendor/font-awesome-custom.css";
-@import "./vendor/material-icons.css";
-@import "./vendor/material-form.css";
-@import "./vendor/bio-icons.css";
 
 /* app styles */
 @import "./animations.css";
 @import "./base.css";
-/*@import "./vendor/jquery.qtip.css";*/
-@import "./qtip.css";
 @import "tippy.js/dist/tippy.css";
 @import "./tippy.css";
 @import "./popover.css";

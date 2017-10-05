@@ -350,12 +350,12 @@ h3 {
 
 h1 {
   font-size: 1.5em;
-  margin: calc(1em / 1.5em) 0;
+  margin: calc(1em / 1.5) 0;
 }
 
 h2 {
   font-size: 1.25em;
-  margin: calc(1em / 1.25em) 0;
+  margin: calc(1em / 1.25) 0;
 }
 
 h3 {

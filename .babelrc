@@ -1,8 +1,6 @@
 {
   "presets": [
-    [ "env", {
-      "useBuiltIns": "entry"
-    } ],
+    "env",
     "react"
   ],
   "ignore": "node_modules/**/*",

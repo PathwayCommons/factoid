@@ -12,6 +12,8 @@ let conf = {
     filename: './build/bundle.js'
   },
 
+  devtool: 'inline-source-map',
+
   module: {
     rules: [
       { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" }
@@ -22,8 +24,6 @@ let conf = {
     isProfile ? new BundleAnalyzerPlugin() : null,
 
     new webpack.EnvironmentPlugin(['NODE_ENV']),
-
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
 
     new webpack.optimize.CommonsChunkPlugin({
       name: 'deps',

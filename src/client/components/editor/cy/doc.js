@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const defs = require('./defs');
-const moment = require('moment');
+const date = require('date-fns');
 const onKey = require('./on-key');
 const Promise = require('bluebird');
 const { isInteractionNode, makeCyEles, makePptEdges } = require('../../../../util');
@@ -284,7 +284,9 @@ function listenToDoc({ bus, cy, document }){
 
   let onAddNewEle = function( docEl, el ){
     let timestamp = docEl.creationTimestamp();
-    let isNew = timestamp != null && moment( timestamp ).isAfter( moment().subtract(5, 'seconds') );
+    let whenCreated = timestamp == null ? null : date.parse( timestamp );
+    let cutoff = date.subSeconds( Date.now(), 5 );
+    let isNew = whenCreated != null && date.isAfter( whenCreated, cutoff );
 
     if( isNew ){
       if( docEl.isInteraction() && el.isNode() ){

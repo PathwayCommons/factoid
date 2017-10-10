@@ -1,6 +1,8 @@
 const h = require('react-hyperscript');
 const Tooltip = require('../tooltip');
 const Toggle = require('../toggle');
+const Popover = require('../popover');
+const Linkout = require('../document-linkout');
 
 module.exports = function({ controller, document }){
   let btns = [];
@@ -47,6 +49,21 @@ module.exports = function({ controller, document }){
     h(Tooltip, { description: 'Fit to screen', shortcut: 'f' }, [
       h('button.editor-button.plain-button', { onClick: () => controller.fit() }, [
         h('i.material-icons', 'zoom_out_map')
+      ])
+    ]),
+
+    h(Popover, {
+      tippy: {
+        position: 'right',
+        html: h('div.editor-linkout', [
+          h(Linkout, { document })
+        ])
+      }
+    }, [
+      h(Tooltip, { description: 'Share link' }, [
+        h('button.editor-button.plain-button', [
+          h('i.material-icons', 'link')
+        ])
       ])
     ])
   );

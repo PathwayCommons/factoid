@@ -97,6 +97,6 @@ module.exports = {
   },
 
   get( opts ){
-    return Promise.try( () => request( '', getQuery(opts) ) ).then( getPostprocess );
+    return Promise.try( () => request( '', getQuery(opts) ) ).then( getPostprocess ).then( res => res[0] );
   }
 };

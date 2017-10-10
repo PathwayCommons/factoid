@@ -5,11 +5,13 @@ const toJson = res => res.json();
 const fetch = require('node-fetch');
 const FormData = require('form-data');
 const Organism = require('../../../../model/organism');
+const uniprot = require('../element-association/uniprot');
 
 const REACH_URL = 'http://agathon.sista.arizona.edu:8080/odinweb/api/text';
 const MERGE_ENTS_WITH_SAME_GROUND = true;
 const ALLOW_IMPLICIT_ORG_SPEC = false;
 const REMOVE_DISCONNECTED_ENTS = true;
+const APPLY_GROUND = true;
 
 module.exports = {
   get: function( text ){
@@ -64,6 +66,8 @@ module.exports = {
         }
       };
 
+      let groundPromises = [];
+
       let addElement = (el, frame, ground) => {
         let foundMerge = false;
 
@@ -91,6 +95,23 @@ module.exports = {
           elementsMap.set( el.id, el );
         }
 
+        if( APPLY_GROUND && ground != null ){
+          let q = {
+            id: ground.id
+          };
+
+          let applyGround = Promise.try( () => {
+            switch( ground.namespace ){
+            case 'uniprot':
+              return uniprot.get( q );
+            }
+          } ).then( assoc => {
+            el.association = assoc;
+          } );
+
+          groundPromises.push( applyGround );
+        }
+
         elementsReachMap.set( reachId, el );
         groundReachMap.set( reachId, ground );
       };
@@ -108,7 +129,8 @@ module.exports = {
 
         let contains = ( arr, str ) => arr.indexOf( str.toLowerCase() ) >= 0;
         let supportedTypes = ['protein'];
-        let typeIsSupported = contains( supportedTypes, frame.type );
+        let type = frame.type;
+        let typeIsSupported = contains( supportedTypes, type );
         let supportedGrounds = ['uniprot'];
         let ground = frame.xrefs != null ? frame.xrefs.find( ref => contains( supportedGrounds, ref.namespace ) ) : null;
         let isGrounded = ground != null;
@@ -119,6 +141,10 @@ module.exports = {
         // implicit mention of org
         if( orgIsSupported && ALLOW_IMPLICIT_ORG_SPEC ){
           enableOrg( org );
+        }
+
+        if( typeIsSupported ){
+          ent.type = type;
         }
 
         ent.name = frame.text;
@@ -197,10 +223,14 @@ module.exports = {
         elements = elements.filter( el => elIsIntn(el) || elIsInSomeIntn(el) );
       }
 
-      return {
-        elements,
-        organisms
-      };
+      return Promise.try( () => {
+        return Promise.all( groundPromises );
+      } ).then( () => {
+        return {
+          elements,
+          organisms
+        };
+      } );
     };
 
     return Promise.try( makeRequest ).then( toJson ).then( makeDocJson );

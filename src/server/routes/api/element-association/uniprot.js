@@ -97,7 +97,11 @@ const request = ( endpt, query ) => {
 
 module.exports = {
   search( opts ){
-    return Promise.try( () => request( '', searchQuery(opts) ) ).then( searchPostprocess );
+    return (
+      Promise.try( () => request( '', searchQuery(opts) ) )
+        .then( searchPostprocess )
+        .catch( () => [] )
+      );
   },
 
   get( opts ){

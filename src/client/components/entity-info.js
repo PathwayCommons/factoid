@@ -477,15 +477,21 @@ class EntityInfo extends React.Component {
 
           evt.stopPropagation();
         }
-      }, [ ...s.matches.map( m => {
-        return h('div.entity-info-match', [
-          h('div.entity-info-match-target', {
-            onClick: () => this.associate( m )
-          }, targetFromAssoc( m )),
-          linkFromAssoc( m )
-        ]);
-      }),
-      h(Loader, { loading: s.gettingMoreMatches })
+      }, [
+        h('div.entity-info-match-msg', [
+          `Confirm the identity of "${s.name}" by choosing the matching entry:`
+        ]),
+
+        ...s.matches.map( m => {
+          return h('div.entity-info-match', [
+            h('div.entity-info-match-target', {
+              onClick: () => this.associate( m )
+            }, targetFromAssoc( m )),
+            linkFromAssoc( m )
+          ]);
+        }),
+
+        h(Loader, { loading: s.gettingMoreMatches })
       ] ) );
     } else if( !s.loadingMatches && s.name && !s.updateDirty ){
       children.push( h('div.entity-info-match-empty', [

@@ -1,7 +1,7 @@
 const defs = require('./defs');
 
 function makeStylesheet(){
-  let { activeColor, defaultColor, labelColor, nodeSize, interactionNodeSize } = defs;
+  let { activeColor, defaultColor, labelColor, nodeSize, interactionNodeSize, invalidColor } = defs;
 
   return [
     {
@@ -31,7 +31,7 @@ function makeStylesheet(){
       selector: 'node[!isInteraction][!associated]',
       style: {
         'border-style': 'double',
-        'border-color': 'red',
+        'border-color': invalidColor,
         'border-width': 2
       }
     },

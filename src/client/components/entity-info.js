@@ -189,8 +189,7 @@ class EntityInfo extends React.Component {
 
     // this indicates to render the match immediately though the data on the server may not be updated yet
     this.setData({
-      match: match,
-      name: match.name
+      match: match
     });
   }
 
@@ -203,11 +202,12 @@ class EntityInfo extends React.Component {
     el.unassociate();
 
     this.setData({
-      name: '',
       matches: [],
       modification: mod,
       match: null
     }, () =>  this.focusNameInput());
+
+    this.updateMatches();
   }
 
   updateMatches( name = this.data.name, offset = this.data.offset, changedOrganisms = false ){

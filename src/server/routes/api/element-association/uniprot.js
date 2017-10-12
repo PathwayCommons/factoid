@@ -24,7 +24,11 @@ const param = ( name, value ) => {
 const searchQuery = opts => clean({
   query: [
     param('accession', opts.id),
-    param('', opts.name),
+    '(' + [
+      param('name', `"${opts.name}"`),
+      param('gene', `"${opts.name}"`),
+      param('accession', `"${opts.name}"`)
+    ].join('+OR+') + ')',
     param('organism', (() => {
       let orgs = opts.organism;
       let ids;

@@ -10,6 +10,7 @@ const Promise = require('bluebird');
 const OrganismToggle = require('./organism-toggle');
 const Organism = require('../../model/organism');
 const Tooltip = require('./tooltip');
+const Highlighter = require('./highlighter');
 
 const animateDomForEdit = domEle => anime({
   targets: domEle,
@@ -404,18 +405,24 @@ class EntityInfo extends React.Component {
 
     let proteinFromAssoc = m => {
       return [
-        h('div.entity-info-name', m.name),
+        h('div.entity-info-name', [
+          h(Highlighter, { text: m.name, term: s.name })
+        ]),
         h('div.entity-info-organism-section', [
           h('span.entity-info-organism-name-title', 'Organism'),
           h('span.entity-info-organism-name', Organism.fromId(m.organism).name())
         ]),
         h('div.entity-info-protein-names', !m.proteinNames ? [] : [
           h('span.entity-info-protein-names-title', 'Protein names'),
-          ...m.proteinNames.map( name => h('span.entity-info-protein-name', name))
+          ...m.proteinNames.map( name => h('span.entity-info-protein-name', [
+            h(Highlighter, { text: name, term: s.name })
+          ]))
         ]),
         h('div.entity-info-gene-names', !m.geneNames ? [] : [
           h('span.entity-info-gene-names-title', 'Gene names'),
-          ...m.geneNames.map( name => h('span.entity-info-gene-name', name))
+          ...m.geneNames.map( name => h('span.entity-info-gene-name', [
+            h(Highlighter, { text: name, term: s.name })
+          ]))
         ])
       ];
     };

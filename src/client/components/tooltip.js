@@ -17,7 +17,7 @@ class Tooltip extends React.Component {
         return h('div.tooltip-content', [
           h('span.tooltip-description', props.description)
         ].concat(props.shortcut != null ? [
-          h('span.tooltip-shortcut-label', 'Key'),
+          h('span.tooltip-shortcut-label', 'Keyboard'),
           h('span.tooltip-shortcut', [
             h('code', props.shortcut)
           ])

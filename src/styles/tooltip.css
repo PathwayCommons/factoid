@@ -8,6 +8,8 @@
 .tooltip-shortcut {
   display: inline-block;
   border: 1px solid #fff;
+  background: #fff;
+  color: #000;
   border-radius: 0.25em;
   min-width: 1em;
   padding: 0 0.1em;

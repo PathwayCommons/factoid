@@ -330,6 +330,7 @@ function listenToDoc({ bus, cy, document }){
     let els = el.union( el.connectedEdges() );
 
     bus.emit('removehandle', el);
+    bus.emit('closetip', el);
 
     els.forEach( animateRm );
 

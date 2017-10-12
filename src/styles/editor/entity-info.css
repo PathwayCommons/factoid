@@ -68,7 +68,7 @@
   width: 100%;
   position: relative;
   padding: 0.25em 0;
-  animation: fadeIn 500ms ease-out;
+  /*animation: fadeIn 500ms ease-out;*/
 
   & + * {
     margin-top: 0.25em;

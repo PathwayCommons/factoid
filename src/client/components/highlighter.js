@@ -13,6 +13,12 @@ class Highlighter extends Component {
     let match;
     let spans = [];
 
+    if( !term ){
+      return h('span.highlighter', [
+        h('span.highlighter-text', text)
+      ]);
+    }
+
     if( ignorePunctuation === undefined ){
       ignorePunctuation = true;
     }

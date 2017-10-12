@@ -406,7 +406,7 @@ class EntityInfo extends React.Component {
     let proteinFromAssoc = m => {
       return [
         h('div.entity-info-name', [
-          h(Highlighter, { text: m.name, term: s.name })
+          h(Highlighter, { text: m.name, term: s.oldName })
         ]),
         h('div.entity-info-organism-section', [
           h('span.entity-info-organism-name-title', 'Organism'),
@@ -415,13 +415,13 @@ class EntityInfo extends React.Component {
         h('div.entity-info-protein-names', !m.proteinNames ? [] : [
           h('span.entity-info-protein-names-title', 'Protein names'),
           ...m.proteinNames.map( name => h('span.entity-info-protein-name', [
-            h(Highlighter, { text: name, term: s.name })
+            h(Highlighter, { text: name, term: s.oldName })
           ]))
         ]),
         h('div.entity-info-gene-names', !m.geneNames ? [] : [
           h('span.entity-info-gene-names-title', 'Gene names'),
           ...m.geneNames.map( name => h('span.entity-info-gene-name', [
-            h(Highlighter, { text: name, term: s.name })
+            h(Highlighter, { text: name, term: s.oldName })
           ]))
         ])
       ];
@@ -486,7 +486,7 @@ class EntityInfo extends React.Component {
         }
       }, [
         h('div.entity-info-match-msg', [
-          `Confirm the identity of "${s.name}" by choosing the matching entry:`
+          `Confirm the identity of "${s.oldName}" by choosing the matching entry:`
         ]),
 
         ...s.matches.map( m => {

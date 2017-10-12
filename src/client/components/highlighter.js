@@ -23,7 +23,39 @@ class Highlighter extends Component {
       ignorePunctuation = true;
     }
 
-    let saniTerm = term.replace(/[-,_. ]/g, '[-,_. ]');
+    let saniTerm = ( () => {
+      let st = '';
+      let sep = '[-,_. ]';
+      let optNonSpSep = '[-,_.]?';
+      let sepRe = new RegExp(sep);
+      let prevChWasSep = false;
+
+      for( let i = 0; i < term.length; i++ ){
+        let ch = term[i];
+        let isFirstChar = i === 0;
+
+        if( ch.match(sepRe) ){
+          // replace all specific separators with a generic separator
+          // (e.g. 'cyclin e' matches 'cyclin-e')
+          st += sep;
+
+          prevChWasSep = true;
+        } else {
+          // join all non-separator, 2-char sequences with a non-space separator
+          // (e.g. 'rad5' matches 'rad-5')
+          if( !isFirstChar && !prevChWasSep ){
+            st += optNonSpSep;
+          }
+
+          st += ch;
+
+          prevChWasSep = false;
+        }
+      }
+
+      return st;
+    } )();
+
     let termRe = new RegExp( saniTerm, 'i' );
 
     do {

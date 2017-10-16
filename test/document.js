@@ -670,7 +670,6 @@ describe('Document', function(){
       docC1.on('replace', function( oldEnt, newEnt ){
         expect( oldEnt, 'old ent 1' ).to.equal( entC1 );
         expect( newEnt instanceof Protein, 'new ent 1 is protein' ).to.be.true;
-        expect( newEnt.name(), 'new name 1' ).to.equal('p53');
 
         replace(1);
       });
@@ -680,7 +679,6 @@ describe('Document', function(){
       docC2.on('replace', function( oldEnt, newEnt ){
         expect( oldEnt, 'old ent 2' ).to.equal( entC2 );
         expect( newEnt instanceof Protein, 'new ent 2 is protein' ).to.be.true;
-        expect( newEnt.name(), 'new name 2' ).to.equal('p53');
 
         replace(2);
       });

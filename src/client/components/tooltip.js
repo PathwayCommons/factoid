@@ -14,9 +14,10 @@ class Tooltip extends React.Component {
 
     let tippyOptions = _.assign( {}, tippyDefaults, {
       html: (() => {
-        return h('span.tooltip-content', [
+        return h('div.tooltip-content', [
           h('span.tooltip-description', props.description)
         ].concat(props.shortcut != null ? [
+          h('span.tooltip-shortcut-label', 'Keyboard'),
           h('span.tooltip-shortcut', [
             h('code', props.shortcut)
           ])
@@ -28,7 +29,7 @@ class Tooltip extends React.Component {
       interactive: false,
       touchHold: true,
       theme: 'dark',
-      delay: 750
+      delay: [ 500, 0 ]
     }, props.tippy );
 
     let popoverOptions = _.assign( {}, props, { tippy: tippyOptions } );

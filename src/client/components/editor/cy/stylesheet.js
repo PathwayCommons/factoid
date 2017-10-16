@@ -1,7 +1,7 @@
 const defs = require('./defs');
 
 function makeStylesheet(){
-  let { activeColor, defaultColor, labelColor, nodeSize, interactionNodeSize } = defs;
+  let { activeColor, defaultColor, labelColor, nodeSize, interactionNodeSize, invalidColor } = defs;
 
   return [
     {
@@ -31,7 +31,7 @@ function makeStylesheet(){
       selector: 'node[!isInteraction][!associated]',
       style: {
         'border-style': 'double',
-        'border-color': 'red',
+        'border-color': invalidColor,
         'border-width': 2
       }
     },
@@ -95,21 +95,19 @@ function makeStylesheet(){
         'target-arrow-color': defaultColor,
         'source-arrow-color': defaultColor,
         'source-endpoint': 'inside-to-node',
-        'target-endpoint': 'inside-to-node'
+        'target-endpoint': 'outside-to-node'
       }
     },
     {
       selector: 'edge[type="positive"]',
       style: {
-        'target-arrow-shape': 'triangle',
-        'target-endpoint': 'outside-to-node'
+        'target-arrow-shape': 'triangle'
       }
     },
     {
       selector: 'edge[type="negative"]',
       style: {
-        'target-arrow-shape': 'tee',
-        'target-endpoint': 'outside-to-node'
+        'target-arrow-shape': 'tee'
       }
     },
     {
@@ -125,7 +123,9 @@ function makeStylesheet(){
         'background-color': activeColor,
         'line-color': activeColor,
         'target-arrow-color': activeColor,
-        'source-arrow-color': activeColor
+        'source-arrow-color': activeColor,
+        'source-endpoint': 'inside-to-node',
+        'target-endpoint': 'inside-to-node'
       }
     },
     {

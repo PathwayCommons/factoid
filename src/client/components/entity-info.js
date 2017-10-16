@@ -1,7 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const ReactDom = require('react-dom');
-const { delay } = require('../../util');
+const { focusDomElement } = require('../../util');
 const _ = require('lodash');
 const defs = require('../defs');
 const anime = require('animejs');
@@ -10,6 +10,7 @@ const Promise = require('bluebird');
 const OrganismToggle = require('./organism-toggle');
 const Organism = require('../../model/organism');
 const Tooltip = require('./tooltip');
+const Highlighter = require('./highlighter');
 
 const animateDomForEdit = domEle => anime({
   targets: domEle,
@@ -39,6 +40,17 @@ class EntityInfo extends React.Component {
       this.updateMatches( name );
     }, defs.updateDelay );
 
+    this.debouncedFocusNameInput = _.debounce( () => {
+      if( this._unmounted ){ return; }
+
+      let root = ReactDom.findDOMNode( this );
+      let input = root.querySelector('.entity-info-name-input');
+
+      if( input != null ){
+        focusDomElement( input );
+      }
+    }, 500 );
+
     this.data = {
       element: el,
       name: el.name(),
@@ -52,28 +64,20 @@ class EntityInfo extends React.Component {
     this.state = _.assign( {}, this.data );
   }
 
-  setData( name, value ){
+  setData( name, value, callback ){
     if( _.isObject(name) ){
+      callback = value;
+
       _.assign( this.data, name );
     } else {
       this.data[ name ] = value;
     }
 
-    this.setState( this.data );
+    this.setState( this.data, callback );
   }
 
   focusNameInput(){
-    if( this._unmounted ){ return; }
-
-    let root = ReactDom.findDOMNode( this );
-    let input = root.querySelector('.entity-info-name-input');
-
-    if( input != null ){
-      let len = input.value.length;
-
-      input.focus();
-      input.setSelectionRange( len, len );
-    }
+    this.debouncedFocusNameInput();
   }
 
   componentDidMount(){
@@ -85,7 +89,7 @@ class EntityInfo extends React.Component {
     let doc = p.document;
 
     if( input != null ){
-      delay(0).then( () => this.focusNameInput() );
+      this.focusNameInput();
     }
 
     this.onRemoteRename = () => {
@@ -186,8 +190,7 @@ class EntityInfo extends React.Component {
 
     // this indicates to render the match immediately though the data on the server may not be updated yet
     this.setData({
-      match: match,
-      name: match.name
+      match: match
     });
   }
 
@@ -200,13 +203,12 @@ class EntityInfo extends React.Component {
     el.unassociate();
 
     this.setData({
-      name: '',
       matches: [],
       modification: mod,
       match: null
-    });
+    }, () =>  this.focusNameInput());
 
-    delay(0).then( () => this.focusNameInput() );
+    this.updateMatches();
   }
 
   updateMatches( name = this.data.name, offset = this.data.offset, changedOrganisms = false ){
@@ -402,19 +404,27 @@ class EntityInfo extends React.Component {
     }
 
     let proteinFromAssoc = m => {
+      let term = assoc == null ? s.oldName : null;
+
       return [
-        h('div.entity-info-name', m.name),
+        h('div.entity-info-name', [
+          h(Highlighter, { text: m.name, term })
+        ]),
         h('div.entity-info-organism-section', [
           h('span.entity-info-organism-name-title', 'Organism'),
           h('span.entity-info-organism-name', Organism.fromId(m.organism).name())
         ]),
         h('div.entity-info-protein-names', !m.proteinNames ? [] : [
           h('span.entity-info-protein-names-title', 'Protein names'),
-          ...m.proteinNames.map( name => h('span.entity-info-protein-name', name))
+          ...m.proteinNames.map( name => h('span.entity-info-protein-name', [
+            h(Highlighter, { text: name, term })
+          ]))
         ]),
         h('div.entity-info-gene-names', !m.geneNames ? [] : [
           h('span.entity-info-gene-names-title', 'Gene names'),
-          ...m.geneNames.map( name => h('span.entity-info-gene-name', name))
+          ...m.geneNames.map( name => h('span.entity-info-gene-name', [
+            h(Highlighter, { text: name, term })
+          ]))
         ])
       ];
     };
@@ -476,15 +486,21 @@ class EntityInfo extends React.Component {
 
           evt.stopPropagation();
         }
-      }, [ ...s.matches.map( m => {
-        return h('div.entity-info-match', [
-          h('div.entity-info-match-target', {
-            onClick: () => this.associate( m )
-          }, targetFromAssoc( m )),
-          linkFromAssoc( m )
-        ]);
-      }),
-      h(Loader, { loading: s.gettingMoreMatches })
+      }, [
+        h('div.entity-info-match-msg', [
+          `Confirm the identity of "${s.oldName}" by choosing the matching entry:`
+        ]),
+
+        ...s.matches.map( m => {
+          return h('div.entity-info-match', [
+            h('div.entity-info-match-target', {
+              onClick: () => this.associate( m )
+            }, targetFromAssoc( m )),
+            linkFromAssoc( m )
+          ]);
+        }),
+
+        h(Loader, { loading: s.gettingMoreMatches })
       ] ) );
     } else if( !s.loadingMatches && s.name && !s.updateDirty ){
       children.push( h('div.entity-info-match-empty', [

@@ -24,8 +24,9 @@ class Address extends React.Component {
       h('p.document-linkout-address-val', [
         h('input.document-linkout-address-url.input-joined.code', { type: 'text', value: formedUrl, readOnly: true }),
         h(Tooltip, {
+          description: copied ? 'Link copied' : 'Copy link',
           tippy: {
-            html: function(){ return h('span', copied ? 'Link copied' : 'Copy link'); },
+            // html: function(){ return h('span', copied ? 'Link copied' : 'Copy link'); },
             hideOnClick: false,
             trigger: 'mouseenter',
             position: 'left',

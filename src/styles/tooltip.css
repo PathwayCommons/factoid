@@ -1,11 +1,27 @@
-.tooltip-shortcut {
-  display: inline-block;
-  border: 1px solid #fff;
-  border-radius: 0.25em;
-  min-width: 1em;
+.tooltip-content {
+  padding: 0.333em;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
 }
 
 .tooltip-shortcut {
-  margin-left: 0.5em;
+  display: inline-block;
+  border: 1px solid #fff;
+  background: #fff;
+  color: #000;
+  border-radius: 0.25em;
+  min-width: 1em;
   padding: 0 0.1em;
+  text-transform: uppercase;
+}
+
+.tooltip-shortcut-label {
+  font-size: var(--smallFontSize);
+  display: inline-block;
+  margin: 0 0.5em;
+  border-left: 1px solid #888;
+  padding: 0.0625em;
+  padding-left: 0.5em;
+  text-transform: uppercase;
 }

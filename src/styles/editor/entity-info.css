@@ -22,6 +22,8 @@
 }
 
 .entity-info-matches {
+  box-sizing: border-box;
+  padding: 0.25em;
   margin-top: 0.5em;
   max-height: calc(100vh - 8em);
   overflow: auto;
@@ -66,7 +68,7 @@
   width: 100%;
   position: relative;
   padding: 0.25em 0;
-  animation: fadeIn 500ms ease-out;
+  /*animation: fadeIn 500ms ease-out;*/
 
   & + * {
     margin-top: 0.25em;
@@ -159,4 +161,10 @@
 
 .entity-info-mod-text {
   margin-top: 0.333em;
+}
+
+.entity-info-match-msg {
+  border: 1.5px solid var(--invalidColor);
+  padding: 0.25em;
+  border-radius: 0.25em;
 }

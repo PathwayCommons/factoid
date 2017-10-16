@@ -1,18 +1,10 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const ReactDom = require('react-dom');
-const { delay, isInteractionNode } = require('../../util');
+const { delay, isInteractionNode, focusDomElement } = require('../../util');
 const _ = require('lodash');
 const defs = require('../defs');
-const anime = require('animejs');
-const uuid = require('uuid');
-
-const animateDomForEdit = domEle => anime({
-  targets: domEle,
-  backgroundColor: [defs.editAnimationWhite, defs.editAnimationColor, defs.editAnimationWhite],
-  duration: defs.editAnimationDuration,
-  easing: defs.editAnimationEasing
-});
+const { animateDomForEdit } = require('./animate');
 
 class InteractionInfo extends React.Component {
   constructor( props ){
@@ -38,12 +30,10 @@ class InteractionInfo extends React.Component {
 
   componentDidMount(){
     let el = this.props.element;
-    let ppt = this.state.ppt;
     let root = ReactDom.findDOMNode( this );
     let comment = root.querySelector('.interaction-info-description');
-    let typeSel = root.querySelector('.interaction-info-type-select');
 
-    delay(0).then( () => comment.focus() );
+    delay(500).then( () => focusDomElement( comment ) );
 
     this.onRemoteRedescribe = () => {
       this.setState({ description: el.description() });
@@ -56,28 +46,12 @@ class InteractionInfo extends React.Component {
     };
 
     el.on('remoteredescribe', this.onRemoteRedescribe);
-
-    this.onRemoteRetype = ( retypedPpt, newType ) => {
-      if( retypedPpt.id() === ppt.id() ){
-        this.setState({ pptType: newType });
-      }
-
-      if( this.remRetypeAni ){
-        this.remRetypeAni.pause();
-      }
-
-      this.remRetypeAni = animateDomForEdit( typeSel );
-    };
-
-    el.on('remoteretype', this.onRemoteRetype);
   }
 
   componentWillUnmount(){
     let el = this.props.element;
 
     el.removeListener('remoteredescribe', this.onRemoteRedescribe);
-
-    el.removeListener('remoteretype', this.onRemoteRetype);
   }
 
   redescribe( descr ){
@@ -91,28 +65,14 @@ class InteractionInfo extends React.Component {
     this.setState({ description: descr });
   }
 
-  retype( ppt, type ){
-    let p = this.props;
-    let el = p.element;
-    let retypeToNull = ppt => el.participantType( ppt, null );
-
-    el.participants().forEach( retypeToNull );
-
-    el.participantType( ppt, type );
-
-    this.setState({ pptType: type });
-  }
-
   render(){
     let children = [];
     let p = this.props;
     let el = p.element;
     let s = this.state;
     let doc = p.document;
-    let evtTgt = p.eventTarget;
     let descrId = 'interaction-info-description' + el.id();
     let descrDom;
-    let ppt = s.ppt;
 
     if( doc.editable() ){
       descrDom = h('textarea.interaction-info-description', {
@@ -133,38 +93,6 @@ class InteractionInfo extends React.Component {
       h('label.interaction-info-description-label', { htmlFor: descrId }, 'Description'),
       descrDom
     ] ) );
-
-    if( evtTgt.isEdge() ){
-      children.push( h('label.interaction-info-type-select-label', [
-        h('span', 'Type')
-      ]) );
-
-      if( doc.editable() ){
-        let radioName = 'interaction-info-type-radioset-' + el.id();
-        let radiosetChildren = [];
-
-        el.PARTICIPANT_TYPES.forEach( type => {
-          let radioId = 'interaction-info-type-radioset-item-' + uuid();
-
-          radiosetChildren.push( h('input.interaction-info-type-radio', {
-            type: 'radio',
-            onChange: () => this.retype( ppt, type ),
-            id: radioId,
-            name: radioName,
-            checked: this.state.pptType.value === type.value
-          }) );
-
-          radiosetChildren.push( h('label.interaction-info-type-label', {
-            htmlFor: radioId,
-            dangerouslySetInnerHTML: { __html: type.icon }
-          }) );
-        } );
-
-        children.push( h('div.radioset.interaction-info-type-radioset', radiosetChildren) );
-      } else {
-        children.push( h('div.interaction-info-type-text', el.participantType( ppt ).displayValue ) );
-      }
-    }
 
     return h('div.interaction-info', children);
   }

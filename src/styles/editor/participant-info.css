@@ -1,0 +1,23 @@
+.participant-info {
+  position: relative;
+  padding: 0.25em;
+}
+
+.participant-info-type-select {
+  width: 100%;
+}
+
+.participant-info-type-select-label {
+  display: block;
+  font-weight: bold;
+  font-size: var(--smallFontSize);
+}
+
+.participant-info-type-select,
+.participant-info-type-text {
+  font-size: var(--smallFontSize);
+}
+
+.participant-info-type-text {
+  margin-top: 0.333em;
+}

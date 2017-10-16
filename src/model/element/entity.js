@@ -122,10 +122,6 @@ class Entity extends Element {
       association: def
     };
 
-    if( def.name != null ){
-      changes.name = def.name;
-    }
-
     if( def.type != null ){
       changes.type = def.type;
     }

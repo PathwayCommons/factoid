@@ -24,7 +24,11 @@ const param = ( name, value ) => {
 const searchQuery = opts => clean({
   query: [
     param('accession', opts.id),
-    param('', opts.name),
+    '(' + [
+      param('name', `"${opts.name}"`),
+      param('gene', `"${opts.name}"`),
+      param('accession', `"${opts.name}"`)
+    ].join('+OR+') + ')',
     param('organism', (() => {
       let orgs = opts.organism;
       let ids;
@@ -93,10 +97,14 @@ const request = ( endpt, query ) => {
 
 module.exports = {
   search( opts ){
-    return Promise.try( () => request( '', searchQuery(opts) ) ).then( searchPostprocess );
+    return (
+      Promise.try( () => request( '', searchQuery(opts) ) )
+        .then( searchPostprocess )
+        .catch( () => [] )
+      );
   },
 
   get( opts ){
-    return Promise.try( () => request( '', getQuery(opts) ) ).then( getPostprocess );
+    return Promise.try( () => request( '', getQuery(opts) ) ).then( getPostprocess ).then( res => res[0] );
   }
 };

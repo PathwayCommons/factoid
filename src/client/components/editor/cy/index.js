@@ -5,7 +5,7 @@ let handleLayout = require('./layout');
 let handleViewport = require('./viewport');
 let addEdgehandles = require('./edgehandles');
 let addCxtMenu = require('./cxtmenu');
-let addQtip = require('./qtip');
+let addTippy = require('./tippy');
 let addAutomove = require('./automove');
 let handleDoc = require('./doc');
 let debug = require('../../../debug');
@@ -34,7 +34,7 @@ function makeCytoscape( opts ){
     handleLayout,
     handleViewport,
     addEdgehandles,
-    addQtip,
+    addTippy,
     handleDoc,
     addAutomove,
     addCxtMenu

@@ -1,5 +1,8 @@
 {
-  "presets": [ "es2015", "react" ],
+  "presets": [
+    "env",
+    "react"
+  ],
   "ignore": "node_modules/**/*",
   "sourceMaps": "inline"
 }

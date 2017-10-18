@@ -7,7 +7,6 @@
 # export FOO="bar" # set up your env vars for the server
 # $WORKSPACE/jenkins.sh
 
-export NODE_ENV=production
 export BUILD_ID=dontKillMe
 
 cd $WORKSPACE
@@ -16,6 +15,7 @@ cd $WORKSPACE
 npm install
 
 # build
+export NODE_ENV=production
 npm run clean
 npm run build
 

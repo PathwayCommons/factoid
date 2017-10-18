@@ -14,6 +14,7 @@ let defaults = {
   DB_NAME: 'factoid',
   DB_HOST: 'localhost',
   DB_PORT: 28015,
+  REACH_URL: 'http://agathon.sista.arizona.edu:8080/odinweb/api/text',
   DB_USER: undefined, // username if db uses auth
   DB_PASS: undefined, // password if db uses auth
   DB_CERT: undefined  // path to a certificate (cert) file if db uses ssl

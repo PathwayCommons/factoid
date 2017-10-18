@@ -7,7 +7,7 @@ const FormData = require('form-data');
 const Organism = require('../../../../model/organism');
 const uniprot = require('../element-association/uniprot');
 
-const REACH_URL = 'http://agathon.sista.arizona.edu:8080/odinweb/api/text';
+const { REACH_URL } = require('../../../../config');
 const MERGE_ENTS_WITH_SAME_GROUND = true;
 const ALLOW_IMPLICIT_ORG_SPEC = false;
 const REMOVE_DISCONNECTED_ENTS = true;

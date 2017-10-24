@@ -20,7 +20,7 @@ function listenToDoc({ bus, cy, document }){
     handler( docEl, el );
   };
 
-  let onCy = function( el, handler ){
+  let onCy = function( el, handler ){ // eslint-disable-line no-unused-vars
     let docEl = getDocEl( el );
 
     handler( docEl, el );
@@ -116,8 +116,7 @@ function listenToDoc({ bus, cy, document }){
 
   let onDocPos = function( pos2, pos1 ){
     onDoc( this, (docEl, el) => {
-      // if the user is grabbing the node, then remote updates to position shouldn't take effect
-      if( el.grabbed() ){ return; }
+      if( el.grabbed() || isInteractionNode( el ) ){ return; }
 
       // no point in updating if no diff
       if( samePos( pos2, pos1 ) ){ return; }
@@ -201,7 +200,7 @@ function listenToDoc({ bus, cy, document }){
     } );
   };
 
-  let onDocRemRetypePpt = function( docEl, type ){
+  let onDocRemRetypePpt = function( docEl, type ){ // eslint-disable-line no-unused-vars
     onDoc( this, function( docIntn, intnNode ){
       let edges = intnNode.connectedEdges();
       let isElNode = n => n.id() === docEl.id();

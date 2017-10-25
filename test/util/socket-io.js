@@ -1,8 +1,16 @@
 let serverIo;
 let clientIo = require('socket.io-client');
+let clientSockets = [];
 
 let client = (function( ns ){
-  return clientIo.connect('http://localhost:54321/' + ns);
+  let socket = clientIo('http://localhost:54321/' + ns, {
+    // unused sockets shouldn't try to reconnect, potentially interfering with other tests
+    reconnection: false
+  });
+
+  clientSockets.push( socket );
+
+  return socket;
 });
 
 let server = (function( ns ){
@@ -10,6 +18,10 @@ let server = (function( ns ){
 });
 
 let stop = function(){
+  clientSockets.forEach( socket => socket.close() );
+
+  clientSockets = [];
+
   serverIo.close();
 };
 

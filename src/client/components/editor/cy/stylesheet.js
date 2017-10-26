@@ -30,9 +30,10 @@ function makeStylesheet(){
     {
       selector: 'node[!isInteraction][!associated]',
       style: {
-        'border-style': 'double',
+        'border-style': 'solid',
         'border-color': invalidColor,
-        'border-width': 2
+        'border-width': 6,
+        'border-opacity': 0.5
       }
     },
     {

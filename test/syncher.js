@@ -89,16 +89,18 @@ describe('Syncher', function(){
         return s.create();
       });
 
-      it('updates only locally if unfilled', function(){
-        let s2 = copy( s );
-        let s3 = copy( s );
+      if( clientside ){
+        it('updates only locally if unfilled', function(){
+          let s2 = copy( s );
+          let s3 = copy( s );
 
-        s2.update('foo', 'foo-unfilled');
+          s2.update('foo', 'foo-unfilled');
 
-        return s3.load().then(function(){
-          expect( s3.get() ).to.have.property('foo', 'foo');
+          return s3.load().then(function(){
+            expect( s3.get() ).to.have.property('foo', 'foo');
+          });
         });
-      });
+      }
 
       it('puts changes in emitted event', function( done ){
         s.on('update', function( changes ){
@@ -124,16 +126,18 @@ describe('Syncher', function(){
         return s.create();
       });
 
-      it('merges only locally if unfilled', function(){
-        let s2 = copy( s );
-        let s3 = copy( s );
+      if( clientside ){
+        it('merges only locally if unfilled', function(){
+          let s2 = copy( s );
+          let s3 = copy( s );
 
-        s2.merge('foo', 'foo-unfilled');
+          s2.merge('foo', 'foo-unfilled');
 
-        return s3.load().then(function(){
-          expect( s3.get() ).to.have.property('foo', 'foo');
+          return s3.load().then(function(){
+            expect( s3.get() ).to.have.property('foo', 'foo');
+          });
         });
-      });
+      }
 
       it('puts changes in emitted event', function( done ){
         s.on('update', function( changes ){
@@ -238,16 +242,18 @@ describe('Syncher', function(){
         return s.create();
       });
 
-      it('pushes only locally if unfilled', function(){
-        let s2 = copy( s );
-        let s3 = copy( s );
+      if( clientside ){
+        it('pushes only locally if unfilled', function(){
+          let s2 = copy( s );
+          let s3 = copy( s );
 
-        s2.push('foo', 'foo-unfilled');
+          s2.push('foo', 'foo-unfilled');
 
-        return s3.load().then(function(){
-          expect( s3.get('foo') ).to.deep.equal(['foo1']);
+          return s3.load().then(function(){
+            expect( s3.get('foo') ).to.deep.equal(['foo1']);
+          });
         });
-      });
+      }
 
       it('puts changes in emitted event', function( done ){
         s.on('update', function( changes ){
@@ -290,16 +296,18 @@ describe('Syncher', function(){
         return s.create();
       });
 
-      it('pulls only locally if unfilled', function(){
-        let s2 = copy( s );
-        let s3 = copy( s );
+      if( clientside ){
+        it('pulls only locally if unfilled', function(){
+          let s2 = copy( s );
+          let s3 = copy( s );
 
-        s2.pull('foo', 3);
+          s2.pull('foo', 3);
 
-        return s3.load().then(function(){
-          expect( s3.get('foo') ).to.deep.equal([1, 2, 3, 4, 5]);
+          return s3.load().then(function(){
+            expect( s3.get('foo') ).to.deep.equal([1, 2, 3, 4, 5]);
+          });
         });
-      });
+      }
 
       it('puts changes in emitted event', function( done ){
         s.on('update', function( changes ){
@@ -348,22 +356,24 @@ describe('Syncher', function(){
         return s.create();
       });
 
-      it('pulls only locally if unfilled', function(){
-        let s2 = copy( s );
-        let s3 = copy( s );
+      if( clientside ){
+        it('pulls only locally if unfilled', function(){
+          let s2 = copy( s );
+          let s3 = copy( s );
 
-        s2.pullById('foo', 'id3');
+          s2.pullById('foo', 'id3');
 
-        return s3.load().then(function(){
-          expect( s3.get('foo') ).to.deep.equal([
-            { id: 'id1', a: 1 },
-            { id: 'id2', a: 2 },
-            { id: 'id3', a: 3 },
-            { id: 'id4', a: 4 },
-            { id: 'id5', a: 5 }
-          ]);
+          return s3.load().then(function(){
+            expect( s3.get('foo') ).to.deep.equal([
+              { id: 'id1', a: 1 },
+              { id: 'id2', a: 2 },
+              { id: 'id3', a: 3 },
+              { id: 'id4', a: 4 },
+              { id: 'id5', a: 5 }
+            ]);
+          });
         });
-      });
+      }
 
       it('puts changes in emitted event', function( done ){
         s.on('update', function( changes ){
@@ -945,6 +955,212 @@ describe('Syncher', function(){
 
           return ss2.destroy();
         }) );
+      });
+    });
+
+    describe('(security of update via locking)', function(){
+      it('allows updating when unlocked', function(){
+        return (
+          ss.create() // unlocked by default
+          .then( () => sc.load() )
+          .then( () => sc.update({ foo: 'bar' }) )
+          .then( () => reload(sc) )
+          .then( sr => expect( sr.get('foo') ).to.equal('bar') )
+        );
+      });
+
+      it('can not set lock key via update', function(){
+        return (
+          ss.create() // unlocked by default
+          .then( () => sc.load() )
+          .then( () => sc.update({ lock: 'bar' }) )
+          .then( () => reload(sc) )
+          .then( sr => expect( sr.get('lock') ).to.not.equal('bar') )
+        );
+      });
+
+      it('server can not override lock key via update', function(){
+        return (
+          ss.create() // unlocked by default
+          .then( () => reload(ss) )
+          .then( sr => sr.update({ lock: 'bar' }) )
+          .then( () => reload(ss) )
+          .then( sr => expect( sr.get('lock') ).to.not.equal('bar') )
+        );
+      });
+
+      it('disallows updating when locked', function(){
+        let caught = null;
+
+        return (
+          ss.create() // unlocked by default
+          .then( () => ss.lock() )
+          .then( () => sc.load() )
+          .then( () => sc.update({ foo: 'bar' }) )
+          .then( () => caught = false, () => caught = true )
+          .then( () => reload(sc) )
+          .then( sr => {
+            expect( sr.get('foo') ).to.not.equal('bar');
+            expect( caught ).to.be.true;
+          } )
+        );
+      });
+
+      it('disallows updating when locked (server)', function(){
+        let caught = null;
+
+        return (
+          ss.create() // unlocked by default
+          .then( () => ss.lock() )
+          .then( () => ss.update({ foo: 'bar' }) )
+          .then( () => caught = false, () => caught = true )
+          .then( () => reload(ss) )
+          .then( sr => {
+            expect( sr.get('foo') ).to.not.equal('bar');
+            expect( caught ).to.be.true;
+          } )
+        );
+      });
+
+      it('gets marked as locked after promise resolves', function(){
+        return (
+          ss.create() // unlocked by default
+          .then( () => sc.load() )
+          .then( () => sc.lock() )
+          .then( () => expect( sc.locked() ).to.be.true )
+        );
+      });
+
+      it('gets marked as locked after promise resolves (server)', function(){
+        return (
+          ss.create() // unlocked by default
+          .then( () => ss.lock() )
+          .then( () => expect( ss.locked() ).to.be.true )
+        );
+      });
+
+      it('gets lock event', function(){
+        let eventPromise = new Promise( resolve => sc.on('lock', resolve) );
+
+        ss.create().then( () => sc.load() ).then( () => sc.lock() );
+
+        return eventPromise;
+      });
+
+      it('gets lock event (server)', function(){
+        let eventPromise = new Promise( resolve => ss.on('lock', resolve) );
+
+        ss.create().then( () => ss.lock() );
+
+        return eventPromise;
+      });
+
+      it('gets unlock event', function(){
+        let eventPromise = new Promise( resolve => sc.on('unlock', resolve) );
+        let key = 'key';
+
+        ss.create().then( () => sc.load() ).then( () => sc.lock(key) ).then( () => sc.unlock(key) );
+
+        return eventPromise;
+      });
+
+      it('gets unlock event (server)', function(){
+        let eventPromise = new Promise( resolve => ss.on('unlock', resolve) );
+        let key = 'key';
+
+        ss.create().then( () => ss.lock(key) ).then( () => ss.unlock(key) );
+
+        return eventPromise;
+      });
+
+      it('data reports unlocked after unlock (server)', function(){
+        let key = 'key';
+
+        return (
+          ss.create()
+          .then( () => ss.lock(key) )
+          .then( () => ss.unlock(key) )
+          .then( () => reload(ss) )
+          .then( sr => {
+            expect( sr.get('locked') ).to.be.false;
+            expect( sr.get('lock') ).to.not.exist;
+          })
+        );
+      });
+
+      it('data reports unlocked after unlock', function(){
+        let key = 'key';
+
+        return (
+          ss.create()
+          .then( () => sc.load() )
+          .then( () => sc.lock(key) )
+          .then( () => sc.unlock(key) )
+          .then( () => reload(sc) )
+          .then( sr => {
+            expect( sr.get('locked') ).to.be.false;
+            expect( sr.get('lock') ).to.not.exist;
+          })
+        );
+      });
+
+      it('can write after unlock (server)', function(){
+        let key = 'key';
+
+        return (
+          ss.create()
+          .then( () => ss.lock(key) )
+          .then( () => ss.unlock(key) )
+          .then( () => ss.update({ foo: 'bar' }) )
+          .then( () => reload(ss) )
+          .then( sr => expect( sr.get('foo') ).to.equal('bar') )
+        );
+      });
+
+      it('can write after unlock', function(){
+        let key = 'key';
+
+        return (
+          ss.create()
+          .then( () => sc.load() )
+          .then( () => sc.lock(key) )
+          .then( () => sc.unlock(key) )
+          .then( () => sc.update({ foo: 'bar' }) )
+          .then( () => reload(sc) )
+          .then( sr => expect( sr.get('foo') ).to.equal('bar') )
+        );
+      });
+
+      it('disallows destroying when locked', function(){
+        let caught = null;
+
+        return (
+          ss.create() // unlocked by default
+          .then( () => ss.lock() )
+          .then( () => sc.load() )
+          .then( () => sc.destroy() )
+          .then( () => caught = false, () => caught = true )
+          .then( () => reload(sc) )
+          .then( () => {
+            expect( caught ).to.be.true;
+          } )
+        );
+      });
+
+      it('disallows destroying when locked (server)', function(){
+        let caught = null;
+
+        return (
+          ss.create() // unlocked by default
+          .then( () => ss.lock() )
+          .then( () => sc.load() )
+          .then( () => sc.destroy() )
+          .then( () => caught = false, () => caught = true )
+          .then( () => reload(sc) )
+          .then( () => {
+            expect( caught ).to.be.true;
+          } )
+        );
       });
     });
 
@@ -1561,7 +1777,7 @@ describe('Syncher', function(){
             { id: 'bar2', a: 2 },
             { id: 'bar6', a: 6 }
           ]);
-          
+
           expect( sc2.get('foo'), 'client2' ).to.deep.equal([
             { id: 'bar2', a: 2 },
             { id: 'bar6', a: 6 }
@@ -1671,6 +1887,105 @@ describe('Syncher', function(){
           expect(  sc.get('foo') ).to.deep.equal( expected );
           expect( sc2.get('foo') ).to.deep.equal( expected );
         });
+      });
+
+      it('prevents editing on client2 after client1 locks', function(){
+        let caught = false;
+
+        return (
+          sc.create()
+          .then( () => sc2.load() )
+          .then( () => sc.lock() )
+          .then( () => sc2.update('foo', 'bar') )
+          .catch( () => { caught = true; } )
+          .then( () => expect( caught ).to.be.true )
+          .then( () => expect( sc.get('foo') ).to.not.equal('bar') )
+        );
+      });
+
+      it('prevents editing on client1 after client2 locks', function(){
+        let caught = false;
+
+        return (
+          sc.create()
+          .then( () => sc2.load() )
+          .then( () => sc2.lock() )
+          .then( () => sc.update('foo', 'bar') )
+          .catch( () => { caught = true; } )
+          .then( () => expect( caught ).to.be.true )
+          .then( () => expect( sc2.get('foo') ).to.not.equal('bar') )
+        );
+      });
+
+      it('client2 gets remotely locked by client1', function(){
+        let onRemote = when( sc2, 'remotelock' );
+        let onLock = when( sc2, 'lock' );
+
+        return (
+          sc.create()
+          .then( () => sc2.load() )
+          .then( () => sc.lock() )
+          .then( () => onRemote )
+          .then( () => onLock )
+        );
+      });
+
+      it('client1 gets remotely locked by client2', function(){
+        let onRemote = when( sc, 'remotelock' );
+        let onLock = when( sc, 'lock' );
+
+        return (
+          sc.create()
+          .then( () => sc2.load() )
+          .then( () => sc2.lock() )
+          .then( () => onRemote )
+          .then( () => onLock )
+        );
+      });
+
+      it('client2 can edit after the syncher is unlocked', function(){
+        return (
+          sc.create()
+          .then( () => sc2.load() )
+          .then( () => sc.lock('foo') )
+          .then( () => sc.unlock('foo') )
+          .then( () => Promise.all([
+            sc2.update({ foo: 'bar' }),
+            when( sc, 'remoteupdate' )
+          ]) )
+          .then( () => expect(sc.get('foo')).to.equal('bar') )
+        );
+      });
+
+      it('client1 can edit after the syncher is unlocked', function(){
+        return (
+          sc.create()
+          .then( () => sc2.load() )
+          .then( () => sc2.lock('foo') )
+          .then( () => sc2.unlock('foo') )
+          .then( () => Promise.all([
+            sc.update({ foo: 'bar' }),
+            when( sc2, 'remoteupdate' )
+          ]) )
+          .then( () => expect(sc2.get('foo')).to.equal('bar') )
+        );
+      });
+
+      it('unlocking with the incorrect key fails', function(){
+        let caughtUnlock = false;
+        let caughtUpdate = false;
+
+        return (
+          sc.create()
+          .then( () => sc2.load() )
+          .then( () => sc.lock('foo') )
+          .then( () => sc2.unlock('bar') )
+          .catch( () => caughtUnlock = true )
+          .then( () => expect(caughtUnlock).to.be.true )
+          .then( () => sc2.update('foo', 'bar') )
+          .catch( () => caughtUpdate = true )
+          .then( () => expect(caughtUpdate).to.be.true )
+        );
       });
 
     });

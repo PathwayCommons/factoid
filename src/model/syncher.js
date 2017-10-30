@@ -12,7 +12,9 @@ const OP_TYPE = Object.freeze({
   PUSH: 'PUSH',
   PULL: 'PULL',
   PULL_BY_ID: 'PULL_BY_ID',
-  MERGE_BY_ID: 'MERGE_BY_ID'
+  MERGE_BY_ID: 'MERGE_BY_ID',
+  LOCK: 'LOCK',
+  UNLOCK: 'UNLOCK'
 });
 
 const DEFAULT_UPDATE_OPTIONS = Object.freeze({
@@ -44,13 +46,13 @@ class Syncher {
   unsynchedFields(){ return ['socket', 'table', 'conn', 'emitter', 'forwardedEmitters', 'isPrivate', '_hasCorrectSecret']; }
 
   // fields that should not be sent to the clientside
-  privateFields(){ return ['secret', '_ops']; }
+  privateFields(){ return ['secret', '_ops', 'lock']; }
 
   // fields that can't be mutated in the db (i.e. .update() ops)
   constRemoteFields(){ return ['id', 'secret', '_hasCorrectSecret']; }
 
   // fields that can't be mutated locally (i.e. .load(), live synched .update() ops)
-  constLocalFields(){ return ['id', 'secret', 'liveId', '_ops', '_newestOp']; }
+  constLocalFields(){ return ['id', 'secret', 'liveId', '_ops', '_newestOpId']; }
 
   constructor( opts = {} ){
     assert( opts.socket || ( opts.rethink && opts.table && opts.conn ), `An instance of Syncher must have a 'socket' (client) or a 'rethink' with a 'table' and a connection 'conn' (server)` );
@@ -73,7 +75,9 @@ class Syncher {
     this.data = _.defaults( {}, opts.data, {
       id: uuid(),
       liveId: uuid(), // to determine the origin of live updates
-      secret: 'read-only' // secret must match the secret stored in the db to make writes
+      secret: 'read-only', // secret must match the secret stored in the db to make writes
+      lock: null, // the key used to unlock the object
+      locked: false // whether it's locked
     } );
 
     this.localOps = [];
@@ -94,8 +98,9 @@ class Syncher {
         })
 
         .on('update', ( diff ) => {
+
           if( canRemoveLocalOp( diff.new ) ){
-            this.removeLocalOp( diff.new._newestOp.id );
+            this.removeLocalOp( diff.new._newestOpId );
           }
 
           if( !canUpdate( diff.new ) ){ return; }
@@ -107,6 +112,17 @@ class Syncher {
 
           this.emit('remoteupdate', diff.changes, diff.old);
           this.emit('update', diff.changes, diff.old);
+
+          let locked = diff.changes.locked;
+          if( locked != null ){
+            if( locked ){
+              this.emit('remotelock');
+              this.emit('lock');
+            } else {
+              this.emit('remoteunlock');
+              this.emit('unlock');
+            }
+          }
         })
 
         .on('destroy', ( obj ) => {
@@ -329,24 +345,6 @@ class Syncher {
     return this.data._hasCorrectSecret;
   }
 
-  confirmSecret(){
-    if( !this.table ){
-      return Promise.reject( error('Secret confirmation can be done only with database access (on the serverside)') );
-    }
-
-    if( this.isPrivate ){
-      return Promise.resolve();
-    }
-
-    return Promise.try( () => {
-      return this.table.get( this.data.id ).run( this.conn );
-    } ).then( entry => {
-      if( entry.secret !== this.data.secret ){
-        throw error(`Secret confirmation failed for ID ${this.data.id} because secret ${this.data.secret} is incorrect`);
-      }
-    } );
-  }
-
   get( field ){
     if( field != null ){
       return this.data[ field ];
@@ -555,10 +553,65 @@ class Syncher {
         [ opToWrite ] // else => just put the op if empty/null/not-an-array
       ),
 
-      _newestOp: opToWrite
+      _newestOpId: opToWrite.id
     } );
 
-    return this.table.get( this.data.id ).update( change ).run( this.conn );
+    return this.updateDatabase( change );
+  }
+
+  updateDatabase( change ){
+    let r = this.rethink;
+
+    let getSpecLocked = () => _.get( change, ['locked'], null );
+    let updateSpecifiesUnlock = () => getSpecLocked() === false;
+    let updateSpecifiesLock = () => getSpecLocked() === true;
+    let getSpecifiedKey = () => _.get( change, ['lock'], null );
+    let dbHasLockKey = () => r.row('lock').default(null).ne(null);
+    let updateSpecifiesKey = () => getSpecifiedKey() != null;
+    let isSecretIncorrect = () => r.row('secret').default(null).ne( this.data.secret );
+    let isPrivate = () => !!this.isPrivate; // i.e. private/priviledged server can always write
+    let dbLockKeyMatchesSpecified = () => r.row('lock').default(null).eq( getSpecifiedKey() );
+
+    let update = r.branch(
+      r.expr( isPrivate() ).eq(true),
+        change,
+
+      isSecretIncorrect(),
+        r.error(`Incorrect secret specified to write to object with ID ${this.data.id}`),
+
+      // valid unlock
+      r.and(
+        dbHasLockKey(),
+        r.expr( updateSpecifiesKey() ).eq(true),
+        dbLockKeyMatchesSpecified(),
+        r.expr( updateSpecifiesUnlock() ).eq(true)
+      ),
+        _.assign( {}, change, { lock: null } ),
+
+      // invalid unlock
+      r.and(
+        dbHasLockKey(),
+        r.expr( updateSpecifiesKey() ).eq(true),
+        r.not( dbLockKeyMatchesSpecified() )
+      ),
+        r.error(`Incorrect lock key specified to unlock object with ID ${this.data.id}`),
+
+      // valid lock
+      r.and(
+        r.not( dbHasLockKey() ),
+        r.expr( updateSpecifiesKey() ).eq(true),
+        r.expr( updateSpecifiesLock() ).eq(true)
+      ),
+        change,
+
+      dbHasLockKey(),
+        r.error(`Existing lock prevents writing to object with ID ${this.data.id}`),
+
+      // valid
+      change
+    );
+
+    return this.table.get( this.data.id ).update( update ).run( this.conn );
   }
 
   // update('foo', 'bar') => update 1 val
@@ -592,7 +645,7 @@ class Syncher {
     if( this.table ){
       let write = () => this.updateDatabaseWithOp( op, obj );
 
-      update = () => this.confirmSecret().then( write ).then( checkStatus ).then( emitSelf );
+      update = () => Promise.try( write ).then( checkStatus ).then( emitSelf );
     } else if( !this.filled ){ // only a local (not yet synched) instance
       update = () => Promise.resolve().then( emitSelf );
     } else {
@@ -652,16 +705,36 @@ class Syncher {
     return this.updateByType( OP_TYPE.MERGE_BY_ID, field, entry, options );
   }
 
+  locked(){
+    return this.get('locked');
+  }
+
+  lock( key = uuid() ){
+    return (
+      this.updateByType( OP_TYPE.LOCK, { locked: true, lock: key } )
+      .then( () => this.emit('lock') )
+      .then( () => this )
+    );
+  }
+
+  unlock( key = this.data.lock ){
+    return (
+      this.updateByType( OP_TYPE.UNLOCK, { locked: false, lock: key } )
+      .then( () => this.emit('unlock') )
+      .then( () => this )
+    );
+  }
+
   destroy( teardown = _.noop ){
     let emitSelf = () => this.emit('destroy');
     let markDestroyed = () => this.destroyed = true;
     let remove;
 
     if( this.table ){
-      let markDb = () => this.table.get( this.data.id ).update({ destroyed: true, liveId: this.data.liveId }).run( this.conn );
+      let markDb = () => this.updateDatabase({ destroyed: true, liveId: this.data.liveId });
       let del = () => this.table.get( this.data.id ).delete().run( this.conn );
 
-      remove = () => this.confirmSecret().then( markDb ).then( checkStatus ).then( del ).then( checkStatus ).then( markDestroyed ).then( emitSelf );
+      remove = () => Promise.try( markDb ).then( checkStatus ).then( del ).then( checkStatus ).then( markDestroyed ).then( emitSelf );
     } else if( !this.filled ){ // i.e. local instance, yet unsynched
       remove = () => Promise.resolve().then( markDestroyed ).then( emitSelf );
     } else {

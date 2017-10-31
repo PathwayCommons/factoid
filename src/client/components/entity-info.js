@@ -488,7 +488,7 @@ class EntityInfo extends React.Component {
         }
       }, [
         h('div.entity-info-match-msg', [
-          `Confirm the identity of "${s.oldName}" by choosing the matching entry:`
+          `Identify "${s.oldName}" by choosing the matching entry:`
         ]),
 
         ...s.matches.map( m => {

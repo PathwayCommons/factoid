@@ -10,9 +10,9 @@ const makeCytoscape = require('./cy');
 const Document = require('../../../model/document');
 const debug = require('../../debug');
 const defs = require('./defs');
-const { getId, defer } = require('../../../util');
-const Menu = require('./menu');
+const { getId, defer, delay, error } = require('../../../util');
 const Buttons = require('./buttons');
+const Submit = require('./submit');
 
 class Editor extends React.Component {
   constructor( props ){
@@ -207,13 +207,96 @@ class Editor extends React.Component {
     this.data.bus.emit('removeselected');
   }
 
+  submit(){
+    let { document, subShown, cy } = this.data;
+
+    if( subShown ){ return Promise.reject( error('Just toggling the popper') ); } // don't resubmit when just toggling the popover
+
+    this.setData({
+      submitting: true,
+      submitted: false,
+      subNoEnts: false,
+      subUnassocEnts: []
+    });
+
+    let animate = node => {
+      // let opacity = node.numericStyle('opacity');
+
+      let ani = node.animation({
+        duration: 500,
+        style: {
+          'border-opacity': 0
+        }
+      });
+
+      node.scratch('_subAni', ani);
+
+      let iterate = () => ani.play().promise().then( () => iterate( ani.reverse() ) );
+
+      iterate( ani ); // kick off 1st iteration
+    };
+
+    let isUnassoc = ent => !ent.associated();
+    let submit = () => delay(1000); // TODO submit to server or ext service
+    let ents = document.entities();
+    let unassocEnts = ents.filter( isUnassoc );
+
+    if( ents.length === 0 ){
+      this.setData({
+        subNoEnts: true,
+        submitting: false
+      });
+
+      return Promise.reject( error('The document has no entities') );
+    } else if( unassocEnts.length > 0 ){
+      this.setData({
+        subUnassocEnts: unassocEnts,
+        submitting: false
+      });
+
+      cy.nodes('[!associated]').forEach( animate );
+
+      return Promise.reject( error('The document has unassociated entities') );
+    } else {
+      return submit().then(() => {
+        this.setData({
+          submitted: true,
+          submitting: false
+        });
+      });
+    }
+  }
+
+  onShowSubmit(){
+    this.setData({ subShown: true });
+  }
+
+  onHideSubmit(){
+    let { cy } = this.data;
+
+    this.setData({ subShown: false });
+
+    let stop = node => {
+      let ani = node.scratch('_subAni');
+      let reset = () => node.removeStyle('border-opacity');
+
+      if( ani ){
+        ani.stop().promise('frame').then( reset );
+      } else {
+        reset();
+      }
+    };
+
+    cy.nodes().forEach( stop );
+  }
+
   render(){
     let document = this.data.document;
     let controller = this;
 
     return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), this.state.initted ? [
       h(Buttons, { controller, document }),
-      //h(Menu, { document }),
+      h(Submit, { controller, document }),
       h('div.editor-graph#editor-graph')
     ] : []);
   }

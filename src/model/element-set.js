@@ -116,7 +116,7 @@ class ElementSet {
   }
 
   synch( enable ){
-    return Promise.all([ this.elements().map( el => el.synch( enable ) ) ]);
+    return Promise.all( this.elements().map( el => el.synch( enable ) ) );
   }
 
   add( ele, opts = {} ){

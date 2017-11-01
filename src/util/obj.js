@@ -1,4 +1,5 @@
 let _ = require('lodash');
+let hash = require('hash.js');
 
 function firstDefined( value, defaultValue /* ... */ ){
   let arg;
@@ -89,4 +90,35 @@ function mixin( proto, obj, opts = {} ){
   _.extend( proto, sanitized );
 }
 
-module.exports = { firstDefined, fill, error, getId, ensureArray, mixin };
+/** jsum
+ * Stringifies a JSON object (not any randon JS object).
+ *
+ * It should be noted that JS objects can have members of
+ * specific type (e.g. function), that are not supported
+ * by JSON.
+ *
+ * @param {Object} obj JSON object
+ * @returns {String} stringified JSON object.
+ */
+function serialize( obj, filter = () => true ){
+  if( Array.isArray(obj) ){
+    return JSON.stringify( obj.map( i => serialize(i) ) );
+  } else if( typeof obj === 'object' && obj !== null ){
+    return ( Object.keys(obj)
+      .filter( filter )
+      .sort()
+      .map(k => `${k}:${serialize(obj[k])}`)
+      .join('|')
+    );
+  }
+
+  return obj;
+}
+
+function jsonHash( obj, filter ){
+  let serializedJson = serialize( obj, filter );
+
+  return hash.sha512().update( serializedJson ).digest('hex');
+}
+
+module.exports = { firstDefined, fill, error, getId, ensureArray, mixin, jsonHash };

@@ -1988,6 +1988,132 @@ describe('Syncher', function(){
         );
       });
 
+      it('getting a remote update with a mismatched hash self corrects', function(){
+        return (
+          sc.create()
+          .then( () => sc2.load() )
+          .then( () => sc.get().foo = 'bad data' )
+          .then( () => Promise.all([
+            sc2.update('bar', 'bar2'),
+            when( sc, 'remoteupdate' )
+          ]) )
+          .then( () => {
+            expect( sc.get('foo') ).to.equal('foo');
+            expect( sc.get('bar') ).to.equal('bar2');
+          } )
+        );
+      });
+
+      it('getting a remote update with a mismatched hash maintains local ops mid-update', function(){
+        // allow retries since there's no guarantee that this test gets the timing correct
+        // (race condition: update1 could finish early -- this means the test setup is wrong, not that the model code is broken)
+        // (seems to work locally every time)
+        this.retries(5);
+
+        let done1 = false;
+        let start1 = false;
+
+        let update1 = () => {
+          start1 = true;
+
+          sc.update('baz', 'baz2').then( () => done1 = true );
+        };
+
+        return (
+          sc.create()
+          .then( () => sc2.load() )
+          .then( () => sc.get().foo = 'bad data' )
+          .then( () => {
+            setTimeout( update1, 0 );
+
+            return Promise.all([
+              sc2.update('bar', 'bar2'),
+              when( sc, 'remoteupdate' )
+            ]);
+          } )
+          .then( () => {
+            expect( start1, 'client1 update started' ).to.be.true;
+            expect( done1, 'client1 update done' ).to.be.false;
+            expect( sc.get('foo') ).to.equal('foo');
+            expect( sc.get('bar') ).to.equal('bar2');
+            expect( sc.get('baz') ).to.equal('baz2');
+          } )
+        );
+      });
+
+      it('getting a remote update with a mismatched hash maintains local ops post-update', function(){
+        return (
+          sc.create()
+          .then( () => sc2.load() )
+          .then( () => sc.get().foo = 'bad data' )
+          .then( () => {
+            return Promise.all([
+              sc.update('baz', 'baz2'),
+              sc2.update('bar', 'bar2'),
+              when( sc, 'remoteupdate' )
+            ]);
+          } )
+          .then( () => {
+            expect( sc.get('foo') ).to.equal('foo');
+            expect( sc.get('bar') ).to.equal('bar2');
+            expect( sc.get('baz') ).to.equal('baz2');
+          } )
+        );
+      });
+
+      it('getting a remote update with a mismatched hash does not affect a different, clean client', function(){
+        // sc2 is the clean-hash client
+
+        return (
+          sc.create()
+          .then( () => sc2.load() )
+          .then( () => sc.get().foo = 'bad data' )
+          .then( () => {
+            return Promise.all([
+              sc.update('baz', 'baz2'),
+              sc2.update('bar', 'bar2'),
+              when( sc, 'remoteupdate' ),
+              when( sc2, 'remoteupdate' )
+            ]);
+          } )
+          .then( () => {
+            expect( sc.get('foo'), 'client1' ).to.equal('foo');
+            expect( sc.get('bar'), 'client1' ).to.equal('bar2');
+            expect( sc.get('baz'), 'client1' ).to.equal('baz2');
+
+            expect( sc2.get('foo'), 'client2' ).to.equal('foo');
+            expect( sc2.get('bar'), 'client2' ).to.equal('bar2');
+            expect( sc2.get('baz'), 'client2' ).to.equal('baz2');
+          } )
+        );
+      });
+
+      it('reloading with mismatched hash corrects the mismatched data', function(){
+        return (
+          sc.create()
+          .then( () => sc.get().foo = 'bad data' )
+          .then( () => sc.reload() )
+          .then( () => {
+            expect( sc.get('foo') ).to.equal('foo');
+          } )
+        );
+      });
+
+      it('reloading with mismatched hash emits the fixes', function( done ){
+        sc.on('reload', ( changes, old ) => {
+          expect( old.foo ).to.equal('bad data');
+          expect( changes.foo ).to.equal('foo');
+          expect( Object.keys(changes).length, 'number of changes' ).to.equal(1);
+
+          done();
+        });
+
+        (
+          sc.create()
+          .then( () => sc.get().foo = 'bad data' )
+          .then( () => sc.reload() )
+        );
+      });
     });
 
   });

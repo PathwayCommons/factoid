@@ -1,9 +1,9 @@
-let { fill, error, promisifyEmit, mixin, ensureArray, assert } = require('../util');
-let Promise = require('bluebird');
-let EventEmitterMixin = require('./event-emitter-mixin');
-let _ = require('lodash');
-let uuid = require('uuid');
-let EventEmitter = require('eventemitter3');
+const { fill, error, promisifyEmit, mixin, ensureArray, assert, jsonHash } = require('../util');
+const Promise = require('bluebird');
+const EventEmitterMixin = require('./event-emitter-mixin');
+const _ = require('lodash');
+const uuid = require('uuid');
+const EventEmitter = require('eventemitter3');
 
 const OP_TYPE = Object.freeze({
   CREATE: 'CREATE',
@@ -26,8 +26,30 @@ const RDB_TYPE = Object.freeze({
   OBJECT: 'OBJECT'
 });
 
+// fields that aren't synched (they are ignored by create() and the constructor options)
+const unsynchedFields = () => { return ['socket', 'table', 'conn', 'emitter', 'forwardedEmitters', 'isPrivate', '_hasCorrectSecret']; };
+
+// fields that should not be sent to the clientside
+const privateFields = () => { return ['secret', '_ops', 'lock']; };
+
+// fields that can't be mutated in the db (i.e. .update() ops)
+const constRemoteFields = () => { return ['id', 'secret', '_hasCorrectSecret']; };
+
+// fields that can't be mutated locally (i.e. .load(), live synched .update() ops)
+const constLocalFields = () => { return ['id', 'secret', 'liveId', '_ops', '_newestOpId']; };
+
+const isPublicMutableField = key => {
+  let isIn = arr => arr.indexOf( key ) >= 0;
+
+  return !( key[0] === '_' || isIn( privateFields() ) || isIn( constRemoteFields() ) || isIn( constLocalFields() ) );
+};
+
+const hash = ( json ) => {
+  return jsonHash( json, isPublicMutableField );
+};
+
 // check status of db r/w op
-let checkStatus = status => {
+const checkStatus = status => {
   if( status.errors > 0 ){
     throw error( status.first_error );
   }
@@ -41,18 +63,10 @@ A CRUD JSON object that is synched between the clientside and serverside via Soc
     - Errors can still be handled using the returned promises
 */
 class Syncher {
-
-  // fields that aren't synched (they are ignored by create() and the constructor options)
-  unsynchedFields(){ return ['socket', 'table', 'conn', 'emitter', 'forwardedEmitters', 'isPrivate', '_hasCorrectSecret']; }
-
-  // fields that should not be sent to the clientside
-  privateFields(){ return ['secret', '_ops', 'lock']; }
-
-  // fields that can't be mutated in the db (i.e. .update() ops)
-  constRemoteFields(){ return ['id', 'secret', '_hasCorrectSecret']; }
-
-  // fields that can't be mutated locally (i.e. .load(), live synched .update() ops)
-  constLocalFields(){ return ['id', 'secret', 'liveId', '_ops', '_newestOpId']; }
+  unsynchedFields(){ return unsynchedFields(); }
+  privateFields(){ return privateFields(); }
+  constRemoteFields(){ return constRemoteFields(); }
+  constLocalFields(){ return constLocalFields(); }
 
   constructor( opts = {} ){
     assert( opts.socket || ( opts.rethink && opts.table && opts.conn ), `An instance of Syncher must have a 'socket' (client) or a 'rethink' with a 'table' and a connection 'conn' (server)` );
@@ -92,9 +106,9 @@ class Syncher {
         .on('create', ( obj ) => {
           if( !canUpdateOnCreate( obj ) ){ return; }
 
-          let sanitizedCopyOfChanges = _.cloneDeep( _.omit( obj, this.constLocalFields() ) );
+          let sanitizedLatestData = _.cloneDeep( _.omit( obj, constLocalFields() ) );
 
-          _.assign( this.data, sanitizedCopyOfChanges );
+          _.assign( this.data, sanitizedLatestData );
         })
 
         .on('update', ( diff ) => {
@@ -105,24 +119,64 @@ class Syncher {
 
           if( !canUpdate( diff.new ) ){ return; }
 
-          // use the new values but re-apply local updates so they aren't lost
-          let sanitizedCopyOfChanges = _.cloneDeep( _.omit( diff.changes, this.constLocalFields() ) );
-          _.assign( this.data, sanitizedCopyOfChanges );
-          this.applyLocalOps();
+          let applyOp = () => {
+            // make sure we don't include things that should not change locally
+            let sanitizedLatestData = _.cloneDeep( _.omit( diff.new, constLocalFields() ) );
 
-          this.emit('remoteupdate', diff.changes, diff.old);
-          this.emit('update', diff.changes, diff.old);
+            // just overwrite the local json with the newest one from the server
+            // (we apply local ops later anyway)
+            _.assign( this.data, sanitizedLatestData );
+          };
 
-          let locked = diff.changes.locked;
-          if( locked != null ){
-            if( locked ){
-              this.emit('remotelock');
-              this.emit('lock');
-            } else {
-              this.emit('remoteunlock');
-              this.emit('unlock');
+          // we want to have only the data that the server has (clean copy)
+          // (but we don't care about non-hash influencing / private data)
+          let cleanLocalData = () => {
+            let diffHasKey = key => diff.new[ key ] !== undefined;
+            let shouldDel = key => isPublicMutableField( key ) && !diffHasKey( key );
+            let delKey = key => delete this.data[ key ];
+
+            _.keys( this.data ).filter( shouldDel ).forEach( delKey );
+          };
+
+          let emit = () => {
+            this.emit('remoteupdate', diff.changes, diff.old);
+            this.emit('update', diff.changes, diff.old);
+
+            let locked = diff.changes.locked;
+            if( locked != null ){
+              if( locked ){
+                this.emit('remotelock');
+                this.emit('lock');
+              } else {
+                this.emit('remoteunlock');
+                this.emit('unlock');
+              }
             }
-          }
+          };
+
+          let checkHash = () => {
+            let localHash = this.hash();
+
+            if( localHash !== diff.hash ){
+              this.reload().then( postValidateHash );
+            } else {
+              postValidateHash();
+            }
+          };
+
+          let postValidateHash = () => {
+            this.applyLocalOps();
+            emit();
+          };
+
+          // use the new values but re-apply local updates so they aren't lost
+
+          applyOp();
+
+          cleanLocalData();
+
+          checkHash();
+
         })
 
         .on('destroy', ( obj ) => {
@@ -134,11 +188,30 @@ class Syncher {
           this.emit('destroy');
         })
 
+        .on('disconnect', () => {
+          this.emit('disconnect');
+        })
+
+        .on('reconnect', () => {
+          this.reload().then( () => {
+            this.applyLocalOps();
+            this.emit('reconnect');
+          } );
+        })
+
+        .on('reconnect_attempt', () => {
+        })
+
         .on('error', ( err ) => {
           Syncher.errorEmitter.emit( 'socket', err );
+          this.emit( 'error', err );
         })
       ;
     }
+  }
+
+  hash(){
+    return hash( this.data );
   }
 
   static get errorEmitter(){
@@ -151,7 +224,6 @@ class Syncher {
     let { io, rethink, table, conn } = opts;
     let syncher = data => new Syncher({ rethink, table, conn, data });
     let jsonErr = err => _.pick( err, ['message', 'stack'] );
-    let emptySyncher = syncher();
 
     // set up server side sockets
     io.on('connection', ( socket ) => {
@@ -207,7 +279,7 @@ class Syncher {
 
         let allFields = _.uniq( _.concat( _.keys( diff.old_val ), _.keys( diff.new_val ) ) );
 
-        let pubFields = _.difference( allFields, emptySyncher.privateFields() );
+        let pubFields = _.difference( allFields, privateFields() );
 
         let sanitize = obj => _.pick( obj, pubFields );
         let type = diff.type;
@@ -215,8 +287,11 @@ class Syncher {
         let sdiff = {
           old: sanitize( diff.old_val ),
           new: sanitize( diff.new_val ),
-          changes: {}
+          changes: {},
+          hash: null
         };
+
+        sdiff.hash = hash( sdiff.new );
 
         pubFields.forEach( key => {
           if( !_.isEqual( sdiff.old[key], sdiff.new[key] ) ){
@@ -257,7 +332,7 @@ class Syncher {
         }
       } else if( !enable ){
         if( live ){
-          return emitServer( 'unsynch', this.data.id ).then( emitSelf ).catch( this.live = true );
+          return emitServer( 'unsynch', this.data.id ).then( emitSelf ).catch( () => this.live = true );
         } else {
           return Promise.resolve();
         }
@@ -272,7 +347,7 @@ class Syncher {
   }
 
   create( setup = _.noop ){
-    let data = _.omit( this.data, this.unsynchedFields() );
+    let data = _.omit( this.data, unsynchedFields() );
     let insert;
     let fill = () => {
       this.filled = true;
@@ -306,7 +381,7 @@ class Syncher {
   }
 
   load( setup = _.noop ){
-    let assign = obj => _.assign( this.data, _.omit( obj, this.constLocalFields() ) );
+    let assign = obj => _.assign( this.data, _.omit( obj, constLocalFields() ) );
     let find;
 
     if( this.table ){
@@ -318,7 +393,7 @@ class Syncher {
 
           let res = json;
 
-          res = _.omit( res, this.privateFields() );
+          res = _.omit( res, privateFields() );
           res = _.assign( {}, res, { _hasCorrectSecret } );
 
           return res;
@@ -333,11 +408,46 @@ class Syncher {
     }
 
     return Promise.try( find ).then( assign ).then( setup ).then( () => {
+      // let alreadyFilled = this.filled;
+
       this.filled = true;
 
       this.emit('load');
 
       return this;
+    } );
+  }
+
+  reload(){
+    let sanitize = json => _.pickBy( json, (val, key) => isPublicMutableField(key) );
+    let oldJson = _.cloneDeep( sanitize( this.data ) );
+    let hasDiff = false;
+    let changes = {};
+
+    return this.load().then( () => {
+      let newJson = sanitize( this.data );
+      let keys = _.union( _.keys(oldJson), _.keys(newJson) );
+
+      keys.forEach( k => {
+        if( !_.isEqual( oldJson[k], newJson[k] ) ){
+          changes[k] = newJson[k];
+          hasDiff = true;
+
+          // if the data doesn't exist in the new json, then we have to delete it to make sure we have a clean copy
+          if( newJson[k] == null && oldJson[k] != null ){
+            delete this.data[k];
+          }
+        }
+      } );
+    } ).then( () => {
+      return this.applyLocalOps();
+    } ).then( () => {
+      if( hasDiff ){
+        this.emit('remoteupdate', changes, oldJson);
+        this.emit('update', changes, oldJson);
+      }
+
+      this.emit('reload', changes, oldJson);
     } );
   }
 
@@ -509,7 +619,7 @@ class Syncher {
             return r.branch(
               r.row( key ).default( null ).typeOf().eq( RDB_TYPE.ARRAY ), // if
               r.row( key ).filter(function( o ){
-                return r.and( ...( vals.map( val => o('id').ne( val ) ) ) );
+                return r.and( ...( vals.map( val => o('id').ne(val) ) ) );
               }),
               [] // else => if no array in db, set empty
             );
@@ -624,7 +734,7 @@ class Syncher {
 
     options = op.options;
 
-    obj = _.omit( obj, this.constRemoteFields() );
+    obj = _.omit( obj, constRemoteFields() );
 
     let objKeys = _.keys(obj);
     let old = _.pick( this.data, objKeys );
@@ -757,7 +867,7 @@ class Syncher {
   }
 
   json(){
-    return _.omit( this.data, this.privateFields() );
+    return _.omit( this.data, privateFields() );
   }
 }
 

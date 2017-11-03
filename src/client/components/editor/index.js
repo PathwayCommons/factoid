@@ -13,6 +13,7 @@ const defs = require('./defs');
 const { getId, defer, delay, error } = require('../../../util');
 const Buttons = require('./buttons');
 const Submit = require('./submit');
+const HowTo = require('../how-to');
 
 class Editor extends React.Component {
   constructor( props ){
@@ -297,6 +298,7 @@ class Editor extends React.Component {
     return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), this.state.initted ? [
       h(Buttons, { controller, document }),
       h(Submit, { controller, document }),
+      h(HowTo, {}),
       h('div.editor-graph#editor-graph')
     ] : []);
   }

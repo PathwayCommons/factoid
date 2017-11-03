@@ -3,7 +3,7 @@
   right: 0;
   top: 0;
   margin: 0.75em;
-  z-index: 99999;
+  z-index: 3;
 }
 
 .editor-submit-info {

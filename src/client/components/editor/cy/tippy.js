@@ -24,11 +24,19 @@ module.exports = function({ bus, cy, document }){
     }
   });
 
-  cy.on('pan zoom drag grab tapstart', hideAllTippies);
+  cy.on('pan zoom drag', hideAllTippies);
+
+  cy.on('tap', e => {
+    if( e.target === cy ){ hideAllTippies(); }
+  });
 
   let drawing = false;
 
-  bus.on('drawstart', () => drawing = true);
+  bus.on('drawstart', () => {
+    drawing = true;
+
+    hideAllTippies();
+  });
   bus.on('drawstop', () => drawing = false);
 
   let destroyTippy = ele => {
@@ -46,13 +54,16 @@ module.exports = function({ bus, cy, document }){
     }
   };
 
-  cy.on('hidetippy', 'node, edge', function(e){
-    let ele = e.target;
+  let hideTippy = ele => {
     let tippies = ele.scratch('_tippies');
 
     if( tippies != null ){
       tippies.forEach( t => t.tippy.hide( t.popper ) );
     }
+  };
+
+  cy.on('hidetippy', 'node, edge', function(e){
+    hideTippy( e.target );
   });
 
   cy.on('tap', 'node, edge', function( e ){
@@ -111,6 +122,8 @@ module.exports = function({ bus, cy, document }){
     if( tippies != null ){
       tippies.forEach( t => t.tippy.hide( t.popper ) );
     } else {
+      hideAllTippies();
+
       tippies = [];
 
       node.scratch('_tippies', tippies);

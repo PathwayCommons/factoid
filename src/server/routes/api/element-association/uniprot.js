@@ -49,6 +49,39 @@ const searchQuery = opts => clean({
   columns: COLUMNS
 });
 
+const parseProteinNames = str => {
+  let lvl = 0;
+  let i0 = 0;
+  let i;
+  let names = [];
+
+  for( i = 0; i < str.length; i++ ){
+    if( str[i] === '(' ){
+      if( names.length === 0 && lvl === 0 ){
+        names.push( str.substring(i0, i - 1) );
+
+        i0 = i - 2;
+      }
+
+      lvl++;
+    } else if( str[i] === ')' ){
+      lvl--;
+
+      if( lvl === 0 ){
+        names.push( str.substring(i0 + 3, i) );
+
+        i0 = i;
+      }
+    }
+  }
+
+  if( lvl === 0 && names.length === 0 ){
+    names.push( str );
+  }
+
+  return names;
+};
+
 const searchPostprocess = res => {
   let lines = res.split(/\n/);
   let ents = [];
@@ -71,8 +104,7 @@ const searchPostprocess = res => {
     let organism = +data[1];
     let name = data[2];
     let geneNames = data[3].split(/\s+/);
-    // let proteinNames = data[4].split(/\s+\(|\)\s+\(|\)$/).filter( notIsEmpty ); // TODO find a better way to split
-    let proteinNames = [ data[4] ];
+    let proteinNames = parseProteinNames( data[4] );
     let url = BASE_URL + '/' + id;
 
     ents.push({ namespace, type, id, organism, name, geneNames, proteinNames, url });

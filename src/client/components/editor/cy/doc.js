@@ -488,7 +488,7 @@ function listenToDoc({ bus, cy, document }){
   }
 
   if( !document.editable() ){
-    cy.autolock( true );
+    cy.autoungrabify( true );
   }
 
   let onTapHold = (e) => {

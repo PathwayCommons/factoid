@@ -3,6 +3,5 @@
     "env",
     "react"
   ],
-  "ignore": "node_modules/**/*",
-  "sourceMaps": "inline"
+  "ignore": "node_modules/**/*"
 }

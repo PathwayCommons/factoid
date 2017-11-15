@@ -46,6 +46,7 @@
     "hyperscript": "^2.0.2",
     "hyperscript-helpers": "^3.0.2",
     "lodash": "^4.13.1",
+    "lru-cache": "^4.1.1",
     "morgan": "^1.7.0",
     "mousetrap": "^1.6.1",
     "node-fetch": "^1.7.1",

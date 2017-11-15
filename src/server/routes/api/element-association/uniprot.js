@@ -3,13 +3,15 @@ const Promise = require('bluebird');
 const querystring = require('querystring');
 const _ = require('lodash');
 const Organism = require('../../../../model/organism');
+const LRUCache = require('lru-cache');
+const { memoize } = require('../../../../util');
 
-const BASE_URL = 'http://www.uniprot.org/uniprot';
+const { UNIPROT_CACHE_SIZE, UNIPROT_URL } = require('../../../../config');
+
+const BASE_URL = UNIPROT_URL;
 const COLUMNS = 'id,organism-id,entry+name,genes,protein+names';
 
 const isEmpty = str => str == null || str === '';
-
-const notIsEmpty = str => !isEmpty( str );
 
 const clean = obj => _.omitBy( obj, _.isNil );
 
@@ -117,7 +119,7 @@ const getQuery = opts => searchQuery({ id: opts.id });
 
 const getPostprocess = searchPostprocess;
 
-const request = ( endpt, query ) => {
+const rawRequest = ( endpt, query ) => {
   let addr = BASE_URL + `/${endpt}` + ( query != null ? '?' + querystring.stringify( query ) : '' );
 
   return (
@@ -126,6 +128,8 @@ const request = ( endpt, query ) => {
       .then( res => res.text() )
   );
 };
+
+const request = memoize( rawRequest, LRUCache({ max: UNIPROT_CACHE_SIZE }) );
 
 module.exports = {
   search( opts ){

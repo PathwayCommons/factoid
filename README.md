@@ -13,15 +13,27 @@
 
 The following environment variables can be used to configure the server:
 
+General:
+
 - `NODE_ENV` : the environment mode; either `production` or `development` (default)
 - `PORT` : the port on which the server runs (default `3000`)
 - `LOG_LEVEL` : minimum log level; one of `info` (default), `warn`, `error`
+
+Database:
+
 - `DB_NAME` : name of the db (default `factoid`)
 - `DB_HOST` : hostname or ip address of the database host (default `localhost`)
-- `DB_PORT` : port where the db can be accessed (default `28015`, the RethinkDB default)
+- `DB_PORT` : port where the db can be accessed (default `28015`, the rethinkdb default)
 - `DB_USER` : username if the db uses auth (undefined by default)
 - `DB_PASS` : password if the db uses auth (undefined by default)
 - `DB_CERT` : local file path to certificate (cert) file if the db uses ssl (undefined by default)
+
+Services:
+
+- `DEFAULT_CACHE_SIZE` : default max number of entries in each cache
+- `REACH_URL` : full url of the reach textmining endpoint
+- `UNIPROT_URL` : full url of uniprot query service
+- `UNIPROT_CACHE_SIZE` : overrides default cache size for uniprot query cache
 
 
 

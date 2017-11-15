@@ -49,7 +49,7 @@ class EntityInfo extends React.Component {
       if( input != null ){
         focusDomElement( input );
       }
-    }, 500 );
+    }, 50 );
 
     this.data = {
       element: el,

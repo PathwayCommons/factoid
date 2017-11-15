@@ -129,6 +129,7 @@ module.exports = function({ bus, cy, document }){
       node.scratch('_tippies', tippies);
 
       let options = {
+        duration: 0,
         position: 'right',
         hideOnClick: false,
         onHidden: _.debounce( () => destroyTippy( node ), 100 ) // debounce allows toggling a tippy on an ele

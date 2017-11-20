@@ -16,7 +16,7 @@ const isEmpty = str => str == null || str === '';
 const clean = obj => _.omitBy( obj, _.isNil );
 
 const param = ( name, value ) => {
-  if( value == null ){ return null; }
+  if( isEmpty(value) || value === '"undefined"' || value === '"null"' ){ return null; }
 
   if( name === '' ){ return value; }
 
@@ -29,8 +29,8 @@ const searchQuery = opts => clean({
       param('name', `"${opts.name}"`),
       param('gene', `"${opts.name}"`),
       param('accession', `"${opts.name}"`),
-      param('accession', `"${opts.id}"`),
-    ].join('+OR+') + ')',
+      param('accession', `"${opts.id}"`)
+    ].filter( p => !_.isNil(p) ).join('+OR+') + ')',
     param('organism', (() => {
       let orgs = opts.organism;
       let ids;

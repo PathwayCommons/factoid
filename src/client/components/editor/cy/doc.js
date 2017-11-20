@@ -230,11 +230,6 @@ function listenToDoc({ bus, cy, document }){
     } );
   };
 
-  let onReplaceEle = function( oldDocEl, newDocEl ){
-    rmEleListeners( oldDocEl );
-    addEleListeners( newDocEl );
-  };
-
   let updateIntnArity = function( docIntn ){
     onDoc( docIntn, function( docEl, el ){
       if( document.has( docIntn ) ){
@@ -472,7 +467,6 @@ function listenToDoc({ bus, cy, document }){
   // doc <=> cy synch
 
   document.on('add', onAddEle);
-  document.on('replace', onReplaceEle);
   document.on('remoteadd', docEl => applyEditAnimation( getCyEl( docEl ) ));
   document.on('remove', onRmEle);
   document.on('remoteremove', docEl => applyEditAnimation( getCyEl( docEl ) ));

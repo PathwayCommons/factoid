@@ -124,21 +124,6 @@ class EntityInfo extends React.Component {
 
     doc.on('toggleorganism', this.onToggleOrganism);
 
-    this.onReplaceEle = ( oldEle, newEle ) => {
-      if( oldEle.id() === this.data.element.id() ){
-        oldEle.removeListener('remoterename', this.onRemoteRename);
-        newEle.on('remoterename', this.onRemoteRename);
-
-        oldEle.removeListener('remotemodify', this.onRemoteModify);
-        newEle.on('remotemodify', this.onRemoteModify);
-
-        this.data.element = newEle;
-        this.setData({ element: newEle });
-      }
-    };
-
-    doc.on('replace', this.onReplaceEle);
-
     if( s.matches.length === 0 && s.name != null && s.name != '' ){
       this.updateMatches();
     }
@@ -153,8 +138,6 @@ class EntityInfo extends React.Component {
     element.removeListener('remotemodify', this.onModifyEle);
 
     document.removeListener('toggleorganism', this.onToggleOrganism);
-
-    document.removeListener('replace', this.onReplaceEle);
 
     if( update ){ update.cancel(); }
 

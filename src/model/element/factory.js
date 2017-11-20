@@ -1,10 +1,14 @@
-let _ = require('lodash');
-let Syncher = require('../syncher');
-let Entity = require('./entity');
-let Element = require('./element');
-let Protein = require('./protein');
-let Interaction = require('./interaction');
-let Promise = require('bluebird');
+const _ = require('lodash');
+const Syncher = require('../syncher');
+const Entity = require('./entity');
+const Element = require('./element');
+const Interaction = require('./interaction');
+const Promise = require('bluebird');
+
+// subtypes may have different association data but do not replace the prototype
+const subtypes = {
+  protein: Entity
+};
 
 /**
 A factory to
@@ -23,7 +27,6 @@ class ElementFactory {
     this.config = _.defaults( {}, opts, {
       types: [
         Entity,
-        Protein,
         Interaction
       ],
       defaultType: Entity,
@@ -32,7 +35,7 @@ class ElementFactory {
   }
 
   getType( typeStr ){
-    return this.config.types.find( t => t.type() === typeStr );
+    return subtypes[typeStr] || this.config.types.find( t => t.type() === typeStr );
   }
 
   isTypeSupported( typeStr ){

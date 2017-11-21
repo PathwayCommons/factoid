@@ -17,6 +17,7 @@ function makeCytoscape( opts ){
     style: makeStylesheet(),
     minZoom: defs.minZoom,
     maxZoom: defs.maxZoom,
+    zoom: ( defs.minZoom + defs.maxZoom ) / 2,
     elements: [],
     layout: {
       name: 'preset',

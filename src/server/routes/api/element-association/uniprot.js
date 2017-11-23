@@ -31,7 +31,7 @@ const searchQuery = opts => clean({
       param('accession', `"${opts.name}"`),
       param('accession', `"${opts.id}"`)
     ].filter( p => !_.isNil(p) ).join('+OR+') + ')',
-    param('organism', (() => {
+    (() => {
       let orgs = opts.organism;
       let ids;
 
@@ -41,8 +41,8 @@ const searchQuery = opts => clean({
         ids = orgs.split(',');
       }
 
-      return '(' + ids.join('+OR+') + ')';
-    })())
+      return '(' + ids.map( id => param('organism', id) ).join('+OR+') + ')';
+    })()
   ].filter( p => !_.isNil(p) ).join('+AND+'),
   limit: opts.limit,
   offset: opts.offset,

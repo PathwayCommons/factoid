@@ -2,14 +2,15 @@
   --widgetBorderColor: #aaa;
   --widgetBorderRadius: 4px;
   --widgetDisabledBorderColor: #ddd;
-  --widgetDisabledTextColor: #888;
+  --widgetDisabledTextColor: #bbb;
   --widgetActiveColor: #aaa;
   --widgetToggleColor: #ccc;
   --buttonActiveColor: #000;
+  --widgetTransitionDuration: 500ms;
   --widgetHeight: 1.75em;
   --defaultWidgetWidth: 12em;
   --activeColor: #3193fd;
-  --invalidColor: #d60c0c;
   --smallFontSize: 0.8em;
   --fadedColor: #888;
+  --invalidColor: #b53535;
 }

@@ -19,7 +19,6 @@ module.exports = Object.freeze({
   defaultColor: '#666',
   activeColor: '#0169d9',
   labelColor: '#fff',
-  invalidColor: '#d60c0c',
   nodeSize: 30,
   interactionNodeSize: 10
 });

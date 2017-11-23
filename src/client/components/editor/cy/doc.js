@@ -213,8 +213,13 @@ function listenToDoc({ bus, cy, document }){
   let reapplyAssocToCy = function( docEl, el ){
     el.data({
       associated: docEl.associated(),
-      name: docEl.name(),
       type: docEl.type()
+    });
+  };
+
+  let reapplyCompeletionToCy = function( docEl, el ){
+    el.data({
+      completed: docEl.completed()
     });
   };
 
@@ -227,6 +232,18 @@ function listenToDoc({ bus, cy, document }){
   let onDocUnassoc = function(){
     onDoc( this, function( docEl, el ){
       reapplyAssocToCy( docEl, el );
+    } );
+  };
+
+  let onDocComplete = function(){
+    onDoc( this, function( docEl, el ){
+      reapplyCompeletionToCy( docEl, el );
+    } );
+  };
+
+  let onDocUncomplete = function(){
+    onDoc( this, function( docEl, el ){
+      reapplyCompeletionToCy( docEl, el );
     } );
   };
 
@@ -345,6 +362,8 @@ function listenToDoc({ bus, cy, document }){
     docEl.on('remove', onDocRmPpt);
     docEl.on('associate', onDocAssoc);
     docEl.on('unassociate', onDocUnassoc);
+    docEl.on('complete', onDocComplete);
+    docEl.on('uncomplete', onDocUncomplete);
     docEl.on('retype', onDocRetypePpt);
     docEl.on('modify', onDocModify);
     el.on('drag', onCyPos);
@@ -365,6 +384,8 @@ function listenToDoc({ bus, cy, document }){
     docEl.removeListener('remove', onDocRmPpt);
     docEl.removeListener('associate', onDocAssoc);
     docEl.removeListener('unassociate', onDocUnassoc);
+    docEl.removeListener('complete', onDocComplete);
+    docEl.removeListener('uncomplete', onDocUncomplete);
     docEl.removeListener('retype', onDocRetypePpt);
     docEl.removeListener('modify', onDocModify);
     el.removeListener('drag', onCyPos);

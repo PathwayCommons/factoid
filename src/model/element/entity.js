@@ -38,7 +38,8 @@ const getModByValue = function( value ){
 
 const DEFAULTS = Object.freeze({
   type: TYPE,
-  modification: MODS.UNMODIFIED.value
+  modification: MODS.UNMODIFIED.value,
+  completed: false
 });
 
 /**
@@ -95,6 +96,14 @@ class Entity extends Element {
 
   get ORDERED_MODIFICATIONS(){
     return ORDERED_MODS;
+  }
+
+  static get MODIFICATION_BY_VALUE(){
+    return getModByValue;
+  }
+
+  get MODIFICATION_BY_VALUE(){
+    return getModByValue;
   }
 
   modify( mod ){
@@ -160,6 +169,38 @@ class Entity extends Element {
     this.emit('unassociate', oldDef);
 
     return update;
+  }
+
+  complete(){
+    let completed = this.completed();
+
+    if( !completed ){
+      let update = this.syncher.update({ completed: true });
+
+      this.emit('complete');
+
+      return update;
+    } else {
+      return Promise.resolve();
+    }
+  }
+
+  uncomplete(){
+    let completed = this.completed();
+
+    if( completed ){
+      let update = this.syncher.update({ completed: false });
+
+      this.emit('uncomplete');
+
+      return update;
+    } else {
+      return Promise.resolve();
+    }
+  }
+
+  completed(){
+    return this.syncher.get('completed');
   }
 
   json(){

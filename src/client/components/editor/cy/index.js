@@ -14,7 +14,7 @@ let defs = require('./defs');
 function makeCytoscape( opts ){
   let cy = new Cytoscape({
     container: opts.container,
-    style: makeStylesheet(),
+    style: makeStylesheet( opts.document ),
     minZoom: defs.minZoom,
     maxZoom: defs.maxZoom,
     zoom: ( defs.minZoom + defs.maxZoom ) / 2,

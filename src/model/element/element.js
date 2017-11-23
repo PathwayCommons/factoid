@@ -107,6 +107,12 @@ class Element {
     }
   }
 
+  named(){
+    let name = this.syncher.get('name');
+
+    return name != null && name != '';
+  }
+
   reposition( newPos = {} ){
     let synched = this.syncher;
 

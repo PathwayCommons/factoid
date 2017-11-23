@@ -47,26 +47,16 @@ class Organism {
 
 [
   new Organism(9606, 'Homo sapiens', 'bio-human'),
-  new Organism(3702, 'Arabidopsis thaliana', 'bio-plant'),
-  new Organism(6239, 'Caenorhabditis elegans', 'bio-worm'),
-  new Organism(7955, 'Danio rerio', 'bio-fish'),
+  new Organism(10090, 'Mus musculus', 'bio-mouse'),
+  new Organism(4932, 'Saccharomyces cerevisiae', 'bio-yeast'),
   new Organism(7227, 'Drosophila melanogaster', 'bio-fly'),
   new Organism(83333, 'Escherichia coli', 'bio-cells'),
-  new Organism(10090, 'Mus musculus', 'bio-mouse'),
+  new Organism(6239, 'Caenorhabditis elegans', 'bio-worm'),
+  new Organism(3702, 'Arabidopsis thaliana', 'bio-plant'),
   new Organism(10116, 'Rattus norvegicus', 'bio-rat'),
-  new Organism(4932, 'Saccharomyces cerevisiae', 'bio-yeast')
-].sort( (a, b) => {
-  let na = constName( a.name() );
-  let nb = constName( b.name() );
+  new Organism(7955, 'Danio rerio', 'bio-fish')
 
-  if( na < nb ){
-    return -1;
-  } else if( na > nb ){
-    return 1;
-  } else {
-    return 0;
-  }
-} ).forEach( org => {
+].forEach( org => {
   organisms.push( org );
 
   Organism[ constName( org.name() ) ] = org;

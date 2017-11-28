@@ -1,9 +1,9 @@
-let { fill, error, promisifyEmit, mixin, ensureArray, assert } = require('../util');
-let Promise = require('bluebird');
-let EventEmitterMixin = require('./event-emitter-mixin');
-let _ = require('lodash');
-let uuid = require('uuid');
-let EventEmitter = require('eventemitter3');
+const { fill, error, promisifyEmit, mixin, ensureArray, assert, jsonHash } = require('../util');
+const Promise = require('bluebird');
+const EventEmitterMixin = require('./event-emitter-mixin');
+const _ = require('lodash');
+const uuid = require('uuid');
+const EventEmitter = require('eventemitter3');
 
 const OP_TYPE = Object.freeze({
   CREATE: 'CREATE',
@@ -12,7 +12,9 @@ const OP_TYPE = Object.freeze({
   PUSH: 'PUSH',
   PULL: 'PULL',
   PULL_BY_ID: 'PULL_BY_ID',
-  MERGE_BY_ID: 'MERGE_BY_ID'
+  MERGE_BY_ID: 'MERGE_BY_ID',
+  LOCK: 'LOCK',
+  UNLOCK: 'UNLOCK'
 });
 
 const DEFAULT_UPDATE_OPTIONS = Object.freeze({
@@ -24,8 +26,30 @@ const RDB_TYPE = Object.freeze({
   OBJECT: 'OBJECT'
 });
 
+// fields that aren't synched (they are ignored by create() and the constructor options)
+const unsynchedFields = () => { return ['socket', 'table', 'conn', 'emitter', 'forwardedEmitters', 'isPrivate', '_hasCorrectSecret']; };
+
+// fields that should not be sent to the clientside
+const privateFields = () => { return ['secret', '_ops', 'lock']; };
+
+// fields that can't be mutated in the db (i.e. .update() ops)
+const constRemoteFields = () => { return ['id', 'secret', '_hasCorrectSecret']; };
+
+// fields that can't be mutated locally (i.e. .load(), live synched .update() ops)
+const constLocalFields = () => { return ['id', 'secret', 'liveId', '_ops', '_newestOpId']; };
+
+const isPublicMutableField = key => {
+  let isIn = arr => arr.indexOf( key ) >= 0;
+
+  return !( key[0] === '_' || isIn( privateFields() ) || isIn( constRemoteFields() ) || isIn( constLocalFields() ) );
+};
+
+const hash = ( json ) => {
+  return jsonHash( json, isPublicMutableField );
+};
+
 // check status of db r/w op
-let checkStatus = status => {
+const checkStatus = status => {
   if( status.errors > 0 ){
     throw error( status.first_error );
   }
@@ -39,18 +63,10 @@ A CRUD JSON object that is synched between the clientside and serverside via Soc
     - Errors can still be handled using the returned promises
 */
 class Syncher {
-
-  // fields that aren't synched (they are ignored by create() and the constructor options)
-  unsynchedFields(){ return ['socket', 'table', 'conn', 'emitter', 'forwardedEmitters', 'isPrivate', '_hasCorrectSecret']; }
-
-  // fields that should not be sent to the clientside
-  privateFields(){ return ['secret', '_ops']; }
-
-  // fields that can't be mutated in the db (i.e. .update() ops)
-  constRemoteFields(){ return ['id', 'secret', '_hasCorrectSecret']; }
-
-  // fields that can't be mutated locally (i.e. .load(), live synched .update() ops)
-  constLocalFields(){ return ['id', 'secret', 'liveId', '_ops', '_newestOp']; }
+  unsynchedFields(){ return unsynchedFields(); }
+  privateFields(){ return privateFields(); }
+  constRemoteFields(){ return constRemoteFields(); }
+  constLocalFields(){ return constLocalFields(); }
 
   constructor( opts = {} ){
     assert( opts.socket || ( opts.rethink && opts.table && opts.conn ), `An instance of Syncher must have a 'socket' (client) or a 'rethink' with a 'table' and a connection 'conn' (server)` );
@@ -73,7 +89,9 @@ class Syncher {
     this.data = _.defaults( {}, opts.data, {
       id: uuid(),
       liveId: uuid(), // to determine the origin of live updates
-      secret: 'read-only' // secret must match the secret stored in the db to make writes
+      secret: 'read-only', // secret must match the secret stored in the db to make writes
+      lock: null, // the key used to unlock the object
+      locked: false // whether it's locked
     } );
 
     this.localOps = [];
@@ -88,25 +106,77 @@ class Syncher {
         .on('create', ( obj ) => {
           if( !canUpdateOnCreate( obj ) ){ return; }
 
-          let sanitizedCopyOfChanges = _.cloneDeep( _.omit( obj, this.constLocalFields() ) );
+          let sanitizedLatestData = _.cloneDeep( _.omit( obj, constLocalFields() ) );
 
-          _.assign( this.data, sanitizedCopyOfChanges );
+          _.assign( this.data, sanitizedLatestData );
         })
 
         .on('update', ( diff ) => {
+
           if( canRemoveLocalOp( diff.new ) ){
-            this.removeLocalOp( diff.new._newestOp.id );
+            this.removeLocalOp( diff.new._newestOpId );
           }
 
           if( !canUpdate( diff.new ) ){ return; }
 
-          // use the new values but re-apply local updates so they aren't lost
-          let sanitizedCopyOfChanges = _.cloneDeep( _.omit( diff.changes, this.constLocalFields() ) );
-          _.assign( this.data, sanitizedCopyOfChanges );
-          this.applyLocalOps();
+          let applyOp = () => {
+            // make sure we don't include things that should not change locally
+            let sanitizedLatestData = _.cloneDeep( _.omit( diff.new, constLocalFields() ) );
 
-          this.emit('remoteupdate', diff.changes, diff.old);
-          this.emit('update', diff.changes, diff.old);
+            // just overwrite the local json with the newest one from the server
+            // (we apply local ops later anyway)
+            _.assign( this.data, sanitizedLatestData );
+          };
+
+          // we want to have only the data that the server has (clean copy)
+          // (but we don't care about non-hash influencing / private data)
+          let cleanLocalData = () => {
+            let diffHasKey = key => diff.new[ key ] !== undefined;
+            let shouldDel = key => isPublicMutableField( key ) && !diffHasKey( key );
+            let delKey = key => delete this.data[ key ];
+
+            _.keys( this.data ).filter( shouldDel ).forEach( delKey );
+          };
+
+          let emit = () => {
+            this.emit('remoteupdate', diff.changes, diff.old);
+            this.emit('update', diff.changes, diff.old);
+
+            let locked = diff.changes.locked;
+            if( locked != null ){
+              if( locked ){
+                this.emit('remotelock');
+                this.emit('lock');
+              } else {
+                this.emit('remoteunlock');
+                this.emit('unlock');
+              }
+            }
+          };
+
+          let checkHash = () => {
+            let localHash = this.hash();
+
+            if( localHash !== diff.hash ){
+              this.reload().then( postValidateHash );
+            } else {
+              postValidateHash();
+            }
+          };
+
+          let postValidateHash = () => {
+            this.applyLocalOps();
+            emit();
+          };
+
+          // use the new values but re-apply local updates so they aren't lost
+
+          applyOp();
+
+          cleanLocalData();
+
+          checkHash();
+
         })
 
         .on('destroy', ( obj ) => {
@@ -118,11 +188,30 @@ class Syncher {
           this.emit('destroy');
         })
 
+        .on('disconnect', () => {
+          this.emit('disconnect');
+        })
+
+        .on('reconnect', () => {
+          this.reload().then( () => {
+            this.applyLocalOps();
+            this.emit('reconnect');
+          } );
+        })
+
+        .on('reconnect_attempt', () => {
+        })
+
         .on('error', ( err ) => {
           Syncher.errorEmitter.emit( 'socket', err );
+          this.emit( 'error', err );
         })
       ;
     }
+  }
+
+  hash(){
+    return hash( this.data );
   }
 
   static get errorEmitter(){
@@ -135,7 +224,6 @@ class Syncher {
     let { io, rethink, table, conn } = opts;
     let syncher = data => new Syncher({ rethink, table, conn, data });
     let jsonErr = err => _.pick( err, ['message', 'stack'] );
-    let emptySyncher = syncher();
 
     // set up server side sockets
     io.on('connection', ( socket ) => {
@@ -191,7 +279,7 @@ class Syncher {
 
         let allFields = _.uniq( _.concat( _.keys( diff.old_val ), _.keys( diff.new_val ) ) );
 
-        let pubFields = _.difference( allFields, emptySyncher.privateFields() );
+        let pubFields = _.difference( allFields, privateFields() );
 
         let sanitize = obj => _.pick( obj, pubFields );
         let type = diff.type;
@@ -199,8 +287,11 @@ class Syncher {
         let sdiff = {
           old: sanitize( diff.old_val ),
           new: sanitize( diff.new_val ),
-          changes: {}
+          changes: {},
+          hash: null
         };
+
+        sdiff.hash = hash( sdiff.new );
 
         pubFields.forEach( key => {
           if( !_.isEqual( sdiff.old[key], sdiff.new[key] ) ){
@@ -241,7 +332,7 @@ class Syncher {
         }
       } else if( !enable ){
         if( live ){
-          return emitServer( 'unsynch', this.data.id ).then( emitSelf ).catch( this.live = true );
+          return emitServer( 'unsynch', this.data.id ).then( emitSelf ).catch( () => this.live = true );
         } else {
           return Promise.resolve();
         }
@@ -256,7 +347,7 @@ class Syncher {
   }
 
   create( setup = _.noop ){
-    let data = _.omit( this.data, this.unsynchedFields() );
+    let data = _.omit( this.data, unsynchedFields() );
     let insert;
     let fill = () => {
       this.filled = true;
@@ -290,7 +381,7 @@ class Syncher {
   }
 
   load( setup = _.noop ){
-    let assign = obj => _.assign( this.data, _.omit( obj, this.constLocalFields() ) );
+    let assign = obj => _.assign( this.data, _.omit( obj, constLocalFields() ) );
     let find;
 
     if( this.table ){
@@ -302,7 +393,7 @@ class Syncher {
 
           let res = json;
 
-          res = _.omit( res, this.privateFields() );
+          res = _.omit( res, privateFields() );
           res = _.assign( {}, res, { _hasCorrectSecret } );
 
           return res;
@@ -317,6 +408,8 @@ class Syncher {
     }
 
     return Promise.try( find ).then( assign ).then( setup ).then( () => {
+      // let alreadyFilled = this.filled;
+
       this.filled = true;
 
       this.emit('load');
@@ -325,26 +418,41 @@ class Syncher {
     } );
   }
 
-  hasCorrectSecret(){
-    return this.data._hasCorrectSecret;
+  reload(){
+    let sanitize = json => _.pickBy( json, (val, key) => isPublicMutableField(key) );
+    let oldJson = _.cloneDeep( sanitize( this.data ) );
+    let hasDiff = false;
+    let changes = {};
+
+    return this.load().then( () => {
+      let newJson = sanitize( this.data );
+      let keys = _.union( _.keys(oldJson), _.keys(newJson) );
+
+      keys.forEach( k => {
+        if( !_.isEqual( oldJson[k], newJson[k] ) ){
+          changes[k] = newJson[k];
+          hasDiff = true;
+
+          // if the data doesn't exist in the new json, then we have to delete it to make sure we have a clean copy
+          if( newJson[k] == null && oldJson[k] != null ){
+            delete this.data[k];
+          }
+        }
+      } );
+    } ).then( () => {
+      return this.applyLocalOps();
+    } ).then( () => {
+      if( hasDiff ){
+        this.emit('remoteupdate', changes, oldJson);
+        this.emit('update', changes, oldJson);
+      }
+
+      this.emit('reload', changes, oldJson);
+    } );
   }
 
-  confirmSecret(){
-    if( !this.table ){
-      return Promise.reject( error('Secret confirmation can be done only with database access (on the serverside)') );
-    }
-
-    if( this.isPrivate ){
-      return Promise.resolve();
-    }
-
-    return Promise.try( () => {
-      return this.table.get( this.data.id ).run( this.conn );
-    } ).then( entry => {
-      if( entry.secret !== this.data.secret ){
-        throw error(`Secret confirmation failed for ID ${this.data.id} because secret ${this.data.secret} is incorrect`);
-      }
-    } );
+  hasCorrectSecret(){
+    return this.data._hasCorrectSecret;
   }
 
   get( field ){
@@ -511,7 +619,7 @@ class Syncher {
             return r.branch(
               r.row( key ).default( null ).typeOf().eq( RDB_TYPE.ARRAY ), // if
               r.row( key ).filter(function( o ){
-                return r.and( ...( vals.map( val => o('id').ne( val ) ) ) );
+                return r.and( ...( vals.map( val => o('id').ne(val) ) ) );
               }),
               [] // else => if no array in db, set empty
             );
@@ -555,10 +663,65 @@ class Syncher {
         [ opToWrite ] // else => just put the op if empty/null/not-an-array
       ),
 
-      _newestOp: opToWrite
+      _newestOpId: opToWrite.id
     } );
 
-    return this.table.get( this.data.id ).update( change ).run( this.conn );
+    return this.updateDatabase( change );
+  }
+
+  updateDatabase( change ){
+    let r = this.rethink;
+
+    let getSpecLocked = () => _.get( change, ['locked'], null );
+    let updateSpecifiesUnlock = () => getSpecLocked() === false;
+    let updateSpecifiesLock = () => getSpecLocked() === true;
+    let getSpecifiedKey = () => _.get( change, ['lock'], null );
+    let dbHasLockKey = () => r.row('lock').default(null).ne(null);
+    let updateSpecifiesKey = () => getSpecifiedKey() != null;
+    let isSecretIncorrect = () => r.row('secret').default(null).ne( this.data.secret );
+    let isPrivate = () => !!this.isPrivate; // i.e. private/priviledged server can always write
+    let dbLockKeyMatchesSpecified = () => r.row('lock').default(null).eq( getSpecifiedKey() );
+
+    let update = r.branch(
+      r.expr( isPrivate() ).eq(true),
+        change,
+
+      isSecretIncorrect(),
+        r.error(`Incorrect secret specified to write to object with ID ${this.data.id}`),
+
+      // valid unlock
+      r.and(
+        dbHasLockKey(),
+        r.expr( updateSpecifiesKey() ).eq(true),
+        dbLockKeyMatchesSpecified(),
+        r.expr( updateSpecifiesUnlock() ).eq(true)
+      ),
+        _.assign( {}, change, { lock: null } ),
+
+      // invalid unlock
+      r.and(
+        dbHasLockKey(),
+        r.expr( updateSpecifiesKey() ).eq(true),
+        r.not( dbLockKeyMatchesSpecified() )
+      ),
+        r.error(`Incorrect lock key specified to unlock object with ID ${this.data.id}`),
+
+      // valid lock
+      r.and(
+        r.not( dbHasLockKey() ),
+        r.expr( updateSpecifiesKey() ).eq(true),
+        r.expr( updateSpecifiesLock() ).eq(true)
+      ),
+        change,
+
+      dbHasLockKey(),
+        r.error(`Existing lock prevents writing to object with ID ${this.data.id}`),
+
+      // valid
+      change
+    );
+
+    return this.table.get( this.data.id ).update( update ).run( this.conn );
   }
 
   // update('foo', 'bar') => update 1 val
@@ -571,7 +734,7 @@ class Syncher {
 
     options = op.options;
 
-    obj = _.omit( obj, this.constRemoteFields() );
+    obj = _.omit( obj, constRemoteFields() );
 
     let objKeys = _.keys(obj);
     let old = _.pick( this.data, objKeys );
@@ -592,7 +755,7 @@ class Syncher {
     if( this.table ){
       let write = () => this.updateDatabaseWithOp( op, obj );
 
-      update = () => this.confirmSecret().then( write ).then( checkStatus ).then( emitSelf );
+      update = () => Promise.try( write ).then( checkStatus ).then( emitSelf );
     } else if( !this.filled ){ // only a local (not yet synched) instance
       update = () => Promise.resolve().then( emitSelf );
     } else {
@@ -652,16 +815,36 @@ class Syncher {
     return this.updateByType( OP_TYPE.MERGE_BY_ID, field, entry, options );
   }
 
+  locked(){
+    return this.get('locked');
+  }
+
+  lock( key = uuid() ){
+    return (
+      this.updateByType( OP_TYPE.LOCK, { locked: true, lock: key } )
+      .then( () => this.emit('lock') )
+      .then( () => this )
+    );
+  }
+
+  unlock( key = this.data.lock ){
+    return (
+      this.updateByType( OP_TYPE.UNLOCK, { locked: false, lock: key } )
+      .then( () => this.emit('unlock') )
+      .then( () => this )
+    );
+  }
+
   destroy( teardown = _.noop ){
     let emitSelf = () => this.emit('destroy');
     let markDestroyed = () => this.destroyed = true;
     let remove;
 
     if( this.table ){
-      let markDb = () => this.table.get( this.data.id ).update({ destroyed: true, liveId: this.data.liveId }).run( this.conn );
+      let markDb = () => this.updateDatabase({ destroyed: true, liveId: this.data.liveId });
       let del = () => this.table.get( this.data.id ).delete().run( this.conn );
 
-      remove = () => this.confirmSecret().then( markDb ).then( checkStatus ).then( del ).then( checkStatus ).then( markDestroyed ).then( emitSelf );
+      remove = () => Promise.try( markDb ).then( checkStatus ).then( del ).then( checkStatus ).then( markDestroyed ).then( emitSelf );
     } else if( !this.filled ){ // i.e. local instance, yet unsynched
       remove = () => Promise.resolve().then( markDestroyed ).then( emitSelf );
     } else {
@@ -684,7 +867,7 @@ class Syncher {
   }
 
   json(){
-    return _.omit( this.data, this.privateFields() );
+    return _.omit( this.data, privateFields() );
   }
 }
 

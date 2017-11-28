@@ -1,13 +1,18 @@
-let React = require('React');
-let _ = require('lodash');
+let React = require('react');
 
 class DirtyComponent extends React.Component {
   constructor( props ){
     super( props );
 
-    this.state = _.assign( this.state || {}, {
-      dirty: true
-    } );
+    this.state = { dirty: true };
+  }
+
+  componentDidMount(){
+    this.state.mounted = true;
+  }
+
+  componentWillUnmount(){
+    this.state.mounted = false;
   }
 
   shouldComponentUpdate( nextProps, nextState ){
@@ -15,15 +20,19 @@ class DirtyComponent extends React.Component {
   }
 
   dirty(){
-    this.setState({ dirty: true });
+    if( this.state.mounted ){
+      this.setState({ dirty: true });
+    }
   }
 
   clean(){
-    this.setState({ dirty: false });
+    if( this.state.mounted ){
+      this.setState({ dirty: false });
+    }
   }
 
   render( output ){
-    this.clean();
+    this.state.dirty = false;
 
     return output;
   }

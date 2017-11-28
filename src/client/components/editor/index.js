@@ -11,7 +11,6 @@ const Document = require('../../../model/document');
 const debug = require('../../debug');
 const defs = require('./defs');
 const { getId, defer } = require('../../../util');
-const Menu = require('./menu');
 const Buttons = require('./buttons');
 
 class Editor extends React.Component {
@@ -213,7 +212,6 @@ class Editor extends React.Component {
 
     return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), this.state.initted ? [
       h(Buttons, { controller, document }),
-      //h(Menu, { document }),
       h('div.editor-graph#editor-graph')
     ] : []);
   }

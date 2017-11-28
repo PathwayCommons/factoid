@@ -5,5 +5,6 @@ module.exports = Object.assign(
   require('./is'),
   require('./assert'),
   require('./dom'),
-  require('./cy')
+  require('./cy'),
+  require('./memoize')
 );

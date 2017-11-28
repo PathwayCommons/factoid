@@ -37,7 +37,7 @@ class Popover extends React.Component {
 
   componentDidMount(){
     let p = this.props;
-    let target = ReactDom.findDOMNode(this).children[0];
+    let target = p.target || ReactDom.findDOMNode(this).children[0];
     let options = p.tippy;
     let content = this.state.content = hh('div', {
       className: ( p.className || '' ) + ' popover-content'

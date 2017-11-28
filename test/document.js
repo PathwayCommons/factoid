@@ -5,7 +5,6 @@ let Syncher = require('../src/model/syncher');
 let ElementFactory = require('../src/model/element/factory');
 let Entity = require('../src/model/element/entity');
 let Interaction = require('../src/model/element/interaction');
-let Protein = require('../src/model/element/protein');
 let Document = require('../src/model/document');
 let MockSocket = require('./mock/socket');
 let ElementCache = require('../src/model/element-cache');
@@ -643,13 +642,6 @@ describe('Document', function(){
         type: 'protein'
       };
 
-      let replaced = [ true, false, false ]; // index 0 is nothing
-
-      let replace = i => {
-        replaced[i] = true;
-        checkDone();
-      };
-
       let associated = [ true, false, false ]; // index 0 is nothing
 
       let associate = i => {
@@ -660,28 +652,14 @@ describe('Document', function(){
       let checkDone = () => {
         let isDone = arr => !arr.some( val => !val );
 
-        if( isDone( associated ) && isDone( replaced ) ){
+        if( isDone( associated ) ){
           next();
         }
       };
 
       entC1.on('associated', () => associate(1));
 
-      docC1.on('replace', function( oldEnt, newEnt ){
-        expect( oldEnt, 'old ent 1' ).to.equal( entC1 );
-        expect( newEnt instanceof Protein, 'new ent 1 is protein' ).to.be.true;
-
-        replace(1);
-      });
-
       entC2.on('associated', () => associate(2));
-
-      docC2.on('replace', function( oldEnt, newEnt ){
-        expect( oldEnt, 'old ent 2' ).to.equal( entC2 );
-        expect( newEnt instanceof Protein, 'new ent 2 is protein' ).to.be.true;
-
-        replace(2);
-      });
 
       Promise.all([
         docC1.add( entC1 ),

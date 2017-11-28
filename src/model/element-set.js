@@ -116,7 +116,7 @@ class ElementSet {
   }
 
   synch( enable ){
-    return Promise.all([ this.elements().map( el => el.synch( enable ) ) ]);
+    return Promise.all( this.elements().map( el => el.synch( enable ) ) );
   }
 
   add( ele, opts = {} ){
@@ -164,28 +164,6 @@ class ElementSet {
     }
 
     return updatePromise;
-  }
-
-  // replace ele with new ele obj (representing the same ele)
-  // - assumes the element is just of another (sub)type, e.g. generic element => protein
-  // - synchronous op
-  replace( oldEle, newEle, opts = {} ){
-    if( !this.has( oldEle ) ){ return; } // can't replace nonexistant
-
-    let id = getId( oldEle );
-    let { silent } = opts;
-
-    if( id === oldEle ){
-      oldEle = this.get( id ); // make sure we have a real ele ref
-    }
-
-    this.elementsById.set( id, newEle );
-
-    if( !silent ){
-      this.emitter.emit( 'replace', oldEle, newEle );
-    }
-
-    return Promise.resolve();
   }
 
   has( ele ){

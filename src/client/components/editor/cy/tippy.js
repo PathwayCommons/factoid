@@ -7,10 +7,12 @@ const { isInteractionNode } = require('../../../../util');
 const Tippy = require('tippy.js');
 const _ = require('lodash');
 const { tippyDefaults } = require('../../../defs');
+const NotificationBase = require('../../notification/base');
+const Notification = require('../../notification/notification');
 
 module.exports = function({ bus, cy, document }){
   let hideAllTippies = () => {
-    cy.nodes().emit('hidetippy');
+    cy.nodes().forEach( hideTippy );
   };
 
   bus.on('closetip', function( el ){
@@ -18,120 +20,229 @@ module.exports = function({ bus, cy, document }){
       let id = el.id();
       let ele = cy.getElementById( id );
 
-      ele.emit('hidetippy');
+      hideTippy( ele );
     } else {
+      hideAllTippies();
+    }
+
+    deactivateIncompleteNotification();
+  });
+
+  cy.on('pan zoom drag', () => {
+    hideAllTippies();
+    deactivateIncompleteNotification();
+  });
+
+  cy.on('tap', e => {
+    if( e.target === cy ){
+      deactivateIncompleteNotification();
       hideAllTippies();
     }
   });
 
-  cy.on('pan zoom drag grab tapstart', hideAllTippies);
-
   let drawing = false;
 
-  bus.on('drawstart', () => drawing = true);
+  bus.on('drawstart', () => {
+    drawing = true;
+
+    hideAllTippies();
+  });
   bus.on('drawstop', () => drawing = false);
 
-  let destroyTippy = ele => {
+  let destroyTippy = tippyInfo => {
+    let t = tippyInfo;
+    let div = t.content;
+
+    t.tippy.destroy( t.popper );
+
+    ReactDom.unmountComponentAtNode( div );
+
+    if( t.popper.parentNode != null ){
+      t.popper.parentNode.removeChild( t.popper );
+    }
+  };
+
+  let destroyTippyFor = ele => {
     let tippies = ele.scratch('_tippies');
 
     ele.scratch('_tippies', null);
 
     if( tippies != null ){
-      tippies.forEach( t => {
-        let div = t.content;
-
-        div.parentNode.removeChild( div );
-        ReactDom.unmountComponentAtNode( div );
-      } );
+      tippies.forEach( destroyTippy );
     }
   };
 
-  cy.on('hidetippy', 'node, edge', function(e){
-    let ele = e.target;
-    let tippies = ele.scratch('_tippies');
+  let getTippyNode = ele => {
+    return ele.isNode() ? ele : ele.connectedNodes().filter( isInteractionNode );
+  };
 
-    if( tippies != null ){
-      tippies.forEach( t => t.tippy.hide( t.popper ) );
+  let incompleteNotification = new Notification({
+    openable: true,
+    openText: 'Open'
+  });
+
+  let incompleteTippyInfo = null;
+
+  incompleteNotification.on('deactivate', () => {
+    if( incompleteTippyInfo != null ){
+      destroyTippy( incompleteTippyInfo );
+
+      incompleteTippyInfo = null;
     }
   });
 
-  cy.on('tap', 'node, edge', function( e ){
-    if( drawing || e.originalEvent.shiftKey ){ return; }
+  incompleteNotification.on('open', () => {
+    toggleElementInfoFor( incompleteTippyInfo.el, true );
+  });
 
-    let tgt = e.target;
-    let connectedNodes = tgt.connectedNodes();
-    let node = tgt.isNode() ? tgt : connectedNodes.filter( isInteractionNode );
+  let makeIncompleteNotification = (el, docEl) => { // eslint-disable-line no-unused-vars
+    let ref = getRef( () => el.renderedBoundingBox({ includeLabels: true, includeOverlays: false }), el );
+    let content = getContentDiv( h( NotificationBase, {
+      notification: incompleteNotification,
+      className: 'incomplete-entity-notification'
+    } ) );
+
+    incompleteNotification.message(`Complete this entity.`);
+
+    incompleteNotification.activate();
+
+    if( incompleteTippyInfo != null ){
+      destroyTippy( incompleteTippyInfo );
+    }
+
+    let tippy = new Tippy( ref, _.assign( {}, tippyDefaults, {
+      duration: 0,
+      theme: 'dark',
+      position: 'top',
+      hideOnClick: false,
+      html: content
+    } ) );
+
+    let popper = tippy.getPopperElement( ref );
+    let tippyInfo = { tippy, popper, content, el };
+
+    incompleteTippyInfo = tippyInfo;
+
+    tippy.show( popper );
+  };
+
+  let deactivateIncompleteNotification = () => {
+    if( incompleteNotification != null && incompleteNotification.active() ){
+      incompleteNotification.deactivate();
+    }
+  };
+
+  let hideTippy = ele => {
+    let node = getTippyNode( ele );
+    let tippies = node.scratch('_tippies');
+    let didClose = false;
+
+    if( tippies != null ){
+      tippies.forEach( t => {
+        t.tippy.hide( t.popper );
+
+        didClose = true;
+      });
+    }
+
+    if( didClose && !isInteractionNode(node) ){
+      let docEl = document.get( node.id() );
+
+      if( !docEl.completed() ){
+        makeIncompleteNotification( node, docEl );
+      }
+    }
+  };
+
+  let getRef = (bb, el) => {
+    let bbFn;
+
+    if( _.isFunction(bb) ){
+      bbFn = bb;
+      bb = bb();
+    }
+
+    let updateStyle = div => {
+      if( bbFn != null ){
+        bb = bbFn();
+      }
+
+      let width = bb.w;
+      let height = bb.h;
+      let left = bb.x1;
+      let top = bb.y1;
+      let style = `position: absolute; left: ${left}px; top: ${top}px; width: ${width}px; height: ${height}px; z-index: -1; pointer-events: none;`;
+
+      div.setAttribute( 'style',style );
+    };
+
+    let div = hh('div.tippy-dummy-ref');
+
+    updateStyle( div );
+
+    if( el != null ){
+      let update = _.debounce( () => updateStyle(div), 200 );
+
+      el.on( 'position', update );
+      el.on( 'style', update );
+    }
+
+    cy.container().appendChild( div );
+
+    return div;
+  };
+
+  let makeTippy = ({ el, ref, content, overrides }) => {
+    let tippy = new Tippy( ref, _.assign( {}, tippyDefaults, {
+      duration: 0,
+      position: 'right',
+      hideOnClick: false,
+      onHidden: _.debounce( () => destroyTippyFor( el ), 100 ) // debounce allows toggling a tippy on an ele
+    }, overrides, {
+      html: content
+    } ) );
+
+    let popper = tippy.getPopperElement( ref );
+
+    let tippies = el.scratch('_tippies');
+
+    if( tippies == null ){
+      tippies = [];
+      el.scratch('_tippies', tippies);
+    }
+
+    tippies.push({ tippy, popper, content });
+
+    tippy.show( popper );
+  };
+
+  let getContentDiv = component => {
+    let div = hh('div');
+
+    ReactDom.render( component, div );
+
+    return div;
+  };
+
+  let toggleElementInfoFor = ( tgt, toggleOn ) => {
+    let node = getTippyNode( tgt );
     let docEl = document.get( node.id() );
-
-    let getContentDiv = component => {
-      let div = hh('div');
-
-      ReactDom.render( component, div );
-
-      return div;
-    };
-
-    let getRef = (bb, el) => {
-      let bbFn;
-
-      if( _.isFunction(bb) ){
-        bbFn = bb;
-        bb = bb();
-      }
-
-      let updateStyle = div => {
-        if( bbFn != null ){
-          bb = bbFn();
-        }
-
-        let width = bb.w;
-        let height = bb.h;
-        let left = bb.x1;
-        let top = bb.y1;
-        let style = `position: absolute; left: ${left}px; top: ${top}px; width: ${width}px; height: ${height}px; z-index: -1; pointer-events: none;`;
-
-        div.setAttribute( 'style',style );
-      };
-
-      let div = hh('div.tippy-dummy-ref');
-
-      updateStyle( div );
-
-      if( el != null ){
-        el.on( 'position', _.debounce( () => updateStyle(div), 500 ) );
-      }
-
-      cy.container().appendChild( div );
-
-      return div;
-    };
 
     let tippies = node.scratch('_tippies');
 
-    if( tippies != null ){
-      tippies.forEach( t => t.tippy.hide( t.popper ) );
+    if( toggleOn === undefined ){
+      toggleOn = tippies == null;
+    }
+
+    if( !toggleOn ){
+      hideTippy( node );
     } else {
+      hideAllTippies();
+      deactivateIncompleteNotification();
+
       tippies = [];
 
       node.scratch('_tippies', tippies);
-
-      let options = {
-        position: 'right',
-        hideOnClick: false,
-        onHidden: _.debounce( () => destroyTippy( node ), 100 ) // debounce allows toggling a tippy on an ele
-      };
-
-      let makeTippy = ({ ref, content, overrides }) => {
-        let tippy = new Tippy( ref, _.assign( {}, tippyDefaults, options, overrides, {
-          html: content
-        } ) );
-
-        let popper = tippy.getPopperElement( ref );
-
-        tippies.push({ tippy, popper, content });
-
-        tippy.show( popper );
-      };
 
       if( docEl.isInteraction() ){
         let bottomOfCyBb = {
@@ -144,6 +255,7 @@ module.exports = function({ bus, cy, document }){
         };
 
         makeTippy({
+          el: node,
           ref: getRef( bottomOfCyBb ),
           content: getContentDiv( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ) ),
           overrides: {
@@ -194,6 +306,7 @@ module.exports = function({ bus, cy, document }){
           }
 
           makeTippy({
+            el: node,
             ref: getRef( getArrowBb, pptNode ),
             content: getContentDiv( h( ParticipantInfo, { interaction: docEl, participant: ppt, bus, document, eventTarget: tgt } ) ),
             overrides: {
@@ -204,11 +317,17 @@ module.exports = function({ bus, cy, document }){
         } );
       } else {
         makeTippy({
-          ref: getRef( () => node.renderedBoundingBox({ includeLabels: false }), node ),
+          el: node,
+          ref: getRef( () => node.renderedBoundingBox({ includeLabels: true, includeOverlays: false }), node ),
           content: getContentDiv( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ) )
         });
       }
     }
+  };
 
+  cy.on('tap', 'node, edge', function( e ){
+    if( drawing || e.originalEvent.shiftKey ){ return; }
+
+    toggleElementInfoFor( e.target );
   });
 };

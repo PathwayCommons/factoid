@@ -24,8 +24,6 @@ class Document {
   constructor( opts = {} ){
     EventEmitterMixin.call( this ); // defines this.emitter
 
-    let doc = this;
-
     let data = _.defaultsDeep( {}, opts.data, DEFAULTS );
 
     opts = _.assign( {}, opts, { data } );
@@ -77,35 +75,6 @@ class Document {
         addedIds.forEach( id => emit( id, true ) );
         rmedIds.forEach( id => emit( id, false ) );
       }
-    });
-
-    let onAssocChange = function(){
-      let el = this;
-
-      if( doc.has(el) ){
-        doc.replaceElementWithSubtype( el );
-      }
-    };
-
-    let addAssocListeners = el => {
-      el.once('associated', onAssocChange);
-      el.once('unassociated', onAssocChange);
-    };
-
-    let rmAssocListeners = el => {
-      el.removeListener('associated', onAssocChange);
-      el.removeListener('unassociated', onAssocChange);
-    };
-
-    this.on('load', () => {
-      this.elements().forEach( addAssocListeners );
-    });
-
-    this.on('add', addAssocListeners);
-    this.on('remove', rmAssocListeners);
-    this.on('replace', ( oldEl, newEl ) => {
-      rmAssocListeners( oldEl );
-      addAssocListeners( newEl );
     });
   }
 
@@ -268,33 +237,6 @@ class Document {
     let rm = () => this.elementSet.remove( el );
 
     return Promise.all([ rmFromIntns(), rm() ]);
-  }
-
-  replaceElementWithSubtype( el ){
-    let reloadCache = () => this.cache().reload( el ); // gets the new type
-
-    let replaceInSet = newEl => this.elementSet.replace( el, newEl );
-
-    let synchEl = el => this.live() ? el.synch() : Promise.resolve();
-
-    let unsynchEl = el => el.synch( false );
-
-    let replaceInInteractions = newEl => {
-      let replaceInInteraction = intn => intn.elementSet.replace( el, newEl );
-
-      return Promise.all([ this.interactions().map( replaceInInteraction ) ]);
-    };
-
-    let replaceEl = newEl => {
-      return (
-        Promise.try( () => unsynchEl( el ) )
-        .then( () => replaceInSet( newEl ) )
-        .then( () => replaceInInteractions( newEl ) )
-        .then( () => synchEl( newEl ) )
-      );
-    };
-
-    return reloadCache().then( replaceEl );
   }
 
   json(){

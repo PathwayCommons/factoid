@@ -1,8 +1,6 @@
 let http = require('express').Router();
 
-[
-  require('./document'),
-  require('./element-association')
-].forEach( defineRoutes => defineRoutes( http ) );
+http.use('/element-association', require('./element-association'));
+http.use('/document', require('./document'));
 
 module.exports = http;

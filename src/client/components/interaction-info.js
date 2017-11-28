@@ -33,8 +33,6 @@ class InteractionInfo extends React.Component {
     let root = ReactDom.findDOMNode( this );
     let comment = root.querySelector('.interaction-info-description');
 
-    delay(500).then( () => focusDomElement( comment ) );
-
     this.onRemoteRedescribe = () => {
       this.setState({ description: el.description() });
 

@@ -38,7 +38,8 @@ function makeCyElesForEle( docEl ){
       type: docEl.type(),
       isEntity: docEl.isEntity(),
       isInteraction: docEl.isInteraction(),
-      associated: docEl.isEntity() ? docEl.associated() : undefined
+      associated: docEl.isEntity() ? docEl.associated() : undefined,
+      completed: docEl.isEntity() ? docEl.completed() : undefined
     },
     position: _.clone( docEl.position() )
   };

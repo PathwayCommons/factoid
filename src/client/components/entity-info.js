@@ -9,8 +9,10 @@ const queryString = require('query-string');
 const Promise = require('bluebird');
 const OrganismToggle = require('./organism-toggle');
 const Organism = require('../../model/organism');
-const Tooltip = require('./tooltip');
 const Highlighter = require('./highlighter');
+const Notification = require('./notification');
+const InlineNotification = require('./notification/inline');
+const Tooltip = require('./tooltip');
 
 const animateDomForEdit = domEle => anime({
   targets: domEle,
@@ -19,24 +21,63 @@ const animateDomForEdit = domEle => anime({
   easing: defs.editAnimationEasing
 });
 
+const STAGES = Object.freeze({
+  NAME: 'name',
+  ASSOCIATE: 'associate',
+  MODIFY: 'mod',
+  COMPLETED: 'completed'
+});
+
+const ORDERED_STAGES = [ STAGES.NAME, STAGES.ASSOCIATE, STAGES.MODIFY, STAGES.COMPLETED ];
+
+const getStageIndex = stage => ORDERED_STAGES.indexOf( stage );
+const getNextStage = stage => ORDERED_STAGES[ getStageIndex(stage) + 1 ];
+const getPrevStage = stage => ORDERED_STAGES[ getStageIndex(stage) - 1 ];
+
+class SingleValueCache {
+  constructor(){ this.value = null; }
+  get(){ return this.value; }
+  set(k, v){ this.value = v; }
+}
+
 let associationCache = new WeakMap();
+let stageCache = new WeakMap();
+let assocNotificationCache = new SingleValueCache();
+let modNotificationCache = new SingleValueCache();
+
+let initCache = ( cache, el, initVal ) => {
+  let cacheEntry = cache.get( el );
+
+  if( cacheEntry == null ){
+    cacheEntry = initVal;
+
+    cache.set( el, cacheEntry );
+  }
+
+  return cacheEntry;
+};
 
 class EntityInfo extends React.Component {
   constructor( props ){
     super( props );
 
     let el = props.element;
-    let cache = associationCache.get( el );
 
-    if( cache == null ){
-      cache = { matches: [], offset: 0 };
+    let assoc = initCache( associationCache, el, { matches: [], offset: 0 } );
 
-      associationCache.set( el, cache );
-    }
+    let stage = initCache( stageCache, el, el.completed() ? STAGES.COMPLETED : ORDERED_STAGES[0] );
+
+    let assocNotification = initCache( assocNotificationCache, el, new Notification({ active: true }) );
+
+    let modNotification = initCache( modNotificationCache, el, new Notification({ active: true }) );
 
     this.debouncedRename = _.debounce( name => {
       this.data.element.rename( name );
 
+      this.updateMatches( name );
+    }, defs.updateDelay );
+
+    this.debouncedUpdateMatches = _.debounce( name => {
       this.updateMatches( name );
     }, defs.updateDelay );
 
@@ -49,16 +90,20 @@ class EntityInfo extends React.Component {
       if( input != null ){
         focusDomElement( input );
       }
-    }, 500 );
+    }, 50 );
 
     this.data = {
       element: el,
       name: el.name(),
       oldName: el.name(),
       modification: el.modification(),
-      matches: cache.matches,
+      matches: assoc.matches,
+      gettingMoreMatches: false,
       limit: defs.associationSearchLimit,
-      offset: cache.offset
+      offset: assoc.offset,
+      stage,
+      assocNotification,
+      modNotification
     };
 
     this.state = _.assign( {}, this.data );
@@ -124,21 +169,6 @@ class EntityInfo extends React.Component {
 
     doc.on('toggleorganism', this.onToggleOrganism);
 
-    this.onReplaceEle = ( oldEle, newEle ) => {
-      if( oldEle.id() === this.data.element.id() ){
-        oldEle.removeListener('remoterename', this.onRemoteRename);
-        newEle.on('remoterename', this.onRemoteRename);
-
-        oldEle.removeListener('remotemodify', this.onRemoteModify);
-        newEle.on('remotemodify', this.onRemoteModify);
-
-        this.data.element = newEle;
-        this.setData({ element: newEle });
-      }
-    };
-
-    doc.on('replace', this.onReplaceEle);
-
     if( s.matches.length === 0 && s.name != null && s.name != '' ){
       this.updateMatches();
     }
@@ -154,31 +184,45 @@ class EntityInfo extends React.Component {
 
     document.removeListener('toggleorganism', this.onToggleOrganism);
 
-    document.removeListener('replace', this.onReplaceEle);
-
     if( update ){ update.cancel(); }
 
     this._unmounted = true;
   }
 
   modify( mod ){
-    this.data.element.modify( mod );
+    if( _.isString(mod) ){
+      mod = this.data.element.MODIFICATION_BY_VALUE(mod);
+    }
 
     this.setData({ modification: mod });
+
+    this.data.element.modify( mod );
   }
 
   rename( name ){
-    let p = this.props;
     let s = this.data;
     let el = s.element;
 
-    this.debouncedRename( name );
+    el.rename( name );
 
-    p.bus.emit('renamedebounce', el, name);
+    this.updateMatches( name );
 
     this.setData({
       name: name,
       updateDirty: true
+    });
+  }
+
+  updateCachedName( name ){
+    this.setData({ name });
+
+    this.debouncedUpdateMatches( name );
+  }
+
+  clear(){
+    this.setData({
+      name: '',
+      matches: []
     });
   }
 
@@ -197,14 +241,11 @@ class EntityInfo extends React.Component {
   unassociate(){
     let s = this.data;
     let el = s.element;
-    let mod = el.MODIFICATIONS.UNMODIFIED;
 
-    el.modify( mod );
     el.unassociate();
 
     this.setData({
       matches: [],
-      modification: mod,
       match: null
     }, () =>  this.focusNameInput());
 
@@ -218,13 +259,18 @@ class EntityInfo extends React.Component {
     let doc = p.document;
     let qOrgs = doc.organisms().map( org => org.id() ).join(',');
 
-    let isNewName = name != s.oldName;
-    let clearOldMatchesAfterSearch = isNewName || changedOrganisms;
+    let isNewName = name !== s.oldName;
+    let clearOldMatches = isNewName || changedOrganisms;
+    let needsUpdate = isNewName || changedOrganisms || offset != this.data.offset || s.matches.length === 0;
+
+    if( !needsUpdate ){ return Promise.resolve(); }
 
     if( this._unmounted ){ return Promise.resolve(); }
 
-    if( clearOldMatchesAfterSearch ){
+    if( clearOldMatches ){
       offset = 0;
+
+      this.setData({ matches: [] });
     }
 
     let q = {
@@ -258,7 +304,7 @@ class EntityInfo extends React.Component {
         .then( matches => {
           if( this._unmounted ){ return; }
 
-          if( clearOldMatchesAfterSearch ){
+          if( clearOldMatches ){
             s.matches = matches;
           } else {
             matches.forEach( m => s.matches.push(m) );
@@ -277,7 +323,7 @@ class EntityInfo extends React.Component {
             updatePromise: null,
             updateDirty: false
           }, () => {
-            if( clearOldMatchesAfterSearch ){
+            if( clearOldMatches ){
               let root = ReactDom.findDOMNode(this);
               let matches = root != null ? root.querySelector('.entity-info-matches') : null;
 
@@ -304,7 +350,7 @@ class EntityInfo extends React.Component {
       updatePromise: update,
       offset: offset,
       matches: name ? s.matches : [],
-      replacingMatches: clearOldMatchesAfterSearch
+      replacingMatches: clearOldMatches
     });
 
     return update;
@@ -328,10 +374,96 @@ class EntityInfo extends React.Component {
     } );
   }
 
-  clear(){
-    this.rename('');
+  getStage(){
+    return this.data.stage;
+  }
 
-    this.setData({ matches: [] });
+  back(){
+    this.goToStage( getPrevStage( this.getStage() ) );
+  }
+
+  forward(){
+    this.goToStage( getNextStage( this.getStage() ) );
+  }
+
+  canGoToStage( stage ){
+    let { element: el, stage: currentStage, name: cachedName } = this.data;
+
+    let i = getStageIndex(currentStage);
+    let j = getStageIndex(stage);
+
+    if( (j > i + 1 || j < i - 1) && j !== 0 ){
+      return false;
+    }
+
+    switch( stage ){
+      case STAGES.NAME:
+        return true;
+      case STAGES.ASSOCIATE:
+        return cachedName != null && cachedName != '';
+      case STAGES.MODIFY:
+        return el.associated();
+      case STAGES.COMPLETED:
+        return this.getStage() === STAGES.MODIFY;
+    }
+  }
+
+  canGoBack(){
+    return this.canGoToStage( getPrevStage( this.data.stage ) );
+  }
+
+  canGoForward(){
+    return this.canGoToStage( getNextStage( this.data.stage ) );
+  }
+
+  goToStage( stage ){
+    let { stage: currentStage, name, element } = this.data;
+
+    if(
+      currentStage === STAGES.NAME && stage === STAGES.ASSOCIATE
+      && name != null && name !== '' && name !== element.name()
+    ){
+      this.rename( name );
+    }
+
+    if( this.canGoToStage(stage) ){
+      this.setData({ stage, stageError: null });
+
+      stageCache.set( this.data.element, stage );
+
+      switch( stage ){
+        case STAGES.NAME:
+          this.focusNameInput();
+          break;
+        case STAGES.ASSOCIATE:
+          this.data.assocNotification.message(`Link "${this.data.name}" to one of the following identifiers.  Linking increases the impact of your paper by enabling data sharing and computational analysis.`);
+          break;
+        case STAGES.MODIFY:
+          this.data.modNotification.message(`Specifying a modification can help to more accurately represent the state of ${this.data.name}.`);
+          break;
+        case STAGES.COMPLETED:
+          this.complete();
+          break;
+      }
+    } else {
+      let stageError;
+
+      switch( currentStage ){
+        case STAGES.ASSOCIATE:
+          stageError = `Link "${this.data.name}" with an identifier before proceeding.`;
+          break;
+        default:
+          stageError = 'This step should be completed before proceeding.';
+      }
+
+      this.setData({ stageError });
+    }
+  }
+
+  complete(){
+    let { element: el } = this.data;
+
+    return el.complete();
   }
 
   render(){
@@ -340,29 +472,110 @@ class EntityInfo extends React.Component {
     let doc = p.document;
     let children = [];
 
-    let Loader = ({ loading }) => h('div.entity-info-matches-loading' + (loading ? '.entity-info-matches-loading-active' : ''), [
-      loading ? h('i.icon.icon-spinner') : h('i.material-icons', 'brightness_1')
+    let Loader = ({ loading = true }) => h('div.entity-info-matches-loading' + (loading ? '.entity-info-matches-loading-active' : ''), [
+      loading ? h('i.icon.icon-spinner') : h('i.material-icons', 'remove')
     ]);
 
-    if( !s.element.associated() && doc.editable() ){
+    let onMatchesScroll = _.debounce( div => {
+      let scrollMax = div.scrollHeight;
+      let scroll = div.scrollTop + div.clientHeight;
 
-      if( s.loadingMatches ){
-        children.push( h('span.input-icon', [
-          h('i.icon.icon-spinner')
+      if( scroll >= scrollMax ){
+        this.getMoreMatches();
+      }
+    }, defs.updateDelay / 2 );
+
+    let stage = this.getStage();
+
+    let assoc;
+
+    if( s.match != null ){
+      assoc = s.match;
+    } else if( s.element.associated() ){
+      assoc = s.element.association();
+    } else {
+      assoc = null;
+    }
+
+    let proteinFromAssoc = (m, highlight = true, showEditIcon = false) => {
+      let term = highlight ? s.name : null;
+
+      return [
+        h('div.entity-info-name', [
+          h(Highlighter, { text: m.name, term }),
+          showEditIcon && doc.editable() ? (
+            h(Tooltip, { description: 'Edit from the beginning' }, [
+              h('button.entity-info-edit.plain-button', {
+                onClick: () => this.goToStage( ORDERED_STAGES[0] )
+              }, [ h('i.material-icons', 'edit') ])
+            ])
+          ) : null
+        ].filter( domEl => domEl != null )),
+        h('div.entity-info-section', [
+          h('span.entity-info-title', 'Organism'),
+          h('span', Organism.fromId(m.organism).name())
+        ]),
+        h('div.entity-info-section', !m.proteinNames ? [] : [
+          h('span.entity-info-title', 'Protein names'),
+          ...m.proteinNames.map( name => h('span.entity-info-alt-name', [
+            h(Highlighter, { text: name, term })
+          ]))
+        ]),
+        h('div.entity-info-section', !m.geneNames ? [] : [
+          h('span.entity-info-title', 'Gene names'),
+          ...m.geneNames.map( name => h('span.entity-info-alt-name', [
+            h(Highlighter, { text: name, term })
+          ]))
+        ])
+      ];
+    };
+
+    let modForList = () => {
+      return h('div.entity-info-section', [
+        h('span.entity-info-title', 'Modification'),
+        h('span', s.modification.displayValue)
+      ]);
+    };
+
+    let linkFromAssoc = m => {
+      return h('div.entity-info-section', [
+        h('a.plain-link', { href: m.url, target: '_blank' }, [
+          'More information ',
+          h('i.material-icons', 'open_in_new')
+        ])
+      ]);
+    };
+
+    let targetFromAssoc = proteinFromAssoc;
+
+    let allAssoc = m => _.concat( proteinFromAssoc(m, false, true), modForList(), linkFromAssoc(m) ); // that's all our service (uniprot) supports
+
+    if( !doc.editable() || stage === STAGES.COMPLETED ){
+      if( assoc == null ){
+        children.push( h('div.entity-info-no-assoc', [
+          h('div.element-info-message.element-info-no-data', [
+            h('i.material-icons', 'info'),
+            h('span', ' This entity has no data associated with it.')
+          ])
         ]) );
       } else {
-        children.push( h('i.input-icon.material-icons', 'search') );
+        children.push( h('div.entity-info-assoc', allAssoc( assoc )) );
       }
-
+    } else if( stage === STAGES.NAME ){
       children.push( h('input.input-round.input-joined.entity-info-name-input', {
         type: 'text',
         placeholder: 'Entity name',
-        value: s.name,
+        defaultValue: s.name,
         spellCheck: false,
-        onChange: evt => this.rename( evt.target.value ),
+        onChange: evt => this.updateCachedName( evt.target.value ),
         onKeyDown: evt => {
-          if( evt.keyCode === 27 ){ // esc
-            evt.target.blur();
+          switch( evt.keyCode ){
+            case 27: // ESC
+              evt.target.blur();
+              break;
+            case 13: // ENTER
+              this.forward();
+              break;
           }
         }
       }) );
@@ -382,130 +595,93 @@ class EntityInfo extends React.Component {
 
         return h(OrganismToggle, { organism, onToggle, getState });
       } )) );
-    }
+    } else if( stage === STAGES.ASSOCIATE ){
+      let AssocMsg = () => {
+        let notification = s.assocNotification;
 
-    let onScroll = _.debounce( div => {
-      let scrollMax = div.scrollHeight;
-      let scroll = div.scrollTop + div.clientHeight;
+        return h(InlineNotification, { notification, className: 'entity-info-notification' });
+      };
 
-      if( scroll >= scrollMax ){
-        this.getMoreMatches();
-      }
-    }, defs.updateDelay / 2 );
+      if( s.matches.length > 0 ){
+        children.push( h('div.entity-info-matches', {
+          className: s.replacingMatches ? 'entity-info-matches-replacing' : '',
+          onScroll: evt => {
+            onMatchesScroll( evt.target );
 
-    let assoc;
-
-    if( s.match != null ){
-      assoc = s.match;
-    } else if( s.element.associated() ){
-      assoc = s.element.association();
-    } else {
-      assoc = null;
-    }
-
-    let proteinFromAssoc = m => {
-      let term = assoc == null ? s.oldName : null;
-
-      return [
-        h('div.entity-info-name', [
-          h(Highlighter, { text: m.name, term })
-        ]),
-        h('div.entity-info-organism-section', [
-          h('span.entity-info-organism-name-title', 'Organism'),
-          h('span.entity-info-organism-name', Organism.fromId(m.organism).name())
-        ]),
-        h('div.entity-info-protein-names', !m.proteinNames ? [] : [
-          h('span.entity-info-protein-names-title', 'Protein names'),
-          ...m.proteinNames.map( name => h('span.entity-info-protein-name', [
-            h(Highlighter, { text: name, term })
-          ]))
-        ]),
-        h('div.entity-info-gene-names', !m.geneNames ? [] : [
-          h('span.entity-info-gene-names-title', 'Gene names'),
-          ...m.geneNames.map( name => h('span.entity-info-gene-name', [
-            h(Highlighter, { text: name, term })
-          ]))
-        ])
-      ];
-    };
-
-    let linkFromAssoc = m => {
-      return h('div.entity-info-match-link', [
-        h('a.plain-link', { href: m.url, target: '_blank' }, [
-          'More information ',
-          h('i.material-icons', 'open_in_new')
-        ])
-      ]);
-    };
-
-    let targetFromAssoc = proteinFromAssoc;
-
-    let allAssoc = m => proteinFromAssoc(m).concat( linkFromAssoc(m) ); // that's all our service (uniprot) supports
-
-    if( assoc != null ){
-      children.push( h(Tooltip, { description: 'Respecify via search', tippy: { position: 'left' } }, [
-        h('button.plain-button.entity-info-unassoc', {
-          onClick: () => this.unassociate()
+            evt.stopPropagation();
+          }
         }, [
-          h('i.material-icons', 'youtube_searched_for')
-        ])
-      ]) );
+          h(AssocMsg),
 
-      children.push( h('div.entity-info-assoc', allAssoc( assoc )) );
+          ...s.matches.map( m => {
+            return h('div.entity-info-match', [
+              h('div.entity-info-match-target', {
+                onClick: () => {
+                  this.associate( m );
+                  this.forward();
+                }
+              }, targetFromAssoc( m )),
+              linkFromAssoc( m )
+            ]);
+          }),
 
-      let selectId = 'entity-info-mod-select-' + s.element.id();
+          h(Loader, { loading: s.gettingMoreMatches })
+        ] ) );
+      } else if( !s.loadingMatches && s.name && !s.updateDirty ){
+        children.push( h(AssocMsg) );
 
-      children.push( h('label.entity-info-mod-label', { htmlFor: selectId }, 'Modification') );
-
-      if( doc.editable() ){
-        children.push( h('select.entity-info-mod-select', {
-          id: selectId,
-          value: s.modification.value,
-          onChange: (evt) => this.modify( evt.target.value ),
-          disabled: !doc.editable()
-        }, s.element.ORDERED_MODIFICATIONS.map( mod => {
-          return h('option', {
-            value: mod.value
-          }, mod.displayValue);
-        } )) );
+        children.push( h('div.entity-info-match-empty', [
+        ` No identifiers could be found.  Try going back and renaming "${s.name}" to a clearer name.`
+        ] ) );
       } else {
-        children.push( h('div.entity-info-mod-text', s.element.modification().displayValue) );
+        children.push(
+          h(AssocMsg),
+          h(Loader)
+        );
       }
-    } else if( !doc.editable() ){
-      children.push( h('div.entity-info-no-assoc', [
-        h('div.element-info-message.element-info-no-data', [
-          h('i.material-icons', 'info'),
-          h('span', ' This entity has no data associated with it.')
-        ])
-      ]) );
-    } else if( s.matches.length > 0 ){
-      children.push( h('div.entity-info-matches', {
-        className: s.replacingMatches ? 'entity-info-matches-replacing' : '',
-        onScroll: evt => {
-          onScroll( evt.target );
+    } else if( stage === STAGES.MODIFY ){
+      let notification = s.modNotification;
 
-          evt.stopPropagation();
+      children.push( h(InlineNotification, { notification, className: 'entity-info-notification' }) );
+
+      children.push( h('label.entity-info-mod-label', 'Modification') );
+
+      children.push( h('select.entity-info-mod-select', {
+        value: s.modification.value,
+        onChange: (evt) => {
+          this.modify( evt.target.value );
+          this.forward();
         }
-      }, [
-        h('div.entity-info-match-msg', [
-          `Confirm the identity of "${s.oldName}" by choosing the matching entry:`
+      }, s.element.ORDERED_MODIFICATIONS.map( mod => {
+        return h('option', {
+          value: mod.value
+        }, mod.displayValue);
+      } )) );
+    }
+
+    if( doc.editable() ){
+      children.push( h('div.entity-info-progression', [
+        h(Tooltip, { description: 'Previous step', tippy: { position: 'left' } }, [
+          h('button.entity-info-back.plain-button', {
+            disabled: !this.canGoBack(),
+            onClick: () => this.back()
+          }, [ h('i.material-icons', 'arrow_back') ])
         ]),
 
-        ...s.matches.map( m => {
-          return h('div.entity-info-match', [
-            h('div.entity-info-match-target', {
-              onClick: () => this.associate( m )
-            }, targetFromAssoc( m )),
-            linkFromAssoc( m )
-          ]);
-        }),
+        h('span.entity-info-stage-dots', ORDERED_STAGES.map( dotStage => {
+          return h('span.entity-info-stage-dot', {
 
-        h(Loader, { loading: s.gettingMoreMatches })
-      ] ) );
-    } else if( !s.loadingMatches && s.name && !s.updateDirty ){
-      children.push( h('div.entity-info-match-empty', [
-        h('i.material-icons', 'not_interested'),
-        ' No entities were found'
+          }, [
+            h('i.material-icons', dotStage === stage ? 'brightness_1' : 'radio_button_unchecked')
+          ]);
+        } )),
+
+        h(Tooltip, { description: 'Next step' }, [
+          h('button.entity-info-forward.plain-button', {
+            disabled: !this.canGoForward(),
+            onClick: () => this.forward()
+          }, [ h('i.material-icons', 'arrow_forward') ])
+        ])
       ]) );
     }
 

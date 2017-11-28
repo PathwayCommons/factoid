@@ -23,22 +23,6 @@ input[type='password'],
 input[type='search'],
 input[type='tel'],
 input[type='url'],
-textarea {
-  /*width: var(--defaultWidgetWidth);*/
-}
-
-input[type='text'],
-input[type='date'],
-input[type='week'],
-input[type='datetime'],
-input[type='email'],
-input[type='file'],
-input[type='month'],
-input[type='number'],
-input[type='password'],
-input[type='search'],
-input[type='tel'],
-input[type='url'],
 input[type='reset'],
 input[type='submit'],
 button,
@@ -59,14 +43,8 @@ select,
   border-radius: var(--widgetBorderRadius);
   border: 1px solid var(--widgetBorderColor);
   transition-property: border-color, background-color, color;
-  transition-duration: 500ms;
+  transition-duration: var(--widgetTransitionDuration);
   transition-timing-function: ease-out;
-
-  &:disabled {
-    border: 1px solid var(--widgetDisabledBorderColor);
-    cursor: default;
-    color: var(--widgetDisabledTextColor);
-  }
 
   &::placeholder {
     color: color(var(--widgetBorderColor) blackness(+30%));
@@ -76,8 +54,7 @@ select,
     color: #000;
   }
 
-  &:active,
-  &:focus {
+  &:active {
     border-color: var(--widgetActiveColor);
   }
 
@@ -92,6 +69,12 @@ select,
 
   &::-ms-clear {
     display: none;
+  }
+
+  &:disabled {
+    border: 1px solid var(--widgetDisabledBorderColor);
+    cursor: default;
+    color: var(--widgetDisabledTextColor);
   }
 }
 
@@ -143,12 +126,7 @@ select {
   background-position: calc(100% - 0.5em) 50%;
   background-size: 1em 1em;
   background-repeat: no-repeat;
-  /*background-blend-mode: overlay;*/
   cursor: pointer;
-
-  /*&:disabled {
-    background-color: rgba(255, 255, 255, 0.5);
-  }*/
 
   /* removes dotted lines on ff */
   &:-moz-focusring {
@@ -245,12 +223,21 @@ button {
     border-color: transparent;
   }
 
+  &.active-button {
+    border-color: var(--activeColor);
+    color: var(--activeColor);
+  }
+
   &:active {
     border-color: var(--buttonActiveColor);
     box-shadow: inset 0 0 0 1px #fff, inset 0 0 4px #fff;
 
     &.plain-button {
       border-color: color(var(--buttonActiveColor) lightness(+33%));
+    }
+
+    &.active-button {
+      color: var(--buttonActiveColor);
     }
   }
 }
@@ -260,8 +247,9 @@ button.button-joined {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   min-width: 2em;
+  border-color: transparent;
+  box-shadow: none;
 }
-
 
 input {
   &.input-joined {
@@ -299,6 +287,16 @@ input {
         color: #888;
       }
     }
+  }
+}
+
+input[type='reset'],
+input[type='submit'],
+button {
+  &:disabled,
+  &:disabled:active {
+    border-color: transparent;
+    color: var(--widgetDisabledTextColor);
   }
 }
 
@@ -370,7 +368,7 @@ a {
   &.plain-link {
     white-space: nowrap;
     box-shadow: 0 -1px color(var(--activeColor) a(50%)) inset;
-    transition: box-shadow 500ms ease-out;
+    transition: box-shadow var(--widgetTransitionDuration) ease-out;
 
     &:active {
       box-shadow: 0 -2px var(--activeColor) inset;

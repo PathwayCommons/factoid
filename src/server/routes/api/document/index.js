@@ -6,6 +6,7 @@ const provider = require('./reach');
 const uuid = require('uuid');
 const { makeCyEles, getCyLayoutOpts } = require('../../../../util');
 const Cytoscape = require('cytoscape');
+const http = require('express').Router();
 
 let newDoc = ({ docDb, eleDb, id, secret }) => {
   return new Document( _.assign( {}, docDb, {
@@ -74,30 +75,30 @@ let runLayout = doc => {
   return Promise.try( runLayout ).then( savePositions ).then( getDoc );
 };
 
-module.exports = function( http ){
-  // get existing doc
-  http.get('/document/:id', function( req, res ){
-    let id = req.params.id;
+// get existing doc
+http.get('/:id', function( req, res ){
+  let id = req.params.id;
 
-    ( Promise.try( loadTables )
-      .then( json => _.assign( {}, json, { id } ) )
-      .then( loadDoc )
-      .then( getDocJson )
-      .then( json => res.json( json ) )
-    );
-  });
+  ( Promise.try( loadTables )
+    .then( json => _.assign( {}, json, { id } ) )
+    .then( loadDoc )
+    .then( getDocJson )
+    .then( json => res.json( json ) )
+  );
+});
 
-  // create new doc
-  http.post('/document', function( req, res ){
-    let text = req.body.text;
-    let secret = uuid();
+// create new doc
+http.post('/', function( req, res ){
+  let text = req.body.text;
+  let secret = uuid();
 
-    ( Promise.try( loadTables )
-      .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret }) )
-      .then( doc => fillDoc( doc, text ) )
-      .then( runLayout )
-      .then( getDocJson )
-      .then( json => res.json( json ) )
-    );
-  });
-};
+  ( Promise.try( loadTables )
+    .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret }) )
+    .then( doc => fillDoc( doc, text ) )
+    .then( runLayout )
+    .then( getDocJson )
+    .then( json => res.json( json ) )
+  );
+});
+
+module.exports = http;

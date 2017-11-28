@@ -1,7 +1,7 @@
 const defs = require('./defs');
 
-function makeStylesheet(){
-  let { activeColor, defaultColor, labelColor, nodeSize, interactionNodeSize, invalidColor } = defs;
+function makeStylesheet( doc ){
+  let { activeColor, defaultColor, labelColor, nodeSize, interactionNodeSize } = defs;
 
   return [
     {
@@ -13,7 +13,11 @@ function makeStylesheet(){
         'label': function( node ){
           let name = node.data('name');
           let mod = node.data('modification');
+          let completed = node.data('completed');
 
+          if( !completed ){
+            return '';
+          } else
           if( mod == null || mod === 'unmodified' ){
             return name;
           } else {
@@ -25,20 +29,6 @@ function makeStylesheet(){
         'color': labelColor,
         'text-valign': 'center',
         'text-halign': 'center'
-      }
-    },
-    {
-      selector: 'node[!isInteraction][!associated]',
-      style: {
-        'border-style': 'double',
-        'border-color': invalidColor,
-        'border-width': 2
-      }
-    },
-    {
-      selector: 'node[!isInteraction][?associated]',
-      style: {
-        'border-width': 0
       }
     },
     {
@@ -140,7 +130,7 @@ function makeStylesheet(){
         'overlay-opacity': 0
       }
     }
-  ];
+  ].filter( block => block != null );
 }
 
 module.exports = makeStylesheet;

@@ -20,7 +20,7 @@ function listenToDoc({ bus, cy, document }){
     handler( docEl, el );
   };
 
-  let onCy = function( el, handler ){
+  let onCy = function( el, handler ){ // eslint-disable-line no-unused-vars
     let docEl = getDocEl( el );
 
     handler( docEl, el );
@@ -116,8 +116,7 @@ function listenToDoc({ bus, cy, document }){
 
   let onDocPos = function( pos2, pos1 ){
     onDoc( this, (docEl, el) => {
-      // if the user is grabbing the node, then remote updates to position shouldn't take effect
-      if( el.grabbed() ){ return; }
+      if( el.grabbed() || isInteractionNode( el ) ){ return; }
 
       // no point in updating if no diff
       if( samePos( pos2, pos1 ) ){ return; }
@@ -201,7 +200,7 @@ function listenToDoc({ bus, cy, document }){
     } );
   };
 
-  let onDocRemRetypePpt = function( docEl, type ){
+  let onDocRemRetypePpt = function( docEl, type ){ // eslint-disable-line no-unused-vars
     onDoc( this, function( docIntn, intnNode ){
       let edges = intnNode.connectedEdges();
       let isElNode = n => n.id() === docEl.id();
@@ -214,8 +213,13 @@ function listenToDoc({ bus, cy, document }){
   let reapplyAssocToCy = function( docEl, el ){
     el.data({
       associated: docEl.associated(),
-      name: docEl.name(),
       type: docEl.type()
+    });
+  };
+
+  let reapplyCompeletionToCy = function( docEl, el ){
+    el.data({
+      completed: docEl.completed()
     });
   };
 
@@ -231,9 +235,16 @@ function listenToDoc({ bus, cy, document }){
     } );
   };
 
-  let onReplaceEle = function( oldDocEl, newDocEl ){
-    rmEleListeners( oldDocEl );
-    addEleListeners( newDocEl );
+  let onDocComplete = function(){
+    onDoc( this, function( docEl, el ){
+      reapplyCompeletionToCy( docEl, el );
+    } );
+  };
+
+  let onDocUncomplete = function(){
+    onDoc( this, function( docEl, el ){
+      reapplyCompeletionToCy( docEl, el );
+    } );
   };
 
   let updateIntnArity = function( docIntn ){
@@ -351,6 +362,8 @@ function listenToDoc({ bus, cy, document }){
     docEl.on('remove', onDocRmPpt);
     docEl.on('associate', onDocAssoc);
     docEl.on('unassociate', onDocUnassoc);
+    docEl.on('complete', onDocComplete);
+    docEl.on('uncomplete', onDocUncomplete);
     docEl.on('retype', onDocRetypePpt);
     docEl.on('modify', onDocModify);
     el.on('drag', onCyPos);
@@ -371,6 +384,8 @@ function listenToDoc({ bus, cy, document }){
     docEl.removeListener('remove', onDocRmPpt);
     docEl.removeListener('associate', onDocAssoc);
     docEl.removeListener('unassociate', onDocUnassoc);
+    docEl.removeListener('complete', onDocComplete);
+    docEl.removeListener('uncomplete', onDocUncomplete);
     docEl.removeListener('retype', onDocRetypePpt);
     docEl.removeListener('modify', onDocModify);
     el.removeListener('drag', onCyPos);
@@ -473,7 +488,6 @@ function listenToDoc({ bus, cy, document }){
   // doc <=> cy synch
 
   document.on('add', onAddEle);
-  document.on('replace', onReplaceEle);
   document.on('remoteadd', docEl => applyEditAnimation( getCyEl( docEl ) ));
   document.on('remove', onRmEle);
   document.on('remoteremove', docEl => applyEditAnimation( getCyEl( docEl ) ));
@@ -489,7 +503,7 @@ function listenToDoc({ bus, cy, document }){
   }
 
   if( !document.editable() ){
-    cy.autolock( true );
+    cy.autoungrabify( true );
   }
 
   let onTapHold = (e) => {

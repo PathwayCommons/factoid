@@ -247,7 +247,6 @@ button.button-joined {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   min-width: 2em;
-  border-color: transparent;
   box-shadow: none;
 }
 

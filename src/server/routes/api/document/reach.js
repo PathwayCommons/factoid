@@ -148,6 +148,7 @@ module.exports = {
         }
 
         ent.name = frame.text;
+        ent.completed = isGrounded;
 
         addElement( ent, frame, ground );
       } );

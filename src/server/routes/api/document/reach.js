@@ -11,6 +11,7 @@ const { REACH_URL } = require('../../../../config');
 const MERGE_ENTS_WITH_SAME_GROUND = true;
 const ALLOW_IMPLICIT_ORG_SPEC = false;
 const REMOVE_DISCONNECTED_ENTS = true;
+const REMOVE_UNGROUNDED_ENTS = false;
 const APPLY_GROUND = true;
 
 module.exports = {
@@ -55,6 +56,7 @@ module.exports = {
       let getArgId = arg => arg.arg;
       let groundIsSame = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
       let elIsIntn = el => el.entries != null;
+      let getElement = id => elementsMap.get(id);
 
       let getSentenceText = id => {
         let f = getFrame(id);
@@ -107,6 +109,7 @@ module.exports = {
             }
           } ).then( assoc => {
             el.association = assoc;
+            el.completed = true;
           } );
 
           groundPromises.push( applyGround );
@@ -138,6 +141,10 @@ module.exports = {
         let org = !isGrounded ? null : Organism.fromName( ground.species );
         let orgIsSupported = org != null && org !== Organism.OTHER;
 
+        if( REMOVE_UNGROUNDED_ENTS && !isGrounded ){
+          return; // skip this element/frame
+        }
+
         // implicit mention of org
         if( orgIsSupported && ALLOW_IMPLICIT_ORG_SPEC ){
           enableOrg( org );
@@ -148,7 +155,6 @@ module.exports = {
         }
 
         ent.name = frame.text;
-        ent.completed = isGrounded;
 
         addElement( ent, frame, ground );
       } );
@@ -178,7 +184,7 @@ module.exports = {
           let isControlledArg = arg => arg.type === 'controlled';
           let argsAreControllerControlled = args.length === 2 && args.some( isControllerArg ) && args.some( isControlledArg );
           let argsAreEntAndEvt = argFrames.some( frameIsEntity ) && argFrames.some( frameIsEvent );
-          let getEntryFromEl = el => ({ id: el.id });
+          let getEntryFromEl = el => el == null ? null : ({ id: el.id });
           let isSingleArgEvt = frame => frameIsEvent(frame) && _.get(frame, ['arguments', 0, 'argument-type']) === 'entity';
           let evtArg = frame.arguments.find( arg => isSingleArgEvt( getFrame( getArgId(arg) ) ) );
           let haveEvtArg = evtArg != null;
@@ -205,7 +211,11 @@ module.exports = {
               intn.entries = argFrames.map( getEntityFrame ).map( getElFromFrame ).map( getEntryFromEl );
             }
 
-            addElement( intn, frame );
+            intn.entries = intn.entries.filter( entry => entry != null );
+
+            if( intn.entries.length >= 2 ){
+              addElement( intn, frame );
+            }
           }
         }
       } );

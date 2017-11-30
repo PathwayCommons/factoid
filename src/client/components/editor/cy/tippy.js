@@ -148,7 +148,7 @@ module.exports = function({ bus, cy, document }){
     if( didClose && !isInteractionNode(node) ){
       let docEl = document.get( node.id() );
 
-      if( !docEl.completed() ){
+      if( docEl && !docEl.completed() ){
         makeIncompleteNotification( node, docEl );
       }
     }

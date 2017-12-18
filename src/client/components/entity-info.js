@@ -14,6 +14,8 @@ const Notification = require('./notification');
 const InlineNotification = require('./notification/inline');
 const Tooltip = require('./tooltip');
 
+const { UNIPROT_LINK_BASE_URL, CHEBI_LINK_BASE_URL } = require('../../config');
+
 const animateDomForEdit = domEle => anime({
   targets: domEle,
   backgroundColor: [defs.editAnimationWhite, defs.editAnimationColor, defs.editAnimationWhite],
@@ -286,21 +288,10 @@ class EntityInfo extends React.Component {
 
     let update;
 
-    let orgIsDefinedForMatch = m => {
-      let org = Organism.fromId( m.organism );
-
-      if( org !== Organism.OTHER ){
-        return true;
-      } else {
-        return false;
-      }
-    };
-
     if( name ){
       update = (
         Promise.try( () => fetch( '/api/element-association/search?' + queryString.stringify(q) ) )
         .then( res => res.json() )
-        .then( matches => matches.filter( orgIsDefinedForMatch ) )
         .then( matches => {
           if( this._unmounted ){ return; }
 
@@ -389,13 +380,6 @@ class EntityInfo extends React.Component {
   canGoToStage( stage ){
     let { element: el, stage: currentStage, name: cachedName } = this.data;
 
-    let i = getStageIndex(currentStage);
-    let j = getStageIndex(stage);
-
-    if( (j > i + 1 || j < i - 1) && j !== 0 ){
-      return false;
-    }
-
     switch( stage ){
       case STAGES.NAME:
         return true;
@@ -404,7 +388,10 @@ class EntityInfo extends React.Component {
       case STAGES.MODIFY:
         return el.associated();
       case STAGES.COMPLETED:
-        return this.getStage() === STAGES.MODIFY;
+        return (
+          currentStage === STAGES.MODIFY ||
+          ( currentStage === STAGES.ASSOCIATE && el.type() === el.TYPES.CHEMICAL )
+        );
     }
   }
 
@@ -418,12 +405,27 @@ class EntityInfo extends React.Component {
 
   goToStage( stage ){
     let { stage: currentStage, name, element } = this.data;
+    let elSupportsMod = element.moddable();
 
     if(
       currentStage === STAGES.NAME && stage === STAGES.ASSOCIATE
       && name != null && name !== '' && name !== element.name()
     ){
       this.rename( name );
+    }
+
+    if(
+      currentStage === STAGES.ASSOCIATE && stage === STAGES.MODIFY
+      && !elSupportsMod
+    ){
+      stage = STAGES.COMPLETED;
+    }
+
+    if(
+      currentStage === STAGES.COMPLETED && stage === STAGES.MODIFY
+      && !elSupportsMod
+    ){
+      stage = STAGES.ASSOCIATE;
     }
 
     if( this.canGoToStage(stage) ){
@@ -497,20 +499,8 @@ class EntityInfo extends React.Component {
       assoc = null;
     }
 
-    let proteinFromAssoc = (m, highlight = true, showEditIcon = false) => {
-      let term = highlight ? s.name : null;
-
+    let proteinFromAssoc = (m, searchTerm) => {
       return [
-        h('div.entity-info-name', [
-          h(Highlighter, { text: m.name, term }),
-          showEditIcon && doc.editable() ? (
-            h(Tooltip, { description: 'Edit from the beginning' }, [
-              h('button.entity-info-edit.plain-button', {
-                onClick: () => this.goToStage( ORDERED_STAGES[0] )
-              }, [ h('i.material-icons', 'edit') ])
-            ])
-          ) : null
-        ].filter( domEl => domEl != null )),
         h('div.entity-info-section', [
           h('span.entity-info-title', 'Organism'),
           h('span', Organism.fromId(m.organism).name())
@@ -518,16 +508,86 @@ class EntityInfo extends React.Component {
         h('div.entity-info-section', !m.proteinNames ? [] : [
           h('span.entity-info-title', 'Protein names'),
           ...m.proteinNames.map( name => h('span.entity-info-alt-name', [
-            h(Highlighter, { text: name, term })
+            h(Highlighter, { text: name, term: searchTerm })
           ]))
         ]),
         h('div.entity-info-section', !m.geneNames ? [] : [
           h('span.entity-info-title', 'Gene names'),
           ...m.geneNames.map( name => h('span.entity-info-alt-name', [
-            h(Highlighter, { text: name, term })
+            h(Highlighter, { text: name, term: searchTerm })
           ]))
         ])
       ];
+    };
+
+    let Formula = ({ formula }) => {
+      let split = formula.match(/(\d+|[n]|[A-Z][a-z]?)/g);
+      let children = [];
+
+      split.forEach( str => {
+        if( str === 'n' || isNaN( parseInt(str) ) ){
+          children.push( h('span', str) );
+        } else {
+          children.push( h('sub', str) );
+        }
+      } );
+
+      return h('span.entity-info-formula', children);
+    };
+
+    let chemFromAssoc = (m, searchTerm) => {
+      return [
+        h('div.entity-info-section', [
+          h('span.entity-info-title', 'Formulae'),
+          ...m.formulae.map( formula => h(Formula, { formula }) )
+        ]),
+        h('div.entity-info-section', [
+          h('span.entity-info-title', 'Mass'),
+          h('span', m.mass)
+        ]),
+        h('div.entity-info-section', [
+          h('span.entity-info-title', 'Charge'),
+          h('span', m.charge)
+        ]),
+        h('div.entity-info-section', !m.synonyms ? [] : [
+          h('span.entity-info-title', 'Synonyms'),
+          ...m.synonyms.map( name => h('span.entity-info-alt-name', [
+            h(Highlighter, { text: name, term: searchTerm })
+          ]))
+        ])
+      ];
+    };
+
+    let targetFromAssoc = (m, highlight = true, showEditIcon = false) => {
+      let searchTerm = highlight ? s.name : null;
+
+      let pre = [
+        h('div.entity-info-name', [
+          h(Highlighter, { text: m.name, term: searchTerm }),
+          showEditIcon && doc.editable() ? (
+            h(Tooltip, { description: 'Edit from the beginning' }, [
+              h('button.entity-info-edit.plain-button', {
+                onClick: () => this.goToStage( ORDERED_STAGES[0] )
+              }, [ h('i.material-icons', 'edit') ])
+            ])
+          ) : null
+        ].filter( domEl => domEl != null ))
+      ];
+
+      let body;
+
+      switch( m.type ){
+        case 'protein':
+          body = proteinFromAssoc( m, searchTerm );
+          break;
+        case 'chemical':
+          body = chemFromAssoc( m, searchTerm );
+          break;
+      }
+
+      let post = [];
+
+      return _.concat( pre, body, post );
     };
 
     let modForList = () => {
@@ -538,17 +598,30 @@ class EntityInfo extends React.Component {
     };
 
     let linkFromAssoc = m => {
+      let url;
+
+      switch( m.type ){
+        case 'protein':
+          url = UNIPROT_LINK_BASE_URL + m.id;
+          break;
+        case 'chemical':
+          url = CHEBI_LINK_BASE_URL + m.id;
+          break;
+      }
+
       return h('div.entity-info-section', [
-        h('a.plain-link', { href: m.url, target: '_blank' }, [
+        h('a.plain-link', { href: url, target: '_blank' }, [
           'More information ',
           h('i.material-icons', 'open_in_new')
         ])
       ]);
     };
 
-    let targetFromAssoc = proteinFromAssoc;
-
-    let allAssoc = m => _.concat( proteinFromAssoc(m, false, true), modForList(), linkFromAssoc(m) ); // that's all our service (uniprot) supports
+    let allAssoc = m => _.concat(
+      targetFromAssoc(m, false, true),
+      s.element.moddable() ? modForList() : [],
+      linkFromAssoc(m)
+    );
 
     if( !doc.editable() || stage === STAGES.COMPLETED ){
       if( assoc == null ){
@@ -661,27 +734,15 @@ class EntityInfo extends React.Component {
 
     if( doc.editable() ){
       children.push( h('div.entity-info-progression', [
-        h(Tooltip, { description: 'Previous step', tippy: { position: 'left' } }, [
-          h('button.entity-info-back.plain-button', {
-            disabled: !this.canGoBack(),
-            onClick: () => this.back()
-          }, [ h('i.material-icons', 'arrow_back') ])
-        ]),
+        h('button.entity-info-back.plain-button', {
+          disabled: !this.canGoBack(),
+          onClick: () => this.back()
+        }, [ h('i.material-icons', 'arrow_back') ]),
 
-        h('span.entity-info-stage-dots', ORDERED_STAGES.map( dotStage => {
-          return h('span.entity-info-stage-dot', {
-
-          }, [
-            h('i.material-icons', dotStage === stage ? 'brightness_1' : 'radio_button_unchecked')
-          ]);
-        } )),
-
-        h(Tooltip, { description: 'Next step' }, [
-          h('button.entity-info-forward.plain-button', {
-            disabled: !this.canGoForward(),
-            onClick: () => this.forward()
-          }, [ h('i.material-icons', 'arrow_forward') ])
-        ])
+        h('button.entity-info-forward.plain-button', {
+          disabled: !this.canGoForward(),
+          onClick: () => this.forward()
+        }, [ h('i.material-icons', 'arrow_forward') ])
       ]) );
     }
 

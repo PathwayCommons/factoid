@@ -126,6 +126,10 @@ class Entity extends Element {
     }
   }
 
+  moddable(){
+    return this.type() === this.TYPES.PROTEIN;
+  }
+
   associate( def ){
     let changes = {
       association: def

@@ -5,11 +5,6 @@ const Element = require('./element');
 const Interaction = require('./interaction');
 const Promise = require('bluebird');
 
-// subtypes may have different association data but do not replace the prototype
-const subtypes = {
-  protein: Entity
-};
-
 /**
 A factory to
   - get existing (i.e. saved in the DB) biological elements, and
@@ -35,7 +30,7 @@ class ElementFactory {
   }
 
   getType( typeStr ){
-    return subtypes[typeStr] || this.config.types.find( t => t.type() === typeStr );
+    return this.config.types.find( t => t.type() === typeStr ) || Entity;
   }
 
   isTypeSupported( typeStr ){
@@ -75,6 +70,10 @@ class ElementFactory {
 
     let Type = this.getType( opts.data.type ) || this.config.defaultType;
 
+    if( Type == null ){
+      throw new Error(`The type '${opts.data.type}' is not supported by ElementFactory.make()`);
+    }
+
     return new Type( opts );
   }
 
@@ -88,6 +87,11 @@ class ElementFactory {
       return genObj.load();
     } ).then( () => { // get the proper object type
       let Type = this.getType( genObj.get('type') );
+
+      if( Type == null ){
+        throw new Error(`The type '${opts.data.type}' is not supported by ElementFactory.load()`);
+      }
+
       let ele = new Type( _.assign( {}, opts, { data: genObj.get() } ) );
 
       // we manually filled the ele from the prior generic json load, so just mark as

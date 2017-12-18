@@ -6,6 +6,8 @@ const fetch = require('node-fetch');
 const FormData = require('form-data');
 const Organism = require('../../../../model/organism');
 const uniprot = require('../element-association/uniprot');
+const pubchem = require('../element-association/pubchem');
+const chebi = require('../element-association/chebi');
 
 const { REACH_URL } = require('../../../../config');
 const MERGE_ENTS_WITH_SAME_GROUND = true;
@@ -106,10 +108,20 @@ module.exports = {
             switch( ground.namespace ){
             case 'uniprot':
               return uniprot.get( q );
+            default:
+              return pubchem.get( q ).then( res => {
+                console.log(res)
+
+                return chebi.search({ name: res.inchi });
+              } ).then( ents => {
+                return ents[0]; // multiple may match but the first is the default one (charge 0 etc)
+              } );
             }
           } ).then( assoc => {
-            el.association = assoc;
-            el.completed = true;
+            if( assoc ){
+              el.association = assoc;
+              el.completed = true;
+            }
           } );
 
           groundPromises.push( applyGround );
@@ -131,10 +143,10 @@ module.exports = {
         };
 
         let contains = ( arr, str ) => arr.indexOf( str.toLowerCase() ) >= 0;
-        let supportedTypes = ['protein'];
+        let supportedTypes = { 'protein': 'protein', 'simple-chemical': 'chemical' };
         let type = frame.type;
-        let typeIsSupported = contains( supportedTypes, type );
-        let supportedGrounds = ['uniprot'];
+        let typeIsSupported = supportedTypes[type] != null;
+        let supportedGrounds = ['uniprot', 'pubchem'];
         let ground = frame.xrefs != null ? frame.xrefs.find( ref => contains( supportedGrounds, ref.namespace ) ) : null;
         let isGrounded = ground != null;
 
@@ -151,7 +163,7 @@ module.exports = {
         }
 
         if( typeIsSupported ){
-          ent.type = type;
+          ent.type = supportedTypes[type];
         }
 
         ent.name = frame.text;

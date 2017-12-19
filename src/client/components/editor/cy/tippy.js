@@ -28,6 +28,15 @@ module.exports = function({ bus, cy, document }){
     deactivateIncompleteNotification();
   });
 
+  bus.on('opentip', function( el ){
+    hideAllTippies();
+    deactivateIncompleteNotification();
+
+    if( el != null ){
+      toggleElementInfoFor( cy.getElementById( el.id() ) );
+    }
+  });
+
   cy.on('pan zoom drag', () => {
     hideAllTippies();
     deactivateIncompleteNotification();

@@ -5,7 +5,7 @@ const onKey = require('./on-key');
 const Promise = require('bluebird');
 const { isInteractionNode, makeCyEles, makePptEdges } = require('../../../../util');
 
-function listenToDoc({ bus, cy, document }){
+function listenToDoc({ bus, cy, document, controller }){
   let getCyEl = function( docEl ){
     return cy.getElementById( docEl.id() );
   };
@@ -473,7 +473,7 @@ function listenToDoc({ bus, cy, document }){
 
   cy.on('mousemove', onMouseMove);
 
-  bus.on('addelementmouse', () => bus.emit('addelement', { position: lastMousePos }));
+  bus.on('addelementmouse', () => controller.addElement({ position: lastMousePos }).then( el => bus.emit('opentip', el) ));
   bus.on('addinteractionmouse', () => bus.emit('addinteraction', { position: lastMousePos }));
 
   onKey('e', () => bus.emit('addelementmouse'));
@@ -508,7 +508,10 @@ function listenToDoc({ bus, cy, document }){
 
   let onTapHold = (e) => {
     if( e.target === cy ){
-      bus.emit('addelement', { position: copyEventPosition(e) });
+      let tapend = cy.pon('tapend');
+      let add = controller.addElement({ position: copyEventPosition(e) });
+
+      Promise.all([ add, tapend ]).then( ([ el ]) => bus.emit('opentip', el) );
     }
   };
 

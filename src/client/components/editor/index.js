@@ -207,11 +207,11 @@ class Editor extends React.Component {
   }
 
   render(){
-    let document = this.data.document;
+    let { document, bus } = this.data;
     let controller = this;
 
     return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), this.state.initted ? [
-      h(Buttons, { controller, document }),
+      h(Buttons, { controller, document, bus }),
       h('div.editor-graph#editor-graph')
     ] : []);
   }

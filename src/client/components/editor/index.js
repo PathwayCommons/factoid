@@ -162,11 +162,17 @@ class Editor extends React.Component {
       }, data )
     });
 
+    this.lastAddedElement = el;
+
     return ( Promise.try( () => el.synch() )
       .then( () => el.create() )
       .then( () => doc.add(el) )
       .then( () => el )
     );
+  }
+
+  getLastAddedElement(){
+    return this.lastAddedElement;
   }
 
   addInteraction( data = {} ){

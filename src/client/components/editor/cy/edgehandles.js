@@ -75,9 +75,11 @@ module.exports = function({ bus, cy, document, controller }){
 
       let getIntn = () => {
         if( createdIntnNode ){
-          return controller.addInteraction({
+          controller.addInteraction({
             position: _.clone( intnNode.position() )
           });
+
+          return controller.getLastAddedElement();
         } else {
           return document.get( intnNode.id() );
         }
@@ -91,16 +93,8 @@ module.exports = function({ bus, cy, document, controller }){
         addedEles.remove();
       };
 
-      // TODO batching causes cy rendering bug
-      let start = () => {
-        //cy.startBatch();
-      };
-
-      let done = () => {
-        //cy.endBatch();
-      };
-
-      Promise.try( start ).then( rmPreviewEles ).then( getIntn ).then( addPpts ).then( done );
+      rmPreviewEles();
+      addPpts( getIntn() );
     }
   });
 

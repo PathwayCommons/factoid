@@ -11,7 +11,7 @@ const chebi = require('../element-association/chebi');
 
 const { REACH_URL } = require('../../../../config');
 const MERGE_ENTS_WITH_SAME_GROUND = true;
-const ALLOW_IMPLICIT_ORG_SPEC = false;
+const ALLOW_IMPLICIT_ORG_SPEC = true;
 const REMOVE_DISCONNECTED_ENTS = true;
 const REMOVE_UNGROUNDED_ENTS = false;
 const APPLY_GROUND = true;

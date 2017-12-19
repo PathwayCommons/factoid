@@ -69,13 +69,6 @@ function makeStylesheet( doc ){
       }
     },
     {
-      selector: 'node[?isInteraction]:selected',
-      style: {
-        'background-color': defaultColor,
-        'text-outline-color': defaultColor
-      }
-    },
-    {
       selector: 'edge',
       style: {
         'width': 3,

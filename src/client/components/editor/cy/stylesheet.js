@@ -88,6 +88,12 @@ function makeStylesheet( doc ){
       }
     },
     {
+      selector: 'node -> node[?isInteraction]',
+      style: {
+        'target-endpoint': 'inside-to-node'
+      }
+    },
+    {
       selector: 'edge[type="positive"]',
       style: {
         'target-arrow-shape': 'triangle'

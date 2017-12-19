@@ -16,9 +16,8 @@ function makeStylesheet( doc ){
           let completed = node.data('completed');
 
           if( !completed ){
-            return '';
-          } else
-          if( mod == null || mod === 'unmodified' ){
+            return '?';
+          } else if( mod == null || mod === 'unmodified' ){
             return name;
           } else {
             return mod.charAt(0).toLowerCase() + '-' + name;

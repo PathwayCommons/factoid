@@ -46,11 +46,12 @@ const searchQuery = opts => {
       (() => {
         let orgs = opts.organism;
         let ids;
+        let getStringName = org => `"${org.name()}"`;
 
         if( orgs == null || orgs === '' ){
-          ids = Organism.ALL.map( org => org.id() );
+          ids = Organism.ALL.map( getStringName );
         } else {
-          ids = orgs.split(',');
+          ids = orgs.split(',').map( Organism.fromId ).map( getStringName );
         }
 
         return '(' + ids.map( id => param('organism', id, false) ).join('+OR+') + ')';

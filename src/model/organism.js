@@ -37,7 +37,7 @@ class Organism {
   }
 
   static fromId( id ){
-    return organisms.find( org => org.id() === id ) || Organism.OTHER;
+    return organisms.find( org => org.id() == id ) || Organism.OTHER;
   }
 
   static get ALL(){ return organisms; }

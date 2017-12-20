@@ -7,7 +7,8 @@ module.exports = Object.freeze({
   associationSearchLimit: 10,
   tippyDefaults: {
     theme: 'light',
-    position: 'bottom',
+    placement: 'bottom',
+    createPopperInstanceOnInit: true,
     animation: 'fade',
     animateFill: false,
     duration: [ 250, 0 ],
@@ -18,6 +19,7 @@ module.exports = Object.freeze({
     interactive: true,
     multiple: true,
     hideOnClick: true,
-    sticky: true
+    sticky: true,
+    dynamicInputDetection: true
   }
 });

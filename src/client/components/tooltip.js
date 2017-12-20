@@ -23,7 +23,7 @@ class Tooltip extends React.Component {
           ])
         ] : []));
       })(),
-      position: 'right',
+      placement: 'right',
       trigger: 'mouseenter click',
       hideOnClick: true,
       interactive: false,

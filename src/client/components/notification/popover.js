@@ -19,7 +19,7 @@ class PopoverNotification extends Component {
           h(NotificationBase, { notification })
         ]);
       })(),
-      position: 'top',
+      placement: 'top',
       trigger: 'manual',
       hideOnClick: false,
       interactive: true,

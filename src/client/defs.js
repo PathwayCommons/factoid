@@ -11,6 +11,7 @@ module.exports = Object.freeze({
     createPopperInstanceOnInit: true,
     animation: 'fade',
     animateFill: false,
+    updateDuration: 250,
     duration: [ 250, 0 ],
     delay: [ 0, 0 ],
     hideDuration: 0,

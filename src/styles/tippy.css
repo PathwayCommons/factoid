@@ -91,4 +91,5 @@
 
 .tippy-popper {
   z-index: 999999 !important;
+  position: fixed !important;
 }

@@ -1,5 +1,10 @@
 /* tippy theme overrides */
 
+/* resolves issue where an adjusting tippy can cause the page to shift */
+.tippy-popper {
+  position: fixed !important;
+}
+
 .tippy-popper .tippy-tooltip {
   padding: 0;
   text-align: inherit;

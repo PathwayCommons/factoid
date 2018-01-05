@@ -44,6 +44,7 @@ class SingleValueCache {
 
 let associationCache = new WeakMap();
 let stageCache = new WeakMap();
+let nameNotificationCache = new SingleValueCache();
 let assocNotificationCache = new SingleValueCache();
 let modNotificationCache = new SingleValueCache();
 
@@ -68,6 +69,8 @@ class EntityInfo extends React.Component {
     let assoc = initCache( associationCache, el, { matches: [], offset: 0 } );
 
     let stage = initCache( stageCache, el, el.completed() ? STAGES.COMPLETED : ORDERED_STAGES[0] );
+
+    let nameNotification = initCache( nameNotificationCache, el, new Notification({ active: true }) );
 
     let assocNotification = initCache( assocNotificationCache, el, new Notification({ active: true }) );
 
@@ -104,6 +107,7 @@ class EntityInfo extends React.Component {
       limit: defs.associationSearchLimit,
       offset: assoc.offset,
       stage,
+      nameNotification,
       assocNotification,
       modNotification
     };
@@ -135,8 +139,8 @@ class EntityInfo extends React.Component {
     let s = this.data;
     let doc = p.document;
 
-    if( input != null ){
-      this.focusNameInput();
+    if( s.stage === ORDERED_STAGES[0] ){
+      this.goToStage( s.stage );
     }
 
     this.onRemoteRename = () => {
@@ -435,14 +439,24 @@ class EntityInfo extends React.Component {
 
       switch( stage ){
         case STAGES.NAME:
+          if( this.data.name ){
+            this.data.nameNotification.message(`This entity is incomplete.  Amend the name of "${this.data.name}", if necessary, and then go to the next step.`);
+          } else {
+            this.data.nameNotification.message(`This entity is incomplete.  Name the entity, then go to the next step.`);
+          }
+
+
           this.focusNameInput();
           break;
+
         case STAGES.ASSOCIATE:
           this.data.assocNotification.message(`Link "${this.data.name}" to one of the following identifiers.  Linking increases the impact of your paper by enabling data sharing and computational analysis.`);
           break;
+
         case STAGES.MODIFY:
           this.data.modNotification.message(`Specifying a modification can help to more accurately represent the state of ${this.data.name}.`);
           break;
+
         case STAGES.COMPLETED:
           this.complete();
           break;
@@ -635,32 +649,44 @@ class EntityInfo extends React.Component {
         children.push( h('div.entity-info-assoc', allAssoc( assoc )) );
       }
     } else if( stage === STAGES.NAME ){
-      children.push( h('input.input-round.input-joined.entity-info-name-input', {
-        type: 'text',
-        placeholder: 'Entity name',
-        defaultValue: s.name,
-        spellCheck: false,
-        onChange: evt => this.updateCachedName( evt.target.value ),
-        onKeyDown: evt => {
-          switch( evt.keyCode ){
-            case 27: // ESC
-              evt.target.blur();
-              break;
-            case 13: // ENTER
-              this.forward();
-              break;
-          }
-        }
-      }) );
+      let NameNotification = () => {
+        let notification = s.nameNotification;
 
-      children.push( h('button', {
-        onClick: () => {
-          this.clear();
-          this.focusNameInput();
-        }
-      }, [
-        h('i.material-icons', 'close')
-      ]) );
+        return h(InlineNotification, { notification, className: 'entity-info-notification' });
+      };
+
+      children.push( h(NameNotification) );
+
+      children.push(
+        h('div.entity-info-name-input-area', [
+          h('input.input-round.input-joined.entity-info-name-input', {
+            type: 'text',
+            placeholder: 'Entity name',
+            defaultValue: s.name,
+            spellCheck: false,
+            onChange: evt => this.updateCachedName( evt.target.value ),
+            onKeyDown: evt => {
+              switch( evt.keyCode ){
+                case 27: // ESC
+                  evt.target.blur();
+                  break;
+                case 13: // ENTER
+                  this.forward();
+                  break;
+              }
+            }
+          }),
+
+          h('button', {
+            onClick: () => {
+              this.clear();
+              this.focusNameInput();
+            }
+          }, [
+            h('i.material-icons', 'close')
+          ])
+        ])
+      );
 
       children.push( h('div.entity-info-organism-toggles', Organism.ALL.map( organism => {
         let onToggle = () => doc.toggleOrganism( organism );

@@ -47,7 +47,7 @@ class Popover extends React.Component {
 
     let tippy = tippyjs( target, _.assign( {}, tippyDefaults, options, {
       html: content
-    } ) );
+    } ) ).tooltips[0];
 
     let show = () => tippy.show();
     let hide = () => tippy.hide();

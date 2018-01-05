@@ -745,17 +745,26 @@ class EntityInfo extends React.Component {
 
       children.push( h('label.entity-info-mod-label', 'Modification') );
 
-      children.push( h('select.entity-info-mod-select', {
-        value: s.modification.value,
-        onChange: (evt) => {
-          this.modify( evt.target.value );
-          this.forward();
-        }
-      }, s.element.ORDERED_MODIFICATIONS.map( mod => {
-        return h('option', {
-          value: mod.value
-        }, mod.displayValue);
-      } )) );
+      let modChildren = [];
+
+      let onChange = (evt) => {
+        this.modify( evt.target.value );
+        this.forward();
+      };
+
+      s.element.ORDERED_MODIFICATIONS.forEach( mod => {
+        let value = mod.value;
+        let name = 'mod-radio-' + s.element.id();
+        let id = name + '-' + value;
+        let type = 'radio';
+
+        modChildren.push(
+          h('input', { type, name, id, value, onChange, checked: value === s.modification.value }),
+          h('label', { htmlFor: id }, mod.displayValue)
+        );
+      } );
+
+      children.push( h('div.radioset.entity-info-mod-radioset', modChildren ) );
     }
 
     if( doc.editable() ){

@@ -12,6 +12,8 @@ const debug = require('../../debug');
 const defs = require('./defs');
 const { getId, defer } = require('../../../util');
 const Buttons = require('./buttons');
+const Notification = require('../notification');
+const CornerNotification = require('../notification/corner');
 
 class Editor extends React.Component {
   constructor( props ){
@@ -98,6 +100,18 @@ class Editor extends React.Component {
         });
 
         logger.info('Initialised Cytoscape on mounted editor');
+      } )
+      .then( () => {
+        let anyIsInc = doc.entities().some( ent => !ent.completed() );
+
+        let ntfn = new Notification({
+          active: anyIsInc,
+          message: 'There are incomplete entities, marked "?", that must be identified.'
+        });
+
+        this.setData({
+          incompleteNotification: ntfn
+        });
       } )
       .then( () => {
         logger.info('The editor has initialised');
@@ -213,11 +227,12 @@ class Editor extends React.Component {
   }
 
   render(){
-    let { document, bus } = this.data;
+    let { document, bus, incompleteNotification } = this.data;
     let controller = this;
 
     return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), this.state.initted ? [
       h(Buttons, { controller, document, bus }),
+      incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h('div.editor-graph#editor-graph')
     ] : []);
   }

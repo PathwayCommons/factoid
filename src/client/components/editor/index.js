@@ -44,7 +44,6 @@ class Editor extends React.Component {
 
     // just to make sure that we don't have dangling listeners causing issues
     doc.on('remove', ( el ) => removeAllListeners( el ));
-    doc.on('replace', ( oldEl ) => removeAllListeners( oldEl ));
 
     let bus = new EventEmitter();
 
@@ -105,13 +104,22 @@ class Editor extends React.Component {
         let anyIsInc = doc.entities().some( ent => !ent.completed() );
 
         let ntfn = new Notification({
+          openable: true,
+          openText: 'Show me',
           active: anyIsInc,
-          message: 'There are incomplete entities, marked "?", that must be identified.'
+          message: 'Provide more information for incomplete entities, labelled "?".'
         });
 
-        this.setData({
-          incompleteNotification: ntfn
-        });
+        ntfn.on('open', () => this.openFirstIncompleteEntity());
+
+        if( this.editable() ){
+          let listenForComplete = el => el.on('complete', () => ntfn.dismiss());
+
+          doc.elements().forEach(listenForComplete);
+          doc.on('add', listenForComplete);
+
+          this.setData({ incompleteNotification: ntfn });
+        }
       } )
       .then( () => {
         logger.info('The editor has initialised');
@@ -224,6 +232,18 @@ class Editor extends React.Component {
     if( !this.editable() ){ return; }
 
     this.data.bus.emit('removeselected');
+  }
+
+  openFirstIncompleteEntity(){
+    if (!this.editable()) { return; }
+
+    let { document, bus } = this.data;
+
+    let incEnts = document.entities().filter(ent => !ent.completed());
+
+    if( incEnts.length > 0 ){
+      bus.emit('opentip', incEnts[0]);
+    }
   }
 
   render(){

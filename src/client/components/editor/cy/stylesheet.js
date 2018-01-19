@@ -42,14 +42,6 @@ function makeStylesheet( doc ){
       }
     },
     {
-      selector: 'node[?isInteraction][arity][arity < 2]',
-      style: {
-        'shape': 'roundrectangle',
-        'width': interactionNodeSize,
-        'height': interactionNodeSize
-      }
-    },
-    {
       selector: 'node[?isInteraction].drop-target',
       style: {
         'border-width': 4 * (interactionNodeSize - 2)

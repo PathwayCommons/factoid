@@ -137,6 +137,7 @@ class ElementSet {
 
     if( !silent ){
       this.emitter.emit( 'add', ele, group );
+      this.emitter.emit( 'localadd', ele, group );
     }
 
     return updatePromise;
@@ -161,6 +162,7 @@ class ElementSet {
 
     if( !silent ){
       this.emitter.emit( 'remove', ele, group );
+      this.emitter.emit( 'localremove', ele, group );
     }
 
     return updatePromise;
@@ -212,6 +214,7 @@ class ElementSet {
 
     if( !silent ){
       this.emitter.emit( 'regroup', ele, group, oldGroup );
+      this.emitter.emit( 'localregroup', ele, group, oldGroup );
     }
 
     return updatePromise;

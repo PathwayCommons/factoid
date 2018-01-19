@@ -141,6 +141,7 @@ class Interaction extends Element {
     let updatePromise = this.elementSet.regroup( ele, { group: typeVal } );
 
     this.emit( 'retype', ele, type, oldType );
+    this.emit( 'localretype', ele, type, oldType );
 
     return updatePromise;
   }

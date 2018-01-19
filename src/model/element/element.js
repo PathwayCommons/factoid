@@ -105,6 +105,7 @@ class Element {
     let updatePromise = this.syncher.update( 'name', newName );
 
     this.emit( 'rename', newName );
+    this.emit( 'localrename', newName );
 
     return updatePromise;
   }
@@ -133,6 +134,7 @@ class Element {
     let updatePromise = synched.update( 'position', newPos );
 
     this.emit( 'reposition', newPos );
+    this.emit( 'localreposition', newPos );
 
     return updatePromise;
   }
@@ -149,6 +151,7 @@ class Element {
     let updatePromise = this.syncher.update( 'description', descr );
 
     this.emit( 'redescribe', descr );
+    this.emit( 'localredescribe', descr );
 
     return updatePromise;
   }

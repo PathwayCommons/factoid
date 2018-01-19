@@ -8,7 +8,7 @@ module.exports = function( { cy, document } ){
       let intn = document.get( node.id() );
 
       if( intn == null ){
-        return;
+        disable( node );
       } else if( node.removed() ){
         disable( node );
       } else if(
@@ -43,6 +43,7 @@ module.exports = function( { cy, document } ){
     });
 
     node.scratch('_automoveRules', [ mean, drag ]);
+
   };
 
   let disable = node => {
@@ -50,7 +51,10 @@ module.exports = function( { cy, document } ){
 
     if( !rules ){ return; }
 
-    rules.forEach( rule => rule.disable() );
+    rules.forEach( rule => {
+      rule.disable();
+      rule.destroy();
+    } );
 
     node.scratch('_automoveRules', null);
   };
@@ -73,7 +77,7 @@ module.exports = function( { cy, document } ){
 
     rules.forEach( r => r.apply() );
   };
-
+  
   cy.on('layoutstop', function(){
     cy.nodes().forEach( updateRules );
   });

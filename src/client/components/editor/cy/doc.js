@@ -319,6 +319,8 @@ function listenToDoc({ bus, cy, document, controller }){
   };
 
   let animateRm = function( el ){
+    return el.remove();
+
     if( isInteractionNode(el) ){
       el.style('opacity', 0);
 

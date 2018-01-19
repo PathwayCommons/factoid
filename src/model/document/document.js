@@ -136,6 +136,7 @@ class Document {
     let updatePromise = this.syncher.update( 'name', newName );
 
     this.emit( 'rename', newName );
+    this.emit( 'localrename', newName );
 
     return updatePromise;
   }
@@ -182,6 +183,7 @@ class Document {
         let update = this.syncher.push('organisms', orgId);
 
         this.emit('toggleorganism', Organism.fromId(orgId), toggleOn);
+        this.emit('localtoggleorganism', Organism.fromId(orgId), toggleOn);
 
         return update;
       }
@@ -190,6 +192,7 @@ class Document {
         let update = this.syncher.pull('organisms', orgId);
 
         this.emit('toggleorganism', Organism.fromId(orgId), toggleOn);
+        this.emit('localtoggleorganism', Organism.fromId(orgId), toggleOn);
 
         return update;
       } else {

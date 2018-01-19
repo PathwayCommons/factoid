@@ -1,0 +1,18 @@
+.editor-undo-rm {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0);
+  text-align: center;
+  z-index: 2;
+  border-radius: 0.25em;
+  box-shadow: 0 4px 20px 4px rgba(0, 20, 60, 0.2), 0 4px 80px -8px rgba(0, 20, 60, 0.3);
+  margin-top: 0.5em;
+  opacity: 1;
+  transition-property: opacity;
+  transition-duration: 500ms;
+}
+
+.editor-undo-rm-unavailable {
+  opacity: 0;
+  pointer-events: none;
+}

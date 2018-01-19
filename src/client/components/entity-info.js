@@ -1,7 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const ReactDom = require('react-dom');
-const { focusDomElement } = require('../../util');
+const { focusDomElement, makeClassList } = require('../../util');
 const _ = require('lodash');
 const defs = require('../defs');
 const anime = require('animejs');
@@ -678,6 +678,10 @@ class EntityInfo extends React.Component {
           }),
 
           h('button', {
+            className: makeClassList({
+              'entity-info-name-clear': true,
+              'entity-info-name-clear-disabled': !s.name
+            }),
             onClick: () => {
               this.clear();
               this.focusNameInput();

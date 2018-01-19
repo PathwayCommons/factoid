@@ -6,6 +6,11 @@
   width: 100%;
 }
 
+.entity-info-name-clear-disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .entity-info-matches-loading {
   height: 1.5em;
   display: flex;

@@ -108,14 +108,14 @@ module.exports = {
             switch( ground.namespace ){
             case 'uniprot':
               return uniprot.get( q );
-            default:
+            case 'chemical':
               return pubchem.get( q ).then( res => {
-                console.log(res)
-
                 return chebi.search({ name: res.inchi });
               } ).then( ents => {
                 return ents[0]; // multiple may match but the first is the default one (charge 0 etc)
               } );
+            default:
+              return null;
             }
           } ).then( assoc => {
             if( assoc ){
@@ -142,8 +142,12 @@ module.exports = {
           id: uuid()
         };
 
+        let supportedTypes = {
+          'protein': 'protein',
+          'simple-chemical': 'chemical'
+        };
+
         let contains = ( arr, str ) => arr.indexOf( str.toLowerCase() ) >= 0;
-        let supportedTypes = { 'protein': 'protein', 'simple-chemical': 'chemical' };
         let type = frame.type;
         let typeIsSupported = supportedTypes[type] != null;
         let supportedGrounds = ['uniprot', 'pubchem'];
@@ -168,7 +172,9 @@ module.exports = {
 
         ent.name = frame.text;
 
-        addElement( ent, frame, ground );
+        if( typeIsSupported ){
+          addElement( ent, frame, ground );
+        }
       } );
 
       // add explicit organisms

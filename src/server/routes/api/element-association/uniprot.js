@@ -195,9 +195,11 @@ const rawTabDelimRequest = ( endpt, query ) => {
 };
 
 const rawXmlRequest = ( endpt, query ) => {
+  let url = getRequestUrl( endpt, _.assign({}, query, { format: 'xml' }) );
+
   return (
     Promise
-      .try( () => fetch( getRequestUrl( endpt, _.assign({}, query, { format: 'xml' }) ) ) )
+      .try( () => fetch( url ) )
       .then( res => res.text() )
       .then( processXml )
   );

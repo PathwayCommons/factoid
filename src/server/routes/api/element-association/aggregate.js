@@ -4,24 +4,29 @@ const dice = require('dice-coefficient'); // sorensen dice coeff
 const distanceMetric = (a, b) => 1 - dice(a, b);
 const chebi = require('./chebi');
 const uniprot = require('./uniprot');
-const pubchem = require('./pubchem');
 const providers = [ uniprot, chebi ];
 const { memoize } = require('../../../../util');
 const LRUCache = require('lru-cache');
 const { MAX_SEARCH_SIZE, AGGREGATE_CACHE_SIZE } = require('../../../../config');
 
-const searchAll = memoize( q => {
+const getProviderByNs = _.memoize( ns => {
+  return providers.find( p => p.namespace === ns );
+} );
+
+const searchAll = q => {
   let allQ = _.assign({}, q, {
     limit: MAX_SEARCH_SIZE,
     offset: 0
   });
 
+  return searchAllCached( allQ );
+};
+
+const searchAllCached = memoize( q => {
   let searchTerm = q.name || q.id;
 
-  let providersByEnts = new Map();
-
   let distance = ent => {
-    let provider = providersByEnts.get( ent.id );
+    let provider = getProviderByNs( ent.namespace );
     let undef = Number.MAX_SAFE_INTEGER;
     let dist = undef;
 
@@ -45,17 +50,11 @@ const searchAll = memoize( q => {
   };
 
   return (
-    Promise.all( providers.map( p => (
-      p.search( allQ )
-      .then( ents => {
-        ents.forEach( ent => providersByEnts.set(ent.id, p) );
-
-        return ents;
-      })
-    ) ) ).then( entSets => {
+    Promise.all( providers.map( p => p.search( q ) ) ).then( entSets => {
       let ents = _.flatten( entSets );
+      let sortedEnts = _.sortBy( ents, distance ); // stable sort
 
-      return _.sortBy( ents, distance ); // stable sort
+      return sortedEnts;
     } )
   );
 }, LRUCache({ max: AGGREGATE_CACHE_SIZE }) );

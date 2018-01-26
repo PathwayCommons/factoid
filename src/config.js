@@ -2,7 +2,7 @@ let process = require('process');
 let _ = require('lodash');
 let { isClient } = require('./util');
 
-const DEFAULT_CACHE_SIZE = process.env.DEFAULT_CACHE_SIZE || 100000;
+const DEFAULT_CACHE_SIZE = parseInt( process.env.DEFAULT_CACHE_SIZE ) || 1000;
 
 let defaults = {
   PORT: 3000,
@@ -23,12 +23,28 @@ let defaults = {
   // Services
   REACH_URL: 'http://agathon.sista.arizona.edu:8080/odinweb/api/text',
   UNIPROT_URL: 'http://www.uniprot.org/uniprot',
-  UNIPROT_CACHE_SIZE: DEFAULT_CACHE_SIZE
+  UNIPROT_LINK_BASE_URL: 'http://www.uniprot.org/uniprot/',
+  UNIPROT_CACHE_SIZE: DEFAULT_CACHE_SIZE,
+  CHEBI_WSDL_URL: 'https://www.ebi.ac.uk/webservices/chebi/2.0/webservice?wsdl',
+  CHEBI_JAVA_PACKAGE: 'uk.ac.ebi.chebi.webapps.chebiWS.model',
+  CHEBI_LINK_BASE_URL: 'https://www.ebi.ac.uk/chebi/searchId.do?chebiId=',
+  CHEBI_CACHE_SIZE: DEFAULT_CACHE_SIZE,
+  PUBCHEM_BASE_URL: 'https://pubchem.ncbi.nlm.nih.gov/rest/pug',
+  PUBCHEM_CACHE_SIZE: DEFAULT_CACHE_SIZE,
+  AGGREGATE_CACHE_SIZE: DEFAULT_CACHE_SIZE,
+  MAX_SEARCH_SIZE: 50
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );
 
 let conf = Object.assign( {}, defaults, envVars );
+
+let intKeys = [
+  'PORT', 'DB_PORT',
+  'UNIPROT_CACHE_SIZE', 'CHEBI_CACHE_SIZE', 'MAX_SEARCH_SIZE'
+];
+
+intKeys.forEach( k => conf[k] = parseInt( conf[k] ) );
 
 Object.freeze( conf );
 

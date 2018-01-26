@@ -13,9 +13,9 @@ class Highlighter extends Component {
     let match;
     let spans = [];
 
-    if( !term ){
+    if( !term || !text ){
       return h('span.highlighter', [
-        h('span.highlighter-text', text)
+        h('span.highlighter-text', text || '')
       ]);
     }
 
@@ -58,6 +58,20 @@ class Highlighter extends Component {
 
     let termRe = new RegExp( saniTerm, 'i' );
 
+    let addWsSplitSpans = text => {
+      let terms = text.split(' ');
+
+      terms.forEach( (term, i) => {
+        if( term !== '' ){
+          spans.push( h('span.highlighter-text', term) );
+        }
+
+        if( i < terms.length - 1 ){
+          spans.push( h('span.highlighter-text', ' ') );
+        }
+      } );
+    };
+
     do {
       match = remaining.match( termRe );
 
@@ -69,14 +83,14 @@ class Highlighter extends Component {
         if( index > 0 ){
           let preMatchTerm = remaining.substring( 0, index );
 
-          spans.push( h('span.highlighter-text', preMatchTerm) );
+          addWsSplitSpans( preMatchTerm );
         }
 
         spans.push( h('span.highlighter-term', matchTerm) );
 
         remaining = remaining.substring( index + length );
       } else {
-        spans.push( h('span.highlighter-text', remaining ) );
+        addWsSplitSpans( remaining );
 
         remaining = '';
       }

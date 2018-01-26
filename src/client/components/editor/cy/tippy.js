@@ -4,7 +4,7 @@ const hh = require('hyperscript');
 const ElementInfo = require('../../element-info');
 const ParticipantInfo = require('../../participant-info');
 const { isInteractionNode } = require('../../../../util');
-const Tippy = require('tippy.js');
+const tippyjs = require('tippy.js');
 const _ = require('lodash');
 const { tippyDefaults } = require('../../../defs');
 const NotificationBase = require('../../notification/base');
@@ -28,6 +28,15 @@ module.exports = function({ bus, cy, document }){
     deactivateIncompleteNotification();
   });
 
+  bus.on('opentip', function( el ){
+    hideAllTippies();
+    deactivateIncompleteNotification();
+
+    if( el != null ){
+      toggleElementInfoFor( cy.getElementById( el.id() ) );
+    }
+  });
+
   cy.on('pan zoom drag', () => {
     hideAllTippies();
     deactivateIncompleteNotification();
@@ -41,25 +50,27 @@ module.exports = function({ bus, cy, document }){
   });
 
   let drawing = false;
+  let ehStopTime = 0;
 
   bus.on('drawstart', () => {
     drawing = true;
 
     hideAllTippies();
   });
+
   bus.on('drawstop', () => drawing = false);
+
+  cy.on('ehstop', () => ehStopTime = Date.now());
 
   let destroyTippy = tippyInfo => {
     let t = tippyInfo;
     let div = t.content;
 
-    t.tippy.destroy( t.popper );
+    t.tippy.hide();
 
     ReactDom.unmountComponentAtNode( div );
 
-    if( t.popper.parentNode != null ){
-      t.popper.parentNode.removeChild( t.popper );
-    }
+    div.parentNode.removeChild( div );
   };
 
   let destroyTippyFor = ele => {
@@ -96,6 +107,8 @@ module.exports = function({ bus, cy, document }){
   });
 
   let makeIncompleteNotification = (el, docEl) => { // eslint-disable-line no-unused-vars
+    if( !document.editable() ){ return; }
+
     let ref = getRef( () => el.renderedBoundingBox({ includeLabels: true, includeOverlays: false }), el );
     let content = getContentDiv( h( NotificationBase, {
       notification: incompleteNotification,
@@ -110,20 +123,19 @@ module.exports = function({ bus, cy, document }){
       destroyTippy( incompleteTippyInfo );
     }
 
-    let tippy = new Tippy( ref, _.assign( {}, tippyDefaults, {
+    let tippy = tippyjs( ref, _.assign( {}, tippyDefaults, {
       duration: 0,
       theme: 'dark',
-      position: 'top',
+      placement: 'top',
       hideOnClick: false,
       html: content
-    } ) );
+    } ) ).tooltips[0];
 
-    let popper = tippy.getPopperElement( ref );
-    let tippyInfo = { tippy, popper, content, el };
+    let tippyInfo = { tippy, content, el };
 
     incompleteTippyInfo = tippyInfo;
 
-    tippy.show( popper );
+    tippy.show();
   };
 
   let deactivateIncompleteNotification = () => {
@@ -139,7 +151,7 @@ module.exports = function({ bus, cy, document }){
 
     if( tippies != null ){
       tippies.forEach( t => {
-        t.tippy.hide( t.popper );
+        t.tippy.hide();
 
         didClose = true;
       });
@@ -193,16 +205,14 @@ module.exports = function({ bus, cy, document }){
   };
 
   let makeTippy = ({ el, ref, content, overrides }) => {
-    let tippy = new Tippy( ref, _.assign( {}, tippyDefaults, {
+    let tippy = tippyjs( ref, _.assign( {}, tippyDefaults, {
       duration: 0,
-      position: 'right',
+      placement: 'right',
       hideOnClick: false,
       onHidden: _.debounce( () => destroyTippyFor( el ), 100 ) // debounce allows toggling a tippy on an ele
     }, overrides, {
       html: content
-    } ) );
-
-    let popper = tippy.getPopperElement( ref );
+    } ) ).tooltips[0];
 
     let tippies = el.scratch('_tippies');
 
@@ -211,9 +221,9 @@ module.exports = function({ bus, cy, document }){
       el.scratch('_tippies', tippies);
     }
 
-    tippies.push({ tippy, popper, content });
+    tippies.push({ tippy, content });
 
-    tippy.show( popper );
+    tippy.show();
   };
 
   let getContentDiv = component => {
@@ -259,7 +269,7 @@ module.exports = function({ bus, cy, document }){
           ref: getRef( bottomOfCyBb ),
           content: getContentDiv( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ) ),
           overrides: {
-            position: 'bottom',
+            placement: 'bottom',
             arrow: false
           }
         });
@@ -311,7 +321,7 @@ module.exports = function({ bus, cy, document }){
             content: getContentDiv( h( ParticipantInfo, { interaction: docEl, participant: ppt, bus, document, eventTarget: tgt } ) ),
             overrides: {
               distance: 5 * zoom,
-              position: pos
+              placement: pos
             }
           });
         } );
@@ -326,7 +336,12 @@ module.exports = function({ bus, cy, document }){
   };
 
   cy.on('tap', 'node, edge', function( e ){
-    if( drawing || e.originalEvent.shiftKey ){ return; }
+    let justMadeEhWithTap = Date.now() - ehStopTime < 100;
+
+    if(
+      justMadeEhWithTap || drawing || e.originalEvent.shiftKey ||
+      e.target.hasClass('eh-handle')
+    ){ return; }
 
     toggleElementInfoFor( e.target );
   });

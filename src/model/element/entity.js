@@ -114,6 +114,7 @@ class Entity extends Element {
     let update = this.syncher.update('modification', mod.value);
 
     this.emit('modify', mod);
+    this.emit('localmodify', mod);
 
     return update;
   }
@@ -124,6 +125,10 @@ class Entity extends Element {
     } else {
       return this.modify( mod );
     }
+  }
+
+  moddable(){
+    return this.type() === this.TYPES.PROTEIN;
   }
 
   associate( def ){
@@ -137,9 +142,11 @@ class Entity extends Element {
 
     let updatePromise = this.syncher.update( changes ).then( () => {
       this.emit('associated');
+      this.emit('localassociated');
     } );
 
     this.emit('associate', def);
+    this.emit('localassociate', def);
 
     return updatePromise;
   }
@@ -164,9 +171,11 @@ class Entity extends Element {
       type: TYPE
     }).then( () => {
       this.emit('unassociated');
+      this.emit('localunassociated');
     } );
 
     this.emit('unassociate', oldDef);
+    this.emit('localunassociate', oldDef);
 
     return update;
   }
@@ -178,6 +187,7 @@ class Entity extends Element {
       let update = this.syncher.update({ completed: true });
 
       this.emit('complete');
+      this.emit('localcomplete');
 
       return update;
     } else {
@@ -192,6 +202,7 @@ class Entity extends Element {
       let update = this.syncher.update({ completed: false });
 
       this.emit('uncomplete');
+      this.emit('localuncomplete');
 
       return update;
     } else {

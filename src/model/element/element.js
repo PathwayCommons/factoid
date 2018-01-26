@@ -14,6 +14,13 @@ const DEFAULTS = Object.freeze({
 
 const sanitizePosition = pos => _.pick( pos, _.keys( DEFAULTS.position ) );
 
+const TYPES = {
+  INTERACTION: 'interaction',
+  ELEMENT: 'element',
+  PROTEIN: 'protein',
+  CHEMICAL: 'chemical'
+};
+
 /**
 A generic biological element of no specific type
 
@@ -22,6 +29,9 @@ This allows for reading and writing on the DB and keeping the object synched
 with remote updates.
 */
 class Element {
+  static get TYPES(){ return TYPES; }
+  get TYPES(){ return TYPES; }
+
   constructor( opts = {} ){
     EventEmitterMixin.call( this ); // defines this.emitter
 
@@ -95,6 +105,7 @@ class Element {
     let updatePromise = this.syncher.update( 'name', newName );
 
     this.emit( 'rename', newName );
+    this.emit( 'localrename', newName );
 
     return updatePromise;
   }
@@ -123,6 +134,7 @@ class Element {
     let updatePromise = synched.update( 'position', newPos );
 
     this.emit( 'reposition', newPos );
+    this.emit( 'localreposition', newPos );
 
     return updatePromise;
   }
@@ -139,6 +151,7 @@ class Element {
     let updatePromise = this.syncher.update( 'description', descr );
 
     this.emit( 'redescribe', descr );
+    this.emit( 'localredescribe', descr );
 
     return updatePromise;
   }

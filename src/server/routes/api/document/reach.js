@@ -6,11 +6,14 @@ const fetch = require('node-fetch');
 const FormData = require('form-data');
 const Organism = require('../../../../model/organism');
 const uniprot = require('../element-association/uniprot');
+const pubchem = require('../element-association/pubchem');
+const chebi = require('../element-association/chebi');
 
 const { REACH_URL } = require('../../../../config');
 const MERGE_ENTS_WITH_SAME_GROUND = true;
-const ALLOW_IMPLICIT_ORG_SPEC = false;
+const ALLOW_IMPLICIT_ORG_SPEC = true;
 const REMOVE_DISCONNECTED_ENTS = true;
+const REMOVE_UNGROUNDED_ENTS = false;
 const APPLY_GROUND = true;
 
 module.exports = {
@@ -55,6 +58,7 @@ module.exports = {
       let getArgId = arg => arg.arg;
       let groundIsSame = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
       let elIsIntn = el => el.entries != null;
+      let getElement = id => elementsMap.get(id);
 
       let getSentenceText = id => {
         let f = getFrame(id);
@@ -104,9 +108,20 @@ module.exports = {
             switch( ground.namespace ){
             case 'uniprot':
               return uniprot.get( q );
+            case 'chemical':
+              return pubchem.get( q ).then( res => {
+                return chebi.search({ name: res.inchi });
+              } ).then( ents => {
+                return ents[0]; // multiple may match but the first is the default one (charge 0 etc)
+              } );
+            default:
+              return null;
             }
           } ).then( assoc => {
-            el.association = assoc;
+            if( assoc ){
+              el.association = assoc;
+              el.completed = true;
+            }
           } );
 
           groundPromises.push( applyGround );
@@ -127,16 +142,24 @@ module.exports = {
           id: uuid()
         };
 
+        let supportedTypes = {
+          'protein': 'protein',
+          'simple-chemical': 'chemical'
+        };
+
         let contains = ( arr, str ) => arr.indexOf( str.toLowerCase() ) >= 0;
-        let supportedTypes = ['protein'];
         let type = frame.type;
-        let typeIsSupported = contains( supportedTypes, type );
-        let supportedGrounds = ['uniprot'];
+        let typeIsSupported = supportedTypes[type] != null;
+        let supportedGrounds = ['uniprot', 'pubchem'];
         let ground = frame.xrefs != null ? frame.xrefs.find( ref => contains( supportedGrounds, ref.namespace ) ) : null;
         let isGrounded = ground != null;
 
         let org = !isGrounded ? null : Organism.fromName( ground.species );
         let orgIsSupported = org != null && org !== Organism.OTHER;
+
+        if( REMOVE_UNGROUNDED_ENTS && !isGrounded ){
+          return; // skip this element/frame
+        }
 
         // implicit mention of org
         if( orgIsSupported && ALLOW_IMPLICIT_ORG_SPEC ){
@@ -144,13 +167,15 @@ module.exports = {
         }
 
         if( typeIsSupported ){
-          ent.type = type;
+          ent.type = supportedTypes[type];
         }
 
         ent.name = frame.text;
         ent.completed = isGrounded;
 
-        addElement( ent, frame, ground );
+        if( typeIsSupported ){
+          addElement( ent, frame, ground );
+        }
       } );
 
       // add explicit organisms
@@ -178,7 +203,7 @@ module.exports = {
           let isControlledArg = arg => arg.type === 'controlled';
           let argsAreControllerControlled = args.length === 2 && args.some( isControllerArg ) && args.some( isControlledArg );
           let argsAreEntAndEvt = argFrames.some( frameIsEntity ) && argFrames.some( frameIsEvent );
-          let getEntryFromEl = el => ({ id: el.id });
+          let getEntryFromEl = el => el == null ? null : ({ id: el.id });
           let isSingleArgEvt = frame => frameIsEvent(frame) && _.get(frame, ['arguments', 0, 'argument-type']) === 'entity';
           let evtArg = frame.arguments.find( arg => isSingleArgEvt( getFrame( getArgId(arg) ) ) );
           let haveEvtArg = evtArg != null;
@@ -205,7 +230,11 @@ module.exports = {
               intn.entries = argFrames.map( getEntityFrame ).map( getElFromFrame ).map( getEntryFromEl );
             }
 
-            addElement( intn, frame );
+            intn.entries = intn.entries.filter( entry => entry != null );
+
+            if( intn.entries.length >= 2 ){
+              addElement( intn, frame );
+            }
           }
         }
       } );

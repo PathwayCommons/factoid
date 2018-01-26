@@ -1,4 +1,4 @@
-const provider = require('./uniprot');
+const provider = require('./aggregate');
 const jsonifyResult = response => ( result => response.json( result ) );
 const http = require('express').Router();
 

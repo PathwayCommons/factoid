@@ -1,12 +1,87 @@
 /* tippy theme overrides */
 
-.tippy-tooltip {
+/* resolves issue where an adjusting tippy can cause the page to shift */
+.tippy-popper {
+  position: fixed !important;
+}
+
+.tippy-popper .tippy-tooltip {
   padding: 0;
+  text-align: inherit;
+}
+
+.tippy-popper[x-placement^=top] .tippy-tooltip .tippy-arrow {
+  border-top: 7px solid #fff;
+  border-right: 7px solid transparent;
+  border-left: 7px solid transparent;
+  bottom: -7px;
+  margin: 0 7px;
+}
+
+.tippy-popper[x-placement^=bottom] .tippy-tooltip .tippy-arrow {
+  border-bottom: 7px solid #fff;
+  border-right: 7px solid transparent;
+  border-left: 7px solid transparent;
+  top: -7px;
+  margin: 0 7px;
+}
+
+.tippy-popper[x-placement^=left] .tippy-tooltip .tippy-arrow {
+  border-left: 7px solid #fff;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  right: -7px;
+  margin: 4px 0;
+}
+
+.tippy-popper[x-placement^=right] .tippy-tooltip .tippy-arrow {
+  border-right: 7px solid #fff;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  left: -7px;
+  margin: 4px 0;
 }
 
 .tippy-popper .tippy-tooltip.light-theme {
-  text-align: inherit;
   color: inherit;
+  background-color: #fff;
+}
+
+.tippy-popper[x-placement^=top] .tippy-tooltip.light-theme .tippy-arrow {
+  border-top-color: #fff;
+}
+
+.tippy-popper[x-placement^=bottom] .tippy-tooltip.light-theme .tippy-arrow {
+  border-bottom-color: #fff;
+}
+
+.tippy-popper[x-placement^=left] .tippy-tooltip.light-theme .tippy-arrow {
+  border-left-color: #fff;
+}
+
+.tippy-popper[x-placement^=right] .tippy-tooltip.light-theme .tippy-arrow {
+  border-right-color: #fff;
+}
+
+.tippy-popper .tippy-tooltip.dark-theme {
+  color: #fff;
+  background-color: #333;
+}
+
+.tippy-popper[x-placement^=top] .tippy-tooltip.dark-theme .tippy-arrow {
+  border-top-color: #333;
+}
+
+.tippy-popper[x-placement^=bottom] .tippy-tooltip.dark-theme .tippy-arrow {
+  border-bottom-color: #333;
+}
+
+.tippy-popper[x-placement^=left] .tippy-tooltip.dark-theme .tippy-arrow {
+  border-left-color: #333;
+}
+
+.tippy-popper[x-placement^=right] .tippy-tooltip.dark-theme .tippy-arrow {
+  border-right-color: #333;
 }
 
 .tippy,
@@ -21,4 +96,5 @@
 
 .tippy-popper {
   z-index: 999999 !important;
+  position: fixed !important;
 }

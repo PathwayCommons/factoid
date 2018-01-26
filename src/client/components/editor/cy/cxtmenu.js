@@ -4,7 +4,8 @@ const icon = name => '<span class="cxtmenu-command-icon"><i class="material-icon
 
 const DEFAULTS = Object.freeze({
   fillColor: 'rgba(0, 0, 0, 0.85)',
-  separatorWidth: 8
+  separatorWidth: 8,
+  openMenuEvents: 'cxttapstart'
 });
 
 module.exports = function({ cy, document, bus, controller }){
@@ -67,7 +68,12 @@ module.exports = function({ cy, document, bus, controller }){
   };
 
   cy.cxtmenu( _.assign( {}, DEFAULTS, {
-    selector: 'node',
+    selector: 'node[?isInteraction]',
+    commands: [ drawCmd, rmElCmd ]
+  } ) );
+
+  cy.cxtmenu( _.assign( {}, DEFAULTS, {
+    selector: 'node[?isEntity]',
     commands: [ drawCmd, rmElCmd ]
   } ) );
 
@@ -87,14 +93,15 @@ module.exports = function({ cy, document, bus, controller }){
 
   cy.cxtmenu( _.assign( {}, DEFAULTS, {
     selector: 'core',
-    openMenuEvents: 'cxttapstart',
     commands: bgCmds
   } ) );
 
-  cy.on('cxttapstart taphold', 'node, edge', function( evt ){
+  cy.on('cxttapstart', 'node, edge', function( evt ){
     let el = evt.target;
 
     el.addClass('cxtmenu-tgt');
+
+    bus.emit('closetip');
   });
 
   cy.on('cxttapend tapend', 'node, edge', function( evt ){

@@ -4,13 +4,13 @@ const Toggle = require('../toggle');
 const Popover = require('../popover');
 const Linkout = require('../document-linkout');
 
-module.exports = function({ controller, document }){
+module.exports = function({ controller, document, bus }){
   let btns = [];
 
   if( document.editable() ){
     btns.push(
       h(Tooltip, { description: 'Add entity', shortcut: 'e' }, [
-        h('button.editor-button.plain-button', { onClick: () => controller.addElement() }, [
+        h('button.editor-button.plain-button', { onClick: () => controller.addElement().then( el => bus.emit('opentip', el) ) }, [
           h('i.material-icons', 'add_circle')
         ])
       ])

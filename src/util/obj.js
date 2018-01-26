@@ -84,6 +84,14 @@ function ensureArray( valOrArr ){
   }
 }
 
+function lazySlice( arr, i, j ){
+  if( i === 0 && j === arr.length ){
+    return arr;
+  } else {
+    return arr.slice( i, j );
+  }
+}
+
 function mixin( proto, obj, opts = {} ){
   let sanitized = _.omit( obj, ['constructor'].concat( opts.not ) );
 
@@ -121,4 +129,4 @@ function jsonHash( obj, filter ){
   return hash.sha512().update( serializedJson ).digest('hex');
 }
 
-module.exports = { firstDefined, fill, error, getId, ensureArray, mixin, jsonHash };
+module.exports = { firstDefined, fill, error, getId, ensureArray, lazySlice, mixin, jsonHash };

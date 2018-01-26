@@ -353,7 +353,10 @@ class Syncher {
       this.filled = true;
       this.data._hasCorrectSecret = true; // let the client know that it owns the obj, i.e. syncher.hasCorrectSecret()
     };
-    let emitSelf = () => this.emit('create');
+    let emitSelf = () => {
+      this.emit('create');
+      this.emit('localcreate');
+    };
 
     if( this.table ){
       insert = () => {
@@ -747,8 +750,8 @@ class Syncher {
 
     let changes = _.pick( this.data, objKeys );
     let emitSelf = () => {
-      this.emit( 'localupdate', changes, old );
       this.emit( 'update', changes, old );
+      this.emit( 'localupdate', changes, old );
     };
     let update;
 

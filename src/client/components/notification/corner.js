@@ -3,7 +3,6 @@ const h = require('react-hyperscript');
 const NotificationBase = require('./base');
 const { makeClassList } = require('../../../util');
 
-// WIP
 class CornerNotification extends DirtyComponent {
   constructor(props){
     super(props);
@@ -19,7 +18,7 @@ class CornerNotification extends DirtyComponent {
 
     return super.render( h('div.corner-notification', {
       className: makeClassList({
-        'inline-notification-active': notification.active()
+        'corner-notification-active': notification.active()
       }) + ' ' + className
     }, [
       h(NotificationBase, { notification })

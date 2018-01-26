@@ -12,6 +12,12 @@ const debug = require('../../debug');
 const defs = require('./defs');
 const { getId, defer } = require('../../../util');
 const Buttons = require('./buttons');
+const Notification = require('../notification');
+const CornerNotification = require('../notification/corner');
+const UndoRemove = require('./undo-remove');
+
+const RM_DEBOUNCE_TIME = 500;
+const RM_AVAIL_DURATION = 5000;
 
 class Editor extends React.Component {
   constructor( props ){
@@ -36,13 +42,64 @@ class Editor extends React.Component {
 
     if( debug.enabled() ){
       window.doc = doc;
+      window.editor = this;
     }
 
-    let removeAllListeners = el => el.removeAllListeners();
+    let checkToClearRmList = () => {
+      let now = Date.now();
+      let l = this.data.rmList;
 
-    // just to make sure that we don't have dangling listeners causing issues
-    doc.on('remove', ( el ) => removeAllListeners( el ));
-    doc.on('replace', ( oldEl ) => removeAllListeners( oldEl ));
+      if( now - l.lastTime > RM_DEBOUNCE_TIME ){
+        l.els = [];
+        l.ppts = [];
+      }
+
+      l.lastTime = now;
+    };
+
+    let rmAvailTimeout = null;
+
+    let makeRmAvailable = () => {
+      clearTimeout( rmAvailTimeout );
+
+      rmAvailTimeout = setTimeout( () => {
+        this.setData({ undoRemoveAvailable: false });
+      }, RM_AVAIL_DURATION );
+
+      this.setData({ undoRemoveAvailable: true });
+    };
+
+    let addRmPptToList = (intn, ppt, type) => {
+      checkToClearRmList();
+      makeRmAvailable();
+
+      this.data.rmList.ppts.push({ intn, ppt, type });
+    };
+
+    let addRmToList = el => {
+      checkToClearRmList();
+      makeRmAvailable();
+
+      this.data.rmList.els.push( el );
+    };
+
+    let listenForRmPpt = intn => intn.on('remove', (el, type) => addRmPptToList(intn, el, type));
+
+    doc.on('remove', el => {
+      addRmToList( el );
+
+      el.removeAllListeners(); // just to make sure that we don't have dangling listeners causing issues
+    });
+
+    doc.on('add', el => {
+      if( el.isInteraction() ){
+        listenForRmPpt( el );
+      }
+    });
+
+    doc.on('load', () => {
+      doc.interactions().forEach( listenForRmPpt );
+    });
 
     let bus = new EventEmitter();
 
@@ -57,7 +114,12 @@ class Editor extends React.Component {
       newElementShift: 0,
       allowDisconnectedInteractions: false,
       mountDeferred: defer(),
-      initted: false
+      initted: false,
+      rmList: {
+        els: [],
+        ppts: [],
+        lastTime: 0
+      }
     });
 
     this.state = _.assign( {}, this.data );
@@ -98,6 +160,27 @@ class Editor extends React.Component {
         });
 
         logger.info('Initialised Cytoscape on mounted editor');
+      } )
+      .then( () => {
+        let anyIsInc = doc.entities().some( ent => !ent.completed() );
+
+        let ntfn = new Notification({
+          openable: true,
+          openText: 'Show me',
+          active: anyIsInc,
+          message: 'Provide more information for incomplete entities, labelled "?".'
+        });
+
+        ntfn.on('open', () => this.openFirstIncompleteEntity());
+
+        if( this.editable() ){
+          let listenForComplete = el => el.on('complete', () => ntfn.dismiss());
+
+          doc.elements().forEach(listenForComplete);
+          doc.on('add', listenForComplete);
+
+          this.setData({ incompleteNotification: ntfn });
+        }
       } )
       .then( () => {
         logger.info('The editor has initialised');
@@ -162,11 +245,17 @@ class Editor extends React.Component {
       }, data )
     });
 
+    this.lastAddedElement = el;
+
     return ( Promise.try( () => el.synch() )
       .then( () => el.create() )
       .then( () => doc.add(el) )
       .then( () => el )
     );
+  }
+
+  getLastAddedElement(){
+    return this.lastAddedElement;
   }
 
   addInteraction( data = {} ){
@@ -190,6 +279,29 @@ class Editor extends React.Component {
     Promise.try( allIntnsRmPpt ).then( rmEl );
   }
 
+  undoRemove(){
+    let { rmList, document } = this.data;
+
+    if( rmList.els.length === 0 && rmList.ppts.length === 0 ){ return Promise.resolve(); }
+
+    this.setData({
+      rmList: { els: [], ppts: [], lastTime: 0 }
+    });
+
+    let makeRmUnavil = () => this.setData({ undoRemoveAvailable: false });
+
+    let restoreEls = () => Promise.all( rmList.els.map( el => document.add(el) ) );
+
+    let restorePpts = () => Promise.all( rmList.ppts.map( ({ intn, ppt, type }) => {
+      let restorePpt = () => intn.add( ppt );
+      let restoreType = () => intn.participantType( ppt, type );
+
+      return Promise.try( restorePpt ).then( restoreType );
+    } ) );
+
+    return Promise.all([ restoreEls(), restorePpts() ]).then( makeRmUnavil );
+  }
+
   layout(){
     if( !this.editable() ){ return; }
 
@@ -206,12 +318,26 @@ class Editor extends React.Component {
     this.data.bus.emit('removeselected');
   }
 
+  openFirstIncompleteEntity(){
+    if (!this.editable()) { return; }
+
+    let { document, bus } = this.data;
+
+    let incEnts = document.entities().filter(ent => !ent.completed());
+
+    if( incEnts.length > 0 ){
+      bus.emit('opentip', incEnts[0]);
+    }
+  }
+
   render(){
-    let document = this.data.document;
+    let { document, bus, incompleteNotification } = this.data;
     let controller = this;
 
     return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), this.state.initted ? [
-      h(Buttons, { controller, document }),
+      h(Buttons, { controller, document, bus }),
+      incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
+      h(UndoRemove, { controller, document, bus }),
       h('div.editor-graph#editor-graph')
     ] : []);
   }
@@ -224,6 +350,9 @@ class Editor extends React.Component {
     if( this.data.cy ){
       this.data.cy.destroy();
     }
+
+    this.data.document.elements().forEach( el => el.removeAllListeners() );
+    this.data.document.removeAllListeners();
   }
 }
 

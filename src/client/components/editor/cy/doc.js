@@ -5,7 +5,7 @@ const onKey = require('./on-key');
 const Promise = require('bluebird');
 const { isInteractionNode, makeCyEles, makePptEdges } = require('../../../../util');
 
-function listenToDoc({ bus, cy, document }){
+function listenToDoc({ bus, cy, document, controller }){
   let getCyEl = function( docEl ){
     return cy.getElementById( docEl.id() );
   };
@@ -319,6 +319,8 @@ function listenToDoc({ bus, cy, document }){
   };
 
   let animateRm = function( el ){
+    return el.remove();
+
     if( isInteractionNode(el) ){
       el.style('opacity', 0);
 
@@ -458,14 +460,6 @@ function listenToDoc({ bus, cy, document }){
     return { x, y };
   };
 
-  cy.on('cyedgehandles.start', function(){
-    cy.nodes().addClass('drop-target');
-  });
-
-  cy.on('cyedgehandles.stop', function(){
-    cy.nodes().removeClass('drop-target');
-  });
-
   // keys
 
   let lastMousePos;
@@ -473,7 +467,7 @@ function listenToDoc({ bus, cy, document }){
 
   cy.on('mousemove', onMouseMove);
 
-  bus.on('addelementmouse', () => bus.emit('addelement', { position: lastMousePos }));
+  bus.on('addelementmouse', () => controller.addElement({ position: lastMousePos }).then( el => bus.emit('opentip', el) ));
   bus.on('addinteractionmouse', () => bus.emit('addinteraction', { position: lastMousePos }));
 
   onKey('e', () => bus.emit('addelementmouse'));
@@ -508,11 +502,35 @@ function listenToDoc({ bus, cy, document }){
 
   let onTapHold = (e) => {
     if( e.target === cy ){
-      bus.emit('addelement', { position: copyEventPosition(e) });
+      let tapend = cy.pon('tapend');
+      let add = controller.addElement({ position: copyEventPosition(e) });
+
+      Promise.all([ add, tapend ]).then( ([ el ]) => bus.emit('opentip', el) );
     }
   };
 
   cy.on('taphold', onTapHold);
+
+  cy.on('tap', 'node, edge', _.debounce( e => {
+    let tgt = e.target;
+
+    if( tgt.isNode() && isInteractionNode(tgt) ){
+      tgt.connectedEdges().select();
+    } else if( tgt.isEdge() ){
+      let intnNode = tgt.connectedNodes( isInteractionNode );
+
+      intnNode.connectedEdges().select();
+      intnNode.select();
+    }
+  }, 10 ));
+
+  cy.on('add', 'edge', e => {
+    let edge = e.target;
+
+    if( edge.connectedNodes(isInteractionNode).selected() ){
+      edge.select();
+    }
+  });
 
   // TODO emit close on bus when doc closed / new doc loaded?
   bus.on('close', function(){

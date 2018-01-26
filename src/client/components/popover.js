@@ -2,7 +2,7 @@ const React = require('react');
 const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
 const hh = require('hyperscript');
-const Tippy = require('tippy.js');
+const tippyjs = require('tippy.js');
 const _ = require('lodash');
 const { tippyDefaults } = require('../defs');
 const Mousetrap = require('mousetrap');
@@ -45,19 +45,17 @@ class Popover extends React.Component {
 
     this.renderTipContent();
 
-    let tippy = new Tippy( target, _.assign( {}, tippyDefaults, options, {
+    let tippy = tippyjs( target, _.assign( {}, tippyDefaults, options, {
       html: content
-    } ) );
+    } ) ).tooltips[0];
 
-    let popper = tippy.getPopperElement( target );
-
-    let show = () => tippy.show( popper );
-    let hide = () => tippy.hide( popper );
+    let show = () => tippy.show();
+    let hide = () => tippy.hide();
 
     if( p.show ){ p.show( show ); }
     if( p.hide ){ p.hide( hide ); }
 
-    this.onEsc = () => tippy.hide( popper );
+    this.onEsc = () => tippy.hide();
 
     emitter.on('esc', this.onEsc);
   }

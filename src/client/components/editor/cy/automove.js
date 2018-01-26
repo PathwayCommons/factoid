@@ -1,6 +1,10 @@
-let isPreviewEle = ele => ele.hasClass('edgehandles-preview') || ele.hasClass('edgehandles-ghost');
-let notIsPreviewEle = ele => !isPreviewEle( ele );
-let { isInteractionNode } = require('../../../../util');
+const isEhNode = ele => ele.hasClass('eh-handle') || ele.hasClass('eh-ghost');
+const notIsEhNode = ele => !isEhNode( ele );
+const isEhEdge = ele => ele.hasClass('eh-preview') || ele.hasClass('eh-ghost');
+const notIsEhEdge = ele => !isEhEdge( ele );
+const { isInteractionNode } = require('../../../../util');
+
+const ALLOW_DRAGGING_INTERACTIONS = false;
 
 module.exports = function( { cy, document } ){
   let update = node => {
@@ -8,12 +12,12 @@ module.exports = function( { cy, document } ){
       let intn = document.get( node.id() );
 
       if( intn == null ){
-        return;
+        disable( node );
       } else if( node.removed() ){
         disable( node );
       } else if(
-        notIsPreviewEle(node) &&
-        node.connectedEdges().filter( notIsPreviewEle ).length >= 2
+        notIsEhNode(node) &&
+        node.connectedEdges().filter( notIsEhEdge ).length >= 2
       ){
         disable( node ); // disable old rules so they can be replaced
         enable( node );
@@ -24,9 +28,11 @@ module.exports = function( { cy, document } ){
   };
 
   let enable = node => {
+    let rules = [];
+
     let nhoodNodes = node.neighborhood().filter( ele => {
-      return ( ele.isNode() && notIsPreviewEle( ele ) && !isInteractionNode( ele )
-        && ele.edgesWith( node ).filter( notIsPreviewEle ).nonempty() );
+      return ( ele.isNode() && notIsEhNode( ele ) && !isInteractionNode( ele )
+        && ele.edgesWith( node ).filter( notIsEhEdge ).nonempty() );
     } );
 
     let mean = cy.automove({
@@ -36,13 +42,20 @@ module.exports = function( { cy, document } ){
       meanOnSelfPosition: () => false
     });
 
-    let drag = cy.automove({
-      nodesMatching: nhoodNodes,
-      reposition: 'drag',
-      dragWith: node
-    });
+    rules.push( mean );
 
-    node.scratch('_automoveRules', [ mean, drag ]);
+    if( ALLOW_DRAGGING_INTERACTIONS ){
+      let drag = cy.automove({
+        nodesMatching: nhoodNodes,
+        reposition: 'drag',
+        dragWith: node
+      });
+
+      rules.push( drag );
+    }
+
+    node.scratch('_automoveRules', rules);
+
   };
 
   let disable = node => {
@@ -50,7 +63,10 @@ module.exports = function( { cy, document } ){
 
     if( !rules ){ return; }
 
-    rules.forEach( rule => rule.disable() );
+    rules.forEach( rule => {
+      rule.disable();
+      rule.destroy();
+    } );
 
     node.scratch('_automoveRules', null);
   };
@@ -77,4 +93,5 @@ module.exports = function( { cy, document } ){
   cy.on('layoutstop', function(){
     cy.nodes().forEach( updateRules );
   });
+
 };

@@ -460,14 +460,6 @@ function listenToDoc({ bus, cy, document, controller }){
     return { x, y };
   };
 
-  cy.on('cyedgehandles.start', function(){
-    cy.nodes().addClass('drop-target');
-  });
-
-  cy.on('cyedgehandles.stop', function(){
-    cy.nodes().removeClass('drop-target');
-  });
-
   // keys
 
   let lastMousePos;

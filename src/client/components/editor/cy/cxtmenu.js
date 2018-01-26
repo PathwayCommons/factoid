@@ -68,7 +68,12 @@ module.exports = function({ cy, document, bus, controller }){
   };
 
   cy.cxtmenu( _.assign( {}, DEFAULTS, {
-    selector: 'node',
+    selector: 'node[?isInteraction]',
+    commands: [ drawCmd, rmElCmd ]
+  } ) );
+
+  cy.cxtmenu( _.assign( {}, DEFAULTS, {
+    selector: 'node[?isEntity]',
     commands: [ drawCmd, rmElCmd ]
   } ) );
 

@@ -1,6 +1,7 @@
 const defs = require('./defs');
+const _ = require('lodash');
 
-function makeStylesheet( doc ){
+function makeStylesheet(){
   let { activeColor, defaultColor, labelColor, nodeSize, interactionNodeSize } = defs;
 
   return [
@@ -98,8 +99,33 @@ function makeStylesheet( doc ){
       }
     },
     {
-      selector: '.edgehandles-preview, .edgehandles-ghost-edge',
+			selector: '.eh-handle',
+			style: {
+        'label': '',
+        'background-image': _.memoize( () => {
+          let dataUri = svg => 'data:image/svg+xml;utf8,' + encodeURIComponent( svg );
+
+          let svg = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="M11.59 7.41L15.17 11H1v2h14.17l-3.59 3.59L13 18l6-6-6-6-1.41 1.41zM20 6v12h2V6h-2z"/></svg>';
+          let svgCircle = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" stroke="#fff" stroke-width="3" fill="transparent"/></svg>';
+
+          return [ dataUri(svg), dataUri(svgCircle) ];
+        }, () => 'const-cache-key' ),
+        'background-width': [ '80%', '100%' ],
+        'background-height': [ '80%', '100%' ],
+        'background-clip': 'node',
+				'background-color': activeColor,
+				'width': 12,
+				'height': 12,
+				'shape': 'ellipse',
+				'overlay-opacity': 0,
+				'border-width': 12, // makes the handle easier to hit
+				'border-opacity': 0
+			}
+		},
+    {
+      selector: '.eh-preview, .eh-ghost-edge',
       style: {
+        'text-outline-color': activeColor,
         'background-color': activeColor,
         'line-color': activeColor,
         'target-arrow-color': activeColor,
@@ -109,7 +135,7 @@ function makeStylesheet( doc ){
       }
     },
     {
-      selector: '.edgehandles-ghost-edge',
+      selector: '.eh-ghost-edge',
       style: {
         'opacity': 0.5
       }
@@ -118,6 +144,15 @@ function makeStylesheet( doc ){
       selector: '.cxtmenu-tgt',
       style: {
         'overlay-opacity': 0
+      }
+    },
+    {
+      selector: '.eh-source, .eh-target',
+      style: {
+        'overlay-opacity': 0,
+        'border-color': activeColor,
+        'border-width': 4,
+        'border-style': 'double'
       }
     }
   ].filter( block => block != null );

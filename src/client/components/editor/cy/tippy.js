@@ -50,13 +50,17 @@ module.exports = function({ bus, cy, document }){
   });
 
   let drawing = false;
+  let ehStopTime = 0;
 
   bus.on('drawstart', () => {
     drawing = true;
 
     hideAllTippies();
   });
+
   bus.on('drawstop', () => drawing = false);
+
+  cy.on('ehstop', () => ehStopTime = Date.now());
 
   let destroyTippy = tippyInfo => {
     let t = tippyInfo;
@@ -330,7 +334,12 @@ module.exports = function({ bus, cy, document }){
   };
 
   cy.on('tap', 'node, edge', function( e ){
-    if( drawing || e.originalEvent.shiftKey ){ return; }
+    let justMadeEhWithTap = Date.now() - ehStopTime < 100;
+
+    if(
+      justMadeEhWithTap || drawing || e.originalEvent.shiftKey ||
+      e.target.hasClass('eh-handle')
+    ){ return; }
 
     toggleElementInfoFor( e.target );
   });

@@ -171,11 +171,13 @@ const processXml = res => {
     let recFullProteinName = _.get(entry, ['protein', 'recommendedName', 'fullName', '_text']);
     let recShortProteinName = _.get(entry, ['protein', 'recommendedName', 'shortName', '_text']);
     let altProteinNames = mapXmlArray( _.get(entry, ['protein', 'alternativeName']), getShortOrFullXmlName );
+    let subProteinNames = mapXmlArray( _.get(entry, ['protein', 'submittedName']), getShortOrFullXmlName );
 
     let proteinNames = [];
     pushIfNonNil( proteinNames, recShortProteinName );
     pushIfNonNil( proteinNames, recFullProteinName );
     altProteinNames.forEach( name => pushIfNonNil( proteinNames, name ) );
+    subProteinNames.forEach( name => pushIfNonNil( proteinNames, name ) );
 
     ents.push({ namespace, type, id, organism, name, geneNames, proteinNames });
   }

@@ -58,7 +58,7 @@ const getLiteEntitiesAtOffset = ( search, offset = 0, limit = MAX_SEARCH_SIZE ) 
 
   return (
     Promise.try( () => getLiteEntities( search ) )
-    .then( liteEnts => liteEnts.splice( offset, offset + limit ) )
+    .then( liteEnts => liteEnts.slice( offset, offset + limit ) )
   );
 };
 

@@ -7,6 +7,7 @@ const { CHEBI_WSDL_URL, CHEBI_JAVA_PACKAGE, CHEBI_CACHE_SIZE, MAX_SEARCH_SIZE } 
 const NS = 'chebi';
 const TYPE = 'chemical';
 const convert = require('./search-string-conversion');
+const isNonNil = x => !_.isNil(x);
 
 const mapSynonym = syn => syn.data;
 
@@ -28,7 +29,7 @@ const mapChemical = chem => {
     synonyms: _.concat(
       safeMap( chem.IupacNames, mapSynonym ),
       safeMap( chem.Synonyms, mapSynonym )
-    ),
+    ).filter( isNonNil ),
     formulae: safeMap( chem.Formulae, mapSynonym )
   }, val => val != null );
 };

@@ -107,6 +107,8 @@ module.exports = function({ bus, cy, document }){
   });
 
   let makeIncompleteNotification = (el, docEl) => { // eslint-disable-line no-unused-vars
+    if( !document.editable() ){ return; }
+
     let ref = getRef( () => el.renderedBoundingBox({ includeLabels: true, includeOverlays: false }), el );
     let content = getContentDiv( h( NotificationBase, {
       notification: incompleteNotification,

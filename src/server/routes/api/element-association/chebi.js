@@ -64,7 +64,11 @@ const getLiteEntitiesAtOffset = ( search, offset = 0, limit = MAX_SEARCH_SIZE ) 
 
 const completeEntityCache = LRUCache({ max: CHEBI_CACHE_SIZE });
 
-const getCompleteEntity = memoize( ( id ) => {
+const getCompleteEntity = ( id ) => {
+  if( completeEntityCache.has(id) ){
+    return completeEntityCache.get(id);
+  }
+
   return (
     Promise.try( getClient )
     .then( client => client.getCompleteEntityAsync({ chebiId: id }) )
@@ -73,8 +77,13 @@ const getCompleteEntity = memoize( ( id ) => {
       return res;
     } )
     .then( res => mapChemical( res.return ) )
+    .then( chem => {
+      completeEntityCache.set( id, chem );
+
+      return chem;
+    } )
   );
-}, completeEntityCache );
+};
 
 const getCompleteEntityByList = ( ids ) => {
   let rawRequest = ids => (

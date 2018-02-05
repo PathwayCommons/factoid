@@ -2,7 +2,7 @@ const React = require('react');
 const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
 const Clipboard = require('clipboard');
-const Tooltip = require('./tooltip');
+const Tooltip = require('./popover/tooltip');
 
 class Address extends React.Component {
   constructor( props ){

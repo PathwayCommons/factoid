@@ -324,6 +324,10 @@ button {
     background-image: url('./image/spinner.svg');
     animation: spin 750ms infinite linear;
   }
+
+  &.icon-logo {
+    background-image: url('./image/logo.svg');
+  }
 }
 
 .icon-rot-90 {

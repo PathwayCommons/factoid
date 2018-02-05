@@ -1,7 +1,7 @@
 const h = require('react-hyperscript');
-const Tooltip = require('../tooltip');
+const Tooltip = require('../popover/tooltip');
 const Toggle = require('../toggle');
-const Popover = require('../popover');
+const Popover = require('../popover/popover');
 const Linkout = require('../document-linkout');
 
 module.exports = function({ controller, document, bus }){

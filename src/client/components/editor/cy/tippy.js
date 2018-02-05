@@ -1,8 +1,8 @@
 const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
 const hh = require('hyperscript');
-const ElementInfo = require('../../element-info');
-const ParticipantInfo = require('../../participant-info');
+const ElementInfo = require('../../element-info/element-info');
+const ParticipantInfo = require('../../element-info/participant-info');
 const { isInteractionNode } = require('../../../../util');
 const tippyjs = require('tippy.js');
 const _ = require('lodash');

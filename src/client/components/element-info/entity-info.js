@@ -1,20 +1,20 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const ReactDom = require('react-dom');
-const { focusDomElement, makeClassList } = require('../../util');
+const { focusDomElement, makeClassList } = require('../../../util');
 const _ = require('lodash');
-const defs = require('../defs');
+const defs = require('../../defs');
 const anime = require('animejs');
 const queryString = require('query-string');
 const Promise = require('bluebird');
-const OrganismToggle = require('./organism-toggle');
-const Organism = require('../../model/organism');
-const Highlighter = require('./highlighter');
-const Notification = require('./notification');
-const InlineNotification = require('./notification/inline');
-const Tooltip = require('./tooltip');
+const OrganismToggle = require('../organism-toggle');
+const Organism = require('../../../model/organism');
+const Highlighter = require('../highlighter');
+const Notification = require('../notification');
+const InlineNotification = require('../notification/inline');
+const Tooltip = require('../popover/tooltip');
 
-const { UNIPROT_LINK_BASE_URL, CHEBI_LINK_BASE_URL } = require('../../config');
+const { UNIPROT_LINK_BASE_URL, CHEBI_LINK_BASE_URL } = require('../../../config');
 
 const animateDomForEdit = domEle => anime({
   targets: domEle,

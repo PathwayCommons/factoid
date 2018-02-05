@@ -1,6 +1,6 @@
 const h = require('react-hyperscript');
 const Toggle = require('./toggle');
-const Tooltip = require('./tooltip');
+const Tooltip = require('./popover/tooltip');
 const React = require('react');
 
 class OrganismToggle extends React.Component {

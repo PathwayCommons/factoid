@@ -1,0 +1,24 @@
+.debug {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  text-align: center;
+}
+
+.debug-links {
+  margin: 0.5em 0;
+}
+
+.debug-link {
+  display: block;
+  margin: 0.5em 0;
+}
+
+.debug-logo-icon {
+  width: 10em;
+  height: 10em;
+  max-width: 100vw;
+}

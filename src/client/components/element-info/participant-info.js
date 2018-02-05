@@ -2,7 +2,6 @@ const React = require('react');
 const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
 const uuid = require('uuid');
-const { animateDomForEdit } = require('./animate');
 
 class ElementInfo extends React.Component {
   constructor( props ){
@@ -74,8 +73,8 @@ class ElementInfo extends React.Component {
   componentDidMount(){
     let intn = this.props.interaction;
     let ppt = this.props.participant;
-    let root = ReactDom.findDOMNode( this );
-    let typeSel = root.querySelector('.participant-info-type-radioset');
+    // let root = ReactDom.findDOMNode( this );
+    // let typeSel = root.querySelector('.participant-info-type-radioset');
 
     this.onRemoteRetype = ( retypedPpt, newType ) => {
       if( retypedPpt.id() === ppt.id() ){

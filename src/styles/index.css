@@ -3,15 +3,17 @@
 /* app styles */
 @import "./animations.css";
 @import "./base.css";
-@import "./tippy.css";
-@import "./popover.css";
-@import "./tooltip.css";
+@import "./popover";
 @import "./react-tabs.css";
 @import "./init-app.css";
 @import "./app.css";
 @import "./highlighter.css";
 @import "./editor";
 @import "./home.css";
+@import "./debug.css";
 @import "./document-linkout.css";
 @import "./document-filler.css";
-@import "./notification.css"
+@import "./notification.css";
+@import "./element-info";
+@import "./organism-toggle.css";
+@import "./example-document.css";

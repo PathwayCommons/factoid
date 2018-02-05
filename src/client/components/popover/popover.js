@@ -4,7 +4,7 @@ const h = require('react-hyperscript');
 const hh = require('hyperscript');
 const tippyjs = require('tippy.js');
 const _ = require('lodash');
-const { tippyDefaults } = require('../defs');
+const { tippyDefaults } = require('../../defs');
 const Mousetrap = require('mousetrap');
 const EventEmitter = require('eventemitter3');
 

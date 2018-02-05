@@ -16,7 +16,7 @@ class Home extends Component {
         h('li', 'The author first receives an email from Factoid, with a link to edit the Factoid document associated with the paper.  '),
         h('li', [
           h('span', 'Next, the author edits the document (e.g.'),
-          h(Link, { className: 'plain-link', to: '/example-document' }, 'example document'),
+          h(Link, { className: 'plain-link', to: '/example-document' }, 'sample document'),
           h('span', ').'),
         ]),
         h('li', 'The author then finalises the document, and the data is automatically sent to the journal.  ')

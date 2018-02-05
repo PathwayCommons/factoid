@@ -17,7 +17,7 @@ class Home extends Component {
         h('li', [
           h('span', 'Next, the author edits the document (e.g.'),
           h(Link, { className: 'plain-link', to: '/example-document' }, 'sample document'),
-          h('span', ').'),
+          h('span', ') to ensure that it accurately portrays the paper.'),
         ]),
         h('li', 'The author then finalises the document, and the data is automatically sent to the journal.  ')
       ])

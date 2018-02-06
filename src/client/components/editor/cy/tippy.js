@@ -28,6 +28,10 @@ module.exports = function({ bus, cy, document }){
     deactivateIncompleteNotification();
   });
 
+  bus.on('destroytip', () => {
+    destroyAllTippies();
+  });
+
   bus.on('opentip', function( el ){
     hideAllTippies();
     deactivateIncompleteNotification();
@@ -62,7 +66,21 @@ module.exports = function({ bus, cy, document }){
 
   cy.on('ehstop', () => ehStopTime = Date.now());
 
+  let destroyAllTippies = () => {
+    cy.nodes().forEach( n => {
+      let infos = n.scratch('_tippies');
+
+      if( infos ){
+        infos.forEach( destroyTippy );
+      }
+    } );
+
+    destroyTippy( incompleteTippyInfo );
+  };
+
   let destroyTippy = tippyInfo => {
+    if( !tippyInfo ){ return; }
+
     let t = tippyInfo;
     let div = t.content;
 

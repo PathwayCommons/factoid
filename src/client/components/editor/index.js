@@ -347,12 +347,16 @@ class Editor extends React.Component {
   }
 
   componentWillUnmount(){
-    if( this.data.cy ){
-      this.data.cy.destroy();
+    let { cy, document, bus } = this.data;
+
+    bus.emit('destroytip');
+
+    if( cy ){
+      cy.destroy();
     }
 
-    this.data.document.elements().forEach( el => el.removeAllListeners() );
-    this.data.document.removeAllListeners();
+    document.elements().forEach( el => el.removeAllListeners() );
+    document.removeAllListeners();
   }
 }
 

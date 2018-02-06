@@ -294,6 +294,10 @@ function listenToDoc({ bus, cy, document, controller }){
   };
 
   let onAddNewEle = function( docEl, el ){
+    // don't animate add for now to make things snappier
+  };
+
+  let animateAdd = function( docEl, el ){
     let timestamp = docEl.creationTimestamp();
     let whenCreated = timestamp == null ? null : date.parse( timestamp );
     let cutoff = date.subSeconds( Date.now(), 5 );
@@ -319,8 +323,7 @@ function listenToDoc({ bus, cy, document, controller }){
   };
 
   let animateRm = function( el ){
-    return el.remove();
-
+    // disable animations for now for speed
     if( isInteractionNode(el) ){
       el.style('opacity', 0);
 
@@ -337,6 +340,13 @@ function listenToDoc({ bus, cy, document, controller }){
       } );
     }
   };
+
+  let rm = function( el ){
+    return el.remove();
+  };
+
+  // disable animations for now (more responsive)
+  animateRm = rm;
 
   let onRmEle = function( docEl ){
     let el = cy.getElementById( docEl.id() );

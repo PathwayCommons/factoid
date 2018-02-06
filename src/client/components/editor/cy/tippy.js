@@ -303,6 +303,8 @@ module.exports = function({ bus, cy, document }){
         };
 
         docEl.participants().forEach( ppt => {
+          if( !document.editable() ){ return; }
+
           let pptNode = cy.getElementById( ppt.id() );
           let edge = pptNode.edgesWith( cy.getElementById( docEl.id() ) );
 

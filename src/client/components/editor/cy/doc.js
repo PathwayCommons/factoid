@@ -531,11 +531,6 @@ function listenToDoc({ bus, cy, document, controller }){
       edge.select();
     }
   });
-
-  // TODO emit close on bus when doc closed / new doc loaded?
-  bus.on('close', function(){
-    // TODO handle removing listeners
-  });
 }
 
 

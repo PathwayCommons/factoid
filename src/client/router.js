@@ -4,17 +4,39 @@ const _ = require('lodash');
 const uuid = require('uuid');
 
 const Editor = require('./components/editor');
-const Home = require('./components/home');
 const Debug = require('./components/debug');
 const DocumentFiller = require('./components/document-filler');
 const ExampleDocument = require('./components/example-document');
 
+const MultiFormEditor = require('./components/multi-form-editor/');
+const LandingPage = require('./components/multi-form-editor/landing-page');
 
 let routes = [
   {
     path: '/',
     render: () => {
-      return h(Home);
+      return h(LandingPage);
+    }
+  },
+  {
+    path: '/edit/:id',
+    render: props => {
+      let params = props.match.params;
+
+      return h( MultiFormEditor, {
+        id: params.id
+      } );
+    }
+  },
+  {
+    path: '/edit/:id/:secret',
+    render: props => {
+      let params = props.match.params;
+
+      return h( MultiFormEditor, {
+        id: params.id,
+        secret: params.secret
+      } );
     }
   },
   {

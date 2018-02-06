@@ -59,6 +59,7 @@
     "react-dom": "^15.4.2",
     "react-hyperscript": "^3.0.0",
     "react-router-dom": "^4.0.0",
+    "react-stepzilla": "^4.7.0",
     "react-tabs": "^1.1.0",
     "rethinkdb": "^2.3.2",
     "serve-favicon": "^2.3.0",

@@ -21,11 +21,11 @@
 .home-steps-figure {
   display: inline-block;
   width: 100%;
-  padding-bottom: 35%;
+  padding-bottom: 25%;
   background-image: url('./image/steps-figure.svg');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: 50% 50%;
   border: 0;
-  margin: -0.5em 0;
+  margin: -1em 0;
 }

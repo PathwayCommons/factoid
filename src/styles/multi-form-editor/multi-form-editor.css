@@ -1,0 +1,40 @@
+.multi-form-editor {
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  & div {
+    border: 2px solid black;
+  }
+
+}
+
+.editor-content {
+  height: 95vh;
+  display: flex;
+  flex-direction: row;
+}
+
+.editor-stepper {
+  height: 5vh;
+}
+
+.editor-view {
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-context {
+  width: 25%;
+}
+
+.editor-toolbar {
+  height: 5%;
+}
+
+.editor-view-panel {
+  height: 95%;
+}

@@ -17,9 +17,9 @@ class LandingPage extends React.Component {
         ]),
         // Links to choose the mode
         h('div.landing-page-mode-links', [
-          h('span.landing-page-mode-link', [ h(Link, { className: 'plain-link', to: '/new-document' }, 'Create new, blank document') ]),
+          h('span.landing-page-mode-link', [ h(Link, { className: 'plain-link', to: '/debug/new-document' }, 'Create new, blank document') ]),
           h('span.landing-page-mode-link-seperator', '-'),
-          h('span.landing-page-mode-link', [ h(Link, { className: 'plain-link', to: '/new-document/fill' }, 'Create new document, filled from text') ])
+          h('span.landing-page-mode-link', [ h(Link, { className: 'plain-link', to: '/debug/new-document/fill' }, 'Create new document, filled from text') ])
         ])
       ]),
       // Footer for the main page

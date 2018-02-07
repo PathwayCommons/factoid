@@ -1,0 +1,75 @@
+.landing-page {
+  overflow: auto;
+}
+
+.landing-page-center, .landing-page-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100vw;
+  text-align: center;
+}
+
+.landing-page-center {
+  height: 70vh;
+}
+
+.landing-page-footer {
+  height: 30vh;
+}
+
+.landing-page-mode-links {
+  margin: 0.5em 0;
+}
+
+.landing-page-mode-link, .landing-page-mode-link-seperator {
+  display: block;
+  margin: 0.5em 0.5em;
+  float: left;
+  font-size: 20px;
+}
+
+.landing-page-link {
+  text-decoration: none;
+  color: #337ab7;
+}
+
+.landing-page-link:hover {
+  color: rgb(37, 52, 67);
+  text-decoration: underline;
+}
+
+.landing-page-icon {
+  width: 10em;
+  height: 100%;
+  max-width: 100vw;
+  background-image: url('/icon.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.landing-page-intro-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: row;
+  text-align: center;
+  width: 100%;
+  height: 10em;
+}
+
+.landing-page-into-header {
+  font-size: 50px;
+  text-align: left;
+  margin: 0px;
+}
+
+.landing-page-intro-desc {
+  font-size: 25px;
+  margin: 0px;
+}
+
+.landing-page-section {
+  width: 95vw;
+}

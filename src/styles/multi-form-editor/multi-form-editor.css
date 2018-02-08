@@ -3,7 +3,7 @@
   height: 100vh;
 
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 
   & div {
     border: 2px solid black;
@@ -12,13 +12,18 @@
 }
 
 .editor-content {
-  height: 95vh;
+  height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: row;
 }
 
 .editor-stepper {
-  height: 5vh;
+  height: 5%;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .editor-view {
@@ -29,12 +34,28 @@
 
 .editor-context {
   width: 25%;
+  z-index: 1;
+  opacity: 1;
 }
 
 .editor-toolbar {
+  display: flex;
+  flex-direction: row;
   height: 5%;
+  z-index: 1;
 }
 
 .editor-view-panel {
   height: 95%;
+
+  & .editor {
+    height: 95% !important;
+    width: 100% !important;
+  }
+}
+
+.multi-form-graph {
+  height: 100%;
+  width: 100%;
+  z-index: 0;
 }

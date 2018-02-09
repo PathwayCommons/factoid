@@ -9,6 +9,7 @@
     border: 1px solid black;
   }
 
+
 }
 
 .editor-content {
@@ -16,6 +17,7 @@
   width: 100vw;
   display: flex;
   flex-direction: column;
+  margin-right: 10px;
 }
 
 .site-logo {
@@ -51,17 +53,25 @@
 .editor-toolbar {
   display: flex;
   flex-direction: row;
-  height: 5%;
+  height: 5vh;
   z-index: 1;
 }
 
 .editor-view-panel {
-  height: 95%;
-
   & .editor {
-    height: 95% !important;
+    height: 85vh !important;
     width: 100% !important;
   }
+}
+
+.form-view-panel {
+  height: 100%;
+  width: 100%;
+}
+
+.text-entry-view-panel {
+  height: 100%;
+  width: 100%;
 }
 
 .multi-form-graph {

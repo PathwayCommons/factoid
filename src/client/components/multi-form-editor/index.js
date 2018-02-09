@@ -26,42 +26,28 @@ class MultiFormEditor extends React.Component {
               h(Tab, [h('div', 'Form view tab')]),
               h(Tab, [h('div', 'Free Text entry view tab')])
             ]),
-            h(TabPanel, [
+            h(TabPanel, { className: 'editor-view-panel' }, [
               h(Editor, this.props)
+            ]),
+            h(TabPanel, [
+              h('div.form-view-panel', [
+                'form view'
+              ])
+            ]),
+            h(TabPanel,[
+              h('div.text-entry-view-panel', [
+                'text entry view'
+              ])
             ])
           ]),
-
-            // h('div.editor-view-panel', { className: 'multi-form-editor-graph' }, [
-            //   h(Editor, this.props),
-            // ])
+          h('div.editor-stepper', [
+            h('div', 'button previous'),
+            h('div', 'edit step 1'),
+            h('div', 'edit step 2'),
+            h('div', 'edit step 3'),
+            h('div', 'button next')
           ])
-      //     h('div.editor-view', [
-      //       h(Tabs, [
-      //         // h('div.editor-toolbar', [
-      //           h(TabList, [
-      //             h(Tab, [h('div', 'Graph view tab')]),
-      //             h(Tab, [h('div', 'Form view tab')]),
-      //             h(Tab, [h('div', 'Free Text entry view tab')])
-      //           ]),
-      //         // ]),
-      //       h(TabPanel, [
-      //         h('div.editor-view-panel', { className: 'multi-form-editor-graph' }, [
-      //           h(Editor, this.props),
-      //         ])
-      //       ]),
-      //       h(TabPanel, 'form view panel'),
-      //       h(TabPanel, 'free text entry panel')
-      //     ]),
-      //     h('div.editor-stepper', [
-      //       h('div', 'button previous'),
-      //       h('div', 'edit step 1'),
-      //       h('div', 'edit step 2'),
-      //       h('div', 'edit step 3'),
-      //       h('div', 'button next')
-      //     ])
-      //   ])
-      // ])
-        // ])
+        ])
       ])
     );
   }

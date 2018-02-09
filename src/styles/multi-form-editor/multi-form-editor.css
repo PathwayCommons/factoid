@@ -6,7 +6,7 @@
   flex-direction: row;
 
   & div {
-    border: 2px solid black;
+    border: 1px solid black;
   }
 
 }
@@ -18,6 +18,16 @@
   flex-direction: row;
 }
 
+.site-logo {
+  display: flex;
+  flex-direction: row;
+  font-size: 3em;
+
+  & .logo {
+    font-size: 12em;
+  }
+}
+
 .editor-stepper {
   height: 5%;
   z-index: 1;
@@ -27,7 +37,7 @@
 }
 
 .editor-view {
-  width: 75%;
+  width: 100%;
   display: flex;
   flex-direction: column;
 }

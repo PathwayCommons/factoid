@@ -3,6 +3,7 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 const uuid = require('uuid');
 
+const Home = require('./components/home');
 const Editor = require('./components/editor');
 const Debug = require('./components/debug');
 const DocumentFiller = require('./components/document-filler');
@@ -16,6 +17,12 @@ let routes = [
     path: '/',
     render: () => {
       return h(LandingPage);
+    }
+  },
+  {
+    path: '/home',
+    render: () => {
+      return h(Home);
     }
   },
   {

@@ -2,6 +2,8 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const MultiStep = require('react-stepzilla').default;
+const { Tab, Tabs, TabList, TabPanel } = require('react-tabs');
+
 
 const Editor = require('../editor');
 const SubmitPage = require('./submit-page');
@@ -9,8 +11,13 @@ const SubmitPage = require('./submit-page');
 
 class MultiFormEditor extends React.Component {
   render() {
-    console.log(this.props);
     return h('div.multi-form-editor', [
+      h('div.editor-context', [
+        h('div.site-logo', [
+          h('i.icon.icon-logo.home-logo-icon'),
+          ' Factoid'
+        ])
+      ]),
       h('div.editor-content', [
         h('div.editor-view', [
           h('div.editor-toolbar', [
@@ -28,8 +35,7 @@ class MultiFormEditor extends React.Component {
                 h('div', 'button next')
               ])
           ])
-        ]),
-        h('div.editor-context', 'context')
+        ])
       ])
     ]);
   }

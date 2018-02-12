@@ -23,7 +23,8 @@
 .site-logo {
   display: flex;
   flex-direction: row;
-  font-size: 3em;
+  font-size: 30px;
+  padding: 10px;
 
   & .logo {
     font-size: 12em;
@@ -55,6 +56,8 @@
   flex-direction: row;
   height: 5vh;
   z-index: 1;
+  margin: 0;
+  padding: 5px;
 }
 
 .editor-view-panel {
@@ -78,4 +81,16 @@
   height: 100%;
   width: 100%;
   z-index: 0;
+}
+
+.interactions {
+  padding: 10px;
+
+  & .interaction {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-bottom: 5px;
+
+  }
 }

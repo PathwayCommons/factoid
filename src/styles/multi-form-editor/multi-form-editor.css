@@ -61,7 +61,9 @@
 }
 
 .editor-view-panel {
+  border: none !important;
   & .editor {
+    border: none !important;
     height: 85vh !important;
     width: 100% !important;
   }

@@ -41,7 +41,7 @@ class Context extends React.Component {
         ]),
         h('div.interactions', [
           ...interactions,
-          h('button', {onClick: e => this.addInteractionForm()}, 'New Interaction')
+          h('button', {onClick: e => this.addInteractionForm()}, 'New Form Entry')
         ]),
       ])
     );
@@ -50,7 +50,24 @@ class Context extends React.Component {
 
 
 class MFE0 extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      doc: null,
+      loaded: false
+    };
+  }
+
+  propogateModel(doc) {
+    this.setState({
+      doc: doc,
+      loaded: true
+    });
+  }
   render() {
+    const entities = this.state.loaded ? this.state.doc.elementSet.cache.source : [];
+    console.log(entities);
     return (
       h('div.multi-form-editor', [
         h(Context),
@@ -62,7 +79,11 @@ class MFE0 extends React.Component {
               h(Tab, [h('div', 'Free Text entry view tab')])
             ]),
             h(TabPanel, { className: 'editor-view-panel' }, [
-              h(Editor, this.props)
+              h(Editor, {
+                id: this.props.id,
+                secret: this.props.secret,
+                propogateModel: (doc) => this.propogateModel(doc)
+              })
             ]),
             h(TabPanel, [
               h('div.form-view-panel', [
@@ -89,7 +110,24 @@ class MFE0 extends React.Component {
 }
 
 class MFE1 extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      doc: null,
+      loaded: false
+    };
+  }
+  propogateModel(doc) {
+    this.setState({
+      doc: doc,
+      loaded: true
+    });
+  }
   render() {
+    const entities = this.loaded ? this.state.doc.elementSet.source : [];
+
     return (
       h('div.multi-form-editor', [
         h('div.editor-content', [
@@ -100,7 +138,11 @@ class MFE1 extends React.Component {
               h(Tab, [h('div', 'Free Text entry view tab')])
             ]),
             h(TabPanel, { className: 'editor-view-panel' }, [
-              h(Editor, this.props)
+              h(Editor, {
+                id: this.props.id,
+                secret: this.props.secret,
+                propogateModel: (doc) => this.propogateModel(doc)
+              })
             ]),
             h(TabPanel, [
               h('div.form-view-panel', [
@@ -129,7 +171,24 @@ class MFE1 extends React.Component {
 
 
 class MFE2 extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      doc: null,
+      loaded: false
+    };
+  }
+  propogateModel(doc) {
+    this.setState({
+      doc: doc,
+      loaded: true
+    });
+  }
   render() {
+    const entities = this.loaded ? this.state.doc.elementSet.source : [];
+
     return (
       h('div.multi-form-editor', [
         h('div.editor-context', [
@@ -146,7 +205,11 @@ class MFE2 extends React.Component {
               h(Tab, [h('div', 'Free Text entry view tab')])
             ]),
             h(TabPanel, { className: 'editor-view-panel' }, [
-              h(Editor, this.props)
+              h(Editor, {
+                id: this.props.id,
+                secret: this.props.secret,
+                propogateModel: (doc) => this.propogateModel(doc)
+              })
             ]),
             h(TabPanel, [
               h('div.form-view-panel', [

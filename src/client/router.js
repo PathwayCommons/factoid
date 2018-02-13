@@ -3,13 +3,15 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 const uuid = require('uuid');
 
+const Home = require('./components/home');
 const Editor = require('./components/editor');
 const Debug = require('./components/debug');
 const DocumentFiller = require('./components/document-filler');
 const ExampleDocument = require('./components/example-document');
 
-const MultiFormEditor = require('./components/multi-form-editor/');
+const { MFE } = require('./components/multi-form-editor/');
 const LandingPage = require('./components/multi-form-editor/landing-page');
+const SubmitPage = require('./components/multi-form-editor/landing-page');
 
 let routes = [
   {
@@ -19,11 +21,17 @@ let routes = [
     }
   },
   {
+    path: '/home',
+    render: () => {
+      return h(Home);
+    }
+  },
+  {
     path: '/edit/:id',
     render: props => {
       let params = props.match.params;
 
-      return h( MultiFormEditor, {
+      return h( MFE, {
         id: params.id
       } );
     }
@@ -33,7 +41,18 @@ let routes = [
     render: props => {
       let params = props.match.params;
 
-      return h( MultiFormEditor, {
+      return h( MFE, {
+        id: params.id,
+        secret: params.secret
+      } );
+    }
+  },
+  {
+    path: 'submit/:id/:secret',
+    render: props => {
+      let params = props.match.params;
+
+      return h( SubmitPage, {
         id: params.id,
         secret: params.secret
       } );
@@ -59,7 +78,7 @@ let routes = [
 
       return h( Redirect, {
         to: {
-          pathname: `/document/${id}/${secret}`
+          pathname: `/edit0/${id}/${secret}`
         }
       } );
     }

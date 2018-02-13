@@ -180,6 +180,8 @@ class Editor extends React.Component {
           doc.on('add', listenForComplete);
 
           this.setData({ incompleteNotification: ntfn });
+
+          this.props.propogateModel(doc);
         }
       } )
       .then( () => {

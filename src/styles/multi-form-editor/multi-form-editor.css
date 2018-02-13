@@ -1,0 +1,98 @@
+.multi-form-editor {
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: row;
+
+  & div {
+    border: 1px solid black;
+  }
+
+
+}
+
+.editor-content {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  margin-right: 10px;
+}
+
+.site-logo {
+  display: flex;
+  flex-direction: row;
+  font-size: 30px;
+  padding: 10px;
+
+  & .logo {
+    font-size: 12em;
+  }
+}
+
+.editor-stepper {
+  height: 5%;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.editor-view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-context {
+  width: 25%;
+  z-index: 1;
+  opacity: 1;
+}
+
+.editor-toolbar {
+  display: flex;
+  flex-direction: row;
+  height: 5vh;
+  z-index: 1;
+  margin: 0;
+  padding-bottom: 5px;
+}
+
+.editor-view-panel {
+  border: none !important;
+  & .editor {
+    border: none !important;
+    height: 85vh !important;
+    width: 100% !important;
+  }
+}
+
+.form-view-panel {
+  height: 85vh;
+  width: 100%;
+}
+
+.text-entry-view-panel {
+  height: 85vh;
+  width: 100%;
+}
+
+.multi-form-graph {
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+}
+
+.interactions {
+  padding: 10px;
+
+  & .interaction {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-bottom: 5px;
+
+  }
+}

@@ -9,8 +9,9 @@ const Debug = require('./components/debug');
 const DocumentFiller = require('./components/document-filler');
 const ExampleDocument = require('./components/example-document');
 
-const { MFE0, MFE1, MFE2 } = require('./components/multi-form-editor/');
+const { MFE } = require('./components/multi-form-editor/');
 const LandingPage = require('./components/multi-form-editor/landing-page');
+const SubmitPage = require('./components/multi-form-editor/landing-page');
 
 let routes = [
   {
@@ -26,43 +27,32 @@ let routes = [
     }
   },
   {
-    path: '/edit0/:id',
+    path: '/edit/:id',
     render: props => {
       let params = props.match.params;
 
-      return h( MFE0, {
+      return h( MFE, {
         id: params.id
       } );
     }
   },
   {
-    path: '/edit0/:id/:secret',
+    path: '/edit/:id/:secret',
     render: props => {
       let params = props.match.params;
 
-      return h( MFE0, {
+      return h( MFE, {
         id: params.id,
         secret: params.secret
       } );
     }
   },
   {
-    path: '/edit1/:id/:secret',
+    path: 'submit/:id/:secret',
     render: props => {
       let params = props.match.params;
 
-      return h( MFE1, {
-        id: params.id,
-        secret: params.secret
-      } );
-    }
-  },
-  {
-    path: '/edit2/:id/:secret',
-    render: props => {
-      let params = props.match.params;
-
-      return h( MFE2, {
+      return h( SubmitPage, {
         id: params.id,
         secret: params.secret
       } );
@@ -88,7 +78,7 @@ let routes = [
 
       return h( Redirect, {
         to: {
-          pathname: `/document/${id}/${secret}`
+          pathname: `/edit0/${id}/${secret}`
         }
       } );
     }

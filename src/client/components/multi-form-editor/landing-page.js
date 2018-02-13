@@ -5,9 +5,7 @@ const React = require('react');
 class LandingPage extends React.Component {
   render(){
     return h('div.landing-page', [
-      // main part of landing-page page
       h('div.landing-page-center', [
-        // A row that includes Factoid logo and short description of Factoid
         h('div.landing-page-intro-row', [
           h('i.landing-page-icon'),
           h('div', [
@@ -15,22 +13,18 @@ class LandingPage extends React.Component {
             h('p.landing-page-intro-desc', 'A project to digitally capture biological data from academic papers')
           ])
         ]),
-        // Links to choose the mode
         h('div.landing-page-mode-links', [
           h('span.landing-page-mode-link', [ h(Link, { className: 'plain-link', to: '/debug/new-document' }, 'Create new, blank document') ]),
           h('span.landing-page-mode-link-seperator', '-'),
           h('span.landing-page-mode-link', [ h(Link, { className: 'plain-link', to: '/debug/new-document/fill' }, 'Create new document, filled from text') ])
         ])
       ]),
-      // Footer for the main page
       h('div.landing-page-footer', [
         h('div.landing-page-section', [
-          // A more detailed description of Factoid
           h('span', 'Factoid is a new bioinformatics technology designed to increase impact of papers by making the genes and interactions that are described by the users easier for others to discover and reuse.'),
 
           h('p'),
 
-          // References to some of the used technologies
           h('span', 'Factoid utilizes '),
           h('span', [ h('a', { className: 'landing-page-link', href: 'http://agathon.sista.arizona.edu:8080/odinweb/', target: '_blank' }, 'REACH') ]),
           h('span', ' for extraction of the biomedical information and '),
@@ -43,7 +37,6 @@ class LandingPage extends React.Component {
 
           h('p'),
 
-          // Information about the development team
           h('span', 'Factoid is being developed by Gary Bader, Max Franz, Dylan Fong, Jeffrey Wong of the '),
           h('span', [ h('a', { className: 'landing-page-link', href: 'http://baderlab.org/', target: '_blank' }, 'Bader Lab') ]),
           h('span', ' at the '),
@@ -60,7 +53,6 @@ class LandingPage extends React.Component {
 
           h('p'),
 
-          // Link to Factoid GitHub page
           h('a', { className: 'landing-page-link', href: 'https://github.com/PathwayCommons/factoid', target: '_blank' }, [
             h('i', { className: 'fa-github fa fa-2x' })
           ])

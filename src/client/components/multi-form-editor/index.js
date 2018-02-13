@@ -95,7 +95,6 @@ class MFE extends React.Component {
             ])
           ]),
           h('div.editor-stepper', [
-            h('div', 'button previous'),
             h('div', 'edit step 1'),
             h('div', 'edit step 2'),
             h('div', 'edit step 3'),

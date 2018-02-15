@@ -5,7 +5,6 @@ const uuid = require('uuid');
 
 const Editor = require('./components/editor');
 const Debug = require('./components/debug');
-const DocumentFiller = require('./components/document-filler');
 const ExampleDocument = require('./components/example-document');
 
 const MultiFormEditor = require('./components/multi-form-editor/');
@@ -62,12 +61,6 @@ let routes = [
           pathname: `/document/${id}/${secret}`
         }
       } );
-    }
-  },
-  {
-    path: '/debug/new-document/fill',
-    render: () => {
-      return h( DocumentFiller );
     }
   },
   {

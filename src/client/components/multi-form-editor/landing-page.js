@@ -14,7 +14,8 @@ class LandingPage extends React.Component {
     this.state = {
       textAreaEnabled: false,
       submitting: false,
-      textAreaAnimating: false
+      textAreaAnimating: false,
+      textAreaHeight: '20em'
     };
   }
 
@@ -33,8 +34,6 @@ class LandingPage extends React.Component {
 
     let animateResult = () => {
       let linkout = ReactDom.findDOMNode(this).querySelector('.landing-page-linkout');
-
-      linkout.style.opacity = 0;
 
       if( linkout ){
         anime({ targets: linkout, opacity: [0, 1], duration: 2000, easing: 'linear' });
@@ -71,7 +70,7 @@ class LandingPage extends React.Component {
             className: makeClassList({
               'landing-page-hidden': this.state.textAreaEnabled
             })
-          }, 'Create'),
+          }, 'CREATE'),
           h('button.landing-page-fill-text-btn', {
             className: makeClassList({
               'landing-page-left': this.state.textAreaEnabled,
@@ -100,16 +99,31 @@ class LandingPage extends React.Component {
                 textAreaAnimating: true
               });
 
+              // indicates whether we are opening or closing text area
+              let opening = !this.state.textAreaEnabled;
+
+              let animeOpts = {
+                targets: textArea,
+                height: opening ? [0, this.state.textAreaHeight] : [textArea.style.height, 0],
+                duration: 1000,
+                easing: 'linear'
+              }
+
               let animePromise;
 
               // order of toggling state and animation changes according to whether
               // we are opening or closing the text area
-              if (!this.state.textAreaEnabled) { // opening text area
+              if (opening) {
                 toggleTextAreaState();
-                animePromise = anime({ targets: textArea, height: [0, '20em'], duration: 1000, easing: 'linear' });
+                animePromise = anime(animeOpts);
               }
-              else { // closing text area
-                animePromise = anime({ targets: textArea, height: ['20em', 0], duration: 1000, easing: 'linear' });
+              else {
+                // need to store height of text area before closing
+                this.setState({
+                  textAreaHeight: textArea.style.height
+                });
+
+                animePromise = anime(animeOpts);
                 animePromise.finished.then(toggleTextAreaState);
               }
 
@@ -121,7 +135,9 @@ class LandingPage extends React.Component {
 
             }
           }, [
-            h(Link, { to: '/' }, 'From text')
+            h(Link, { to: '/' }, [
+              h('i', 'FROM TEXT')
+            ])
           ]),
           h('textarea.landing-page-text', {
             className: makeClassList({
@@ -135,9 +151,12 @@ class LandingPage extends React.Component {
               'landing-page-round-tr': !this.state.textAreaEnabled,
               'landing-page-round-br': true,
               'landing-page-round-bl': this.state.textAreaEnabled
-            }),
+            })
           },[
-            h(Link, { to: '/debug/new-document' }, 'Blank')
+            h(Link, { to: '/debug/new-document' }, [
+              h('i', 'BLANK'),
+              h('i.fas.fa-angle-right')
+            ])
           ]),
           h('button.landing-page-submit-btn', {
             className: makeClassList({
@@ -149,7 +168,10 @@ class LandingPage extends React.Component {
             }),
             onClick: () => this.createDoc()
           },[
-            h(Link, { to: '/' }, 'Next')
+            h(Link, { to: '/' }, [
+              h('i', 'NEXT'),
+              h('i.fas.fa-angle-right')
+            ])
           ]),
           h('span.icon.icon-spinner.landing-page-submit-spinner', {
             className: makeClassList({

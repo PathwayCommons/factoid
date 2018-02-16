@@ -56,7 +56,25 @@
 
 .landing-page-mode-area button a {
   display: block;
+}
+
+.landing-page-mode-area button a i {
+  font-style: normal;
+  display: block;
+  float: left;
   padding: 0px 10px;
+}
+
+.landing-page-mode-area button a i:not(:last-child) {
+  padding-right: 5px;
+}
+
+.landing-page-mode-area button a i:last-child:not(:first-child) {
+  padding-left: 0px;
+}
+
+.landing-page-mode-area button i.fas {
+  font-family: fontawesome;
 }
 
 .landing-page-empty-doc-btn {

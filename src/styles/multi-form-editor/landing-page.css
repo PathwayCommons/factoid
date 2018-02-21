@@ -135,35 +135,11 @@
   border-radius: 0px;
 }
 
-.landing-page-arrow {
-  font-size: 2em;
-  text-align: center;
-  color: var(--fadedColor);
-}
-
-.landing-page-linkout {
-  margin-top: 1em;
-  padding: 0.125em 1.5em;
-  border-radius: 0.25em;
-  box-shadow: 0 4px 20px 4px rgba(0, 20, 60, 0.2), 0 4px 80px -8px rgba(0, 20, 60, 0.3);
-}
-
-.landing-page-open {
-  color: var(--fadedColor);
-  font-size: 2em;
-  margin-top: 0.5em;
-  text-align: center;
-}
-
 .landing-page-submit-spinner {
   margin-left: 0.5em;
   opacity: 0;
   transition-property: opacity;
   transition-duration: 500ms;
-}
-
-.landing-page-after-submit {
-  margin-bottom: 2em;
 }
 
 .landing-page-spinner-submitting {

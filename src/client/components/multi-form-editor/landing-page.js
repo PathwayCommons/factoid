@@ -1,10 +1,9 @@
 const h = require('react-hyperscript');
-const { Link } = require('react-router-dom');
+const { Link, withRouter } = require('react-router-dom');
 const React = require('react');
 const ReactDom = require('react-dom');
 const { makeClassList } = require('../../../util');
 const Promise = require('bluebird');
-const Linkout = require('../document-linkout');
 const anime = require('animejs');
 
 class LandingPage extends React.Component {
@@ -19,7 +18,7 @@ class LandingPage extends React.Component {
     };
   }
 
-  createDoc(){
+  createAndNavigateToDoc(){
     let text = ReactDom.findDOMNode(this).querySelector('.landing-page-text').value;
 
     let makeRequest = () => fetch('/api/document', {
@@ -32,23 +31,72 @@ class LandingPage extends React.Component {
 
     let toJson = res => res.json();
 
-    let animateResult = () => {
-      let linkout = ReactDom.findDOMNode(this).querySelector('.landing-page-linkout');
-
-      if( linkout ){
-        anime({ targets: linkout, opacity: [0, 1], duration: 2000, easing: 'linear' });
-      }
-    };
-
     let updateState = documentJson => {
       documentJson.editable = true;
 
-      this.setState({ documentJson, submitting: false }, animateResult);
+      this.setState({ documentJson, submitting: false });
+    };
+
+    let route = () => {
+      this.props.history.push(this.state.documentJson.privateUrl);
     };
 
     this.setState({ submitting: true });
 
-    Promise.try( makeRequest ).then( toJson ).then( updateState );
+    Promise.try( makeRequest ).then( toJson ).then( updateState ).then( route );
+  }
+
+  toggleTextArea(){
+    // if there is an animation for text area do not allow click event
+    if (this.state.textAreaAnimating) {
+      return;
+    }
+
+    let textArea = ReactDom.findDOMNode(this).querySelector('.landing-page-text');
+
+    let toggleTextAreaState = (() => {
+      this.setState({
+        textAreaEnabled: !this.state.textAreaEnabled
+      });
+    });
+
+    this.setState({
+      textAreaAnimating: true
+    });
+
+    // indicates whether we are opening or closing text area
+    let opening = !this.state.textAreaEnabled;
+
+    let animeOpts = {
+      targets: textArea,
+      height: opening ? [0, this.state.textAreaHeight] : [textArea.style.height, 0],
+      duration: 1000,
+      easing: 'linear'
+    }
+
+    let animePromise;
+
+    // order of toggling state and animation changes according to whether
+    // we are opening or closing the text area
+    if (opening) {
+      toggleTextAreaState();
+      animePromise = anime(animeOpts);
+    }
+    else {
+      // need to store height of text area before closing
+      this.setState({
+        textAreaHeight: textArea.style.height
+      });
+
+      animePromise = anime(animeOpts);
+      animePromise.finished.then(toggleTextAreaState);
+    }
+
+    animePromise.finished.then(() => {
+      this.setState({
+        textAreaAnimating: false
+      });
+    });
   }
 
   render(){
@@ -80,60 +128,7 @@ class LandingPage extends React.Component {
               'landing-page-round-bl': !this.state.textAreaEnabled,
               'landing-page-round-tr': this.state.textAreaEnabled
             }),
-            onClick: () => {
-
-              // if there is an animation for text area do not allow click event
-              if (this.state.textAreaAnimating) {
-                return;
-              }
-
-              let textArea = ReactDom.findDOMNode(this).querySelector('.landing-page-text');
-
-              let toggleTextAreaState = (() => {
-                this.setState({
-                  textAreaEnabled: !this.state.textAreaEnabled
-                });
-              });
-
-              this.setState({
-                textAreaAnimating: true
-              });
-
-              // indicates whether we are opening or closing text area
-              let opening = !this.state.textAreaEnabled;
-
-              let animeOpts = {
-                targets: textArea,
-                height: opening ? [0, this.state.textAreaHeight] : [textArea.style.height, 0],
-                duration: 1000,
-                easing: 'linear'
-              }
-
-              let animePromise;
-
-              // order of toggling state and animation changes according to whether
-              // we are opening or closing the text area
-              if (opening) {
-                toggleTextAreaState();
-                animePromise = anime(animeOpts);
-              }
-              else {
-                // need to store height of text area before closing
-                this.setState({
-                  textAreaHeight: textArea.style.height
-                });
-
-                animePromise = anime(animeOpts);
-                animePromise.finished.then(toggleTextAreaState);
-              }
-
-              animePromise.finished.then(() => {
-                this.setState({
-                  textAreaAnimating: false
-                });
-              });
-
-            }
+            onClick: () => this.toggleTextArea()
           }, [
             h(Link, { to: '/' }, [
               h('i', 'FROM TEXT')
@@ -166,7 +161,7 @@ class LandingPage extends React.Component {
               'landing-page-round-br': true,
               'landing-page-round-bl': true
             }),
-            onClick: () => this.createDoc()
+            onClick: () => this.createAndNavigateToDoc()
           },[
             h(Link, { to: '/' }, [
               h('i', 'NEXT'),
@@ -178,36 +173,7 @@ class LandingPage extends React.Component {
               'landing-page-spinner-submitting': this.state.submitting
             })
           })
-        ]),
-        h('div.landing-page-after-submit', {
-          className: makeClassList({
-            'landing-page-hidden': !this.state.textAreaEnabled
-          })
-        }, ( () => {
-          // generate the content for the children elements of the div
-          // according to state of documentJson
-          let rootChildren = [];
-
-          let documentJson = this.state.documentJson;
-
-          if( documentJson != null ){
-            rootChildren.push( h('div.landing-page-arrow', [
-              h('i.material-icons', 'arrow_downward')
-            ]) );
-
-            rootChildren.push( h('div.landing-page-linkout', [
-              h(Linkout, { documentJson })
-            ]) );
-
-            rootChildren.push( h('div.landing-page-open', [
-              h(Link, { target: '_blank', to: documentJson.privateUrl }, [
-                h('i.material-icons', 'open_in_new')
-              ])
-            ]) );
-          }
-
-          return rootChildren;
-        } )() )
+        ])
       ]),
       h('div.landing-page-footer', {
         className: makeClassList({
@@ -257,4 +223,4 @@ class LandingPage extends React.Component {
   }
 }
 
-module.exports = LandingPage;
+module.exports = withRouter(LandingPage);

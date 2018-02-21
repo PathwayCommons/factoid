@@ -15,8 +15,8 @@ const SubmitPage = require('./components/multi-form-editor/landing-page');
 let routes = [
   {
     path: '/',
-    render: () => {
-      return h(LandingPage);
+    render: props => {
+      return h( LandingPage, props );
     }
   },
   {

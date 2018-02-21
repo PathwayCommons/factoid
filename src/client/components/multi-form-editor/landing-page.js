@@ -1,5 +1,5 @@
 const h = require('react-hyperscript');
-const { Link, withRouter } = require('react-router-dom');
+const { Link } = require('react-router-dom');
 const React = require('react');
 const ReactDom = require('react-dom');
 const { makeClassList } = require('../../../util');
@@ -38,7 +38,8 @@ class LandingPage extends React.Component {
     };
 
     let route = () => {
-      this.props.history.push(this.state.documentJson.privateUrl);
+      let { history } = this.props;
+      history.replace(this.state.documentJson.privateUrl);
     };
 
     this.setState({ submitting: true });
@@ -223,4 +224,4 @@ class LandingPage extends React.Component {
   }
 }
 
-module.exports = withRouter(LandingPage);
+module.exports = LandingPage;

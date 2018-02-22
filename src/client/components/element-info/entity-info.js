@@ -14,6 +14,8 @@ const Notification = require('../notification');
 const InlineNotification = require('../notification/inline');
 const Tooltip = require('../popover/tooltip');
 
+const { queryElementAssociation } = require('../../server-api');
+
 const { UNIPROT_LINK_BASE_URL, CHEBI_LINK_BASE_URL } = require('../../../config');
 
 const animateDomForEdit = domEle => anime({
@@ -294,8 +296,7 @@ class EntityInfo extends React.Component {
 
     if( name ){
       update = (
-        Promise.try( () => fetch( '/api/element-association/search?' + queryString.stringify(q) ) )
-        .then( res => res.json() )
+        Promise.try( () => queryElementAssociation( q ) )
         .then( matches => {
           if( this._unmounted ){ return; }
 

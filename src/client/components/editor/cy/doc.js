@@ -294,6 +294,8 @@ function listenToDoc({ bus, cy, document, controller }){
   };
 
   let onAddNewEle = function( docEl, el ){
+    return; // disable animation for now
+
     let timestamp = docEl.creationTimestamp();
     let whenCreated = timestamp == null ? null : date.parse( timestamp );
     let cutoff = date.subSeconds( Date.now(), 5 );
@@ -319,7 +321,7 @@ function listenToDoc({ bus, cy, document, controller }){
   };
 
   let animateRm = function( el ){
-    return el.remove();
+    return el.remove(); // disable animation for now
 
     if( isInteractionNode(el) ){
       el.style('opacity', 0);

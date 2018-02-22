@@ -77,7 +77,7 @@ let routes = [
 
       return h( Redirect, {
         to: {
-          pathname: `/edit0/${id}/${secret}`
+          pathname: `/edit/${id}/${secret}`
         }
       } );
     }

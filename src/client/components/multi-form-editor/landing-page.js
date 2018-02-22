@@ -6,6 +6,8 @@ const { makeClassList } = require('../../../util');
 const Promise = require('bluebird');
 const anime = require('animejs');
 
+const { createDoc } = require('../../server-api');
+
 class LandingPage extends React.Component {
   constructor( props ){
     super( props );
@@ -21,16 +23,6 @@ class LandingPage extends React.Component {
   createAndNavigateToDoc(){
     let text = ReactDom.findDOMNode(this).querySelector('.landing-page-text').value;
 
-    let makeRequest = () => fetch('/api/document', {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      method: 'POST',
-      body: JSON.stringify({ text })
-    });
-
-    let toJson = res => res.json();
-
     let updateState = documentJson => {
       documentJson.editable = true;
 
@@ -44,7 +36,7 @@ class LandingPage extends React.Component {
 
     this.setState({ submitting: true });
 
-    Promise.try( makeRequest ).then( toJson ).then( updateState ).then( route );
+    Promise.try( () => createDoc( text ) ).then( updateState ).then( route );
   }
 
   toggleTextArea(){

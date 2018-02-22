@@ -62,26 +62,31 @@ module.exports = function({ bus, cy, document, controller }){
 
     let getIntn = () => {
       if( createdIntnNode ){
-        controller.addInteraction({
+        return controller.addInteraction({
           position: _.clone( intnNode.position() )
         });
-
-        return controller.getLastAddedElement();
       } else {
         return document.get( intnNode.id() );
       }
     };
 
-    let addPpts = intn => Promise.all( pptNodes.map( n => intn.add( document.get( n.id() ) ) ) );
+    let addPpts = intn => Promise.all( pptNodes.map( n => intn.add( document.get( n.id() ) ) ) ).then( () => intn );
 
     let rmPreviewEles = () => {
       // remove the edgehandles eles and let the doc listeners create
-      // cy elements will full data
+      // cy elements with full data
       addedEles.remove();
     };
 
-    rmPreviewEles();
-    addPpts( getIntn() );
+    let replaceEdges = () => {
+      let intn;
+
+      return getIntn().then( i => intn = i ).then( () => rmPreviewEles() ).then( () => intn );
+    };
+
+    let openPopover = intn => bus.emit('opentip', intn);
+
+    Promise.try( replaceEdges ).then( addPpts ).then( openPopover );
   };
 
   let handlePosition = node => {

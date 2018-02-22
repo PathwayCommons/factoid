@@ -23,7 +23,8 @@ module.exports = function({ bus, cy, document, controller }){
     if( alreadyConnected ){
       return null;
     } if( isInteractionNode( source ) || isInteractionNode( target ) ){
-      return 'flat';
+      return null; // disable hyperedge-like interactions for now
+      // return 'flat';
     } else  {
       return 'node';
     }
@@ -101,7 +102,7 @@ module.exports = function({ bus, cy, document, controller }){
   let onStart = src => sourceNode = src;
 
   let eh = cy.edgehandles({
-    handleNodes: 'node',
+    handleNodes: 'node[!isInteraction]',
     handlePosition,
     edgeType,
     loopAllowed,

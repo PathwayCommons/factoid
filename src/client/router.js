@@ -6,7 +6,6 @@ const uuid = require('uuid');
 const Home = require('./components/home');
 const Editor = require('./components/editor');
 const Debug = require('./components/debug');
-const DocumentFiller = require('./components/document-filler');
 const ExampleDocument = require('./components/example-document');
 
 const { MFE } = require('./components/multi-form-editor/');
@@ -16,8 +15,8 @@ const SubmitPage = require('./components/multi-form-editor/landing-page');
 let routes = [
   {
     path: '/',
-    render: () => {
-      return h(LandingPage);
+    render: props => {
+      return h( LandingPage, props );
     }
   },
   {
@@ -81,12 +80,6 @@ let routes = [
           pathname: `/edit0/${id}/${secret}`
         }
       } );
-    }
-  },
-  {
-    path: '/debug/new-document/fill',
-    render: () => {
-      return h( DocumentFiller );
     }
   },
   {

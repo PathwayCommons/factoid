@@ -11,23 +11,78 @@
   text-align: center;
 }
 
-.landing-page-center {
+.landing-page-center-fit {
   height: 70vh;
 }
 
-.landing-page-footer {
+.landing-page-footer-fit {
   height: 30vh;
 }
 
-.landing-page-mode-links {
-  margin: 0.5em 0;
+.landing-page-no-right-border {
+  border-right: none;
 }
 
-.landing-page-mode-link, .landing-page-mode-link-seperator {
-  display: block;
-  margin: 0.5em 0.5em;
+.landing-page-no-bottom-border {
+  border-bottom: none;
+}
+
+.landing-page-no-top-border {
+  border-top: none;
+}
+
+.landing-page-mode-area {
   float: left;
+  margin: 0.5em 0;
   font-size: 20px;
+  display: inline-block;
+  width: 60vw;
+}
+
+.landing-page-mode-area * {
+  vertical-align: middle;
+  text-decoration: none;
+}
+
+.landing-page-mode-area span {
+  margin: 0.5em 0.5em;
+}
+
+.landing-page-mode-area button {
+  cursor: pointer;
+  border-radius: 0px 0px 0px 0px;
+  padding: 0px;
+}
+
+.landing-page-mode-area button a {
+  display: block;
+}
+
+.landing-page-mode-area button a i {
+  font-style: normal;
+  display: block;
+  float: left;
+  padding: 0px 10px;
+}
+
+.landing-page-mode-area button a i:not(:last-child) {
+  padding-right: 5px;
+}
+
+.landing-page-mode-area button a i:last-child:not(:first-child) {
+  padding-left: 0px;
+}
+
+.landing-page-mode-area button i.fas {
+  font-family: fontawesome;
+}
+
+.landing-page-empty-doc-btn {
+  background-color: #B1578B;
+}
+
+.landing-page-fill-text-btn, .landing-page-submit-btn {
+  background-color: #FEE59D;
 }
 
 .landing-page-link {
@@ -72,4 +127,49 @@
 
 .landing-page-section {
   width: 95vw;
+}
+
+.landing-page-text {
+  width: 100%;
+  resize: vertical;
+  border-radius: 0px;
+}
+
+.landing-page-submit-spinner {
+  margin-left: 0.5em;
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: 500ms;
+}
+
+.landing-page-spinner-submitting {
+  opacity: 1;
+}
+
+.landing-page-hidden {
+  display: none;
+}
+
+.landing-page-left {
+  float: left;
+}
+
+.landing-page-right {
+  float: right;
+}
+
+.landing-page-round-tl {
+  border-top-left-radius: 0.25em !important;
+}
+
+.landing-page-round-tr {
+  border-top-right-radius: 0.25em !important;
+}
+
+.landing-page-round-bl {
+  border-bottom-left-radius: 0.25em !important;
+}
+
+.landing-page-round-br {
+  border-bottom-right-radius: 0.25em !important;
 }

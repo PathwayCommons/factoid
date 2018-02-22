@@ -16,16 +16,6 @@ module.exports = function({ controller, document, bus }){
       ])
     );
 
-    if( controller.allowDisconnectedInteractions() ){
-      btns.push(
-        h(Tooltip, { description: 'Add interaction', shortcut: 'i' }, [
-          h('button.editor-button.plain-button', { onClick: () => controller.addInteraction() }, [
-            h('i.material-icons', 'add_box')
-          ])
-        ])
-      );
-    }
-
     btns.push(
       h(Tooltip, { description: 'Delete selected', shortcut: 'del' }, [
         h('button.editor-button.plain-button', { onClick: () => controller.removeSelected() }, [

@@ -84,13 +84,6 @@ module.exports = function({ cy, document, bus, controller }){
 
   let bgCmds = [ addEntCmd, drawModeCmd, layoutCmd, fitCmd, rmSelCmd ];
 
-  if( controller.allowDisconnectedInteractions() ){
-    bgCmds = [ addEntCmd, drawModeCmd, layoutCmd, fitCmd, rmSelCmd, addIntnCmd ];
-  } else {
-    // bgCmds = [ fitCmd, rmSelCmd, addEntCmd, drawModeCmd, layoutCmd ];
-    bgCmds = [ layoutCmd, drawModeCmd, addEntCmd, rmSelCmd, fitCmd ];
-  }
-
   cy.cxtmenu( _.assign( {}, DEFAULTS, {
     selector: 'core',
     commands: bgCmds

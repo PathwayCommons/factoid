@@ -112,7 +112,6 @@ class Editor extends React.Component {
       document: doc,
       drawMode: false,
       newElementShift: 0,
-      allowDisconnectedInteractions: false,
       mountDeferred: defer(),
       initted: false,
       rmList: {
@@ -123,10 +122,6 @@ class Editor extends React.Component {
     });
 
     this.state = _.assign( {}, this.data );
-
-    if( this.data.allowDisconnectedInteractions ){
-      bus.on('addinteraction', data => this.addInteraction( data ));
-    }
 
     logger.info('Checking if doc with id %s already exists', doc.id());
 
@@ -193,10 +188,6 @@ class Editor extends React.Component {
     _.assign( this.data, obj );
 
     this.setState( obj, callback );
-  }
-
-  allowDisconnectedInteractions(){
-    return this.data.allowDisconnectedInteractions;
   }
 
   editable(){

@@ -23,6 +23,15 @@
   border-bottom-right-radius: 8px;
 }
 
+.editor-button-group {
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.editor-button-group + .editor-button-group {
+  margin-top: 2em;
+}
+
 .editor-menu {
   z-index: 1;
   position: absolute;

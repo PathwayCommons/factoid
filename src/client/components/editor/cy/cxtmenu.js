@@ -82,7 +82,7 @@ module.exports = function({ cy, document, bus, controller }){
     commands: [ rmElCmd ]
   } ) );
 
-  let bgCmds = [ addEntCmd, drawModeCmd, layoutCmd, fitCmd, rmSelCmd ];
+  let bgCmds = [ drawModeCmd, addEntCmd, rmSelCmd ];
 
   cy.cxtmenu( _.assign( {}, DEFAULTS, {
     selector: 'core',

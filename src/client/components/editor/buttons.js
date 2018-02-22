@@ -5,37 +5,31 @@ const Popover = require('../popover/popover');
 const Linkout = require('../document-linkout');
 
 module.exports = function({ controller, document, bus }){
-  let btns = [];
+  let grs = [];
 
   if( document.editable() ){
-    btns.push(
+    grs.push([
       h(Tooltip, { description: 'Add entity', shortcut: 'e' }, [
         h('button.editor-button.plain-button', { onClick: () => controller.addElement().then( el => bus.emit('opentip', el) ) }, [
           h('i.material-icons', 'add_circle')
         ])
-      ])
-    );
+      ]),
 
-    btns.push(
       h(Tooltip, { description: 'Delete selected', shortcut: 'del' }, [
         h('button.editor-button.plain-button', { onClick: () => controller.removeSelected() }, [
           h('i.material-icons', 'clear')
         ])
       ]),
+
       h(Tooltip, { description: 'Toggle draw connections mode', shortcut: 'd' }, [
         h(Toggle, { className: 'editor-button plain-button', onToggle: () => controller.toggleDrawMode(), getState: () => controller.drawMode() }, [
           h('i.material-icons', 'keyboard_tab')
         ])
-      ]),
-      h(Tooltip, { description: 'Re-arrange all entities', shortcut: 'r' }, [
-        h('button.editor-button.plain-button', { onClick: () => controller.layout() }, [
-          h('i.material-icons', 'shuffle')
-        ])
       ])
-    );
+    ]);
   }
 
-  btns.push(
+  grs.push([
     h(Tooltip, { description: 'Fit to screen', shortcut: 'f' }, [
       h('button.editor-button.plain-button', { onClick: () => controller.fit() }, [
         h('i.material-icons', 'zoom_out_map')
@@ -56,7 +50,7 @@ module.exports = function({ controller, document, bus }){
         ])
       ])
     ])
-  );
+  ]);
 
-  return h('div.editor-buttons', btns);
+  return h('div.editor-buttons', grs.map( btns => h('div.editor-button-group', btns) ));
 };

@@ -109,8 +109,6 @@ module.exports = function({ bus, cy, document, controller }){
   cy.on('ehstart', () => bus.emit('drawstart'));
   cy.on('ehstop', () => bus.emit('drawstop'));
 
-  cy.on('ehstop', () => cy.nodes().removeClass('eh-source eh-target eh-preview'));
-
   if( DRAW_ON_HANDLE_TAP ){
     cy.on('tap', 'node.eh-handle', _.debounce( () => {
       eh.show( sourceNode );

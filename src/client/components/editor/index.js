@@ -103,7 +103,7 @@ class Editor extends React.Component {
 
     let bus = new EventEmitter();
 
-    bus.on('drawtoggle', () => this.toggleDrawMode());
+    bus.on('drawtoggle', toggle => this.toggleDrawMode(toggle));
     bus.on('addelement', data => this.addElement( data ));
     bus.on('remove', docEl => this.remove( docEl ));
 
@@ -194,10 +194,10 @@ class Editor extends React.Component {
     return this.data.document.editable();
   }
 
-  toggleDrawMode(){
+  toggleDrawMode( toggle ){
     if( !this.editable() ){ return; }
 
-    let on = !this.drawMode();
+    let on = toggle === undefined ? !this.drawMode() : toggle;
 
     this.data.bus.emit( on ? 'drawon' : 'drawoff' );
 

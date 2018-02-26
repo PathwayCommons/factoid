@@ -15,17 +15,18 @@ module.exports = function({ controller, document, bus }){
         ])
       ]),
 
+      h(Tooltip, { description: 'Draw an interaction', shortcut: 'd' }, [
+        h(Toggle, { className: 'editor-button plain-button', onToggle: () => controller.toggleDrawMode(), getState: () => controller.drawMode() }, [
+          h('i.material-icons', 'arrow_forward')
+        ])
+      ]),
+
       h(Tooltip, { description: 'Delete selected', shortcut: 'del' }, [
         h('button.editor-button.plain-button', { onClick: () => controller.removeSelected() }, [
           h('i.material-icons', 'clear')
         ])
-      ]),
-
-      h(Tooltip, { description: 'Toggle draw connections mode', shortcut: 'd' }, [
-        h(Toggle, { className: 'editor-button plain-button', onToggle: () => controller.toggleDrawMode(), getState: () => controller.drawMode() }, [
-          h('i.material-icons', 'keyboard_tab')
-        ])
       ])
+
     ]);
   }
 

@@ -15,6 +15,7 @@ const ALLOW_IMPLICIT_ORG_SPEC = true;
 const REMOVE_DISCONNECTED_ENTS = true;
 const REMOVE_UNGROUNDED_ENTS = false;
 const APPLY_GROUND = true;
+const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
 
 module.exports = {
   get: function( text ){
@@ -164,6 +165,10 @@ module.exports = {
         // implicit mention of org
         if( orgIsSupported && ALLOW_IMPLICIT_ORG_SPEC ){
           enableOrg( org );
+        }
+
+        if( REMOVE_GROUND_FOR_OTHER_SPECIES && org != null && !orgIsSupported ){
+          ground = null;
         }
 
         if( typeIsSupported ){

@@ -103,7 +103,7 @@ class Editor extends React.Component {
 
     let bus = new EventEmitter();
 
-    bus.on('drawtoggle', () => this.toggleDrawMode());
+    bus.on('drawtoggle', toggle => this.toggleDrawMode(toggle));
     bus.on('addelement', data => this.addElement( data ));
     bus.on('remove', docEl => this.remove( docEl ));
 
@@ -112,7 +112,6 @@ class Editor extends React.Component {
       document: doc,
       drawMode: false,
       newElementShift: 0,
-      allowDisconnectedInteractions: false,
       mountDeferred: defer(),
       initted: false,
       rmList: {
@@ -123,10 +122,6 @@ class Editor extends React.Component {
     });
 
     this.state = _.assign( {}, this.data );
-
-    if( this.data.allowDisconnectedInteractions ){
-      bus.on('addinteraction', data => this.addInteraction( data ));
-    }
 
     logger.info('Checking if doc with id %s already exists', doc.id());
 
@@ -195,18 +190,14 @@ class Editor extends React.Component {
     this.setState( obj, callback );
   }
 
-  allowDisconnectedInteractions(){
-    return this.data.allowDisconnectedInteractions;
-  }
-
   editable(){
     return this.data.document.editable();
   }
 
-  toggleDrawMode(){
+  toggleDrawMode( toggle ){
     if( !this.editable() ){ return; }
 
-    let on = !this.drawMode();
+    let on = toggle === undefined ? !this.drawMode() : toggle;
 
     this.data.bus.emit( on ? 'drawon' : 'drawoff' );
 
@@ -347,12 +338,16 @@ class Editor extends React.Component {
   }
 
   componentWillUnmount(){
-    if( this.data.cy ){
-      this.data.cy.destroy();
+    let { cy, document, bus } = this.data;
+
+    bus.emit('destroytip');
+
+    if( cy ){
+      cy.destroy();
     }
 
-    this.data.document.elements().forEach( el => el.removeAllListeners() );
-    this.data.document.removeAllListeners();
+    document.elements().forEach( el => el.removeAllListeners() );
+    document.removeAllListeners();
   }
 }
 

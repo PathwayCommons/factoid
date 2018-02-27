@@ -28,15 +28,6 @@ module.exports = function( { bus, cy, document } ){
       animationFilter: isNotInteraction
     } ) );
 
-    // hack to remove animations on interactions; not needed in 3.2
-    // lastLayout.one('layoutready', function(){
-    //   lastLayout.animations.filter( ani => {
-    //     let tgt = ani._private.target;
-    //
-    //     return tgt !== cy && isInteraction( tgt );
-    //   } ).forEach( ani => ani.stop() );
-    // });
-
     lastLayout.run();
   };
 

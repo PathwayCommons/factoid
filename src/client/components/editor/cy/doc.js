@@ -294,8 +294,10 @@ function listenToDoc({ bus, cy, document, controller }){
   };
 
   let onAddNewEle = function( docEl, el ){
-    return; // disable animation for now
+    // don't animate add for now to make things snappier
+  };
 
+  let animateAdd = function( docEl, el ){
     let timestamp = docEl.creationTimestamp();
     let whenCreated = timestamp == null ? null : date.parse( timestamp );
     let cutoff = date.subSeconds( Date.now(), 5 );
@@ -321,8 +323,7 @@ function listenToDoc({ bus, cy, document, controller }){
   };
 
   let animateRm = function( el ){
-    return el.remove(); // disable animation for now
-
+    // disable animations for now for speed
     if( isInteractionNode(el) ){
       el.style('opacity', 0);
 
@@ -339,6 +340,13 @@ function listenToDoc({ bus, cy, document, controller }){
       } );
     }
   };
+
+  let rm = function( el ){
+    return el.remove();
+  };
+
+  // disable animations for now (more responsive)
+  animateRm = rm;
 
   let onRmEle = function( docEl ){
     let el = cy.getElementById( docEl.id() );
@@ -532,11 +540,6 @@ function listenToDoc({ bus, cy, document, controller }){
     if( edge.connectedNodes(isInteractionNode).selected() ){
       edge.select();
     }
-  });
-
-  // TODO emit close on bus when doc closed / new doc loaded?
-  bus.on('close', function(){
-    // TODO handle removing listeners
   });
 }
 

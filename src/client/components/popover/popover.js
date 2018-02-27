@@ -4,7 +4,7 @@ const h = require('react-hyperscript');
 const hh = require('hyperscript');
 const tippyjs = require('tippy.js');
 const _ = require('lodash');
-const { tippyDefaults } = require('../defs');
+const { tippyDefaults } = require('../../defs');
 const Mousetrap = require('mousetrap');
 const EventEmitter = require('eventemitter3');
 
@@ -55,13 +55,16 @@ class Popover extends React.Component {
     if( p.show ){ p.show( show ); }
     if( p.hide ){ p.hide( hide ); }
 
-    this.onEsc = () => tippy.hide();
+    this.hideTippy = () => tippy.hide();
+    this.destroyTippy = () => tippy.destroy();
 
-    emitter.on('esc', this.onEsc);
+    emitter.on('esc', this.hideTippy);
   }
 
   componentWillUnmount(){
-    emitter.removeListener('esc', this.onEsc);
+    emitter.removeListener('esc', this.hideTippy);
+
+    this.destroyTippy();
   }
 
   componentDidUpdate(){

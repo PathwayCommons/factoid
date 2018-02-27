@@ -1,10 +1,10 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const ReactDom = require('react-dom');
-const { delay, isInteractionNode, focusDomElement } = require('../../util');
+const { isInteractionNode } = require('../../../util');
 const _ = require('lodash');
-const defs = require('../defs');
-const { animateDomForEdit } = require('./animate');
+const defs = require('../../defs');
+const { animateDomForEdit } = require('../animate');
 
 class InteractionInfo extends React.Component {
   constructor( props ){

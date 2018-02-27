@@ -87,7 +87,9 @@ module.exports = function({ bus, cy, document, controller }){
 
     let openPopover = intn => bus.emit('opentip', intn);
 
-    Promise.try( replaceEdges ).then( addPpts ).then( openPopover );
+    let disableDrawMode = () => bus.emit('drawtoggle', false);
+
+    Promise.try( replaceEdges ).then( addPpts ).then( openPopover ).then( disableDrawMode );
   };
 
   let handlePosition = node => {

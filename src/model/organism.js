@@ -33,7 +33,7 @@ class Organism {
   }
 
   static fromName( name ){
-    return organisms.find( org => nameMatches( org.name(), name ) );
+    return organisms.find( org => nameMatches( org.name(), name ) ) || Organism.OTHER;
   }
 
   static fromId( id ){

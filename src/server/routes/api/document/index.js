@@ -54,7 +54,8 @@ let runLayout = doc => {
 
   let runLayout = () => {
     let layout = cy.layout( _.assign( {}, getCyLayoutOpts(), {
-      animate: false
+      animate: false,
+      randomize: true
     } ) );
 
     let layoutDone = layout.promiseOn('layoutstop');

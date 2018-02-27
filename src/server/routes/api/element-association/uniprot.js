@@ -154,7 +154,11 @@ const processXml = res => {
   let namespace = NS;
   let type = TYPE;
 
-  let entries = json.uniprot.entry;
+  let entries = _.get( json, ['uniprot', 'entry'] );
+
+  if( entries == null ){
+    return [];
+  }
 
   if( !_.isArray(entries) ){
     entries = [ entries ];

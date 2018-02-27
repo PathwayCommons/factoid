@@ -1618,7 +1618,15 @@ describe('Syncher', function(){
         sc.create().then(function(){
           return sc2.load();
         }).then(function(){
-          let updated = whenAllRemoteupdates([ sc, sc2 ], 2);
+          let updated = new Promise( resolve => {
+            // use debounce since error correction updates could introduce extra updates
+            let onUpdate = _.debounce( resolve, 1000 ); // n.b. liberal duration, in case slow test machine etc.
+
+            sc.on('update', onUpdate);
+            sc.on('remoteupdate', onUpdate);
+            sc2.on('update', onUpdate);
+            sc2.on('remoteupdate', onUpdate);
+          } );
 
           sc.pull('foo',  1);
           sc2.pull('foo', 5);

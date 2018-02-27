@@ -5,7 +5,9 @@ const uuid = require('uuid');
 
 const Editor = require('./components/editor');
 const Home = require('./components/home');
+const Debug = require('./components/debug');
 const DocumentFiller = require('./components/document-filler');
+const ExampleDocument = require('./components/example-document');
 
 
 let routes = [
@@ -16,7 +18,19 @@ let routes = [
     }
   },
   {
-    path: '/new-document',
+    path: '/debug',
+    render: () => {
+      return h(Debug);
+    }
+  },
+  {
+    path: '/example-document',
+    render: props => {
+      return h( ExampleDocument, props );
+    }
+  },
+  {
+    path: '/debug/new-document',
     render: () => {
       let id = uuid();
       let secret = uuid();
@@ -29,11 +43,9 @@ let routes = [
     }
   },
   {
-    path: '/new-document/fill',
+    path: '/debug/new-document/fill',
     render: () => {
-      return h('div.document-filler-page', [
-        h( DocumentFiller )
-      ]);
+      return h( DocumentFiller );
     }
   },
   {

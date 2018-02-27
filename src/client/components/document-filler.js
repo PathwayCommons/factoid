@@ -49,14 +49,18 @@ class DocumentFiller extends React.Component {
     let updateState = documentJson => {
       documentJson.editable = true;
 
-      this.setState({ documentJson }, animateResult);
+      this.setState({ documentJson, submitting: false }, animateResult);
     };
+
+    this.setState({ submitting: true });
 
     Promise.try( makeRequest ).then( toJson ).then( updateState );
   }
 
   render(){
     let rootChildren = [
+      h('h1', 'Textmining debug page'),
+      h('p', 'This is a debug page for textmining.  It is for testing purposes only; it is not for users.  This page may be removed at any time.'),
       h('label.document-filler-text-label', 'Document text'),
       h('textarea.document-filler-text'),
       h('div.document-filler-submit-line', [
@@ -89,9 +93,7 @@ class DocumentFiller extends React.Component {
       ]) );
     }
 
-    let root = h('div.document-filler', rootChildren);
-
-    return root;
+    return h('div.document-filler', rootChildren);
   }
 }
 

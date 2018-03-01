@@ -1,12 +1,14 @@
-let _ = require('lodash');
-let Promise = require('bluebird');
-let Syncher = require('../syncher');
-let EventEmitterMixin = require('../event-emitter-mixin');
-let ElementSet = require('../element-set');
-let ElementCache = require('../element-cache');
-let ElementFactory = require('../element');
-let { assertOneOfFieldsDefined, mixin, getId } = require('../../util');
-let Organism = require('../organism');
+const _ = require('lodash');
+const Promise = require('bluebird');
+const Syncher = require('../syncher');
+const EventEmitterMixin = require('../event-emitter-mixin');
+const ElementSet = require('../element-set');
+const ElementCache = require('../element-cache');
+const ElementFactory = require('../element');
+const { assertOneOfFieldsDefined, mixin, getId } = require('../../util');
+const Organism = require('../organism');
+const Cytoscape = require('cytoscape');
+const { makeCyEles, getCyLayoutOpts } = require('../../util');
 
 const DEFAULTS = Object.freeze({
   entries: [], // used by elementSet
@@ -240,6 +242,37 @@ class Document {
     let rm = () => this.elementSet.remove( el );
 
     return Promise.all([ rmFromIntns(), rm() ]);
+  }
+
+  // applies layout positions after the layout is done running, mostly useful for serverside
+  applyLayout(){
+    let cy = new Cytoscape({
+      headless: true,
+      elements: makeCyEles( this.elements() ),
+      layout: { name: 'grid' },
+      styleEnabled: true
+    });
+
+    let runLayout = () => {
+      let layout = cy.layout( _.assign( {}, getCyLayoutOpts(), {
+        animate: false,
+        randomize: true
+      } ) );
+
+      let layoutDone = layout.promiseOn('layoutstop');
+
+      layout.run();
+
+      return layoutDone;
+    };
+
+    let savePositions = () => Promise.all( this.elements().map( docEl => {
+      let el = cy.getElementById( docEl.id() );
+
+      return docEl.reposition( _.clone( el.position() ) );
+    } ) );
+
+    return Promise.try( runLayout ).then( savePositions );
   }
 
   json(){

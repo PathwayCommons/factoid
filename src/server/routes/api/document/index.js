@@ -4,8 +4,6 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const provider = require('./reach');
 const uuid = require('uuid');
-const { makeCyEles, getCyLayoutOpts } = require('../../../../util');
-const Cytoscape = require('cytoscape');
 const http = require('express').Router();
 
 let newDoc = ({ docDb, eleDb, id, secret }) => {
@@ -46,34 +44,10 @@ let fillDoc = ( doc, text ) => {
 
 // run cytoscape layout on server side so that the document looks ok on first open
 let runLayout = doc => {
-  let cy = new Cytoscape({
-    elements: makeCyEles( doc.elements() ),
-    layout: { name: 'grid' },
-    styleEnabled: true
-  });
-
-  let runLayout = () => {
-    let layout = cy.layout( _.assign( {}, getCyLayoutOpts(), {
-      animate: false,
-      randomize: true
-    } ) );
-
-    let layoutDone = layout.promiseOn('layoutstop');
-
-    layout.run();
-
-    return layoutDone;
-  };
-
-  let savePositions = () => Promise.all( doc.elements().map( docEl => {
-    let el = cy.getElementById( docEl.id() );
-
-    return docEl.reposition( _.clone( el.position() ) );
-  } ) );
-
+  let run = () => doc.applyLayout();
   let getDoc = () => doc;
 
-  return Promise.try( runLayout ).then( savePositions ).then( getDoc );
+  return Promise.try( run ).then( getDoc );
 };
 
 // get existing doc

@@ -176,7 +176,6 @@ module.exports = {
         }
 
         ent.name = frame.text;
-        ent.completed = isGrounded;
 
         if( typeIsSupported ){
           addElement( ent, frame, ground );

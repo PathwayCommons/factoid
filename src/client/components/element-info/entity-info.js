@@ -662,7 +662,7 @@ class EntityInfo extends React.Component {
           h('input.input-round.input-joined.entity-info-name-input', {
             type: 'text',
             placeholder: 'Entity name',
-            defaultValue: s.name,
+            value: s.name,
             spellCheck: false,
             onChange: evt => this.updateCachedName( evt.target.value ),
             onKeyDown: evt => {

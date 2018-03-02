@@ -11,21 +11,22 @@ class Home extends Component {
             h('div.nav-bar-logo.icon.icon-logo'),
             h('div.nav-bar-links', [
               h('div.nav-bar-link', [
-                h('a', { href: '/' }, 'Some link')
+                h('a', { href: '/' }, 'About')
               ]),
               h('div.nav-bar-link', [
-                h('a', { href: '/' }, 'Some link')
+                h('a', { href: '/' }, 'Features')
               ]),
               h('div.nav-bar-link', [
-                h('a', { href: '/' }, 'Some link')
+                h('a', { href: '/' }, 'Team')
               ])
             ])
           ]),
           h('h1.hero-title', 'Factoid'),
-          h('div.hero-subtitle', 'Share your pathway with the world'),
+          h('div.hero-subtitle', 'SHARE YOUR PATHWAY WITH THE WORLD'),
+          h('div.hero-description', 'Publishing and getting your research noticed is essential. Factoid helps you increase the visibility of your publications by linking your research to pathways.'),
           h('div.hero-buttons', [
-            h('button.hero-button', 'View Factoid demo'),
-            h('button.hero-button', 'Try Factoid with your abstract')
+            h('button.hero-button', 'TRY FACTOID'),
+            // h('button.hero-button.hero-alt', 'View Demo')
           ])
         ])
       ]),
@@ -67,7 +68,8 @@ class Home extends Component {
       ]),
       h('section.home-section', [
         h('div.page-content', [
-          h('p', 'Some random content')
+          h('p', 'Credits'),
+          h('p', 'starline @ Freepik for the free splash background https://www.freepik.com/starline')
         ])
       ]),
     ]);

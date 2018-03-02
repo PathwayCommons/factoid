@@ -8,7 +8,7 @@ class Home extends Component {
       h('section.hero', [
         h('div.page-content', [
           h('header.nav-bar', [
-            h('div.nav-bar-logo.icon.icon-logo'),
+            h('div'),
             h('div.nav-bar-links', [
               h('div.nav-bar-link', [
                 h('a', { href: '/' }, 'About')

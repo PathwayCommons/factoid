@@ -2,6 +2,7 @@ header.nav-bar {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  padding-top: 30px;
 }
 
 .nav-bar-logo {
@@ -17,6 +18,7 @@ header.nav-bar {
   padding: 0;
   flex-direction: row;
   align-self: flex-end;
+  font-size: 1.15em;
 }
 
 .nav-bar-link {
@@ -43,7 +45,7 @@ header.nav-bar {
   font-size: 5em;
   font-weight: 700;
   margin-bottom: 0.25em;
-  margin-top: 2em;
+  margin-top: 1.7em;
 }
 
 .hero-subtitle {
@@ -52,7 +54,7 @@ header.nav-bar {
 }
 
 .hero-description {
-  font-size: 1.25em;
+  font-size: 1.125em;
   color: black;
 }
 

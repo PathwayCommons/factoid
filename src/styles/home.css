@@ -138,3 +138,15 @@ header.nav-bar {
     margin-bottom: 0.25em;
   }
 }
+.team > * {
+  font-size: 1.125em;
+  color: #212F3D;
+}
+
+.team h2 {
+  font-size: 2em;
+}
+
+.content h2 {
+  font-size: 2em;
+}

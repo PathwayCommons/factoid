@@ -67,7 +67,7 @@ class Home extends Component {
         ])
       ]),
       h('section.home-section', [
-        h('div.page-content', [
+        h('div.page-content.team', [
           h('h2', 'Team'),
           h('p', 'Factoid is the product of a proud collaboration between the Bader Lab @ the University of Toronto, Sander Lab @ the Dana Farber Cancer Institute and Harvard Medical School, and the Pathway and Omics Lab @ Oregon Health and Science University'),
           h('h3', 'Bader Lab @ University of Toronto'),
@@ -95,7 +95,7 @@ class Home extends Component {
         ])
       ]),
       h('section.home-section', [
-        h('div.page-content', [
+        h('div.page-content.content', [
           h('h2', 'Contact'),
           h('p', 'Please send all inquiries to some.email@factoid.com')
         ])

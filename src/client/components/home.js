@@ -14,7 +14,7 @@ class Home extends Component {
                 h('a', { href: '/' }, 'About')
               ]),
               h('div.nav-bar-link', [
-                h('a', { href: '/' }, 'Features')
+                h('a', { href: '/' }, 'How it Works')
               ]),
               h('div.nav-bar-link', [
                 h('a', { href: '/' }, 'Team')
@@ -68,25 +68,37 @@ class Home extends Component {
       ]),
       h('section.home-section', [
         h('div.page-content', [
-          h('p', 'Some random content')
-        ])
-      ]),
-      h('section.home-section', [
-        h('div.page-content', [
-          h('p', 'Some random content')
-        ])
-      ]),
-      h('section.home-section', [
-        h('div.page-content', [
-          h('p', 'Some random content')
-        ])
-      ]),
-      h('section.home-section', [
-        h('div.page-content', [
-          h('p', 'Credits'),
+          h('h2', 'Team'),
+          h('p', 'Factoid is the product of a proud collaboration between the Bader Lab @ the University of Toronto, Sander Lab @ the Dana Farber Cancer Institute and Harvard Medical School, and the Pathway and Omics Lab @ Oregon Health and Science University'),
+          h('h3', 'Bader Lab @ University of Toronto'),
+          h('ul', [
+            h('li', 'Gary Bader'),
+            h('li', 'Max Franz'),
+            h('li', 'Jeffrey Wong'),
+            h('li', 'Dylan Fong')
+          ]),
+          h('h3', 'Sander Lab @ The Dana-Farber Cancer Institute and Harvard Medical School'),
+          h('ul', [
+            h('li', 'Chris Sander'),
+            h('li', 'Christian Dallago'),
+            h('li', 'Augustin Luna')
+          ]),
+          h('h3', 'Pathway and Omics Lab @ The Oregon Health and Science University'),
+          h('ul', [
+            h('li', 'Emek Demir'),
+            h('li', 'Funda Durupinar Babur'),
+            h('li', 'David Servillo'),
+            h('li', 'Metin Can Siper'),
+          ]),
+          h('h3', 'Assets'),
           h('p', 'starline @ Freepik for the free splash background https://www.freepik.com/starline')
         ])
       ]),
+      h('section.home-section', [
+        h('div.page-content', [
+          h('h2', 'Contact')
+        ])
+      ])
     ]);
   }
 }

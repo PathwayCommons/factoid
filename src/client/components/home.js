@@ -11,20 +11,20 @@ class Home extends Component {
             h('div'),
             h('div.nav-bar-links', [
               h('div.nav-bar-link', [
-                h('a', { href: '/' }, 'About')
+                h('a', { href: '/#about' }, 'About')
               ]),
               h('div.nav-bar-link', [
-                h('a', { href: '/' }, 'How it Works')
+                h('a', { href: '/#how' }, 'How it Works')
               ]),
               h('div.nav-bar-link', [
-                h('a', { href: '/' }, 'Team')
+                h('a', { href: '/#credits' }, 'Team')
               ]),
               h('div.nav-bar-link', [
-                h('a', { href: '/' }, 'Contact')
+                h('a', { href: '/#contact' }, 'Contact')
               ])
             ])
           ]),
-          h('div.hero-title-container', [
+          h('div.hero-title-container#about', [
             h('div.hero-title', 'Factoid')
           ]),
           h('div.hero-subtitle', 'SHARE YOUR PATHWAY WITH THE WORLD'),
@@ -35,7 +35,7 @@ class Home extends Component {
           ])
         ])
       ]),
-      h('section.home-section', [
+      h('section.home-section#how', [
         h('div.page-content', [
           h('h2.how-it-works', 'How does Factoid work?'),
           h('p.how-it-works-description', `
@@ -66,11 +66,11 @@ class Home extends Component {
           ])
         ])
       ]),
-      h('section.home-section', [
+      h('section.home-section#credits', [
         h('div.page-content.team', [
-          h('h2', 'Team'),
+          h('h2.team-title-header', 'Team'),
           h('p', 'Factoid is the product of a proud collaboration between the Bader Lab @ the University of Toronto, Sander Lab @ the Dana Farber Cancer Institute and Harvard Medical School, and the Pathway and Omics Lab @ Oregon Health and Science University'),
-          h('h3', 'Bader Lab @ University of Toronto'),
+          h('h3', 'Bader Lab @ The University of Toronto'),
           h('ul', [
             h('li', 'Gary Bader'),
             h('li', 'Max Franz'),
@@ -94,7 +94,7 @@ class Home extends Component {
           h('p', 'starline @ Freepik for the free splash background https://www.freepik.com/starline')
         ])
       ]),
-      h('section.home-section', [
+      h('section.home-section#contact', [
         h('div.page-content.content', [
           h('h2', 'Contact'),
           h('p', 'Please send all inquiries to some.email@factoid.com')

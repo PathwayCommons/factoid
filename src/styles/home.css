@@ -44,8 +44,17 @@ header.nav-bar {
 .hero-title {
   font-size: 5em;
   font-weight: 700;
-  margin-bottom: 0.25em;
+  margin-bottom: 0.5em;
   margin-top: 1.7em;
+}
+
+.hero-title-icon {
+  /* position: relative; */
+  /* top: 8em; */
+  height: 5em;
+  width: 100%;
+  background-image: url('./image/logo-no-slogan.svg');
+  background-repeat: no-repeat;
 }
 
 .hero-subtitle {
@@ -112,4 +121,20 @@ header.nav-bar {
 .home-section {
   min-height: 3em;
   padding: 1px 0;
+}
+
+.how-it-works {
+  font-size: 2em;
+  color: #212F3D;
+}
+
+.how-it-works-description {
+  margin-bottom: 2em;
+  color: #767676;
+  font-size: 1.125em;
+
+  & h2 {
+    color: #212F3D;
+    margin-bottom: 0.25em;
+  }
 }

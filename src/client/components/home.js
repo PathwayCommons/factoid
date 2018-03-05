@@ -96,7 +96,8 @@ class Home extends Component {
       ]),
       h('section.home-section', [
         h('div.page-content', [
-          h('h2', 'Contact')
+          h('h2', 'Contact'),
+          h('p', 'Please send all inquiries to some.email@factoid.com')
         ])
       ])
     ]);

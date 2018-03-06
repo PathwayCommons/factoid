@@ -18,7 +18,7 @@ header.nav-bar {
   padding: 0;
   flex-direction: row;
   align-self: flex-end;
-  font-size: 1.15em;
+  font-size: 1.125em;
 }
 
 .nav-bar-link {

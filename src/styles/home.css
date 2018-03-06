@@ -36,6 +36,7 @@ header.nav-bar {
   background-repeat: no-repeat;
   background-position: top;
 
+  min-height: 48em;
   color: #212F3D;
   padding-top: 1em;
   padding-bottom: 2em;

@@ -151,3 +151,17 @@ header.nav-bar {
 .content h2 {
   font-size: 2em;
 }
+
+.contact h2 {
+  font-size: 2em;
+  color: #212F3D;
+}
+
+.contact p {
+  font-size: 1.125em;
+  color: #767676;
+}
+
+.contact a {
+  font-size: 1.125em;
+}

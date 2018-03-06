@@ -68,8 +68,8 @@ class Home extends Component {
       ]),
       h('section.home-section#credits', [
         h('div.page-content.team', [
-          h('h2.team-title-header', 'Team'),
-          h('p', 'Factoid is the product of a proud collaboration between the Bader Lab @ the University of Toronto, Sander Lab @ the Dana Farber Cancer Institute and Harvard Medical School, and the Pathway and Omics Lab @ Oregon Health and Science University'),
+          h('h2', 'Team'),
+          h('p', 'Factoid is the product of a proud collaboration between the Bader Lab @ the University of Toronto, Sander Lab @ the Dana Farber Cancer Institute and Harvard Medical School, and the Pathway and Omics Lab @ the Oregon Health and Science University'),
           h('h3', 'Bader Lab @ The University of Toronto'),
           h('ul', [
             h('li', 'Gary Bader'),
@@ -95,9 +95,12 @@ class Home extends Component {
         ])
       ]),
       h('section.home-section#contact', [
-        h('div.page-content.content', [
+        h('div.page-content.contact', [
           h('h2', 'Contact'),
-          h('p', 'Please send all inquiries to some.email@factoid.com')
+          h('p', [
+            h('span', 'Please send all inquiries to the'),
+            h('a.plain-link', { href: 'https://groups.google.com/forum/#!forum/pathway-commons-help' }, ' Factoid help forum')
+          ])
         ])
       ])
     ]);

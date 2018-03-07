@@ -109,12 +109,8 @@ module.exports = {
             switch( ground.namespace ){
             case 'uniprot':
               return uniprot.get( q );
-            case 'chemical':
-              return pubchem.get( q ).then( res => {
-                return chebi.search({ name: res.inchi });
-              } ).then( ents => {
-                return ents[0]; // multiple may match but the first is the default one (charge 0 etc)
-              } );
+            case 'pubchem':
+              return pubchem.get( q );
             default:
               return null;
             }

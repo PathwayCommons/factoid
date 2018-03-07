@@ -772,16 +772,36 @@ class EntityInfo extends React.Component {
     }
 
     if( doc.editable() ){
+      let isCompleted = stage === STAGES.COMPLETED;
+      let buttonLabel = content => h('span.entity-info-progression-button-label', [ content ]);
+
+      let backButtonLabel = buttonLabel( h('i.material-icons', 'arrow_back') );
+
+      let forwardButtonLabel = buttonLabel(
+        h('i.material-icons', {
+          className: makeClassList({
+            'entity-info-complete-icon': isCompleted
+          })
+        }, isCompleted ? 'check_circle' : 'arrow_forward')
+      );
+
       children.push( h('div.entity-info-progression', [
         h('button.entity-info-back.plain-button', {
           disabled: !this.canGoBack(),
           onClick: () => this.back()
-        }, [ h('i.material-icons', 'arrow_back') ]),
+        }, [ backButtonLabel ]),
 
         h('button.entity-info-forward.plain-button', {
           disabled: !this.canGoForward(),
           onClick: () => this.forward()
-        }, [ h('i.material-icons', 'arrow_forward') ])
+        }, [
+          !isCompleted ? forwardButtonLabel : h(Tooltip, {
+            description: 'This entity is completed.',
+            tippy: { placement: 'bottom' }
+          }, [
+            forwardButtonLabel
+          ])
+        ])
       ]) );
     }
 

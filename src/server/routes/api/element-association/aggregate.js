@@ -2,9 +2,9 @@ const _ = require('lodash');
 const Promise = require('bluebird');
 const dice = require('dice-coefficient'); // sorensen dice coeff
 const distanceMetric = (a, b) => 1 - dice(a, b);
-const chebi = require('./chebi');
+const pubchem = require('./pubchem');
 const uniprot = require('./uniprot');
-const providers = [ uniprot, chebi ];
+const providers = [ uniprot, pubchem ];
 const { memoize } = require('../../../../util');
 const LRUCache = require('lru-cache');
 const { MAX_SEARCH_SIZE, AGGREGATE_CACHE_SIZE } = require('../../../../config');

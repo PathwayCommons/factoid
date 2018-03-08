@@ -51,7 +51,7 @@ const getVals = ( ent, matcher ) => {
 
 const getVal = ( ent, matcher ) => getVals( ent, matcher )[0];
 
-const titleCase = str => !str ? '' : str[0].toUpperCase() + str.substr(1);
+const titleCase = str => !str ? '' : str[0].toUpperCase() + str.substr(1).toLowerCase();
 
 const processName = name => titleCase( name ? name.replace(/;/g, ' ') : '' );
 

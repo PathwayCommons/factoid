@@ -14,7 +14,7 @@ const Notification = require('../notification');
 const InlineNotification = require('../notification/inline');
 const Tooltip = require('../popover/tooltip');
 
-const { UNIPROT_LINK_BASE_URL, CHEBI_LINK_BASE_URL } = require('../../../config');
+const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL } = require('../../../config');
 
 const animateDomForEdit = domEle => anime({
   targets: domEle,
@@ -619,7 +619,7 @@ class EntityInfo extends React.Component {
           url = UNIPROT_LINK_BASE_URL + m.id;
           break;
         case 'chemical':
-          url = CHEBI_LINK_BASE_URL + m.id;
+          url = PUBCHEM_LINK_BASE_URL + m.id;
           break;
       }
 

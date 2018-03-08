@@ -8,6 +8,7 @@ const providers = [ uniprot, pubchem ];
 const { memoize } = require('../../../../util');
 const LRUCache = require('lru-cache');
 const { MAX_SEARCH_SIZE, AGGREGATE_CACHE_SIZE } = require('../../../../config');
+const logger = require('../../../logger');
 
 const getProviderByNs = _.memoize( ns => {
   return providers.find( p => p.namespace === ns );
@@ -65,13 +66,22 @@ const search = q => {
   return (
     Promise.try( () => searchAll(q) )
     .then( ents => ents.slice( offset, offset + limit ) )
+    .catch( err => {
+      logger.error(`Aggregate search failed: ${err.toString()}`);
+
+      throw err;
+    } )
   );
 };
 
 const get = q => {
   let provider = providers.find( p => p.namespace === q.namespace );
 
-  return provider.get( q );
+  return provider.get( q ).catch( err => {
+    logger.error(`Aggregate get failed: ${err.toString()}`);
+
+    throw err;
+  } );
 };
 
 module.exports = { get, search };

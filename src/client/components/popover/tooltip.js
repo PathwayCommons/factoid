@@ -29,7 +29,7 @@ class Tooltip extends React.Component {
       interactive: false,
       touchHold: true,
       theme: 'dark',
-      delay: [ 500, 0 ]
+      delay: [ 1000, 0 ]
     }, props.tippy );
 
     let popoverOptions = _.assign( {}, props, { tippy: tippyOptions } );

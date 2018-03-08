@@ -785,19 +785,28 @@ class EntityInfo extends React.Component {
         }, isCompleted ? 'check_circle' : 'arrow_forward')
       );
 
+      let tippyOpts = { placement: 'bottom' };
+
       children.push( h('div.entity-info-progression', [
         h('button.entity-info-back.plain-button', {
           disabled: !this.canGoBack(),
           onClick: () => this.back()
-        }, [ backButtonLabel ]),
+        }, [
+          h(Tooltip, {
+            description: 'Go to the previous step.',
+            tippy: tippyOpts
+          }, [
+            backButtonLabel
+          ])
+        ]),
 
         h('button.entity-info-forward.plain-button', {
           disabled: !this.canGoForward(),
           onClick: () => this.forward()
         }, [
-          !isCompleted ? forwardButtonLabel : h(Tooltip, {
-            description: 'This entity is completed.',
-            tippy: { placement: 'bottom' }
+          h(Tooltip, {
+            description: isCompleted ? 'This entity is completed.' : 'Go to the next step.',
+            tippy: tippyOpts
           }, [
             forwardButtonLabel
           ])

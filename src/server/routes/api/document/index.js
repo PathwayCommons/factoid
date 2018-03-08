@@ -1,12 +1,16 @@
-const Document = require('../../../../model/document');
-const db = require('../../../db');
-const Promise = require('bluebird');
-const _ = require('lodash');
-const provider = require('./reach');
-const uuid = require('uuid');
-const { makeCyEles, getCyLayoutOpts } = require('../../../../util');
 const Cytoscape = require('cytoscape');
 const http = require('express').Router();
+const Promise = require('bluebird');
+const _ = require('lodash');
+const uuid = require('uuid');
+
+const Document = require('../../../../model/document');
+const db = require('../../../db');
+const { makeCyEles, getCyLayoutOpts } = require('../../../../util');
+const logger = require('../../../logger');
+
+const provider = require('./reach');
+
 
 let newDoc = ({ docDb, eleDb, id, secret }) => {
   return new Document( _.assign( {}, docDb, {
@@ -41,7 +45,9 @@ let getDocJson = doc => doc.json();
 let fillDoc = ( doc, text ) => {
   return provider.get( text ).then( res => {
     return doc.fromJson( res );
-  } ).then( () => doc );
+  } ).then( () => doc ).catch(e => {
+    logger.error('Could not fill doc from text: ', `text: ${text}`, e);
+  } );
 };
 
 // run cytoscape layout on server side so that the document looks ok on first open

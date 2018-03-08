@@ -45,9 +45,7 @@ let getDocJson = doc => doc.json();
 let fillDoc = ( doc, text ) => {
   return provider.get( text ).then( res => {
     return doc.fromJson( res );
-  } ).then( () => doc ).catch(e => {
-    logger.error('Could not fill doc from text: ', `text: ${text}`, e);
-  } );
+  } ).then( () => doc );
 };
 
 // run cytoscape layout on server side so that the document looks ok on first open
@@ -81,6 +79,10 @@ http.post('/', function( req, res ){
     .then( runLayout )
     .then( getDocJson )
     .then( json => res.json( json ) )
+    .catch( e => {
+      logger.error('Could not fill doc from text: ', `text: ${text}`, e);
+      res.sendStatus(500);
+    } )
   );
 });
 

@@ -82,6 +82,7 @@ http.post('/', function( req, res ){
     .catch( e => {
       logger.error('Could not fill doc from text: ', `text: ${text}`, e);
       res.sendStatus(500);
+      throw e;
     } )
   );
 });

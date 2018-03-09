@@ -37,7 +37,7 @@ class Home extends Component {
       ]),
       h('section.home-section#how', [
         h('div.page-content', [
-          h('h2.how-it-works', 'How does Factoid work?'),
+          h('h2.section-title', 'How does Factoid work?'),
           h('p.how-it-works-description', `
             Factoid works in tandem with publishers and authors to give your biological research visibility by linking your paper to digital data for your pathway.
           `),
@@ -66,9 +66,19 @@ class Home extends Component {
           ])
         ])
       ]),
+      h('section.home-section#why', [
+        h('div.page-content', [
+          h('h2.section-title', 'Our Mission'),
+          h('h2', 'Increase the Visibility of Your Research'),
+          h('p', 'Our mission is to help you increase the visibility of your research.  Factoid is a cutting edge platform that digitally captures your information.  This provides a means for better search an discovery capabilities for your paper'),
+          h('p', `By encoding your paper's information in a Factoid document, the future research possibilities are endless; providing opportunities to perform large scale research and analysis over thousands of papers efficiently.`),
+          h('h2', 'Contribute to the Future of Academic Paper Curation'),
+          h('p', 'The current processes for finding and reading pathway literature is time consuming and inefficient.  Factoid solves these issues by providing services to search and view thousands of papers in a unified digital format, making it easy to understand a vast array of biological phenomena.')
+        ])
+      ]),
       h('section.home-section#credits', [
         h('div.page-content.team', [
-          h('h2', 'Team'),
+          h('h2.section-title', 'Team'),
           h('p', 'Factoid is the product of a proud collaboration between the Bader Lab @ the University of Toronto, Sander Lab @ the Dana Farber Cancer Institute and Harvard Medical School, and the Pathway and Omics Lab @ the Oregon Health and Science University'),
           h('h3', 'Bader Lab @ The University of Toronto'),
           h('ul', [
@@ -96,7 +106,7 @@ class Home extends Component {
       ]),
       h('section.home-section#contact', [
         h('div.page-content.contact', [
-          h('h2', 'Contact'),
+          h('h2.section-title', 'Contact'),
           h('p', [
             h('span', 'Please send all inquiries to the'),
             h('a.plain-link', { href: 'https://groups.google.com/forum/#!forum/pathway-commons-help' }, ' Factoid help forum')

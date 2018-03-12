@@ -69,11 +69,29 @@ class Home extends Component {
       h('section.home-section#why', [
         h('div.page-content', [
           h('h2.section-title', 'Our Mission'),
-          h('h2', 'Increase the Visibility of Your Research'),
-          h('p', 'Our mission is to help you increase the visibility of your research.  Factoid is a cutting edge platform that digitally captures your information.  This provides a means for better search an discovery capabilities for your paper'),
+          h('h2', 'Increase the Visibility of important biological Research'),
+          h('p', 'Our mission is to increase the visibility of important biological research.  Factoid is a cutting edge platform that digitally captures information from academic papers.  This provides a means for better search and discovery capabilities academic papers.'),
           h('p', `By encoding your paper's information in a Factoid document, the future research possibilities are endless; providing opportunities to perform large scale research and analysis over thousands of papers efficiently.`),
+          h('h2', 'Revolutionize the Future of Academic Paper Curation'),
+          h('p', 'The current processes for finding and reading biological literature are time consuming and inefficient.  Factoid solves these issues by providing services to search and view thousands of papers in a unified digital format, making it easy to understand a vast array of biological phenomena.')
+        ])
+      ]),
+      h('section.home-section#why-biologists', [
+        h('div.page-content', [
+          h('h2.section-title', 'For Biologists'),
+          h('h2', 'Increase the Impact of Your Research'),
+          h('p', 'Factoid makes your paper easily searchable and accessible by encoding it as a Factoid document, a format that makes it easily searchable.'),
           h('h2', 'Contribute to the Future of Academic Paper Curation'),
-          h('p', 'The current processes for finding and reading pathway literature is time consuming and inefficient.  Factoid solves these issues by providing services to search and view thousands of papers in a unified digital format, making it easy to understand a vast array of biological phenomena.')
+          h('p', `The current processes for finding and reading biological literature are time consuming and inefficient.  By contributing to Factoid documents, you will help seed a ecosystem that has the potential to revolutionize the way academic knowledge is stored and accessed.`)
+        ])
+      ]),
+      h('section.home-section#why-publishers', [
+        h('div.page-content', [
+          h('h2.section-title', 'For Journals'),
+          h('h2', 'Increase the Visibility and Traffic of Your Journal'),
+          h('p', 'Factoid makes your collection of papers easily searchable and accessible by encoding it as a Factoid document, with each document linking back to your journal to increase awareness and influence.'),
+          h('h2', 'Become a Pioneer in the Future of Academic Paper Curation'),
+          h('p', `Free your journal from the burden of archaic paper curation processes.  Factoid documents for your papers will allow you to easily manage and curate your papers while increasing the channels for accessing your content.`)
         ])
       ]),
       h('section.home-section#credits', [

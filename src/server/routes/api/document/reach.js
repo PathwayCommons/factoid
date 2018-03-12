@@ -9,7 +9,9 @@ const uniprot = require('../element-association/uniprot');
 const pubchem = require('../element-association/pubchem');
 const chebi = require('../element-association/chebi');
 
-const { REACH_URL } = require('../../../../config');
+const logger = require('../../../logger');
+
+const { REACH_URL, REACH_RESPONSE_TIME_LIMIT } = require('../../../../config');
 const MERGE_ENTS_WITH_SAME_GROUND = true;
 const ALLOW_IMPLICIT_ORG_SPEC = true;
 const REMOVE_DISCONNECTED_ENTS = true;
@@ -28,6 +30,12 @@ module.exports = {
 
         return data;
       })()
+    }).timeout(REACH_RESPONSE_TIME_LIMIT).catch(Promise.TimeoutError, e => {
+      logger.error(`REACH service at url: ${REACH_URL}
+        took longer than the configured time limit ${REACH_RESPONSE_TIME_LIMIT}
+        to create a doc from the given text: `, text, e);
+
+      throw e;
     });
 
     let makeDocJson = res => {

@@ -11,7 +11,7 @@ const chebi = require('../element-association/chebi');
 
 const logger = require('../../../logger');
 
-const { REACH_URL, REACH_RESPONSE_TIME_LIMIT } = require('../../../../config');
+const { REACH_URL } = require('../../../../config');
 const MERGE_ENTS_WITH_SAME_GROUND = true;
 const ALLOW_IMPLICIT_ORG_SPEC = true;
 const REMOVE_DISCONNECTED_ENTS = true;
@@ -30,12 +30,6 @@ module.exports = {
 
         return data;
       })()
-    }).timeout(REACH_RESPONSE_TIME_LIMIT).catch(Promise.TimeoutError, e => {
-      logger.error(`REACH service at url: ${REACH_URL}
-        took longer than the configured time limit ${REACH_RESPONSE_TIME_LIMIT}
-        to create a doc from the given text: `, text, e);
-
-      throw e;
     });
 
     let makeDocJson = res => {
@@ -266,7 +260,7 @@ module.exports = {
       } ).then( () => {
 
         if( elements.length === 0 ){
-          logger.error(` REACH service at url: ${REACH_URL} recognized 0 entities to create a doc from the given text: `, text);
+          logger.error(` REACH service recognized 0 entities from the given text: `, text);
         }
         return {
           elements,

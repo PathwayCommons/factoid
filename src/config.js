@@ -22,7 +22,6 @@ let defaults = {
 
   // Services
   REACH_URL: 'http://agathon.sista.arizona.edu:8080/odinweb/api/text',
-  REACH_RESPONSE_TIME_LIMIT: 1000,
   UNIPROT_URL: 'http://www.uniprot.org/uniprot',
   UNIPROT_LINK_BASE_URL: 'http://www.uniprot.org/uniprot/',
   UNIPROT_CACHE_SIZE: DEFAULT_CACHE_SIZE,

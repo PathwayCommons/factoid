@@ -78,15 +78,15 @@ http.post('/', function( req, res ){
     .then( doc => fillDoc( doc, text ) )
     .then( runLayout )
     .then( getDocJson )
-    .then( json => res.json( json ) )
+    .then( json => {
+      logger.info(`Created new doc ${json.id}`);
+      return res.json( json );
+    } )
     .catch( e => {
+      logger.error(`Could not fill doc from text: ${text}`);
+      logger.error('REACH exception thrown :', e.message);
+      res.sendStatus(500);
 
-      if( e instanceof Promise.TimeoutError ){
-        res.sendStatus(504);
-      } else {
-        logger.error('Could not fill doc from text: ', `text: ${text}`, e);
-        res.sendStatus(500);  
-      }
       throw e;
     } )
   );

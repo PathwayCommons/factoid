@@ -515,7 +515,8 @@ class EntityInfo extends React.Component {
       assoc = null;
     }
 
-    let proteinFromAssoc = (m, searchTerm) => {
+    let proteinFromAssoc = (m, searchTerms) => {
+
       return [
         h('div.entity-info-section', [
           h('span.entity-info-title', 'Organism'),
@@ -524,13 +525,13 @@ class EntityInfo extends React.Component {
         h('div.entity-info-section', !m.proteinNames ? [] : [
           h('span.entity-info-title', 'Protein names'),
           ...m.proteinNames.map( name => h('span.entity-info-alt-name', [
-            h(Highlighter, { text: name, term: searchTerm })
+            h(Highlighter, { text: name, terms: searchTerms })
           ]))
         ]),
         h('div.entity-info-section', !m.geneNames ? [] : [
           h('span.entity-info-title', 'Gene names'),
           ...m.geneNames.map( name => h('span.entity-info-alt-name', [
-            h(Highlighter, { text: name, term: searchTerm })
+            h(Highlighter, { text: name, terms: searchTerms })
           ]))
         ])
       ];
@@ -551,7 +552,8 @@ class EntityInfo extends React.Component {
       return h('span.entity-info-formula', children);
     };
 
-    let chemFromAssoc = (m, searchTerm) => {
+    let chemFromAssoc = (m, searchTerms) => {
+
       return [
         h('div.entity-info-section', [
           h('span.entity-info-title', 'Formulae'),
@@ -568,18 +570,19 @@ class EntityInfo extends React.Component {
         h('div.entity-info-section', !m.synonyms ? [] : [
           h('span.entity-info-title', 'Synonyms'),
           ...m.synonyms.slice(0, MAX_SYNONYMS_SHOWN).map( name => h('span.entity-info-alt-name', [
-            h(Highlighter, { text: name, term: searchTerm })
+            h(Highlighter, { text: name, terms: searchTerms })
           ]))
         ])
       ];
     };
 
     let targetFromAssoc = (m, highlight = true, showEditIcon = false) => {
-      let searchTerm = highlight ? s.name : null;
+      let searchStr = highlight ? s.name : null;
+      let searchTerms = searchStr.split(' ');
 
       let pre = [
         h('div.entity-info-name', [
-          h(Highlighter, { text: m.name, term: searchTerm }),
+          h(Highlighter, { text: m.name, terms: searchTerms }),
           showEditIcon && doc.editable() ? (
             h(Tooltip, { description: 'Edit from the beginning' }, [
               h('button.entity-info-edit.plain-button', {
@@ -594,10 +597,10 @@ class EntityInfo extends React.Component {
 
       switch( m.type ){
         case 'protein':
-          body = proteinFromAssoc( m, searchTerm );
+          body = proteinFromAssoc( m, searchTerms );
           break;
         case 'chemical':
-          body = chemFromAssoc( m, searchTerm );
+          body = chemFromAssoc( m, searchTerms );
           break;
       }
 

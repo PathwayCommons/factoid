@@ -21,7 +21,7 @@ let defaults = {
   DB_CERT: undefined,  // path to a certificate (cert) file if db uses ssl
 
   // Services
-  REACH_URL: 'http://agathon.sista.arizona.edu:8080/odinweb/api/text',
+  REACH_URL: 'localhost:8080/odinweb/api/text',
   UNIPROT_URL: 'http://www.uniprot.org/uniprot',
   UNIPROT_LINK_BASE_URL: 'http://www.uniprot.org/uniprot/',
   UNIPROT_CACHE_SIZE: DEFAULT_CACHE_SIZE,

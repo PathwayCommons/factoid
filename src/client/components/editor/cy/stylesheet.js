@@ -118,7 +118,7 @@ function makeStylesheet(){
 				'height': 12,
 				'shape': 'ellipse',
 				'overlay-opacity': 0,
-				'border-width': 12, // makes the handle easier to hit
+				'border-width': 2, // makes the handle easier to hit
 				'border-opacity': 0
 			}
 		},

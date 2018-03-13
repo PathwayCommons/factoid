@@ -763,9 +763,10 @@ class EntityInfo extends React.Component {
         let name = 'mod-radio-' + s.element.id();
         let id = name + '-' + value;
         let type = 'radio';
+        let checked = value === s.modification.value && s.element.completed();
 
         modChildren.push(
-          h('input', { type, name, id, value, onChange, checked: value === s.modification.value }),
+          h('input', { type, name, id, value, onChange, checked }),
           h('label', { htmlFor: id }, mod.displayValue)
         );
       } );

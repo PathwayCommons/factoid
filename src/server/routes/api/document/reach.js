@@ -264,6 +264,10 @@ module.exports = {
       return Promise.try( () => {
         return Promise.all( groundPromises );
       } ).then( () => {
+
+        if( elements.length === 0 ){
+          logger.error(` REACH service at url: ${REACH_URL} recognized 0 entities to create a doc from the given text: `, text);
+        }
         return {
           elements,
           organisms

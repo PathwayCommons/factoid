@@ -14,6 +14,8 @@ const Notification = require('../notification');
 const InlineNotification = require('../notification/inline');
 const Tooltip = require('../popover/tooltip');
 
+const MAX_SYNONYMS_SHOWN = 10;
+
 const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL } = require('../../../config');
 
 const animateDomForEdit = domEle => anime({
@@ -565,7 +567,7 @@ class EntityInfo extends React.Component {
         ]),
         h('div.entity-info-section', !m.synonyms ? [] : [
           h('span.entity-info-title', 'Synonyms'),
-          ...m.synonyms.map( name => h('span.entity-info-alt-name', [
+          ...m.synonyms.slice(0, MAX_SYNONYMS_SHOWN).map( name => h('span.entity-info-alt-name', [
             h(Highlighter, { text: name, term: searchTerm })
           ]))
         ])

@@ -8,6 +8,7 @@ const { isInteractionNode } = require('../../../../util');
 const SELECT_ON_HANDLE_TAP = false;
 const DRAW_ON_HANDLE_TAP = true;
 const TAP_IN_DRAW_MODE = true;
+const TAP_BG_TO_CANCEL = true;
 
 
 module.exports = function({ bus, cy, document, controller }){
@@ -153,6 +154,14 @@ module.exports = function({ bus, cy, document, controller }){
         eh.start(el);
       }
     }, 1));
+  }
+
+  if( TAP_BG_TO_CANCEL ){
+    cy.on('tap', e => {
+      if( e.target === cy && inDrawMode ){
+        controller.toggleDrawMode( false );
+      }
+    });
   }
 
   bus.on('drawon', () => {

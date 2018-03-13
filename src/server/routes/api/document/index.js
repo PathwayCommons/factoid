@@ -1,10 +1,16 @@
-const Document = require('../../../../model/document');
-const db = require('../../../db');
+const Cytoscape = require('cytoscape');
+const http = require('express').Router();
 const Promise = require('bluebird');
 const _ = require('lodash');
-const provider = require('./reach');
 const uuid = require('uuid');
-const http = require('express').Router();
+
+
+const Document = require('../../../../model/document');
+const db = require('../../../db');
+const { makeCyEles, getCyLayoutOpts } = require('../../../../util');
+const logger = require('../../../logger');
+
+const provider = require('./reach');
 
 let newDoc = ({ docDb, eleDb, id, secret }) => {
   return new Document( _.assign( {}, docDb, {
@@ -72,7 +78,17 @@ http.post('/', function( req, res ){
     .then( doc => fillDoc( doc, text ) )
     .then( runLayout )
     .then( getDocJson )
-    .then( json => res.json( json ) )
+    .then( json => {
+      logger.info(`Created new doc ${json.id}`);
+      return res.json( json );
+    } )
+    .catch( e => {
+      logger.error(`Could not fill doc from text: ${text}`);
+      logger.error('REACH exception thrown :', e.message);
+      res.sendStatus(500);
+
+      throw e;
+    } )
   );
 });
 

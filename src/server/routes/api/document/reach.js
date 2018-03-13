@@ -9,6 +9,8 @@ const uniprot = require('../element-association/uniprot');
 const pubchem = require('../element-association/pubchem');
 const chebi = require('../element-association/chebi');
 
+const logger = require('../../../logger');
+
 const { REACH_URL } = require('../../../../config');
 const MERGE_ENTS_WITH_SAME_GROUND = true;
 const ALLOW_IMPLICIT_ORG_SPEC = true;
@@ -256,6 +258,10 @@ module.exports = {
       return Promise.try( () => {
         return Promise.all( groundPromises );
       } ).then( () => {
+
+        if( elements.length === 0 ){
+          logger.error(` REACH service recognized 0 entities from the given text: `, text);
+        }
         return {
           elements,
           organisms

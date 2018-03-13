@@ -576,21 +576,42 @@ class EntityInfo extends React.Component {
       ];
     };
 
-    let targetFromAssoc = (m, highlight = true, showEditIcon = false) => {
+    let targetFromAssoc = (m) => {
+      let complete = stage === STAGES.COMPLETED;
+      let highlight = !complete;
       let searchStr = highlight ? s.name : null;
       let searchTerms = searchStr.split(' ');
+      let showEditIcon = complete && doc.editable();
+
+      let nameChildren = [];
+
+      let matchName = h(Highlighter, { text: m.name, terms: searchTerms });
+
+      if( complete ){
+        nameChildren.push( h('span', s.name) );
+      } else {
+        nameChildren.push( matchName );
+      }
+
+      if( showEditIcon ){
+        nameChildren.push( h(Tooltip, { description: 'Edit from the beginning' }, [
+          h('button.entity-info-edit.plain-button', {
+            onClick: () => this.goToStage( ORDERED_STAGES[0] )
+          }, [ h('i.material-icons', 'edit') ])
+        ]) );
+      }
+
+      if( complete && m.name.toLowerCase() !== s.name.toLowerCase() ){
+        nameChildren.push(
+          h('br'),
+          h('span', '('),
+          matchName,
+          h('span', ')')
+        );
+      }
 
       let pre = [
-        h('div.entity-info-name', [
-          h(Highlighter, { text: m.name, terms: searchTerms }),
-          showEditIcon && doc.editable() ? (
-            h(Tooltip, { description: 'Edit from the beginning' }, [
-              h('button.entity-info-edit.plain-button', {
-                onClick: () => this.goToStage( ORDERED_STAGES[0] )
-              }, [ h('i.material-icons', 'edit') ])
-            ])
-          ) : null
-        ].filter( domEl => domEl != null ))
+        h('div.entity-info-name', nameChildren.filter( domEl => domEl != null ))
       ];
 
       let body;
@@ -637,7 +658,7 @@ class EntityInfo extends React.Component {
     };
 
     let allAssoc = m => _.concat(
-      targetFromAssoc(m, false, true),
+      targetFromAssoc(m),
       s.element.moddable() ? modForList() : [],
       linkFromAssoc(m)
     );

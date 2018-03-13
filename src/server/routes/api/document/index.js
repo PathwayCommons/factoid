@@ -80,8 +80,13 @@ http.post('/', function( req, res ){
     .then( getDocJson )
     .then( json => res.json( json ) )
     .catch( e => {
-      logger.error('Could not fill doc from text: ', `text: ${text}`, e);
-      res.sendStatus(500);
+
+      if( e instanceof Promise.TimeoutError ){
+        res.sendStatus(504);
+      } else {
+        logger.error('Could not fill doc from text: ', `text: ${text}`, e);
+        res.sendStatus(500);  
+      }
       throw e;
     } )
   );

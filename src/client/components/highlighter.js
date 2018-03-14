@@ -74,6 +74,10 @@ class Highlighter extends Component {
       let retVal = "";
 
       terms.forEach( ( term, i ) => {
+        if (!term) {
+          return;
+        }
+
         let st = getSaniTerm(term);
 
         if (i !== 0) {

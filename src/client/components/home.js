@@ -77,7 +77,7 @@ class Home extends Component {
         h('div.page-content', [
           h('h2.section-title', 'Our Mission'),
           h('h2', 'Make Biological Pathways in Research Articles Easy to Find and Access'),
-          h('p', 'Factoid is a powerful app that helps authors describe the genes and interactions for a pathway in their manuscript. The app guides authors through the steps for generating a computer-readable record of a pathway that is otherwise only available by reading an article’s text and figures.'),
+          h('p', 'Factoid is a app that helps authors describe the genes and interactions for a pathway in their manuscript. Factoid guides authors through the steps for generating a computer-readable record of a pathway that is otherwise only available by reading an article’s text and figures.'),
           h('p', 'Factoid raises awareness about individual and original research articles by helping authors share accurate pathway data with the researcher community.'),
         ])
       ]),

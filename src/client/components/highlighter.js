@@ -8,12 +8,26 @@ class Highlighter extends Component {
   }
 
   render(){
-    let { term, text, ignorePunctuation } = this.props;
+    let { terms, text, ignorePunctuation } = this.props;
     let remaining = text;
     let match;
     let spans = [];
 
-    if( !term || !text ){
+    let anyTermExists = ( () => {
+      if (!terms) {
+        return false;
+      }
+
+      for ( let term of terms ) {
+        if (term) {
+          return true;
+        }
+      }
+
+      return false;
+    } )();
+
+    if( !text || !anyTermExists){
       return h('span.highlighter', [
         h('span.highlighter-text', text || '')
       ]);
@@ -23,7 +37,7 @@ class Highlighter extends Component {
       ignorePunctuation = true;
     }
 
-    let saniTerm = ( () => {
+    let getSaniTerm = term => {
       let st = '';
       let sep = '[-,_. ]';
       let optNonSpSep = '[-,_.]?';
@@ -54,9 +68,29 @@ class Highlighter extends Component {
       }
 
       return st;
+    };
+
+    let saniTerms = ( () => {
+      let retVal = "";
+
+      terms.forEach( ( term, i ) => {
+        if (!term) {
+          return;
+        }
+
+        let st = getSaniTerm(term);
+
+        if (i !== 0) {
+          retVal += '|';
+        }
+
+        retVal += st;
+      } );
+
+      return retVal;
     } )();
 
-    let termRe = new RegExp( saniTerm, 'i' );
+    let termsRe = new RegExp( saniTerms, 'i' );
 
     let addWsSplitSpans = text => {
       let terms = text.split(' ');
@@ -73,7 +107,7 @@ class Highlighter extends Component {
     };
 
     do {
-      match = remaining.match( termRe );
+      match = remaining.match( termsRe );
 
       if( match ){
         let matchTerm = match[0];

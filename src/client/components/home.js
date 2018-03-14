@@ -1,6 +1,7 @@
 const h = require('react-hyperscript');
 const { Link } = require('react-router-dom');
 const { Component } = require('react');
+const AnchorLink = require('react-anchor-link-smooth-scroll').default;
 
 class Home extends Component {
   render(){
@@ -11,16 +12,16 @@ class Home extends Component {
             h('div'),
             h('div.nav-bar-links', [
               h('div.nav-bar-link', [
-                h('a', { href: '/#about' }, 'About')
+                h(AnchorLink, { href: '#about' }, 'About')
               ]),
               h('div.nav-bar-link', [
-                h('a', { href: '/#how' }, 'How it Works')
+                h(AnchorLink, { href: '#how' }, 'How it Works')
               ]),
               h('div.nav-bar-link', [
-                h('a', { href: '/#credits' }, 'Team')
+                h(AnchorLink, { href: '#credits' }, 'Team')
               ]),
               h('div.nav-bar-link', [
-                h('a', { href: '/#contact' }, 'Contact')
+                h(AnchorLink, { href: '#contact' }, 'Contact')
               ])
             ])
           ]),

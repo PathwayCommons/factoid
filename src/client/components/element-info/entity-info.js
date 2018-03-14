@@ -13,7 +13,11 @@ const Highlighter = require('../highlighter');
 const Notification = require('../notification');
 const InlineNotification = require('../notification/inline');
 const Tooltip = require('../popover/tooltip');
+const Heap = require('heap');
+const dice = require('dice-coefficient'); // sorensen dice coeff
+const distanceMetric = (a, b) => 1 - dice(a, b);
 
+const MAX_FIXED_SYNONYMS = 5;
 const MAX_SYNONYMS_SHOWN = 10;
 
 const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL } = require('../../../config');
@@ -567,11 +571,29 @@ class EntityInfo extends React.Component {
         ]),
         h('div.entity-info-section', !m.synonyms ? [] : [
           h('span.entity-info-title', 'Synonyms'),
-          ...m.synonyms.slice(0, MAX_SYNONYMS_SHOWN).map( name => h('span.entity-info-alt-name', [
+          ...shortenSynonyms(m.synonyms, this.data.name).map( name => h('span.entity-info-alt-name', [
             h(Highlighter, { text: name, terms: searchTerms })
           ]))
         ])
       ];
+    };
+
+    let shortenSynonyms = (synonyms, cmpStr) => {
+      if (synonyms.length <= MAX_SYNONYMS_SHOWN) {
+        return synonyms;
+      }
+
+      // use a memoized comparison function to avoid re-calculating distance for the same values
+      let cmp = _.memoize( (s1, s2) => {
+        return distanceMetric(s1, cmpStr) - distanceMetric(s2, cmpStr);
+      } );
+
+      // fix the first constant number of synonyms
+      let fixed = synonyms.slice(0, MAX_FIXED_SYNONYMS);
+      // complete the short list by the best matches among the remaining synonyms
+      let remainingBestMatch = Heap.nsmallest(synonyms.slice(MAX_FIXED_SYNONYMS), MAX_SYNONYMS_SHOWN - MAX_FIXED_SYNONYMS, cmp);
+
+      return [...fixed, ...remainingBestMatch];
     };
 
     let targetFromAssoc = (m) => {

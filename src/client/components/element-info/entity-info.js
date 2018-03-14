@@ -516,7 +516,6 @@ class EntityInfo extends React.Component {
     }
 
     let proteinFromAssoc = (m, searchTerms) => {
-
       return [
         h('div.entity-info-section', [
           h('span.entity-info-title', 'Organism'),
@@ -553,7 +552,6 @@ class EntityInfo extends React.Component {
     };
 
     let chemFromAssoc = (m, searchTerms) => {
-
       return [
         h('div.entity-info-section', [
           h('span.entity-info-title', 'Formulae'),

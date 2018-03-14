@@ -69,7 +69,7 @@ header.nav-bar {
 }
 
 .hero-button {
-  background-color: #ED4A31;
+  background-color: #00A84C;
   width: 8em;
   height: 2.5em;
   color: #EEEEEE;
@@ -96,6 +96,19 @@ header.nav-bar {
 
 .home {
   box-sizing: border-box;
+}
+
+.infographic-container {
+}
+
+.home-infographic {
+  display: inline-block;
+  width: 100%;
+  height: 70em;
+  margin-top: 2em;
+  background-image: url('./image/infographic-factoid.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 .home-logo {

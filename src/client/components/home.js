@@ -67,32 +67,44 @@ class Home extends Component {
           ])
         ])
       ]),
+      h('section.home-section#what', [
+        h('div.page-content', [
+          h('h2.section-title', 'What Problem Does Factoid Solve?'),
+          h('div.infographic-container', [ h('span.home-infographic') ])
+        ])
+      ]),
       h('section.home-section#why', [
         h('div.page-content', [
           h('h2.section-title', 'Our Mission'),
-          h('h2', 'Increase the Visibility of important biological Research'),
-          h('p', 'Our mission is to increase the visibility of important biological research.  Factoid is a cutting edge platform that digitally captures information from academic papers.  This provides a means for better search and discovery capabilities academic papers.'),
-          h('p', `By encoding your paper's information in a Factoid document, the future research possibilities are endless; providing opportunities to perform large scale research and analysis over thousands of papers efficiently.`),
-          h('h2', 'Revolutionize the Future of Academic Paper Curation'),
-          h('p', 'The current processes for finding and reading biological literature are time consuming and inefficient.  Factoid solves these issues by providing services to search and view thousands of papers in a unified digital format, making it easy to understand a vast array of biological phenomena.')
+          h('h2', 'Make Biological Pathways in Research Articles Easy to Find and Access'),
+          h('p', 'Factoid is a powerful app that helps authors describe the genes and interactions for a pathway in their manuscript. The app guides authors through the steps for generating a computer-readable record of a pathway that is otherwise only available by reading an article’s text and figures.'),
+          h('p', 'Factoid raises awareness about individual and original research articles by helping authors share accurate pathway data with the researcher community.'),
         ])
       ]),
       h('section.home-section#why-biologists', [
         h('div.page-content', [
-          h('h2.section-title', 'For Biologists'),
-          h('h2', 'Increase the Impact of Your Research'),
-          h('p', 'Factoid makes your paper easily searchable and accessible by encoding it as a Factoid document, a format that makes it easily searchable.'),
-          h('h2', 'Contribute to the Future of Academic Paper Curation'),
-          h('p', `The current processes for finding and reading biological literature are time consuming and inefficient.  By contributing to Factoid documents, you will help seed a ecosystem that has the potential to revolutionize the way academic knowledge is stored and accessed.`)
+          h('h2.section-title', 'For Authors'),
+          h('h2', 'Put Your Research Where People Can Find It'),
+          h('p', 'Your publication is the culmination of a tremendous persistent effort spanning many years. Traditional methods dictate that your research will only be discoverable via search engine with a specific set of keywords. Using Factoid will increase the number of ways that people can access your research.'),
+          h('p', 'Research colleagues will be able to discover pathways captured from Factoid with the underlying evidence from your research. Personally generating this data from your research ensures that it remains credible to your colleagues.')
         ])
       ]),
       h('section.home-section#why-publishers', [
         h('div.page-content', [
           h('h2.section-title', 'For Journals'),
-          h('h2', 'Increase the Visibility and Traffic of Your Journal'),
-          h('p', 'Factoid makes your collection of papers easily searchable and accessible by encoding it as a Factoid document, with each document linking back to your journal to increase awareness and influence.'),
-          h('h2', 'Become a Pioneer in the Future of Academic Paper Curation'),
-          h('p', `Free your journal from the burden of archaic paper curation processes.  Factoid documents for your papers will allow you to easily manage and curate your papers while increasing the channels for accessing your content.`)
+          h('h2', 'Enhance Your Content And Increase Your Reach'),
+          h('p', 'Your content contains key biological knowledge that readers need to stay on top of their field and push their research in novel directions. Increase the value that you bring to your readers with Factoid.'),
+          h('p', 'Factoid brings your content to the fore with enhanced articles using cutting edge technology.'),
+          h('p', 'Foster deep connections with the researchers you work with by embedding article content within the pathway information they access for their day-to-day research.'),
+          h('p', 'Integrating Factoid in your manuscript workflow is simple and lightweight.  Providing you with a plethora of benefits for minimal investment.'),
+          h('h2', 'Crowd-sourcing Pathway Knowledge Curation'),
+          h('p', 'Pathway knowledge is an invaluable resource for studying diseases and making scientific discoveries at the cellular level. However, there is a tremendous cost and effort required to curate and maintain this knowledge.'),
+          h('p', 'Factoid aims to make this process more efficient and less costly by crowdsourcing knowledge:'),
+          h('ul', [
+            h('p', '- From the original source (authors)'),
+            h('p', '- At the ideal time (when manuscripts are being reviewed, when authors knowledge of the subject is most present')
+          ]),
+          h('p', `Factoid is aiming to provide a simple and scalable solution addressing the important pain points related to pathway data curation, allowing publishers to provide accurate and useful data to readers.`)
         ])
       ]),
       h('section.home-section#credits', [

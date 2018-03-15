@@ -39,7 +39,8 @@ function makeStylesheet(){
         'height': 3,
         'label': '',
         'border-width': 3 * (interactionNodeSize - 2),
-        'border-opacity': 0.0001
+        'border-opacity': 0.0001,
+        'events': 'no'
       }
     },
     {

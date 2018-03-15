@@ -583,12 +583,12 @@ class EntityInfo extends React.Component {
 
       let nameChildren = [];
 
-      let matchName = h(Highlighter, { text: m.name, terms: searchTerms });
+      let matchName = () => h(Highlighter, { text: m.name, terms: searchTerms });
 
       if( complete ){
         nameChildren.push( h('span', s.name) );
       } else {
-        nameChildren.push( matchName );
+        nameChildren.push( matchName() );
       }
 
       if( showEditIcon ){
@@ -603,7 +603,7 @@ class EntityInfo extends React.Component {
         nameChildren.push(
           h('br'),
           h('span', '('),
-          matchName,
+          matchName(),
           h('span', ')')
         );
       }

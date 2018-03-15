@@ -1,0 +1,10 @@
+.document-seeder-text {
+  width: 100%;
+  height: calc(100vh - 10em);
+  resize: none;
+}
+
+.document-seeder-text-label {
+  font-weight: bold;
+  font-size: var(--smallFontSize);
+}

@@ -31,10 +31,10 @@ header.nav-bar {
 
 .hero {
   background-image: linear-gradient(to bottom right, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.1) 100%);
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.75) 0%, rgba(0,0,0,0.25) 100%), url('./image/hero-splash.jpg');
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.75) 0%, rgba(0,0,0,0.25) 100%), url('./image/hero-splash-0.png');
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: top;
+  background-position: bottom;
 
   min-height: 48em;
   color: #212F3D;

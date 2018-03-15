@@ -119,7 +119,11 @@ function makeStylesheet(){
 				'shape': 'ellipse',
 				'overlay-opacity': 0,
 				'border-width': 2, // makes the handle easier to hit
-				'border-opacity': 0
+				'border-opacity': 0,
+
+        // effectively remove the handle node for now
+        'pointer-events': 'none',
+        'opacity': 0
 			}
 		},
     {

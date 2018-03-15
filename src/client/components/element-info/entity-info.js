@@ -629,9 +629,16 @@ class EntityInfo extends React.Component {
     };
 
     let modForList = () => {
-      return h('div.entity-info-section', [
+      return h('div.entity-info-section.entity-info-mod-section', [
         h('span.entity-info-title', 'Modification'),
-        h('span', s.modification.displayValue)
+        h('span', s.modification.displayValue),
+        h(Tooltip, { description: 'Edit the modification' }, [
+          h('button.entity-info-edit-mod.plain-button', {
+            onClick: () => this.goToStage( STAGES.MODIFY )
+          }, [
+            h('i.material-icons', 'edit')
+          ])
+        ])
       ]);
     };
 

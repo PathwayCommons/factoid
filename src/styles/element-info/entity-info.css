@@ -106,6 +106,14 @@
   max-width: 100%;
 }
 
+.entity-info-mod-section {
+}
+
+.entity-info-edit-mod {
+  margin-left: 0.25em;
+  vertical-align: baseline;
+}
+
 .entity-info-title {
   font-weight: 600;
   margin-right: 0.5em;

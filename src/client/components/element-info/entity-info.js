@@ -578,7 +578,7 @@ class EntityInfo extends React.Component {
       let complete = stage === STAGES.COMPLETED;
       let highlight = !complete;
       let searchStr = highlight ? s.name : null;
-      let searchTerms = searchStr.split(/\s+/);
+      let searchTerms = searchStr ? searchStr.split(/\s+/) : [];
       let showEditIcon = complete && doc.editable();
 
       let nameChildren = [];

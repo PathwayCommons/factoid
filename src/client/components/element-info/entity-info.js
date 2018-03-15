@@ -583,10 +583,14 @@ class EntityInfo extends React.Component {
         return synonyms;
       }
 
-      // use a memoized comparison function to avoid re-calculating distance for the same values
-      let cmp = _.memoize( (s1, s2) => {
-        return distanceMetric(s1, cmpStr) - distanceMetric(s2, cmpStr);
+      // use a memoized distance function to avoid re-calculating the same distances inside nsmallest function
+      let distance = _.memoize( s => {
+        return distanceMetric(s, cmpStr);
       } );
+
+      let cmp = (s1, s2) => {
+        return distance(s1) - distance(s2);
+      };
 
       // fix the first constant number of synonyms
       let fixed = synonyms.slice(0, MAX_FIXED_SYNONYMS);

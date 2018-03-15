@@ -132,17 +132,10 @@ header.nav-bar {
     color: #212F3D;
   }
 
-  & p {
-    font-size: 1.125em;
-  }
-
-  & a {
-    font-size: 1.125em;
-  }
 }
 
 .home-section:nth-child(odd){
-  background-color: #f1eeec;
+  background-color: #EEEEEE;
   /* background-image: linear-gradient(to bottom right, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.1) 100%); */
 }
 

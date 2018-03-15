@@ -139,8 +139,8 @@ class Home extends Component {
         h('div.page-content.contact', [
           h('h2.section-title', 'Contact'),
           h('p', [
-            h('span', 'Please send all inquiries to the'),
-            h('a.plain-link', { href: 'https://groups.google.com/forum/#!forum/pathway-commons-help' }, ' Factoid help forum')
+            h('span', 'Please send all inquiries to'),
+            h('a.plain-link', { href: 'mailto:pathway-commons-help@googlegroups.com' }, ' pathway-commons-help@googlegroups.com.')
           ])
         ])
       ])

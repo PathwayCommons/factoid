@@ -102,13 +102,11 @@ class FormEditor extends Component {
     };
 
     this.data = {
-      doc: doc
+      document: doc
     };
   }
 
   addElement( data = {} ){
-    if( !this.editable() ){ return; }
-
 
     let doc = this.data.document;
 
@@ -127,7 +125,6 @@ class FormEditor extends Component {
   }
 
   addInteraction( data = {} ){
-    if( !this.editable() ){ return; }
 
     return this.addElement( _.assign({
       type: 'interaction',
@@ -135,6 +132,16 @@ class FormEditor extends Component {
     }, data) );
   }
 
+  addInteractionRow(){
+
+    this.setState({ numInteractions: this.state.numInteractions + 1 });
+
+    this.addInteraction();
+
+    this.addElement();
+
+    this.addElement();
+  }
 
   render(){
     const interactionForms = [];
@@ -146,7 +153,7 @@ class FormEditor extends Component {
     return h('div.document-form.page-content', [
       h('h1', 'Insert Pathway Information As Text'),
       ...interactionForms,
-      h('button.form-interaction-adder', { onClick: e => this.setState({ numInteractions: this.state.numInteractions + 1 }) }, [
+      h('button.form-interaction-adder', { onClick: e => this.addInteractionRow() }, [
         h('i.material-icons', 'add'),
         'add interaction'
       ]),

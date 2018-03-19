@@ -14,8 +14,7 @@ const Notification = require('../notification');
 const InlineNotification = require('../notification/inline');
 const Tooltip = require('../popover/tooltip');
 const Heap = require('heap');
-const dice = require('dice-coefficient'); // sorensen dice coeff
-const distanceMetric = (a, b) => 1 - dice(a, b);
+const { stringDistanceMetric } = require('../../../util');
 
 const MAX_FIXED_SYNONYMS = 5;
 const MAX_SYNONYMS_SHOWN = 10;
@@ -312,7 +311,7 @@ class EntityInfo extends React.Component {
 
             // use a memoized distance function to avoid re-calculating the same distances inside nsmallest function
             let distance = _.memoize( s => {
-              return distanceMetric(s, cmpStr);
+              return stringDistanceMetric(s, cmpStr);
             } );
 
             let cmp = (s1, s2) => {

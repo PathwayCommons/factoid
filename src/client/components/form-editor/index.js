@@ -1,5 +1,14 @@
 const { Component } = require('react');
 const h = require('react-hyperscript');
+const io = require('socket.io-client');
+const _ = require('lodash');
+
+
+const logger = require('../../logger');
+const debug = require('../../debug');
+
+const Document = require('../../../model/document');
+
 const DocumentWizardStepper = require('../document-wizard-stepper');
 
 
@@ -48,6 +57,46 @@ class InteractionForm extends Component {
 class FormEditor extends Component {
   constructor(props){
     super(props);
+
+    let docSocket = io.connect('/document');
+    let eleSocket = io.connect('/element');
+
+    let logSocketErr = (err) => logger.error('An error occurred during clientside socket communication', err);
+
+    docSocket.on('error', logSocketErr);
+    eleSocket.on('error', logSocketErr);
+
+    let id = _.get( props, 'id' );
+    let secret = _.get( props, 'secret' );
+
+    let doc = new Document({
+      socket: docSocket,
+      factoryOptions: { socket: eleSocket },
+      data: { id, secret }
+    });
+
+    Promise.try( () => doc.load() )
+      .then( () => logger.info('The doc already exists and is now loaded') )
+      .catch( err => {
+        logger.info('The doc does not exist or an error occurred');
+        logger.warn( err );
+
+        return ( doc.create()
+          .then( () => logger.info('The doc was created') )
+          .catch( err => logger.error('The doc could not be created', err) )
+        );
+      } )
+      .then( () => doc.synch(true) )
+      .then( () => logger.info('Document synch active') )
+      .then( () => {
+
+        if( debug.enabled() ){
+          window.doc = doc;
+          window.editor = this;
+        }
+        logger.info('The editor is initialising');
+      } );
+
     this.state = {
       numInteractions: 0
     };

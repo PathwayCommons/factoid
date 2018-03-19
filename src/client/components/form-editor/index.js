@@ -100,7 +100,41 @@ class FormEditor extends Component {
     this.state = {
       numInteractions: 0
     };
+
+    this.data = {
+      doc: doc
+    };
   }
+
+  addElement( data = {} ){
+    if( !this.editable() ){ return; }
+
+
+    let doc = this.data.document;
+
+    let el = doc.factory().make({
+      data: _.assign( {
+        type: 'entity',
+        name: '',
+      }, data )
+    });
+
+    return ( Promise.try( () => el.synch() )
+      .then( () => el.create() )
+      .then( () => doc.add(el) )
+      .then( () => el )
+    );
+  }
+
+  addInteraction( data = {} ){
+    if( !this.editable() ){ return; }
+
+    return this.addElement( _.assign({
+      type: 'interaction',
+      name: ''
+    }, data) );
+  }
+
 
   render(){
     const interactionForms = [];

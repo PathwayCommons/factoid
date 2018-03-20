@@ -75,6 +75,10 @@ class FormEditor extends Component {
       data: { id, secret }
     });
 
+    this.data = this.state = {
+      document: doc
+    };
+
     Promise.try( () => doc.load() )
       .then( () => logger.info('The doc already exists and is now loaded') )
       .catch( err => {
@@ -94,16 +98,19 @@ class FormEditor extends Component {
           window.doc = doc;
           window.editor = this;
         }
+
+        // force an update here
+
+        this.forceUpdate();
         logger.info('The editor is initialising');
       } );
 
-    this.state = {
-      numInteractions: 0
-    };
+  }
 
-    this.data = {
-      document: doc
-    };
+  setData( obj, callback ){
+    _.assign( this.data, obj );
+
+    this.setState( obj, callback );
   }
 
   addElement( data = {} ){
@@ -134,8 +141,6 @@ class FormEditor extends Component {
 
   addInteractionRow(){
 
-    this.setState({ numInteractions: this.state.numInteractions + 1 });
-
     this.addInteraction();
 
     this.addElement();
@@ -144,9 +149,11 @@ class FormEditor extends Component {
   }
 
   render(){
+    const doc = this.state.document;
+    const interactions = doc.interactions();
     const interactionForms = [];
 
-    for (let i = 0; i < this.state.numInteractions; i++) {
+    for (let i = 0; i < interactions.length; i++) {
       interactionForms.push(h(InteractionForm));
     }
 

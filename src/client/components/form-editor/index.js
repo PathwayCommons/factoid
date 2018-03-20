@@ -41,10 +41,11 @@ class InteractionForm extends Component {
     return h('div.form-interaction', [
       h(EntityForm),
       h('span', [
-        h('select', [
-          h('option', { value: 'interacts with', selected: this.state.interactionType === 'interacts with' }, 'interacts with'),
-          h('option', { value: 'phosphorylates', selected: this.state.interactionType === 'phosphorylates' }, 'phosphorylates'),
-          h('option', { value: 'enzyme reaction', selected: this.state.interactionType === 'enzyme reaction' }, 'enzyme reaction')
+        h('select', { value: this.state.intearctionType }, [
+          h('option', { value: 'interacts with' }, 'interacts with'),
+          h('option', { value: 'phosphorylates' }, 'phosphorylates'),
+          h('option', { value: 'enzyme reaction' }, 'enzyme reaction'),
+          h('option', { value: 'other' }, 'other')
         ])
       ]),
       h(EntityForm)

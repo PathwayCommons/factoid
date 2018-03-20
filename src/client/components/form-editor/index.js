@@ -15,16 +15,19 @@ const DocumentWizardStepper = require('../document-wizard-stepper');
 class EntityForm extends Component {
   constructor(props){
     super(props);
-    this.state = {
-      entityName: ''
+    this.state = this.data = {
+      entity: props.entity
     };
+  }
+
+  updateEntityName( newName ){
+    this.state.entity.name( newName );
+    this.forceUpdate();
   }
   render(){
     return h('input[type="text"].form-entity', {
-      value: this.state.entityName,
-      onChange: e => this.setState({
-        entityName: e.target.value
-      })
+      value: this.state.entity.name(),
+      onChange: e => this.updateEntityName(e.target.value)
     });
   }
 }
@@ -32,7 +35,7 @@ class EntityForm extends Component {
 class InteractionForm extends Component {
   constructor(props){
     super(props);
-    this.state =  this.data = {
+    this.state = this.data = {
       interaction: props.interaction
     };
   }
@@ -49,7 +52,7 @@ class InteractionForm extends Component {
     const rEnt = intn.elements()[1];
 
     return h('div.form-interaction', [
-      h(EntityForm),
+      h(EntityForm, { entity: lEnt }),
       h('span', [
         h('select', { value: intn.description(), onChange: e => this.updateInteractionType(e.target.value) }, [
           h('option', { value: 'interacts with' }, 'interacts with'),
@@ -58,7 +61,7 @@ class InteractionForm extends Component {
           h('option', { value: 'other' }, 'other')
         ])
       ]),
-      h(EntityForm)
+      h(EntityForm, { entity: rEnt } )
     ]);
   }
 }

@@ -32,16 +32,26 @@ class EntityForm extends Component {
 class InteractionForm extends Component {
   constructor(props){
     super(props);
-    this.state = {
-      interactionType: 'interacts with'
+    this.state =  this.data = {
+      interaction: props.interaction
     };
   }
 
+  updateInteractionType(nextType){
+    const intn = this.state.interaction;
+    intn.description(nextType);
+    this.forceUpdate();
+  }
+
   render(){
+    const intn = this.state.interaction;
+    const lEnt = intn.elements()[0];
+    const rEnt = intn.elements()[1];
+
     return h('div.form-interaction', [
       h(EntityForm),
       h('span', [
-        h('select', { value: this.state.intearctionType }, [
+        h('select', { value: intn.description(), onChange: e => this.updateInteractionType(e.target.value) }, [
           h('option', { value: 'interacts with' }, 'interacts with'),
           h('option', { value: 'phosphorylates' }, 'phosphorylates'),
           h('option', { value: 'enzyme reaction' }, 'enzyme reaction'),
@@ -142,21 +152,28 @@ class FormEditor extends Component {
 
   addInteractionRow(){
 
-    this.addInteraction();
+    let lEnt = this.addElement();
+    let rEnt = this.addElement();
+    let intn = this.addInteraction();
 
-    this.addElement();
+    Promise.all([lEnt, rEnt, intn]).then(responses => {
+      let i = responses[2];
 
-    this.addElement();
+      i.addParticipant(responses[0]);
+      i.addParticipant(responses[1]);
+
+      this.forceUpdate();
+    });
+
   }
 
   render(){
     const doc = this.state.document;
     const interactions = doc.interactions();
-    const interactionForms = [];
 
-    for (let i = 0; i < interactions.length; i++) {
-      interactionForms.push(h(InteractionForm));
-    }
+    const interactionForms = interactions.map(interaction => {
+      return h(InteractionForm, { interaction });
+    });
 
     return h('div.document-form.page-content', [
       h('h1', 'Insert Pathway Information As Text'),

@@ -1,0 +1,46 @@
+.form-editor-title {
+  text-align: center;
+  color: #212F3D;
+  font-size: 2.5em;
+  margin-bottom: 1em;
+}
+
+.form-interaction {
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-action-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.form-interaction-adder {
+  color: #00ADB5;
+  background-color: #EEEEEE;
+  height: 2.5em;
+  margin-top: 1.5em;
+  margin-bottom: 4em;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: row;
+}
+
+
+.form-submit {
+  color: #EEEEEE;
+  background-color: #00A84C;
+  height: 2.5em;
+  margin-top: 1.5em;
+  margin-bottom: 4em;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: row;
+
+}
+
+.add-new-interaction-icon {
+  font-size: 1.5em;
+}

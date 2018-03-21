@@ -27,6 +27,7 @@ class EntityForm extends Component {
   render(){
     return h('input[type="text"].form-entity', {
       value: this.state.entity.name(),
+      placeholder: 'Enter entity name',
       onChange: e => this.updateEntityName(e.target.value)
     });
   }
@@ -179,11 +180,16 @@ class FormEditor extends Component {
     });
 
     return h('div.document-form.page-content', [
-      h('h1', 'Insert Pathway Information As Text'),
+      h('h1.form-editor-title', 'Insert Pathway Information As Text'),
       ...interactionForms,
-      h('button.form-interaction-adder', { onClick: e => this.addInteractionRow() }, [
-        h('i.material-icons', 'add'),
-        'add interaction'
+      h('div.form-action-buttons', [
+        h('button.form-interaction-adder', { onClick: e => this.addInteractionRow() }, [
+          h('i.material-icons.add-new-interaction-icon', 'add'),
+          'ADD INTERACTION'
+        ]),
+        h('button.form-submit', { onClick: e => this.addInteractionRow() }, [
+          'SUBMIT'
+        ])
       ]),
       h(DocumentWizardStepper, {
         backEnabled: false,

@@ -199,12 +199,12 @@ module.exports = {
         let args = frame.arguments;
 
         if( args.length === 2 ){
-          let argFrames = args.map( getArgId ).map( getFrame );
+          let argFrames = args.map( getArgId ).map( getFrame ).filter( frame => frame != null );
           let argsAreEnts = argFrames.every( frameIsEntity );
           let isControllerArg = arg => arg.type === 'controller';
           let isControlledArg = arg => arg.type === 'controlled';
           let argsAreControllerControlled = args.length === 2 && args.some( isControllerArg ) && args.some( isControlledArg );
-          let argsAreEntAndEvt = argFrames.some( frameIsEntity ) && argFrames.some( frameIsEvent );
+          let argsAreEntAndEvt = argFrames.every( frame => frameIsEntity(frame) || frameIsEvent(frame) );
           let getEntryFromEl = el => el == null ? null : ({ id: el.id });
           let isSingleArgEvt = frame => frameIsEvent(frame) && _.get(frame, ['arguments', 0, 'argument-type']) === 'entity';
           let evtArg = frame.arguments.find( arg => isSingleArgEvt( getFrame( getArgId(arg) ) ) );

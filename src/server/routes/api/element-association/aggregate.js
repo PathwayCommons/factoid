@@ -24,7 +24,7 @@ const searchAll = q => {
 const searchAllCached = memoize( q => {
   let searchTerm = q.name || q.id;
 
-  let distance = ent => {
+  let distance = memoize( ent => {
     let provider = getProviderByNs( ent.namespace );
     let undef = Number.MAX_SAFE_INTEGER;
     let dist = undef;
@@ -46,14 +46,18 @@ const searchAllCached = memoize( q => {
     provider.distanceFields.forEach( k => check( ent[k] ) );
 
     return dist;
-  };
+  }, new Map(), ent => ent.namespace + ':' + ent.id );
 
   return (
     Promise.all( providers.map( p => p.search( q ) ) ).then( entSets => {
       let ents = _.flatten( entSets );
       let sortedEnts = _.sortBy( ents, distance ); // stable sort
 
-      return sortedEnts;
+      // n.b. must copy obj, else other cached searched may have distance overwritten
+      let decorate = ent => _.assign( {}, ent, { distance: distance(ent) } );
+      let decoratedEnts = sortedEnts.map( decorate );
+
+      return decoratedEnts;
     } )
   );
 }, LRUCache({ max: AGGREGATE_CACHE_SIZE }) );

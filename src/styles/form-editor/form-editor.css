@@ -28,6 +28,11 @@
   flex-direction: row;
 }
 
+.delete-interaction {
+  border: none;
+  color: #ED4A31;
+}
+
 
 .form-submit {
   color: #EEEEEE;

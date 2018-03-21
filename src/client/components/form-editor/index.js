@@ -47,6 +47,10 @@ class InteractionForm extends Component {
     this.forceUpdate();
   }
 
+  deleteInteraction() {
+    // TODO implement this
+  }
+
   render(){
     const intn = this.state.interaction;
     const lEnt = intn.elements()[0];
@@ -62,7 +66,8 @@ class InteractionForm extends Component {
           h('option', { value: 'other' }, 'other')
         ])
       ]),
-      h(EntityForm, { entity: rEnt } )
+      h(EntityForm, { entity: rEnt } ),
+      h('button.delete-interaction', { onClick: e => this.deleteInteraction() }, 'X')
     ]);
   }
 }

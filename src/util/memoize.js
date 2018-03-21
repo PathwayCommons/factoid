@@ -1,12 +1,15 @@
 const { jsonHash } = require('./obj');
-const getStringifiedKey = args => jsonHash( Array.from(args) );
+
+const getStringifiedKey = function(){
+  return jsonHash( Array.from(arguments) );
+};
 
 const memoize = ( fn, cache, getKey = getStringifiedKey ) => {
   let getVal = args => fn.apply( null, args );
 
   return function(){
     let args = arguments;
-    let key = getKey( args );
+    let key = getKey( ...args );
     let val;
 
     if( cache.has(key) ){

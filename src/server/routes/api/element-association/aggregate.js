@@ -1,11 +1,9 @@
 const _ = require('lodash');
 const Promise = require('bluebird');
-const dice = require('dice-coefficient'); // sorensen dice coeff
-const distanceMetric = (a, b) => 1 - dice(a, b);
 const pubchem = require('./pubchem');
 const uniprot = require('./uniprot');
 const providers = [ uniprot, pubchem ];
-const { memoize } = require('../../../../util');
+const { memoize, stringDistanceMetric } = require('../../../../util');
 const LRUCache = require('lru-cache');
 const { MAX_SEARCH_SIZE, AGGREGATE_CACHE_SIZE } = require('../../../../config');
 const logger = require('../../../logger');
@@ -32,7 +30,7 @@ const searchAllCached = memoize( q => {
     let dist = undef;
 
     let checkDist = val => {
-      let d = val == null ? undef : distanceMetric( searchTerm, val );
+      let d = val == null ? undef : stringDistanceMetric( searchTerm, val );
 
       dist = Math.min( d, dist );
     };

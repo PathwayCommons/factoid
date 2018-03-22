@@ -13,7 +13,10 @@ const Highlighter = require('../highlighter');
 const Notification = require('../notification');
 const InlineNotification = require('../notification/inline');
 const Tooltip = require('../popover/tooltip');
+const Heap = require('heap');
+const { stringDistanceMetric } = require('../../../util');
 
+const MAX_FIXED_SYNONYMS = 5;
 const MAX_SYNONYMS_SHOWN = 10;
 
 const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL } = require('../../../config');
@@ -301,6 +304,34 @@ class EntityInfo extends React.Component {
         .then( matches => {
           if( this._unmounted ){ return; }
 
+          let getShortSynonyms = (synonyms, cmpStr = name) => {
+            if (synonyms.length <= MAX_SYNONYMS_SHOWN) {
+              return synonyms;
+            }
+
+            // use a memoized distance function to avoid re-calculating the same distances inside nsmallest function
+            let distance = _.memoize( s => {
+              return stringDistanceMetric(s, cmpStr);
+            } );
+
+            let cmp = (s1, s2) => {
+              return distance(s1) - distance(s2);
+            };
+
+            // fix the first constant number of synonyms
+            let fixed = synonyms.slice(0, MAX_FIXED_SYNONYMS);
+            // complete the short list by the best matches among the remaining synonyms
+            let remainingBestMatch = Heap.nsmallest(synonyms.slice(MAX_FIXED_SYNONYMS), MAX_SYNONYMS_SHOWN - MAX_FIXED_SYNONYMS, cmp);
+
+            return [...fixed, ...remainingBestMatch];
+          };
+
+          matches.forEach( (match) => {
+            if (match.synonyms) {
+              match.shortSynonyms = getShortSynonyms(match.synonyms);
+            }
+          } );
+
           if( clearOldMatches ){
             s.matches = matches;
           } else {
@@ -565,9 +596,9 @@ class EntityInfo extends React.Component {
           h('span.entity-info-title', 'Charge'),
           h('span', m.charge)
         ]),
-        h('div.entity-info-section', !m.synonyms ? [] : [
+        h('div.entity-info-section', !m.shortSynonyms ? [] : [
           h('span.entity-info-title', 'Synonyms'),
-          ...m.synonyms.slice(0, MAX_SYNONYMS_SHOWN).map( name => h('span.entity-info-alt-name', [
+          ...m.shortSynonyms.map( name => h('span.entity-info-alt-name', [
             h(Highlighter, { text: name, terms: searchTerms })
           ]))
         ])

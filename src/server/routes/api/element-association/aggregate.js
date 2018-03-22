@@ -18,7 +18,24 @@ const searchAll = q => {
     offset: 0
   });
 
-  return searchAllCached( allQ );
+  return searchAllWithOrgCounts( allQ );
+};
+
+// tie-breaks distance metric with organism mentions
+const searchAllWithOrgCounts = q => {
+  let orgCount = ent => q.organismCounts[ent.organism] || 0;
+
+  let sortByDistThenOrgs = (a, b) => {
+    let distDiff = a.distance - b.distance;
+
+    if( distDiff === 0 ){
+      return orgCount(b) - orgCount(a);
+    } else {
+      return distDiff;
+    }
+  };
+
+  return searchAllCached( q ).then( ents => ents.sort( sortByDistThenOrgs ) );
 };
 
 const searchAllCached = memoize( q => {
@@ -69,7 +86,8 @@ const search = q => {
     Promise.try( () => searchAll(q) )
     .then( ents => ents.slice( offset, offset + limit ) )
     .catch( err => {
-      logger.error(`Aggregate search failed: ${err.toString()}`);
+      logger.error(`Aggregate search failed`);
+      logger.error(err);
 
       throw err;
     } )
@@ -80,7 +98,8 @@ const get = q => {
   let provider = providers.find( p => p.namespace === q.namespace );
 
   return provider.get( q ).catch( err => {
-    logger.error(`Aggregate get failed: ${err.toString()}`);
+    logger.error(`Aggregate get failed`);
+    logger.error(err);
 
     throw err;
   } );

@@ -286,7 +286,8 @@ class EntityInfo extends React.Component {
     let q = {
       name: name,
       limit: s.limit,
-      offset: offset
+      offset: offset,
+      organismCounts: doc.organismCountsJson()
     };
 
     if( s.updatePromise ){
@@ -297,7 +298,13 @@ class EntityInfo extends React.Component {
 
     if( name ){
       update = (
-        Promise.try( () => fetch( '/api/element-association/search?' + queryString.stringify(q) ) )
+        Promise.try( () => fetch( '/api/element-association/search', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify(q)
+        } ) )
         .then( res => res.json() )
         .then( matches => {
           if( this._unmounted ){ return; }
@@ -751,13 +758,6 @@ class EntityInfo extends React.Component {
           ])
         ])
       );
-
-      children.push( h('div.entity-info-organism-toggles', Organism.ALL.map( organism => {
-        let onToggle = () => doc.toggleOrganism( organism );
-        let getState = () => doc.organisms().find( o => o.id() === organism.id() ) != null;
-
-        return h(OrganismToggle, { organism, onToggle, getState });
-      } )) );
     } else if( stage === STAGES.ASSOCIATE ){
       let AssocMsg = () => {
         let notification = s.assocNotification;

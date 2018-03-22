@@ -184,6 +184,16 @@ class Document {
     return cnt;
   }
 
+  organismCountsJson(){
+    let json = {};
+
+    for( let [org, count] of this.organismCounts() ){
+      json[ org.id() ] = count;
+    }
+
+    return json;
+  }
+
   // mentions for one org
   organismCount( org ){
     return this.organismCounts().get( org );

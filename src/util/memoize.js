@@ -7,6 +7,10 @@ const getStringifiedKey = function(){
 const memoize = ( fn, cache, getKey = getStringifiedKey ) => {
   let getVal = args => fn.apply( null, args );
 
+  if( cache === undefined ){
+    cache = new Map();
+  }
+
   return function(){
     let args = arguments;
     let key = getKey( ...args );

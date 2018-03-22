@@ -123,7 +123,7 @@ function makeStylesheet(){
 				'border-opacity': 0,
 
         // effectively remove the handle node for now
-        'pointer-events': 'none',
+        'events': 'no',
         'opacity': 0
 			}
 		},

@@ -41,9 +41,9 @@ const searchQuery = opts => {
         strParam('name', opts.name),
         strParam('gene', opts.name),
         strParam('accession', opts.name),
-        strParam('accession', opts.id),
-        strParam('reviewed', 'yes')
+        strParam('accession', opts.id)
       ].filter( p => !_.isNil(p) ).join('+OR+') + ')',
+      strParam('reviewed', 'yes'),
       (() => {
         let orgs = opts.organism;
         let ids;

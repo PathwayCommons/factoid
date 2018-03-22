@@ -11,7 +11,7 @@ const TYPE = 'chemical';
 const NAMESPACE = 'pubchem';
 const USE_TABLE_QUERY = true; // tends to be faster
 const ADD_SYNONYMS = true;
-const ALWAYS_USE_FIRST_SYNONYM_AS_NAME = false;
+const ALWAYS_USE_FIRST_SYNONYM_AS_NAME = true;
 
 const IUPAC_NAME_LABEL = 'IUPAC Name';
 const PREFERRED_NAME = 'Preferred';

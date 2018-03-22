@@ -93,9 +93,9 @@ const processTableEntry = ent => {
 };
 
 const searchForAllIds = memoize( search => {
-  let url = PUBCHEM_BASE_URL + '/substance/name/' + querystring.escape( search ) + '/cids/json?name_type=word&&listkey_count=' + MAX_SEARCH_SIZE;
-
   search = convert( search );
+
+  let url = PUBCHEM_BASE_URL + '/substance/name/' + querystring.escape( search ) + '/cids/json?name_type=word&&listkey_count=' + MAX_SEARCH_SIZE;
 
   return (
     Promise.try( () => fetch( url ) )
@@ -104,11 +104,10 @@ const searchForAllIds = memoize( search => {
       let ents = _.get( res, ['InformationList', 'Information']);
       let hasCid = ent => ent.CID != null;
       let getFirstCid = ent => ent.CID[0];
+      let noResults = _.get( res, ['Fault', 'Code'] ) === 'PUGREST.NotFound';
 
-      if( ents == null ){
-        console.log(res)
-
-        throw error(`Pubchem query failed for text: '${search}'`);
+      if( noResults ){
+        return [];
       }
 
       let cids = _.uniq( ents.filter( hasCid ).map( getFirstCid ) );

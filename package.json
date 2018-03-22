@@ -51,7 +51,7 @@
     "lru-cache": "^4.1.1",
     "morgan": "^1.7.0",
     "mousetrap": "^1.6.1",
-    "node-fetch": "^1.7.1",
+    "node-fetch": "^2.1.1",
     "normalize.css": "^5.0.0",
     "popper.js": "^1.13.0",
     "query-string": "^4.3.4",

@@ -36,6 +36,19 @@ class Home extends Component {
           ])
         ])
       ]),
+      h('section.home-section#what', [
+        h('div.page-content', [
+          h('div.infographic-container', [ h('span.home-infographic') ])
+        ])
+      ]),
+      h('section.home-section#why', [
+        h('div.page-content', [
+          h('h2.section-title', 'Our Mission'),
+          h('h2', 'Make Biological Pathways in Research Articles Easy to Find and Access'),
+          h('p', 'Factoid is a app that helps authors describe the genes and interactions for a pathway in their manuscript. Factoid guides authors through the steps for generating a computer-readable record of a pathway that is otherwise only available by reading an article’s text and figures.'),
+          h('p', 'Factoid raises awareness about individual and original research articles by helping authors share accurate pathway data with the researcher community.'),
+        ])
+      ]),
       h('section.home-section#how', [
         h('div.page-content', [
           h('h2.section-title', 'How does Factoid work?'),
@@ -67,20 +80,6 @@ class Home extends Component {
           ])
         ])
       ]),
-      h('section.home-section#what', [
-        h('div.page-content', [
-          h('h2.section-title', 'What Problem Does Factoid Solve?'),
-          h('div.infographic-container', [ h('span.home-infographic') ])
-        ])
-      ]),
-      h('section.home-section#why', [
-        h('div.page-content', [
-          h('h2.section-title', 'Our Mission'),
-          h('h2', 'Make Biological Pathways in Research Articles Easy to Find and Access'),
-          h('p', 'Factoid is a app that helps authors describe the genes and interactions for a pathway in their manuscript. Factoid guides authors through the steps for generating a computer-readable record of a pathway that is otherwise only available by reading an article’s text and figures.'),
-          h('p', 'Factoid raises awareness about individual and original research articles by helping authors share accurate pathway data with the researcher community.'),
-        ])
-      ]),
       h('section.home-section#why-biologists', [
         h('div.page-content', [
           h('h2.section-title', 'For Authors'),
@@ -110,29 +109,15 @@ class Home extends Component {
       h('section.home-section#credits', [
         h('div.page-content.team', [
           h('h2.section-title', 'Team'),
-          h('p', 'Factoid is the product of a proud collaboration between the Bader Lab @ the University of Toronto, Sander Lab @ the Dana Farber Cancer Institute and Harvard Medical School, and the Pathway and Omics Lab @ the Oregon Health and Science University'),
-          h('h3', 'Bader Lab @ The University of Toronto'),
-          h('ul', [
-            h('li', 'Gary Bader'),
-            h('li', 'Max Franz'),
-            h('li', 'Jeffrey Wong'),
-            h('li', 'Dylan Fong')
+          h('p', [
+            h('a.plain-link', { href: 'https://baderlab.org' }, 'Bader Lab @ The University of Toronto')
           ]),
-          h('h3', 'Sander Lab @ The Dana-Farber Cancer Institute and Harvard Medical School'),
-          h('ul', [
-            h('li', 'Chris Sander'),
-            h('li', 'Christian Dallago'),
-            h('li', 'Augustin Luna')
+          h('p', [
+            h('a.plain-link', { href: 'http://sanderlab.org' }, 'Sander Lab @ The Dana-Farber Cancer Institute and Harvard Medical School')
           ]),
-          h('h3', 'Pathway and Omics Lab @ The Oregon Health and Science University'),
-          h('ul', [
-            h('li', 'Emek Demir'),
-            h('li', 'Funda Durupinar Babur'),
-            h('li', 'David Servillo'),
-            h('li', 'Metin Can Siper'),
-          ]),
-          h('h3', 'Assets'),
-          h('p', 'starline @ Freepik for the free splash background https://www.freepik.com/starline')
+          h('p', [
+            h('a.plain-link', { href: 'https://ohsu.pure.elsevier.com/en/persons/emek-demir' }, 'Pathway and Omics Lab @ The Oregon Health and Science University')
+          ])
         ])
       ]),
       h('section.home-section#contact', [

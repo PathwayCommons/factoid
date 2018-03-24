@@ -20,8 +20,8 @@ const APPLY_GROUND = true;
 const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
 
 module.exports = {
-  get: function( text ){
-    let makeRequest = () => fetch(REACH_URL, {
+  getRawResponse: function( text ){
+    return fetch(REACH_URL, {
       method: 'POST',
       body: (function(){
         let data = new FormData();
@@ -31,6 +31,9 @@ module.exports = {
         return data;
       })()
     });
+  },
+  get: function( text ){
+    let makeRequest = () => this.getRawResponse( text );
 
     let makeDocJson = res => {
       let elements = [];

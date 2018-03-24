@@ -56,6 +56,8 @@ let runLayout = doc => {
   return Promise.try( run ).then( getDoc );
 };
 
+let getReachOutput = text => provider.getRawResponse( text );
+
 // get existing doc
 http.get('/:id', function( req, res ){
   let id = req.params.id;
@@ -90,6 +92,14 @@ http.post('/', function( req, res ){
       throw e;
     } )
   );
+});
+
+http.post('/queryReach', function( req, res ){
+  let text = req.body.text;
+
+  getReachOutput( text )
+  .then( reachRes => reachRes.json() )
+  .then( reachJson => res.json(reachJson) );
 });
 
 module.exports = http;

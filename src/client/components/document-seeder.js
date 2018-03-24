@@ -100,63 +100,63 @@ class DocumentSeeder extends React.Component {
     let retVal = [];
 
     while ( entityIndex < entityIntervals.length && interactionIndex < interactionIntervals.length ) {
-    	let entityInt = entityIntervals[entityIndex];
-    	let interactionInt = interactionIntervals[interactionIndex];
+      let entityInt = entityIntervals[entityIndex];
+      let interactionInt = interactionIntervals[interactionIndex];
 
       // push an interaction object for the part of interaction that intersects no entity
-    	if ( entityInt.start > interactionInt.start ) {
-    		let interactionObj = {
-    			start: interactionInt.start,
+      if ( entityInt.start > interactionInt.start ) {
+        let interactionObj = {
+          start: interactionInt.start,
           end: Math.min(entityInt.start, interactionInt.end),
-    			classes: [ INTERACTION_HIGHLIGHT_CLASS ]
-    		};
+          classes: [ INTERACTION_HIGHLIGHT_CLASS ]
+        };
 
         retVal.push(interactionObj);
 
         // update the beginining of interaction interval since we just covered some
-    		interactionInt.start = interactionObj.end;
+        interactionInt.start = interactionObj.end;
 
         // if the whole interaction is covered pass to the next one
-    		// this would happen if interaction sentence does not include any entity
-    		if ( interactionInt.end === interactionObj.end ) {
-    			interactionIndex++;
-    			continue;
-    		}
-    	}
+        // this would happen if interaction sentence does not include any entity
+        if ( interactionInt.end === interactionObj.end ) {
+          interactionIndex++;
+          continue;
+        }
+      }
 
-    	let entityObj = {
-    		start: entityInt.start,
-    		end: entityInt.end,
-    		classes: [ ENTITY_HIGHLIGHT_CLASS ]
-    	};
+      let entityObj = {
+        start: entityInt.start,
+        end: entityInt.end,
+        classes: [ ENTITY_HIGHLIGHT_CLASS ]
+      };
 
-    	// if entity is covered by interaction it makes an intersection
+      // if entity is covered by interaction it makes an intersection
       // so it should have the interaction class as well
-    	if ( entityInt.start >= interactionInt.start && entityInt.end <= interactionInt.end ) {
-    		entityObj.classes.push( INTERACTION_HIGHLIGHT_CLASS );
-    		interactionInt.start = entityInt.end;
+      if ( entityInt.start >= interactionInt.start && entityInt.end <= interactionInt.end ) {
+        entityObj.classes.push( INTERACTION_HIGHLIGHT_CLASS );
+        interactionInt.start = entityInt.end;
 
-    		// we are done with this intersection pass to the next one
-    		if ( interactionInt.start >= interactionInt.end ) {
-    			interactionIndex++;
-    		}
-    	}
+        // we are done with this intersection pass to the next one
+        if ( interactionInt.start >= interactionInt.end ) {
+          interactionIndex++;
+        }
+      }
 
-    	retVal.push(entityObj);
+      retVal.push(entityObj);
 
       // pass to next entity
-    	entityIndex++;
+      entityIndex++;
     }
 
     let iterateRemaningIntervals = ( index, intervals, higlightClass ) => {
       while ( index < intervals.length ) {
-      	let interval = intervals[index];
-      	retVal.push({
-      		start: interval.start,
-      		end: interval.end,
-      		classes: [ higlightClass ]
-      	});
-      	index++;
+        let interval = intervals[index];
+        retVal.push({
+          start: interval.start,
+          end: interval.end,
+          classes: [ higlightClass ]
+        });
+        index++;
       }
     }
 

@@ -38,6 +38,14 @@ let defaults = {
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );
 
+for( let key in envVars ){
+  let val = envVars[key];
+
+  if( val === '' || val == null ){
+    delete envVars[key];
+  }
+}
+
 let conf = Object.assign( {}, defaults, envVars );
 
 let intKeys = [

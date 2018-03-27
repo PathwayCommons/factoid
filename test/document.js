@@ -5,6 +5,7 @@ let Syncher = require('../src/model/syncher');
 let ElementFactory = require('../src/model/element/factory');
 let Entity = require('../src/model/element/entity');
 let Interaction = require('../src/model/element/interaction');
+let Organism = require('../src/model/organism');
 let Document = require('../src/model/document');
 let MockSocket = require('./mock/socket');
 let ElementCache = require('../src/model/element-cache');
@@ -634,40 +635,71 @@ describe('Document', function(){
       } );
     });
 
-    it('associates entity on client1, resolves on client2', function( next ){
+    it('associates entity on client1, resolves on client2', function(){
+      let org = Organism.HOMO_SAPIENS;
+
       let assoc = {
         name: 'p53',
         id: 43289543859,
-        organism: 9606,
+        organism: Organism.HOMO_SAPIENS.id(),
         type: 'protein'
       };
 
-      let associated = [ true, false, false ]; // index 0 is nothing
+      let mouse = Organism.MUS_MUSCULUS;
 
-      let associate = i => {
-        associated[i] = true;
-        checkDone();
-      };
+      let assocPromise = ent => new Promise( resolve => ent.on('associated', resolve) );
 
-      let checkDone = () => {
-        let isDone = arr => !arr.some( val => !val );
+      let allAssociated = [ assocPromise(entC1), assocPromise(entC2) ];
 
-        if( isDone( associated ) ){
-          next();
-        }
-      };
-
-      entC1.on('associated', () => associate(1));
-
-      entC2.on('associated', () => associate(2));
-
-      Promise.all([
+      return Promise.all([
         docC1.add( entC1 ),
         new Promise( resolve => docC2.on('add', resolve) )
       ]).then( () => {
-        entC1.associate( assoc );
-
+        return entC1.associate( assoc );
+      }).then( () => {
+        return allAssociated;
+      } ).then( () => {
         expect( entC1.association(), 'association' ).to.deep.equal( assoc );
+        expect( docC1.organismCount(org), 'human count' ).to.equal(1);
+        expect( docC1.organismCount(mouse), 'mouse count' ).to.equal(0);
+      });
+    });
+
+    it('associates entity and toggles organism on client1, resolves on client2', function(){
+      let org = Organism.HOMO_SAPIENS;
+
+      let assoc = {
+        name: 'p53',
+        id: 43289543859,
+        organism: Organism.HOMO_SAPIENS.id(),
+        type: 'protein'
+      };
+
+      let mouse = Organism.MUS_MUSCULUS;
+
+      let assocPromise = ent => new Promise( resolve => ent.on('associated', resolve) );
+
+      let allAssociated = [ assocPromise(entC1), assocPromise(entC2) ];
+
+      let togglePromise = doc => new Promise( resolve => doc.on('toggleorganism', resolve) );
+
+      let allToggled = [ togglePromise(docC1), togglePromise(docC2) ];
+
+      return Promise.all([
+        docC1.add( entC1 ),
+        new Promise( resolve => docC2.on('add', resolve) )
+      ]).then( () => {
+        return entC1.associate( assoc );
+      }).then( () => {
+        return docC1.toggleOrganism(org);
+      } ).then( () => {
+        return allAssociated;
+      } ).then( () => {
+        return allToggled;
+      } ).then( () => {
+        expect( entC1.association(), 'association' ).to.deep.equal( assoc );
+        expect( docC1.organismCount(org), 'human count' ).to.equal(2);
+        expect( docC1.organismCount(mouse), 'mouse count' ).to.equal(0);
       });
     });
   });

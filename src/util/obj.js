@@ -129,4 +129,8 @@ function jsonHash( obj, filter ){
   return hash.sha512().update( serializedJson ).digest('hex');
 }
 
-module.exports = { firstDefined, fill, error, getId, ensureArray, lazySlice, mixin, jsonHash };
+function isNonNil(v){
+  return !_.isNil(v);
+}
+
+module.exports = { firstDefined, fill, error, getId, ensureArray, lazySlice, mixin, jsonHash, isNonNil };

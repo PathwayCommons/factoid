@@ -25,6 +25,16 @@ class Organism {
     return this.spec.icon;
   }
 
+  defaultIndex(){
+    let index = this.spec.defaultIndex;
+
+    if( index == null || isNaN(index) ){
+      return organisms.length + 1;
+    }
+
+    return index;
+  }
+
   json(){
     return {
       name: this.name(),
@@ -56,7 +66,9 @@ class Organism {
   new Organism(10116, 'Rattus norvegicus', 'bio-rat'),
   new Organism(7955, 'Danio rerio', 'bio-fish')
 
-].forEach( org => {
+].forEach( (org, i) => {
+  org.spec.defaultIndex = i;
+
   organisms.push( org );
 
   Organism[ constName( org.name() ) ] = org;

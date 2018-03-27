@@ -8,7 +8,7 @@ const ElementFactory = require('../element');
 const { assertOneOfFieldsDefined, mixin, getId } = require('../../util');
 const Organism = require('../organism');
 const Cytoscape = require('cytoscape');
-const { makeCyEles, getCyLayoutOpts } = require('../../util');
+const { makeCyEles, getCyLayoutOpts, isNonNil } = require('../../util');
 
 const DEFAULTS = Object.freeze({
   entries: [], // used by elementSet
@@ -159,16 +159,60 @@ class Document {
     return this.elements().filter( el => el.isInteraction() );
   }
 
-  organisms(){
-    let orgIds = this.syncher.get('organisms');
+  // mention count for all organisms (toggle + ent mentions)
+  organismCounts(){
+    let cnt = new Map(); // org => mention count
+    let resetCount = org => cnt.set( org, 0 );
+    let addToCount = org => cnt.set( org, cnt.get(org) + 1 );
+    let getOrg = id => Organism.fromId( id );
+    let entIsAssocd = ent => ent.associated();
+    let getOrgIdForEnt = ent => _.get( ent.association(), ['organism'] );
 
-    if( orgIds != null ){
-      return orgIds.map( id => Organism.fromId( id ) );
-    } else {
-      return [];
-    }
+    Organism.ALL.forEach( resetCount );
+
+    this.toggledOrganisms().forEach( addToCount );
+
+    (
+      this.entities()
+      .filter( entIsAssocd )
+      .map( getOrgIdForEnt )
+      .filter( isNonNil ) // may be an entity w/o org
+      .map( getOrg )
+      .forEach( addToCount )
+    );
+
+    return cnt;
   }
 
+  organismCountsJson(){
+    let json = {};
+
+    for( let [org, count] of this.organismCounts() ){
+      json[ org.id() ] = count;
+    }
+
+    return json;
+  }
+
+  // mentions for one org
+  organismCount( org ){
+    return this.organismCounts().get( org );
+  }
+
+  // get list of all orgs (incl. explicit mentions and implicit mentions via entity assoc)
+  organisms(){
+    let hasMentions = ([ org, mentions ]) => mentions > 0; // eslint-disable-line no-unused-vars
+    let getOrg = ([ org, mentions ]) => org; // eslint-disable-line no-unused-vars
+
+    return [ ...this.organismCounts() ].filter( hasMentions ).map( getOrg );
+  }
+
+  // get list of orgs w/ explicit mentions
+  toggledOrganisms(){
+    return this.syncher.get('organisms').map( id => Organism.fromId(id) );
+  }
+
+  // toggle organism explicit mention
   toggleOrganism( org, toggleOn ){
     let orgId = getId( org );
     let orgIds = this.syncher.get('organisms') || [];

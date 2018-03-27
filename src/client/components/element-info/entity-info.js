@@ -268,7 +268,6 @@ class EntityInfo extends React.Component {
     let p = this.props;
     let el = s.element;
     let doc = p.document;
-    let qOrgs = doc.organisms().map( org => org.id() ).join(',');
 
     let isNewName = name !== s.oldName;
     let clearOldMatches = isNewName || changedOrganisms;
@@ -288,7 +287,7 @@ class EntityInfo extends React.Component {
       name: name,
       limit: s.limit,
       offset: offset,
-      organism: qOrgs
+      organismCounts: doc.organismCountsJson()
     };
 
     if( s.updatePromise ){
@@ -299,7 +298,13 @@ class EntityInfo extends React.Component {
 
     if( name ){
       update = (
-        Promise.try( () => fetch( '/api/element-association/search?' + queryString.stringify(q) ) )
+        Promise.try( () => fetch( '/api/element-association/search', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify(q)
+        } ) )
         .then( res => res.json() )
         .then( matches => {
           if( this._unmounted ){ return; }
@@ -353,10 +358,10 @@ class EntityInfo extends React.Component {
           }, () => {
             if( clearOldMatches ){
               let root = ReactDom.findDOMNode(this);
-              let matches = root != null ? root.querySelector('.entity-info-matches') : null;
+              let matchesDom = root != null ? root.querySelector('.entity-info-matches') : null;
 
-              if( matches != null ){
-                matches.scrollTop = 0;
+              if( matchesDom != null ){
+                matchesDom.scrollTop = 0;
               }
             }
           });
@@ -753,13 +758,6 @@ class EntityInfo extends React.Component {
           ])
         ])
       );
-
-      children.push( h('div.entity-info-organism-toggles', Organism.ALL.map( organism => {
-        let onToggle = () => doc.toggleOrganism( organism );
-        let getState = () => doc.organisms().find( o => o.id() === organism.id() ) != null;
-
-        return h(OrganismToggle, { organism, onToggle, getState });
-      } )) );
     } else if( stage === STAGES.ASSOCIATE ){
       let AssocMsg = () => {
         let notification = s.assocNotification;

@@ -5,6 +5,7 @@ const uniprot = require('./uniprot');
 const providers = [ uniprot, pubchem ];
 const { memoize, stringDistanceMetric } = require('../../../../util');
 const LRUCache = require('lru-cache');
+const Organism = require('../../../../model/organism');
 const { MAX_SEARCH_SIZE, AGGREGATE_CACHE_SIZE } = require('../../../../config');
 const logger = require('../../../logger');
 
@@ -24,12 +25,21 @@ const searchAll = q => {
 // tie-breaks distance metric with organism mentions
 const searchAllWithOrgCounts = q => {
   let orgCount = ent => q.organismCounts[ent.organism] || 0;
+  let defaultOrgIndex = ent => Organism.fromId(ent.organism).defaultIndex();
 
   let sortByDistThenOrgs = (a, b) => {
     let distDiff = a.distance - b.distance;
 
     if( distDiff === 0 ){
-      return orgCount(b) - orgCount(a);
+      let orgDiff = orgCount(b) - orgCount(a);
+
+      if( orgDiff === 0 ){
+        let defaultOrgDiff = defaultOrgIndex(a) - defaultOrgIndex(b);
+
+        return defaultOrgDiff;
+      } else {
+        return orgDiff;
+      }
     } else {
       return distDiff;
     }

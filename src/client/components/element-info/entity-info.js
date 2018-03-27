@@ -812,8 +812,18 @@ class EntityInfo extends React.Component {
       let modChildren = [];
 
       let onChange = (evt) => {
-        this.modify( evt.target.value );
+        let value = evt.target.value;
+
+        this.modify( value );
         this.forward();
+      };
+
+      let onClick = (evt) => {
+        let value = evt.target.value;
+
+        if( s.element.completed() && value === s.modification.value ){
+          this.forward();
+        }
       };
 
       s.element.ORDERED_MODIFICATIONS.forEach( mod => {
@@ -824,7 +834,7 @@ class EntityInfo extends React.Component {
         let checked = value === s.modification.value && s.element.completed();
 
         modChildren.push(
-          h('input', { type, name, id, value, onChange, checked }),
+          h('input', { type, name, id, value, onChange, onClick, checked }),
           h('label', { htmlFor: id }, mod.displayValue)
         );
       } );

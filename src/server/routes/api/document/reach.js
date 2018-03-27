@@ -8,6 +8,7 @@ const Organism = require('../../../../model/organism');
 const uniprot = require('../element-association/uniprot');
 const pubchem = require('../element-association/pubchem');
 const chebi = require('../element-association/chebi');
+const stream = require('stream');
 
 const logger = require('../../../logger');
 
@@ -21,15 +22,15 @@ const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
 
 module.exports = {
   get: function( text ){
+    let form = new FormData();
+
+    form.append('file', text, {
+      filename: 'myfile.txt'
+    });
+
     let makeRequest = () => fetch(REACH_URL, {
       method: 'POST',
-      body: (function(){
-        let data = new FormData();
-
-        data.append('text', text);
-
-        return data;
-      })()
+      body: form
     });
 
     let makeDocJson = res => {

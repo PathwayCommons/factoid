@@ -21,7 +21,7 @@ let defaults = {
   DB_CERT: undefined,  // path to a certificate (cert) file if db uses ssl
 
   // Services
-  REACH_URL: 'http://reach.baderlab.org/api/textBody',
+  REACH_URL: 'http://reach.baderlab.org/api/uploadFile',
   UNIPROT_URL: 'http://www.uniprot.org/uniprot',
   UNIPROT_LINK_BASE_URL: 'http://www.uniprot.org/uniprot/',
   UNIPROT_CACHE_SIZE: DEFAULT_CACHE_SIZE,

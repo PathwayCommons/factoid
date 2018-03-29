@@ -478,9 +478,9 @@ class EntityInfo extends React.Component {
       switch( stage ){
         case STAGES.NAME:
           if( this.data.name ){
-            this.data.nameNotification.message(`This entity is incomplete.  Amend the name of "${this.data.name}", if necessary, and then go to the next step.`);
+            this.data.nameNotification.message(`Amend the name of "${this.data.name}", if necessary.`);
           } else {
-            this.data.nameNotification.message(`This entity is incomplete.  Name the entity, then go to the next step.`);
+            this.data.nameNotification.message(`Name the entity.`);
           }
 
 
@@ -488,11 +488,11 @@ class EntityInfo extends React.Component {
           break;
 
         case STAGES.ASSOCIATE:
-          this.data.assocNotification.message(`Link "${this.data.name}" to one of the following identifiers.  Linking increases the impact of your paper by enabling data sharing and computational analysis.`);
+          this.data.assocNotification.message(`Select the best match for "${this.data.name}".`);
           break;
 
         case STAGES.MODIFY:
-          this.data.modNotification.message(`Specifying a modification can help to more accurately represent the state of ${this.data.name}.`);
+          this.data.modNotification.message(`Select a modification for ${this.data.name}.`);
           break;
 
         case STAGES.COMPLETED:

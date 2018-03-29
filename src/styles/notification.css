@@ -1,5 +1,4 @@
 .notification {
-  max-width: 30em;
   color: #fff;
   display: flex;
   flex-direction: row;
@@ -29,6 +28,7 @@
   display: flex;
   cursor: pointer;
   min-height: 3em;
+  min-width: 8em;
   padding: 0.5em 1em;
   text-align: center;
   font-size: 0.8em;
@@ -67,7 +67,6 @@
 }
 
 .notification-message {
-  font-size: var(--smallFontSize);
   line-height: 1.5;
 }
 
@@ -92,6 +91,7 @@
   border-radius: 0.25em;
   box-shadow: 0 4px 20px 4px rgba(0, 20, 60, 0.2), 0 4px 80px -8px rgba(0, 20, 60, 0.3);
   display: none;
+  width: 30em;
   max-width: calc(100vw - 2em);
 }
 

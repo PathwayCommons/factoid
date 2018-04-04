@@ -31,8 +31,9 @@ class Home extends Component {
           h('div.hero-subtitle', 'SHARE YOUR PATHWAY WITH THE WORLD'),
           h('div.hero-description', 'Publishing and getting your research noticed is essential. Factoid helps you increase the visibility of your publications by linking your research to pathways.'),
           h('div.hero-buttons', [
-            h('button.hero-button', 'TRY FACTOID'),
-            // h('button.hero-button.hero-alt', 'View Demo')
+            h(Link, { to: '/example-document'}, [
+              h('button.hero-button', 'TRY FACTOID'),
+            ])
           ])
         ])
       ]),

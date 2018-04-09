@@ -5,6 +5,7 @@ const { isInteractionNode } = require('../../../util');
 const _ = require('lodash');
 const defs = require('../../defs');
 const { animateDomForEdit } = require('../animate');
+const uuid = require('uuid');
 
 class InteractionInfo extends React.Component {
   constructor( props ){
@@ -24,7 +25,8 @@ class InteractionInfo extends React.Component {
     this.state = {
       description: props.element.description(),
       ppt: ppt,
-      pptType: el.participantType( ppt )
+      pptType: el.participantType( ppt ),
+      assoc: el.association()
     };
   }
 
@@ -43,13 +45,19 @@ class InteractionInfo extends React.Component {
       this.remRedescrAni = animateDomForEdit( comment );
     };
 
+    this.onAssociate = () => {
+      this.setState({ assoc: el.association() });
+    };
+
     el.on('remoteredescribe', this.onRemoteRedescribe);
+    el.on('associate', this.onAssociate);
   }
 
   componentWillUnmount(){
     let el = this.props.element;
 
     el.removeListener('remoteredescribe', this.onRemoteRedescribe);
+    el.removeListener('associate', this.onAssociate);
   }
 
   redescribe( descr ){
@@ -63,32 +71,57 @@ class InteractionInfo extends React.Component {
     this.setState({ description: descr });
   }
 
+  associate( assoc ){
+    let p = this.props;
+    let el = p.element;
+
+    el.associate( assoc );
+  }
+
   render(){
     let children = [];
     let p = this.props;
     let el = p.element;
     let s = this.state;
     let doc = p.document;
-    let descrId = 'interaction-info-description' + el.id();
-    let descrDom;
+    let descrDom, assocDom;
 
     if( doc.editable() ){
       descrDom = h('textarea.interaction-info-description', {
-        id: descrId,
         placeholder: 'Interaction description',
         value: s.description,
         onChange: event => this.redescribe( event.target.value )
       });
+
+      let radioName = 'interaction-info-assoc-radioset-' + el.id();
+      let radiosetChildren = [];
+
+      el.ASSOCIATIONS.forEach( assoc => {
+        let radioId = 'interaction-info-assoc-radioset-item-' + uuid();
+
+        radiosetChildren.push( h('input.interaction-info-type-radio', {
+          type: 'radio',
+          onChange: () => this.associate( assoc ),
+          id: radioId,
+          name: radioName,
+          checked: this.state.assoc.value === assoc.value
+        }) );
+
+        radiosetChildren.push( h('label.interaction-info-assoc-radio-label', {
+          htmlFor: radioId
+        }, assoc.displayValue) );
+      } );
+
+      assocDom = h('div.interaction-info-assoc-radioset', radiosetChildren);
     } else {
-      descrDom = h('div.interaction-info-description', s.description || [
-        h('div.element-info-no-data', [
-          h('span', ' This interaction has no description.')
-        ])
-      ]);
+      descrDom = h('div.interaction-info-description', s.description || 'This interaction has no description.');
     }
 
     children.push( h('div.interaction-info-details', [
-      h('label.interaction-info-description-label', { htmlFor: descrId }, 'Description'),
+      h('label.interaction-info-assoc-label', 'Type'),
+      assocDom,
+
+      h('label.interaction-info-description-label', 'Description'),
       descrDom
     ] ) );
 

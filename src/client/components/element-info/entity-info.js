@@ -430,7 +430,7 @@ class EntityInfo extends React.Component {
       case STAGES.COMPLETED:
         return (
           currentStage === STAGES.MODIFY ||
-          ( currentStage === STAGES.ASSOCIATE && el.type() === el.TYPES.CHEMICAL )
+          ( currentStage === STAGES.ASSOCIATE && el.type() === el.TYPE.CHEMICAL )
         );
     }
   }

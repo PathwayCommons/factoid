@@ -503,11 +503,11 @@ describe('Interaction', function(){
       return Promise.resolve().then( () => {
         let updated = whenAll( [ intnC1, intnC2 ], 'add', 2 );
 
-        intnC1.on('remove', ( ele, group ) => {
+        intnC1.on('remove', ( ele, group ) => { // eslint-disable-line no-unused-vars
           throw new Error(`intnC1 should not have anything removed`);
         });
 
-        intnC2.on('remove', ( ele, group ) => {
+        intnC2.on('remove', ( ele, group ) => { // eslint-disable-line no-unused-vars
           throw new Error(`intnC2 should not have anything removed`);
         });
 
@@ -538,11 +538,11 @@ describe('Interaction', function(){
       } ).then( () => {
         let updated = whenAll( [ intnC1, intnC2 ], 'remove', 2 );
 
-        intnC1.on('add', ( ele, group ) => {
+        intnC1.on('add', ( ele, group ) => { // eslint-disable-line no-unused-vars
           throw new Error(`intnC1 should not have anything added`);
         });
 
-        intnC2.on('add', ( ele, group ) => {
+        intnC2.on('add', ( ele, group ) => { // eslint-disable-line no-unused-vars
           throw new Error(`intnC2 should not have anything added`);
         });
 
@@ -553,6 +553,45 @@ describe('Interaction', function(){
       } ).then( () => {
         expect( intnC1.participants().length, 'number of participants (client1)' ).to.equal( 0 );
         expect( intnC2.participants().length, 'number of participants (client2)' ).to.equal( 0 );
+      } );
+    });
+
+    let isNotUnsigned = type => type.value !== Interaction.PARTICIPANT_TYPE.UNSIGNED.value;
+
+    Interaction.ASSOCIATIONS.forEach( intnType => {
+      Interaction.PARTICIPANT_TYPES.filter( isNotUnsigned ).forEach( pptType => {
+        it(`sets interaction type as ${intnType.value}:${pptType.value}`, function(){
+          return Promise.resolve().then( () => {
+            return intnC1.add( entC1 );
+          } ).then( () => {
+            return intnC1.add( ent2C1 );
+          } ).then( () => {
+            return intnC1.associate( intnType );
+          } ).then( () => {
+            return intnC1.retypeParticipant( entC1, pptType );
+          } ).then( () => {
+            expect( intnC1.association().value ).to.equal( intnType.value );
+            expect( intnC1.association().isPositive() ).to.equal( pptType.value === Interaction.PARTICIPANT_TYPE.POSITIVE.value );
+            expect( intnC1.association().getTarget().id() ).to.equal( entC1.id() );
+          } );
+        });
+      } );
+    } );
+
+    // example of using convenience functions on associations, e.g. setAsPromotionOf()
+    it('sets interaction participant type via type object for promotion expression', function(){
+      return Promise.resolve().then( () => {
+        return intnC1.add( entC1 );
+      } ).then( () => {
+        return intnC1.add( ent2C1 );
+      } ).then( () => {
+        return intnC1.associate( Interaction.ASSOCIATION.EXPRESSION );
+      } ).then( () => {
+        return intnC1.association().setAsPromotionOf( entC1 );
+      } ).then( () => {
+        expect( intnC1.association().value ).to.equal( Interaction.ASSOCIATION.EXPRESSION.value );
+        expect( intnC1.association().isPositive() ).to.be.true;
+        expect( intnC1.association().getTarget().id() ).to.equal( entC1.id() );
       } );
     });
 

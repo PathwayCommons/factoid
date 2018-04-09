@@ -225,13 +225,17 @@ function listenToDoc({ bus, cy, document, controller }){
 
   let onDocAssoc = function(){
     onDoc( this, function( docEl, el ){
-      reapplyAssocToCy( docEl, el );
+      if( !docEl.isInteraction() ){
+        reapplyAssocToCy( docEl, el );
+      }
     } );
   };
 
   let onDocUnassoc = function(){
     onDoc( this, function( docEl, el ){
-      reapplyAssocToCy( docEl, el );
+      if( !docEl.isInteraction() ){
+        reapplyAssocToCy( docEl, el );
+      }
     } );
   };
 

@@ -52,33 +52,8 @@ class Home extends Component {
       ]),
       h('section.home-section#how', [
         h('div.page-content', [
-          h('h2.section-title', 'How does Factoid work?'),
-          h('p.how-it-works-description', `
-            Factoid works in tandem with publishers and authors to give your biological research visibility by linking your paper to digital data for your pathway.
-          `),
-          h('p', [ h('span.home-steps-figure') ]),
-          h('ol', [
-            h('li.how-it-works-description', [
-              h('h2', 'We receive your paper'),
-              h('p', 'Factoid receives your research paper and digitally captures information from it.')
-            ]),
-            h('li.how-it-works-description', [
-              h('h2', 'You receive an email'),
-              h('p', 'You get an email from Factoid with a link to a document containing your digitally captured information.')
-            ]),
-            h('li.how-it-works-description', [
-              h('h2', 'Edit the Factoid document'),
-              h('p', [
-                h('span', 'Edit the document (e.g. '),
-                h(Link, { className: 'plain-link', to: '/example-document' }, 'sample document'),
-                h('span', ') to ensure that it accurately represents the information we found in your paper.')
-              ])
-            ]),
-            h('li.how-it-works-description', [
-              h('h2', 'Submit and finalize the document'),
-              h('p', 'You finalize the document, and we send the data to the journal.  Your data is publicly available for anyone to use and cite.')
-            ]),
-          ])
+          h('h2.section-title', 'How it Works'),
+          h('div.infographic-container', [ h('span.how-it-works') ])
         ])
       ]),
       h('section.home-section#why-biologists', [
@@ -97,6 +72,7 @@ class Home extends Component {
           h('p', 'Factoid brings your content to the fore with enhanced articles using cutting edge technology.'),
           h('p', 'Foster deep connections with the researchers you work with by embedding article content within the pathway information they access for their day-to-day research.'),
           h('p', 'Integrating Factoid in your manuscript workflow is simple and lightweight.  Providing you with a plethora of benefits for minimal investment.'),
+          h('div.how-it-works-detailed'),
           h('h2', 'Crowd-sourcing Pathway Knowledge Curation'),
           h('p', 'Pathway knowledge is an invaluable resource for studying diseases and making scientific discoveries at the cellular level. However, there is a tremendous cost and effort required to curate and maintain this knowledge.'),
           h('p', 'Factoid aims to make this process more efficient and less costly by crowdsourcing knowledge:'),

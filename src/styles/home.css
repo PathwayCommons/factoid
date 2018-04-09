@@ -110,6 +110,26 @@ header.nav-bar {
   background-repeat: no-repeat;
 }
 
+.how-it-works {
+  display: inline-block;
+  width: 100%;
+  height: 60em;
+  margin-top: 2em;
+  background-image: url('./image/how-it-works.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.how-it-works-detailed {
+  display: inline-block;
+  width: 100%;
+  height: 35em;
+  margin-top: 2em;
+  background-image: url('./image/how-it-works-detailed.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
 .home-logo {
   background-image: url('./image/logo-no-slogan.svg');
 }

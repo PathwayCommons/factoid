@@ -58,6 +58,7 @@ Services:
 - `npm run watch` : watch mode (debug mode enabled, auto rebuild, livereload)
 - `npm test` : run tests
 - `npm run lint` : lint the project
+- `npm run fix` : fix minor linting errors (ones that can be automatically fixed)
 
 
 

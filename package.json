@@ -7,11 +7,13 @@
     "start": "forever ./src/server",
     "stop": "forever stop ./src/server",
     "lint:js": "eslint ./src",
+    "fix:js": "eslint ./src --fix",
     "bundle:js": "webpack",
     "watch:js": "webpack --watch",
     "watch:sync-bundle": "browser-sync start --config browser-sync.config.js",
     "watch:sync-server": "nodemon src/server/index.js",
     "lint:css": "stylelint src/**/*.css",
+    "fix:css": "stylelint src/**/*.css --fix",
     "bundle:css": "postcss src/styles/index.css -o build/bundle.css",
     "watch:css": "postcss --watch src/styles/index.css -o build/bundle.css",
     "bundle:css-deps": "postcss src/styles/deps.css -o build/deps.css",
@@ -22,8 +24,10 @@
     "bundle-profile": "cross-env NODE_ENV=production PROFILE=true webpack --profile",
     "clean": "rimraf build/*",
     "lint": "run-s lint:*",
+    "fix": "run-s fix:*",
     "watch": "run-p watch:*",
-    "test": "mocha"
+    "test": "mocha",
+    "test:travis": "run-s test lint"
   },
   "dependencies": {
     "animejs": "^2.0.2",

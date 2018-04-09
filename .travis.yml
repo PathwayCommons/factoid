@@ -3,6 +3,7 @@ language: node_js
 node_js:
   - "8"
   - "stable"
+script: npm run test:travis
 sudo: required
 before_install:
   - sudo apt-get -qq update

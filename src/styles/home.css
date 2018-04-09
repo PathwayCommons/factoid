@@ -26,18 +26,17 @@ header.nav-bar {
 }
 
 .nav-bar-link:hover {
-  color: #00ADB5;
+  color: #00adb5;
 }
 
 .hero {
-  background-image: linear-gradient(to bottom right, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.1) 100%);
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.75) 0%, rgba(0,0,0,0.25) 100%), url('./image/hero-splash-0.png');
+  background-image: linear-gradient(to bottom right, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.75) 0%, rgba(0, 0, 0, 0.25) 100%), url('./image/hero-splash-0.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: bottom;
-
   min-height: 48em;
-  color: #212F3D;
+  color: #212f3d;
   padding-top: 1em;
   padding-bottom: 2em;
 }
@@ -51,6 +50,7 @@ header.nav-bar {
 
 .hero-title-icon {
   /* position: relative; */
+
   /* top: 8em; */
   height: 5em;
   width: 100%;
@@ -69,10 +69,10 @@ header.nav-bar {
 }
 
 .hero-button {
-  background-color: #00A84C;
+  background-color: #00a84c;
   width: 8em;
   height: 2.5em;
-  color: #EEEEEE;
+  color: #eee;
   border-width: 2px;
   font-size: 1.35em;
   margin: 0.25em 0;
@@ -80,11 +80,11 @@ header.nav-bar {
 }
 
 .hero-button:hover {
-  background-color: #00ADB5;
+  background-color: #00adb5;
 }
 
 .hero-alt {
-  border-color: #00ADB5;
+  border-color: #00adb5;
 }
 
 .hero-buttons {
@@ -98,8 +98,7 @@ header.nav-bar {
   box-sizing: border-box;
 }
 
-.infographic-container {
-}
+.infographic-container {} /* stylelint-disable-line */
 
 .home-infographic {
   display: inline-block;
@@ -129,14 +128,12 @@ header.nav-bar {
 
 .home-section {
   & h2 {
-    color: #212F3D;
+    color: #212f3d;
   }
-
 }
 
-.home-section:nth-child(odd){
-  background-color: #EEEEEE;
-  /* background-image: linear-gradient(to bottom right, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.1) 100%); */
+.home-section:nth-child(odd) {
+  background-color: #eee;
 }
 
 .home-section {
@@ -146,7 +143,7 @@ header.nav-bar {
 
 .section-title {
   font-size: 2em;
-  color: #212F3D;
+  color: #212f3d;
 }
 
 .how-it-works-description {
@@ -155,13 +152,13 @@ header.nav-bar {
   font-size: 1.125em;
 
   & h2 {
-    color: #212F3D;
+    color: #212f3d;
     margin-bottom: 0.25em;
   }
 }
 
 .team > * {
-  color: #212F3D;
+  color: #212f3d;
 }
 
 .team h2 {
@@ -174,7 +171,7 @@ header.nav-bar {
 
 .contact h2 {
   font-size: 2em;
-  color: #212F3D;
+  color: #212f3d;
 }
 
 .contact p {

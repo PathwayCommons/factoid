@@ -67,7 +67,7 @@ class InteractionForm extends Component {
         ])
       ]),
       h(EntityForm, { entity: rEnt } ),
-      h('button.delete-interaction', { onClick: e => this.deleteInteraction() }, 'X')
+      h('button.delete-interaction', { onClick: () => this.deleteInteraction() }, 'X')
     ]);
   }
 }
@@ -188,11 +188,11 @@ class FormEditor extends Component {
       h('h1.form-editor-title', 'Insert Pathway Information As Text'),
       ...interactionForms,
       h('div.form-action-buttons', [
-        h('button.form-interaction-adder', { onClick: e => this.addInteractionRow() }, [
+        h('button.form-interaction-adder', { onClick: () => this.addInteractionRow() }, [
           h('i.material-icons.add-new-interaction-icon', 'add'),
           'ADD INTERACTION'
         ]),
-        h('button.form-submit', { onClick: e => this.addInteractionRow() }, [
+        h('button.form-submit', { onClick: () => this.addInteractionRow() }, [
           'SUBMIT'
         ])
       ]),

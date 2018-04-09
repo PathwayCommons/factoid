@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 const Promise = require('bluebird');
 const querystring = require('querystring');
 const _ = require('lodash');
-const { memoize, error } = require('../../../../util');
+const { memoize } = require('../../../../util');
 const LRUCache = require('lru-cache');
 const convert = require('./search-string-conversion');
 

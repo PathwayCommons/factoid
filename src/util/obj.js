@@ -1,7 +1,7 @@
 let _ = require('lodash');
 let hash = require('hash.js');
 
-function firstDefined( value, defaultValue /* ... */ ){
+function firstDefined( value, defaultValue /* ... */ ){ // eslint-disable-line no-unused-vars
   let arg;
 
   for( var i = 0; i < arguments.length; i++ ){

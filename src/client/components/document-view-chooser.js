@@ -1,7 +1,5 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const Promise = require('bluebird');
-const ReactDom = require('react-dom');
 const DocumentWizardStepper = require('./document-wizard-stepper');
 
 class DocumentViewChooser extends React.Component {

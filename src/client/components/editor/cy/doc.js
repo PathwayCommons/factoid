@@ -293,11 +293,11 @@ function listenToDoc({ bus, cy, document, controller }){
     onAddEles([ docEl ]);
   };
 
-  let onAddNewEle = function( docEl, el ){
+  let onAddNewEle = function( docEl, el ){ // eslint-disable-line no-unused-vars
     // don't animate add for now to make things snappier
   };
 
-  let animateAdd = function( docEl, el ){
+  let animateAdd = function( docEl, el ){ // eslint-disable-line no-unused-vars
     let timestamp = docEl.creationTimestamp();
     let whenCreated = timestamp == null ? null : date.parse( timestamp );
     let cutoff = date.subSeconds( Date.now(), 5 );

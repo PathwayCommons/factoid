@@ -1,5 +1,4 @@
 const React = require('react');
-const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
 const uuid = require('uuid');
 

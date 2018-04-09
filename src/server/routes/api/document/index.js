@@ -1,4 +1,3 @@
-const Cytoscape = require('cytoscape');
 const http = require('express').Router();
 const Promise = require('bluebird');
 const _ = require('lodash');
@@ -7,7 +6,6 @@ const uuid = require('uuid');
 
 const Document = require('../../../../model/document');
 const db = require('../../../db');
-const { makeCyEles, getCyLayoutOpts } = require('../../../../util');
 const logger = require('../../../logger');
 
 const provider = require('./reach');

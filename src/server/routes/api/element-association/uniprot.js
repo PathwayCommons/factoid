@@ -195,7 +195,7 @@ const processXml = res => {
 
 const getRequestUrl = ( endpt, query ) => BASE_URL + `/${endpt}` + ( query != null ? '?' + querystring.stringify(query) : '' );
 
-const rawTabDelimRequest = ( endpt, query ) => {
+const rawTabDelimRequest = ( endpt, query ) => { // eslint-disable-line no-unused-vars
   return (
     Promise
       .try( () => fetch( getRequestUrl( endpt, _.assign({}, query, { format: 'tab' }) ) ) )

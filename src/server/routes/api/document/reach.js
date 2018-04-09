@@ -7,8 +7,6 @@ const FormData = require('form-data');
 const Organism = require('../../../../model/organism');
 const uniprot = require('../element-association/uniprot');
 const pubchem = require('../element-association/pubchem');
-const chebi = require('../element-association/chebi');
-const stream = require('stream');
 
 const logger = require('../../../logger');
 
@@ -62,7 +60,6 @@ module.exports = {
       let getArgId = arg => arg.arg;
       let groundIsSame = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
       let elIsIntn = el => el.entries != null;
-      let getElement = id => elementsMap.get(id);
 
       let getSentenceText = id => {
         let f = getFrame(id);

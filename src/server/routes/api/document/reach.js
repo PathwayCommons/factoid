@@ -6,7 +6,10 @@ const fetch = require('node-fetch');
 const FormData = require('form-data');
 const Organism = require('../../../../model/organism');
 const uniprot = require('../element-association/uniprot');
-const pubchem = require('../element-association/pubchem');
+
+// TODO re-enable once a more stable solution for pubchem xrefs is found
+// https://github.com/PathwayCommons/factoid/issues/228
+// const pubchem = require('../element-association/pubchem');
 
 const logger = require('../../../logger');
 
@@ -110,7 +113,10 @@ module.exports = {
             case 'uniprot':
               return uniprot.get( q );
             case 'pubchem':
-              return pubchem.get( q );
+              return null;
+              // TODO re-enable once a more stable solution for pubchem xrefs is found
+              // https://github.com/PathwayCommons/factoid/issues/228
+              // return pubchem.get( q );
             default:
               return null;
             }

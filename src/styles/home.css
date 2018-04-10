@@ -103,7 +103,8 @@ header.nav-bar {
 .home-infographic {
   display: inline-block;
   width: 100%;
-  height: 70em;
+  padding-bottom: 130%;
+  background-position: 50% 50%;
   margin-top: 2em;
   background-image: url('./image/infographic-factoid.svg');
   background-size: contain;
@@ -113,9 +114,9 @@ header.nav-bar {
 .how-it-works {
   display: inline-block;
   width: 100%;
-  height: 60em;
-  margin-top: 2em;
-  background-image: url('./image/how-it-works.png');
+  padding-bottom: 100%;
+  background-position: 50% 50%;
+  background-image: url('./image/author-workflow.svg');
   background-size: contain;
   background-repeat: no-repeat;
 }
@@ -123,11 +124,12 @@ header.nav-bar {
 .how-it-works-detailed {
   display: inline-block;
   width: 100%;
-  height: 35em;
-  margin-top: 2em;
-  background-image: url('./image/how-it-works-detailed.png');
+  padding-bottom: 70%;
+  background-position: 50% 50%;
+  background-image: url('./image/workflow-detailed.svg');
   background-size: contain;
   background-repeat: no-repeat;
+  margin: -5% 0; /* to account for extra padding in image */
 }
 
 .home-logo {
@@ -159,6 +161,7 @@ header.nav-bar {
 .home-section {
   min-height: 3em;
   padding: 1px 0;
+  padding-bottom: 1.5em;
 }
 
 .section-title {

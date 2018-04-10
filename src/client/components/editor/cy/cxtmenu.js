@@ -8,7 +8,7 @@ const DEFAULTS = Object.freeze({
   openMenuEvents: 'cxttapstart'
 });
 
-module.exports = function({ cy, document, bus, controller }){
+module.exports = function({ cy, document, bus }){
   if( !document.editable() ){ return; }
 
   let drawCmd = {
@@ -39,31 +39,10 @@ module.exports = function({ cy, document, bus, controller }){
     }
   };
 
-  let addIntnCmd = {
-    content: icon('add_box'),
-    select: function(){
-      bus.emit('addinteractionmouse');
-    }
-  };
-
   let drawModeCmd = {
     content: icon('keyboard_tab'),
     select: function(){
       bus.emit('drawtoggle');
-    }
-  };
-
-  let layoutCmd = {
-    content: icon('shuffle'),
-    select: function(){
-      bus.emit('layout');
-    }
-  };
-
-  let fitCmd = {
-    content: icon('zoom_out_map'),
-    select: function(){
-      bus.emit('fit');
     }
   };
 

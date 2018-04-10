@@ -21,7 +21,7 @@ let defaults = {
   DB_CERT: undefined,  // path to a certificate (cert) file if db uses ssl
 
   // Services
-  REACH_URL: 'http://agathon.sista.arizona.edu:8080/odinweb/api/text',
+  REACH_URL: 'http://reach.baderlab.org/api/uploadFile',
   UNIPROT_URL: 'http://www.uniprot.org/uniprot',
   UNIPROT_LINK_BASE_URL: 'http://www.uniprot.org/uniprot/',
   UNIPROT_CACHE_SIZE: DEFAULT_CACHE_SIZE,
@@ -30,12 +30,21 @@ let defaults = {
   CHEBI_LINK_BASE_URL: 'https://www.ebi.ac.uk/chebi/searchId.do?chebiId=',
   CHEBI_CACHE_SIZE: DEFAULT_CACHE_SIZE,
   PUBCHEM_BASE_URL: 'https://pubchem.ncbi.nlm.nih.gov/rest/pug',
+  PUBCHEM_LINK_BASE_URL: 'https://pubchem.ncbi.nlm.nih.gov/compound/',
   PUBCHEM_CACHE_SIZE: DEFAULT_CACHE_SIZE,
   AGGREGATE_CACHE_SIZE: DEFAULT_CACHE_SIZE,
   MAX_SEARCH_SIZE: 50
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );
+
+for( let key in envVars ){
+  let val = envVars[key];
+
+  if( val === '' || val == null ){
+    delete envVars[key];
+  }
+}
 
 let conf = Object.assign( {}, defaults, envVars );
 

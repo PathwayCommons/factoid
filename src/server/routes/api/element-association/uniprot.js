@@ -43,6 +43,7 @@ const searchQuery = opts => {
         strParam('accession', opts.name),
         strParam('accession', opts.id)
       ].filter( p => !_.isNil(p) ).join('+OR+') + ')',
+      strParam('reviewed', 'yes'),
       (() => {
         let orgs = opts.organism;
         let ids;
@@ -183,6 +184,9 @@ const processXml = res => {
     altProteinNames.forEach( name => pushIfNonNil( proteinNames, name ) );
     subProteinNames.forEach( name => pushIfNonNil( proteinNames, name ) );
 
+    // since uniprot uses weird names, use the first "protein name" instead, if possible
+    name = proteinNames[0] || name;
+
     ents.push({ namespace, type, id, organism, name, geneNames, proteinNames });
   }
 
@@ -191,7 +195,7 @@ const processXml = res => {
 
 const getRequestUrl = ( endpt, query ) => BASE_URL + `/${endpt}` + ( query != null ? '?' + querystring.stringify(query) : '' );
 
-const rawTabDelimRequest = ( endpt, query ) => {
+const rawTabDelimRequest = ( endpt, query ) => { // eslint-disable-line no-unused-vars
   return (
     Promise
       .try( () => fetch( getRequestUrl( endpt, _.assign({}, query, { format: 'tab' }) ) ) )

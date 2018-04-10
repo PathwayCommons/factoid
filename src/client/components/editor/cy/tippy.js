@@ -55,6 +55,7 @@ module.exports = function({ bus, cy, document }){
 
   let drawing = false;
   let ehStopTime = 0;
+  let lastOpenTime = 0;
 
   bus.on('drawstart', () => {
     drawing = true;
@@ -272,6 +273,8 @@ module.exports = function({ bus, cy, document }){
 
       node.scratch('_tippies', tippies);
 
+      lastOpenTime = Date.now();
+
       if( docEl.isInteraction() ){
         let bottomOfCyBb = {
           w: cy.width(),
@@ -357,11 +360,13 @@ module.exports = function({ bus, cy, document }){
 
   cy.on('tap', 'node, edge', function( e ){
     let justMadeEhWithTap = Date.now() - ehStopTime < 100;
+    let justOpened = Date.now() - lastOpenTime < 500;
+    let isEdgeHandle = e.target.hasClass('eh-handle');
+    let shiftDown = e.originalEvent.shiftKey;
 
-    if(
-      justMadeEhWithTap || drawing || e.originalEvent.shiftKey ||
-      e.target.hasClass('eh-handle')
-    ){ return; }
+    if( justMadeEhWithTap || drawing || shiftDown || justOpened || isEdgeHandle){
+      return;
+    }
 
     toggleElementInfoFor( e.target );
   });

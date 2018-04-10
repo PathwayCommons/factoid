@@ -9,11 +9,13 @@ const convert = require('./search-string-conversion');
 const { PUBCHEM_BASE_URL, PUBCHEM_CACHE_SIZE, MAX_SEARCH_SIZE } = require('../../../../config');
 const TYPE = 'chemical';
 const NAMESPACE = 'pubchem';
-const USE_TABLE_QUERY = true;
-const ADD_SYNONYMS_WITH_TABLE = true;
+const USE_TABLE_QUERY = true; // tends to be faster
+const ADD_SYNONYMS = true;
+const ALWAYS_USE_FIRST_SYNONYM_AS_NAME = true;
 
 const IUPAC_NAME_LABEL = 'IUPAC Name';
 const PREFERRED_NAME = 'Preferred';
+const TRADITIONAL_NAME = 'Traditional';
 const INCHI_LABEL = 'InChI';
 const INCHI_KEY_LABEL = 'InChIKey';
 const FORMULA_LABEL = 'Molecular Formula';
@@ -23,6 +25,7 @@ const MONOISOTOPIC_MASS_NAME = 'MonoIsotopic';
 
 const isIupacNameProp = p => p.label === IUPAC_NAME_LABEL;
 const isPreferredIupacNameProp = p => isIupacNameProp(p) && p.name === PREFERRED_NAME;
+const isTraditionalIupacNameProp = p => isIupacNameProp(p) && p.name === TRADITIONAL_NAME;
 const isInchiProp = p => p.label === INCHI_LABEL;
 const isInchiKeyProp = p => p.label === INCHI_KEY_LABEL;
 const isFormulaProp = p => p.label === FORMULA_LABEL;
@@ -48,11 +51,15 @@ const getVals = ( ent, matcher ) => {
 
 const getVal = ( ent, matcher ) => getVals( ent, matcher )[0];
 
-const processName = name => name.replace(/;/g, ' ');
+const titleCase = str => !str ? '' : str[0].toUpperCase() + str.substr(1).toLowerCase();
+
+const processName = name => titleCase( name ? name.replace(/;/g, ' ') : '' );
 
 const processEntry = ent => {
   let names = getVals( ent, isIupacNameProp ).map( processName );
-  let mainName = getVal( ent, isPreferredIupacNameProp ) || names[0];
+  let tradName = processName( getVal( ent, isTraditionalIupacNameProp ) );
+  let prefName = processName( getVal( ent, isPreferredIupacNameProp ) );
+  let mainName =  tradName || prefName || names[0];
 
   return {
     type: TYPE,
@@ -74,7 +81,7 @@ const processTableEntry = ent => {
     type: TYPE,
     namespace: NAMESPACE,
     id: ent.CID,
-    name: processName( ent.IUPACName ),
+    name: processName( ent.IUPACName ), // pubchem doesn't give nice default names for tab reqs...
     inchi: ent.InChI,
     inchiKey: ent.InChIKey,
     charge: ent.Charge,
@@ -86,17 +93,22 @@ const processTableEntry = ent => {
 };
 
 const searchForAllIds = memoize( search => {
-  let url = PUBCHEM_BASE_URL + '/substance/name/' + querystring.escape( search ) + '/cids/json?name_type=word&&listkey_count=' + MAX_SEARCH_SIZE;
-
   search = convert( search );
+
+  let url = PUBCHEM_BASE_URL + '/substance/name/' + querystring.escape( search ) + '/cids/json?name_type=word&&listkey_count=' + MAX_SEARCH_SIZE;
 
   return (
     Promise.try( () => fetch( url ) )
     .then( res => res.json() )
     .then( res => {
-      let ents = res.InformationList.Information;
+      let ents = _.get( res, ['InformationList', 'Information']);
       let hasCid = ent => ent.CID != null;
       let getFirstCid = ent => ent.CID[0];
+      let noResults = _.get( res, ['Fault', 'Code'] ) === 'PUGREST.NotFound';
+
+      if( noResults ){
+        return [];
+      }
 
       let cids = _.uniq( ents.filter( hasCid ).map( getFirstCid ) );
 
@@ -111,7 +123,7 @@ const entryCache = LRUCache({ max: PUBCHEM_CACHE_SIZE });
 const getEntriesById = ( ids ) => {
   let uncachedIds = ids.filter( id => !entryCache.has(id) );
   let useTable = USE_TABLE_QUERY;
-  let useTableSyns = ADD_SYNONYMS_WITH_TABLE;
+  let addSyns = ADD_SYNONYMS;
   let url;
 
   if( useTable ){
@@ -135,7 +147,7 @@ const getEntriesById = ( ids ) => {
 
   let synonyms = new Map();
 
-  let getSynonymsPromise = useTable && useTableSyns && uncachedIds.length > 0 ? (
+  let getSynonymsPromise = addSyns && uncachedIds.length > 0 ? (
     Promise.try( () => fetch(`${PUBCHEM_BASE_URL}/compound/cid/${uncachedIds.join(',')}/synonyms/json`) )
     .then( res => res.json() )
     .then( res => res.InformationList.Information )
@@ -146,19 +158,23 @@ const getEntriesById = ( ids ) => {
 
   let storeSynonymsInCache = () => {
     synonyms.forEach( ( syns, id ) => {
-      entryCache.get( id ).synonyms = syns;
+      let entry = entryCache.get( id );
+
+      entry.synonyms = (syns || []).map( processName );
+
+      // backup case : use first synonym as main name if main result has no name
+      if( entry.synonyms.length > 0 && (ALWAYS_USE_FIRST_SYNONYM_AS_NAME || !entry.name) ){
+        entry.name = entry.synonyms[0];
+        entry.synonyms.shift();
+      }
     } );
   };
 
   let handleSynonyms = () => {
-    if( useTable ){
-      return (
-        Promise.try( () => getSynonymsPromise )
-        .then( storeSynonymsInCache )
-      );
-    } else {
-      return Promise.resolve();
-    }
+    return (
+      Promise.try( () => getSynonymsPromise )
+      .then( storeSynonymsInCache )
+    );
   };
 
   return (
@@ -191,4 +207,4 @@ const search = opts => {
 
 const distanceFields = ['id', 'name', 'synonyms'];
 
-module.exports = { get, search, distanceFields };
+module.exports = { namespace: NAMESPACE, get, search, distanceFields };

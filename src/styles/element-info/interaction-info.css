@@ -18,8 +18,28 @@ textarea.interaction-info-description {
   overflow: scroll;
 }
 
-.interaction-info-description-label {
+.interaction-info-description-label,
+.interaction-info-assoc-label {
   display: block;
   font-weight: bold;
   font-size: var(--smallFontSize);
+
+  &:not(:first-child) {
+    margin-top: 0.75em;
+  }
+}
+
+.interaction-info-assoc-radio-label {
+  display: block;
+}
+
+/* TODO hidden/modified parts of WIP interaction wizard UI */
+.interaction-info-assoc-radioset,
+.interaction-info-assoc-label {
+  display: none;
+}
+
+/* TODO hidden/modified parts of WIP interaction wizard UI */
+.interaction-info-description-label:not(:first-child) {
+  margin-top: 0;
 }

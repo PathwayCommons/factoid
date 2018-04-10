@@ -6,8 +6,12 @@ const fetch = require('node-fetch');
 const FormData = require('form-data');
 const Organism = require('../../../../model/organism');
 const uniprot = require('../element-association/uniprot');
-const pubchem = require('../element-association/pubchem');
-const chebi = require('../element-association/chebi');
+
+// TODO re-enable once a more stable solution for pubchem xrefs is found
+// https://github.com/PathwayCommons/factoid/issues/228
+// const pubchem = require('../element-association/pubchem');
+
+const logger = require('../../../logger');
 
 const { REACH_URL } = require('../../../../config');
 const MERGE_ENTS_WITH_SAME_GROUND = true;
@@ -18,17 +22,21 @@ const APPLY_GROUND = true;
 const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
 
 module.exports = {
-  get: function( text ){
-    let makeRequest = () => fetch(REACH_URL, {
-      method: 'POST',
-      body: (function(){
-        let data = new FormData();
+  // TODO remove this function as reach should never need to be exposed directly
+  getRawResponse: function( text ){
+    let form = new FormData();
 
-        data.append('text', text);
-
-        return data;
-      })()
+    form.append('file', text, {
+      filename: 'myfile.txt'
     });
+
+    return fetch(REACH_URL, {
+      method: 'POST',
+      body: form
+    });
+  },
+  get: function( text ){
+    let makeRequest = () => this.getRawResponse( text );
 
     let makeDocJson = res => {
       let elements = [];
@@ -59,7 +67,6 @@ module.exports = {
       let getArgId = arg => arg.arg;
       let groundIsSame = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
       let elIsIntn = el => el.entries != null;
-      let getElement = id => elementsMap.get(id);
 
       let getSentenceText = id => {
         let f = getFrame(id);
@@ -109,12 +116,11 @@ module.exports = {
             switch( ground.namespace ){
             case 'uniprot':
               return uniprot.get( q );
-            case 'chemical':
-              return pubchem.get( q ).then( res => {
-                return chebi.search({ name: res.inchi });
-              } ).then( ents => {
-                return ents[0]; // multiple may match but the first is the default one (charge 0 etc)
-              } );
+            case 'pubchem':
+              return null;
+              // TODO re-enable once a more stable solution for pubchem xrefs is found
+              // https://github.com/PathwayCommons/factoid/issues/228
+              // return pubchem.get( q );
             default:
               return null;
             }
@@ -260,6 +266,10 @@ module.exports = {
       return Promise.try( () => {
         return Promise.all( groundPromises );
       } ).then( () => {
+
+        if( elements.length === 0 ){
+          logger.error(` REACH service recognized 0 entities from the given text: `, text);
+        }
         return {
           elements,
           organisms

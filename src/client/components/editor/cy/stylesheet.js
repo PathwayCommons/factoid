@@ -39,7 +39,8 @@ function makeStylesheet(){
         'height': 3,
         'label': '',
         'border-width': 3 * (interactionNodeSize - 2),
-        'border-opacity': 0.0001
+        'border-opacity': 0.0001,
+        'events': 'no'
       }
     },
     {
@@ -118,8 +119,12 @@ function makeStylesheet(){
 				'height': 12,
 				'shape': 'ellipse',
 				'overlay-opacity': 0,
-				'border-width': 12, // makes the handle easier to hit
-				'border-opacity': 0
+				'border-width': 2, // makes the handle easier to hit
+				'border-opacity': 0,
+
+        // effectively remove the handle node for now
+        'events': 'no',
+        'opacity': 0
 			}
 		},
     {

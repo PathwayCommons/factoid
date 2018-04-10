@@ -1,7 +1,7 @@
-let { mixin } = require('../../util');
-let _ = require('lodash');
-let Syncher = require('../syncher');
-let EventEmitterMixin = require('../event-emitter-mixin');
+const { mixin } = require('../../util');
+const _ = require('lodash');
+const Syncher = require('../syncher');
+const EventEmitterMixin = require('../event-emitter-mixin');
 
 const TYPE = 'element';
 
@@ -14,12 +14,7 @@ const DEFAULTS = Object.freeze({
 
 const sanitizePosition = pos => _.pick( pos, _.keys( DEFAULTS.position ) );
 
-const TYPES = {
-  INTERACTION: 'interaction',
-  ELEMENT: 'element',
-  PROTEIN: 'protein',
-  CHEMICAL: 'chemical'
-};
+const { ELEMENT_TYPES, ELEMENT_TYPE } = require('./element-type');
 
 /**
 A generic biological element of no specific type
@@ -29,8 +24,11 @@ This allows for reading and writing on the DB and keeping the object synched
 with remote updates.
 */
 class Element {
-  static get TYPES(){ return TYPES; }
-  get TYPES(){ return TYPES; }
+  static get TYPES(){ return ELEMENT_TYPES; }
+  get TYPES(){ return ELEMENT_TYPES; }
+
+  static get TYPE(){ return ELEMENT_TYPE; }
+  get TYPE(){ return ELEMENT_TYPE; }
 
   constructor( opts = {} ){
     EventEmitterMixin.call( this ); // defines this.emitter

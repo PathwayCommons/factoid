@@ -4,6 +4,8 @@ const Entity = require('./entity');
 const Element = require('./element');
 const Interaction = require('./interaction');
 const Promise = require('bluebird');
+const { isEntity, isInteraction } = require('./element-type');
+const { error } = require('../../util');
 
 /**
 A factory to
@@ -20,17 +22,19 @@ type based on the data returned by the DB.
 class ElementFactory {
   constructor( opts ){
     this.config = _.defaults( {}, opts, {
-      types: [
-        Entity,
-        Interaction
-      ],
       defaultType: Entity,
       data: {}
     } );
   }
 
   getType( typeStr ){
-    return this.config.types.find( t => t.type() === typeStr ) || Entity;
+    if( isInteraction(typeStr) ){
+      return Interaction;
+    } else if( isEntity(typeStr) ){
+      return Entity;
+    } else {
+      throw error(`The type '${typeStr}' is invalid for element creation`);
+    }
   }
 
   isTypeSupported( typeStr ){

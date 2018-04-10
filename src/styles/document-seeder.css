@@ -1,0 +1,41 @@
+.document-seeder-text {
+  width: 100%;
+  height: calc(100vh - 10em);
+  resize: none;
+}
+
+.document-seeder-text-label {
+  font-weight: bold;
+  font-size: var(--smallFontSize);
+}
+
+.document-seeder-highlight-panel {
+  width: 100%;
+  height: calc(100vh - 10em);
+  vertical-align: middle;
+  font: inherit;
+  padding: 0 0.25em;
+  min-height: var(--widgetHeight);
+  line-height: var(--widgetHeight);
+  box-sizing: border-box;
+  display: inline-block;
+  border-radius: var(--widgetBorderRadius);
+  border: 1px solid var(--widgetBorderColor);
+  overflow: auto;
+}
+
+.document-seeder-highlight-panel span {
+  white-space: pre-line;
+}
+
+.document-seeder-highlighted-entity {
+  background-color: rgba(255, 255, 0, 0.2);
+}
+
+.document-seeder-highlighted-interaction {
+  text-decoration: underline;
+}
+
+.document-seeder-hidden {
+  display: none;
+}

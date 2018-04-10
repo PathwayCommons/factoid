@@ -30,9 +30,6 @@
   color: #000;
 }
 
-.react-tabs__tab--selected {
-}
-
-.react-tabs__tab-panel {
-
-}
+/* re-enable stylelint on these blocks if they used eventually... */
+.react-tabs__tab--selected {} /* stylelint-disable-line */
+.react-tabs__tab-panel {} /* stylelint-disable-line */

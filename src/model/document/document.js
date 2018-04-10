@@ -1,12 +1,14 @@
-let _ = require('lodash');
-let Promise = require('bluebird');
-let Syncher = require('../syncher');
-let EventEmitterMixin = require('../event-emitter-mixin');
-let ElementSet = require('../element-set');
-let ElementCache = require('../element-cache');
-let ElementFactory = require('../element');
-let { assertOneOfFieldsDefined, mixin, getId } = require('../../util');
-let Organism = require('../organism');
+const _ = require('lodash');
+const Promise = require('bluebird');
+const Syncher = require('../syncher');
+const EventEmitterMixin = require('../event-emitter-mixin');
+const ElementSet = require('../element-set');
+const ElementCache = require('../element-cache');
+const ElementFactory = require('../element');
+const { assertOneOfFieldsDefined, mixin, getId } = require('../../util');
+const Organism = require('../organism');
+const Cytoscape = require('cytoscape');
+const { makeCyEles, getCyLayoutOpts, isNonNil } = require('../../util');
 
 const DEFAULTS = Object.freeze({
   entries: [], // used by elementSet
@@ -157,16 +159,60 @@ class Document {
     return this.elements().filter( el => el.isInteraction() );
   }
 
-  organisms(){
-    let orgIds = this.syncher.get('organisms');
+  // mention count for all organisms (toggle + ent mentions)
+  organismCounts(){
+    let cnt = new Map(); // org => mention count
+    let resetCount = org => cnt.set( org, 0 );
+    let addToCount = org => cnt.set( org, cnt.get(org) + 1 );
+    let getOrg = id => Organism.fromId( id );
+    let entIsAssocd = ent => ent.associated();
+    let getOrgIdForEnt = ent => _.get( ent.association(), ['organism'] );
 
-    if( orgIds != null ){
-      return orgIds.map( id => Organism.fromId( id ) );
-    } else {
-      return [];
-    }
+    Organism.ALL.forEach( resetCount );
+
+    this.toggledOrganisms().forEach( addToCount );
+
+    (
+      this.entities()
+      .filter( entIsAssocd )
+      .map( getOrgIdForEnt )
+      .filter( isNonNil ) // may be an entity w/o org
+      .map( getOrg )
+      .forEach( addToCount )
+    );
+
+    return cnt;
   }
 
+  organismCountsJson(){
+    let json = {};
+
+    for( let [org, count] of this.organismCounts() ){
+      json[ org.id() ] = count;
+    }
+
+    return json;
+  }
+
+  // mentions for one org
+  organismCount( org ){
+    return this.organismCounts().get( org );
+  }
+
+  // get list of all orgs (incl. explicit mentions and implicit mentions via entity assoc)
+  organisms(){
+    let hasMentions = ([ org, mentions ]) => mentions > 0; // eslint-disable-line no-unused-vars
+    let getOrg = ([ org, mentions ]) => org; // eslint-disable-line no-unused-vars
+
+    return [ ...this.organismCounts() ].filter( hasMentions ).map( getOrg );
+  }
+
+  // get list of orgs w/ explicit mentions
+  toggledOrganisms(){
+    return this.syncher.get('organisms').map( id => Organism.fromId(id) );
+  }
+
+  // toggle organism explicit mention
   toggleOrganism( org, toggleOn ){
     let orgId = getId( org );
     let orgIds = this.syncher.get('organisms') || [];
@@ -240,6 +286,37 @@ class Document {
     let rm = () => this.elementSet.remove( el );
 
     return Promise.all([ rmFromIntns(), rm() ]);
+  }
+
+  // applies layout positions after the layout is done running, mostly useful for serverside
+  applyLayout(){
+    let cy = new Cytoscape({
+      headless: true,
+      elements: makeCyEles( this.elements() ),
+      layout: { name: 'grid' },
+      styleEnabled: true
+    });
+
+    let runLayout = () => {
+      let layout = cy.layout( _.assign( {}, getCyLayoutOpts(), {
+        animate: false,
+        randomize: true
+      } ) );
+
+      let layoutDone = layout.promiseOn('layoutstop');
+
+      layout.run();
+
+      return layoutDone;
+    };
+
+    let savePositions = () => Promise.all( this.elements().map( docEl => {
+      let el = cy.getElementById( docEl.id() );
+
+      return docEl.reposition( _.clone( el.position() ) );
+    } ) );
+
+    return Promise.try( runLayout ).then( savePositions );
   }
 
   json(){

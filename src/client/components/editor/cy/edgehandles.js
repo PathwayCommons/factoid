@@ -1,15 +1,21 @@
-let on = require('./on-key');
-let uuid = require('uuid');
-let _ = require('lodash');
-let Promise = require('bluebird');
+const on = require('./on-key');
+const uuid = require('uuid');
+const _ = require('lodash');
+const Promise = require('bluebird');
 
-let { isInteractionNode } = require('../../../../util');
+const { isInteractionNode } = require('../../../../util');
 
-let SELECT_ON_HANDLE_TAP = false;
-let DRAW_ON_HANDLE_TAP = true;
+const SELECT_ON_HANDLE_TAP = false;
+const DRAW_ON_HANDLE_TAP = true;
+const TAP_IN_DRAW_MODE = true;
+const TAP_BG_TO_CANCEL = true;
+
 
 module.exports = function({ bus, cy, document, controller }){
   if( !document.editable() ){ return; }
+
+  let inDrawMode = false;
+  let lastEdgeCreationTime = 0;
 
   let edgeType = function( source, target ){
     let alreadyConnectedByEdge = source.edgesWith( target ).length > 0;
@@ -89,6 +95,8 @@ module.exports = function({ bus, cy, document, controller }){
 
     let disableDrawMode = () => bus.emit('drawtoggle', false);
 
+    lastEdgeCreationTime = Date.now();
+
     Promise.try( replaceEdges ).then( addPpts ).then( openPopover ).then( disableDrawMode );
   };
 
@@ -136,8 +144,37 @@ module.exports = function({ bus, cy, document, controller }){
     }, 1) );
   }
 
-  bus.on('drawon', () => eh.enableDrawMode());
-  bus.on('drawoff', () => eh.disableDrawMode());
+  if( TAP_IN_DRAW_MODE ){
+    cy.on('tap', 'node[?isEntity]', _.debounce((e) => {
+      let justCreatedEdge = Date.now() - lastEdgeCreationTime < 250;
+
+      if( inDrawMode && !justCreatedEdge ){
+        let el = e.target;
+
+        eh.start(el);
+      }
+    }, 1));
+  }
+
+  if( TAP_BG_TO_CANCEL ){
+    cy.on('tap', e => {
+      if( e.target === cy && inDrawMode ){
+        controller.toggleDrawMode( false );
+      }
+    });
+  }
+
+  bus.on('drawon', () => {
+    eh.enableDrawMode();
+    inDrawMode = true;
+  });
+
+  bus.on('drawoff', () => {
+    eh.disableDrawMode();
+
+    inDrawMode = false;
+  });
+
   bus.on('drawfrom', el => eh.start(el));
 
   on('d', () => bus.emit('drawtoggle'));

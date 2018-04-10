@@ -12,7 +12,7 @@ class Debug extends React.Component {
       h('p', 'This page is for testing purposes only.  It is not for users.  This page may be removed at any time.'),
       h('div.debug-links', [
         h('span.debug-link', [ h(Link, { className: 'plain-link', to: '/debug/new-document' }, 'Create new, blank document') ]),
-        h('span.debug-link', [ h(Link, { className: 'plain-link', to: '/debug/new-document/fill' }, 'Create new document, filled from text') ])
+        h('span.debug-link', [ h(Link, { className: 'plain-link', to: '/debug/new-document/seed' }, 'Create new document, filled from text') ])
       ])
     ]);
   }

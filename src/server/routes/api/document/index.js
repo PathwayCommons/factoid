@@ -1,12 +1,14 @@
-const Document = require('../../../../model/document');
-const db = require('../../../db');
+const http = require('express').Router();
 const Promise = require('bluebird');
 const _ = require('lodash');
-const provider = require('./reach');
 const uuid = require('uuid');
-const { makeCyEles, getCyLayoutOpts } = require('../../../../util');
-const Cytoscape = require('cytoscape');
-const http = require('express').Router();
+
+
+const Document = require('../../../../model/document');
+const db = require('../../../db');
+const logger = require('../../../logger');
+
+const provider = require('./reach');
 
 let newDoc = ({ docDb, eleDb, id, secret }) => {
   return new Document( _.assign( {}, docDb, {
@@ -46,35 +48,13 @@ let fillDoc = ( doc, text ) => {
 
 // run cytoscape layout on server side so that the document looks ok on first open
 let runLayout = doc => {
-  let cy = new Cytoscape({
-    elements: makeCyEles( doc.elements() ),
-    layout: { name: 'grid' },
-    styleEnabled: true
-  });
-
-  let runLayout = () => {
-    let layout = cy.layout( _.assign( {}, getCyLayoutOpts(), {
-      animate: false,
-      randomize: true
-    } ) );
-
-    let layoutDone = layout.promiseOn('layoutstop');
-
-    layout.run();
-
-    return layoutDone;
-  };
-
-  let savePositions = () => Promise.all( doc.elements().map( docEl => {
-    let el = cy.getElementById( docEl.id() );
-
-    return docEl.reposition( _.clone( el.position() ) );
-  } ) );
-
+  let run = () => doc.applyLayout();
   let getDoc = () => doc;
 
-  return Promise.try( runLayout ).then( savePositions ).then( getDoc );
+  return Promise.try( run ).then( getDoc );
 };
+
+let getReachOutput = text => provider.getRawResponse( text );
 
 // get existing doc
 http.get('/:id', function( req, res ){
@@ -98,8 +78,27 @@ http.post('/', function( req, res ){
     .then( doc => fillDoc( doc, text ) )
     .then( runLayout )
     .then( getDocJson )
-    .then( json => res.json( json ) )
+    .then( json => {
+      logger.info(`Created new doc ${json.id}`);
+      return res.json( json );
+    } )
+    .catch( e => {
+      logger.error(`Could not fill doc from text: ${text}`);
+      logger.error('REACH exception thrown :', e.message);
+      res.sendStatus(500);
+
+      throw e;
+    } )
   );
+});
+
+// TODO remove this route as reach should never need to be queried directly
+http.post('/query-reach', function( req, res ){
+  let text = req.body.text;
+
+  getReachOutput( text )
+  .then( reachRes => reachRes.json() )
+  .then( reachJson => res.json(reachJson) );
 });
 
 module.exports = http;

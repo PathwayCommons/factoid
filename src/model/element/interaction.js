@@ -1,33 +1,28 @@
-let Element = require('./element');
-let _ = require('lodash');
-let Promise = require('bluebird');
-let ElementSet = require('../element-set');
-let { assertFieldsDefined } = require('../../util');
-let freeze = obj => Object.freeze( obj );
+const Element = require('./element');
+const _ = require('lodash');
+const Promise = require('bluebird');
+const ElementSet = require('../element-set');
+const { assertFieldsDefined } = require('../../util');
+
+const { INTERACTION_TYPE, INTERACTION_TYPES, getIntnTypeByVal } = require('./interaction-type/enum');
+const { PARTICIPANT_TYPE, PARTICIPANT_TYPES, getPptTypeByVal } = require('./participant-type');
 
 const TYPE = 'interaction';
 
+const makeAssociation = ( type, intn ) => {
+  let Type = _.isString(type) ? getIntnTypeByVal(type) : type;
+
+  return new Type( intn );
+};
+
 const DEFAULTS = Object.freeze({
   type: TYPE,
+  association: INTERACTION_TYPE.INTERACTION.value,
   entries: [] // used by elementSet
 });
 
-const pptType = ( value, displayValue, icon ) => freeze({ value, displayValue, icon });
-
-const PARTICIPANT_TYPE = freeze({
-  UNSIGNED: pptType('unsigned', '–', '<i class="material-icons">remove</i>'),
-  POSITIVE: pptType('positive', '→', '<i class="material-icons">arrow_forward</i>'),
-  NEGATIVE: pptType('negative', '⊣', '<i class="material-icons icon-rot-90">title</i>')
-});
-
-const PARTICIPANT_TYPES = _.keys( PARTICIPANT_TYPE ).map( k => PARTICIPANT_TYPE[k] );
-
-const getPptTypeByVal = val => {
-  return PARTICIPANT_TYPES.find( type => type.value === val ) || PARTICIPANT_TYPE.UNSIGNED;
-};
-
 /**
-A generic biological interaction between [0, N] elements
+A biological interaction between [0, N] elements
 
 It is important to specify a `cache` on an interaction.  This indicates the cache
 from which the elements are loaded/taken.  For example, an interaction commonly
@@ -59,6 +54,16 @@ class Interaction extends Element {
       this.emit( 'retype', el, newType, oldType );
       this.emit( 'remoteretype', el, newType, oldType );
     });
+
+    this.on('remoteupdate', ( changes, old ) => {
+      if( changes.association != null ){
+        let oldType = makeAssociation( old.association, this );
+        let newType = makeAssociation( changes.association, this );
+
+        this.emit( 'associate', newType, oldType );
+        this.emit( 'remoteassociate', newType, oldType );
+      }
+    });
   }
 
   static get PARTICIPANT_TYPE(){ return PARTICIPANT_TYPE; }
@@ -68,6 +73,14 @@ class Interaction extends Element {
   static get PARTICIPANT_TYPES(){ return PARTICIPANT_TYPES; }
 
   get PARTICIPANT_TYPES(){ return PARTICIPANT_TYPES; }
+
+  static get ASSOCIATION(){ return INTERACTION_TYPE; }
+
+  get ASSOCIATION(){ return INTERACTION_TYPE; }
+
+  static get ASSOCIATIONS(){ return INTERACTION_TYPES; }
+
+  get ASSOCIATIONS(){ return INTERACTION_TYPES; }
 
   static type(){ return TYPE; }
 
@@ -155,6 +168,64 @@ class Interaction extends Element {
       return this.getParticipantType( ele );
     } else {
       return this.setParticipantType( ele, type );
+    }
+  }
+
+  participantsOf( type, condition ){
+    let typeVal = _.isString(type) ? type : type.value;
+
+    return this.participants().filter( ppt => {
+      let t = this.getParticipantType( ppt );
+
+      return condition( t.value, typeVal );
+    } );
+  }
+
+  participantsOfType( type ){
+    return this.participantsOf( type, (t1, t2) => t1 === t2 );
+  }
+
+  participantsNotOfType( type ){
+    return this.participantsOf( type, (t1, t2) => t1 !== t2 );
+  }
+
+  associate( interactionType ){
+    let type = makeAssociation( interactionType, this );
+    let oldType = makeAssociation( this.syncher.get('association'), this );
+
+    let update = this.update({
+      association: type.value, // could be changed to `association: { type, ... }` if we need to store more info
+      type: type.value
+    });
+
+    this.emit( 'associate', type, oldType );
+    this.emit( 'localassociate', type, oldType );
+
+    return update;
+  }
+
+  unassociate(){
+    let oldType = makeAssociation( this.syncher.get('association'), this );
+
+    let update = this.syncher.update({
+      association: null,
+      type: TYPE
+    }).then( () => {
+      this.emit('unassociated', oldType);
+      this.emit('localunassociated', oldType);
+    } );
+
+    this.emit('unassociate', oldType);
+    this.emit('localunassociate', oldType);
+
+    return update;
+  }
+
+  association( interactionType ){
+    if( interactionType === undefined ){
+      return makeAssociation( this.syncher.get('association'), this );
+    } else {
+      return this.associate( interactionType );
     }
   }
 

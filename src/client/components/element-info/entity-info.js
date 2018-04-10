@@ -5,16 +5,19 @@ const { focusDomElement, makeClassList } = require('../../../util');
 const _ = require('lodash');
 const defs = require('../../defs');
 const anime = require('animejs');
-const queryString = require('query-string');
 const Promise = require('bluebird');
-const OrganismToggle = require('../organism-toggle');
 const Organism = require('../../../model/organism');
 const Highlighter = require('../highlighter');
 const Notification = require('../notification');
 const InlineNotification = require('../notification/inline');
 const Tooltip = require('../popover/tooltip');
+const Heap = require('heap');
+const { stringDistanceMetric } = require('../../../util');
 
-const { UNIPROT_LINK_BASE_URL, CHEBI_LINK_BASE_URL } = require('../../../config');
+const MAX_FIXED_SYNONYMS = 5;
+const MAX_SYNONYMS_SHOWN = 10;
+
+const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL } = require('../../../config');
 
 const animateDomForEdit = domEle => anime({
   targets: domEle,
@@ -263,7 +266,6 @@ class EntityInfo extends React.Component {
     let p = this.props;
     let el = s.element;
     let doc = p.document;
-    let qOrgs = doc.organisms().map( org => org.id() ).join(',');
 
     let isNewName = name !== s.oldName;
     let clearOldMatches = isNewName || changedOrganisms;
@@ -283,7 +285,7 @@ class EntityInfo extends React.Component {
       name: name,
       limit: s.limit,
       offset: offset,
-      organism: qOrgs
+      organismCounts: doc.organismCountsJson()
     };
 
     if( s.updatePromise ){
@@ -294,10 +296,44 @@ class EntityInfo extends React.Component {
 
     if( name ){
       update = (
-        Promise.try( () => fetch( '/api/element-association/search?' + queryString.stringify(q) ) )
+        Promise.try( () => fetch( '/api/element-association/search', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify(q)
+        } ) )
         .then( res => res.json() )
         .then( matches => {
           if( this._unmounted ){ return; }
+
+          let getShortSynonyms = (synonyms, cmpStr = name) => {
+            if (synonyms.length <= MAX_SYNONYMS_SHOWN) {
+              return synonyms;
+            }
+
+            // use a memoized distance function to avoid re-calculating the same distances inside nsmallest function
+            let distance = _.memoize( s => {
+              return stringDistanceMetric(s, cmpStr);
+            } );
+
+            let cmp = (s1, s2) => {
+              return distance(s1) - distance(s2);
+            };
+
+            // fix the first constant number of synonyms
+            let fixed = synonyms.slice(0, MAX_FIXED_SYNONYMS);
+            // complete the short list by the best matches among the remaining synonyms
+            let remainingBestMatch = Heap.nsmallest(synonyms.slice(MAX_FIXED_SYNONYMS), MAX_SYNONYMS_SHOWN - MAX_FIXED_SYNONYMS, cmp);
+
+            return [...fixed, ...remainingBestMatch];
+          };
+
+          matches.forEach( (match) => {
+            if (match.synonyms) {
+              match.shortSynonyms = getShortSynonyms(match.synonyms);
+            }
+          } );
 
           if( clearOldMatches ){
             s.matches = matches;
@@ -320,10 +356,10 @@ class EntityInfo extends React.Component {
           }, () => {
             if( clearOldMatches ){
               let root = ReactDom.findDOMNode(this);
-              let matches = root != null ? root.querySelector('.entity-info-matches') : null;
+              let matchesDom = root != null ? root.querySelector('.entity-info-matches') : null;
 
-              if( matches != null ){
-                matches.scrollTop = 0;
+              if( matchesDom != null ){
+                matchesDom.scrollTop = 0;
               }
             }
           });
@@ -394,7 +430,7 @@ class EntityInfo extends React.Component {
       case STAGES.COMPLETED:
         return (
           currentStage === STAGES.MODIFY ||
-          ( currentStage === STAGES.ASSOCIATE && el.type() === el.TYPES.CHEMICAL )
+          ( currentStage === STAGES.ASSOCIATE && el.type() === el.TYPE.CHEMICAL )
         );
     }
   }
@@ -440,9 +476,9 @@ class EntityInfo extends React.Component {
       switch( stage ){
         case STAGES.NAME:
           if( this.data.name ){
-            this.data.nameNotification.message(`This entity is incomplete.  Amend the name of "${this.data.name}", if necessary, and then go to the next step.`);
+            this.data.nameNotification.message(`Amend the name of "${this.data.name}", if necessary.`);
           } else {
-            this.data.nameNotification.message(`This entity is incomplete.  Name the entity, then go to the next step.`);
+            this.data.nameNotification.message(`Name the entity.`);
           }
 
 
@@ -450,11 +486,11 @@ class EntityInfo extends React.Component {
           break;
 
         case STAGES.ASSOCIATE:
-          this.data.assocNotification.message(`Link "${this.data.name}" to one of the following identifiers.  Linking increases the impact of your paper by enabling data sharing and computational analysis.`);
+          this.data.assocNotification.message(`Select the best match for "${this.data.name}".`);
           break;
 
         case STAGES.MODIFY:
-          this.data.modNotification.message(`Specifying a modification can help to more accurately represent the state of ${this.data.name}.`);
+          this.data.modNotification.message(`Select a modification for ${this.data.name}.`);
           break;
 
         case STAGES.COMPLETED:
@@ -513,7 +549,7 @@ class EntityInfo extends React.Component {
       assoc = null;
     }
 
-    let proteinFromAssoc = (m, searchTerm) => {
+    let proteinFromAssoc = (m, searchTerms) => {
       return [
         h('div.entity-info-section', [
           h('span.entity-info-title', 'Organism'),
@@ -522,13 +558,13 @@ class EntityInfo extends React.Component {
         h('div.entity-info-section', !m.proteinNames ? [] : [
           h('span.entity-info-title', 'Protein names'),
           ...m.proteinNames.map( name => h('span.entity-info-alt-name', [
-            h(Highlighter, { text: name, term: searchTerm })
+            h(Highlighter, { text: name, terms: searchTerms })
           ]))
         ]),
         h('div.entity-info-section', !m.geneNames ? [] : [
           h('span.entity-info-title', 'Gene names'),
           ...m.geneNames.map( name => h('span.entity-info-alt-name', [
-            h(Highlighter, { text: name, term: searchTerm })
+            h(Highlighter, { text: name, terms: searchTerms })
           ]))
         ])
       ];
@@ -549,7 +585,7 @@ class EntityInfo extends React.Component {
       return h('span.entity-info-formula', children);
     };
 
-    let chemFromAssoc = (m, searchTerm) => {
+    let chemFromAssoc = (m, searchTerms) => {
       return [
         h('div.entity-info-section', [
           h('span.entity-info-title', 'Formulae'),
@@ -563,39 +599,61 @@ class EntityInfo extends React.Component {
           h('span.entity-info-title', 'Charge'),
           h('span', m.charge)
         ]),
-        h('div.entity-info-section', !m.synonyms ? [] : [
+        h('div.entity-info-section', !m.shortSynonyms ? [] : [
           h('span.entity-info-title', 'Synonyms'),
-          ...m.synonyms.map( name => h('span.entity-info-alt-name', [
-            h(Highlighter, { text: name, term: searchTerm })
+          ...m.shortSynonyms.map( name => h('span.entity-info-alt-name', [
+            h(Highlighter, { text: name, terms: searchTerms })
           ]))
         ])
       ];
     };
 
-    let targetFromAssoc = (m, highlight = true, showEditIcon = false) => {
-      let searchTerm = highlight ? s.name : null;
+    let targetFromAssoc = (m) => {
+      let complete = stage === STAGES.COMPLETED;
+      let highlight = !complete;
+      let searchStr = highlight ? s.name : null;
+      let searchTerms = searchStr ? searchStr.split(/\s+/) : [];
+      let showEditIcon = complete && doc.editable();
+
+      let nameChildren = [];
+
+      let matchName = () => h(Highlighter, { text: m.name, terms: searchTerms });
+
+      if( complete ){
+        nameChildren.push( h('span', s.name) );
+      } else {
+        nameChildren.push( matchName() );
+      }
+
+      if( showEditIcon ){
+        nameChildren.push( h(Tooltip, { description: 'Edit from the beginning' }, [
+          h('button.entity-info-edit.plain-button', {
+            onClick: () => this.goToStage( ORDERED_STAGES[0] )
+          }, [ h('i.material-icons', 'edit') ])
+        ]) );
+      }
+
+      if( complete && m.name.toLowerCase() !== s.name.toLowerCase() ){
+        nameChildren.push(
+          h('br'),
+          h('span', '('),
+          matchName(),
+          h('span', ')')
+        );
+      }
 
       let pre = [
-        h('div.entity-info-name', [
-          h(Highlighter, { text: m.name, term: searchTerm }),
-          showEditIcon && doc.editable() ? (
-            h(Tooltip, { description: 'Edit from the beginning' }, [
-              h('button.entity-info-edit.plain-button', {
-                onClick: () => this.goToStage( ORDERED_STAGES[0] )
-              }, [ h('i.material-icons', 'edit') ])
-            ])
-          ) : null
-        ].filter( domEl => domEl != null ))
+        h('div.entity-info-name', nameChildren.filter( domEl => domEl != null ))
       ];
 
       let body;
 
       switch( m.type ){
         case 'protein':
-          body = proteinFromAssoc( m, searchTerm );
+          body = proteinFromAssoc( m, searchTerms );
           break;
         case 'chemical':
-          body = chemFromAssoc( m, searchTerm );
+          body = chemFromAssoc( m, searchTerms );
           break;
       }
 
@@ -605,9 +663,16 @@ class EntityInfo extends React.Component {
     };
 
     let modForList = () => {
-      return h('div.entity-info-section', [
+      return h('div.entity-info-section.entity-info-mod-section', [
         h('span.entity-info-title', 'Modification'),
-        h('span', s.modification.displayValue)
+        h('span', s.modification.displayValue),
+        h(Tooltip, { description: 'Edit the modification' }, [
+          h('button.entity-info-edit-mod.plain-button', {
+            onClick: () => this.goToStage( STAGES.MODIFY )
+          }, [
+            h('i.material-icons', 'edit')
+          ])
+        ])
       ]);
     };
 
@@ -619,7 +684,7 @@ class EntityInfo extends React.Component {
           url = UNIPROT_LINK_BASE_URL + m.id;
           break;
         case 'chemical':
-          url = CHEBI_LINK_BASE_URL + m.id;
+          url = PUBCHEM_LINK_BASE_URL + m.id;
           break;
       }
 
@@ -632,7 +697,7 @@ class EntityInfo extends React.Component {
     };
 
     let allAssoc = m => _.concat(
-      targetFromAssoc(m, false, true),
+      targetFromAssoc(m),
       s.element.moddable() ? modForList() : [],
       linkFromAssoc(m)
     );
@@ -691,13 +756,6 @@ class EntityInfo extends React.Component {
           ])
         ])
       );
-
-      children.push( h('div.entity-info-organism-toggles', Organism.ALL.map( organism => {
-        let onToggle = () => doc.toggleOrganism( organism );
-        let getState = () => doc.organisms().find( o => o.id() === organism.id() ) != null;
-
-        return h(OrganismToggle, { organism, onToggle, getState });
-      } )) );
     } else if( stage === STAGES.ASSOCIATE ){
       let AssocMsg = () => {
         let notification = s.assocNotification;
@@ -752,8 +810,18 @@ class EntityInfo extends React.Component {
       let modChildren = [];
 
       let onChange = (evt) => {
-        this.modify( evt.target.value );
+        let value = evt.target.value;
+
+        this.modify( value );
         this.forward();
+      };
+
+      let onClick = (evt) => {
+        let value = evt.target.value;
+
+        if( s.element.completed() && value === s.modification.value ){
+          this.forward();
+        }
       };
 
       s.element.ORDERED_MODIFICATIONS.forEach( mod => {
@@ -761,9 +829,10 @@ class EntityInfo extends React.Component {
         let name = 'mod-radio-' + s.element.id();
         let id = name + '-' + value;
         let type = 'radio';
+        let checked = value === s.modification.value && s.element.completed();
 
         modChildren.push(
-          h('input', { type, name, id, value, onChange, checked: value === s.modification.value }),
+          h('input', { type, name, id, value, onChange, onClick, checked }),
           h('label', { htmlFor: id }, mod.displayValue)
         );
       } );
@@ -772,16 +841,45 @@ class EntityInfo extends React.Component {
     }
 
     if( doc.editable() ){
+      let isCompleted = stage === STAGES.COMPLETED;
+      let buttonLabel = content => h('span.entity-info-progression-button-label', [ content ]);
+
+      let backButtonLabel = buttonLabel( h('i.material-icons', 'arrow_back') );
+
+      let forwardButtonLabel = buttonLabel(
+        h('i.material-icons', {
+          className: makeClassList({
+            'entity-info-complete-icon': isCompleted
+          })
+        }, isCompleted ? 'check_circle' : 'arrow_forward')
+      );
+
+      let tippyOpts = { placement: 'bottom' };
+
       children.push( h('div.entity-info-progression', [
         h('button.entity-info-back.plain-button', {
           disabled: !this.canGoBack(),
           onClick: () => this.back()
-        }, [ h('i.material-icons', 'arrow_back') ]),
+        }, [
+          h(Tooltip, {
+            description: 'Go to the previous step.',
+            tippy: tippyOpts
+          }, [
+            backButtonLabel
+          ])
+        ]),
 
         h('button.entity-info-forward.plain-button', {
           disabled: !this.canGoForward(),
           onClick: () => this.forward()
-        }, [ h('i.material-icons', 'arrow_forward') ])
+        }, [
+          h(Tooltip, {
+            description: isCompleted ? 'This entity is completed.' : 'Go to the next step.',
+            tippy: tippyOpts
+          }, [
+            forwardButtonLabel
+          ])
+        ])
       ]) );
     }
 

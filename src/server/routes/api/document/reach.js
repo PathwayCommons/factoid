@@ -22,17 +22,20 @@ const APPLY_GROUND = true;
 const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
 
 module.exports = {
-  get: function( text ){
+  getRawResponse: function( text ){
     let form = new FormData();
 
     form.append('file', text, {
       filename: 'myfile.txt'
     });
 
-    let makeRequest = () => fetch(REACH_URL, {
+    return fetch(REACH_URL, {
       method: 'POST',
       body: form
     });
+  },
+  get: function( text ){
+    let makeRequest = () => this.getRawResponse( text );
 
     let makeDocJson = res => {
       let elements = [];

@@ -100,7 +100,7 @@ header.nav-bar {
 
 .infographic-container {} /* stylelint-disable-line */
 
-.home-infographic {
+/* .home-infographic {
   display: inline-block;
   width: 100%;
   padding-bottom: 130%;
@@ -109,16 +109,20 @@ header.nav-bar {
   background-image: url('./image/infographic-factoid.svg');
   background-size: contain;
   background-repeat: no-repeat;
-}
+} */
 
 .how-it-works {
   display: inline-block;
-  width: 100%;
-  padding-bottom: 100%;
-  background-position: 50% 50%;
+  width: 50%;
+  padding-bottom: 50%;
+  background-position: 100% 50%;
   background-image: url('./image/author-workflow.svg');
   background-size: contain;
   background-repeat: no-repeat;
+}
+
+#how {
+  text-align: center;
 }
 
 .how-it-works-detailed {
@@ -136,26 +140,12 @@ header.nav-bar {
   background-image: url('./image/logo-no-slogan.svg');
 }
 
-.home-steps-figure {
-  display: inline-block;
-  width: 100%;
-  padding-bottom: 25%;
-  background-image: url('./image/steps-figure.svg');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-  border: 0;
-  margin: -1em 0;
-}
-
 .home-section {
   & h2 {
     color: #212f3d;
   }
-}
 
-.home-section:nth-child(odd) {
-  background-color: #eee;
+  margin: 2em 0;
 }
 
 .home-section {

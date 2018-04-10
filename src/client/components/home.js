@@ -37,11 +37,11 @@ class Home extends Component {
           ])
         ])
       ]),
-      h('section.home-section#what', [
-        h('div.page-content', [
-          h('div.infographic-container', [ h('span.home-infographic') ])
-        ])
-      ]),
+      // h('section.home-section#what', [
+      //   h('div.page-content', [
+      //     h('div.infographic-container', [ h('span.home-infographic') ])
+      //   ])
+      // ]),
       h('section.home-section#why', [
         h('div.page-content', [
           h('h2.section-title', 'Our Mission'),

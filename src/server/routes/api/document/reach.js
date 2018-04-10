@@ -22,6 +22,7 @@ const APPLY_GROUND = true;
 const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
 
 module.exports = {
+  // TODO remove this function as reach should never need to be exposed directly
   getRawResponse: function( text ){
     let form = new FormData();
 

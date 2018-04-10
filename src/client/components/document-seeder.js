@@ -29,7 +29,7 @@ class DocumentSeeder extends React.Component {
   getReachResponse(){
     let text = this.state.reachHighlightInput;
 
-    let makeRequest = () => fetch('/api/document/queryReach', {
+    let makeRequest = () => fetch('/api/document/query-reach', {
       headers: {
         'Content-Type': 'application/json'
       },

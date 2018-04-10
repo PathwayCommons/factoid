@@ -92,7 +92,8 @@ http.post('/', function( req, res ){
   );
 });
 
-http.post('/queryReach', function( req, res ){
+// TODO remove this route as reach should never need to be queried directly
+http.post('/query-reach', function( req, res ){
   let text = req.body.text;
 
   getReachOutput( text )

@@ -70,7 +70,7 @@ class DocumentSeeder extends React.Component {
       return {
         start: _.get( frame, ['start-pos', 'offset'] ),
         end: _.get( frame, ['end-pos', 'offset'] )
-      }
+      };
     };
 
     let isEvtSentenceFrame = frame => evtSentencesSet.has( _.get( frame, 'frame-id' ) );
@@ -80,7 +80,7 @@ class DocumentSeeder extends React.Component {
 
     let interactionIntervals = _.get( reachResponse, ['sentences', 'frames'], []).filter( isEvtSentenceFrame ).map( frameToInterval );
 
-    return this.mergeIntervals(entityIntervals, interactionIntervals)
+    return this.mergeIntervals(entityIntervals, interactionIntervals);
   }
 
   // merges entity intervals and interaction intervals, resulting array
@@ -158,7 +158,7 @@ class DocumentSeeder extends React.Component {
         });
         index++;
       }
-    }
+    };
 
     // iterate through the remaining intervals
     iterateRemaningIntervals( entityIndex, entityIntervals, ENTITY_HIGHLIGHT_CLASS );
@@ -172,7 +172,7 @@ class DocumentSeeder extends React.Component {
       this.setState({
         reachHighlightEnabled: !this.state.reachHighlightEnabled
       });
-    }
+    };
 
     let highlightOrClear = () => {
       if (this.state.reachHighlightEnabled) {

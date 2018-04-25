@@ -1,5 +1,6 @@
 const InteractionType = require('./interaction-type');
 const { PARTICIPANT_TYPE } = require('../participant-type');
+const { MODS } = require('../entity-mods');
 
 const VALUE = 'modification';
 const DISPLAY_VALUE = 'Modification';
@@ -31,11 +32,41 @@ class Modification extends InteractionType {
     return [T.POSITIVE, T.NEGATIVE];
   }
 
+  areParticipantsTyped(){
+    return this.isSigned();
+  }
+
   static isAllowedForInteraction( intn ){
     let ppts = intn.participants();
-    let isProtein = ent => ent.type() === 'protein';
+    let isProtein = ent => true || ent.type() === 'protein';
 
-    ppts.length === 2 && ppts.every( isProtein );
+    return ppts.length === 2 && ppts.every( isProtein );
+  }
+
+  toString(){
+    let tgt = this.getTarget();
+    let verb = (this.isInhibition() ? 'inhibits' : 'promotes');
+
+    let mod;
+
+    switch( tgt.modification().value ){
+      case MODS.PHOSPHORYLATED.value:
+        mod = 'phosphorylation';
+        break;
+      case MODS.METHYLATED.value:
+        mod = 'methylation';
+        break;
+      case MODS.UBIQUINATED.value:
+        mod = 'ubiquination';
+        break;
+      default:
+        mod = 'modification';
+        break;
+    }
+
+    let obj = `the ${mod} of`;
+
+    return super.toString( `${verb} ${obj}` );
   }
 
   static get value(){ return VALUE; }

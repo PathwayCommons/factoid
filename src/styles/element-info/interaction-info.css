@@ -33,13 +33,15 @@ textarea.interaction-info-description {
   display: block;
 }
 
-/* TODO hidden/modified parts of WIP interaction wizard UI */
-.interaction-info-assoc-radioset,
-.interaction-info-assoc-label {
-  display: none;
+.interaction-info-assoc-radioset-label {
+  font-size: var(--smallFontSize);
+  font-weight: bold;
 }
 
-/* TODO hidden/modified parts of WIP interaction wizard UI */
-.interaction-info-description-label:not(:first-child) {
-  margin-top: 0;
+.interaction-info-notification {
+  margin-bottom: 0.5em;
+}
+
+.interaction-info-summary {
+  font-weight: bold;
 }

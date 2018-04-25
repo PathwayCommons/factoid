@@ -8,9 +8,9 @@ const ProteinAffectsChemical = require('./protein-affects-chemical');
 
 const INTERACTION_TYPE = Object.freeze({
   INTERACTION: General,
-  CHEMICAL_AFFECTS_PROTEIN: ChemicalAffectsProtein,
   EXPRESSION: Expression,
   MODIFICATION: Modification,
+  CHEMICAL_AFFECTS_PROTEIN: ChemicalAffectsProtein,
   PROTEIN_AFFECTS_CHEMICAL: ProteinAffectsChemical
 });
 

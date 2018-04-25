@@ -7,8 +7,7 @@ const { MODS, ORDERED_MODS, getModByValue } = require('./entity-mods');
 
 const DEFAULTS = Object.freeze({
   type: TYPE,
-  modification: MODS.UNMODIFIED.value,
-  completed: false
+  modification: MODS.UNMODIFIED.value
 });
 
 /**
@@ -149,42 +148,8 @@ class Entity extends Element {
     return update;
   }
 
-  complete(){
-    let completed = this.completed();
-
-    if( !completed ){
-      let update = this.syncher.update({ completed: true });
-
-      this.emit('complete');
-      this.emit('localcomplete');
-
-      return update;
-    } else {
-      return Promise.resolve();
-    }
-  }
-
-  uncomplete(){
-    let completed = this.completed();
-
-    if( completed ){
-      let update = this.syncher.update({ completed: false });
-
-      this.emit('uncomplete');
-      this.emit('localuncomplete');
-
-      return update;
-    } else {
-      return Promise.resolve();
-    }
-  }
-
-  completed(){
-    return this.syncher.get('completed');
-  }
-
   json(){
-    return super.json();
+    return _.assign( {}, super.json(), _.pick( this.syncher.get(), _.keys(DEFAULTS) ) );
   }
 }
 

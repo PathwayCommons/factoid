@@ -31,6 +31,14 @@ class InteractionType {
     return this.has( PARTICIPANT_TYPE.NEGATIVE );
   }
 
+  isSigned(){
+    return this.isPositive() || this.isNegative();
+  }
+
+  areParticipantsTyped(){
+    return true;
+  }
+
   setParticipantAs( ppt, type ){
     let intn = this.interaction;
     let signedPpts = intn.participantsNotOfType( PARTICIPANT_TYPE.UNSIGNED );
@@ -52,13 +60,54 @@ class InteractionType {
 
   getTarget(){
     let intn = this.interaction;
+
+    if( !intn.completed() ){
+      throw error(`Can not get target of incomplete interaction ${intn.id()}`);
+    }
+
     let ppts = intn.participantsNotOfType( PARTICIPANT_TYPE.UNSIGNED );
 
     if( ppts.length > 1 ){ // can't have more than one target
-      throw error(`More than two participants of interaction ${intn.id()} are signed: ` + intn.participants().map( ppt => ppt.id() ).join(', '));
+      throw error(`Can not get target, as more than two participants of interaction ${intn.id()} are signed: ` + intn.participants().map( ppt => ppt.id() ).join(', '));
     }
 
     return ppts[0];
+  }
+
+  getSource(){
+    let intn = this.interaction;
+
+    if( !intn.completed() ){
+      throw error(`Can not get source of incomplete interaction ${intn.id()}`);
+    }
+
+    let ppts = intn.participantsOfType( PARTICIPANT_TYPE.UNSIGNED );
+
+    if( ppts.length > 1 ){ // can't have more than one source
+      throw error(`Can not get source, as more than two participants of interaction ${intn.id()} are unsigned: ` + intn.participants().map( ppt => ppt.id() ).join(', '));
+    }
+
+    return ppts[0];
+  }
+
+  toString(expr = 'interacts with'){
+    let intn = this.interaction;
+    let src, tgt;
+
+    try {
+      src = this.getSource();
+      tgt = this.getTarget();
+    } catch( err ){
+      let ppts = intn.participants();
+
+      src = ppts[0];
+      tgt = ppts[1];
+    }
+
+    let srcName = src.name() || '(?)';
+    let tgtName = tgt.name() || '(?)';
+
+    return `${srcName} ${expr} ${tgtName}`;
   }
 
   static isAllowedForInteraction( intn ){ // eslint-disable-line no-unused-vars

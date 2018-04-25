@@ -9,8 +9,12 @@ class ElementInfo extends React.Component {
   }
 
   render(){
-    let p = this.props;
+    let p = Object.assign( {
+      key: this.props.element.id()
+    }, this.props );
+
     let { element } = p;
+
     let component;
 
     if( element.isEntity() ){

@@ -2,7 +2,7 @@ const defs = require('./defs');
 const _ = require('lodash');
 
 function makeStylesheet(){
-  let { activeColor, defaultColor, labelColor, nodeSize, interactionNodeSize } = defs;
+  let { activeColor, defaultColor, labelColor, nodeSize } = defs;
 
   return [
     {
@@ -24,11 +24,13 @@ function makeStylesheet(){
             return mod.charAt(0).toLowerCase() + '-' + name;
           }
         },
+        'font-size': 10,
         'text-outline-width': 2,
         'text-outline-color': defaultColor,
         'color': labelColor,
         'text-valign': 'center',
-        'text-halign': 'center'
+        'text-halign': 'center',
+        'z-index': 1
       }
     },
     {
@@ -38,21 +40,8 @@ function makeStylesheet(){
         'width': 3,
         'height': 3,
         'label': '',
-        'border-width': 3 * (interactionNodeSize - 2),
-        'border-opacity': 0.0001,
-        'events': 'no'
-      }
-    },
-    {
-      selector: 'node[?isInteraction].drop-target',
-      style: {
-        'border-width': 4 * (interactionNodeSize - 2)
-      }
-    },
-    {
-      selector: 'node[?isInteraction].tooltip-target',
-      style: {
-        'border-width': 0
+        'events': 'no',
+        'z-index': 0
       }
     },
     {
@@ -96,7 +85,9 @@ function makeStylesheet(){
       selector: 'edge:selected',
       style: {
         'line-color': activeColor,
-        'target-arrow-color': activeColor
+        'target-arrow-color': activeColor,
+        'z-index': 999,
+        'z-compound-depth': 'top'
       }
     },
     {

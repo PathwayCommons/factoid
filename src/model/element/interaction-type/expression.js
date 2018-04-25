@@ -31,12 +31,19 @@ class Expression extends InteractionType {
     return [T.POSITIVE, T.NEGATIVE];
   }
 
+  areParticipantsTyped(){
+    return this.isSigned();
+  }
+
   static isAllowedForInteraction( intn ){
     let ppts = intn.participants();
     let isProtein = ent => ent.type() === 'protein';
-    let isChemical = ent => ent.type() === 'chemical';
 
-    ppts.length === 2 && ppts.some( isProtein ) && ppts.some( isChemical );
+    return ppts.length === 2 && ppts.every( isProtein );
+  }
+
+  toString(){
+    return super.toString( (this.isInhibition() ? 'inhibits' : 'promotes') + ' the expression of' );
   }
 
   static get value(){ return VALUE; }

@@ -293,4 +293,4 @@ class InteractionInfo extends DataComponent {
   }
 }
 
-module.exports = props => h(InteractionInfo, Object.assign({ id: props.element.id() }, props));
+module.exports = props => h(InteractionInfo, Object.assign({ key: props.element.id() }, props));

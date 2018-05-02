@@ -697,4 +697,4 @@ class EntityInfo extends DataComponent {
   }
 }
 
-module.exports = props => h(EntityInfo, Object.assign({ id: props.element.id() }, props));
+module.exports = props => h(EntityInfo, Object.assign({ key: props.element.id() }, props));

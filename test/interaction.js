@@ -570,6 +570,8 @@ describe('Interaction', function(){
           } ).then( () => {
             return intnC1.retypeParticipant( entC1, pptType );
           } ).then( () => {
+            return intnC1.complete();
+          } ).then( () => {
             expect( intnC1.association().value ).to.equal( intnType.value );
             expect( intnC1.association().isPositive() ).to.equal( pptType.value === Interaction.PARTICIPANT_TYPE.POSITIVE.value );
             expect( intnC1.association().getTarget().id() ).to.equal( entC1.id() );
@@ -588,6 +590,8 @@ describe('Interaction', function(){
         return intnC1.associate( Interaction.ASSOCIATION.EXPRESSION );
       } ).then( () => {
         return intnC1.association().setAsPromotionOf( entC1 );
+      } ).then( () => {
+        return intnC1.complete();
       } ).then( () => {
         expect( intnC1.association().value ).to.equal( Interaction.ASSOCIATION.EXPRESSION.value );
         expect( intnC1.association().isPositive() ).to.be.true;

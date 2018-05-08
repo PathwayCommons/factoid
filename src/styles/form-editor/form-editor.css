@@ -1,14 +1,28 @@
+.form-editor {
+  display: flex;
+  flex-direction: column;
+}
+
 .form-editor-title {
-  text-align: center;
   color: #212F3D;
   font-size: 2.5em;
+  margin-top: 0;
+  padding-top: 2em;
   margin-bottom: 1em;
+}
+
+.form-template-entry {
+  width: 40em;
 }
 
 .form-interaction {
   padding-bottom: 10px;
+  display: inline-flex;
+  padding-right: 10px;
+}
+
+.form-interaction-line {
   display: flex;
-  justify-content: space-between;
 }
 
 .form-action-buttons {
@@ -21,9 +35,20 @@
   color: #00ADB5;
   background-color: #EEEEEE;
   height: 2.5em;
-  margin-top: 1.5em;
+  margin-top: 1em;
   margin-bottom: 4em;
   padding: 0 20px;
+  display: flex;
+  flex-direction: row;
+}
+
+.form-entity-adder {
+  color: #00ADB5;
+  background-color: #EEEEEE;
+  height: 2em;
+  width: 2em;
+  margin: 0.5em;
+  padding-left: 0.5em;
   display: flex;
   flex-direction: row;
 }
@@ -32,7 +57,6 @@
   border: none;
   color: #ED4A31;
 }
-
 
 .form-submit {
   color: #EEEEEE;
@@ -43,9 +67,112 @@
   padding: 0 20px;
   display: flex;
   flex-direction: row;
-
 }
 
 .add-new-interaction-icon {
   font-size: 1.5em;
+}
+
+.add-new-entity-icon {
+  font-size: 1em;
+}
+.form-entity-title {
+  margin: 0.5em;
+}
+
+.form-entity {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  width: 8em;
+  height: 1.5em;
+  margin: 0.5em;
+
+}
+
+.form-entity-small {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  width: 4em;
+  height: 1.5em;
+  margin: 0.5em;
+
+}
+
+.form-entity-medium {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  width: 8em;
+  height: 1.5em;
+  margin: 0.5em;
+
+}
+
+.form-multiple-entity {
+  padding: 0.5em;
+  height: 5em;
+  width: 12em;
+  line-height: 100%;
+  margin: 0.5em;
+}
+
+
+
+.form-options{
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  height: 1.5em;
+  margin: 0.5em;
+}
+
+.form-options-long{
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  height: 1.5em;
+  width: 230px;
+  margin: 0.5em;
+  /*font-size: 0.8em;*/
+
+}
+
+.form-entity::placeholder, .form-entity-small::placeholder, .form-entity-medium::placeholder{
+  font-style: italic;
+  font-weight: lighter;
+  font-family: Arial;
+  /*font-size: 0.9em;*/
+}
+
+.form-interaction .element-info .entity-info .inline-notification{
+  visibility: hidden;
+  padding: 0em;
+  height: 0em;
+}
+
+
+.form-interaction .element-info {
+  padding-top: 0px;
+  width: 12em;
+  /*height: 4em;*/
+  padding-bottom: 0px;
+}
+
+
+
+.form-interaction .element-info .entity-info-section{
+  padding-top: 0px;
+  /*visibility: hidden;*/
+  /*height: 0em;*/
+}
+/*.form-interaction .element-info, .entity-info{
+  width: 12em;
+}*/
+
+.form-interaction .element-info .entity-info .entity-info-name-input-area,   .entity-info-progression{
+  padding-top: 0px;
+  height: 2em;
+  /*width: 12em;*/
+}
+
+.form-interaction .element-info .entity-info .entity-info-matches{
+  height: 20em;
+
 }

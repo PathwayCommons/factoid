@@ -1,4 +1,42 @@
+.view-chooser-title {
+  text-align: center;
+  margin-bottom: 2em;
+}
+
 .document-view-chooser-label {
   font-weight: bold;
   font-size: var(--smallFontSize);
+}
+
+.document-view-chooser-radios {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.document-view-chooser-choice {
+  padding: 10px;
+  border: 2px solid #767676;
+}
+
+.document-view-chooser-choice:hover {
+  border-color: #00a84c;
+}
+
+.network-choice {
+  height: 20em;
+  width: 20em;
+  background-image: url('./image/network-option-preview.png');
+  background-size: cover;
+  margin-bottom: 10px;
+  border: 1px solid #767676;
+}
+
+.form-choice {
+  background-image: url('./image/form-option-preview.png');
+  background-size: cover;
+  border: 1px solid #767676;
+  margin-bottom: 10px;
+  height: 20em;
+  width: 20em;
 }

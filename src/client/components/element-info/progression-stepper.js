@@ -6,22 +6,22 @@ module.exports = ({ progression }) => {
   let { STAGES } = progression;
   let stage = progression.getStage();
   let isCompleted = stage === STAGES.COMPLETED;
-  let buttonLabel = content => h('span.entity-info-progression-button-label', [ content ]);
+  let buttonLabel = content => h('span.element-info-progression-button-label', [ content ]);
 
   let backButtonLabel = buttonLabel( h('i.material-icons', 'chevron_left') );
 
   let forwardButtonLabel = buttonLabel(
     h('i.material-icons', {
       className: makeClassList({
-        'entity-info-complete-icon': isCompleted
+        'element-info-complete-icon': isCompleted
       })
     }, isCompleted ? 'check_circle' : 'chevron_right')
   );
 
   let tippyOpts = { placement: 'bottom' };
 
-  return ( h('div.entity-info-progression', [
-    h('button.entity-info-back.plain-button', {
+  return ( h('div.element-info-progression', [
+    h('button.element-info-back.plain-button', {
       disabled: !progression.canGoBack(),
       onClick: () => progression.back()
     }, [
@@ -33,7 +33,7 @@ module.exports = ({ progression }) => {
       ])
     ]),
 
-    h('button.entity-info-forward.plain-button', {
+    h('button.element-info-forward.plain-button', {
       disabled: !progression.canGoForward(),
       onClick: () => progression.forward()
     }, [

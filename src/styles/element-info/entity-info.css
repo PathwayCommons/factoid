@@ -137,30 +137,3 @@
 .entity-info-notification {
   margin-bottom: 0.75em;
 }
-
-.entity-info-progression {
-  margin-top: 1em;
-  display: flex;
-  flex-direction: row;
-}
-
-.entity-info-back,
-.entity-info-forward {
-  font-size: 1.25em;
-  flex-grow: 1;
-}
-
-.entity-info-progression-button-label {
-  display: flex;
-  justify-content: center;
-  flex-grow: 1;
-}
-
-.entity-info-complete-icon {
-  color: var(--completeColor);
-}
-
-.entity-info-edit {
-  margin-left: 0.25em;
-  vertical-align: baseline;
-}

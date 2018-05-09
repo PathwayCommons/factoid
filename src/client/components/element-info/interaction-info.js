@@ -96,7 +96,7 @@ class InteractionInfo extends DataComponent {
 
         case STAGES.PARTICIPANT_TYPES:
           bus.emit('openpptstip', el);
-          pptTypeNotification.message(`Select the arrowhead appropriate to the interaction.`);
+          pptTypeNotification.message(`Activation or inhibition?`);
           break;
 
         case STAGES.COMPLETED:

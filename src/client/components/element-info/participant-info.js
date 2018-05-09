@@ -48,6 +48,7 @@ class ParticipantInfo extends React.Component {
         }
 
         let radioId = 'participant-info-type-radioset-item-' + uuid();
+        let checked = this.state.pptType.value === type.value;
 
         radiosetChildren.push( h('input.participant-info-type-radio', {
           type: 'radio',
@@ -55,9 +56,14 @@ class ParticipantInfo extends React.Component {
             this.retype( type );
             bus.emit('retypeppt', interaction, participant, type);
           },
+          onClick: () => {
+            if( checked ){ // skip to next stage when clicking existing selection
+              bus.emit('retypepptskip', interaction, participant, type);
+            }
+          },
           id: radioId,
           name: radioName,
-          checked: this.state.pptType.value === type.value
+          checked
         }) );
 
         radiosetChildren.push( h('label.participant-info-type-label', {

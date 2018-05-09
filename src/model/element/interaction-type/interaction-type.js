@@ -70,6 +70,16 @@ class InteractionType {
     return ppts[0];
   }
 
+  setTarget( ppt ){
+    if( this.isNegative() ){
+      return this.setParticipantAsNegative( ppt );
+    } else if( this.isPostivie() ){
+      return this.setParticipantAsPositive( ppt );
+    } else {
+      return this.setParticipantAsPositive( PARTICIPANT_TYPE.UNSIGNED_TARGET );
+    }
+  }
+
   getSource(){
     let intn = this.interaction;
     let ppts = intn.participantsOfType( PARTICIPANT_TYPE.UNSIGNED );

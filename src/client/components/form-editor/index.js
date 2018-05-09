@@ -1,27 +1,80 @@
-const DirtyComponent = require('../dirty-component');
+const { Component } = require('react');
 const h = require('react-hyperscript');
 const io = require('socket.io-client');
 const _ = require('lodash');
-const EventEmitter = require('eventemitter3');
+
 
 const logger = require('../../logger');
 const debug = require('../../debug');
 
 const Document = require('../../../model/document');
 
-// const DocumentWizardStepper = require('../document-wizard-stepper');
-// const AppBar = require('../app-bar');
-// const ActionLogger = require('../action-logger');
+const DocumentWizardStepper = require('../document-wizard-stepper');
 
 
-const ProteinModificationForm = require('./protein-modification-form');
-const ExpressionRegulationForm = require('./expression-regulation-form');
-const MolecularInteractionForm = require('./molecular-interaction-form');
-const ActivationInhibitionForm = require('./activation-inhibition-form');
+class EntityForm extends Component {
+  constructor(props){
+    super(props);
+    this.state = this.data = {
+      entity: props.entity
+    };
+  }
 
-let Interaction = require('../../../model/element/interaction');
+  updateEntityName( newName ){
+    this.state.entity.name( newName );
+    this.forceUpdate();
+  }
+  render(){
+    return h('input[type="text"].form-entity', {
+      value: this.state.entity.name(),
+      placeholder: 'Enter entity name',
+      onChange: e => this.updateEntityName(e.target.value)
+    });
+  }
+}
 
-class FormEditor extends DirtyComponent {
+class InteractionForm extends Component {
+  constructor(props){
+    super(props);
+    this.state = this.data = {
+      interaction: props.interaction
+    };
+  }
+
+  updateInteractionType(nextType){
+    const intn = this.state.interaction;
+    intn.description(nextType);
+    this.forceUpdate();
+  }
+
+  deleteInteraction() {
+    // TODO implement this
+  }
+
+  render(){
+    const intn = this.state.interaction;
+    const lEnt = intn.elements()[0];
+    const rEnt = intn.elements()[1];
+
+    return h('div.form-interaction', [
+      h(EntityForm, { entity: lEnt }),
+      h('span', [
+        h('select', { value: intn.description(), onChange: e => this.updateInteractionType(e.target.value) }, [
+          h('option', { value: 'interacts with' }, 'interacts with'),
+          h('option', { value: 'phosphorylates' }, 'phosphorylates'),
+          h('option', { value: 'enzyme reaction' }, 'enzyme reaction'),
+          h('option', { value: 'other' }, 'other')
+        ])
+      ]),
+      h(EntityForm, { entity: rEnt } ),
+      h('button.delete-interaction', { onClick: () => this.deleteInteraction() }, 'X')
+    ]);
+  }
+}
+
+
+// TODO actually build a working UI that's hooked into the model
+class FormEditor extends Component {
   constructor(props){
     super(props);
 
@@ -36,21 +89,15 @@ class FormEditor extends DirtyComponent {
     let id = _.get( props, 'id' );
     let secret = _.get( props, 'secret' );
 
-
     let doc = new Document({
       socket: docSocket,
       factoryOptions: { socket: eleSocket },
       data: { id, secret }
     });
 
-    let bus = new EventEmitter();
-
     this.data = this.state = {
-      document: doc,
-      bus: bus
+      document: doc
     };
-
-
 
     Promise.try( () => doc.load() )
       .then( () => logger.info('The doc already exists and is now loaded') )
@@ -59,8 +106,8 @@ class FormEditor extends DirtyComponent {
         logger.warn( err );
 
         return ( doc.create()
-            .then( () => logger.info('The doc was created') )
-            .catch( err => logger.error('The doc could not be created', err) )
+          .then( () => logger.info('The doc was created') )
+          .catch( err => logger.error('The doc could not be created', err) )
         );
       } )
       .then( () => doc.synch(true) )
@@ -73,6 +120,7 @@ class FormEditor extends DirtyComponent {
         }
 
         // force an update here
+
         this.forceUpdate();
         logger.info('The editor is initialising');
       } );
@@ -85,172 +133,73 @@ class FormEditor extends DirtyComponent {
     this.setState( obj, callback );
   }
 
-  addElement( data){
+  addElement( data = {} ){
 
     let doc = this.data.document;
 
     let el = doc.factory().make({
       data: _.assign( {
         type: 'entity',
-        name: ''
-
+        name: '',
       }, data )
     });
 
     return ( Promise.try( () => el.synch() )
-        .then( () => el.create() )
-        .then( () => doc.add(el) )
-        .then( () => el )
+      .then( () => el.create() )
+      .then( () => doc.add(el) )
+      .then( () => el )
     );
   }
 
-  addInteraction( data ){
+  addInteraction( data = {} ){
 
-    let doc = this.data.document;
-
-    let el = doc.factory().make({
-      data: _.assign( {
-        type: 'interaction',
-
-      }, data )
-    });
-
-    return ( Promise.try( () => el.synch() )
-        .then( () => el.create() )
-        .then( () => doc.add(el) )
-        .then( () => el.associate(data.association) )
-        .then( () => el )
-
-    );
-
+    return this.addElement( _.assign({
+      type: 'interaction',
+      name: ''
+    }, data) );
   }
 
+  addInteractionRow(){
 
-  addInteractionRow(data){
-    let self = this;
-    let entArr = [];
+    let lEnt = this.addElement();
+    let rEnt = this.addElement();
+    let intn = this.addInteraction();
 
-    for(let i = 0; i < data.pptTypes.length; i++)
-      entArr.push(self.addElement());
+    Promise.all([lEnt, rEnt, intn]).then(responses => {
+      let i = responses[2];
 
-    let intn = this.addInteraction(data);
+      i.addParticipant(responses[0]);
+      i.addParticipant(responses[1]);
 
-
-    entArr.push(intn);
-
-
-    Promise.all(entArr).then(responses => {
-      let resp = responses[data.pptTypes.length]; // this is the interaction
-
-      for(let i = 0; i < data.pptTypes.length; i++) {
-        resp.addParticipant(responses[i]);
-        resp.setParticipantType(responses[i], data.pptTypes[i]);
-      }
-      this.dirty();
-    });
-  }
-
-
-  deleteInteractionRow(data){
-
-    let doc = this.state.document;
-    let intn = data.interaction;
-
-    let els = intn.elements();
-    let elsLength = els.length;
-
-
-    let promiseArr = [];
-    for(let i = 0; i < elsLength; i++) {
-      promiseArr.push(Promise.try(() => intn.removeParticipant(els[i]))
-        .then(()=>{
-              doc.remove(els[i]);
-          }
-        ));
-    }
-
-    Promise.all(promiseArr).then( () => {
-      doc.remove(intn);
-      this.dirty();
-    });
-
-  }
-
-
-
-  //TODO: This will test validity of entries first
-  //Convert to biopax or show in the editor
-  submit(){
-
-    let doc = this.state.document;
-    doc.interactions().map(interaction=>{
-      console.log(interaction);
-      interaction.elements().map(el => {
-        console.log(el.name());
-        console.log(el);
-      });
-
+      this.forceUpdate();
     });
 
   }
 
   render(){
-    let doc = this.state.document;
-    let self = this;
+    const doc = this.state.document;
+    const interactions = doc.interactions();
 
-    this.state.dirty = false;
-
-    const forms = [
-      {type: 'Protein Modification' , clazz: ProteinModificationForm, pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  description:"One protein chemically modifies another protein.", association: Interaction.ASSOCIATION.MODIFICATION},
-      {type:'Molecular Interaction', clazz: MolecularInteractionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.UNSIGNED], description: "Two or more proteins physically interact.", association: Interaction.ASSOCIATION.INTERACTION},
-      {type:'Activation Inhibition', clazz:ActivationInhibitionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes the activity status of another protein.", association: Interaction.ASSOCIATION.MODIFICATION},
-      {type:'Expression Regulation', clazz: ExpressionRegulationForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes mRNA expression of a gene.", association: Interaction.ASSOCIATION.EXPRESSION}
-    ];
-
-    let hArr = [];
-
-
-    forms.forEach(function(form){
-
-      let formContent = doc.interactions().map(interaction => {
-        if(interaction.name() === form.type)
-          return h('div.form-interaction-line',
-            [
-              h(form.clazz, {key: interaction.id(), document:doc, interaction:interaction, description: form.type}),
-              h('button.delete-interaction', { onClick: e => {self.deleteInteractionRow({interaction:interaction}); } }, 'X')
-            ] );
-        else return null;
-      });
-
-
-      //update form
-      let hFunc = h('div.form-template-entry', [
-        h('h2', form.type),
-        h('p', form.description),
-        ...formContent,
-        h('div.form-action-buttons', [
-          h('button.form-interaction-adder', { onClick: e => self.addInteractionRow({name:form.type, pptTypes:form.pptTypes,  association: form.association})}, [
-            h('i.material-icons.add-new-interaction-icon', 'add'),
-            'ADD INTERACTION'
-          ])])
-      ]);
-
-      hArr.push(hFunc);
+    const interactionForms = interactions.map(interaction => {
+      return h(InteractionForm, { interaction });
     });
 
-    return h('div.form-editor', [
-//      h(AppBar, { document: this.data.document, bus: this.data.bus }),
- //     h(ActionLogger, { document: this.data.document, bus: this.data.bus }),
-      h('div.page-content', [
-        h('h1.form-editor-title', 'Insert Pathway Information As Text'),
-        h('div.form-templates', [
-          ...hArr
+    return h('div.document-form.page-content', [
+      h('h1.form-editor-title', 'Insert Pathway Information As Text'),
+      ...interactionForms,
+      h('div.form-action-buttons', [
+        h('button.form-interaction-adder', { onClick: () => this.addInteractionRow() }, [
+          h('i.material-icons.add-new-interaction-icon', 'add'),
+          'ADD INTERACTION'
         ]),
-        h('button.form-submit', { onClick: e => this.submit() }, [
+        h('button.form-submit', { onClick: () => this.addInteractionRow() }, [
           'SUBMIT'
         ])
       ]),
-
+      h(DocumentWizardStepper, {
+        backEnabled: false,
+        // TODO
+      })
     ]);
   }
 }

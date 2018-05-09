@@ -21,11 +21,11 @@ class EntityForm extends DirtyComponent {
 
 
 
-    if(this.data.entity){
-      this.data.entity.on("complete", () => {
-        this.dirty();
-      });
-    }
+    // if(this.data.entity){
+    //   this.data.entity.on("complete", () => {
+    //     this.dirty();
+    //   });
+    // }
 
     this.entityInfoClasses = ".entity-info-section, .entity-info-progression";
 
@@ -104,7 +104,7 @@ class EntityForm extends DirtyComponent {
 
             mergedEntity = el;
 
-            console.log("merging the two " + this.state.entity.id() + " and " + el.id());
+            // console.log("merging the two " + this.state.entity.id() + " and " + el.id());
             break;
           }
         }
@@ -151,19 +151,9 @@ class EntityForm extends DirtyComponent {
   }
 
   render(){
-    let self = this;
     let hFunc;
-    let hCompletedStatus;
-
-    if(this.state.entity && this.state.entity.completed())
-      hCompletedStatus = h('i.material-icons.entity-info-complete-icon', 'check_circle');
-    else
-      hCompletedStatus = h('i.material-icons', 'help');
-
 
     hFunc = h('div.form-interaction', [
-
-
 
       h('button.entity-info-edit.plain-button',  {onClick: () => this.toggleEntityInfo()}, [
         h('i.material-icons', 'arrow_drop_down  ')

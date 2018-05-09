@@ -182,15 +182,15 @@ class FormEditor extends DirtyComponent {
   //Convert to biopax or show in the editor
   submit(){
 
-    let doc = this.state.document;
-    doc.interactions().map(interaction=>{
-      console.log(interaction);
-      interaction.elements().map(el => {
-        console.log(el.name());
-        console.log(el);
-      });
-
-    });
+    // let doc = this.state.document;
+    // doc.interactions().map(interaction=>{
+    //   console.log(interaction);
+    //   interaction.elements().map(el => {
+    //     console.log(el.name());
+    //     console.log(el);
+    //   });
+    //
+    // });
 
   }
 
@@ -217,7 +217,7 @@ class FormEditor extends DirtyComponent {
           return h('div.form-interaction-line',
             [
               h(form.clazz, {key: interaction.id(), document:doc, interaction:interaction, description: form.type}),
-              h('button.delete-interaction', { onClick: e => {self.deleteInteractionRow({interaction:interaction}); } }, 'X')
+              h('button.delete-interaction', { onClick: () => {self.deleteInteractionRow({interaction:interaction}); } }, 'X')
             ] );
         else return null;
       });
@@ -229,7 +229,7 @@ class FormEditor extends DirtyComponent {
         h('p', form.description),
         ...formContent,
         h('div.form-action-buttons', [
-          h('button.form-interaction-adder', { onClick: e => self.addInteractionRow({name:form.type, pptTypes:form.pptTypes,  association: form.association})}, [
+          h('button.form-interaction-adder', { onClick: () => self.addInteractionRow({name:form.type, pptTypes:form.pptTypes,  association: form.association})}, [
             h('i.material-icons.add-new-interaction-icon', 'add'),
             'ADD INTERACTION'
           ])])
@@ -246,7 +246,7 @@ class FormEditor extends DirtyComponent {
         h('div.form-templates', [
           ...hArr
         ]),
-        h('button.form-submit', { onClick: e => this.submit() }, [
+        h('button.form-submit', { onClick: () => this.submit() }, [
           'SUBMIT'
         ])
       ]),

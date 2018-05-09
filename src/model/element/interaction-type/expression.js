@@ -9,22 +9,6 @@ class Expression extends InteractionType {
     super( intn );
   }
 
-  isPromotion(){
-    return this.isPositive();
-  }
-
-  isInhibition(){
-    return this.isNegative();
-  }
-
-  setAsPromotionOf( ppt ){
-    return this.setPariticpantAsPositive( ppt );
-  }
-
-  setAsInhibitionOf( ppt ){
-    return this.setPariticpantAsNegative( ppt );
-  }
-
   allowedParticipantTypes(){
     const T = PARTICIPANT_TYPE;
 

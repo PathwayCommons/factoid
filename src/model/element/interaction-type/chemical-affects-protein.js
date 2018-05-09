@@ -9,14 +9,6 @@ class ChemicalAffectsProtein extends InteractionType {
     super( intn );
   }
 
-  isInhibition(){
-    return this.isNegative();
-  }
-
-  isActivation(){
-    return this.isPositive();
-  }
-
   allowedParticipantTypes(){
     const T = PARTICIPANT_TYPE;
 
@@ -25,14 +17,6 @@ class ChemicalAffectsProtein extends InteractionType {
 
   areParticipantsTyped(){
     return this.isSigned();
-  }
-
-  setAsInhibitionOf( ppt ){
-    return this.setPariticpantAsNegative( ppt );
-  }
-
-  setAsActivationOf( ppt ){
-    return this.setPariticpantAsPositive( ppt );
   }
 
   static isAllowedForInteraction( intn ){

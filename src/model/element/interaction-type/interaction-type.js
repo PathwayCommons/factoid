@@ -1,9 +1,10 @@
 const { error } = require('../../../util');
-const { PARTICIPANT_TYPE, PARTICIPANT_TYPES } = require('../participant-type');
+const { PARTICIPANT_TYPE } = require('../participant-type');
 
 const VALUE = 'unset';
 const DISPLAY_VALUE = 'Unset';
 
+// abstract base class
 class InteractionType {
   constructor( interaction ){
     if( !interaction ){
@@ -13,8 +14,8 @@ class InteractionType {
     this.interaction = interaction;
   }
 
-  allowedParticipantTypes(){
-    return PARTICIPANT_TYPES;
+  allowedParticipantTypes(){ // i.e. settable by the user
+    return [ PARTICIPANT_TYPE.UNSIGNED, PARTICIPANT_TYPE.POSITIVE, PARTICIPANT_TYPE.NEGATIVE ];
   }
 
   has( pptType ){
@@ -56,6 +57,30 @@ class InteractionType {
 
   setParticipantAsNegative( ppt ){
     return this.setParticipantAs( ppt, PARTICIPANT_TYPE.NEGATIVE );
+  }
+
+  isPromotion(){
+    return this.isPositive();
+  }
+
+  setAsPromotionOf( ppt ){
+    return this.setPariticpantAsPositive( ppt );
+  }
+
+  isActiviation(){
+    return this.isPositive();
+  }
+
+  setAsActivationOf( ppt ){
+    return this.setPariticpantAsPositive( ppt );
+  }
+
+  isInhibition(){
+    return this.isNegative();
+  }
+
+  setAsInhibitionOf( ppt ){
+    return this.setPariticpantAsNegative( ppt );
   }
 
   getTarget(){

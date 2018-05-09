@@ -3,11 +3,8 @@ const _ = require('lodash');
 
 const TYPE = 'entity';
 
-const { MODS, ORDERED_MODS, getModByValue } = require('./entity-mods');
-
 const DEFAULTS = Object.freeze({
-  type: TYPE,
-  modification: MODS.UNMODIFIED.value
+  type: TYPE
 });
 
 /**
@@ -35,69 +32,12 @@ class Entity extends Element {
         this.emit( 'unassociated', old.association );
         this.emit( 'remoteunassociated', old.association );
       }
-
-      if( changes.modification != null ){
-        let newMod = getModByValue( changes.modification ) ;
-        let oldMod = getModByValue( old.modification );
-
-        this.emit( 'modify', newMod, oldMod );
-        this.emit( 'remotemodify', newMod, oldMod );
-      }
     });
   }
 
   static type(){ return TYPE; }
 
   isEntity(){ return true; }
-
-  static get MODIFICATIONS(){
-    return MODS;
-  }
-
-  get MODIFICATIONS(){
-    return MODS;
-  }
-
-  static get ORDERED_MODIFICATIONS(){
-    return ORDERED_MODS;
-  }
-
-  get ORDERED_MODIFICATIONS(){
-    return ORDERED_MODS;
-  }
-
-  static get MODIFICATION_BY_VALUE(){
-    return getModByValue;
-  }
-
-  get MODIFICATION_BY_VALUE(){
-    return getModByValue;
-  }
-
-  modify( mod ){
-    if( !_.isObject(mod) ){
-      mod = getModByValue(mod);
-    }
-
-    let update = this.syncher.update('modification', mod.value);
-
-    this.emit('modify', mod);
-    this.emit('localmodify', mod);
-
-    return update;
-  }
-
-  modification( mod ){
-    if( mod === undefined ){
-      return getModByValue( this.syncher.get('modification') );
-    } else {
-      return this.modify( mod );
-    }
-  }
-
-  moddable(){
-    return this.type() === this.TYPE.PROTEIN;
-  }
 
   associate( def ){
     let changes = {

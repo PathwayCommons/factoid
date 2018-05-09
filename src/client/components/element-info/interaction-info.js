@@ -242,6 +242,12 @@ class InteractionInfo extends DataComponent {
           return;
         }
 
+        // skip modification base type for now and just allow users to set
+        // modification subtypes
+        if( assoc.value === el.ASSOCIATION.MODIFICATION.value ){
+          return;
+        }
+
         let radioId = 'interaction-info-assoc-radioset-item-' + uuid();
 
         radiosetChildren.push( h('input.interaction-info-type-radio', {

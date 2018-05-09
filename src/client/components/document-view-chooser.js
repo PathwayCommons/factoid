@@ -20,11 +20,11 @@ class DocumentViewChooser extends React.Component {
     let rootChildren = [
       h('h1.view-chooser-title', 'Choose editor'),
       h('div.document-view-chooser-radios', [
-        h('div.document-view-chooser-choice', { onClick: e => this.goToEditor('document') }, [
+        h('div.document-view-chooser-choice', { onClick: () => this.goToEditor('document') }, [
           h('div.network-choice'),
           h('label', { htmlFor: 'document-view-chooser-network' }, 'Network Editor')
         ]),
-        h('div.document-view-chooser-choice', { onClick: e => this.goToEditor('form') }, [
+        h('div.document-view-chooser-choice', { onClick: () => this.goToEditor('form') }, [
           h('div.form-choice'),
           h('label', { htmlFor: 'document-view-chooser-form' }, 'Form Editor')
         ])

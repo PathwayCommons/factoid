@@ -1,9 +1,10 @@
 const { error } = require('../../../util');
-const { PARTICIPANT_TYPE, PARTICIPANT_TYPES } = require('../participant-type');
+const { PARTICIPANT_TYPE } = require('../participant-type');
 
 const VALUE = 'unset';
 const DISPLAY_VALUE = 'Unset';
 
+// abstract base class
 class InteractionType {
   constructor( interaction ){
     if( !interaction ){
@@ -13,8 +14,8 @@ class InteractionType {
     this.interaction = interaction;
   }
 
-  allowedParticipantTypes(){
-    return PARTICIPANT_TYPES;
+  allowedParticipantTypes(){ // i.e. settable by the user
+    return [ PARTICIPANT_TYPE.UNSIGNED, PARTICIPANT_TYPE.POSITIVE, PARTICIPANT_TYPE.NEGATIVE ];
   }
 
   has( pptType ){
@@ -58,12 +59,32 @@ class InteractionType {
     return this.setParticipantAs( ppt, PARTICIPANT_TYPE.NEGATIVE );
   }
 
+  isPromotion(){
+    return this.isPositive();
+  }
+
+  setAsPromotionOf( ppt ){
+    return this.setPariticpantAsPositive( ppt );
+  }
+
+  isActiviation(){
+    return this.isPositive();
+  }
+
+  setAsActivationOf( ppt ){
+    return this.setPariticpantAsPositive( ppt );
+  }
+
+  isInhibition(){
+    return this.isNegative();
+  }
+
+  setAsInhibitionOf( ppt ){
+    return this.setPariticpantAsNegative( ppt );
+  }
+
   getTarget(){
     let intn = this.interaction;
-
-    if( !intn.completed() ){
-      throw error(`Can not get target of incomplete interaction ${intn.id()}`);
-    }
 
     let ppts = intn.participantsNotOfType( PARTICIPANT_TYPE.UNSIGNED );
 
@@ -74,13 +95,18 @@ class InteractionType {
     return ppts[0];
   }
 
+  setTarget( ppt ){
+    if( this.isNegative() ){
+      return this.setParticipantAsNegative( ppt );
+    } else if( this.isPostivie() ){
+      return this.setParticipantAsPositive( ppt );
+    } else {
+      return this.setParticipantAsPositive( PARTICIPANT_TYPE.UNSIGNED_TARGET );
+    }
+  }
+
   getSource(){
     let intn = this.interaction;
-
-    if( !intn.completed() ){
-      throw error(`Can not get source of incomplete interaction ${intn.id()}`);
-    }
-
     let ppts = intn.participantsOfType( PARTICIPANT_TYPE.UNSIGNED );
 
     if( ppts.length > 1 ){ // can't have more than one source

@@ -4,12 +4,18 @@ const General = require('./general');
 const ChemicalAffectsProtein = require('./chemical-affects-protein');
 const Expression = require('./expression');
 const Modification = require('./modification');
+const Phosphorylation = require('./phosphorylation');
+const Methylation = require('./methylation');
+const Ubiquination = require('./ubiquination');
 const ProteinAffectsChemical = require('./protein-affects-chemical');
 
 const INTERACTION_TYPE = Object.freeze({
   INTERACTION: General,
   EXPRESSION: Expression,
   MODIFICATION: Modification,
+  PHOSPHORYLATION: Phosphorylation,
+  METHYLATION: Methylation,
+  UBIQUINATION: Ubiquination,
   CHEMICAL_AFFECTS_PROTEIN: ChemicalAffectsProtein,
   PROTEIN_AFFECTS_CHEMICAL: ProteinAffectsChemical
 });

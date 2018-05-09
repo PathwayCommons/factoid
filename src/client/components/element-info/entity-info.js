@@ -24,7 +24,6 @@ let associationCache = new WeakMap();
 let stageCache = new WeakMap();
 let nameNotificationCache = new SingleValueCache();
 let assocNotificationCache = new SingleValueCache();
-let modNotificationCache = new SingleValueCache();
 
 class EntityInfo extends DataComponent {
   constructor( props ){
@@ -35,7 +34,7 @@ class EntityInfo extends DataComponent {
     let assoc = initCache( associationCache, el, { matches: [], offset: 0 } );
 
     let progression = new Progression({
-      STAGES: [ 'NAME', 'ASSOCIATE', 'MODIFY', 'COMPLETED' ],
+      STAGES: [ 'NAME', 'ASSOCIATE', 'COMPLETED' ],
       getStage: () => this.getStage(),
       canGoToStage: stage => this.canGoToStage(stage),
       goToStage: stage => this.goToStage(stage)
@@ -48,8 +47,6 @@ class EntityInfo extends DataComponent {
     let nameNotification = initCache( nameNotificationCache, el, new Notification({ active: true }) );
 
     let assocNotification = initCache( assocNotificationCache, el, new Notification({ active: true }) );
-
-    let modNotification = initCache( modNotificationCache, el, new Notification({ active: true }) );
 
     this.debouncedRename = _.debounce( name => {
       this.data.element.rename( name );
@@ -76,7 +73,6 @@ class EntityInfo extends DataComponent {
       element: el,
       name: el.name(),
       oldName: el.name(),
-      modification: el.modification(),
       matches: assoc.matches,
       gettingMoreMatches: false,
       limit: defs.associationSearchLimit,
@@ -84,7 +80,6 @@ class EntityInfo extends DataComponent {
       stage,
       nameNotification,
       assocNotification,
-      modNotification,
       progression
     };
   }
@@ -96,7 +91,6 @@ class EntityInfo extends DataComponent {
   componentDidMount(){
     let root = ReactDom.findDOMNode( this );
     let input = root.querySelector('.entity-info-name-input');
-    let modSel = root.querySelector('.entity-info-mod-select');
     let p = this.props;
     let s = this.data;
     let doc = p.document;
@@ -119,18 +113,6 @@ class EntityInfo extends DataComponent {
 
     s.element.on('remoterename', this.onRemoteRename);
 
-    this.onRemoteModify = () => {
-      this.setData({ modification: s.element.modification() });
-
-      if( this.remModAni ){
-        this.remModAni.pause();
-      }
-
-      this.remModAni = animateDomForEdit( modSel );
-    };
-
-    s.element.on('remotemodify', this.onRemoteModify);
-
     this.onToggleOrganism = () => {
       associationCache = new WeakMap(); // all entities invalidated
 
@@ -150,23 +132,11 @@ class EntityInfo extends DataComponent {
 
     element.removeListener('remoterename', this.onRemoteRename);
 
-    element.removeListener('remotemodify', this.onModifyEle);
-
     document.removeListener('toggleorganism', this.onToggleOrganism);
 
     if( update ){ update.cancel(); }
 
     this._unmounted = true;
-  }
-
-  modify( mod ){
-    if( _.isString(mod) ){
-      mod = this.data.element.MODIFICATION_BY_VALUE(mod);
-    }
-
-    this.setData({ modification: mod });
-
-    this.data.element.modify( mod );
   }
 
   rename( name ){
@@ -379,40 +349,20 @@ class EntityInfo extends DataComponent {
         return true;
       case STAGES.ASSOCIATE:
         return cachedName != null && cachedName != '';
-      case STAGES.MODIFY:
-        return el.associated();
       case STAGES.COMPLETED:
-        return (
-          currentStage === STAGES.MODIFY ||
-          ( currentStage === STAGES.ASSOCIATE && el.type() === el.TYPE.CHEMICAL )
-        );
+        return currentStage === STAGES.ASSOCIATE && el.associated();
     }
   }
 
   goToStage( stage ){
     let { stage: currentStage, name, element, progression } = this.data;
     let { STAGES } = progression;
-    let elSupportsMod = element.moddable();
 
     if(
       currentStage === STAGES.NAME && stage === STAGES.ASSOCIATE
       && name != null && name !== '' && name !== element.name()
     ){
       this.rename( name );
-    }
-
-    if(
-      currentStage === STAGES.ASSOCIATE && stage === STAGES.MODIFY
-      && !elSupportsMod
-    ){
-      stage = STAGES.COMPLETED;
-    }
-
-    if(
-      currentStage === STAGES.COMPLETED && stage === STAGES.MODIFY
-      && !elSupportsMod
-    ){
-      stage = STAGES.ASSOCIATE;
     }
 
     if( progression.canGoToStage(stage) ){
@@ -434,10 +384,6 @@ class EntityInfo extends DataComponent {
 
         case STAGES.ASSOCIATE:
           this.data.assocNotification.message(`Select the best match for "${this.data.name}".`);
-          break;
-
-        case STAGES.MODIFY:
-          this.data.modNotification.message(`Select a modification for ${this.data.name}.`);
           break;
 
         case STAGES.COMPLETED:
@@ -543,11 +489,8 @@ class EntityInfo extends DataComponent {
       return _.concat( pre, body, post );
     };
 
-    let onEditMod = () => progression.goToStage( STAGES.MODIFY );
-
     let allAssoc = m => _.concat(
       targetFromAssoc(m),
-      s.element.moddable() ? assocDisp.modification(s.modification, onEditMod) : [],
       assocDisp.link(m)
     );
 
@@ -649,44 +592,6 @@ class EntityInfo extends DataComponent {
           h(Loader)
         );
       }
-    } else if( stage === STAGES.MODIFY ){
-      let notification = s.modNotification;
-
-      children.push( h(InlineNotification, { notification, className: 'entity-info-notification' }) );
-
-      children.push( h('label.entity-info-mod-label', 'Modification') );
-
-      let modChildren = [];
-
-      let onChange = (evt) => {
-        let value = evt.target.value;
-
-        this.modify( value );
-        progression.forward();
-      };
-
-      let onClick = (evt) => {
-        let value = evt.target.value;
-
-        if( s.element.completed() && value === s.modification.value ){
-          progression.forward();
-        }
-      };
-
-      s.element.ORDERED_MODIFICATIONS.forEach( mod => {
-        let value = mod.value;
-        let name = 'mod-radio-' + s.element.id();
-        let id = name + '-' + value;
-        let type = 'radio';
-        let checked = value === s.modification.value && s.element.completed();
-
-        modChildren.push(
-          h('input', { type, name, id, value, onChange, onClick, checked }),
-          h('label', { htmlFor: id }, mod.displayValue)
-        );
-      } );
-
-      children.push( h('div.radioset.entity-info-mod-radioset', modChildren ) );
     }
 
     if( doc.editable() ){

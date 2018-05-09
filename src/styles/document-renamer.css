@@ -1,0 +1,24 @@
+.doc-name {
+  z-index: 100;
+  margin-left: 5px;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  padding: 5px;
+  border: 0 !important;
+  color: #212f3d;
+  font-weight: bold;
+}
+
+.doc-name::placeholder {
+  font-style: italic;
+}
+
+.doc-name:focus {
+  border-radius: 0;
+  border: 1px solid #767676 !important;
+}
+
+.doc-name:hover {
+  border-radius: 0;
+  border: 1px solid #767676 !important;
+}

@@ -106,14 +106,6 @@
   max-width: 100%;
 }
 
-.entity-info-mod-section {
-}
-
-.entity-info-edit-mod {
-  margin-left: 0.25em;
-  vertical-align: baseline;
-}
-
 .entity-info-title {
   font-weight: 600;
   margin-right: 0.5em;
@@ -140,16 +132,6 @@
   right: 0;
   top: 0;
   margin: 0.25em;
-}
-
-.entity-info-mod-label {
-  display: block;
-  font-weight: bold;
-  font-size: 0.8em;
-}
-
-.entity-info-mod-radioset {
-  font-size: 0.8em;
 }
 
 .entity-info-notification {

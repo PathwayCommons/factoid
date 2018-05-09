@@ -22,6 +22,21 @@
   flex-direction: row;
 }
 
+.element-info-back-area,
+.element-info-forward-area {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+}
+
+.element-info-progression {
+  & .popover-target {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+  }
+}
+
 .element-info-back,
 .element-info-forward {
   font-size: 1.25em;

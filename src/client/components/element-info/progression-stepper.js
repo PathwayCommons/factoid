@@ -21,27 +21,31 @@ module.exports = ({ progression }) => {
   let tippyOpts = { placement: 'bottom' };
 
   return ( h('div.element-info-progression', [
-    h('button.element-info-back.plain-button', {
-      disabled: !progression.canGoBack(),
-      onClick: () => progression.back()
-    }, [
+    h('div.element-info-back-area', [
       h(Tooltip, {
-        description: 'Go to the previous step.',
+        description: 'Back',
         tippy: tippyOpts
       }, [
-        backButtonLabel
+        h('button.element-info-back.plain-button', {
+          disabled: !progression.canGoBack(),
+          onClick: () => progression.back()
+        }, [
+          backButtonLabel
+        ])
       ])
     ]),
 
-    h('button.element-info-forward.plain-button', {
-      disabled: !progression.canGoForward(),
-      onClick: () => progression.forward()
+    h(Tooltip, {
+      description: isCompleted ? 'Completed' : 'Next',
+      tippy: tippyOpts
     }, [
-      h(Tooltip, {
-        description: isCompleted ? 'This entity is completed.' : 'Go to the next step.',
-        tippy: tippyOpts
-      }, [
-        forwardButtonLabel
+      h('div.element-info-forward-area', [
+        h('button.element-info-forward.plain-button', {
+          disabled: !progression.canGoForward(),
+          onClick: () => progression.forward()
+        }, [
+          forwardButtonLabel
+        ])
       ])
     ])
   ]) );

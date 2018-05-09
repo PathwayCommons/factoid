@@ -8,14 +8,14 @@ module.exports = ({ progression }) => {
   let isCompleted = stage === STAGES.COMPLETED;
   let buttonLabel = content => h('span.entity-info-progression-button-label', [ content ]);
 
-  let backButtonLabel = buttonLabel( h('i.material-icons', 'arrow_back') );
+  let backButtonLabel = buttonLabel( h('i.material-icons', 'chevron_left') );
 
   let forwardButtonLabel = buttonLabel(
     h('i.material-icons', {
       className: makeClassList({
         'entity-info-complete-icon': isCompleted
       })
-    }, isCompleted ? 'check_circle' : 'arrow_forward')
+    }, isCompleted ? 'check_circle' : 'chevron_right')
   );
 
   let tippyOpts = { placement: 'bottom' };

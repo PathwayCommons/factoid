@@ -61,10 +61,6 @@ class InteractionType {
   getTarget(){
     let intn = this.interaction;
 
-    if( !intn.completed() ){
-      throw error(`Can not get target of incomplete interaction ${intn.id()}`);
-    }
-
     let ppts = intn.participantsNotOfType( PARTICIPANT_TYPE.UNSIGNED );
 
     if( ppts.length > 1 ){ // can't have more than one target
@@ -76,11 +72,6 @@ class InteractionType {
 
   getSource(){
     let intn = this.interaction;
-
-    if( !intn.completed() ){
-      throw error(`Can not get source of incomplete interaction ${intn.id()}`);
-    }
-
     let ppts = intn.participantsOfType( PARTICIPANT_TYPE.UNSIGNED );
 
     if( ppts.length > 1 ){ // can't have more than one source

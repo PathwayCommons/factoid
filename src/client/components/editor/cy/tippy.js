@@ -161,7 +161,9 @@ module.exports = function({ bus, cy, document }){
       className: 'incomplete-entity-notification'
     } ) );
 
-    incompleteNotification.message(`Complete this entity.`);
+    let type = docEl.isInteraction() ? 'interaction' : 'entity';
+
+    incompleteNotification.message(`Complete this ${type}.`);
 
     incompleteNotification.activate();
 
@@ -203,7 +205,7 @@ module.exports = function({ bus, cy, document }){
       });
     }
 
-    if( didClose && !isInteractionNode(node) ){
+    if( didClose && list !== '_pptTippies' ){
       let docEl = document.get( node.id() );
 
       if( docEl && !docEl.completed() ){

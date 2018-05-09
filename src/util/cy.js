@@ -34,7 +34,6 @@ function makeCyElesForEle( docEl ){
     data: {
       id: docEl.id(),
       name: docEl.name(),
-      modification: docEl.isEntity() ? docEl.modification().value : null,
       type: docEl.type(),
       isEntity: docEl.isEntity(),
       isInteraction: docEl.isInteraction(),

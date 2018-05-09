@@ -13,15 +13,12 @@ function makeStylesheet(){
         'height': nodeSize,
         'label': function( node ){
           let name = node.data('name');
-          let mod = node.data('modification');
           let completed = node.data('completed');
 
           if( !completed ){
             return '?';
-          } else if( mod == null || mod === 'unmodified' ){
-            return name;
           } else {
-            return mod.charAt(0).toLowerCase() + '-' + name;
+            return name;
           }
         },
         'font-size': 10,

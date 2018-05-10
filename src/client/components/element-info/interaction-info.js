@@ -96,7 +96,7 @@ class InteractionInfo extends DataComponent {
 
         case STAGES.PARTICIPANT_TYPES:
           bus.emit('openpptstip', el);
-          pptTypeNotification.message(`Select the arrowhead appropriate to the interaction.`);
+          pptTypeNotification.message(`Activation or inhibition?`);
           break;
 
         case STAGES.COMPLETED:
@@ -159,16 +159,25 @@ class InteractionInfo extends DataComponent {
       } );
     };
 
-    this.onRetypePpt = () => {
+    let goPastPptTypeStage = () => {
       if( progression.getStage() === STAGES.PARTICIPANT_TYPES ){
         progression.forward();
       }
+    };
+
+    this.onRetypePpt = () => {
+      goPastPptTypeStage();
+    };
+
+    this.onRetypePptSkip = () => {
+      goPastPptTypeStage();
     };
 
     el.on('remoteassociate', this.onRemoteAssociate);
     el.on('remoteredescribe', this.onRemoteRedescribe);
     el.on('associate', this.onAssociate);
     bus.on('retypeppt', this.onRetypePpt);
+    bus.on('retypepptskip', this.onRetypePptSkip);
   }
 
   componentWillUnmount(){
@@ -178,6 +187,7 @@ class InteractionInfo extends DataComponent {
     el.removeListener('remoteredescribe', this.onRemoteRedescribe);
     el.removeListener('associate', this.onAssociate);
     bus.removeListener('retypeppt', this.onRetypePpt);
+    bus.removeListener('retypepptskip', this.onRetypePptSkip);
   }
 
   redescribe( descr ){
@@ -249,6 +259,7 @@ class InteractionInfo extends DataComponent {
         }
 
         let radioId = 'interaction-info-assoc-radioset-item-' + uuid();
+        let checked = el.associated() && el.association().value === assoc.value;
 
         radiosetChildren.push( h('input.interaction-info-type-radio', {
           type: 'radio',
@@ -256,10 +267,13 @@ class InteractionInfo extends DataComponent {
             this.associate( assoc );
             progression.forward();
           },
+          onClick: () => { // skip to next stage when clicking existing assoc
+            if( checked ){ progression.forward(); }
+          },
           id: radioId,
           name: radioName,
           value: assoc.value,
-          checked: el.associated() && el.association().value === assoc.value
+          checked
         }) );
 
         radiosetChildren.push( h('label.interaction-info-assoc-radio-label', {
@@ -282,7 +296,7 @@ class InteractionInfo extends DataComponent {
 
       if( showEditIcon ){
         summaryChildren.push( h(Tooltip, { description: 'Edit from the beginning' }, [
-          h('button.entity-info-edit.plain-button', {
+          h('button.interaction-info-edit.plain-button', {
             onClick: () => progression.goToStage( ORDERED_STAGES[0] )
           }, [ h('i.material-icons', 'edit') ])
         ]) );

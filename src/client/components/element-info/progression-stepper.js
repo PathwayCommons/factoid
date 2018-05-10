@@ -6,42 +6,46 @@ module.exports = ({ progression }) => {
   let { STAGES } = progression;
   let stage = progression.getStage();
   let isCompleted = stage === STAGES.COMPLETED;
-  let buttonLabel = content => h('span.entity-info-progression-button-label', [ content ]);
+  let buttonLabel = content => h('span.element-info-progression-button-label', [ content ]);
 
-  let backButtonLabel = buttonLabel( h('i.material-icons', 'arrow_back') );
+  let backButtonLabel = buttonLabel( h('i.material-icons', 'chevron_left') );
 
   let forwardButtonLabel = buttonLabel(
     h('i.material-icons', {
       className: makeClassList({
-        'entity-info-complete-icon': isCompleted
+        'element-info-complete-icon': isCompleted
       })
-    }, isCompleted ? 'check_circle' : 'arrow_forward')
+    }, isCompleted ? 'check_circle' : 'chevron_right')
   );
 
   let tippyOpts = { placement: 'bottom' };
 
-  return ( h('div.entity-info-progression', [
-    h('button.entity-info-back.plain-button', {
-      disabled: !progression.canGoBack(),
-      onClick: () => progression.back()
-    }, [
+  return ( h('div.element-info-progression', [
+    h('div.element-info-back-area', [
       h(Tooltip, {
-        description: 'Go to the previous step.',
+        description: 'Back',
         tippy: tippyOpts
       }, [
-        backButtonLabel
+        h('button.element-info-back.plain-button', {
+          disabled: !progression.canGoBack(),
+          onClick: () => progression.back()
+        }, [
+          backButtonLabel
+        ])
       ])
     ]),
 
-    h('button.entity-info-forward.plain-button', {
-      disabled: !progression.canGoForward(),
-      onClick: () => progression.forward()
+    h(Tooltip, {
+      description: isCompleted ? 'Completed' : 'Next',
+      tippy: tippyOpts
     }, [
-      h(Tooltip, {
-        description: isCompleted ? 'This entity is completed.' : 'Go to the next step.',
-        tippy: tippyOpts
-      }, [
-        forwardButtonLabel
+      h('div.element-info-forward-area', [
+        h('button.element-info-forward.plain-button', {
+          disabled: !progression.canGoForward(),
+          onClick: () => progression.forward()
+        }, [
+          forwardButtonLabel
+        ])
       ])
     ])
   ]) );

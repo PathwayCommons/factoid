@@ -15,3 +15,45 @@
 .element-info-no-data {
   color: var(--widgetDisabledTextColor);
 }
+
+.element-info-progression {
+  margin-top: 1em;
+  display: flex;
+  flex-direction: row;
+}
+
+.element-info-back-area,
+.element-info-forward-area {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+}
+
+.element-info-progression {
+  & .popover-target {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+  }
+}
+
+.element-info-back,
+.element-info-forward {
+  font-size: 1.25em;
+  flex-grow: 1;
+}
+
+.element-info-progression-button-label {
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.element-info-complete-icon {
+  color: var(--completeColor);
+}
+
+.element-info-edit {
+  margin-left: 0.25em;
+  vertical-align: baseline;
+}

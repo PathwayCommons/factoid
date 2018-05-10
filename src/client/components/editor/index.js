@@ -340,9 +340,12 @@ class Editor extends React.Component {
     this.data.mountDeferred.resolve();
     let doc = this.data.document;
 
-    let myFactoids = JSON.parse(localStorage.getItem('my-factoids')) || [];
-    myFactoids.push({id: doc.id(), secret: doc.secret(), name: doc.name()});
-    localStorage.setItem('my-factoids', JSON.stringify(myFactoids));
+    let docs = JSON.parse(localStorage.getItem('my-factoids')) || [];
+    let docData = { id: doc.id(), secret: doc.secret(), name: doc.name() };
+    if( _.find(docs,  docData) == null ){
+      docs.push(docData);
+      localStorage.setItem('my-factoids', JSON.stringify(docs));
+    }
   }
 
   componentWillUnmount(){

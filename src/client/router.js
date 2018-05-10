@@ -25,7 +25,7 @@ let routes = [
   {
     path: '/documents',
     render: props => {
-      props.factoids = [... new Set(JSON.parse(localStorage.getItem('my-factoids')))] || [];
+      props.factoids = JSON.parse(localStorage.getItem('my-factoids')) || [];
       return h( MyFactoids, props );
     }
   },

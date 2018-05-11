@@ -10,8 +10,8 @@ class ActivationInhibitionForm extends InteractionForm{
 
   render(){
     const intn = this.state.interaction;
-      const lEnt = this.getInputParticipants()[0];
-      const rEnt = this.getOutputParticipants()[0];
+      const lEnt = this.getInputParticipant();
+      const rEnt = this.getOutputParticipant();
 
 
 

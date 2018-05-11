@@ -1,6 +1,5 @@
 const { Component } = require('react');
 const _ = require('lodash');
-let Interaction = require('../../../model/element/interaction');
 
 class InteractionForm extends Component {
   constructor(props){
@@ -16,14 +15,21 @@ class InteractionForm extends Component {
     this.state.document.synch();
   }
 
-  getInputParticipants(){
+  getInputParticipant(){
     let intn = this.state.interaction;
-    return intn.participants().filter(el =>  (intn.getParticipantType(el) === Interaction.PARTICIPANT_TYPE.UNSIGNED));
+    //get source gives an error for unsigned partcipants
+    // return intn.association().getSource();
+
+    let target = intn.association().getTarget();
+    return intn.participants().filter(el =>  el !== target)[0];
+
   }
 
-  getOutputParticipants(){
+  getOutputParticipant(){
     let intn = this.state.interaction;
-    return intn.participants().filter(el =>  (intn.getParticipantType(el)===  Interaction.PARTICIPANT_TYPE.POSITIVE || intn.getParticipantType(el) ===  Interaction.PARTICIPANT_TYPE.NEGATIVE));
+
+    return intn.association().getTarget();
+
   }
 
 
@@ -50,7 +56,7 @@ class InteractionForm extends Component {
 
   updateActivationInhibition(val){
     let intn = this.state.interaction;
-    let rEnt = this.getEntityForParticipantIndex(1);
+    let rEnt = this.getOutputParticipant();
 
     // Promise.try( () => {
       if (val.indexOf("activ") > -1) {

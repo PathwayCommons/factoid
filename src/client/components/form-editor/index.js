@@ -72,6 +72,28 @@ class FormEditor extends DirtyComponent {
           window.editor = this;
         }
 
+        doc.on('remove', () => {
+          this.forceUpdate();
+        });
+
+
+        //TODO
+        doc.on('add', (el) => {
+
+          el.on('complete', () => {
+
+            el.on('remoteupdate', () => {
+              this.dirty();
+            });
+
+
+            this.dirty();
+          });
+
+
+
+        });
+
         // force an update here
         this.forceUpdate();
         logger.info('The editor is initialising');
@@ -118,7 +140,7 @@ class FormEditor extends DirtyComponent {
     return ( Promise.try( () => el.synch() )
         .then( () => el.create() )
         .then( () => doc.add(el) )
-        .then( () => el.associate(data.association) )
+        .then( () => el.associate(data.association[0].value) )
         .then( () => el )
 
     );
@@ -127,11 +149,10 @@ class FormEditor extends DirtyComponent {
 
 
   addInteractionRow(data){
-    let self = this;
     let entArr = [];
 
     for(let i = 0; i < data.pptTypes.length; i++)
-      entArr.push(self.addElement());
+      entArr.push(this.addElement());
 
     let intn = this.addInteraction(data);
 
@@ -144,41 +165,63 @@ class FormEditor extends DirtyComponent {
 
       for(let i = 0; i < data.pptTypes.length; i++) {
         resp.addParticipant(responses[i]);
+
         resp.setParticipantType(responses[i], data.pptTypes[i]);
+
+
+
+        // if(data.pptTypes[i] !== Interaction.PARTICIPANT_TYPE.UNSIGNED)
+        //   resp.association().setTarget( responses[i]);
+
       }
+
+
       this.dirty();
     });
   }
 
+  updateState(){
+    this.dirty();
+  }
 
   deleteInteractionRow(data){
 
     let doc = this.state.document;
     let intn = data.interaction;
 
-    let els = intn.elements();
+    let els = intn.participants();
     let elsLength = els.length;
 
 
+    // intn.map(el => { if(intn.has(el))
+    // {intn.remove(el); Promise.resolve();}});
+
     let promiseArr = [];
     for(let i = 0; i < elsLength; i++) {
+      let participationCnt = doc.interactions().filter((interaction) => interaction.has( els[i] )).length;
+
       promiseArr.push(Promise.try(() => intn.removeParticipant(els[i]))
         .then(()=>{
+          if(participationCnt <= 1)
               doc.remove(els[i]);
           }
         ));
     }
 
     Promise.all(promiseArr).then( () => {
-      doc.remove(intn);
+      try{
+        doc.remove(intn);
+      }
+      catch(e) {
+        // console.log(e);
+      }
+
       this.dirty();
     });
 
   }
 
 
-
-  //TODO: This will test validity of entries first
   //Convert to biopax or show in the editor
   submit(){
 
@@ -196,28 +239,29 @@ class FormEditor extends DirtyComponent {
 
   render(){
     let doc = this.state.document;
-    let self = this;
 
     this.state.dirty = false;
 
     const forms = [
-      {type: 'Protein Modification' , clazz: ProteinModificationForm, pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  description:"One protein chemically modifies another protein.", association: Interaction.ASSOCIATION.MODIFICATION},
-      {type:'Molecular Interaction', clazz: MolecularInteractionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.UNSIGNED], description: "Two or more proteins physically interact.", association: Interaction.ASSOCIATION.INTERACTION},
-      {type:'Activation Inhibition', clazz:ActivationInhibitionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes the activity status of another protein.", association: Interaction.ASSOCIATION.MODIFICATION},
-      {type:'Expression Regulation', clazz: ExpressionRegulationForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes mRNA expression of a gene.", association: Interaction.ASSOCIATION.EXPRESSION}
+      {type: 'Protein Modification' , clazz: ProteinModificationForm, pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  description:"One protein chemically modifies another protein.", association: [Interaction.ASSOCIATION.PHOSPHORYLATION, Interaction.ASSOCIATION.UBIQUINATION, Interaction.ASSOCIATION.METHYLATION] },
+      {type:'Molecular Interaction', clazz: MolecularInteractionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.UNSIGNED], description: "Two or more proteins physically interact.", association: [Interaction.ASSOCIATION.INTERACTION]},
+      {type:'Activation Inhibition', clazz:ActivationInhibitionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes the activity status of another protein.", association: [Interaction.ASSOCIATION.MODIFICATION]},
+      {type:'Expression Regulation', clazz: ExpressionRegulationForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes mRNA expression of a gene.", association: [Interaction.ASSOCIATION.EXPRESSION]}
     ];
 
     let hArr = [];
 
 
-    forms.forEach(function(form){
+    forms.forEach((form) => {
 
       let formContent = doc.interactions().map(interaction => {
-        if(interaction.name() === form.type)
+          if(form.association.filter(assoc => assoc.value === interaction.association().value).length > 0 )
+        // if(form.type === interaction.name())
           return h('div.form-interaction-line',
             [
-              h(form.clazz, {key: interaction.id(), document:doc, interaction:interaction, description: form.type}),
-              h('button.delete-interaction', { onClick: () => {self.deleteInteractionRow({interaction:interaction}); } }, 'X')
+              h('button.delete-interaction', { onClick: () => {this.deleteInteractionRow({interaction:interaction}); } }, 'X'),
+              h(form.clazz, {key: interaction.id(), document:doc, interaction:interaction, description: form.type})
+
             ] );
         else return null;
       });
@@ -229,7 +273,8 @@ class FormEditor extends DirtyComponent {
         h('p', form.description),
         ...formContent,
         h('div.form-action-buttons', [
-          h('button.form-interaction-adder', { onClick: () => self.addInteractionRow({name:form.type, pptTypes:form.pptTypes,  association: form.association})}, [
+          h('button.form-interaction-adder', {
+            onClick: () => this.addInteractionRow({name:form.type, pptTypes:form.pptTypes,  association: form.association})}, [
             h('i.material-icons.add-new-interaction-icon', 'add'),
             'ADD INTERACTION'
           ])])

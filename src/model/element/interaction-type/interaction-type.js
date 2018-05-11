@@ -51,7 +51,7 @@ class InteractionType {
     ]);
   }
 
-  setPariticpantAsPositive( ppt ){
+  setParticipantAsPositive(ppt ){
     return this.setParticipantAs( ppt, PARTICIPANT_TYPE.POSITIVE );
   }
 
@@ -64,7 +64,7 @@ class InteractionType {
   }
 
   setAsPromotionOf( ppt ){
-    return this.setPariticpantAsPositive( ppt );
+    return this.setParticipantAsPositive( ppt );
   }
 
   isActiviation(){
@@ -72,7 +72,7 @@ class InteractionType {
   }
 
   setAsActivationOf( ppt ){
-    return this.setPariticpantAsPositive( ppt );
+    return this.setParticipantAsPositive( ppt );
   }
 
   isInhibition(){
@@ -98,7 +98,7 @@ class InteractionType {
   setTarget( ppt ){
     if( this.isNegative() ){
       return this.setParticipantAsNegative( ppt );
-    } else if( this.isPostivie() ){
+    } else if( this.isPositive() ){
       return this.setParticipantAsPositive( ppt );
     } else {
       return this.setParticipantAsPositive( PARTICIPANT_TYPE.UNSIGNED_TARGET );

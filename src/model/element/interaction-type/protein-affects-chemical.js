@@ -22,7 +22,7 @@ class ProteinAffectsChemical extends InteractionType {
   }
 
   setAsProductionOf( ppt ){
-    return this.setPariticpantAsPositive( ppt );
+    return this.setParticipantAsPositive( ppt );
   }
 
   allowedParticipantTypes(){

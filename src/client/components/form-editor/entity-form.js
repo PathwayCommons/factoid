@@ -20,15 +20,14 @@ class EntityForm extends DirtyComponent {
     }, props );
 
 
-
-    // if(this.data.entity){
-    //   this.data.entity.on("complete", () => {
-    //     this.dirty();
-    //   });
-    // }
+    if(this.data.entity){
+      this.data.entity.on("complete", () => {
+        this.mergeWithOtherEntities();
+        this.dirty();
+      });
+    }
 
     this.entityInfoClasses = ".entity-info-section, .entity-info-progression";
-
 
   }
 
@@ -48,7 +47,6 @@ class EntityForm extends DirtyComponent {
       else {
         ei.style.height = "100%";
 
-        // ei.style.zIndex = "10";
       }
     });
     this.dirty();
@@ -84,16 +82,24 @@ class EntityForm extends DirtyComponent {
   }
 
   areAssociationsTheSame(assoc1, assoc2){
-    return (assoc1.id === assoc2.id && assoc1.modification === assoc2.modification && assoc1.organism === assoc2.organism);
+    return (assoc1.id === assoc2.id  && assoc1.organism === assoc2.organism);
   }
 
   /***
    * Combine the completed entities if they have the same grounding information and database id
    */
   mergeWithOtherEntities(){
+    let entity = this.state.entity;
 
-    if(this.state.entity.completed()) {
-      let entity = this.state.entity;
+    if(entity) {
+
+      //get the participant type of this entity within its interaction
+      //there can only be one interaction with this entity as it is not merged yet
+      let intns = this.state.document.interactions().filter(intn => intn.has(entity));
+
+      let participantType = intns[0].getParticipantType(entity);
+
+
       let mergedEntity;
 
       //we can assume that all the other elements in the list are unique as we replace them immediately
@@ -118,12 +124,15 @@ class EntityForm extends DirtyComponent {
         let updateParticipants = ((intn) => {
           if( intn.has( entity )) {
             intn.addParticipant(mergedEntity);
+            intn.setParticipantType(mergedEntity, participantType);
+
           }
           else
             return Promise.resolve();
         });
 
         Promise.all(  this.state.document.interactions().map( updateParticipants ) );
+
 
 
         //update the entity of this form
@@ -139,11 +148,10 @@ class EntityForm extends DirtyComponent {
 
      return true;
   }
-  componentDidUpdate(){
 
-    //always check this
-    this.mergeWithOtherEntities();
-    return true;
+
+  updateState(){
+    this.dirty();
   }
 
   domId(){
@@ -155,7 +163,10 @@ class EntityForm extends DirtyComponent {
 
     hFunc = h('div.form-interaction', [
 
-      h('button.entity-info-edit.plain-button',  {onClick: () => this.toggleEntityInfo()}, [
+      h('button.entity-info-edit.plain-button',  {
+        onClick: () => this.toggleEntityInfo(),
+        onChange: () => this.updateState()},
+        [
         h('i.material-icons', 'arrow_drop_down  ')
       ]),
       h(ElementInfo, {element: this.state.entity, document: this.state.document}),

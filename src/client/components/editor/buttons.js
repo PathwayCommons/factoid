@@ -9,6 +9,13 @@ module.exports = function({ controller, document, bus }){
 
   if( document.editable() ){
     grs.push([
+      h(Tooltip, { description: 'Help' }, [
+        h('button.editor-button.plain-button', { onClick: () => controller.toggleHelp() }, [
+          h('i.material-icons', 'info')
+        ])
+      ])
+    ]),
+    grs.push([
       h(Tooltip, { description: 'Add entity', shortcut: 'e' }, [
         h('button.editor-button.plain-button', { onClick: () => controller.addElement().then( el => bus.emit('opentip', el) ) }, [
           h('i.material-icons', 'add_circle')

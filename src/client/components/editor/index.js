@@ -110,6 +110,7 @@ class Editor extends React.Component {
     this.data = ({
       bus: bus,
       document: doc,
+      helpMode: false,
       drawMode: false,
       newElementShift: 0,
       mountDeferred: defer(),
@@ -345,6 +346,26 @@ class Editor extends React.Component {
     if( _.find(docs,  docData) == null ){
       docs.push(docData);
       localStorage.setItem('my-factoids', JSON.stringify(docs));
+    }
+  }
+
+  toggleHelp(){
+    let showHelp = this.data.helpMode;
+
+    if( !showHelp ){
+      // fade the screen black
+      // remove the current factoid document elements
+      // add an example factoid document of a well known pathway
+      // open tooltips for the editor buttons, entities, and interactions
+
+      this.data.showHelp = true;
+    } else {
+      // restore screen dimness
+      // restore the current factoid document elements
+      // remove the example factoid document
+      // remove all the tooltips for the editor buttons, entities, and interactions
+
+      this.data.showHelp = false;
     }
   }
 

@@ -7,3 +7,5 @@ npm-debug.log
 warn.log
 error.log
 debug.log
+/.idea/
+

@@ -5,16 +5,22 @@ const EventEmitter = require('eventemitter3');
 const io = require('socket.io-client');
 const _ = require('lodash');
 const Promise = require('bluebird');
-const logger = require('../../logger');
-const makeCytoscape = require('./cy');
-const Document = require('../../../model/document');
-const debug = require('../../debug');
-const defs = require('./defs');
+
 const { getId, defer } = require('../../../util');
-const Buttons = require('./buttons');
+const Document = require('../../../model/document');
+
 const Notification = require('../notification');
 const CornerNotification = require('../notification/corner');
+const Popover = require('../popover/popover');
+
+const logger = require('../../logger');
+const debug = require('../../debug');
+
+const makeCytoscape = require('./cy');
+const defs = require('./defs');
+const Buttons = require('./buttons');
 const UndoRemove = require('./undo-remove');
+const helpNetwork = require('./help-network');
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -110,7 +116,7 @@ class Editor extends React.Component {
     this.data = ({
       bus: bus,
       document: doc,
-      helpMode: false,
+      showHelp: false,
       drawMode: false,
       newElementShift: 0,
       mountDeferred: defer(),
@@ -329,12 +335,14 @@ class Editor extends React.Component {
     let { document, bus, incompleteNotification } = this.data;
     let controller = this;
 
-    return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), this.state.initted ? [
+    let editorContent = this.state.initted ? [
       h(Buttons, { controller, document, bus }),
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
       h('div.editor-graph#editor-graph')
-    ] : []);
+    ] : [];
+
+    return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), editorContent);
   }
 
   componentDidMount(){
@@ -350,22 +358,53 @@ class Editor extends React.Component {
   }
 
   toggleHelp(){
-    let showHelp = this.data.helpMode;
+    let showHelp = this.data.showHelp;
+    let bus = this.data.bus;
+    let cy = this.data.cy;
+
+
+    let rmEditorEles = cy => {
+      bus.emit('closetip');
+      let elements = cy.elements();
+
+      elements.unselect();
+      cy.scratch('_help', elements);
+      elements.remove();
+    };
+
+    let reAddEditorEles = cy => {
+      let elements = cy.scratch('_help');
+      elements.restore();
+      cy.removeScratch('_help');
+    };
+
+    let revertEditorState = () => {
+      this.toggleDrawMode(false);
+
+      this.setData({showHelp: true});
+    };
 
     if( !showHelp ){
       // fade the screen black
       // remove the current factoid document elements
       // add an example factoid document of a well known pathway
       // open tooltips for the editor buttons, entities, and interactions
-
-      this.data.showHelp = true;
+      rmEditorEles(cy);
+      cy.add(helpNetwork);
+      cy.fit();
+      cy.autoungrabify(true);
+      revertEditorState();
     } else {
       // restore screen dimness
       // restore the current factoid document elements
       // remove the example factoid document
       // remove all the tooltips for the editor buttons, entities, and interactions
+      cy.remove('*');
+      cy.autoungrabify(false);
+      reAddEditorEles(cy);
+      cy.fit();
 
-      this.data.showHelp = false;
+      this.setData({showHelp: false});
     }
   }
 

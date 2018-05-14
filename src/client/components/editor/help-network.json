@@ -1,0 +1,271 @@
+[
+  {
+    "data": {
+      "id": "cc5956c0-7d85-4a71-b2ff-8eeac36d9550",
+      "name": "ATM",
+      "type": "protein",
+      "isEntity": true,
+      "isInteraction": false,
+      "associated": true,
+      "completed": true
+    },
+    "position": {
+      "x": 13.612104534026333,
+      "y": 25.36898602184649
+    },
+    "group": "nodes",
+    "removed": false,
+    "selected": false,
+    "selectable": true,
+    "locked": false,
+    "grabbable": true,
+    "classes": ""
+  },
+  {
+    "data": {
+      "id": "5e3202e7-5c79-4e40-aca9-f956b11789d2",
+      "name": "Mdm2",
+      "type": "protein",
+      "isEntity": true,
+      "isInteraction": false,
+      "associated": true,
+      "completed": true
+    },
+    "position": {
+      "x": 30.497529311086055,
+      "y": 214.42653169507605
+    },
+    "group": "nodes",
+    "removed": false,
+    "selected": false,
+    "selectable": true,
+    "locked": false,
+    "grabbable": true,
+    "classes": ""
+  },
+  {
+    "data": {
+      "id": "e371e20a-e0e1-4cde-a2ef-92d299a95d6f",
+      "name": "p21",
+      "type": "protein",
+      "isEntity": true,
+      "isInteraction": false,
+      "associated": true,
+      "completed": true
+    },
+    "position": {
+      "x": 257.3643843953064,
+      "y": 200.2717213740566
+    },
+    "group": "nodes",
+    "removed": false,
+    "selected": false,
+    "selectable": true,
+    "locked": false,
+    "grabbable": true,
+    "classes": ""
+  },
+  {
+    "data": {
+      "id": "62ab424f-9c5d-4f14-a531-6ff40aca80a4",
+      "name": "Cdk2",
+      "type": "protein",
+      "isEntity": true,
+      "isInteraction": false,
+      "associated": true,
+      "completed": true
+    },
+    "position": {
+      "x": 221.03778154709403,
+      "y": 367.02433112562835
+    },
+    "group": "nodes",
+    "removed": false,
+    "selected": false,
+    "selectable": true,
+    "locked": false,
+    "grabbable": true,
+    "classes": ""
+  },
+  {
+    "data": {
+      "id": "5e28ebeb-c40e-4b12-a19c-4bffc7f73c6b",
+      "name": "CCNE1",
+      "type": "protein",
+      "isEntity": true,
+      "isInteraction": false,
+      "associated": true,
+      "completed": true
+    },
+    "position": {
+      "x": 254.58218614957013,
+      "y": 30.81403112357316
+    },
+    "group": "nodes",
+    "removed": false,
+    "selected": false,
+    "selectable": true,
+    "locked": false,
+    "grabbable": true,
+    "classes": ""
+  },
+  {
+    "data": {
+      "id": "a97c120c-755c-4ae2-abcb-746c00bc9fb3",
+      "name": "",
+      "type": "interaction",
+      "isEntity": false,
+      "isInteraction": true,
+      "arity": 2
+    },
+    "position": {
+      "x": 22.054816922556192,
+      "y": 119.89775885846127
+    },
+    "group": "nodes",
+    "removed": false,
+    "selected": false,
+    "selectable": true,
+    "locked": false,
+    "grabbable": true,
+    "classes": ""
+  },
+  {
+    "data": {
+      "id": "3320d336-8b1c-4831-9da9-70629d0ab6aa",
+      "name": "",
+      "type": "interaction",
+      "isEntity": false,
+      "isInteraction": true,
+      "arity": 2
+    },
+    "position": {
+      "x": 239.2010829712002,
+      "y": 283.6480262498425
+    },
+    "group": "nodes",
+    "removed": false,
+    "selected": false,
+    "selectable": true,
+    "locked": false,
+    "grabbable": true,
+    "classes": ""
+  },
+  {
+    "data": {
+      "id": "bc1bef03-3ba8-4ac2-bdab-b00a2468fa1e",
+      "name": "",
+      "type": "interaction",
+      "isEntity": false,
+      "isInteraction": true,
+      "arity": 2
+    },
+    "position": {
+      "x": 255.97328527243826,
+      "y": 115.54287624881488
+    },
+    "group": "nodes",
+    "removed": false,
+    "selected": false,
+    "selectable": true,
+    "locked": false,
+    "grabbable": true,
+    "classes": ""
+  },
+  {
+    "data": {
+      "source": "a97c120c-755c-4ae2-abcb-746c00bc9fb3",
+      "target": "5e3202e7-5c79-4e40-aca9-f956b11789d2",
+      "type": "unsigned",
+      "id": "71946421-a52c-442e-ae81-dab24f252dad"
+    },
+    "position": {},
+    "group": "edges",
+    "removed": false,
+    "selected": false,
+    "selectable": true,
+    "locked": false,
+    "grabbable": true,
+    "classes": ""
+  },
+  {
+    "data": {
+      "source": "a97c120c-755c-4ae2-abcb-746c00bc9fb3",
+      "target": "cc5956c0-7d85-4a71-b2ff-8eeac36d9550",
+      "type": "unsigned",
+      "id": "cb39dc03-d775-41de-ad7b-b1273025aae9"
+    },
+    "position": {},
+    "group": "edges",
+    "removed": false,
+    "selected": false,
+    "selectable": true,
+    "locked": false,
+    "grabbable": true,
+    "classes": ""
+  },
+  {
+    "data": {
+      "source": "3320d336-8b1c-4831-9da9-70629d0ab6aa",
+      "target": "62ab424f-9c5d-4f14-a531-6ff40aca80a4",
+      "type": "unsigned",
+      "id": "15cd707a-1dc1-4340-a6f8-70a470a2f5be"
+    },
+    "position": {},
+    "group": "edges",
+    "removed": false,
+    "selected": false,
+    "selectable": true,
+    "locked": false,
+    "grabbable": true,
+    "classes": ""
+  },
+  {
+    "data": {
+      "source": "3320d336-8b1c-4831-9da9-70629d0ab6aa",
+      "target": "e371e20a-e0e1-4cde-a2ef-92d299a95d6f",
+      "type": "unsigned",
+      "id": "eb3d0965-0e12-493b-bf14-f562083ee2dd"
+    },
+    "position": {},
+    "group": "edges",
+    "removed": false,
+    "selected": false,
+    "selectable": true,
+    "locked": false,
+    "grabbable": true,
+    "classes": ""
+  },
+  {
+    "data": {
+      "source": "bc1bef03-3ba8-4ac2-bdab-b00a2468fa1e",
+      "target": "5e28ebeb-c40e-4b12-a19c-4bffc7f73c6b",
+      "type": "unsigned",
+      "id": "abca036b-f54e-48ca-90f9-f5a20c4ff8dd"
+    },
+    "position": {},
+    "group": "edges",
+    "removed": false,
+    "selected": false,
+    "selectable": true,
+    "locked": false,
+    "grabbable": true,
+    "classes": ""
+  },
+  {
+    "data": {
+      "source": "bc1bef03-3ba8-4ac2-bdab-b00a2468fa1e",
+      "target": "e371e20a-e0e1-4cde-a2ef-92d299a95d6f",
+      "type": "unsigned",
+      "id": "eae1537c-a721-48be-8d6e-4c8f24a6eca5"
+    },
+    "position": {},
+    "group": "edges",
+    "removed": false,
+    "selected": false,
+    "selectable": true,
+    "locked": false,
+    "grabbable": true,
+    "classes": ""
+  }
+]

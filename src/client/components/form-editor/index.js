@@ -140,7 +140,7 @@ class FormEditor extends DirtyComponent {
     return ( Promise.try( () => el.synch() )
         .then( () => el.create() )
         .then( () => doc.add(el) )
-        .then( () => el.associate(data.association[0].value) )
+        .then( () => el.associate(data.association.value))
         .then( () => el )
 
     );
@@ -274,7 +274,7 @@ class FormEditor extends DirtyComponent {
         ...formContent,
         h('div.form-action-buttons', [
           h('button.form-interaction-adder', {
-            onClick: () => this.addInteractionRow({name:form.type, pptTypes:form.pptTypes,  association: form.association})}, [
+            onClick: () => this.addInteractionRow({name:form.type, pptTypes:form.pptTypes,  association: form.association[0]})}, [
             h('i.material-icons.add-new-interaction-icon', 'add'),
             'ADD INTERACTION'
           ])])

@@ -1,6 +1,8 @@
 const React = require('react');
 const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
+const hh = require('hyperscript');
+const tippyjs = require('tippy.js');
 const EventEmitter = require('eventemitter3');
 const io = require('socket.io-client');
 const _ = require('lodash');
@@ -11,7 +13,6 @@ const Document = require('../../../model/document');
 
 const Notification = require('../notification');
 const CornerNotification = require('../notification/corner');
-const Popover = require('../popover/popover');
 
 const logger = require('../../logger');
 const debug = require('../../debug');
@@ -342,6 +343,16 @@ class Editor extends React.Component {
       h('div.editor-graph#editor-graph')
     ] : [];
 
+    if( this.state.initted && this.state.showHelp ){
+      editorContent = [
+        h(Buttons, { controller, document, bus }),
+        incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
+        h(UndoRemove, { controller, document, bus }),
+        h('div.editor-graph#editor-graph'),
+        h('div.editor-help-overlay', { onClick: e => this.toggleHelp() } )
+      ];
+    }
+
     return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), editorContent);
   }
 
@@ -389,20 +400,82 @@ class Editor extends React.Component {
       // remove the current factoid document elements
       // add an example factoid document of a well known pathway
       // open tooltips for the editor buttons, entities, and interactions
+      this.data.bus.emit('showhelp');
       rmEditorEles(cy);
       cy.add(helpNetwork);
-      cy.fit();
+      cy.fit(10);
       cy.autoungrabify(true);
+      cy.userPanningEnabled(false);
+      cy.userZoomingEnabled(false);
       revertEditorState();
+      let ent = cy.nodes().first();
+      let entRef = ent.popperRef();
+      let entTippy = new tippyjs(entRef, {
+        html: (() => {
+          return hh('div', 'tippy content');
+        })(),
+        trigger: 'manual',
+        theme: 'light',
+        placement: 'bottom',
+        createPopperInstanceOnInit: true,
+        animation: 'fade',
+        animateFill: false,
+        updateDuration: 250,
+        duration: [ 250, 0 ],
+        delay: [ 0, 0 ],
+        hideDuration: 0,
+        arrow: true,
+        interactive: true,
+        multiple: true,
+        hideOnClick: true,
+        sticky: true,
+        livePlacement: true,
+        dynamicInputDetection: true
+      }).tooltips[0];
+
+      let intn = cy.edges().first();
+      let intnRef = intn.popperRef();
+      let intnTippy = new tippyjs(intnRef, {
+        html: (() => {
+          return hh('div', 'tippy content');
+        })(),
+        trigger: 'manual',
+        theme: 'light',
+        placement: 'top-right',
+        createPopperInstanceOnInit: true,
+        animation: 'fade',
+        animateFill: false,
+        updateDuration: 250,
+        duration: [ 250, 0 ],
+        delay: [ 0, 0 ],
+        hideDuration: 0,
+        arrow: true,
+        interactive: true,
+        multiple: true,
+        hideOnClick: true,
+        sticky: true,
+        livePlacement: true,
+        dynamicInputDetection: true
+      }).tooltips[0];
+
+      this.entTip = entTippy;
+      this.intnTip = intnTippy;
+
+      entTippy.show();
+      intnTippy.show();
+
     } else {
       // restore screen dimness
       // restore the current factoid document elements
       // remove the example factoid document
       // remove all the tooltips for the editor buttons, entities, and interactions
+      this.data.bus.emit('closehelp');
       cy.remove('*');
       cy.autoungrabify(false);
       reAddEditorEles(cy);
       cy.fit();
+      cy.userZoomingEnabled(true);
+      cy.userPanningEnabled(true);
 
       this.setData({showHelp: false});
     }
@@ -415,6 +488,12 @@ class Editor extends React.Component {
 
     if( cy ){
       cy.destroy();
+    }
+    if( this.entTip ){
+      this.entTip.destroy();
+    }
+    if( this.intnTip ){
+      this.intnTip.destroy();
     }
 
     document.elements().forEach( el => el.removeAllListeners() );

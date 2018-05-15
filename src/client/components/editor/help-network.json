@@ -1,29 +1,7 @@
 [
   {
     "data": {
-      "id": "cc5956c0-7d85-4a71-b2ff-8eeac36d9550",
-      "name": "ATM",
-      "type": "protein",
-      "isEntity": true,
-      "isInteraction": false,
-      "associated": true,
-      "completed": true
-    },
-    "position": {
-      "x": 13.612104534026333,
-      "y": 25.36898602184649
-    },
-    "group": "nodes",
-    "removed": false,
-    "selected": false,
-    "selectable": true,
-    "locked": false,
-    "grabbable": true,
-    "classes": ""
-  },
-  {
-    "data": {
-      "id": "5e3202e7-5c79-4e40-aca9-f956b11789d2",
+      "id": "0045f121-9837-4f1e-b345-b84242497d5d",
       "name": "Mdm2",
       "type": "protein",
       "isEntity": true,
@@ -32,8 +10,8 @@
       "completed": true
     },
     "position": {
-      "x": 30.497529311086055,
-      "y": 214.42653169507605
+      "x": -43.57268220095528,
+      "y": 83.84032064783555
     },
     "group": "nodes",
     "removed": false,
@@ -45,7 +23,7 @@
   },
   {
     "data": {
-      "id": "e371e20a-e0e1-4cde-a2ef-92d299a95d6f",
+      "id": "be724669-6365-4557-9e16-cdc83c7ff5fe",
       "name": "p21",
       "type": "protein",
       "isEntity": true,
@@ -54,8 +32,8 @@
       "completed": true
     },
     "position": {
-      "x": 257.3643843953064,
-      "y": 200.2717213740566
+      "x": -59.25902989051382,
+      "y": 313.1912112585853
     },
     "group": "nodes",
     "removed": false,
@@ -67,8 +45,8 @@
   },
   {
     "data": {
-      "id": "62ab424f-9c5d-4f14-a531-6ff40aca80a4",
-      "name": "Cdk2",
+      "id": "17f547ca-bb48-45c0-81ab-166af88afee6",
+      "name": "ATM",
       "type": "protein",
       "isEntity": true,
       "isInteraction": false,
@@ -76,8 +54,8 @@
       "completed": true
     },
     "position": {
-      "x": 221.03778154709403,
-      "y": 367.02433112562835
+      "x": 83.59959093499815,
+      "y": 84.73485820732886
     },
     "group": "nodes",
     "removed": false,
@@ -89,7 +67,7 @@
   },
   {
     "data": {
-      "id": "5e28ebeb-c40e-4b12-a19c-4bffc7f73c6b",
+      "id": "15cdee58-e28b-43bd-9943-49813679a526",
       "name": "CCNE1",
       "type": "protein",
       "isEntity": true,
@@ -98,8 +76,8 @@
       "completed": true
     },
     "position": {
-      "x": 254.58218614957013,
-      "y": 30.81403112357316
+      "x": -80.27118947235067,
+      "y": 203.70502754851506
     },
     "group": "nodes",
     "removed": false,
@@ -111,7 +89,29 @@
   },
   {
     "data": {
-      "id": "a97c120c-755c-4ae2-abcb-746c00bc9fb3",
+      "id": "1343c6eb-39a1-47a0-aae1-f4823192e903",
+      "name": "Cdk2",
+      "type": "protein",
+      "isEntity": true,
+      "isInteraction": false,
+      "associated": true,
+      "completed": true
+    },
+    "position": {
+      "x": 73.58908683456443,
+      "y": 298.8571743548438
+    },
+    "group": "nodes",
+    "removed": false,
+    "selected": false,
+    "selectable": true,
+    "locked": false,
+    "grabbable": true,
+    "classes": ""
+  },
+  {
+    "data": {
+      "id": "b6558ca6-f760-4210-a694-6e68008cb125",
       "name": "",
       "type": "interaction",
       "isEntity": false,
@@ -119,8 +119,8 @@
       "arity": 2
     },
     "position": {
-      "x": 22.054816922556192,
-      "y": 119.89775885846127
+      "x": 20.013454367021435,
+      "y": 84.2875894275822
     },
     "group": "nodes",
     "removed": false,
@@ -132,7 +132,7 @@
   },
   {
     "data": {
-      "id": "3320d336-8b1c-4831-9da9-70629d0ab6aa",
+      "id": "81b81d18-a2c9-4bf9-a569-b3a0ce4a69b3",
       "name": "",
       "type": "interaction",
       "isEntity": false,
@@ -140,8 +140,8 @@
       "arity": 2
     },
     "position": {
-      "x": 239.2010829712002,
-      "y": 283.6480262498425
+      "x": -69.76510968143225,
+      "y": 258.4481194035502
     },
     "group": "nodes",
     "removed": false,
@@ -153,7 +153,7 @@
   },
   {
     "data": {
-      "id": "bc1bef03-3ba8-4ac2-bdab-b00a2468fa1e",
+      "id": "b64d0287-6dfe-4f40-9cee-56a047574800",
       "name": "",
       "type": "interaction",
       "isEntity": false,
@@ -161,8 +161,8 @@
       "arity": 2
     },
     "position": {
-      "x": 255.97328527243826,
-      "y": 115.54287624881488
+      "x": 7.165028472025302,
+      "y": 306.02419280671455
     },
     "group": "nodes",
     "removed": false,
@@ -174,10 +174,10 @@
   },
   {
     "data": {
-      "source": "a97c120c-755c-4ae2-abcb-746c00bc9fb3",
-      "target": "5e3202e7-5c79-4e40-aca9-f956b11789d2",
+      "source": "b6558ca6-f760-4210-a694-6e68008cb125",
+      "target": "0045f121-9837-4f1e-b345-b84242497d5d",
       "type": "unsigned",
-      "id": "71946421-a52c-442e-ae81-dab24f252dad"
+      "id": "6086a1f8-2ed7-49a9-803b-c97c4ce7f325"
     },
     "position": {},
     "group": "edges",
@@ -190,10 +190,10 @@
   },
   {
     "data": {
-      "source": "a97c120c-755c-4ae2-abcb-746c00bc9fb3",
-      "target": "cc5956c0-7d85-4a71-b2ff-8eeac36d9550",
+      "source": "b6558ca6-f760-4210-a694-6e68008cb125",
+      "target": "17f547ca-bb48-45c0-81ab-166af88afee6",
       "type": "unsigned",
-      "id": "cb39dc03-d775-41de-ad7b-b1273025aae9"
+      "id": "757eddb6-1403-4d23-8836-c92e984abf88"
     },
     "position": {},
     "group": "edges",
@@ -206,10 +206,10 @@
   },
   {
     "data": {
-      "source": "3320d336-8b1c-4831-9da9-70629d0ab6aa",
-      "target": "62ab424f-9c5d-4f14-a531-6ff40aca80a4",
+      "source": "81b81d18-a2c9-4bf9-a569-b3a0ce4a69b3",
+      "target": "15cdee58-e28b-43bd-9943-49813679a526",
       "type": "unsigned",
-      "id": "15cd707a-1dc1-4340-a6f8-70a470a2f5be"
+      "id": "b2368a90-8022-462c-8e34-cf1fd7d70ca0"
     },
     "position": {},
     "group": "edges",
@@ -222,10 +222,10 @@
   },
   {
     "data": {
-      "source": "3320d336-8b1c-4831-9da9-70629d0ab6aa",
-      "target": "e371e20a-e0e1-4cde-a2ef-92d299a95d6f",
+      "source": "81b81d18-a2c9-4bf9-a569-b3a0ce4a69b3",
+      "target": "be724669-6365-4557-9e16-cdc83c7ff5fe",
       "type": "unsigned",
-      "id": "eb3d0965-0e12-493b-bf14-f562083ee2dd"
+      "id": "7c4a1fd3-3975-4c39-a27d-1358036415d7"
     },
     "position": {},
     "group": "edges",
@@ -238,10 +238,10 @@
   },
   {
     "data": {
-      "source": "bc1bef03-3ba8-4ac2-bdab-b00a2468fa1e",
-      "target": "5e28ebeb-c40e-4b12-a19c-4bffc7f73c6b",
+      "source": "b64d0287-6dfe-4f40-9cee-56a047574800",
+      "target": "1343c6eb-39a1-47a0-aae1-f4823192e903",
       "type": "unsigned",
-      "id": "abca036b-f54e-48ca-90f9-f5a20c4ff8dd"
+      "id": "86e4d7eb-bc4e-4c0f-8cbc-0b590ba77903"
     },
     "position": {},
     "group": "edges",
@@ -254,10 +254,10 @@
   },
   {
     "data": {
-      "source": "bc1bef03-3ba8-4ac2-bdab-b00a2468fa1e",
-      "target": "e371e20a-e0e1-4cde-a2ef-92d299a95d6f",
+      "source": "b64d0287-6dfe-4f40-9cee-56a047574800",
+      "target": "be724669-6365-4557-9e16-cdc83c7ff5fe",
       "type": "unsigned",
-      "id": "eae1537c-a721-48be-8d6e-4c8f24a6eca5"
+      "id": "d16f0a0a-1a01-4937-be3f-ca7688da1b6a"
     },
     "position": {},
     "group": "edges",

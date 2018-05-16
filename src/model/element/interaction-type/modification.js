@@ -21,7 +21,7 @@ class Modification extends InteractionType {
 
   static isAllowedForInteraction( intn ){
     let ppts = intn.participants();
-    let isProtein = ent => true || ent.type() === 'protein';
+    let isProtein = ent => ent.type() === 'protein';
 
     return ppts.length === 2 && ppts.every( isProtein );
   }

@@ -1,13 +1,12 @@
 const _ = require('lodash');
 
 const General = require('./general');
-const ChemicalAffectsProtein = require('./chemical-affects-protein');
 const Expression = require('./expression');
 const Modification = require('./modification');
 const Phosphorylation = require('./phosphorylation');
 const Methylation = require('./methylation');
 const Ubiquination = require('./ubiquination');
-const ProteinAffectsChemical = require('./protein-affects-chemical');
+const ProteinChemical = require('./protein-chemical');
 
 const INTERACTION_TYPE = Object.freeze({
   INTERACTION: General,
@@ -16,8 +15,7 @@ const INTERACTION_TYPE = Object.freeze({
   PHOSPHORYLATION: Phosphorylation,
   METHYLATION: Methylation,
   UBIQUINATION: Ubiquination,
-  CHEMICAL_AFFECTS_PROTEIN: ChemicalAffectsProtein,
-  PROTEIN_AFFECTS_CHEMICAL: ProteinAffectsChemical
+  PROTEIN_CHEMICAL: ProteinChemical
 });
 
 const INTERACTION_TYPE_VALS = ( () => {

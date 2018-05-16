@@ -8,7 +8,7 @@ const io = require('socket.io-client');
 const _ = require('lodash');
 const Promise = require('bluebird');
 
-const { getId, defer } = require('../../../util');
+const { getId, defer, makeClassList, isInteractionNode } = require('../../../util');
 const Document = require('../../../model/document');
 
 const Notification = require('../notification');
@@ -16,12 +16,12 @@ const CornerNotification = require('../notification/corner');
 
 const logger = require('../../logger');
 const debug = require('../../debug');
+const { tippyDefaults, tippyTopZIndex } = require('../../defs');
 
 const makeCytoscape = require('./cy');
 const defs = require('./defs');
 const Buttons = require('./buttons');
 const UndoRemove = require('./undo-remove');
-const helpNetwork = require('./help-network');
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -338,21 +338,17 @@ class Editor extends React.Component {
 
     let editorContent = this.state.initted ? [
       h(Buttons, { controller, document, bus }),
-      incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
+      incompleteNotification  && !this.state.showHelp ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
-      h('div.editor-graph#editor-graph')
+      h('div.editor-graph#editor-graph'),
+      h('div.editor-help-overlay', { onClick: () => this.toggleHelp(), className: makeClassList({'editor-help-overlay-active': this.state.showHelp})} )
     ] : [];
 
-    if( this.state.initted && this.state.showHelp ){
-      editorContent = [
-        h(Buttons, { controller, document, bus }),
-        incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
-        h(UndoRemove, { controller, document, bus }),
-        h('div.editor-graph#editor-graph'),
-        h('div.editor-help-overlay', { onClick: e => this.toggleHelp() } )
-      ];
+    if( this.state.showHelp ){
+       editorContent.push(h('div.editor-button.editor-help-close-button', { onClick: () => this.toggleHelp() }, [
+        h('i.material-icons', 'close')
+       ]));
     }
-
     return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), editorContent);
   }
 
@@ -373,111 +369,63 @@ class Editor extends React.Component {
     let bus = this.data.bus;
     let cy = this.data.cy;
 
-
-    let rmEditorEles = cy => {
-      bus.emit('closetip');
-      let elements = cy.elements();
-
-      elements.unselect();
-      cy.scratch('_help', elements);
-      elements.remove();
-    };
-
-    let reAddEditorEles = cy => {
-      let elements = cy.scratch('_help');
-      elements.restore();
-      cy.removeScratch('_help');
-    };
-
-    let revertEditorState = () => {
-      this.toggleDrawMode(false);
-
-      this.setData({showHelp: true});
-    };
-
     if( !showHelp ){
-      // fade the screen black
-      // remove the current factoid document elements
-      // add an example factoid document of a well known pathway
-      // open tooltips for the editor buttons, entities, and interactions
-      this.data.bus.emit('showhelp');
-      rmEditorEles(cy);
-      cy.add(helpNetwork);
-      cy.fit(10);
-      cy.autoungrabify(true);
-      cy.userPanningEnabled(false);
-      cy.userZoomingEnabled(false);
-      revertEditorState();
-      let ent = cy.nodes().first();
-      let entRef = ent.popperRef();
-      let entTippy = new tippyjs(entRef, {
-        html: (() => {
-          return hh('div', 'tippy content');
-        })(),
-        trigger: 'manual',
-        theme: 'light',
-        placement: 'bottom',
-        createPopperInstanceOnInit: true,
-        animation: 'fade',
-        animateFill: false,
-        updateDuration: 250,
-        duration: [ 250, 0 ],
-        delay: [ 0, 0 ],
-        hideDuration: 0,
-        arrow: true,
-        interactive: true,
-        multiple: true,
-        hideOnClick: true,
-        sticky: true,
-        livePlacement: true,
-        dynamicInputDetection: true
-      }).tooltips[0];
+      bus.emit('showhelp');
 
-      let intn = cy.edges().first();
-      let intnRef = intn.popperRef();
-      let intnTippy = new tippyjs(intnRef, {
-        html: (() => {
-          return hh('div', 'tippy content');
-        })(),
-        trigger: 'manual',
-        theme: 'light',
-        placement: 'top-right',
-        createPopperInstanceOnInit: true,
-        animation: 'fade',
-        animateFill: false,
-        updateDuration: 250,
-        duration: [ 250, 0 ],
-        delay: [ 0, 0 ],
-        hideDuration: 0,
-        arrow: true,
-        interactive: true,
-        multiple: true,
-        hideOnClick: true,
-        sticky: true,
-        livePlacement: true,
-        dynamicInputDetection: true
-      }).tooltips[0];
+      let ent = cy.nodes(node => !isInteractionNode(node)).first();
+      if( !ent.empty() ){
+        let entRef = ent.popperRef();
+        let entTippy = new tippyjs(entRef, _.assign({}, tippyDefaults, {
+          html: (() => {
+            return hh('div.editor-help-tooltip', [
+              hh('div', 'Provide entity name'),
+              hh('ul', [
+                hh('li', 'E.g P53')
+              ])
+            ]);
+          })(),
+          theme: 'dark',
+          placement: 'right',
+          trigger: 'manual',
+          distance: 32,
+          zIndex: tippyTopZIndex
+        })).tooltips[0];
+        this.data.entTip = entTippy;
+        entTippy.show();
+      }
 
-      this.entTip = entTippy;
-      this.intnTip = intnTippy;
+      let intn = cy.nodes(isInteractionNode).first();
+      if( !intn.empty() ){
+        let intnRef = intn.popperRef();
+        let intnTippy = new tippyjs(intnRef, _.assign({}, tippyDefaults, {
+          html: (() => {
+            return hh('div.editor-help-tooltip', [
+              hh('div', 'Provide interaction type and direction'),
+              hh('ul', [
+                hh('li', 'E.g A activates phosphorylation of B')
+              ])
+            ]);
+          })(),
+          theme: 'dark',
+          trigger: 'manual',
+          placement: 'left',
+          distance: 32,
+          zIndex: tippyTopZIndex
+        })).tooltips[0];
 
-      entTippy.show();
-      intnTippy.show();
-
+        this.data.intnTip = intnTippy;
+        intnTippy.show();
+      }
+      this.setData({ showHelp: true });
     } else {
-      // restore screen dimness
-      // restore the current factoid document elements
-      // remove the example factoid document
-      // remove all the tooltips for the editor buttons, entities, and interactions
-      this.data.bus.emit('closehelp');
-      cy.remove('*');
-      cy.autoungrabify(false);
-      reAddEditorEles(cy);
-      cy.fit();
-      cy.userZoomingEnabled(true);
-      cy.userPanningEnabled(true);
-
-      this.setData({showHelp: false});
+      bus.emit('closehelp');
+      if( this.data.entTip ){
+        this.data.entTip.hide();
+      }
+      if( this.data.intnTip ){
+        this.data.intnTip.hide();
+      }
+      this.setData({ showHelp: false });
     }
   }
 
@@ -489,11 +437,11 @@ class Editor extends React.Component {
     if( cy ){
       cy.destroy();
     }
-    if( this.entTip ){
-      this.entTip.destroy();
+    if( this.data.entTip ){
+      this.data.entTip.destroy();
     }
-    if( this.intnTip ){
-      this.intnTip.destroy();
+    if( this.data.intnTip ){
+      this.data.intnTip.destroy();
     }
 
     document.elements().forEach( el => el.removeAllListeners() );

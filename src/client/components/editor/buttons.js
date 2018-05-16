@@ -1,5 +1,6 @@
 const h = require('react-hyperscript');
 const _ = require('lodash');
+const { tippyTopZIndex } = require('../../defs');
 const Tooltip = require('../popover/tooltip');
 const Toggle = require('../toggle');
 const Popover = require('../popover/popover');
@@ -15,12 +16,15 @@ module.exports = function({ controller, document, bus }){
     },
     hide: hideNow => {
       bus.on('closehelp', hideNow);
+    },
+    tippy: {
+      zIndex: tippyTopZIndex
     }
   };
 
   if( document.editable() ){
     grs.push([
-      h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Help' }), [
+      h(Tooltip, { description: 'Help' }, [
         h('button.editor-button.plain-button', { onClick: () => controller.toggleHelp() }, [
           h('i.material-icons', 'info')
         ])
@@ -28,7 +32,7 @@ module.exports = function({ controller, document, bus }){
     ]),
 
     grs.push([
-      h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Add entity', shortcut: 'e' }), [
+      h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Add an entity', shortcut: 'e' }), [
         h('button.editor-button.plain-button', { onClick: () => controller.addElement().then( el => bus.emit('opentip', el) )  }, [
           h('i.material-icons', 'add_circle')
         ])

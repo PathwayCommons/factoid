@@ -95,6 +95,9 @@
 }
 
 .tippy-popper {
-  z-index: 999999 !important;
+  /*
+   commented to make editor help tooltips have z-index specified
+   z-index: 999999 !important;
+  */
   position: fixed !important;
 }

@@ -67,7 +67,7 @@ class InteractionType {
     return this.setParticipantAsPositive( ppt );
   }
 
-  isActiviation(){
+  isActivation(){
     return this.isPositive();
   }
 

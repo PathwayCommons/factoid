@@ -12,10 +12,10 @@ module.exports = function({ controller, document, bus }){
 
   let baseTooltipProps = {
     show: showNow => {
-      bus.on('showhelp', showNow);
+      bus.on('showtips', showNow);
     },
     hide: hideNow => {
-      bus.on('closehelp', hideNow);
+      bus.on('hidetips', hideNow);
     },
     tippy: {
       zIndex: tippyTopZIndex
@@ -25,7 +25,7 @@ module.exports = function({ controller, document, bus }){
   if( document.editable() ){
     grs.push([
       h(Tooltip, { description: 'Help' }, [
-        h('button.editor-button.plain-button', { onClick: () => controller.toggleHelp() }, [
+        h('button.editor-button.plain-button', { onClick: () => bus.emit('togglehelp') }, [
           h('i.material-icons', 'info')
         ])
       ])

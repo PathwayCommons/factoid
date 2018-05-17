@@ -11,6 +11,8 @@ const NotificationBase = require('../../notification/base');
 const Notification = require('../../notification/notification');
 
 module.exports = function({ bus, cy, document }){
+  let isSmallScreen = () => window.innerWidth <= 650;
+
   let hideAllTippies = (list = '_tippies') => {
     cy.nodes().forEach( node => hideTippy(node, list) );
   };
@@ -255,7 +257,7 @@ module.exports = function({ bus, cy, document }){
   let makeTippy = ({ el, ref, content, overrides, sublist }) => {
     let tippy = tippyjs( ref, _.assign( {}, tippyDefaults, {
       duration: 0,
-      placement: 'right',
+      placement: isSmallScreen() ? 'bottom' : 'right',
       hideOnClick: false,
       onHidden: _.debounce( () => destroyTippyFor( el, sublist ), 100 ) // debounce allows toggling a tippy on an ele
     }, overrides, {

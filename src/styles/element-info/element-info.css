@@ -4,7 +4,7 @@
   box-sizing: border-box;
   padding: 0.25em;
   min-width: 300px;
-  max-width: 100vw;
+  max-width: calc(100vw - 1.5em);
   width: 400px;
 }
 

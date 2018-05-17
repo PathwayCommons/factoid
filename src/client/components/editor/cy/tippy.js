@@ -389,7 +389,7 @@ module.exports = function({ bus, cy, document }){
         };
 
         if( !togglePpts ){
-          window.t = makeTippy({
+          makeTippy({
             el: node,
             ref: getRef( getIntnTippyBb, node ),
             content: getContentDiv( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ) ),

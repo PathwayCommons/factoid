@@ -78,7 +78,6 @@ class DocumentSeeder extends React.Component {
     let frameToTriggerInterval = frame => {
       let frameText = _.get(frame, 'text');
       let frameStart = _.get(frame, ['start-pos', 'offset']);
-      let frameEnd = _.get( frame, ['end-pos', 'offset'] );
       let triggerWord = _.get(frame, 'trigger');
 
       if (triggerWord === undefined) {

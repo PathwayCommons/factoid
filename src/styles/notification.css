@@ -95,10 +95,22 @@
   max-width: calc(100vw - 2em);
 }
 
+@media (min-width: 500px){
+  .corner-notification {
+    max-width: calc(100vw - 4em);
+  }
+}
+
 .corner-notification-active {
   display: block;
 }
 
 .incomplete-entity-notification .notification-open {
   display: none;
+}
+
+@media (max-width: 500px) {
+  .notification-message {
+    font-size: var(--smallFontSize);
+  }
 }

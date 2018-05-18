@@ -22,15 +22,15 @@ module.exports = function({ controller, document, bus }){
     }
   };
 
-  if( document.editable() ){
-    grs.push([
-      h(Tooltip, { description: 'Help' }, [
-        h('button.editor-button.plain-button', { onClick: () => bus.emit('togglehelp') }, [
-          h('i.material-icons', 'info')
-        ])
+  grs.push([
+    h(Tooltip, { description: 'Help' }, [
+      h('button.editor-button.plain-button', { onClick: () => bus.emit('togglehelp') }, [
+        h('i.material-icons', 'info')
       ])
-    ]),
+    ])
+  ]);
 
+  if( document.editable() ){
     grs.push([
       h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Add an entity', shortcut: 'e' }), [
         h('button.editor-button.plain-button', { onClick: () => controller.addElement().then( el => bus.emit('opentip', el) )  }, [

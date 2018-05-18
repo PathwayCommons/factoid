@@ -8,6 +8,25 @@ const { makeClassList, isInteractionNode } = require('../../../util');
 const defs = require('../../defs');
 
 
+let TOOLTIP_CONTENT = {
+  entity:  editable => {
+    return hh('div.editor-help-tooltip', [
+      hh('div', editable ? 'Provide entity name' : 'View Entities'),
+      hh('ul', [
+        hh('li', 'E.g P53')
+      ])
+    ]);
+  },
+  interaction: editable => {
+    return hh('div.editor-help-tooltip', [
+      hh('div', editable ? 'Provide interaction type and direction' : 'View interaction type and direction'),
+      hh('ul', [
+        hh('li', 'E.g A activates phosphorylation of B')
+      ])
+    ]);
+  }
+};
+
 class Help extends React.Component {
   constructor(props){
     super(props);
@@ -39,67 +58,58 @@ class Help extends React.Component {
     }
   }
 
+  makeHelpTooltip( opts ){
+    let ele = opts.ele;
+    let eleRef = ele.popperRef();
+    let tippy = new tippyjs(eleRef, _.assign({}, defs.tippyDefaults, {
+      theme: 'dark',
+      trigger: 'manual',
+      distance: 32,
+      zIndex: defs.tippyTopZIndex
+    }, opts.tippy));
+
+    return tippy.tooltips[0];
+  }
+
   toggleHelp(){
     let showHelp = this.data.showHelp;
+    let editable = this.props.document.editable();
     let bus = this.props.bus;
-    let cy = this.props.cy;
+    let cy = this.props.controller.data.cy;
 
     if( !showHelp ){
       bus.emit('showtips');
 
       let ent = cy.nodes(node => !isInteractionNode(node)).first();
       if( !ent.empty() ){
-        let entRef = ent.popperRef();
-        let entTippy = new tippyjs(entRef, _.assign({}, defs.tippyDefaults, {
-          html: (() => {
-            return hh('div.editor-help-tooltip', [
-              hh('div', 'Provide entity name'),
-              hh('ul', [
-                hh('li', 'E.g P53')
-              ])
-            ]);
-          })(),
-          theme: 'dark',
-          placement: 'right',
-          trigger: 'manual',
-          distance: 32,
-          zIndex: defs.tippyTopZIndex
-        })).tooltips[0];
-        this.data.entTip = entTippy;
-        entTippy.show();
+        this.data.entTip = this.makeHelpTooltip( {
+          ele: ent,
+          tippy: {
+            html: TOOLTIP_CONTENT.entity(editable),
+            placement: 'right',
+          }
+        } );
+        this.data.entTip.show();
       }
 
       let intn = cy.nodes(isInteractionNode).first();
       if( !intn.empty() ){
-        let intnRef = intn.popperRef();
-        let intnTippy = new tippyjs(intnRef, _.assign({}, defs.tippyDefaults, {
-          html: (() => {
-            return hh('div.editor-help-tooltip', [
-              hh('div', 'Provide interaction type and direction'),
-              hh('ul', [
-                hh('li', 'E.g A activates phosphorylation of B')
-              ])
-            ]);
-          })(),
-          theme: 'dark',
-          trigger: 'manual',
-          placement: 'left',
-          distance: 32,
-          zIndex: defs.tippyTopZIndex
-        })).tooltips[0];
 
-        this.data.intnTip = intnTippy;
-        intnTippy.show();
+        this.data.intnTip = this.makeHelpTooltip( {
+          ele: intn,
+          tippy: {
+            html: TOOLTIP_CONTENT.interaction(editable),
+            placement: 'left'
+          }
+        } );
+        this.data.intnTip.show();
       }
       this.setData({ showHelp: true });
+
     } else {
       bus.emit('hidetips');
-      if( this.data.entTip ){
-        this.data.entTip.hide();
-      }
-      if( this.data.intnTip ){
-        this.data.intnTip.hide();
-      }
+      if( this.data.entTip ){ this.data.entTip.hide(); }
+      if( this.data.intnTip ){ this.data.intnTip.hide(); }
       this.setData({ showHelp: false });
     }
   }

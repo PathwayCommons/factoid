@@ -330,7 +330,7 @@ class Editor extends React.Component {
   }
 
   render(){
-    let { document, bus, incompleteNotification, cy } = this.data;
+    let { document, bus, incompleteNotification } = this.data;
     let controller = this;
 
     let editorContent = this.state.initted ? [
@@ -338,7 +338,7 @@ class Editor extends React.Component {
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
       h('div.editor-graph#editor-graph'),
-      h(Help, { bus, cy })
+      h(Help, { document, bus, controller })
     ] : [];
 
     return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), editorContent);

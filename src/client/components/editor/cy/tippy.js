@@ -362,6 +362,11 @@ module.exports = function({ bus, cy, document }){
 
         let flipIntnTippy = (isVertical && pos.x > vpW/2) || (!isVertical && pos.y > vpH/2);
 
+        if( isSmallScreen() ){
+          isVertical = false;
+          flipIntnTippy = false;
+        }
+
         let edgesBb = node.edgesWith( src.add(tgt) ).renderedBoundingBox();
 
         let intnTippyAway = false;

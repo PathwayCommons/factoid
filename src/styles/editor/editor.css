@@ -94,3 +94,18 @@
     margin-bottom: 0;
   }
 }
+
+.num-tasks {
+  position: absolute;
+  top: 80px;
+  left: 25px;
+  font-size: 0.666em;
+  color: white;
+  background-color: #ed4a31;
+  height: 15px;
+  line-height: 15px;
+  padding: 0 2px;
+  border: 2px solid;
+  border-radius: 15px;
+  text-align: center;
+}

@@ -222,22 +222,6 @@ class FormEditor extends DirtyComponent {
 
   }
 
-
-  //Convert to biopax or show in the editor
-  submit(){
-
-    // let doc = this.state.document;
-    // doc.interactions().map(interaction=>{
-    //   console.log(interaction);
-    //   interaction.elements().map(el => {
-    //     console.log(el.name());
-    //     console.log(el);
-    //   });
-    //
-    // });
-
-  }
-
   render(){
     let doc = this.state.document;
 
@@ -292,13 +276,8 @@ class FormEditor extends DirtyComponent {
         h('div.form-templates', [
           ...hArr
         ]),
-        h('div.form-button-group', [
-          h('button.form-submit', { onClick: () => this.submit() }, [
-            'SUBMIT'
-          ]),
-          h('button.form-export-to-biopax', { onClick: () => exportDocumentToOwl(doc) }, [
-            'EXPORT TO BIOPAX'
-          ])
+        h('button.form-submit', { onClick: () => exportDocumentToOwl(doc) }, [
+          'SUBMIT'
         ])
       ]),
 

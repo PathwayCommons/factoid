@@ -8,6 +8,7 @@ const logger = require('../../logger');
 const debug = require('../../debug');
 
 const Document = require('../../../model/document');
+const { exportDocumentToOwl } = require('../../../util');
 
 // const DocumentWizardStepper = require('../document-wizard-stepper');
 // const AppBar = require('../app-bar');
@@ -291,8 +292,13 @@ class FormEditor extends DirtyComponent {
         h('div.form-templates', [
           ...hArr
         ]),
-        h('button.form-submit', { onClick: () => this.submit() }, [
-          'SUBMIT'
+        h('div.form-button-group', [
+          h('button.form-submit', { onClick: () => this.submit() }, [
+            'SUBMIT'
+          ]),
+          h('button.form-export-to-biopax', { onClick: () => exportDocumentToOwl(doc) }, [
+            'EXPORT TO BIOPAX'
+          ])
         ])
       ]),
 

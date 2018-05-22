@@ -1,5 +1,6 @@
 const InteractionType = require('./interaction-type');
 const { PARTICIPANT_TYPE } = require('../participant-type');
+const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
 
 const VALUE = 'expression';
 const DISPLAY_VALUE = 'Expression';
@@ -24,6 +25,23 @@ class Expression extends InteractionType {
     let isProtein = ent => ent.type() === 'protein';
 
     return ppts.length === 2 && ppts.every( isProtein );
+  }
+
+  toBiopaxTemplate(){
+    let source = this.getSource();
+    let target = this.getTarget();
+
+    let srcName = source.name() || '';
+    let tgtName = target.name() || '';
+
+    let controlType = this.isInhibition() ? BIOPAX_CONTROL_TYPE.INHIBITION : BIOPAX_CONTROL_TYPE.ACTIVATION;
+
+    return {
+      type: BIOPAX_TEMPLATE_TYPE.EXPRESSION_REGULATION,
+      transcriptionFactor: srcName,
+      targetProtein: tgtName,
+      controlType: controlType
+    };
   }
 
   toString(){

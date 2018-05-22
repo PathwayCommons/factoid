@@ -37,17 +37,20 @@
   color: #ED4A31;
 }
 
+.form-button-group {
+  margin-top: 1.5em;
+  margin-bottom: 4em;
+}
+
+.form-button-group button {
+  height: 2.5em;
+  padding: 0 20px;
+  margin-right: 4px;
+}
 
 .form-submit {
   color: #EEEEEE;
   background-color: #00A84C;
-  height: 2.5em;
-  margin-top: 1.5em;
-  margin-bottom: 4em;
-  padding: 0 20px;
-  display: flex;
-  flex-direction: row;
-
 }
 
 .add-new-interaction-icon {

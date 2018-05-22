@@ -3,6 +3,7 @@ const Tooltip = require('../popover/tooltip');
 const Toggle = require('../toggle');
 const Popover = require('../popover/popover');
 const Linkout = require('../document-linkout');
+const { exportDocumentToOwl } = require('../../../util');
 
 module.exports = function({ controller, document, bus }){
   let grs = [];
@@ -49,6 +50,12 @@ module.exports = function({ controller, document, bus }){
         h('button.editor-button.plain-button', [
           h('i.material-icons', 'link')
         ])
+      ])
+    ]),
+
+    h(Tooltip, { description: 'Export to Biopax' }, [
+      h('button.editor-button.plain-button', { onClick: () => exportDocumentToOwl(document) }, [
+        h('i.material-icons', 'save_alt')
       ])
     ])
   ]);

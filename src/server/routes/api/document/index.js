@@ -59,12 +59,20 @@ let runLayout = doc => {
 
 let getReachOutput = text => provider.getRawResponse( text );
 
+let handleResponseError = response => {
+  if (!response.ok) {
+    throw Error(response.statusText);
+  }
+  return response;
+};
+
 let getBiopaxFromTemplates = templates => {
   return fetch( BIOPAX_CONVERTER_URL, {
-      method: 'POST',
-      body: JSON.stringify(templates),
-      headers: { 'Content-Type': 'application/json' }
-  } );
+    method: 'POST',
+    body: JSON.stringify(templates),
+    headers: { 'Content-Type': 'application/json' }
+  } )
+  .then(handleResponseError);
 };
 
 // get existing doc

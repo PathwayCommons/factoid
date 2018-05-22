@@ -40,7 +40,7 @@ class Modification extends InteractionType {
 
     let template = {
       type: templateType,
-      contollerProtein: srcName,
+      controllerProtein: srcName,
       targetProtein: tgtName,
       controlType: controlType
     };

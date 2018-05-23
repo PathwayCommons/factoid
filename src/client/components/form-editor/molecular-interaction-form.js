@@ -17,7 +17,7 @@ class MolecularInteractionForm extends InteractionForm {
     let intnId = intn.id();
 
     let hFunc = intn.elements().map(el =>{
-      return h('div', [h(EntityForm, {entity:el, placeholder:'Molecule', tooltipContent:'Name or ID', style: 'form-entity-small', document: this.state.document})
+      return h('div', [h(EntityForm, {entity:el, placeholder:'Molecule', tooltipContent:'Name or ID', style: 'form-entity-small', document: this.state.document, bus: this.state.bus})
       ]);
     });
 

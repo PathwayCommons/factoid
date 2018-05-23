@@ -47,7 +47,7 @@ class FormEditor extends DirtyComponent {
 
     this.data = this.state = {
       document: doc,
-      bus: bus
+      bus: bus,
     };
 
 
@@ -76,15 +76,12 @@ class FormEditor extends DirtyComponent {
           this.forceUpdate();
         });
 
-
         //TODO
         doc.on('add', (el) => {
           el.on('complete', () => {
             el.on('remoteupdate', () => {
               this.dirty();
             });
-
-
             this.dirty();
           });
 
@@ -94,10 +91,13 @@ class FormEditor extends DirtyComponent {
 
         // force an update here
         this.forceUpdate();
+
+
         logger.info('The editor is initialising');
       } );
 
   }
+
 
   setData( obj, callback ){
     _.assign( this.data, obj );
@@ -178,9 +178,21 @@ class FormEditor extends DirtyComponent {
     });
   }
 
-  updateState(){
-    this.dirty();
+  toggleEntityInfo(event){
+
+
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+
+    if(!value)
+      this.state.bus.emit('showEntityInfo');
+    else
+      this.state.bus.emit('hideEntityInfo');
+
+    // this.setState(this.state);
   }
+
+
 
   deleteInteractionRow(data){
 
@@ -265,7 +277,8 @@ class FormEditor extends DirtyComponent {
                     key: interaction.id(),
                     document: doc,
                     interaction: interaction,
-                    description: form.type
+                    description: form.type,
+                    bus: this.state.bus,
                   })
 
                 ]);
@@ -281,7 +294,7 @@ class FormEditor extends DirtyComponent {
         ...formContent,
         h('div.form-action-buttons', [
           h('button.form-interaction-adder', {
-            onClick: () => this.addInteractionRow({name:form.type, pptTypes:form.pptTypes,  association: form.association[0]})}, [
+            onClick: () => this.addInteractionRow({name:form.type, pptTypes: form.pptTypes,  association: form.association[0]})}, [
             h('i.material-icons.add-new-interaction-icon', 'add'),
             'ADD INTERACTION'
           ])])
@@ -293,6 +306,8 @@ class FormEditor extends DirtyComponent {
     return h('div.form-editor', [
 //      h(AppBar, { document: this.data.document, bus: this.data.bus }),
  //     h(ActionLogger, { document: this.data.document, bus: this.data.bus }),
+      'Hide entity information for all',
+      h('input.form-checkbox', {type: 'checkbox', defaultChecked:false, onChange: e => {this.toggleEntityInfo(e);}}),
       h('div.page-content', [
         h('h1.form-editor-title', 'Insert Pathway Information As Text'),
         h('div.form-templates', [

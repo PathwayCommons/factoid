@@ -157,3 +157,9 @@
   height: 20em;
 
 }
+
+.form-editor .form-checkbox{
+  margin-left: 1em;
+  opacity: 1;
+  pointer-events: all;
+}

@@ -9,7 +9,8 @@ class InteractionForm extends Component {
       interaction: props.interaction,
       description: props.description,
       document: props.document,
-      caller: props.caller
+      bus: props.bus,
+      // isEntityInfoVisible: props.isEntityInfoVisible
     };
 
 

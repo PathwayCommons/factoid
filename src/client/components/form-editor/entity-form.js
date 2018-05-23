@@ -21,15 +21,10 @@ class EntityForm extends DirtyComponent {
 
     if(this.data.entity){
       this.data.entity.on("complete", () => {
-        this.iconType = 'arrow_drop_up';
+
         this.mergeWithOtherEntities();
         this.dirty();
       });
-
-      // this.data.entity.on("associate", () => {
-      //   console.log("associated");
-      //   this.dirty();
-      // });
     }
 
     this.entityInfoClasses = ".entity-info-section, .entity-info-progression";
@@ -43,6 +38,15 @@ class EntityForm extends DirtyComponent {
 
   componentDidMount(){
     emitter.on('esc', () => this.hideEntityInfo());
+
+    this.state.bus.on('showEntityInfo', ()=>{
+      this.showEntityInfo();
+    });
+
+
+    this.state.bus.on('hideEntityInfo', ()=>{
+      this.hideEntityInfo();
+    });
   }
 
   toggleEntityInfo(){
@@ -72,13 +76,25 @@ class EntityForm extends DirtyComponent {
     entityInfoSections.forEach(ei => {
       ei.style.visibility = "hidden";
       ei.style.height = 0;
-
     });
 
     this.iconType = 'arrow_drop_up';
     this.dirty();
   }
 
+
+  showEntityInfo(){
+
+    let target = ReactDom.findDOMNode(this);
+    let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
+    entityInfoSections.forEach(ei => {
+      ei.style.visibility = "visible";
+      ei.style.height = "100%";
+    });
+
+    this.iconType = 'arrow_drop_down';
+    this.dirty();
+  }
 
   areAssociationsTheSame(assoc1, assoc2){
     return (assoc1.id === assoc2.id  && assoc1.organism === assoc2.organism);

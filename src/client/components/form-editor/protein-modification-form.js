@@ -3,7 +3,6 @@ let InteractionForm = require('./interaction-form.js');
 let EntityForm = require('./entity-form.js');
 
 let Interaction = require('../../../model/element/interaction');
-const InteractionInfo = require('../element-info/interaction-info');
 
 class ProteinModificationForm extends InteractionForm {
 
@@ -39,7 +38,7 @@ class ProteinModificationForm extends InteractionForm {
 
 
     return h('div.form-interaction', [
-      h(EntityForm, { entity: lEnt ,   placeholder:'Controller protein', tooltipContent:'Name or ID', document: this.state.document}),
+      h(EntityForm, { entity: lEnt ,   placeholder:'Controller protein', tooltipContent:'Name or ID', document: this.state.document, bus: this.state.bus}),
       h('span', [
         h('select.form-options', {id:('activation-'+ intn.id()), value: actVal,
           onChange: e => {
@@ -63,8 +62,7 @@ class ProteinModificationForm extends InteractionForm {
         ])
       ]),
 
-      // h(InteractionInfo, {element: this.state.interaction, document:this.state.document, eventTarget: }),
-      h(EntityForm, { entity: rEnt, placeholder:'Controlled protein' , tooltipContent:'Name or ID', document: this.state.document} )
+      h(EntityForm, { entity: rEnt, placeholder:'Controlled protein' , tooltipContent:'Name or ID', document: this.state.document , bus: this.state.bus})
 
     ]);
   }

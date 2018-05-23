@@ -95,10 +95,14 @@
   }
 }
 
-.num-tasks {
+.task-list-button {
+  position: relative;
+}
+
+.num-tasks-indicator {
   position: absolute;
-  top: 80px;
-  left: 25px;
+  top: -4px;
+  left: 18px;
   font-size: 0.666em;
   color: white;
   background-color: #ed4a31;

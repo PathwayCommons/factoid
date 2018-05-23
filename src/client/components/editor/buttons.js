@@ -7,35 +7,7 @@ const Toggle = require('../toggle');
 const Popover = require('../popover/popover');
 const Linkout = require('../document-linkout');
 
-class TaskListButton extends DirtyComponent {
-  constructor(props){
-    super(props);
-  }
-
-  shouldComponentUpdate() {
-    return true;
-  }
-
-  componentDidMount(){
-    this.onAdd = () => this.dirty();
-    this.onRemove = () => this.dirty();
-    this.props.document.on('add', this.onAdd);
-    this.props.document.on('remove', this.onRemove);
-  }
-
-  componentWillUnmount(){
-    this.props.document.removeListener(this.onAdd);
-    this.props.document.removeListener(this.onRemove);
-  }
-
-  render() {
-    let numIncompleteEntities = this.props.document.entities().filter(ent => !ent.completed()).length;
-    return h('button.editor-button.plain-button', { onClick: () => this.props.bus.emit('toggletasklist') }, [
-      numIncompleteEntities !== 0 ? h('div.num-tasks', this.props.document.entities().filter(ent => !ent.completed()).length) : null,
-      h('i.material-icons', 'format_list_bulleted')
-    ]);
-  }
-}
+const { TaskListButton } = require('./task-list');
 
 module.exports = function({ controller, document, bus }){
   let grs = [];

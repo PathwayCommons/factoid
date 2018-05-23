@@ -180,6 +180,8 @@ class EntityForm extends DirtyComponent {
       h(ElementInfo, {element: this.state.entity, document: this.state.document}),
 
 
+
+
     ]);
 
 

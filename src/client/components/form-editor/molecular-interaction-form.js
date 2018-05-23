@@ -10,14 +10,28 @@ class MolecularInteractionForm extends InteractionForm {
     return this.state.interaction.elements().length;
   }
 
-
+  deleteEntity(el){
+    this.state.document.remove(el);
+  }
 
   render(){
     const intn = this.state.interaction;
     let intnId = intn.id();
+    let hDeleteFunc = (el) => {return h('button.delete-entity', {
+        onClick: () => {
+          this.deleteEntity(el);
+        }
+      }, 'x');};
+
+    if(this.state.interaction.elements().length <= 2)
+      hDeleteFunc = () => null;
 
     let hFunc = intn.elements().map(el =>{
-      return h('div', [h(EntityForm, {entity:el, placeholder:'Molecule', tooltipContent:'Name or ID', style: 'form-entity-small', document: this.state.document, bus: this.state.bus})
+      return h('div', [
+        hDeleteFunc(el),
+        h(EntityForm, {entity:el, placeholder:'Molecule', tooltipContent:'Name or ID', style: 'form-entity-small', document: this.state.document, bus: this.state.bus}),
+
+
       ]);
     });
 

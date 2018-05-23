@@ -37,6 +37,14 @@
   color: #ED4A31;
 }
 
+.delete-entity {
+  border: none;
+  color: #ED4A31;
+  display: flex;
+  padding-left: 3em;
+  margin-bottom: -0.5em;
+}
+
 
 .form-submit {
   color: #EEEEEE;

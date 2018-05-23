@@ -15,24 +15,33 @@ class EntityForm extends DirtyComponent {
   constructor(props) {
     super(props);
     this.state = this.data = _.assign( {
-      style: 'form-entity',
-      showEntityInfo: false,
+      style: 'form-entity'
     }, props );
 
 
     if(this.data.entity){
       this.data.entity.on("complete", () => {
+        this.iconType = 'arrow_drop_up';
         this.mergeWithOtherEntities();
         this.dirty();
       });
+
+      // this.data.entity.on("associate", () => {
+      //   console.log("associated");
+      //   this.dirty();
+      // });
     }
 
     this.entityInfoClasses = ".entity-info-section, .entity-info-progression";
 
+
+    if(this.data.entity.completed())
+      this.iconType = 'arrow_drop_up';
+    else
+      this.iconType = 'arrow_drop_down';
   }
 
   componentDidMount(){
-    // this.hideEntityInfo();
     emitter.on('esc', () => this.hideEntityInfo());
   }
 
@@ -43,14 +52,18 @@ class EntityForm extends DirtyComponent {
       ei.style.visibility = ei.style.visibility === "hidden" ? "visible": "hidden" ;
       if(ei.style.visibility === "hidden") {
         ei.style.height = 0;
+        this.iconType = 'arrow_drop_down';
       }
       else {
         ei.style.height = "100%";
+        this.iconType = 'arrow_drop_up';
 
       }
     });
+
     this.dirty();
   }
+
 
   hideEntityInfo(){
 
@@ -62,24 +75,10 @@ class EntityForm extends DirtyComponent {
 
     });
 
-
+    this.iconType = 'arrow_drop_up';
     this.dirty();
   }
 
-  updateEntityName(newName) {
-    this.state.entity.name(newName);
-    this.dirty();
-
-  }
-
-  updateGrounding(stateVal) {
-
-      if (this.state.entity.name().length > 0) {
-          // this.state.showEntityInfo = stateVal;
-          this.setState({showEntityInfo: stateVal});
-      }
-    this.dirty();
-  }
 
   areAssociationsTheSame(assoc1, assoc2){
     return (assoc1.id === assoc2.id  && assoc1.organism === assoc2.organism);
@@ -134,7 +133,6 @@ class EntityForm extends DirtyComponent {
         Promise.all(  this.state.document.interactions().map( updateParticipants ) );
 
 
-
         //update the entity of this form
         this.state.entity = mergedEntity;
         //we can now remove our entity
@@ -145,17 +143,11 @@ class EntityForm extends DirtyComponent {
 
 
   shouldComponentUpdate(){
-
      return true;
   }
 
-
   updateState(){
     this.dirty();
-  }
-
-  domId(){
-    return "entity-" + this.state.entity.id();
   }
 
   render(){
@@ -167,7 +159,7 @@ class EntityForm extends DirtyComponent {
         onClick: () => this.toggleEntityInfo(),
         onChange: () => this.updateState()},
         [
-        h('i.material-icons', 'arrow_drop_down  ')
+        h('i.material-icons', this.iconType)
       ]),
       h(ElementInfo, {element: this.state.entity, document: this.state.document}),
 

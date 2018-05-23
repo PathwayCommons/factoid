@@ -3,6 +3,7 @@ let InteractionForm = require('./interaction-form.js');
 let EntityForm = require('./entity-form.js');
 
 let Interaction = require('../../../model/element/interaction');
+const InteractionInfo = require('../element-info/interaction-info');
 
 class ProteinModificationForm extends InteractionForm {
 
@@ -12,14 +13,13 @@ class ProteinModificationForm extends InteractionForm {
 
     intn.associate(val);
 
+    this.state.interaction.complete();
+
     this.forceUpdate();
   }
 
   getModificationType(){
-
     return this.state.interaction.association().value;
-    //TODO
-    // return "phosphorylation";
   }
 
   render(){
@@ -33,6 +33,9 @@ class ProteinModificationForm extends InteractionForm {
 
 
     let modVal = this.getModificationType();
+    if(!rEnt || !lEnt || !modVal)
+      return null;
+
 
 
     return h('div.form-interaction', [
@@ -59,6 +62,8 @@ class ProteinModificationForm extends InteractionForm {
           h('option', { value: Interaction.ASSOCIATION.UBIQUINATION.value }, 'ubiquination')
         ])
       ]),
+
+      // h(InteractionInfo, {element: this.state.interaction, document:this.state.document, eventTarget: }),
       h(EntityForm, { entity: rEnt, placeholder:'Controlled protein' , tooltipContent:'Name or ID', document: this.state.document} )
 
     ]);

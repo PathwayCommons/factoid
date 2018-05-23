@@ -12,7 +12,10 @@ class InteractionForm extends Component {
       caller: props.caller
     };
 
-    this.state.document.synch();
+
+    // this.state.document.synch();
+
+    this.state.interaction.complete();
   }
 
   getInputParticipant(){
@@ -29,7 +32,6 @@ class InteractionForm extends Component {
     let intn = this.state.interaction;
 
     return intn.association().getTarget();
-
   }
 
 
@@ -69,12 +71,9 @@ class InteractionForm extends Component {
         // intn.association().setAsInhibitionOf(rEnt);
       }
 
-      // setTimeout(()=> {
-          this.forceUpdate();
-        // }, 1000);
-    // })
-    // .then(() => this.forceUpdate());
+      this.state.interaction.complete();
 
+      this.forceUpdate();
   }
 }
 

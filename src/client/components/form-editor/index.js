@@ -79,9 +79,7 @@ class FormEditor extends DirtyComponent {
 
         //TODO
         doc.on('add', (el) => {
-
           el.on('complete', () => {
-
             el.on('remoteupdate', () => {
               this.dirty();
             });
@@ -255,15 +253,24 @@ class FormEditor extends DirtyComponent {
     forms.forEach((form) => {
 
       let formContent = doc.interactions().map(interaction => {
-          if(form.association.filter(assoc => assoc.value === interaction.association().value).length > 0 )
-        // if(form.type === interaction.name())
-          return h('div.form-interaction-line',
-            [
-              h('button.delete-interaction', { onClick: () => {this.deleteInteractionRow({interaction:interaction}); } }, 'X'),
-              h(form.clazz, {key: interaction.id(), document:doc, interaction:interaction, description: form.type})
+          if(form.association.filter(assoc => assoc.value === interaction.association().value).length > 0 ) {
+              return h('div.form-interaction-line',
+                [
+                  h('button.delete-interaction', {
+                    onClick: () => {
+                      this.deleteInteractionRow({interaction: interaction});
+                    }
+                  }, 'X'),
+                  h(form.clazz, {
+                    key: interaction.id(),
+                    document: doc,
+                    interaction: interaction,
+                    description: form.type
+                  })
 
-            ] );
-        else return null;
+                ]);
+          }
+          else return null;
       });
 
 
@@ -292,7 +299,7 @@ class FormEditor extends DirtyComponent {
           ...hArr
         ]),
         h('button.form-submit', { onClick: () => this.submit() }, [
-          'SUBMIT'
+          'Download BioPAX'
         ])
       ]),
 

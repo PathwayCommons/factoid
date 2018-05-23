@@ -24,12 +24,12 @@ class DocumentViewChooser extends React.Component {
         h('div.document-view-chooser-choice', { onClick: () => this.goToEditor('document') }, [
           h('div.network-choice'),
           h('h2', { htmlFor: 'document-view-chooser-network' }, 'Network Editor'),
-          h('p', 'View and edit your network graphically.  Biochemical entities are represented as circles, interactions are represented by edges connecting two etnities.')
+          h('p', 'View and edit your document graphically using an intuitive network editor designed for ease of use.')
         ]),
         h('div.document-view-chooser-choice', { onClick: () => this.goToEditor('form') }, [
           h('div.form-choice'),
           h('h2', { htmlFor: 'document-view-chooser-form' }, 'Form Editor'),
-          h('p', 'Add new types of interactions to your document with easy to use form template text entries.')
+          h('p', 'Add new types of interactions to your document with form template text entries.')
         ])
       ]),
       h(DocumentWizardStepper, {

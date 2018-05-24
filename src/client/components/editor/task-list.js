@@ -6,49 +6,78 @@ const { makeClassList } = require('../../../util');
 
 const getIncompleteEntities = doc => doc.entities().filter(ent => !ent.completed());
 
+
+const eleEvts = [ 'rename', 'redescribe' ];
+const entEvts = [ 'modify', 'associated', 'unassociated', 'complete', 'uncomplete'];
+const intnEvts = [ 'retype' ];
+
+let bindEleEvts = (ele, cb) => {
+  eleEvts.forEach(evt => {
+
+    ele.on(evt, cb);
+  });
+
+  if( ele.isInteraction() ){
+    intnEvts.forEach(evt => {
+      ele.on(evt, cb);
+    });
+  } else {
+    entEvts.forEach(evt => {
+      ele.on(evt, cb);
+    });
+  }
+};
+
+let unbindEleEvts = (ele, cb) => {
+  eleEvts.forEach(evt => {
+    ele.removeListener(evt, cb);
+  });
+
+  if( ele.isInteraction() ){
+    intnEvts.forEach(evt => {
+      ele.removeListener(evt, cb);
+    });
+  } else {
+    entEvts.forEach(evt => {
+      ele.removeListener(evt, cb);
+    });
+  }
+};
+
 class TaskList extends DirtyComponent {
   shouldComponentUpdate() {
     return true;
   }
   componentDidMount(){
-    const eleEvts = [ 'rename', 'redescribe' ];
-    const entEvts = [ 'modify', 'associated', 'unassociated', 'complete', 'uncomplete'];
-    const intnEvts = [ 'retype' ];
+    this.eleEvts = eleEvts;
+    this.entEvts = entEvts;
+    this.intnEvts = intnEvts;
 
     let update = () => this.dirty();
     this.update = update;
 
-    let logEleEvt = ele => {
-      eleEvts.forEach(evt => {
-
-        ele.on(evt, update);
-      });
-
-      if( ele.isInteraction() ){
-        intnEvts.forEach(evt => {
-          ele.on(evt, update);
-        });
-      } else {
-        entEvts.forEach(evt => {
-          ele.on(evt, update);
-        });
-      }
-    };
-
-    this.onAdd = e => {
-      logEleEvt(e);
+    this.onAdd = ele => {
+      bindEleEvts(ele, update);
       this.dirty();
     };
 
-    this.onRemove = e => {
-      logEleEvt(e);
+    this.onRemove = ele => {
+      unbindEleEvts(ele, update);
       this.dirty();
     };
 
     this.props.document.on('add', this.onAdd);
     this.props.document.on('remove', this.onRemove);
 
-    this.props.document.elements().forEach(logEleEvt);
+    this.props.document.elements().forEach(ele => bindEleEvts(ele, update));
+  }
+
+  componentWillUnmount(){
+    this.props.document.elements().forEach( ele => unbindEleEvts(ele, this.update));
+
+    this.props.document.removeListener(this.onAdd);
+    this.props.document.removeListener(this.onRemove);
+
   }
 
   render(){
@@ -71,15 +100,35 @@ class TaskListButton extends DirtyComponent {
   }
 
   componentDidMount(){
-    this.onAdd = () => this.dirty();
-    this.onRemove = () => this.dirty();
+    this.eleEvts = eleEvts;
+    this.entEvts = entEvts;
+    this.intnEvts = intnEvts;
+
+    let update = () => this.dirty();
+    this.update = update;
+
+    this.onAdd = ele => {
+      bindEleEvts(ele, update);
+      this.dirty();
+    };
+
+    this.onRemove = ele => {
+      unbindEleEvts(ele, update);
+      this.dirty();
+    };
+
     this.props.document.on('add', this.onAdd);
     this.props.document.on('remove', this.onRemove);
+
+    this.props.document.elements().forEach(ele => bindEleEvts(ele, update));
   }
 
   componentWillUnmount(){
+    this.props.document.elements().forEach( ele => unbindEleEvts(ele, this.update));
+
     this.props.document.removeListener(this.onAdd);
     this.props.document.removeListener(this.onRemove);
+
   }
 
   render() {

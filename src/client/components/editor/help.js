@@ -13,7 +13,7 @@ let TOOLTIP_CONTENT = {
     return hh('div.help-tooltip', [
       hh('div', editable ? 'Provide entity name' : 'View Entities'),
       hh('ul', [
-        hh('li', 'E.g P53')
+        hh('li', 'E.g. P53')
       ])
     ]);
   },
@@ -21,7 +21,7 @@ let TOOLTIP_CONTENT = {
     return hh('div.help-tooltip', [
       hh('div', editable ? 'Provide interaction type and direction' : 'View interaction type and direction'),
       hh('ul', [
-        hh('li', 'E.g A activates phosphorylation of B')
+        hh('li', 'E.g. A activates phosphorylation of B')
       ])
     ]);
   }

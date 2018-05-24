@@ -47,53 +47,61 @@ class EntityForm extends DirtyComponent {
     this.state.bus.on('hideEntityInfo', ()=>{
       this.hideEntityInfo();
     });
+
+    this._isMounted = true;
+
+
   }
 
   toggleEntityInfo(){
-    let target = ReactDom.findDOMNode(this);
-    let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
-    entityInfoSections.forEach(ei => {
-      ei.style.visibility = ei.style.visibility === "hidden" ? "visible": "hidden" ;
-      if(ei.style.visibility === "hidden") {
-        ei.style.height = 0;
-        this.iconType = 'arrow_drop_down';
-      }
-      else {
-        ei.style.height = "100%";
-        this.iconType = 'arrow_drop_up';
+    if(this._isMounted) {
+      let target = ReactDom.findDOMNode(this);
+      let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
+      entityInfoSections.forEach(ei => {
+        ei.style.visibility = ei.style.visibility === "hidden" ? "visible" : "hidden";
+        if (ei.style.visibility === "hidden") {
+          ei.style.height = 0;
+          this.iconType = 'arrow_drop_down';
+        }
+        else {
+          ei.style.height = "100%";
+          this.iconType = 'arrow_drop_up';
 
-      }
-    });
-
-    this.dirty();
+        }
+      });
+      this.dirty();
+    }
   }
 
 
   hideEntityInfo(){
 
-    let target = ReactDom.findDOMNode(this);
-    let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
-    entityInfoSections.forEach(ei => {
-      ei.style.visibility = "hidden";
-      ei.style.height = 0;
-    });
+    if(this._isMounted) {
+      let target = ReactDom.findDOMNode(this);
+      let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
+      entityInfoSections.forEach(ei => {
+        ei.style.visibility = "hidden";
+        ei.style.height = 0;
+      });
 
-    this.iconType = 'arrow_drop_up';
-    this.dirty();
+      this.iconType = 'arrow_drop_up';
+      this.dirty();
+    }
   }
 
 
   showEntityInfo(){
+    if(this._isMounted) {
+      let target = ReactDom.findDOMNode(this);
+      let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
+      entityInfoSections.forEach(ei => {
+        ei.style.visibility = "visible";
+        ei.style.height = "100%";
+      });
 
-    let target = ReactDom.findDOMNode(this);
-    let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
-    entityInfoSections.forEach(ei => {
-      ei.style.visibility = "visible";
-      ei.style.height = "100%";
-    });
-
-    this.iconType = 'arrow_drop_down';
-    this.dirty();
+      this.iconType = 'arrow_drop_down';
+      this.dirty();
+    }
   }
 
   areAssociationsTheSame(assoc1, assoc2){

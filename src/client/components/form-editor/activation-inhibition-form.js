@@ -15,7 +15,11 @@ class ActivationInhibitionForm extends InteractionForm{
 
 
 
-      let actVal =  intn.association().isInhibition()? "inhibits" : "activates" ;
+    let actVal =  intn.association().isInhibition()? "inhibits" : "activates" ;
+
+    if(!rEnt || !lEnt || !actVal)
+      return null;
+
 
     return h('div.form-interaction', [
       h(EntityForm, { entity: lEnt , placeholder: 'Source protein', document: this.state.document, bus: this.state.bus}),

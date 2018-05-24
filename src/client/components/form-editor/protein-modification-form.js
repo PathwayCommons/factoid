@@ -32,6 +32,7 @@ class ProteinModificationForm extends InteractionForm {
 
 
     let modVal = this.getModificationType();
+
     if(!rEnt || !lEnt || !modVal)
       return null;
 
@@ -42,7 +43,6 @@ class ProteinModificationForm extends InteractionForm {
       h('span', [
         h('select.form-options', {id:('activation-'+ intn.id()), value: actVal,
           onChange: e => {
-
 
             this.updateActivationInhibition(e.target.value);
           }}, [

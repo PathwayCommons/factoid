@@ -1,8 +1,16 @@
 .task-list {
   position: absolute;
-  top: -83px;
-  left: 40px;
+  top: 0;
+  left: 45px;
   height: 100vh;
   width: 20em;
-  background-color: red;
+  background-color: #eee;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 200ms ease-out;
+}
+
+.task-list-active {
+  opacity: 1;
+  z-index: 1000001;
 }

@@ -1,4 +1,3 @@
-const DirtyComponent = require('../dirty-component');
 const h = require('react-hyperscript');
 const _ = require('lodash');
 const { tippyTopZIndex } = require('../../defs');
@@ -38,7 +37,16 @@ module.exports = function({ controller, document, bus }){
   if( document.editable() ){
     grs.push([
       h(Tooltip, _.assign({}, baseTooltipProps,  { description: 'Tasks' }), [
-        h(TaskListButton, { controller, document, bus })
+        h(Toggle, {
+          className: 'editor-button plain-button task-list-button',
+          controller,
+          document,
+          bus,
+          onToggle: () => controller.toggleTaskListMode(),
+          getState: () => controller.taskListMode()
+        }, [
+          h(TaskListButton, { controller, document, bus })
+        ])
       ])
     ]);
 

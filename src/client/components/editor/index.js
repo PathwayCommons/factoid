@@ -20,6 +20,7 @@ const defs = require('./defs');
 const Buttons = require('./buttons');
 const UndoRemove = require('./undo-remove');
 const Help = require('./help');
+const { TaskList } = require('./task-list');
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -116,6 +117,7 @@ class Editor extends React.Component {
       bus: bus,
       document: doc,
       drawMode: false,
+      taskListMode: false,
       newElementShift: 0,
       mountDeferred: defer(),
       initted: false,
@@ -211,6 +213,17 @@ class Editor extends React.Component {
 
   drawMode(){
     return this.data.drawMode;
+  }
+
+  toggleTaskListMode( ){
+    this.data.bus.emit('toggletasklist');
+    this.setData({
+      taskListMode: !this.data.taskListMode
+    });
+  }
+
+  taskListMode(){
+    return this.data.taskListMode;
   }
 
   addElement( data = {} ){
@@ -338,7 +351,8 @@ class Editor extends React.Component {
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
       h('div.editor-graph#editor-graph'),
-      h(Help, { document, bus, controller })
+      h(Help, { document, bus, controller }),
+      h(TaskList, { document, bus, controller, show: this.data.taskListMode })
     ] : [];
 
     return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), editorContent);

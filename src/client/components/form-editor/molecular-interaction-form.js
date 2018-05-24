@@ -30,8 +30,6 @@ class MolecularInteractionForm extends InteractionForm {
       return h('div', [
         hDeleteFunc(el),
         h(EntityForm, {entity:el, placeholder:'Molecule', tooltipContent:'Name or ID', style: 'form-entity-small', document: this.state.document, bus: this.state.bus}),
-
-
       ]);
     });
 

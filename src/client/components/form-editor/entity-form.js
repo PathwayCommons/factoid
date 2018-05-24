@@ -50,7 +50,10 @@ class EntityForm extends DirtyComponent {
 
     this._isMounted = true;
 
+  }
 
+  componentWillUnmount(){
+    this._isMounted = false;
   }
 
   toggleEntityInfo(){

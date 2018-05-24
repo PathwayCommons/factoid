@@ -4,11 +4,12 @@ let edgehandles = require('cytoscape-edgehandles');
 let cxtmenu = require('cytoscape-cxtmenu');
 let automove = require('cytoscape-automove');
 let cose = require('cytoscape-cose-bilkent');
+let cypopper = require('cytoscape-popper');
 
 function regCyExts(){
   regCyLayouts();
 
-  [ edgehandles, cxtmenu, automove ].forEach( ext => Cytoscape.use( ext ) );
+  [ edgehandles, cxtmenu, automove, cypopper ].forEach( ext => Cytoscape.use( ext ) );
 }
 
 function regCyLayouts(){

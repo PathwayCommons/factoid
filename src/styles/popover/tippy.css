@@ -95,6 +95,9 @@
 }
 
 .tippy-popper {
-  z-index: 999999 !important;
+  /*
+   commented out to allow tooltips to be configured using custom zindex values
+   z-index: 999999 !important;
+  */
   position: fixed !important;
 }

@@ -98,6 +98,8 @@
   /*
    commented out to allow tooltips to be configured using custom zindex values
    z-index: 999999 !important;
-  */
+
+  commented out to allow tooltips to be more easily aligned outside of full-screen views
   position: fixed !important;
+  */
 }

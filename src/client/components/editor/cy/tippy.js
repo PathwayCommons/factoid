@@ -259,6 +259,8 @@ module.exports = function({ bus, cy, document }){
       duration: 0,
       placement: isSmallScreen() ? 'bottom' : 'right',
       hideOnClick: false,
+      sticky: true,
+      livePlacement: true,
       onHidden: _.debounce( () => destroyTippyFor( el, sublist ), 100 ) // debounce allows toggling a tippy on an ele
     }, overrides, {
       html: content

@@ -21,11 +21,13 @@ module.exports = Object.freeze({
     interactive: true,
     multiple: true,
     hideOnClick: true,
-    sticky: true,
-    livePlacement: true,
     dynamicInputDetection: true,
     zIndex: 9999,
     performance: true,
-    touchHold: false
+    touchHold: false,
+
+    // These options should be enabled per-tippy, as needed
+    sticky: false,
+    livePlacement: false,
   }
 });

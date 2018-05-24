@@ -15,7 +15,7 @@ module.exports = Object.freeze({
     updateDuration: 250,
     duration: [ 250, 0 ],
     delay: [ 0, 0 ],
-    hideDuration: 0,
+    hideDuration: 0, // necessary on tippy.js@2.0.9
     arrow: true,
     trigger: 'click',
     interactive: true,
@@ -24,6 +24,8 @@ module.exports = Object.freeze({
     sticky: true,
     livePlacement: true,
     dynamicInputDetection: true,
-    zIndex: 9999
+    zIndex: 9999,
+    performance: true,
+    touchHold: false
   }
 });

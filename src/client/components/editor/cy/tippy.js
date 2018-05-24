@@ -432,7 +432,9 @@ module.exports = function({ bus, cy, document }){
               content: getContentDiv( h( ParticipantInfo, { interaction: docEl, participant: ppt, bus, document, eventTarget: tgt } ) ),
               overrides: {
                 distance: 10 + 5 * zoom,
-                placement: isVertical ? (flipIntnTippy ? 'right' : 'left') : (flipIntnTippy ? 'bottom' : 'top')
+                placement: isVertical ? (flipIntnTippy ? 'right' : 'left') : (flipIntnTippy ? 'bottom' : 'top'),
+                animation: 'shift-away',
+                duration: [250, 0]
               },
               sublist: '_pptTippies'
             });

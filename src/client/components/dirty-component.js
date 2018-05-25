@@ -4,37 +4,17 @@ class DirtyComponent extends React.Component {
   constructor( props ){
     super( props );
 
-    this.state = { dirty: true };
+    this.state = { _dirtyTimestamp: 0 };
   }
 
-  componentDidMount(){
-    this.state.mounted = true;
+  dirty( callback ){
+    this.setState({ _dirtyTimestamp: Date.now() }, callback);
   }
 
-  componentWillUnmount(){
-    this.state.mounted = false;
-  }
+  clean(){}
 
-  shouldComponentUpdate( nextProps, nextState ){
-    return nextState.dirty;
-  }
-
-  dirty(){
-    if( this.state.mounted ){
-      this.setState({ dirty: true });
-    }
-  }
-
-  clean(){
-    if( this.state.mounted ){
-      this.setState({ dirty: false });
-    }
-  }
-
-  render( output ){
-    this.state.dirty = false;
-
-    return output;
+  render( content ){
+    return content;
   }
 }
 

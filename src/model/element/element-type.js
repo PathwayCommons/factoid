@@ -1,37 +1,19 @@
-const { INTERACTION_TYPE_VALS } = require('./interaction-type/enum');
+const _ = require('lodash');
+const { INTERACTION_TYPE_VALS: INTERACTION_TYPE } = require('./interaction-type/enum');
+const { ENTITY_TYPE, ENTITY_TYPES } = require('./entity-type');
 
-const ELEMENT_TYPE = Object.assign({}, {
-  ENTITY: 'entity',
-  PROTEIN: 'protein',
-  CHEMICAL: 'chemical'
-}, INTERACTION_TYPE_VALS);
+const INTERACTION_TYPES = _.flatMap( INTERACTION_TYPE );
 
-const ELEMENT_TYPES = Object.keys( ELEMENT_TYPE ).map( k => ELEMENT_TYPE[k] );
+const ELEMENT_TYPE = Object.assign({}, ENTITY_TYPE, INTERACTION_TYPE);
+
+const ELEMENT_TYPES = _.flatMap( ELEMENT_TYPE );
 
 const isEntity = type => {
-  switch( type ){
-    case ELEMENT_TYPE.ENTITY:
-    case ELEMENT_TYPE.PROTEIN:
-    case ELEMENT_TYPE.CHEMICAL:
-      return true;
-    default:
-      return false;
-  }
+  return ENTITY_TYPES.indexOf(type) >= 0;
 };
 
 const isInteraction = type => {
-  const T = INTERACTION_TYPE_VALS;
-
-  switch( type ){
-    case T.INTERACTION:
-    case T.CHEMICAL_AFFECTS_PROTEIN:
-    case T.EXPRESSION:
-    case T.MODIFICATION:
-    case T.PROTEIN_AFFECTS_CHEMICAL:
-      return true;
-    default:
-      return false;
-  }
+  return INTERACTION_TYPES.indexOf(type) >= 0;
 };
 
 module.exports = { ELEMENT_TYPE, ELEMENT_TYPES, isEntity, isInteraction };

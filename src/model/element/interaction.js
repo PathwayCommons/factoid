@@ -229,10 +229,12 @@ class Interaction extends Element {
     }
   }
 
+  associated(){
+    return this.syncher.get('association') != null;
+  }
+
   json(){
-    return _.assign( {}, super.json(), {
-      elements: this.elements().map( el => el.json() )
-    } );
+    return _.assign( {}, super.json(), _.pick( this.syncher.get(), _.keys(DEFAULTS) ) );
   }
 }
 

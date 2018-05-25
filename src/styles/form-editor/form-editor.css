@@ -5,6 +5,10 @@
   margin-bottom: 1em;
 }
 
+.form-template-entry {
+  width: 40em;
+}
+
 .form-interaction {
   padding-bottom: 10px;
   display: flex;
@@ -33,6 +37,14 @@
   color: #ED4A31;
 }
 
+.delete-entity {
+  border: none;
+  color: #ED4A31;
+  display: flex;
+  padding-left: 3em;
+  margin-bottom: -0.5em;
+}
+
 
 .form-submit {
   color: #EEEEEE;
@@ -48,4 +60,114 @@
 
 .add-new-interaction-icon {
   font-size: 1.5em;
+}
+
+.add-new-entity-icon {
+  font-size: 1em;
+}
+.form-entity-title {
+  margin: 0.5em;
+}
+
+.form-entity {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  width: 8em;
+  height: 1.5em;
+  margin: 0.5em;
+
+}
+
+.form-entity-small {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  width: 4em;
+  height: 1.5em;
+  margin: 0.5em;
+
+}
+
+.form-entity-medium {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  width: 8em;
+  height: 1.5em;
+  margin: 0.5em;
+
+}
+
+.form-multiple-entity {
+  padding: 0.5em;
+  height: 5em;
+  width: 12em;
+  line-height: 100%;
+  margin: 0.5em;
+}
+
+
+
+.form-options{
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  height: 1.5em;
+  margin: 0.5em;
+}
+
+.form-options-long{
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  height: 1.5em;
+  width: 230px;
+  margin: 0.5em;
+  /*font-size: 0.8em;*/
+
+}
+
+.form-entity::placeholder, .form-entity-small::placeholder, .form-entity-medium::placeholder{
+  font-style: italic;
+  font-weight: lighter;
+  font-family: Arial;
+  /*font-size: 0.9em;*/
+}
+
+.form-interaction .element-info .entity-info .inline-notification{
+  visibility: hidden;
+  padding: 0em;
+  height: 0em;
+}
+
+
+.form-interaction .element-info {
+  padding-top: 0px;
+  width: 12em;
+  /*height: 4em;*/
+  padding-bottom: 0px;
+}
+
+
+
+.form-interaction .element-info .entity-info-section{
+  padding-top: 0px;
+  /*visibility: hidden;*/
+  /*height: 0em;*/
+}
+/*.form-interaction .element-info, .entity-info{
+  width: 12em;
+}*/
+
+.form-interaction .element-info .entity-info .entity-info-name-input-area,   .entity-info-progression{
+  padding-top: 0px;
+  height: 2em;
+  /*width: 12em;*/
+}
+
+.form-interaction .element-info .entity-info .entity-info-matches{
+  height: 20em;
+
+}
+
+.form-editor .form-checkbox{
+  margin-left: 1em;
+  opacity: 1;
+  pointer-events: all;
 }

@@ -1,69 +1,31 @@
-const React = require('react');
+const DataComponent = require('../data-component');
 const h = require('react-hyperscript');
 const ReactDom = require('react-dom');
-const { focusDomElement, makeClassList } = require('../../../util');
+const { focusDomElement, makeClassList, initCache, SingleValueCache } = require('../../../util');
 const _ = require('lodash');
 const defs = require('../../defs');
-const anime = require('animejs');
 const Promise = require('bluebird');
-const Organism = require('../../../model/organism');
+const Heap = require('heap');
 const Highlighter = require('../highlighter');
 const Notification = require('../notification');
 const InlineNotification = require('../notification/inline');
 const Tooltip = require('../popover/tooltip');
-const Heap = require('heap');
+const assocDisp = require('./entity-assoc-display');
+const Progression = require('./progression');
+const ProgressionStepper = require('./progression-stepper');
+
 const { stringDistanceMetric } = require('../../../util');
+const { animateDomForEdit } = require('../animate');
 
 const MAX_FIXED_SYNONYMS = 5;
 const MAX_SYNONYMS_SHOWN = 10;
-
-const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL } = require('../../../config');
-
-const animateDomForEdit = domEle => anime({
-  targets: domEle,
-  backgroundColor: [defs.editAnimationWhite, defs.editAnimationColor, defs.editAnimationWhite],
-  duration: defs.editAnimationDuration,
-  easing: defs.editAnimationEasing
-});
-
-const STAGES = Object.freeze({
-  NAME: 'name',
-  ASSOCIATE: 'associate',
-  MODIFY: 'mod',
-  COMPLETED: 'completed'
-});
-
-const ORDERED_STAGES = [ STAGES.NAME, STAGES.ASSOCIATE, STAGES.MODIFY, STAGES.COMPLETED ];
-
-const getStageIndex = stage => ORDERED_STAGES.indexOf( stage );
-const getNextStage = stage => ORDERED_STAGES[ getStageIndex(stage) + 1 ];
-const getPrevStage = stage => ORDERED_STAGES[ getStageIndex(stage) - 1 ];
-
-class SingleValueCache {
-  constructor(){ this.value = null; }
-  get(){ return this.value; }
-  set(k, v){ this.value = v; }
-}
 
 let associationCache = new WeakMap();
 let stageCache = new WeakMap();
 let nameNotificationCache = new SingleValueCache();
 let assocNotificationCache = new SingleValueCache();
-let modNotificationCache = new SingleValueCache();
 
-let initCache = ( cache, el, initVal ) => {
-  let cacheEntry = cache.get( el );
-
-  if( cacheEntry == null ){
-    cacheEntry = initVal;
-
-    cache.set( el, cacheEntry );
-  }
-
-  return cacheEntry;
-};
-
-class EntityInfo extends React.Component {
+class EntityInfo extends DataComponent {
   constructor( props ){
     super( props );
 
@@ -71,13 +33,20 @@ class EntityInfo extends React.Component {
 
     let assoc = initCache( associationCache, el, { matches: [], offset: 0 } );
 
+    let progression = new Progression({
+      STAGES: [ 'NAME', 'ASSOCIATE', 'COMPLETED' ],
+      getStage: () => this.getStage(),
+      canGoToStage: stage => this.canGoToStage(stage),
+      goToStage: stage => this.goToStage(stage)
+    });
+
+    let { STAGES, ORDERED_STAGES } = progression;
+
     let stage = initCache( stageCache, el, el.completed() ? STAGES.COMPLETED : ORDERED_STAGES[0] );
 
     let nameNotification = initCache( nameNotificationCache, el, new Notification({ active: true }) );
 
     let assocNotification = initCache( assocNotificationCache, el, new Notification({ active: true }) );
-
-    let modNotification = initCache( modNotificationCache, el, new Notification({ active: true }) );
 
     this.debouncedRename = _.debounce( name => {
       this.data.element.rename( name );
@@ -104,7 +73,6 @@ class EntityInfo extends React.Component {
       element: el,
       name: el.name(),
       oldName: el.name(),
-      modification: el.modification(),
       matches: assoc.matches,
       gettingMoreMatches: false,
       limit: defs.associationSearchLimit,
@@ -112,22 +80,8 @@ class EntityInfo extends React.Component {
       stage,
       nameNotification,
       assocNotification,
-      modNotification
+      progression
     };
-
-    this.state = _.assign( {}, this.data );
-  }
-
-  setData( name, value, callback ){
-    if( _.isObject(name) ){
-      callback = value;
-
-      _.assign( this.data, name );
-    } else {
-      this.data[ name ] = value;
-    }
-
-    this.setState( this.data, callback );
   }
 
   focusNameInput(){
@@ -137,13 +91,14 @@ class EntityInfo extends React.Component {
   componentDidMount(){
     let root = ReactDom.findDOMNode( this );
     let input = root.querySelector('.entity-info-name-input');
-    let modSel = root.querySelector('.entity-info-mod-select');
     let p = this.props;
     let s = this.data;
     let doc = p.document;
+    let progression = s.progression;
+    let { ORDERED_STAGES } = progression;
 
     if( s.stage === ORDERED_STAGES[0] ){
-      this.goToStage( s.stage );
+      progression.goToStage( s.stage );
     }
 
     this.onRemoteRename = () => {
@@ -157,18 +112,6 @@ class EntityInfo extends React.Component {
     };
 
     s.element.on('remoterename', this.onRemoteRename);
-
-    this.onRemoteModify = () => {
-      this.setData({ modification: s.element.modification() });
-
-      if( this.remModAni ){
-        this.remModAni.pause();
-      }
-
-      this.remModAni = animateDomForEdit( modSel );
-    };
-
-    s.element.on('remotemodify', this.onRemoteModify);
 
     this.onToggleOrganism = () => {
       associationCache = new WeakMap(); // all entities invalidated
@@ -189,23 +132,11 @@ class EntityInfo extends React.Component {
 
     element.removeListener('remoterename', this.onRemoteRename);
 
-    element.removeListener('remotemodify', this.onModifyEle);
-
     document.removeListener('toggleorganism', this.onToggleOrganism);
 
     if( update ){ update.cancel(); }
 
     this._unmounted = true;
-  }
-
-  modify( mod ){
-    if( _.isString(mod) ){
-      mod = this.data.element.MODIFICATION_BY_VALUE(mod);
-    }
-
-    this.setData({ modification: mod });
-
-    this.data.element.modify( mod );
   }
 
   rename( name ){
@@ -409,43 +340,23 @@ class EntityInfo extends React.Component {
     return this.data.stage;
   }
 
-  back(){
-    this.goToStage( getPrevStage( this.getStage() ) );
-  }
-
-  forward(){
-    this.goToStage( getNextStage( this.getStage() ) );
-  }
-
   canGoToStage( stage ){
     let { element: el, stage: currentStage, name: cachedName } = this.data;
+    let { STAGES } = this.data.progression;
 
     switch( stage ){
       case STAGES.NAME:
         return true;
       case STAGES.ASSOCIATE:
         return cachedName != null && cachedName != '';
-      case STAGES.MODIFY:
-        return el.associated();
       case STAGES.COMPLETED:
-        return (
-          currentStage === STAGES.MODIFY ||
-          ( currentStage === STAGES.ASSOCIATE && el.type() === el.TYPE.CHEMICAL )
-        );
+        return currentStage === STAGES.ASSOCIATE && el.associated();
     }
   }
 
-  canGoBack(){
-    return this.canGoToStage( getPrevStage( this.data.stage ) );
-  }
-
-  canGoForward(){
-    return this.canGoToStage( getNextStage( this.data.stage ) );
-  }
-
   goToStage( stage ){
-    let { stage: currentStage, name, element } = this.data;
-    let elSupportsMod = element.moddable();
+    let { stage: currentStage, name, element, progression } = this.data;
+    let { STAGES } = progression;
 
     if(
       currentStage === STAGES.NAME && stage === STAGES.ASSOCIATE
@@ -454,21 +365,7 @@ class EntityInfo extends React.Component {
       this.rename( name );
     }
 
-    if(
-      currentStage === STAGES.ASSOCIATE && stage === STAGES.MODIFY
-      && !elSupportsMod
-    ){
-      stage = STAGES.COMPLETED;
-    }
-
-    if(
-      currentStage === STAGES.COMPLETED && stage === STAGES.MODIFY
-      && !elSupportsMod
-    ){
-      stage = STAGES.ASSOCIATE;
-    }
-
-    if( this.canGoToStage(stage) ){
+    if( progression.canGoToStage(stage) ){
       this.setData({ stage, stageError: null });
 
       stageCache.set( this.data.element, stage );
@@ -487,10 +384,6 @@ class EntityInfo extends React.Component {
 
         case STAGES.ASSOCIATE:
           this.data.assocNotification.message(`Select the best match for "${this.data.name}".`);
-          break;
-
-        case STAGES.MODIFY:
-          this.data.modNotification.message(`Select a modification for ${this.data.name}.`);
           break;
 
         case STAGES.COMPLETED:
@@ -519,7 +412,7 @@ class EntityInfo extends React.Component {
   }
 
   render(){
-    let s = this.state;
+    let s = this.data;
     let p = this.props;
     let doc = p.document;
     let children = [];
@@ -537,7 +430,9 @@ class EntityInfo extends React.Component {
       }
     }, defs.updateDelay / 2 );
 
-    let stage = this.getStage();
+    let { progression } = this.data;
+    let { STAGES, ORDERED_STAGES } = progression;
+    let stage = progression.getStage();
 
     let assoc;
 
@@ -549,65 +444,6 @@ class EntityInfo extends React.Component {
       assoc = null;
     }
 
-    let proteinFromAssoc = (m, searchTerms) => {
-      return [
-        h('div.entity-info-section', [
-          h('span.entity-info-title', 'Organism'),
-          h('span', Organism.fromId(m.organism).name())
-        ]),
-        h('div.entity-info-section', !m.proteinNames ? [] : [
-          h('span.entity-info-title', 'Protein names'),
-          ...m.proteinNames.map( name => h('span.entity-info-alt-name', [
-            h(Highlighter, { text: name, terms: searchTerms })
-          ]))
-        ]),
-        h('div.entity-info-section', !m.geneNames ? [] : [
-          h('span.entity-info-title', 'Gene names'),
-          ...m.geneNames.map( name => h('span.entity-info-alt-name', [
-            h(Highlighter, { text: name, terms: searchTerms })
-          ]))
-        ])
-      ];
-    };
-
-    let Formula = ({ formula }) => {
-      let split = formula.match(/(\d+|[n]|[A-Z][a-z]?)/g);
-      let children = [];
-
-      split.forEach( str => {
-        if( str === 'n' || isNaN( parseInt(str) ) ){
-          children.push( h('span', str) );
-        } else {
-          children.push( h('sub', str) );
-        }
-      } );
-
-      return h('span.entity-info-formula', children);
-    };
-
-    let chemFromAssoc = (m, searchTerms) => {
-      return [
-        h('div.entity-info-section', [
-          h('span.entity-info-title', 'Formulae'),
-          ...m.formulae.map( formula => h(Formula, { formula }) )
-        ]),
-        h('div.entity-info-section', [
-          h('span.entity-info-title', 'Mass'),
-          h('span', m.mass)
-        ]),
-        h('div.entity-info-section', [
-          h('span.entity-info-title', 'Charge'),
-          h('span', m.charge)
-        ]),
-        h('div.entity-info-section', !m.shortSynonyms ? [] : [
-          h('span.entity-info-title', 'Synonyms'),
-          ...m.shortSynonyms.map( name => h('span.entity-info-alt-name', [
-            h(Highlighter, { text: name, terms: searchTerms })
-          ]))
-        ])
-      ];
-    };
-
     let targetFromAssoc = (m) => {
       let complete = stage === STAGES.COMPLETED;
       let highlight = !complete;
@@ -617,7 +453,7 @@ class EntityInfo extends React.Component {
 
       let nameChildren = [];
 
-      let matchName = () => h(Highlighter, { text: m.name, terms: searchTerms });
+      let matchName = () => h(Highlighter, { key: m.id, text: m.name, terms: searchTerms });
 
       if( complete ){
         nameChildren.push( h('span', s.name) );
@@ -628,7 +464,7 @@ class EntityInfo extends React.Component {
       if( showEditIcon ){
         nameChildren.push( h(Tooltip, { description: 'Edit from the beginning' }, [
           h('button.entity-info-edit.plain-button', {
-            onClick: () => this.goToStage( ORDERED_STAGES[0] )
+            onClick: () => progression.goToStage( ORDERED_STAGES[0] )
           }, [ h('i.material-icons', 'edit') ])
         ]) );
       }
@@ -646,60 +482,16 @@ class EntityInfo extends React.Component {
         h('div.entity-info-name', nameChildren.filter( domEl => domEl != null ))
       ];
 
-      let body;
-
-      switch( m.type ){
-        case 'protein':
-          body = proteinFromAssoc( m, searchTerms );
-          break;
-        case 'chemical':
-          body = chemFromAssoc( m, searchTerms );
-          break;
-      }
+      let body = assocDisp[ m.type ]( m, searchTerms );
 
       let post = [];
 
       return _.concat( pre, body, post );
     };
 
-    let modForList = () => {
-      return h('div.entity-info-section.entity-info-mod-section', [
-        h('span.entity-info-title', 'Modification'),
-        h('span', s.modification.displayValue),
-        h(Tooltip, { description: 'Edit the modification' }, [
-          h('button.entity-info-edit-mod.plain-button', {
-            onClick: () => this.goToStage( STAGES.MODIFY )
-          }, [
-            h('i.material-icons', 'edit')
-          ])
-        ])
-      ]);
-    };
-
-    let linkFromAssoc = m => {
-      let url;
-
-      switch( m.type ){
-        case 'protein':
-          url = UNIPROT_LINK_BASE_URL + m.id;
-          break;
-        case 'chemical':
-          url = PUBCHEM_LINK_BASE_URL + m.id;
-          break;
-      }
-
-      return h('div.entity-info-section', [
-        h('a.plain-link', { href: url, target: '_blank' }, [
-          'More information ',
-          h('i.material-icons', 'open_in_new')
-        ])
-      ]);
-    };
-
     let allAssoc = m => _.concat(
       targetFromAssoc(m),
-      s.element.moddable() ? modForList() : [],
-      linkFromAssoc(m)
+      assocDisp.link(m)
     );
 
     if( !doc.editable() || stage === STAGES.COMPLETED ){
@@ -717,7 +509,7 @@ class EntityInfo extends React.Component {
       let NameNotification = () => {
         let notification = s.nameNotification;
 
-        return h(InlineNotification, { notification, className: 'entity-info-notification' });
+        return h(InlineNotification, { notification, key: notification.id(), className: 'entity-info-notification' });
       };
 
       children.push( h(NameNotification) );
@@ -736,7 +528,7 @@ class EntityInfo extends React.Component {
                   evt.target.blur();
                   break;
                 case 13: // ENTER
-                  this.forward();
+                  progression.forward();
                   break;
               }
             }
@@ -760,7 +552,7 @@ class EntityInfo extends React.Component {
       let AssocMsg = () => {
         let notification = s.assocNotification;
 
-        return h(InlineNotification, { notification, className: 'entity-info-notification' });
+        return h(InlineNotification, { notification, key: notification.id(), className: 'entity-info-notification' });
       };
 
       if( s.matches.length > 0 ){
@@ -779,10 +571,10 @@ class EntityInfo extends React.Component {
               h('div.entity-info-match-target', {
                 onClick: () => {
                   this.associate( m );
-                  this.forward();
+                  progression.forward();
                 }
               }, targetFromAssoc( m )),
-              linkFromAssoc( m )
+              assocDisp.link( m )
             ]);
           }),
 
@@ -800,91 +592,14 @@ class EntityInfo extends React.Component {
           h(Loader)
         );
       }
-    } else if( stage === STAGES.MODIFY ){
-      let notification = s.modNotification;
-
-      children.push( h(InlineNotification, { notification, className: 'entity-info-notification' }) );
-
-      children.push( h('label.entity-info-mod-label', 'Modification') );
-
-      let modChildren = [];
-
-      let onChange = (evt) => {
-        let value = evt.target.value;
-
-        this.modify( value );
-        this.forward();
-      };
-
-      let onClick = (evt) => {
-        let value = evt.target.value;
-
-        if( s.element.completed() && value === s.modification.value ){
-          this.forward();
-        }
-      };
-
-      s.element.ORDERED_MODIFICATIONS.forEach( mod => {
-        let value = mod.value;
-        let name = 'mod-radio-' + s.element.id();
-        let id = name + '-' + value;
-        let type = 'radio';
-        let checked = value === s.modification.value && s.element.completed();
-
-        modChildren.push(
-          h('input', { type, name, id, value, onChange, onClick, checked }),
-          h('label', { htmlFor: id }, mod.displayValue)
-        );
-      } );
-
-      children.push( h('div.radioset.entity-info-mod-radioset', modChildren ) );
     }
 
     if( doc.editable() ){
-      let isCompleted = stage === STAGES.COMPLETED;
-      let buttonLabel = content => h('span.entity-info-progression-button-label', [ content ]);
-
-      let backButtonLabel = buttonLabel( h('i.material-icons', 'arrow_back') );
-
-      let forwardButtonLabel = buttonLabel(
-        h('i.material-icons', {
-          className: makeClassList({
-            'entity-info-complete-icon': isCompleted
-          })
-        }, isCompleted ? 'check_circle' : 'arrow_forward')
-      );
-
-      let tippyOpts = { placement: 'bottom' };
-
-      children.push( h('div.entity-info-progression', [
-        h('button.entity-info-back.plain-button', {
-          disabled: !this.canGoBack(),
-          onClick: () => this.back()
-        }, [
-          h(Tooltip, {
-            description: 'Go to the previous step.',
-            tippy: tippyOpts
-          }, [
-            backButtonLabel
-          ])
-        ]),
-
-        h('button.entity-info-forward.plain-button', {
-          disabled: !this.canGoForward(),
-          onClick: () => this.forward()
-        }, [
-          h(Tooltip, {
-            description: isCompleted ? 'This entity is completed.' : 'Go to the next step.',
-            tippy: tippyOpts
-          }, [
-            forwardButtonLabel
-          ])
-        ])
-      ]) );
+      children.push( h(ProgressionStepper, { progression, key: s.element.id() }) );
     }
 
     return h('div.entity-info', children);
   }
 }
 
-module.exports = EntityInfo;
+module.exports = props => h(EntityInfo, Object.assign({ key: props.element.id() }, props));

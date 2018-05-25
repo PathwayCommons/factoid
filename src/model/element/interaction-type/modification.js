@@ -9,33 +9,28 @@ class Modification extends InteractionType {
     super( intn );
   }
 
-  isPromotion(){
-    return this.isPositive();
-  }
-
-  isInhibition(){
-    return this.isNegative();
-  }
-
-  setAsPromotionOf( ppt ){
-    return this.setPariticpantAsPositive( ppt );
-  }
-
-  setAsInhibitionOf( ppt ){
-    return this.setPariticpantAsNegative( ppt );
-  }
-
   allowedParticipantTypes(){
     const T = PARTICIPANT_TYPE;
 
     return [T.POSITIVE, T.NEGATIVE];
   }
 
+  areParticipantsTyped(){
+    return this.isSigned();
+  }
+
   static isAllowedForInteraction( intn ){
     let ppts = intn.participants();
     let isProtein = ent => ent.type() === 'protein';
 
-    ppts.length === 2 && ppts.every( isProtein );
+    return ppts.length === 2 && ppts.every( isProtein );
+  }
+
+  toString( mod = 'modification' ){
+    let verb = (this.isInhibition() ? 'inhibits' : 'promotes');
+    let obj = `the ${mod} of`;
+
+    return super.toString( `${verb} ${obj}` );
   }
 
   static get value(){ return VALUE; }

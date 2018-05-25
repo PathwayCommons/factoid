@@ -8,10 +8,8 @@ const h = require('react-hyperscript');
 class PopoverNotification extends Component {
   constructor( props ){
     super( props );
-  }
 
-  render(){
-    let { notification, tippy, children } = this.props;
+    let { notification, tippy } = this.props;
 
     let tippyOptions = _.assign( {}, tippyDefaults, {
       html: (() => {
@@ -31,19 +29,50 @@ class PopoverNotification extends Component {
     let popoverOptions = _.assign( {}, this.props, {
       tippy: tippyOptions,
       show: showNow => {
-        notification.on('activate', showNow);
+        let show = this.show = () => {
+          if( this.data.mounted ){
+            showNow();
+          }
+        };
+
+        notification.on('activate', show);
 
         if( notification.active() ){
-          showNow();
+          show();
         }
       },
       hide: hideNow => {
-        notification.on('deactivate', hideNow);
-        notification.on('dismiss', hideNow);
+        let hide = this.hide = () => {
+          if( this.data.mounted ){
+            hideNow();
+          }
+        };
+
+        notification.on('deactivate', hide);
+        notification.on('dismiss', hide);
       }
     } );
 
-    return h( Popover, popoverOptions, children );
+    this.popoverOptions = popoverOptions;
+  }
+
+  componentDidMount(){
+    this.data.mounted = true;
+  }
+
+  componentWillUnmount(){
+    let { notification } = this.data;
+    let { show, hide } = this;
+
+    this.data.mounted = false;
+
+    notification.removeListener('activate', show);
+    notification.removeListener('deactivate', hide);
+    notification.removeListener('dismiss', hide);
+  }
+
+  render(){
+    return h( Popover, this.popoverOptions, this.props.children );
   }
 }
 

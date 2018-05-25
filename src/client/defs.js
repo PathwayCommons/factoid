@@ -21,6 +21,7 @@ module.exports = Object.freeze({
     multiple: true,
     hideOnClick: true,
     sticky: true,
+    livePlacement: true,
     dynamicInputDetection: true
   }
 });

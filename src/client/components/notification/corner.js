@@ -6,17 +6,28 @@ const { makeClassList } = require('../../../util');
 class CornerNotification extends DirtyComponent {
   constructor(props){
     super(props);
+  }
 
-    let { notification: ntfn } = props;
+  componentDidMount(){
+    let { notification: ntfn } = this.props;
 
-    ntfn.on('activate', () => this.dirty());
-    ntfn.on('deactivate', () => this.dirty());
+    this.onActivationChange = () => this.dirty();
+
+    ntfn.on('activate', this.onActivationChange);
+    ntfn.on('deactivate', this.onActivationChange);
+  }
+
+  componentWillUnmount(){
+    let { notification: ntfn } = this.props;
+
+    ntfn.removeListener('activate', this.onActivationChange);
+    ntfn.removeListener('deactivate', this.onActivationChange);
   }
 
   render(){
     let { notification, className } = this.props;
 
-    return super.render( h('div.corner-notification', {
+    return ( h('div.corner-notification', {
       className: makeClassList({
         'corner-notification-active': notification.active()
       }) + ' ' + className
@@ -26,4 +37,4 @@ class CornerNotification extends DirtyComponent {
   }
 }
 
-module.exports = CornerNotification;
+module.exports = props => h(CornerNotification, Object.assign({ key: props.notification.id() }, props));

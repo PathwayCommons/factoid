@@ -1,10 +1,10 @@
 const InteractionType = require('./interaction-type');
 const { PARTICIPANT_TYPE } = require('../participant-type');
 
-const VALUE = 'proteinaffectschemical';
-const DISPLAY_VALUE = 'Chemical consumption/production';
+const VALUE = 'chemicalprotein';
+const DISPLAY_VALUE = 'Protein and chemical';
 
-class ProteinAffectsChemical extends InteractionType {
+class ProteinChemical extends InteractionType {
   constructor( intn ){
     super( intn );
   }
@@ -22,7 +22,7 @@ class ProteinAffectsChemical extends InteractionType {
   }
 
   setAsProductionOf( ppt ){
-    return this.setPariticpantAsPositive( ppt );
+    return this.setParticipantAsPositive( ppt );
   }
 
   allowedParticipantTypes(){
@@ -31,12 +31,28 @@ class ProteinAffectsChemical extends InteractionType {
     return [T.POSITIVE, T.NEGATIVE];
   }
 
+  areParticipantsTyped(){
+    return this.isSigned();
+  }
+
   static isAllowedForInteraction( intn ){
     let ppts = intn.participants();
     let isProtein = ent => ent.type() === 'protein';
     let isChemical = ent => ent.type() === 'chemical';
 
-    ppts.length === 2 && ppts.some( isProtein ) && ppts.some( isChemical );
+    return ppts.length === 2 && ppts.some( isProtein ) && ppts.some( isChemical );
+  }
+
+  toString(){
+    let verb;
+
+    if( this.getTarget().type() === 'chemical' ){
+      verb = this.isNegative() ? 'consumes' : 'produces';
+    } else {
+      verb = this.isNegative() ? 'inhibits' : 'activates';
+    }
+
+    return super.toString( verb );
   }
 
   static get value(){ return VALUE; }
@@ -46,4 +62,4 @@ class ProteinAffectsChemical extends InteractionType {
   get displayValue(){ return DISPLAY_VALUE; }
 }
 
-module.exports = ProteinAffectsChemical;
+module.exports = ProteinChemical;

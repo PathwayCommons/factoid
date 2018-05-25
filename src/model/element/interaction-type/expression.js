@@ -9,34 +9,25 @@ class Expression extends InteractionType {
     super( intn );
   }
 
-  isPromotion(){
-    return this.isPositive();
-  }
-
-  isInhibition(){
-    return this.isNegative();
-  }
-
-  setAsPromotionOf( ppt ){
-    return this.setPariticpantAsPositive( ppt );
-  }
-
-  setAsInhibitionOf( ppt ){
-    return this.setPariticpantAsNegative( ppt );
-  }
-
   allowedParticipantTypes(){
     const T = PARTICIPANT_TYPE;
 
     return [T.POSITIVE, T.NEGATIVE];
   }
 
+  areParticipantsTyped(){
+    return this.isSigned();
+  }
+
   static isAllowedForInteraction( intn ){
     let ppts = intn.participants();
     let isProtein = ent => ent.type() === 'protein';
-    let isChemical = ent => ent.type() === 'chemical';
 
-    ppts.length === 2 && ppts.some( isProtein ) && ppts.some( isChemical );
+    return ppts.length === 2 && ppts.every( isProtein );
+  }
+
+  toString(){
+    return super.toString( (this.isInhibition() ? 'inhibits' : 'promotes') + ' the expression of' );
   }
 
   static get value(){ return VALUE; }

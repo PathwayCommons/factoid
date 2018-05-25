@@ -1,8 +1,10 @@
 const React = require('react');
+const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
 const uuid = require('uuid');
+const { animateDomForEdit } = require('../animate');
 
-class ElementInfo extends React.Component {
+class ParticipantInfo extends React.Component {
   constructor( props ){
     super( props );
 
@@ -30,29 +32,38 @@ class ElementInfo extends React.Component {
 
   render(){
     let p = this.props;
-    let { participant, interaction, document } = p;
+    let { participant, interaction, document, bus } = p;
     let doc = document;
     let ppt = participant;
     let intn = interaction;
     let children = [];
-
-    // children.push( h('label.participant-info-type-select-label', [
-    //   h('span', 'Type')
-    // ]) );
 
     if( doc.editable() ){
       let radioName = 'participant-info-type-radioset-' + ppt.id();
       let radiosetChildren = [];
 
       intn.PARTICIPANT_TYPES.forEach( type => {
+        if( !intn.association().allowedParticipantTypes().some( t => t.value === type.value ) ){
+          return; // ignore unsupported ppt types for the interaction type
+        }
+
         let radioId = 'participant-info-type-radioset-item-' + uuid();
+        let checked = this.state.pptType.value === type.value;
 
         radiosetChildren.push( h('input.participant-info-type-radio', {
           type: 'radio',
-          onChange: () => this.retype( type ),
+          onChange: () => {
+            this.retype( type );
+            bus.emit('retypeppt', interaction, participant, type);
+          },
+          onClick: () => {
+            if( checked ){ // skip to next stage when clicking existing selection
+              bus.emit('retypepptskip', interaction, participant, type);
+            }
+          },
           id: radioId,
           name: radioName,
-          checked: this.state.pptType.value === type.value
+          checked
         }) );
 
         radiosetChildren.push( h('label.participant-info-type-label', {
@@ -72,19 +83,18 @@ class ElementInfo extends React.Component {
   componentDidMount(){
     let intn = this.props.interaction;
     let ppt = this.props.participant;
-    // let root = ReactDom.findDOMNode( this );
-    // let typeSel = root.querySelector('.participant-info-type-radioset');
+    let root = ReactDom.findDOMNode( this );
+    let typeSel = root.querySelector('.participant-info-type-radioset');
 
     this.onRemoteRetype = ( retypedPpt, newType ) => {
       if( retypedPpt.id() === ppt.id() ){
         this.setState({ pptType: newType });
 
-        // animation is a bit distracting here, disable for now
-        // if( this.remRetypeAni ){
-        //   this.remRetypeAni.pause();
-        // }
-        //
-        // this.remRetypeAni = animateDomForEdit( typeSel );
+        if( this.remRetypeAni ){
+          this.remRetypeAni.pause();
+        }
+
+        this.remRetypeAni = animateDomForEdit( typeSel );
       }
     };
 
@@ -106,4 +116,6 @@ class ElementInfo extends React.Component {
   }
 }
 
-module.exports = ElementInfo;
+module.exports = props => h(ParticipantInfo, Object.assign({
+  key: props.interaction.id() + '-' + props.participant.id()
+}, props));

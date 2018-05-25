@@ -12,6 +12,7 @@ const DebugDocumentSeeder = require('./components/debug-document-seeder');
 const ExampleDocument = require('./components/example-document');
 const DocumentSeeder = require('./components/document-seeder');
 const DocumentViewChooser = require('./components/document-view-chooser');
+const MyFactoids = require('./components/my-factoids');
 
 
 let routes = [
@@ -19,6 +20,13 @@ let routes = [
     path: '/',
     render: () => {
       return h(Home);
+    }
+  },
+  {
+    path: '/documents',
+    render: props => {
+      props.factoids = JSON.parse(localStorage.getItem('my-factoids')) || [];
+      return h( MyFactoids, props );
     }
   },
   {

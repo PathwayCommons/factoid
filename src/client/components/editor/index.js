@@ -238,11 +238,14 @@ class Editor extends React.Component {
 
     this.lastAddedElement = el;
 
-    return ( Promise.try( () => el.synch() )
-      .then( () => el.create() )
-      .then( () => doc.add(el) )
-      .then( () => el )
-    );
+    let synch = () => el.synch();
+    let create = () => el.create();
+    let add = () => doc.add( el );
+
+    return Promise.all([
+      Promise.try( synch ).then( create ),
+      Promise.try( add )
+    ]).then( () => el );
   }
 
   getLastAddedElement(){
@@ -335,6 +338,14 @@ class Editor extends React.Component {
 
   componentDidMount(){
     this.data.mountDeferred.resolve();
+    let doc = this.data.document;
+
+    let docs = JSON.parse(localStorage.getItem('my-factoids')) || [];
+    let docData = { id: doc.id(), secret: doc.secret(), name: doc.name() };
+    if( _.find(docs,  docData) == null ){
+      docs.push(docData);
+      localStorage.setItem('my-factoids', JSON.stringify(docs));
+    }
   }
 
   componentWillUnmount(){

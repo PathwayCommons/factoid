@@ -89,6 +89,11 @@
   margin: 0.25em 0;
 }
 
+button.entity-info-edit {
+  margin-left: 0.25em;
+  vertical-align: baseline;
+}
+
 .entity-info-match-link {
   font-size: 0.8em;
   display: block;
@@ -104,14 +109,6 @@
   font-size: 0.8em;
   margin: 0.25em 0;
   max-width: 100%;
-}
-
-.entity-info-mod-section {
-}
-
-.entity-info-edit-mod {
-  margin-left: 0.25em;
-  vertical-align: baseline;
 }
 
 .entity-info-title {
@@ -142,43 +139,6 @@
   margin: 0.25em;
 }
 
-.entity-info-mod-label {
-  display: block;
-  font-weight: bold;
-  font-size: 0.8em;
-}
-
-.entity-info-mod-radioset {
-  font-size: 0.8em;
-}
-
 .entity-info-notification {
   margin-bottom: 0.75em;
-}
-
-.entity-info-progression {
-  margin-top: 1em;
-  display: flex;
-  flex-direction: row;
-}
-
-.entity-info-back,
-.entity-info-forward {
-  font-size: 1.25em;
-  flex-grow: 1;
-}
-
-.entity-info-progression-button-label {
-  display: flex;
-  justify-content: center;
-  flex-grow: 1;
-}
-
-.entity-info-complete-icon {
-  color: var(--completeColor);
-}
-
-.entity-info-edit {
-  margin-left: 0.25em;
-  vertical-align: baseline;
 }

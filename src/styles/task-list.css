@@ -2,9 +2,9 @@
   position: absolute;
   top: 0;
   left: 45px;
-  height: 100vh;
+  height: 98vh;
   width: 20em;
-  background-color: #eee;
+  background-color: #767676;
   opacity: 0;
   z-index: -1;
   transition: opacity 200ms ease-out;
@@ -12,6 +12,6 @@
 }
 
 .task-list-active {
-  opacity: 1;
-  z-index: 1000001;
+  opacity: 0.8;
+  z-index: 3;
 }

@@ -1,6 +1,7 @@
 const DataComponent = require('../data-component');
 const h = require('react-hyperscript');
-const NotificationBase = require('./base');
+
+const InlineNotification = require('./inline');
 const { makeClassList } = require('../../../util');
 
 // WIP
@@ -37,7 +38,9 @@ class NotificationPanel extends DataComponent {
     let { notificationList: nl } = this.props;
     let { open } = this.data;
 
-    let makeNtfn = notification => h(NotificationBase, { notification, key: notification.id() });
+    let makeNtfn = notification => h('div.notification-panel-entry', [
+      h(InlineNotification, { notification, key: notification.id() })
+    ]);
 
     return (
       h('div.notification-panel', {

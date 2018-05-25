@@ -85,22 +85,21 @@ class TaskList extends DirtyComponent {
 
   render(){
     let doc = this.props.document;
-    let ntfns = doc.entities().map(ent => {
-      return new Notification({
+    let ntfns = doc.entities().filter(ent => !ent.completed()).map(ent => {
+      let ntfn = new Notification({
         openable: true,
         openText: 'Show me',
         active: true,
         message: `Provide more information for incomplete entity ${ent.name() === '' ? 'unnamed entity' : ent.name()}.`
       });
+
+      ntfn.on('open', () => this.props.bus.emit('opentip', ent));
+
+      return ntfn;
     });
 
     let ntfnList = new NotificationList(ntfns);
     let ntfnPanel = h(NotificationPanel, { notificationList: ntfnList });
-    // let taskListContent = [
-    //   h('div.task-list-content', getIncompleteEntities(this.props.document).map(ent => {
-    //     return h('div', `complete ${ent.name() === '' ? 'unnamed entitiy' : ent.name()}`);
-    //   }))
-    // ];
 
     let taskListContent = [ntfnPanel];
 

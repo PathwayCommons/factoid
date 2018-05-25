@@ -65,7 +65,8 @@ class Help extends React.Component {
       theme: 'dark',
       trigger: 'manual',
       distance: 32,
-      zIndex: defs.tippyTopZIndex
+      zIndex: defs.tippyTopZIndex,
+      hideOnClick: false
     }, opts.tippy));
 
     return tippy.tooltips[0];

@@ -116,9 +116,7 @@ class EntityForm extends DirtyComponent {
    */
   mergeWithOtherEntities(){
     let entity = this.state.entity;
-
     if(entity) {
-
       //get the participant type of this entity within its interaction
       //there can only be one interaction with this entity as it is not merged yet
       let intns = this.state.document.interactions().filter(intn => intn.has(entity));
@@ -151,7 +149,6 @@ class EntityForm extends DirtyComponent {
           if( intn.has( entity )) {
             intn.addParticipant(mergedEntity);
             intn.setParticipantType(mergedEntity, participantType);
-
           }
           else
             return Promise.resolve();
@@ -189,8 +186,6 @@ class EntityForm extends DirtyComponent {
         h('i.material-icons', this.iconType)
       ]),
       h(ElementInfo, {element: this.state.entity, document: this.state.document}),
-
-
 
 
     ]);

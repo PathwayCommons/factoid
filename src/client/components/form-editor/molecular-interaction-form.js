@@ -2,7 +2,6 @@ const h = require('react-hyperscript');
 let InteractionForm = require('./interaction-form.js');
 let EntityForm = require('./entity-form.js');
 
-
 class MolecularInteractionForm extends InteractionForm {
 
 
@@ -11,7 +10,17 @@ class MolecularInteractionForm extends InteractionForm {
   }
 
   deleteEntity(el){
-    this.state.document.remove(el);
+
+    let intns = this.state.document.interactions().filter(intn => intn.has(el));
+
+    if(intns.length <= 1)
+      this.state.document.remove(el);
+    else {
+      this.state.interaction.removeParticipant(el);
+    }
+
+    this.forceUpdate();
+
   }
 
   render(){
@@ -29,7 +38,8 @@ class MolecularInteractionForm extends InteractionForm {
     let hFunc = intn.elements().map(el =>{
       return h('div', [
         hDeleteFunc(el),
-        h(EntityForm, {entity:el, placeholder:'Molecule', tooltipContent:'Name or ID', style: 'form-entity-small', document: this.state.document, bus: this.state.bus}),
+        //we have to assign key because react renders component in the old position when deleted
+        h(EntityForm, {key: el.id(), entity:el, placeholder:'Molecule', tooltipContent:'Name or ID', style: 'form-entity-small', document: this.state.document, bus: this.state.bus}),
       ]);
     });
 

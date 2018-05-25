@@ -5,6 +5,7 @@ module.exports = Object.freeze({
   editAnimationColor: 'rgba(255, 255, 0, 0.5)',
   editAnimationWhite: 'rgba(255, 255, 255, 0.5)',
   associationSearchLimit: 10,
+  tippyTopZIndex: 10001,
   tippyDefaults: {
     theme: 'light',
     placement: 'bottom',
@@ -22,6 +23,7 @@ module.exports = Object.freeze({
     hideOnClick: true,
     sticky: true,
     livePlacement: true,
-    dynamicInputDetection: true
+    dynamicInputDetection: true,
+    zIndex: 9999
   }
 });

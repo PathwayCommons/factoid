@@ -88,9 +88,10 @@ class TaskList extends DirtyComponent {
     let ntfns = doc.entities().filter(ent => !ent.completed()).map(ent => {
       let ntfn = new Notification({
         openable: true,
+        dismissable: false,
         openText: 'Show me',
         active: true,
-        message: `Provide more information for incomplete entity ${ent.name() === '' ? 'unnamed entity' : ent.name()}.`
+        message: `Provide more information for ${ent.name() === '' ? 'unnamed entity' : ent.name()}.`
       });
 
       ntfn.on('open', () => this.props.bus.emit('opentip', ent));

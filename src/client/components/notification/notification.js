@@ -7,7 +7,8 @@ const defaults = {
   message: '',
   openText: 'Open',
   active: false,
-  openable: false
+  openable: false,
+  dismissable: true
 };
 
 const setOrGet = ( ntfn, name, value, eventName = name ) => {

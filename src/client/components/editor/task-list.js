@@ -3,6 +3,9 @@ const h = require('react-hyperscript');
 
 const { makeClassList } = require('../../../util');
 
+const Notification = require('../notification');
+const NotificationList = require('../notification/list');
+const NotificationPanel = require('../notification/panel');
 
 const getIncompleteEntities = doc => doc.entities().filter(ent => !ent.completed());
 
@@ -81,11 +84,25 @@ class TaskList extends DirtyComponent {
   }
 
   render(){
-    let taskListContent = [
-      h('div.task-list-content', getIncompleteEntities(this.props.document).map(ent => {
-        return h('div', `complete ${ent.name() === '' ? 'unamed entitiy' : ent.name()}`);
-      }))
-    ];
+    let doc = this.props.document;
+    let ntfns = doc.entities().map(ent => {
+      return new Notification({
+        openable: true,
+        openText: 'Show me',
+        active: true,
+        message: `Provide more information for incomplete entity ${ent.name() === '' ? 'unnamed entity' : ent.name()}.`
+      });
+    });
+
+    let ntfnList = new NotificationList(ntfns);
+    let ntfnPanel = h(NotificationPanel, { notificationList: ntfnList });
+    // let taskListContent = [
+    //   h('div.task-list-content', getIncompleteEntities(this.props.document).map(ent => {
+    //     return h('div', `complete ${ent.name() === '' ? 'unnamed entitiy' : ent.name()}`);
+    //   }))
+    // ];
+
+    let taskListContent = [ntfnPanel];
 
     return h('div.task-list', {
       className: makeClassList({ 'task-list-active': this.props.show })

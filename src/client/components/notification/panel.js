@@ -49,4 +49,5 @@ class NotificationPanel extends DataComponent {
   }
 }
 
-module.exports = props => h(NotificationPanel, Object.assign({ key: props.notification.id }, props) );
+module.exports = NotificationPanel;
+

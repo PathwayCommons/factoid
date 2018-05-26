@@ -5,6 +5,7 @@ const toJson = res => res.json();
 const fetch = require('node-fetch');
 const FormData = require('form-data');
 const Organism = require('../../../../model/organism');
+const { INTERACTION_TYPE } = require('../../../../model/element/interaction-type/enum');
 const uniprot = require('../element-association/uniprot');
 
 // TODO re-enable once a more stable solution for pubchem xrefs is found
@@ -20,6 +21,13 @@ const REMOVE_DISCONNECTED_ENTS = true;
 const REMOVE_UNGROUNDED_ENTS = false;
 const APPLY_GROUND = true;
 const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
+
+const REACH_EVENT_TYPE = Object.freeze({
+  TRANSCRIPTION: 'transcription',
+  PHOSPHORYLATION: 'phosphorylation',
+  METHYLATION: 'methylation',
+  ACTIVATION: 'activation'
+});
 
 module.exports = {
   // TODO remove this function as reach should never need to be exposed directly
@@ -218,6 +226,7 @@ module.exports = {
           let evtArg = frame.arguments.find( arg => isSingleArgEvt( getFrame( getArgId(arg) ) ) );
           let haveEvtArg = evtArg != null;
           let isBinaryCollapsible = argsAreEntAndEvt && argsAreControllerControlled && haveEvtArg;
+          let isProtein = ele => ele.type == 'protein';
 
           if( argsAreEnts || isBinaryCollapsible ){
             let intn = {
@@ -226,8 +235,10 @@ module.exports = {
               description: getSentenceText( frame.sentence )
             };
 
+            let eles;
+
             if( argsAreEnts ){
-              intn.entries = argFrames.map( getElFromFrame ).map( getEntryFromEl );
+              eles = argFrames.map( getElFromFrame );
             } else if( isBinaryCollapsible ){
               let getEntityFrame = frame => {
                 if( frameIsEvent( frame ) ){
@@ -237,10 +248,53 @@ module.exports = {
                 }
               };
 
-              intn.entries = argFrames.map( getEntityFrame ).map( getElFromFrame ).map( getEntryFromEl );
+              eles = argFrames.map( getEntityFrame ).map( getElFromFrame );
             }
 
-            intn.entries = intn.entries.filter( entry => entry != null );
+            eles = eles.filter( ele => ele != null );
+
+            intn.entries = eles.map( getEntryFromEl );
+
+            let protCount = eles.filter(isProtein).length;
+            let assoc;
+
+            // protein - protein
+            if (protCount == 2) {
+              if (isBinaryCollapsible) {
+                let type = getFrame( getArgId(evtArg) ).subtype;
+
+                switch (type) {
+                  case REACH_EVENT_TYPE.TRANSCRIPTION:
+                    assoc = INTERACTION_TYPE.EXPRESSION;
+                    break;
+                  case REACH_EVENT_TYPE.PHOSPHORYLATION:
+                    assoc = INTERACTION_TYPE.PHOSPHORYLATION;
+                    break;
+                  case REACH_EVENT_TYPE.METHYLATION:
+                    assoc = INTERACTION_TYPE.METHYLATION;
+                    break;
+                  default:
+                    break;
+                }
+              }
+            }
+            // protein - chemical
+            else if (protCount == 1 ) {
+              if (argsAreEnts) {
+                // more cases would be added in the future
+                switch (frame.type) {
+                  case REACH_EVENT_TYPE.ACTIVATION:
+                    assoc = INTERACTION_TYPE.PROTEIN_CHEMICAL;
+                    break;
+                  default:
+                    break;
+                }
+              }
+            }
+
+            if (assoc) {
+              intn.association = assoc.value;
+            }
 
             if( intn.entries.length >= 2 ){
               addElement( intn, frame );

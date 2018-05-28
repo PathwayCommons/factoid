@@ -7,7 +7,6 @@
   background-color: #767676;
   z-index: -1;
   opacity: 0;
-
   transform: translate3d(0%, 0, 0);
   transition-property: transform, opacity;
   transition-duration: 200ms;

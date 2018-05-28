@@ -21,6 +21,14 @@
   flex-direction: column;
   background: rgba(255, 255, 255, 0.5);
   border-bottom-right-radius: 8px;
+
+  transform: translate3d(0, 0, 0);
+  transition: transform 200ms ease-out;
+}
+
+.editor-buttons-shifted {
+  transform: translate3d(21.5em, 0, 0);
+  transition: transform 200ms ease-out;
 }
 
 .editor-button-group {
@@ -55,6 +63,15 @@
   top: 0;
   width: 100%;
   height: 100%;
+
+  transform: translate3d(0, 0, 0);
+  transition: transform 200ms ease-out;
+
+}
+
+.editor-graph-shifted {
+  transform: translate3d(21.5em, 0, 0);
+  transition: transform 200ms ease-out;
 }
 
 .editor-menu-content {

@@ -346,13 +346,15 @@ class Editor extends React.Component {
     let { document, bus, incompleteNotification } = this.data;
     let controller = this;
 
+    let showTaskList = this.data.taskListMode;
+
     let editorContent = this.state.initted ? [
-      h(Buttons, { controller, document, bus }),
+      h(Buttons, { className: showTaskList ? 'editor-buttons.editor-buttons-shifted' : 'editor-buttons', controller, document, bus }),
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
-      h('div.editor-graph#editor-graph'),
+      h(`div.${showTaskList ? 'editor-graph-shifted#editor-graph' : 'editor-graph#editor-graph'}`),
       h(Help, { document, bus, controller }),
-      h(TaskList, { document, bus, controller, show: this.data.taskListMode })
+      h(TaskList, { document, bus, controller, show: showTaskList })
     ] : [];
 
     return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), editorContent);

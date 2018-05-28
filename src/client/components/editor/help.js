@@ -76,10 +76,13 @@ class Help extends React.Component {
     let showHelp = this.data.showHelp;
     let editable = this.props.document.editable();
     let bus = this.props.bus;
-    let cy = this.props.controller.data.cy;
+    let controller = this.props.controller;
+    let cy = controller.data.cy;
 
     if( !showHelp ){
       bus.emit('showtips');
+
+      controller.resetMenuState();
 
       let ent = cy.nodes(node => !isInteractionNode(node)).first();
       if( !ent.empty() ){

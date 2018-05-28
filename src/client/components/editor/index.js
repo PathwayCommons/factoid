@@ -342,6 +342,13 @@ class Editor extends React.Component {
     }
   }
 
+  resetMenuState(){
+    this.setData({
+      drawMode: false,
+      taskListMode: false
+    });
+  }
+
   render(){
     let { document, bus, incompleteNotification } = this.data;
     let controller = this;

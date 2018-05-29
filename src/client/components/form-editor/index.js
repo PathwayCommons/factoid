@@ -72,20 +72,25 @@ class FormEditor extends DirtyComponent {
           window.editor = this;
         }
 
+
+
         doc.on('remove', () => {
           this.forceUpdate();
         });
 
         //TODO
         doc.on('add', (el) => {
-          el.on('complete', () => {
-            el.on('remoteupdate', () => {
+
+          el.on('remoteupdate', () => {
+
               this.dirty();
-            });
-            this.dirty();
           });
 
+          el.on('complete', () => {
+              this.dirty();
+          });
 
+            this.dirty();
 
         });
 
@@ -158,13 +163,16 @@ class FormEditor extends DirtyComponent {
     entArr.push(intn);
 
 
+
     Promise.all(entArr).then(responses => {
       let resp = responses[data.pptTypes.length]; // this is the interaction
+
 
       for(let i = 0; i < data.pptTypes.length; i++) {
         resp.addParticipant(responses[i]);
 
         resp.setParticipantType(responses[i], data.pptTypes[i]);
+
 
 
 

@@ -25,7 +25,7 @@ class ProteinModificationForm extends InteractionForm {
 
     let intn = this.state.interaction;
 
-    let actVal =  intn.association().isInhibition()? "inhibits" : "activates" ;
+    let actVal =  intn.association() && intn.association().isInhibition()? "inhibits" : "activates" ;
 
     let lEnt = this.getInputParticipant();
     let rEnt = this.getOutputParticipant();
@@ -33,7 +33,9 @@ class ProteinModificationForm extends InteractionForm {
 
     let modVal = this.getModificationType();
 
-    if(!rEnt || !lEnt || !modVal)
+
+
+    if(!rEnt || !lEnt || !modVal ||!actVal)
       return null;
 
 

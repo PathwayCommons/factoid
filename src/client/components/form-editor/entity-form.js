@@ -48,6 +48,20 @@ class EntityForm extends DirtyComponent {
       this.hideEntityInfo();
     });
 
+    this.state.entity.on('associated', ()=>{
+
+      let target = ReactDom.findDOMNode(this);
+      target.style.height = 0;
+      this.dirty();
+
+      setTimeout(()=>{
+        target.style.height = '100%';
+        this.dirty();
+      }, 10);
+
+    });
+
+
     this._isMounted = true;
 
   }

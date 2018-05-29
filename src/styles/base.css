@@ -368,7 +368,6 @@ a {
   text-decoration: none;
 
   &.plain-link {
-    white-space: nowrap;
     box-shadow: 0 -1px color(var(--activeColor) a(50%)) inset;
     transition: box-shadow var(--widgetTransitionDuration) ease-out;
 

@@ -18,7 +18,9 @@ module.exports = function({ controller, document, bus }){
       bus.on('hidetips', hideNow);
     },
     tippy: {
-      zIndex: tippyTopZIndex
+      zIndex: tippyTopZIndex,
+      hideOnClick: false,
+      events: 'mouseenter manual'
     }
   };
 

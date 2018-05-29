@@ -34,6 +34,12 @@
   opacity: 1;
 }
 
+@media (max-width: 400px) {
+  .entity-info-matches {
+    max-height: calc(40vh);
+  }
+}
+
 .entity-info-match-empty {
   margin: 1em 0;
 }

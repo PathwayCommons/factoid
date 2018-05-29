@@ -11,6 +11,8 @@ const NotificationBase = require('../../notification/base');
 const Notification = require('../../notification/notification');
 
 module.exports = function({ bus, cy, document }){
+  let isSmallScreen = () => window.innerWidth <= 650;
+
   let hideAllTippies = (list = '_tippies') => {
     cy.nodes().forEach( node => hideTippy(node, list) );
   };
@@ -255,8 +257,10 @@ module.exports = function({ bus, cy, document }){
   let makeTippy = ({ el, ref, content, overrides, sublist }) => {
     let tippy = tippyjs( ref, _.assign( {}, tippyDefaults, {
       duration: 0,
-      placement: 'right',
+      placement: isSmallScreen() ? 'bottom' : 'right',
       hideOnClick: false,
+      sticky: true,
+      livePlacement: true,
       onHidden: _.debounce( () => destroyTippyFor( el, sublist ), 100 ) // debounce allows toggling a tippy on an ele
     }, overrides, {
       html: content
@@ -360,6 +364,11 @@ module.exports = function({ bus, cy, document }){
 
         let flipIntnTippy = (isVertical && pos.x > vpW/2) || (!isVertical && pos.y > vpH/2);
 
+        if( isSmallScreen() ){
+          isVertical = false;
+          flipIntnTippy = false;
+        }
+
         let edgesBb = node.edgesWith( src.add(tgt) ).renderedBoundingBox();
 
         let intnTippyAway = false;
@@ -389,7 +398,7 @@ module.exports = function({ bus, cy, document }){
         };
 
         if( !togglePpts ){
-          window.t = makeTippy({
+          makeTippy({
             el: node,
             ref: getRef( getIntnTippyBb, node ),
             content: getContentDiv( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ) ),

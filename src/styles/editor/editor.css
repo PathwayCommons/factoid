@@ -6,6 +6,7 @@
   transition-duration: 300ms;
   transition-property: opacity;
   transition-timing-function: ease-out;
+  overflow-x: hidden;
 }
 
 .editor-initted {

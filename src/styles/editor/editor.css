@@ -1,7 +1,7 @@
 .editor {
-  height: 100vh;
-  width: 100vw;
-  position: relative;
+  height: 100%;
+  width: 100%;
+  position: absolute;
   opacity: 0.01;
   transition-duration: 300ms;
   transition-property: opacity;

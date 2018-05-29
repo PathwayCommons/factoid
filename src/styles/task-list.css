@@ -11,6 +11,7 @@
   transition-property: transform, opacity;
   transition-duration: 200ms;
   padding: 10px;
+  overflow-y: scroll;
 }
 
 .task-list-active {

@@ -120,11 +120,15 @@ http.post('/query-reach', function( req, res ){
   .then( reachJson => res.json(reachJson) );
 });
 
-http.post('/convert-to-biopax', function( req, res ){
-  let templates = req.body;
-  getBiopaxFromTemplates( templates )
-  .then( result => result.text() )
-  .then( owl => res.send( owl ));
+http.get('/biopax/:id', function( req, res ){
+  let id = req.params.id;
+  Promise.try( loadTables )
+    .then( json => _.assign( {}, json, { id } ) )
+    .then( loadDoc )
+    .then( doc => doc.toBiopaxTemplates() )
+    .then( getBiopaxFromTemplates )
+    .then( result => result.text() )
+    .then( owl => res.send( owl ));
 });
 
 module.exports = http;

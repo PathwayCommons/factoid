@@ -1,4 +1,5 @@
 const FileSaver = require('file-saver');
+const _ = require('lodash');
 
 function exportContentToFile(content, fileName){
   var file = new File([content], fileName, {type: "text/plain;charset=utf-8"});
@@ -6,25 +7,22 @@ function exportContentToFile(content, fileName){
 }
 
 function exportContentToOwl(content, fileName){
-  if(!fileName.endsWith('.owl')){
+  if( !_.endsWith(fileName, '.owl') ){
     fileName += '.owl';
   }
 
   exportContentToFile(content, fileName);
 }
 
-function exportDocumentToOwl(doc, fileName){
-  let templates = doc.toBiopaxTemplates();
+function exportDocumentToOwl(docId, fileName){
+  // in case document itself is given instead of document id
+  if( !_.isString(docId) ){
+      docId = docId.id();
+  }
 
-  let makeRequest = () => fetch('/api/document/convert-to-biopax', {
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    method: 'POST',
-    body: JSON.stringify(templates)
-  });
+  let makeRequest = () => fetch(`/api/document/biopax/${docId}`);
 
-  fileName = fileName || doc.id();
+  fileName = fileName || docId;
 
   Promise.try( makeRequest ).then( result => result.text() )
           .then( content => exportContentToOwl(content, fileName) );

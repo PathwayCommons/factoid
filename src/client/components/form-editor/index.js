@@ -276,7 +276,7 @@ class FormEditor extends DirtyComponent {
         h('div.form-templates', [
           ...hArr
         ]),
-        h('button.form-submit', { onClick: () => exportDocumentToOwl(doc) }, [
+        h('button.form-submit', { onClick: () => exportDocumentToOwl(doc.id()) }, [
           'SUBMIT'
         ])
       ]),

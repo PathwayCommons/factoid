@@ -54,7 +54,7 @@ module.exports = function({ controller, document, bus }){
     ]),
 
     h(Tooltip, { description: 'Export to Biopax' }, [
-      h('button.editor-button.plain-button', { onClick: () => exportDocumentToOwl(document) }, [
+      h('button.editor-button.plain-button', { onClick: () => exportDocumentToOwl(document.id()) }, [
         h('i.material-icons', 'save_alt')
       ])
     ])

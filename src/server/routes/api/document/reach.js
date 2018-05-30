@@ -6,6 +6,7 @@ const fetch = require('node-fetch');
 const FormData = require('form-data');
 const Organism = require('../../../../model/organism');
 const { INTERACTION_TYPE } = require('../../../../model/element/interaction-type/enum');
+const { PARTICIPANT_TYPE } = require('../../../../model/element/participant-type');
 const uniprot = require('../element-association/uniprot');
 
 // TODO re-enable once a more stable solution for pubchem xrefs is found
@@ -235,64 +236,105 @@ module.exports = {
               description: getSentenceText( frame.sentence )
             };
 
-            let eles;
+            let elIdToFrameId = new Map();
+            let controllerId = argsAreControllerControlled ? getArgId( args.find( isControllerArg ) ) : null;
 
-            if( argsAreEnts ){
-              eles = argFrames.map( getElFromFrame );
-            } else if( isBinaryCollapsible ){
-              let getEntityFrame = frame => {
-                if( frameIsEvent( frame ) ){
-                  return getFrame( getArgId( frame.arguments[0] ) );
-                } else {
-                  return frame;
+            let getElAndSetMap = frame => {
+              let el = getElFromFrame( frame );
+
+              if ( el ) {
+                elIdToFrameId.set( el.id, frame['frame-id'] );
+              }
+
+              return el;
+            };
+
+            let getTargetSign = () => {
+              let subtype = frame.subtype;
+
+              if ( !subtype ) {
+                return null;
+              }
+
+              if ( subtype.startsWith( 'positive' ) ) {
+                return PARTICIPANT_TYPE.POSITIVE;
+              }
+
+              if ( subtype.startsWith( 'negative' ) ) {
+                return PARTICIPANT_TYPE.NEGATIVE;
+              }
+
+              return PARTICIPANT_TYPE.UNSIGNED_TARGET;
+            };
+
+            let attachTargetGroup = entry => {
+              let elFrameId = elIdToFrameId.get( entry.id );
+
+              // If the entry does not represent the controlled arg return directly
+              if ( !argsAreControllerControlled || elFrameId == controllerId ) {
+                return;
+              }
+
+              let targetSign = getTargetSign();
+
+              if ( targetSign ) {
+                entry.group = targetSign.value;
+              }
+            };
+
+            let getAssociation = eles => {
+              let protCount = eles.filter( isProtein ).length;
+
+              // protein - protein
+              if ( protCount == 2 ) {
+                if ( isBinaryCollapsible ) {
+                  let type = getFrame( getArgId( evtArg ) ).subtype;
+
+                  switch ( type ) {
+                    case REACH_EVENT_TYPE.TRANSCRIPTION:
+                      return INTERACTION_TYPE.EXPRESSION;
+                    case REACH_EVENT_TYPE.PHOSPHORYLATION:
+                      return INTERACTION_TYPE.PHOSPHORYLATION;
+                    case REACH_EVENT_TYPE.METHYLATION:
+                      return INTERACTION_TYPE.METHYLATION;
+                    default:
+                      return null;
+                  }
                 }
-              };
+              }
+              // protein - chemical
+              else if ( protCount == 1 ) {
+                if ( argsAreEnts ) {
+                  // more cases would be added in the future
+                  switch ( frame.type ) {
+                    case REACH_EVENT_TYPE.ACTIVATION:
+                      return INTERACTION_TYPE.PROTEIN_CHEMICAL;
+                    default:
+                      return null;
+                  }
+                }
+              }
 
-              eles = argFrames.map( getEntityFrame ).map( getElFromFrame );
-            }
+              return null;
+            };
 
-            eles = eles.filter( ele => ele != null );
+            let getEntityFrame = frame => {
+              if( frameIsEvent( frame ) ){
+                return getFrame( getArgId( frame.arguments[0] ) );
+              } else {
+                return frame;
+              }
+            };
+
+            let eles = argFrames.map( getEntityFrame ).map( getElAndSetMap )
+                        .filter( ele => ele != null );
 
             intn.entries = eles.map( getEntryFromEl );
+            intn.entries.map( attachTargetGroup );
 
-            let protCount = eles.filter(isProtein).length;
-            let assoc;
+            let assoc = getAssociation( eles );
 
-            // protein - protein
-            if (protCount == 2) {
-              if (isBinaryCollapsible) {
-                let type = getFrame( getArgId(evtArg) ).subtype;
-
-                switch (type) {
-                  case REACH_EVENT_TYPE.TRANSCRIPTION:
-                    assoc = INTERACTION_TYPE.EXPRESSION;
-                    break;
-                  case REACH_EVENT_TYPE.PHOSPHORYLATION:
-                    assoc = INTERACTION_TYPE.PHOSPHORYLATION;
-                    break;
-                  case REACH_EVENT_TYPE.METHYLATION:
-                    assoc = INTERACTION_TYPE.METHYLATION;
-                    break;
-                  default:
-                    break;
-                }
-              }
-            }
-            // protein - chemical
-            else if (protCount == 1 ) {
-              if (argsAreEnts) {
-                // more cases would be added in the future
-                switch (frame.type) {
-                  case REACH_EVENT_TYPE.ACTIVATION:
-                    assoc = INTERACTION_TYPE.PROTEIN_CHEMICAL;
-                    break;
-                  default:
-                    break;
-                }
-              }
-            }
-
-            if (assoc) {
+            if ( assoc ) {
               intn.association = assoc.value;
             }
 

@@ -14,10 +14,8 @@ class InteractionForm extends Component {
     };
 
 
-    // this.state.document.synch();
-
-    this.state.interaction.complete();
   }
+
 
   getInputParticipant(){
     let intn = this.state.interaction;

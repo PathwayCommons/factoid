@@ -4,6 +4,9 @@ let EntityForm = require('./entity-form.js');
 
 class MolecularInteractionForm extends InteractionForm {
 
+  // componentDidMount(){
+  //   this.state.interaction.on('complete', ()=> this.forceUpdate());
+  // }
 
   getNextEntityInd(){
     return this.state.interaction.elements().length;
@@ -36,6 +39,8 @@ class MolecularInteractionForm extends InteractionForm {
       hDeleteFunc = () => null;
 
     let hFunc = intn.elements().map(el =>{
+      if(!el)
+        return null;
       return h('div', [
         hDeleteFunc(el),
         //we have to assign key because react renders component in the old position when deleted
@@ -44,9 +49,7 @@ class MolecularInteractionForm extends InteractionForm {
     });
 
     return h('div.form-interaction', [
-
       ...hFunc,
-
       h('div.form-action-buttons', [
         h('button.form-entity-adder', { onClick: () => {
               let desc = {};

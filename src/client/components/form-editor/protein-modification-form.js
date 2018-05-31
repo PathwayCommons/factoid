@@ -7,6 +7,8 @@ let Interaction = require('../../../model/element/interaction');
 class ProteinModificationForm extends InteractionForm {
 
 
+
+
   updateModificationType(val){
     let intn = this.state.interaction;
 
@@ -22,6 +24,7 @@ class ProteinModificationForm extends InteractionForm {
   }
 
   render(){
+
 
     let intn = this.state.interaction;
 

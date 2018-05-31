@@ -78,6 +78,7 @@ class FormEditor extends DirtyComponent {
           this.forceUpdate();
         });
 
+
         //TODO
         doc.on('add', (el) => {
 
@@ -87,6 +88,8 @@ class FormEditor extends DirtyComponent {
           });
 
           el.on('complete', () => {
+
+            if(!el.isInteraction())
               this.dirty();
           });
 
@@ -172,8 +175,6 @@ class FormEditor extends DirtyComponent {
         resp.addParticipant(responses[i]);
 
         resp.setParticipantType(responses[i], data.pptTypes[i]);
-
-
 
 
         // if(data.pptTypes[i] !== Interaction.PARTICIPANT_TYPE.UNSIGNED)
@@ -273,6 +274,9 @@ class FormEditor extends DirtyComponent {
     forms.forEach((form) => {
 
       let formContent = doc.interactions().map(interaction => {
+        if(!interaction.complete())
+          return null;
+
           if(form.association.filter(assoc => assoc.value === interaction.association().value).length > 0 ) {
               return h('div.form-interaction-line',
                 [

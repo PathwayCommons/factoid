@@ -15,13 +15,13 @@ class EntityForm extends DirtyComponent {
   constructor(props) {
     super(props);
     this.state = this.data = _.assign( {
-      style: 'form-entity',
-      showEntityInfo: false,
+      style: 'form-entity'
     }, props );
 
 
     if(this.data.entity){
       this.data.entity.on("complete", () => {
+
         this.mergeWithOtherEntities();
         this.dirty();
       });
@@ -29,56 +29,96 @@ class EntityForm extends DirtyComponent {
 
     this.entityInfoClasses = ".entity-info-section, .entity-info-progression";
 
+
+    if(this.data.entity.completed())
+      this.iconType = 'arrow_drop_up';
+    else
+      this.iconType = 'arrow_drop_down';
   }
 
   componentDidMount(){
-    // this.hideEntityInfo();
     emitter.on('esc', () => this.hideEntityInfo());
+
+    this.state.bus.on('showEntityInfo', ()=>{
+      this.showEntityInfo();
+    });
+
+
+    this.state.bus.on('hideEntityInfo', ()=>{
+      this.hideEntityInfo();
+    });
+
+    this.state.entity.on('associated', ()=>{
+
+      let target = ReactDom.findDOMNode(this);
+      target.style.height = 0;
+      this.dirty();
+
+      setTimeout(()=>{
+        target.style.height = '100%';
+        this.dirty();
+      }, 10);
+
+    });
+
+
+    this._isMounted = true;
+
+  }
+
+  componentWillUnmount(){
+    this._isMounted = false;
   }
 
   toggleEntityInfo(){
-    let target = ReactDom.findDOMNode(this);
-    let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
-    entityInfoSections.forEach(ei => {
-      ei.style.visibility = ei.style.visibility === "hidden" ? "visible": "hidden" ;
-      if(ei.style.visibility === "hidden") {
-        ei.style.height = 0;
-      }
-      else {
-        ei.style.height = "100%";
+    if(this._isMounted) {
+      let target = ReactDom.findDOMNode(this);
+      let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
+      entityInfoSections.forEach(ei => {
+        ei.style.visibility = ei.style.visibility === "hidden" ? "visible" : "hidden";
+        if (ei.style.visibility === "hidden") {
+          ei.style.height = 0;
+          this.iconType = 'arrow_drop_down';
+        }
+        else {
+          ei.style.height = "100%";
+          this.iconType = 'arrow_drop_up';
 
-      }
-    });
-    this.dirty();
+        }
+      });
+      this.dirty();
+    }
   }
+
 
   hideEntityInfo(){
 
-    let target = ReactDom.findDOMNode(this);
-    let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
-    entityInfoSections.forEach(ei => {
-      ei.style.visibility = "hidden";
-      ei.style.height = 0;
+    if(this._isMounted) {
+      let target = ReactDom.findDOMNode(this);
+      let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
+      entityInfoSections.forEach(ei => {
+        ei.style.visibility = "hidden";
+        ei.style.height = 0;
+      });
 
-    });
-
-
-    this.dirty();
+      this.iconType = 'arrow_drop_up';
+      this.dirty();
+    }
   }
 
-  updateEntityName(newName) {
-    this.state.entity.name(newName);
-    this.dirty();
 
-  }
+  showEntityInfo(){
+    if(this._isMounted) {
+      let target = ReactDom.findDOMNode(this);
+      let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
+      entityInfoSections.forEach(ei => {
+        ei.style.visibility = "visible";
+        ei.style.height = "100%";
+      });
 
-  updateGrounding(stateVal) {
-
-      if (this.state.entity.name().length > 0) {
-          // this.state.showEntityInfo = stateVal;
-          this.setState({showEntityInfo: stateVal});
-      }
-    this.dirty();
+      this.iconType = 'arrow_drop_down';
+      this.dirty();
+    }
   }
 
   areAssociationsTheSame(assoc1, assoc2){
@@ -90,9 +130,7 @@ class EntityForm extends DirtyComponent {
    */
   mergeWithOtherEntities(){
     let entity = this.state.entity;
-
     if(entity) {
-
       //get the participant type of this entity within its interaction
       //there can only be one interaction with this entity as it is not merged yet
       let intns = this.state.document.interactions().filter(intn => intn.has(entity));
@@ -125,14 +163,12 @@ class EntityForm extends DirtyComponent {
           if( intn.has( entity )) {
             intn.addParticipant(mergedEntity);
             intn.setParticipantType(mergedEntity, participantType);
-
           }
           else
             return Promise.resolve();
         });
 
         Promise.all(  this.state.document.interactions().map( updateParticipants ) );
-
 
 
         //update the entity of this form
@@ -145,17 +181,11 @@ class EntityForm extends DirtyComponent {
 
 
   shouldComponentUpdate(){
-
      return true;
   }
 
-
   updateState(){
     this.dirty();
-  }
-
-  domId(){
-    return "entity-" + this.state.entity.id();
   }
 
   render(){
@@ -167,7 +197,7 @@ class EntityForm extends DirtyComponent {
         onClick: () => this.toggleEntityInfo(),
         onChange: () => this.updateState()},
         [
-        h('i.material-icons', 'arrow_drop_down  ')
+        h('i.material-icons', this.iconType)
       ]),
       h(ElementInfo, {element: this.state.entity, document: this.state.document}),
 

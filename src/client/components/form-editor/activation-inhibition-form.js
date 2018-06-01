@@ -15,10 +15,14 @@ class ActivationInhibitionForm extends InteractionForm{
 
 
 
-      let actVal =  intn.association().isInhibition()? "inhibits" : "activates" ;
+    let actVal =  intn.association().isInhibition()? "inhibits" : "activates" ;
+
+    if(!rEnt || !lEnt || !actVal)
+      return null;
+
 
     return h('div.form-interaction', [
-      h(EntityForm, { entity: lEnt , placeholder: 'Source protein', document: this.state.document}),
+      h(EntityForm, { entity: lEnt , placeholder: 'Source protein', document: this.state.document, bus: this.state.bus}),
       h('span', [
         h('select.form-options', { value: actVal, onChange: e => {this.updateActivationInhibition(e.target.value);
           } }, [
@@ -26,7 +30,7 @@ class ActivationInhibitionForm extends InteractionForm{
           h('option', { value: 'inhibits' }, 'inhibits'),
         ])
       ]),
-      h(EntityForm, { entity: rEnt, placeholder: 'Target protein' , document: this.state.document} ),
+      h(EntityForm, { entity: rEnt, placeholder: 'Target protein' , document: this.state.document, bus: this.state.bus} ),
     ]);
 
   }

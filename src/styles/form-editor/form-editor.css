@@ -1,3 +1,4 @@
+
 .form-editor-title {
   text-align: center;
   color: #212F3D;
@@ -35,6 +36,14 @@
 .delete-interaction {
   border: none;
   color: #ED4A31;
+}
+
+.delete-entity {
+  border: none;
+  color: #ED4A31;
+  display: flex;
+  padding-left: 3em;
+  margin-bottom: -0.5em;
 }
 
 
@@ -156,4 +165,10 @@
 .form-interaction .element-info .entity-info .entity-info-matches{
   height: 20em;
 
+}
+
+.form-editor .form-checkbox{
+  margin-left: 1em;
+  opacity: 1;
+  pointer-events: all;
 }

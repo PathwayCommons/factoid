@@ -31,15 +31,15 @@ class Expression extends InteractionType {
     let source = this.getSource();
     let target = this.getTarget();
 
-    let srcName = source.name() || '';
-    let tgtName = target.name() || '';
+    let srcTemplate = source.toBiopaxTemplate();
+    let tgtTemplate = target.toBiopaxTemplate();
 
     let controlType = this.isInhibition() ? BIOPAX_CONTROL_TYPE.INHIBITION : BIOPAX_CONTROL_TYPE.ACTIVATION;
 
     return {
       type: BIOPAX_TEMPLATE_TYPE.EXPRESSION_REGULATION,
-      transcriptionFactor: srcName,
-      targetProtein: tgtName,
+      transcriptionFactor: srcTemplate,
+      targetProtein: tgtTemplate,
       controlType: controlType
     };
   }

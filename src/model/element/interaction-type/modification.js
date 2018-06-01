@@ -31,8 +31,8 @@ class Modification extends InteractionType {
     let source = this.getSource();
     let target = this.getTarget();
 
-    let srcName = source.name() || '';
-    let tgtName = target.name() || '';
+    let srcTemplate = source.toBiopaxTemplate();
+    let tgtTemplate = target.toBiopaxTemplate();
     let templateType = ( effect === undefined )
             ? BIOPAX_TEMPLATE_TYPE.PROTEIN_CONTROLS_STATE : BIOPAX_TEMPLATE_TYPE.PROTEIN_MODIFICATION;
 
@@ -40,8 +40,8 @@ class Modification extends InteractionType {
 
     let template = {
       type: templateType,
-      controllerProtein: srcName,
-      targetProtein: tgtName,
+      controllerProtein: srcTemplate,
+      targetProtein: tgtTemplate,
       controlType: controlType
     };
 

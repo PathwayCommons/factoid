@@ -11,11 +11,11 @@ class General extends InteractionType {
 
   toBiopaxTemplate(){
     let participants = this.interaction.participants();
-    let participantNames = participants.map( participant => participant.name() );
+    let participantTemplates = participants.map( participant => participant.toBiopaxTemplate() );
 
     return {
       type: BIOPAX_TEMPLATE_TYPE.MOLECULAR_INTERACTION,
-      moleculeList: participantNames
+      moleculeList: participantTemplates
     };
   }
 

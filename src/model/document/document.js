@@ -337,7 +337,7 @@ class Document {
     let templates = [];
 
     interactions.forEach( intn => {
-      let template = intn.association().toBiopaxTemplate();
+      let template = intn.toBiopaxTemplate();
       if (template !== null){
         templates.push(template);
       }

@@ -48,8 +48,8 @@ class ProteinChemical extends InteractionType {
     let negative = this.isNegative();
     let source = this.getSource();
     let target = this.getTarget();
-    let srcName = source.name() || '';
-    let tgtName = target.name() || '';
+    let srcTemplate = source.toBiopaxTemplate();
+    let tgtTemplate = target.toBiopaxTemplate();
 
     let template;
 
@@ -58,8 +58,8 @@ class ProteinChemical extends InteractionType {
 
       template = {
         type: type,
-        controllerProtein: srcName,
-        chemical: tgtName
+        controllerProtein: srcTemplate,
+        chemical: tgtTemplate
       };
     }
     else {
@@ -68,8 +68,8 @@ class ProteinChemical extends InteractionType {
 
       template = {
         type: type,
-        chemical: srcName,
-        targetProtein: tgtName,
+        chemical: srcTemplate,
+        targetProtein: tgtTemplate,
         controlType: controlType
       };
     }

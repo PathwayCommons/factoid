@@ -82,11 +82,6 @@ class FormEditor extends DirtyComponent {
         //TODO
         doc.on('add', (el) => {
 
-          el.on('remoteupdate', () => {
-
-              this.dirty();
-          });
-
           el.on('complete', () => {
 
             if(!el.isInteraction())
@@ -235,7 +230,6 @@ class FormEditor extends DirtyComponent {
       catch(e) {
         // console.log(e);
       }
-
       this.dirty();
     });
 
@@ -317,10 +311,6 @@ class FormEditor extends DirtyComponent {
     });
 
     return h('div.form-editor', [
-//      h(AppBar, { document: this.data.document, bus: this.data.bus }),
- //     h(ActionLogger, { document: this.data.document, bus: this.data.bus }),
-      'Hide entity information for all',
-      h('input.form-checkbox', {type: 'checkbox', defaultChecked:false, onChange: e => {this.toggleEntityInfo(e);}}),
       h('div.page-content', [
         h('h1.form-editor-title', 'Insert Pathway Information As Text'),
         h('div.form-templates', [

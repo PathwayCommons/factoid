@@ -2,17 +2,13 @@ const h = require('react-hyperscript');
 let InteractionForm = require('./interaction-form.js');
 let EntityForm = require('./entity-form.js');
 
-
-
 class ActivationInhibitionForm extends InteractionForm{
-
 
 
   render(){
     const intn = this.state.interaction;
       const lEnt = this.getInputParticipant();
       const rEnt = this.getOutputParticipant();
-
 
 
     let actVal =  intn.association().isInhibition()? "inhibits" : "activates" ;

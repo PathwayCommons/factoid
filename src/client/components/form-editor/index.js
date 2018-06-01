@@ -182,7 +182,8 @@ class FormEditor extends DirtyComponent {
 
       }
 
-
+      //complete the interaction after all participants are added so it is displayed
+      resp.complete();
       this.dirty();
     });
   }
@@ -274,7 +275,7 @@ class FormEditor extends DirtyComponent {
     forms.forEach((form) => {
 
       let formContent = doc.interactions().map(interaction => {
-        if(!interaction.complete())
+        if(!interaction.completed())
           return null;
 
           if(form.association.filter(assoc => assoc.value === interaction.association().value).length > 0 ) {

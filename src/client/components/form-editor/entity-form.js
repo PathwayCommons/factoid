@@ -3,11 +3,11 @@ const _ = require('lodash');
 const h = require('react-hyperscript');
 const ReactDom = require('react-dom');
 const ElementInfo = require('../element-info/element-info');
-const React = require('react');
 const Mousetrap = require('mousetrap');
 const EventEmitter = require('eventemitter3');
 
 const emitter = new EventEmitter();
+
 
 Mousetrap.bind('escape', () => emitter.emit('esc'));
 
@@ -39,7 +39,7 @@ class EntityForm extends DirtyComponent {
 
     let target = ReactDom.findDOMNode(this);
 
-    target.addEventListener('click',  (e)=> {
+    target.addEventListener('click',  ()=> {
       this.showEntityInfo();
       this.hideAllEntityInfos();
     });
@@ -49,7 +49,6 @@ class EntityForm extends DirtyComponent {
       if(ref !== target)
         this.hideEntityInfo();
     });
-
 
     //initially hidden
     this.hideEntityInfo();
@@ -82,6 +81,7 @@ class EntityForm extends DirtyComponent {
   showEntityInfo(){
     if(this._isMounted) {
       let target = ReactDom.findDOMNode(this);
+
       let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
       entityInfoSections.forEach(ei => {
         ei.style.visibility = "visible";

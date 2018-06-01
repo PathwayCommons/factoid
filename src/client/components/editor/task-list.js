@@ -10,41 +10,19 @@ const NotificationPanel = require('../notification/panel');
 const getIncompleteEntities = doc => doc.entities().filter(ent => !ent.completed());
 
 
-const eleEvts = [ 'rename' ];
-const entEvts = [ 'complete', 'uncomplete' ];
-const intnEvts = [ ];
+const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
 
 let bindEleEvts = (ele, cb) => {
   eleEvts.forEach(evt => {
 
     ele.on(evt, cb);
   });
-
-  if( ele.isInteraction() ){
-    intnEvts.forEach(evt => {
-      ele.on(evt, cb);
-    });
-  } else {
-    entEvts.forEach(evt => {
-      ele.on(evt, cb);
-    });
-  }
 };
 
 let unbindEleEvts = (ele, cb) => {
   eleEvts.forEach(evt => {
     ele.removeListener(evt, cb);
   });
-
-  if( ele.isInteraction() ){
-    intnEvts.forEach(evt => {
-      ele.removeListener(evt, cb);
-    });
-  } else {
-    entEvts.forEach(evt => {
-      ele.removeListener(evt, cb);
-    });
-  }
 };
 
 class TaskList extends DirtyComponent {
@@ -53,8 +31,6 @@ class TaskList extends DirtyComponent {
   }
   componentDidMount(){
     this.eleEvts = eleEvts;
-    this.entEvts = entEvts;
-    this.intnEvts = intnEvts;
 
     let update = () => this.dirty();
     this.update = update;
@@ -85,16 +61,23 @@ class TaskList extends DirtyComponent {
 
   render(){
     let doc = this.props.document;
-    let ntfns = doc.entities().filter(ent => !ent.completed()).map(ent => {
+    let ntfns = doc.elements().filter(ele => !ele.completed()).map(ele => {
+      let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + ' (?)'}`;
+      let innerMsg = entMsg(ele);
+
+      if( ele.isInteraction() ){
+        let participants = ele.participants();
+        innerMsg = `the interaction between ${participants.map(entMsg).join(' and ')}`;
+      }
       let ntfn = new Notification({
         openable: true,
         dismissable: false,
         openText: 'Show me',
         active: true,
-        message: `Provide more information for ${ent.name() === '' ? 'unnamed entity' : ent.name() + ' (?)'}.`
+        message: `Provide more information for ${innerMsg}`
       });
 
-      ntfn.on('open', () => this.props.bus.emit('opentip', ent));
+      ntfn.on('open', () => this.props.bus.emit('opentip', ele));
 
       return ntfn;
     });
@@ -118,8 +101,6 @@ class TaskListButton extends DirtyComponent {
 
   componentDidMount(){
     this.eleEvts = eleEvts;
-    this.entEvts = entEvts;
-    this.intnEvts = intnEvts;
 
     let update = () => this.dirty();
     this.update = update;

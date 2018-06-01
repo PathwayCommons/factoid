@@ -346,10 +346,7 @@ class Editor extends React.Component {
   }
 
   resetMenuState(){
-    return Promise.all([this.toggleTaskListMode(false),  this.toggleDrawMode(false)]).then( () => {
-      // wait for menu animations to complete
-      return new Promise( resolve => setTimeout(resolve, 250));
-    });
+    return Promise.all([this.toggleTaskListMode(false),  this.toggleDrawMode(false)]).delay(250);
   }
 
   render(){

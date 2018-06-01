@@ -7,8 +7,6 @@ const Notification = require('../notification');
 const NotificationList = require('../notification/list');
 const NotificationPanel = require('../notification/panel');
 
-const getIncompleteEntities = doc => doc.entities().filter(ent => !ent.completed());
-
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
 
@@ -131,11 +129,11 @@ class TaskListButton extends DirtyComponent {
 
   render() {
 
-    let incompleteEnts = getIncompleteEntities(this.props.document);
-    let numIncompleteEntities = incompleteEnts.length;
+    let incompleteEles = this.props.document.elements().filter(ele => !ele.completed());
+    let numIncompleteEles = incompleteEles.length;
 
     return h('div', [
-      numIncompleteEntities !== 0 ? h('div.num-tasks-indicator', incompleteEnts.length) : null,
+      numIncompleteEles !== 0 ? h('div.num-tasks-indicator', numIncompleteEles) : null,
       h('i.material-icons', 'format_list_bulleted')
     ]);
   }

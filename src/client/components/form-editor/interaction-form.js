@@ -9,11 +9,13 @@ class InteractionForm extends Component {
       interaction: props.interaction,
       description: props.description,
       document: props.document,
-      caller: props.caller
+      bus: props.bus,
+      // isEntityInfoVisible: props.isEntityInfoVisible
     };
 
-    this.state.document.synch();
+
   }
+
 
   getInputParticipant(){
     let intn = this.state.interaction;
@@ -29,7 +31,6 @@ class InteractionForm extends Component {
     let intn = this.state.interaction;
 
     return intn.association().getTarget();
-
   }
 
 
@@ -69,12 +70,9 @@ class InteractionForm extends Component {
         // intn.association().setAsInhibitionOf(rEnt);
       }
 
-      // setTimeout(()=> {
-          this.forceUpdate();
-        // }, 1000);
-    // })
-    // .then(() => this.forceUpdate());
+      this.state.interaction.complete();
 
+      this.forceUpdate();
   }
 }
 

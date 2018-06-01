@@ -80,7 +80,7 @@ class InteractionType {
   }
 
   setAsInhibitionOf( ppt ){
-    return this.setPariticpantAsNegative( ppt );
+    return this.setParticipantAsNegative( ppt );
   }
 
   getTarget(){

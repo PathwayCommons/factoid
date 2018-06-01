@@ -347,6 +347,7 @@ class Editor extends React.Component {
 
   resetMenuState(){
     this.data.bus.emit('closetip');
+    this.data.bus.emit('hidetips');
     return Promise.all([this.toggleTaskListMode(false),  this.toggleDrawMode(false)]).delay(250);
   }
 

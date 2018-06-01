@@ -10,9 +10,9 @@ const NotificationPanel = require('../notification/panel');
 const getIncompleteEntities = doc => doc.entities().filter(ent => !ent.completed());
 
 
-const eleEvts = [ 'rename', 'redescribe' ];
-const entEvts = [ 'modify', 'associated', 'unassociated', 'complete', 'uncomplete'];
-const intnEvts = [ 'retype' ];
+const eleEvts = [ 'rename' ];
+const entEvts = [ 'complete', 'uncomplete' ];
+const intnEvts = [ ];
 
 let bindEleEvts = (ele, cb) => {
   eleEvts.forEach(evt => {
@@ -91,7 +91,7 @@ class TaskList extends DirtyComponent {
         dismissable: false,
         openText: 'Show me',
         active: true,
-        message: `Provide more information for ${ent.name() === '' ? 'unnamed entity' : ent.name()}.`
+        message: `Provide more information for ${ent.name() === '' ? 'unnamed entity' : ent.name() + ' (?)'}.`
       });
 
       ntfn.on('open', () => this.props.bus.emit('opentip', ent));

@@ -215,11 +215,14 @@ class Editor extends React.Component {
     return this.data.drawMode;
   }
 
-  toggleTaskListMode( ){
-    this.data.bus.emit('toggletasklist');
-    this.setData({
-      taskListMode: !this.data.taskListMode
-    });
+  toggleTaskListMode( toggle ){
+    if( !this.editable() ){ return; }
+
+    let on = toggle === undefined ? !this.taskListMode() : toggle;
+
+    this.data.bus.emit( on ? 'taskliston' : 'tasklistoff' );
+
+    return new Promise( resolve => this.setData({ taskListMode: on }, resolve) );
   }
 
   taskListMode(){
@@ -343,9 +346,9 @@ class Editor extends React.Component {
   }
 
   resetMenuState(){
-    this.setData({
-      drawMode: false,
-      taskListMode: false
+    return Promise.all([this.toggleTaskListMode(false),  this.toggleDrawMode(false)]).then( () => {
+      // wait for menu animations to complete
+      return new Promise( resolve => setTimeout(resolve, 250));
     });
   }
 
@@ -360,7 +363,7 @@ class Editor extends React.Component {
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
       h(`div.${showTaskList ? 'editor-graph-shifted#editor-graph' : 'editor-graph#editor-graph'}`),
-      h(Help, { document, bus, controller }),
+      h(Help, { document, bus, cy: this.data.cy, controller }),
       h(TaskList, { document, bus, controller, show: showTaskList })
     ] : [];
 

@@ -77,13 +77,10 @@ class Help extends React.Component {
     let editable = this.props.document.editable();
     let bus = this.props.bus;
     let controller = this.props.controller;
-    let cy = controller.data.cy;
+    let cy = this.props.cy;
 
-    if( !showHelp ){
+    let showTips = () => {
       bus.emit('showtips');
-
-      controller.resetMenuState();
-
       let ent = cy.nodes(node => !isInteractionNode(node)).first();
       if( !ent.empty() ){
         this.data.entTip = this.makeHelpTooltip( {
@@ -109,12 +106,19 @@ class Help extends React.Component {
         this.data.intnTip.show();
       }
       this.setData({ showHelp: true });
+    };
 
-    } else {
+    let hideTips = () => {
       bus.emit('hidetips');
       if( this.data.entTip ){ this.data.entTip.hide(); }
       if( this.data.intnTip ){ this.data.intnTip.hide(); }
       this.setData({ showHelp: false });
+    };
+
+    if( !showHelp ){
+      controller.resetMenuState().then( showTips );
+    } else {
+      hideTips();
     }
   }
 

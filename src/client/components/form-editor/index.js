@@ -78,15 +78,13 @@ class FormEditor extends DirtyComponent {
           this.forceUpdate();
         });
 
+
         //TODO
         doc.on('add', (el) => {
 
-          el.on('remoteupdate', () => {
-
-              this.dirty();
-          });
-
           el.on('complete', () => {
+
+            if(!el.isInteraction())
               this.dirty();
           });
 
@@ -174,14 +172,13 @@ class FormEditor extends DirtyComponent {
         resp.setParticipantType(responses[i], data.pptTypes[i]);
 
 
-
-
         // if(data.pptTypes[i] !== Interaction.PARTICIPANT_TYPE.UNSIGNED)
         //   resp.association().setTarget( responses[i]);
 
       }
 
-
+      //complete the interaction after all participants are added so it is displayed
+      resp.complete();
       this.dirty();
     });
   }
@@ -233,7 +230,6 @@ class FormEditor extends DirtyComponent {
       catch(e) {
         // console.log(e);
       }
-
       this.dirty();
     });
 
@@ -273,6 +269,9 @@ class FormEditor extends DirtyComponent {
     forms.forEach((form) => {
 
       let formContent = doc.interactions().map(interaction => {
+        if(!interaction.completed())
+          return null;
+
           if(form.association.filter(assoc => assoc.value === interaction.association().value).length > 0 ) {
               return h('div.form-interaction-line',
                 [
@@ -312,10 +311,6 @@ class FormEditor extends DirtyComponent {
     });
 
     return h('div.form-editor', [
-//      h(AppBar, { document: this.data.document, bus: this.data.bus }),
- //     h(ActionLogger, { document: this.data.document, bus: this.data.bus }),
-      'Hide entity information for all',
-      h('input.form-checkbox', {type: 'checkbox', defaultChecked:false, onChange: e => {this.toggleEntityInfo(e);}}),
       h('div.page-content', [
         h('h1.form-editor-title', 'Insert Pathway Information As Text'),
         h('div.form-templates', [

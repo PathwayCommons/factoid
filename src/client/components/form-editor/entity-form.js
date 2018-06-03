@@ -3,11 +3,11 @@ const _ = require('lodash');
 const h = require('react-hyperscript');
 const ReactDom = require('react-dom');
 const ElementInfo = require('../element-info/element-info');
-
 const Mousetrap = require('mousetrap');
 const EventEmitter = require('eventemitter3');
 
 const emitter = new EventEmitter();
+
 
 Mousetrap.bind('escape', () => emitter.emit('esc'));
 
@@ -29,40 +29,29 @@ class EntityForm extends DirtyComponent {
 
     this.entityInfoClasses = ".entity-info-section, .entity-info-progression";
 
-
-    if(this.data.entity.completed())
-      this.iconType = 'arrow_drop_up';
-    else
-      this.iconType = 'arrow_drop_down';
   }
 
   componentDidMount(){
-    emitter.on('esc', () => this.hideEntityInfo());
-
-    this.state.bus.on('showEntityInfo', ()=>{
-      this.showEntityInfo();
-    });
-
-
-    this.state.bus.on('hideEntityInfo', ()=>{
-      this.hideEntityInfo();
-    });
-
-    this.state.entity.on('associated', ()=>{
-
-      let target = ReactDom.findDOMNode(this);
-      target.style.height = 0;
-      this.dirty();
-
-      setTimeout(()=>{
-        target.style.height = '100%';
-        this.dirty();
-      }, 10);
-
-    });
-
 
     this._isMounted = true;
+
+    emitter.on('esc', () => this.hideEntityInfo());
+
+    let target = ReactDom.findDOMNode(this);
+
+    target.addEventListener('click',  ()=> {
+      this.showEntityInfo();
+      this.hideAllEntityInfos();
+    });
+
+
+    this.state.bus.on('hideEntityInfo', (ref)=>{
+      if(ref !== target)
+        this.hideEntityInfo();
+    });
+
+    //initially hidden
+    this.hideEntityInfo();
 
   }
 
@@ -70,26 +59,10 @@ class EntityForm extends DirtyComponent {
     this._isMounted = false;
   }
 
-  toggleEntityInfo(){
-    if(this._isMounted) {
-      let target = ReactDom.findDOMNode(this);
-      let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
-      entityInfoSections.forEach(ei => {
-        ei.style.visibility = ei.style.visibility === "hidden" ? "visible" : "hidden";
-        if (ei.style.visibility === "hidden") {
-          ei.style.height = 0;
-          this.iconType = 'arrow_drop_down';
-        }
-        else {
-          ei.style.height = "100%";
-          this.iconType = 'arrow_drop_up';
-
-        }
-      });
-      this.dirty();
-    }
+  hideAllEntityInfos(){
+    let target = ReactDom.findDOMNode(this);
+    this.state.bus.emit('hideEntityInfo',  target);
   }
-
 
   hideEntityInfo(){
 
@@ -101,23 +74,23 @@ class EntityForm extends DirtyComponent {
         ei.style.height = 0;
       });
 
-      this.iconType = 'arrow_drop_up';
       this.dirty();
     }
   }
 
-
   showEntityInfo(){
     if(this._isMounted) {
       let target = ReactDom.findDOMNode(this);
+
       let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
       entityInfoSections.forEach(ei => {
         ei.style.visibility = "visible";
         ei.style.height = "100%";
       });
 
-      this.iconType = 'arrow_drop_down';
       this.dirty();
+
+
     }
   }
 
@@ -137,9 +110,7 @@ class EntityForm extends DirtyComponent {
 
       let participantType = intns[0].getParticipantType(entity);
 
-
       let mergedEntity;
-
       //we can assume that all the other elements in the list are unique as we replace them immediately
       for(let i = 0; i < this.state.document.entities().length; i++) {
         let el = this.state.document.entities()[i];
@@ -153,7 +124,6 @@ class EntityForm extends DirtyComponent {
           }
         }
       }
-
 
         // //find the entity index
       if(mergedEntity) {
@@ -184,24 +154,12 @@ class EntityForm extends DirtyComponent {
      return true;
   }
 
-  updateState(){
-    this.dirty();
-  }
 
   render(){
     let hFunc;
 
     hFunc = h('div.form-interaction', [
-
-      h('button.entity-info-edit.plain-button',  {
-        onClick: () => this.toggleEntityInfo(),
-        onChange: () => this.updateState()},
-        [
-        h('i.material-icons', this.iconType)
-      ]),
       h(ElementInfo, {element: this.state.entity, document: this.state.document}),
-
-
     ]);
 
 

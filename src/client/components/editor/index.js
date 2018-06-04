@@ -364,7 +364,7 @@ class Editor extends React.Component {
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
       h(`div.${showTaskList ? 'editor-graph-shifted#editor-graph' : 'editor-graph#editor-graph'}`),
-      h(Help, { document, bus, cy: this.state.cy, controller }),
+      h(Help, { document, bus, controller }),
       h(TaskList, { document, bus, controller, show: showTaskList })
     ] : [];
 

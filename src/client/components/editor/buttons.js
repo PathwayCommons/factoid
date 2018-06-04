@@ -12,7 +12,7 @@ const { TaskListButton } = require('./task-list');
 
 class EditorButtons extends React.Component {
   render(){
-    let { bus, className, document, controller } = this.props;
+    let { bus, className, document, controller, history } = this.props;
     let grs = [];
 
     let baseTooltipProps = {
@@ -29,30 +29,7 @@ class EditorButtons extends React.Component {
       }
     };
 
-    grs.push([
-      h(Tooltip, { description: 'Help' }, [
-        h('button.editor-button.plain-button', { onClick: () => bus.emit('togglehelp') }, [
-          h('i.material-icons', 'info')
-        ])
-      ])
-    ]);
-
     if( document.editable() ){
-      grs.push([
-        h(Tooltip, _.assign({}, baseTooltipProps,  { description: 'Tasks' }), [
-          h(Toggle, {
-            className: 'editor-button plain-button task-list-button',
-            controller,
-            document,
-            bus,
-            onToggle: () => controller.toggleTaskListMode(),
-            getState: () => controller.taskListMode()
-          }, [
-            h(TaskListButton, { controller, document, bus })
-          ])
-        ])
-      ]);
-
       grs.push([
         h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Add an entity', shortcut: 'e' }), [
           h('button.editor-button.plain-button', { onClick: () => controller.addElement().then( el => bus.emit('opentip', el) )  }, [
@@ -81,6 +58,27 @@ class EditorButtons extends React.Component {
           h('i.material-icons', 'zoom_out_map')
         ])
       ]),
+    ]);
+
+    grs.push([
+      h(Tooltip, { description: 'Help' }, [
+        h('button.editor-button.plain-button', { onClick: () => bus.emit('togglehelp') }, [
+          h('i.material-icons', 'info')
+        ])
+      ]),
+
+      h(Tooltip, _.assign({}, baseTooltipProps,  { description: 'Tasks' }), [
+        h(Toggle, {
+          className: 'editor-button plain-button task-list-button',
+          controller,
+          document,
+          bus,
+          onToggle: () => controller.toggleTaskListMode(),
+          getState: () => controller.taskListMode()
+        }, [
+          h(TaskListButton, { controller, document, bus })
+        ])
+      ]),
 
       h(Popover, {
         tippy: {
@@ -95,10 +93,8 @@ class EditorButtons extends React.Component {
             h('i.material-icons', 'link')
           ])
         ])
-      ])
-    ]);
+      ]),
 
-    grs.push([
       h(Popover, {
         tippy: {
           position: 'right',

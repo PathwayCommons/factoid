@@ -236,6 +236,10 @@ class Interaction extends Element {
   json(){
     return _.assign( {}, super.json(), _.pick( this.syncher.get(), _.keys(DEFAULTS) ) );
   }
+
+  toBiopaxTemplate(){
+    return this.association().toBiopaxTemplate();
+  }
 }
 
 // forward common calls to the element set

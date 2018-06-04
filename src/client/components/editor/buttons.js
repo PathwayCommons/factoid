@@ -6,6 +6,7 @@ const Tooltip = require('../popover/tooltip');
 const Toggle = require('../toggle');
 const Popover = require('../popover/popover');
 const Linkout = require('../document-linkout');
+const { exportDocumentToOwl } = require('../../../util');
 
 const { TaskListButton } = require('./task-list');
 
@@ -92,6 +93,12 @@ class EditorButtons extends React.Component {
           h('button.editor-button.plain-button', [
             h('i.material-icons', 'link')
           ])
+        ])
+      ]),
+
+      h(Tooltip, _.assign( {}, baseTooltipProps, { description: 'Export to Biopax' }), [
+        h('button.editor-button.plain-button', { onClick: () => exportDocumentToOwl(document.id()) }, [
+          h('i.material-icons', 'save_alt')
         ])
       ]),
 

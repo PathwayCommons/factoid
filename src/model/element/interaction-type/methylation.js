@@ -2,10 +2,15 @@ const Modification = require('./modification');
 
 const VALUE = 'methylation';
 const DISPLAY_VALUE = 'Methylation';
+const EFFECT = 'methylated';
 
 class Methylation extends Modification {
   constructor( intn ){
     super( intn );
+  }
+
+  toBiopaxTemplate(){
+    return super.toBiopaxTemplate(EFFECT);
   }
 
   toString(){

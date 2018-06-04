@@ -91,6 +91,26 @@ class Entity extends Element {
   json(){
     return _.assign( {}, super.json(), _.pick( this.syncher.get(), _.keys(DEFAULTS) ) );
   }
+
+  getBiopaxXref(){
+    let assoc = this.association();
+
+    if ( assoc == undefined ) {
+      return null;
+    }
+
+    return {
+      id: assoc.id,
+      namespace: assoc.namespace
+    };
+  }
+
+  toBiopaxTemplate(){
+    let name = this.name() || '';
+    let xref = this.getBiopaxXref();
+    
+    return { name, xref };
+  }
 }
 
 module.exports = Entity;

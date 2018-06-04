@@ -8,6 +8,7 @@ const logger = require('../../logger');
 const debug = require('../../debug');
 
 const Document = require('../../../model/document');
+const { exportDocumentToOwl } = require('../../../util');
 
 // const DocumentWizardStepper = require('../document-wizard-stepper');
 // const AppBar = require('../app-bar');
@@ -221,22 +222,6 @@ class FormEditor extends DirtyComponent {
 
   }
 
-
-  //Convert to biopax or show in the editor
-  submit(){
-
-    // let doc = this.state.document;
-    // doc.interactions().map(interaction=>{
-    //   console.log(interaction);
-    //   interaction.elements().map(el => {
-    //     console.log(el.name());
-    //     console.log(el);
-    //   });
-    //
-    // });
-
-  }
-
   render(){
     let doc = this.state.document;
 
@@ -291,7 +276,7 @@ class FormEditor extends DirtyComponent {
         h('div.form-templates', [
           ...hArr
         ]),
-        h('button.form-submit', { onClick: () => this.submit() }, [
+        h('button.form-submit', { onClick: () => exportDocumentToOwl(doc.id()) }, [
           'SUBMIT'
         ])
       ]),

@@ -2,10 +2,15 @@ const Modification = require('./modification');
 
 const VALUE = 'ubiquination';
 const DISPLAY_VALUE = 'Ubiquination';
+const EFFECT = 'ubiquinated';
 
 class Ubiquination extends Modification {
   constructor( intn ){
     super( intn );
+  }
+
+  toBiopaxTemplate(){
+    return super.toBiopaxTemplate(EFFECT);
   }
 
   toString(){

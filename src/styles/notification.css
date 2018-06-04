@@ -84,8 +84,8 @@
 .corner-notification {
   z-index: 3;
   position: fixed;
-  right: 0;
-  top: 0;
+  right: 100px;
+  top: 20px;
   margin: 1em;
   background: #333;
   border-radius: 0.25em;

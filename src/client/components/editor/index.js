@@ -17,7 +17,7 @@ const debug = require('../../debug');
 
 const makeCytoscape = require('./cy');
 const defs = require('./defs');
-const Buttons = require('./buttons');
+const { EditorButtons, AppButtons } = require('./buttons');
 const UndoRemove = require('./undo-remove');
 const Help = require('./help');
 const { TaskList } = require('./task-list');
@@ -359,11 +359,12 @@ class Editor extends React.Component {
     let showTaskList = this.data.taskListMode;
 
     let editorContent = this.state.initted ? [
-      h(Buttons, { className: showTaskList ? 'editor-buttons.editor-buttons-shifted' : 'editor-buttons', controller, document, bus, history }),
+      h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
+      h(AppButtons, { className: showTaskList ? 'editor-buttons-right.editor-buttons-right-shifted' : 'editor-buttons-right', controller, document, bus, history } ),
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
       h(`div.${showTaskList ? 'editor-graph-shifted#editor-graph' : 'editor-graph#editor-graph'}`),
-      h(Help, { document, bus, cy: this.data.cy, controller }),
+      h(Help, { document, bus, cy: this.state.cy, controller }),
       h(TaskList, { document, bus, controller, show: showTaskList })
     ] : [];
 

@@ -132,14 +132,6 @@ class Help extends React.Component {
       )
     ];
 
-    if( this.state.showHelp ){
-      helpContent.push(
-        h('div.editor-button.help-close-button', { onClick: () => this.toggleHelp()}, [
-          h('i.material-icons', 'close')
-        ])
-      );
-    }
-
     return h('div.help', helpContent);
   }
 }

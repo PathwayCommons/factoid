@@ -13,7 +13,7 @@ const { TaskListButton } = require('./task-list');
 
 class EditorButtons extends React.Component {
   render(){
-    let { bus, className, document, controller, history } = this.props;
+    let { bus, className, document, controller } = this.props;
     let grs = [];
 
     let baseTooltipProps = {
@@ -148,6 +148,54 @@ class EditorButtons extends React.Component {
       ])
     ]);
 
+    return h(`div.${className}`, grs.map( btns => h('div.editor-button-group', btns) ));
+  }
+}
+
+class AppButtons extends React.Component {
+  render(){
+    let { bus, className, document, controller, history } = this.props;
+    let grs = [];
+
+    let baseTooltipProps = {
+      show: showNow => {
+        bus.on('showtips', showNow);
+      },
+      hide: hideNow => {
+        bus.on('hidetips', hideNow);
+      },
+      tippy: {
+        zIndex: tippyTopZIndex,
+        hideOnClick: false,
+        events: 'mouseenter manual'
+      }
+    };
+
+    let appButtons = [h(Tooltip, { description: 'Help' }, [
+      h('button.editor-button.plain-button', { onClick: () => bus.emit('togglehelp') }, [
+        h('i.material-icons', 'info')
+      ])
+    ])];
+
+    if( document.editable() ){
+      appButtons.push([
+        h(Tooltip, _.assign({}, baseTooltipProps,  { description: 'Tasks' }), [
+          h(Toggle, {
+            className: 'editor-button plain-button task-list-button',
+            controller,
+            document,
+            bus,
+            onToggle: () => controller.toggleTaskListMode(),
+            getState: () => controller.taskListMode()
+          }, [
+            h(TaskListButton, { controller, document, bus })
+          ])
+        ])
+      ]);
+    }
+
+    grs.push(appButtons);
+
     if( document.editable() ){
       grs.push([
         h(Popover, {
@@ -188,7 +236,7 @@ class EditorButtons extends React.Component {
             ])
           }
         }, [
-          h(Tooltip, _.assign({}, baseTooltipProps, { description: 'More tools' }), [
+          h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Menu' }), [
             h('button.editor-button.plain-button', [
               h('i.material-icons', 'more_vert')
             ])
@@ -197,9 +245,12 @@ class EditorButtons extends React.Component {
       ]);
     }
 
+
     return h(`div.${className}`, grs.map( btns => h('div.editor-button-group', btns) ));
 
   }
+
 }
 
-module.exports = EditorButtons;
+module.exports = { AppButtons, EditorButtons };
+

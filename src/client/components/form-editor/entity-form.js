@@ -40,23 +40,20 @@ class EntityForm extends DirtyComponent {
       //   this.dirty();
       // });
 
+      // this.data.entity.on("remoteupdate", () => {
+      //   this.destroyTippy();
+      //   this.makeTippy();
+      //   this.dirty();
+      // });
 
-
-
-      this.data.entity.on("remoteupdate", () => {
-        this.destroyTippy();
-        this.makeTippy();
-        this.dirty();
-      });
-
+//
+      // this.data.entity.on("remoteassociated", () => {
+      //   this.destroyTippy();
+      //   this.makeTippy();
+      //   this.dirty();
+      // });
 
       this.data.entity.on("rename", () => {
-        this.dirty();
-      });
-
-      this.data.entity.on("remoteassociated", () => {
-        this.destroyTippy();
-        this.makeTippy();
         this.dirty();
       });
 
@@ -67,6 +64,8 @@ class EntityForm extends DirtyComponent {
       });
 
       this.data.entity.on("unassociated", () => {
+        this.destroyTippy();
+        this.makeTippy();
         this.dirty();
       });
     }
@@ -93,10 +92,11 @@ class EntityForm extends DirtyComponent {
 
     let options =  {
       duration: 0,
-      placement:'bottom',
+      placement:'top',
+      sticky: true,
+      livePlacement: false,
       hideOnClick: false,
     };
-
 
     let getContentDiv =  (component) => {
       let div = hh('div');
@@ -105,17 +105,11 @@ class EntityForm extends DirtyComponent {
 
       return div;
     };
-    // let key = "tmp";
-    // if(this.state.entity.association())
-    //   // key = this.state.entity.association().id;
-    //   key = this.state.entity.association().name + "-" + this.state.entity.association().organism;
-
 
     this.tippy = tippyjs(this.target, _.assign({}, tippyDefaults,options, {
       html: getContentDiv( h(ElementInfo, {
-        // key:key,
         element: this.state.entity,
-        document: this.state.document
+        document: this.state.document,
       }))}
     )).tooltips[0];
 

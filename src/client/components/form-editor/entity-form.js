@@ -5,11 +5,14 @@ const ReactDom = require('react-dom');
 const ElementInfo = require('../element-info/element-info');
 const Mousetrap = require('mousetrap');
 const EventEmitter = require('eventemitter3');
+const Popover = require('../popover/popover');
+const Tooltip = require('../popover/tooltip');
+
 
 const emitter = new EventEmitter();
 
 
-Mousetrap.bind('escape', () => emitter.emit('esc'));
+// Mousetrap.bind('escape', () => emitter.emit('esc'));
 
 class EntityForm extends DirtyComponent {
   constructor(props) {
@@ -19,79 +22,48 @@ class EntityForm extends DirtyComponent {
     }, props );
 
 
-    if(this.data.entity){
-      this.data.entity.on("complete", () => {
+    this.hCompletedStatus = h('i.material-icons', 'help');
 
+    if(this.data.entity){
+      if(this.data.entity.completed())
+        this.hCompletedStatus = h('i.material-icons.entity-info-complete-icon', 'check_circle');
+
+
+      this.data.entity.on("complete", () => {
+        this.hCompletedStatus = h('i.material-icons.entity-info-complete-icon', 'check_circle');
         this.mergeWithOtherEntities();
+        this.dirty();
+      });
+
+      // this.data.entity.on("remotecomplete", () => {
+      //   this.hCompletedStatus = h('i.material-icons.entity-info-complete-icon', 'check_circle');
+      //   this.mergeWithOtherEntities();
+      //   this.dirty();
+      // });
+
+
+      this.data.entity.on("remoteupdate", () => {
+        this.dirty();
+      });
+
+
+      this.data.entity.on("rename", () => {
+        this.dirty();
+      });
+
+      this.data.entity.on("remoteassociated", () => {
+        this.dirty();
+      });
+
+      this.data.entity.on("associated", () => {
+        this.dirty();
+      });
+
+      this.data.entity.on("unassociated", () => {
         this.dirty();
       });
     }
 
-    this.entityInfoClasses = ".entity-info-section, .entity-info-progression";
-
-  }
-
-  componentDidMount(){
-
-    this._isMounted = true;
-
-    emitter.on('esc', () => this.hideEntityInfo());
-
-    let target = ReactDom.findDOMNode(this);
-
-    target.addEventListener('click',  ()=> {
-      this.showEntityInfo();
-      this.hideAllEntityInfos();
-    });
-
-
-    this.state.bus.on('hideEntityInfo', (ref)=>{
-      if(ref !== target)
-        this.hideEntityInfo();
-    });
-
-    //initially hidden
-    this.hideEntityInfo();
-
-  }
-
-  componentWillUnmount(){
-    this._isMounted = false;
-  }
-
-  hideAllEntityInfos(){
-    let target = ReactDom.findDOMNode(this);
-    this.state.bus.emit('hideEntityInfo',  target);
-  }
-
-  hideEntityInfo(){
-
-    if(this._isMounted) {
-      let target = ReactDom.findDOMNode(this);
-      let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
-      entityInfoSections.forEach(ei => {
-        ei.style.visibility = "hidden";
-        ei.style.height = 0;
-      });
-
-      this.dirty();
-    }
-  }
-
-  showEntityInfo(){
-    if(this._isMounted) {
-      let target = ReactDom.findDOMNode(this);
-
-      let entityInfoSections = target.querySelectorAll(this.entityInfoClasses);
-      entityInfoSections.forEach(ei => {
-        ei.style.visibility = "visible";
-        ei.style.height = "100%";
-      });
-
-      this.dirty();
-
-
-    }
   }
 
   areAssociationsTheSame(assoc1, assoc2){
@@ -150,17 +122,42 @@ class EntityForm extends DirtyComponent {
   }
 
 
-  shouldComponentUpdate(){
-     return true;
-  }
-
-
   render(){
     let hFunc;
 
+    if(this.state.entity && this.state.entity.completed())
+      this.hCompletedStatus = h('i.material-icons.entity-info-complete-icon', 'check_circle');
+    else
+      this.hCompletedStatus = h('i.material-icons', 'help');
+
+
     hFunc = h('div.form-interaction', [
-      h(ElementInfo, {element: this.state.entity, document: this.state.document}),
+      h('input[type="button"].'+ this.state.style, {
+          value: this.state.entity && this.state.entity.name(),
+          placeholder: this.state.placeholder,
+          readOnly: true
+        }),
+      this.hCompletedStatus
     ]);
+
+    let key = "tmp";
+    if(this.state.entity.association())
+      key = this.state.entity.association().name + "-" + this.state.entity.association().organism;
+
+    hFunc = h(Popover, {
+      key: key,
+      tippy: {
+        // key: key,
+        hideOnClick: false,
+        interactive: true,
+        multiple: false,
+        html: h(ElementInfo, {/*key:key,*/ element: this.state.entity, document: this.state.document})
+      }
+    }, [hFunc]);
+
+
+
+
 
 
     return hFunc;

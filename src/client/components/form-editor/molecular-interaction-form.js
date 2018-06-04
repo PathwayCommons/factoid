@@ -44,7 +44,7 @@ class MolecularInteractionForm extends InteractionForm {
       return h('div', [
         hDeleteFunc(el),
         //we have to assign key because react renders component in the old position when deleted
-        h(EntityForm, {key: el.id(), entity:el, placeholder:'Molecule', tooltipContent:'Name or ID', style: 'form-entity-small', document: this.state.document, bus: this.state.bus}),
+        h(EntityForm, {key: el.id(), entity:el, placeholder:'Molecule', tooltipContent:'Name or ID', style: 'form-entity', document: this.state.document, bus: this.state.bus}),
       ]);
     });
 

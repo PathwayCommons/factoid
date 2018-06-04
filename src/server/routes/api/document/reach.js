@@ -5,6 +5,8 @@ const toJson = res => res.json();
 const fetch = require('node-fetch');
 const FormData = require('form-data');
 const Organism = require('../../../../model/organism');
+const { INTERACTION_TYPE } = require('../../../../model/element/interaction-type/enum');
+const { PARTICIPANT_TYPE } = require('../../../../model/element/participant-type');
 const uniprot = require('../element-association/uniprot');
 
 // TODO re-enable once a more stable solution for pubchem xrefs is found
@@ -20,6 +22,13 @@ const REMOVE_DISCONNECTED_ENTS = true;
 const REMOVE_UNGROUNDED_ENTS = false;
 const APPLY_GROUND = true;
 const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
+
+const REACH_EVENT_TYPE = Object.freeze({
+  TRANSCRIPTION: 'transcription',
+  PHOSPHORYLATION: 'phosphorylation',
+  METHYLATION: 'methylation',
+  ACTIVATION: 'activation'
+});
 
 module.exports = {
   // TODO remove this function as reach should never need to be exposed directly
@@ -218,6 +227,7 @@ module.exports = {
           let evtArg = frame.arguments.find( arg => isSingleArgEvt( getFrame( getArgId(arg) ) ) );
           let haveEvtArg = evtArg != null;
           let isBinaryCollapsible = argsAreEntAndEvt && argsAreControllerControlled && haveEvtArg;
+          let isProtein = ele => ele.type == 'protein';
 
           if( argsAreEnts || isBinaryCollapsible ){
             let intn = {
@@ -226,21 +236,107 @@ module.exports = {
               description: getSentenceText( frame.sentence )
             };
 
-            if( argsAreEnts ){
-              intn.entries = argFrames.map( getElFromFrame ).map( getEntryFromEl );
-            } else if( isBinaryCollapsible ){
-              let getEntityFrame = frame => {
-                if( frameIsEvent( frame ) ){
-                  return getFrame( getArgId( frame.arguments[0] ) );
-                } else {
-                  return frame;
+            let elIdToFrameId = new Map();
+            let controllerId = argsAreControllerControlled ? getArgId( args.find( isControllerArg ) ) : null;
+
+            let getElAndSetMap = frame => {
+              let el = getElFromFrame( frame );
+
+              if ( el ) {
+                elIdToFrameId.set( el.id, frame['frame-id'] );
+              }
+
+              return el;
+            };
+
+            let getTargetSign = () => {
+              let subtype = frame.subtype;
+
+              if ( !subtype ) {
+                return null;
+              }
+
+              if ( subtype.startsWith( 'positive' ) ) {
+                return PARTICIPANT_TYPE.POSITIVE;
+              }
+
+              if ( subtype.startsWith( 'negative' ) ) {
+                return PARTICIPANT_TYPE.NEGATIVE;
+              }
+
+              return PARTICIPANT_TYPE.UNSIGNED_TARGET;
+            };
+
+            let attachTargetGroup = entry => {
+              let elFrameId = elIdToFrameId.get( entry.id );
+
+              // If the entry does not represent the controlled arg return directly
+              if ( !argsAreControllerControlled || elFrameId == controllerId ) {
+                return;
+              }
+
+              let targetSign = getTargetSign();
+
+              if ( targetSign ) {
+                entry.group = targetSign.value;
+              }
+            };
+
+            let getAssociation = eles => {
+              let protCount = eles.filter( isProtein ).length;
+
+              // protein - protein
+              if ( protCount == 2 ) {
+                if ( isBinaryCollapsible ) {
+                  let type = getFrame( getArgId( evtArg ) ).subtype;
+
+                  switch ( type ) {
+                    case REACH_EVENT_TYPE.TRANSCRIPTION:
+                      return INTERACTION_TYPE.EXPRESSION;
+                    case REACH_EVENT_TYPE.PHOSPHORYLATION:
+                      return INTERACTION_TYPE.PHOSPHORYLATION;
+                    case REACH_EVENT_TYPE.METHYLATION:
+                      return INTERACTION_TYPE.METHYLATION;
+                    default:
+                      return null;
+                  }
                 }
-              };
+              }
+              // protein - chemical
+              else if ( protCount == 1 ) {
+                if ( argsAreEnts ) {
+                  // more cases would be added in the future
+                  switch ( frame.type ) {
+                    case REACH_EVENT_TYPE.ACTIVATION:
+                      return INTERACTION_TYPE.PROTEIN_CHEMICAL;
+                    default:
+                      return null;
+                  }
+                }
+              }
 
-              intn.entries = argFrames.map( getEntityFrame ).map( getElFromFrame ).map( getEntryFromEl );
+              return null;
+            };
+
+            let getEntityFrame = frame => {
+              if( frameIsEvent( frame ) ){
+                return getFrame( getArgId( frame.arguments[0] ) );
+              } else {
+                return frame;
+              }
+            };
+
+            let eles = argFrames.map( getEntityFrame ).map( getElAndSetMap )
+                        .filter( ele => ele != null );
+
+            intn.entries = eles.map( getEntryFromEl );
+            intn.entries.map( attachTargetGroup );
+
+            let assoc = getAssociation( eles );
+
+            if ( assoc ) {
+              intn.association = assoc.value;
             }
-
-            intn.entries = intn.entries.filter( entry => entry != null );
 
             if( intn.entries.length >= 2 ){
               addElement( intn, frame );

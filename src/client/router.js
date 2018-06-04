@@ -111,22 +111,18 @@ let routes = [
   {
     path: '/document/:id',
     render: props => {
-      let params = props.match.params;
+      let { id } = props.match.params;
 
-      return h( Editor, {
-        id: params.id
-      } );
+      return h( Editor, { id } );
     }
   },
   {
     path: '/document/:id/:secret',
     render: props => {
-      let params = props.match.params;
+      let { id, secret } = props.match.params;
+      let { history } = props;
 
-      return h( Editor, {
-        id: params.id,
-        secret: params.secret
-      } );
+      return h( Editor, { id, secret, history } );
     }
   },
   {

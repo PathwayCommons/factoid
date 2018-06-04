@@ -1,7 +1,8 @@
-const EventEmitterMixin = require('./event-emitter-mixin');
-const { mixin } = require('../util');
 const _ = require('lodash');
 const uuid = require('uuid');
+
+const EventEmitterMixin = require('../../../model/event-emitter-mixin');
+const { mixin } = require('../../../util');
 
 class NotificationList {
   constructor( notifications = [], opts ){

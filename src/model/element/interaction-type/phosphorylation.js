@@ -2,10 +2,15 @@ const Modification = require('./modification');
 
 const VALUE = 'phosphorylation';
 const DISPLAY_VALUE = 'Phosphorylation';
+const EFFECT = 'phosphorylated';
 
 class Phosphorylation extends Modification {
   constructor( intn ){
     super( intn );
+  }
+
+  toBiopaxTemplate(){
+    return super.toBiopaxTemplate(EFFECT);
   }
 
   toString(){

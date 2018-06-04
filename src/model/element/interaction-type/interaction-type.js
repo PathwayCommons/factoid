@@ -116,6 +116,10 @@ class InteractionType {
     return ppts[0];
   }
 
+  toBiopaxTemplate() {
+    throw `Abstract method toBiopaxTemplate() is not overridden for interaction type of ${this.value}`;
+  }
+
   toString(expr = 'interacts with'){
     let intn = this.interaction;
     let src, tgt;

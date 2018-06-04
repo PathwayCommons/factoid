@@ -136,7 +136,7 @@
 .num-tasks-indicator {
   position: absolute;
   top: -4px;
-  left: 18px;
+  right: 18px;
   font-size: 0.666em;
   color: white;
   background-color: #ed4a31;

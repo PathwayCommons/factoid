@@ -332,6 +332,20 @@ class Document {
     };
   }
 
+  toBiopaxTemplates(){
+    let interactions = this.interactions();
+    let templates = [];
+
+    interactions.forEach( intn => {
+      let template = intn.toBiopaxTemplate();
+      if (template !== null){
+        templates.push(template);
+      }
+    } );
+
+    return templates;
+  }
+
   fromJson( json ){
     let els = json.elements || [];
     let makeEl = json => Promise.try( () => this.factory().make({ data: json }) );

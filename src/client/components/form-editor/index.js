@@ -82,9 +82,12 @@ class FormEditor extends DirtyComponent {
         //TODO
         doc.on('add', (el) => {
 
+          el.on('remoteupdate', ()=> {
+            this.dirty();
+          });
           el.on('complete', () => {
 
-            if(!el.isInteraction())
+            // if(!el.isInteraction())
               this.dirty();
           });
 

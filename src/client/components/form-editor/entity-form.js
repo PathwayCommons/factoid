@@ -3,16 +3,15 @@ const _ = require('lodash');
 const h = require('react-hyperscript');
 const ReactDom = require('react-dom');
 const ElementInfo = require('../element-info/element-info');
+// const Popover = require('../popover/popover');
+const tippyjs = require('tippy.js');
+const { tippyDefaults } = require('../../defs');
+const hh = require('hyperscript');
 const Mousetrap = require('mousetrap');
 const EventEmitter = require('eventemitter3');
-const Popover = require('../popover/popover');
-const Tooltip = require('../popover/tooltip');
-
-
 const emitter = new EventEmitter();
 
-
-// Mousetrap.bind('escape', () => emitter.emit('esc'));
+Mousetrap.bind('escape', () => emitter.emit('esc'));
 
 class EntityForm extends DirtyComponent {
   constructor(props) {
@@ -42,7 +41,11 @@ class EntityForm extends DirtyComponent {
       // });
 
 
+
+
       this.data.entity.on("remoteupdate", () => {
+        this.destroyTippy();
+        this.makeTippy();
         this.dirty();
       });
 
@@ -52,10 +55,14 @@ class EntityForm extends DirtyComponent {
       });
 
       this.data.entity.on("remoteassociated", () => {
+        this.destroyTippy();
+        this.makeTippy();
         this.dirty();
       });
 
       this.data.entity.on("associated", () => {
+        this.destroyTippy();
+        this.makeTippy();
         this.dirty();
       });
 
@@ -63,6 +70,54 @@ class EntityForm extends DirtyComponent {
         this.dirty();
       });
     }
+
+  }
+
+  componentDidMount(){
+    this.target =  ReactDom.findDOMNode(this);
+
+    this.makeTippy();
+
+    // let show = () => this.tippy.show();
+    // let hide = () => this.tippy.hide();
+
+    this.hideTippy = () => this.tippy.hide();
+    this.destroyTippy = () => this.tippy.destroy();
+
+    emitter.on('esc', this.hideTippy);
+  }
+
+
+
+  makeTippy () {
+
+    let options =  {
+      duration: 0,
+      placement:'bottom',
+      hideOnClick: false,
+    };
+
+
+    let getContentDiv =  (component) => {
+      let div = hh('div');
+
+      ReactDom.render( component, div );
+
+      return div;
+    };
+    // let key = "tmp";
+    // if(this.state.entity.association())
+    //   // key = this.state.entity.association().id;
+    //   key = this.state.entity.association().name + "-" + this.state.entity.association().organism;
+
+
+    this.tippy = tippyjs(this.target, _.assign({}, tippyDefaults,options, {
+      html: getContentDiv( h(ElementInfo, {
+        // key:key,
+        element: this.state.entity,
+        document: this.state.document
+      }))}
+    )).tooltips[0];
 
   }
 
@@ -97,7 +152,7 @@ class EntityForm extends DirtyComponent {
         }
       }
 
-        // //find the entity index
+      // //find the entity index
       if(mergedEntity) {
 
         //update the interactions containing this entity
@@ -121,12 +176,13 @@ class EntityForm extends DirtyComponent {
     }
   }
 
-
   render(){
     let hFunc;
 
-    if(this.state.entity && this.state.entity.completed())
+    if(this.state.entity && this.state.entity.completed()) {
+      this.state.entity.complete();
       this.hCompletedStatus = h('i.material-icons.entity-info-complete-icon', 'check_circle');
+    }
     else
       this.hCompletedStatus = h('i.material-icons', 'help');
 
@@ -135,30 +191,10 @@ class EntityForm extends DirtyComponent {
       h('input[type="button"].'+ this.state.style, {
           value: this.state.entity && this.state.entity.name(),
           placeholder: this.state.placeholder,
-          readOnly: true
+          readOnly: true,
         }),
       this.hCompletedStatus
     ]);
-
-    let key = "tmp";
-    if(this.state.entity.association())
-      key = this.state.entity.association().name + "-" + this.state.entity.association().organism;
-
-    hFunc = h(Popover, {
-      key: key,
-      tippy: {
-        // key: key,
-        hideOnClick: false,
-        interactive: true,
-        multiple: false,
-        html: h(ElementInfo, {/*key:key,*/ element: this.state.entity, document: this.state.document})
-      }
-    }, [hFunc]);
-
-
-
-
-
 
     return hFunc;
   }

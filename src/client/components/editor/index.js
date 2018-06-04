@@ -20,6 +20,7 @@ const defs = require('./defs');
 const Buttons = require('./buttons');
 const UndoRemove = require('./undo-remove');
 const Help = require('./help');
+const { TaskList } = require('./task-list');
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -116,6 +117,7 @@ class Editor extends React.Component {
       bus: bus,
       document: doc,
       drawMode: false,
+      taskListMode: false,
       newElementShift: 0,
       mountDeferred: defer(),
       initted: false,
@@ -211,6 +213,20 @@ class Editor extends React.Component {
 
   drawMode(){
     return this.data.drawMode;
+  }
+
+  toggleTaskListMode( toggle ){
+    if( !this.editable() ){ return; }
+
+    let on = toggle === undefined ? !this.taskListMode() : toggle;
+
+    this.data.bus.emit( on ? 'taskliston' : 'tasklistoff' );
+
+    return new Promise( resolve => this.setData({ taskListMode: on }, resolve) );
+  }
+
+  taskListMode(){
+    return this.data.taskListMode;
   }
 
   addElement( data = {} ){
@@ -329,16 +345,25 @@ class Editor extends React.Component {
     }
   }
 
+  resetMenuState(){
+    this.data.bus.emit('closetip');
+    this.data.bus.emit('hidetips');
+    return Promise.all([this.toggleTaskListMode(false),  this.toggleDrawMode(false)]).delay(250);
+  }
+
   render(){
     let { document, bus, incompleteNotification } = this.data;
     let controller = this;
 
+    let showTaskList = this.data.taskListMode;
+
     let editorContent = this.state.initted ? [
-      h(Buttons, { controller, document, bus }),
+      h(Buttons, { className: showTaskList ? 'editor-buttons.editor-buttons-shifted' : 'editor-buttons', controller, document, bus }),
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
-      h('div.editor-graph#editor-graph'),
-      h(Help, { document, bus, controller })
+      h(`div.${showTaskList ? 'editor-graph-shifted#editor-graph' : 'editor-graph#editor-graph'}`),
+      h(Help, { document, bus, cy: this.data.cy, controller }),
+      h(TaskList, { document, bus, controller, show: showTaskList })
     ] : [];
 
     return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), editorContent);

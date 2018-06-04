@@ -114,3 +114,7 @@
     font-size: var(--smallFontSize);
   }
 }
+
+.notification-panel-entry {
+  margin: 10px;
+}

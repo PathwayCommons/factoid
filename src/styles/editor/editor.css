@@ -6,6 +6,7 @@
   transition-duration: 300ms;
   transition-property: opacity;
   transition-timing-function: ease-out;
+  overflow-x: hidden;
 }
 
 .editor-initted {
@@ -21,6 +22,14 @@
   flex-direction: column;
   background: rgba(255, 255, 255, 0.5);
   border-bottom-right-radius: 8px;
+
+  transform: translate3d(0, 0, 0);
+  transition: transform 200ms ease-out;
+}
+
+.editor-buttons-shifted {
+  transform: translate3d(21.5em, 0, 0);
+  transition: transform 200ms ease-out;
 }
 
 .editor-button-group {
@@ -55,6 +64,15 @@
   top: 0;
   width: 100%;
   height: 100%;
+
+  transform: translate3d(0, 0, 0);
+  transition: transform 200ms ease-out;
+
+}
+
+.editor-graph-shifted {
+  transform: translate3d(21.5em, 0, 0);
+  transition: transform 200ms ease-out;
 }
 
 .editor-menu-content {
@@ -93,4 +111,23 @@
   & .document-linkout-address:last-child .document-linkout-address-val {
     margin-bottom: 0;
   }
+}
+
+.task-list-button {
+  position: relative;
+}
+
+.num-tasks-indicator {
+  position: absolute;
+  top: -4px;
+  left: 18px;
+  font-size: 0.666em;
+  color: white;
+  background-color: #ed4a31;
+  height: 15px;
+  line-height: 15px;
+  padding: 0 2px;
+  border: 2px solid;
+  border-radius: 15px;
+  text-align: center;
 }

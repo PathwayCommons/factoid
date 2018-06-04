@@ -45,9 +45,9 @@ class NotificationBase extends DirtyComponent {
         h('div.notification-message', n.message())
       ].filter( v => v != null )),
       h('div.notification-actions', [
-        h('button.notification-action.notification-dismiss', { onClick: () => n.dismiss() }, [
+        n.options.dismissable ? h('button.notification-action.notification-dismiss', { onClick: () => n.dismiss() }, [
           'Dismiss'
-        ]),
+        ]) : null,
         h('button.notification-action.notification-open', { onClick: () => n.open() }, n.openText())
       ])
     ]) );

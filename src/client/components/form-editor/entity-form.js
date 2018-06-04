@@ -23,6 +23,7 @@ class EntityForm extends DirtyComponent {
 
     this.hCompletedStatus = h('i.material-icons', 'help');
 
+
     if(this.data.entity){
       if(this.data.entity.completed())
         this.hCompletedStatus = h('i.material-icons.entity-info-complete-icon', 'check_circle');
@@ -31,14 +32,18 @@ class EntityForm extends DirtyComponent {
       this.data.entity.on("complete", () => {
         this.hCompletedStatus = h('i.material-icons.entity-info-complete-icon', 'check_circle');
         this.mergeWithOtherEntities();
-        this.dirty();
+        if(this._isMounted)
+          this.dirty();
       });
 
-      // this.data.entity.on("remotecomplete", () => {
-      //   this.hCompletedStatus = h('i.material-icons.entity-info-complete-icon', 'check_circle');
-      //   this.mergeWithOtherEntities();
-      //   this.dirty();
-      // });
+
+      this.data.entity.on("remotecomplete", () => {
+        // this.hCompletedStatus = h('i.material-icons.entity-info-complete-icon', 'check_circle');
+
+        // this.mergeWithOtherEntities();
+        this.destroyTippy();
+        this.mountTippy();
+      });
 
       // this.data.entity.on("remoteupdate", () => {
       //   this.destroyTippy();
@@ -54,66 +59,103 @@ class EntityForm extends DirtyComponent {
       // });
 
       this.data.entity.on("rename", () => {
-        this.dirty();
+        if(this._isMounted)
+          this.dirty();
       });
 
       this.data.entity.on("associated", () => {
+        // this.tippy.destroy();
         this.destroyTippy();
         this.makeTippy();
-        this.dirty();
+
       });
 
       this.data.entity.on("unassociated", () => {
+        // this.tippy.destroy();
         this.destroyTippy();
         this.makeTippy();
-        this.dirty();
+
       });
+
     }
 
   }
 
   componentDidMount(){
-    this.target =  ReactDom.findDOMNode(this);
-
-    this.makeTippy();
-
-    // let show = () => this.tippy.show();
-    // let hide = () => this.tippy.hide();
-
-    this.hideTippy = () => this.tippy.hide();
-    this.destroyTippy = () => this.tippy.destroy();
-
-    emitter.on('esc', this.hideTippy);
+    this.target =  ReactDom.findDOMNode(this);//.children[0];
+    this._isMounted = true;
   }
 
+  componentWillUnmount(){
+    this._isMounted = false;
+  }
+  mountTippy(){
 
+    if(!this._tippyMounted) {
+      this._tippyMounted = true;
+      this.makeTippy();
+      this.tippy.show();
+    }
+
+  }
 
   makeTippy () {
 
-    let options =  {
+    if(!this._tippyMounted || !this._isMounted)
+      return;
+
+    let options = {
       duration: 0,
-      placement:'top',
+      placement: 'top',
       sticky: true,
       livePlacement: false,
       hideOnClick: false,
     };
 
-    let getContentDiv =  (component) => {
+    let getContentDiv = (component) => {
       let div = hh('div');
-
-      ReactDom.render( component, div );
-
+      ReactDom.render(component, div);
       return div;
     };
 
-    this.tippy = tippyjs(this.target, _.assign({}, tippyDefaults,options, {
-      html: getContentDiv( h(ElementInfo, {
-        element: this.state.entity,
-        document: this.state.document,
-      }))}
+    this.content = getContentDiv(h(ElementInfo, {
+      element: this.state.entity,
+      document: this.state.document,
+    }));
+
+    this.tippy = tippyjs(this.target, _.assign({}, tippyDefaults, options, {
+        html: this.content
+      }
     )).tooltips[0];
 
+    let hideTippy = () => this.tippy.hide();
+
+    emitter.on('esc', hideTippy);
+
+    this.dirty();
   }
+
+
+   destroyTippy() {
+
+    if(this.tippy) {
+      let div = this.content;
+
+      this.tippy.destroy();
+
+      ReactDom.unmountComponentAtNode(div);
+    }
+    // let rm = div => {
+    //   try {
+    //     div.parentNode.removeChild( div );
+    //   } catch( err ){
+    //     // just let it fail
+    //   }
+    // };
+
+    // rm(div);
+  }
+
 
   areAssociationsTheSame(assoc1, assoc2){
     return (assoc1.id === assoc2.id  && assoc1.organism === assoc2.organism);
@@ -164,6 +206,7 @@ class EntityForm extends DirtyComponent {
 
         //update the entity of this form
         this.state.entity = mergedEntity;
+
         //we can now remove our entity
         this.state.document.remove(entity);
       }
@@ -186,6 +229,7 @@ class EntityForm extends DirtyComponent {
           value: this.state.entity && this.state.entity.name(),
           placeholder: this.state.placeholder,
           readOnly: true,
+          onClick: () => {this.mountTippy();}
         }),
       this.hCompletedStatus
     ]);

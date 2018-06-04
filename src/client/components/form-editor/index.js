@@ -47,7 +47,7 @@ class FormEditor extends DirtyComponent {
 
     this.data = this.state = {
       document: doc,
-      bus: bus
+      bus: bus,
     };
 
 
@@ -72,6 +72,8 @@ class FormEditor extends DirtyComponent {
           window.editor = this;
         }
 
+
+
         doc.on('remove', () => {
           this.forceUpdate();
         });
@@ -80,26 +82,28 @@ class FormEditor extends DirtyComponent {
         //TODO
         doc.on('add', (el) => {
 
-          el.on('complete', () => {
-
-            el.on('remoteupdate', () => {
-              this.dirty();
-            });
-
-
+          el.on('remoteupdate', ()=> {
             this.dirty();
           });
+          el.on('complete', () => {
 
+            // if(!el.isInteraction())
+              this.dirty();
+          });
 
+            this.dirty();
 
         });
 
         // force an update here
         this.forceUpdate();
+
+
         logger.info('The editor is initialising');
       } );
 
   }
+
 
   setData( obj, callback ){
     _.assign( this.data, obj );
@@ -140,7 +144,7 @@ class FormEditor extends DirtyComponent {
     return ( Promise.try( () => el.synch() )
         .then( () => el.create() )
         .then( () => doc.add(el) )
-        .then( () => el.associate(data.association[0].value) )
+        .then( () => el.associate(data.association.value))
         .then( () => el )
 
     );
@@ -160,8 +164,10 @@ class FormEditor extends DirtyComponent {
     entArr.push(intn);
 
 
+
     Promise.all(entArr).then(responses => {
       let resp = responses[data.pptTypes.length]; // this is the interaction
+
 
       for(let i = 0; i < data.pptTypes.length; i++) {
         resp.addParticipant(responses[i]);
@@ -169,20 +175,32 @@ class FormEditor extends DirtyComponent {
         resp.setParticipantType(responses[i], data.pptTypes[i]);
 
 
-
         // if(data.pptTypes[i] !== Interaction.PARTICIPANT_TYPE.UNSIGNED)
         //   resp.association().setTarget( responses[i]);
 
       }
 
-
+      //complete the interaction after all participants are added so it is displayed
+      resp.complete();
       this.dirty();
     });
   }
 
-  updateState(){
-    this.dirty();
+  toggleEntityInfo(event){
+
+
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+
+    if(!value)
+      this.state.bus.emit('showEntityInfo');
+    else
+      this.state.bus.emit('hideEntityInfo');
+
+    // this.setState(this.state);
   }
+
+
 
   deleteInteractionRow(data){
 
@@ -215,7 +233,6 @@ class FormEditor extends DirtyComponent {
       catch(e) {
         // console.log(e);
       }
-
       this.dirty();
     });
 
@@ -255,15 +272,28 @@ class FormEditor extends DirtyComponent {
     forms.forEach((form) => {
 
       let formContent = doc.interactions().map(interaction => {
-          if(form.association.filter(assoc => assoc.value === interaction.association().value).length > 0 )
-        // if(form.type === interaction.name())
-          return h('div.form-interaction-line',
-            [
-              h('button.delete-interaction', { onClick: () => {this.deleteInteractionRow({interaction:interaction}); } }, 'X'),
-              h(form.clazz, {key: interaction.id(), document:doc, interaction:interaction, description: form.type})
+        if(!interaction.completed())
+          return null;
 
-            ] );
-        else return null;
+          if(form.association.filter(assoc => assoc.value === interaction.association().value).length > 0 ) {
+              return h('div.form-interaction-line',
+                [
+                  h('button.delete-interaction', {
+                    onClick: () => {
+                      this.deleteInteractionRow({interaction: interaction});
+                    }
+                  }, 'X'),
+                  h(form.clazz, {
+                    key: interaction.id(),
+                    document: doc,
+                    interaction: interaction,
+                    description: form.type,
+                    bus: this.state.bus,
+                  })
+
+                ]);
+          }
+          else return null;
       });
 
 
@@ -274,7 +304,7 @@ class FormEditor extends DirtyComponent {
         ...formContent,
         h('div.form-action-buttons', [
           h('button.form-interaction-adder', {
-            onClick: () => this.addInteractionRow({name:form.type, pptTypes:form.pptTypes,  association: form.association})}, [
+            onClick: () => this.addInteractionRow({name:form.type, pptTypes: form.pptTypes,  association: form.association[0]})}, [
             h('i.material-icons.add-new-interaction-icon', 'add'),
             'ADD INTERACTION'
           ])])
@@ -284,15 +314,13 @@ class FormEditor extends DirtyComponent {
     });
 
     return h('div.form-editor', [
-//      h(AppBar, { document: this.data.document, bus: this.data.bus }),
- //     h(ActionLogger, { document: this.data.document, bus: this.data.bus }),
       h('div.page-content', [
         h('h1.form-editor-title', 'Insert Pathway Information As Text'),
         h('div.form-templates', [
           ...hArr
         ]),
         h('button.form-submit', { onClick: () => this.submit() }, [
-          'SUBMIT'
+          'Download BioPAX'
         ])
       ]),
 

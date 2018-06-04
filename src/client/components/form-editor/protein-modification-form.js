@@ -7,26 +7,28 @@ let Interaction = require('../../../model/element/interaction');
 class ProteinModificationForm extends InteractionForm {
 
 
+
+
   updateModificationType(val){
     let intn = this.state.interaction;
 
     intn.associate(val);
 
+    this.state.interaction.complete();
+
     this.forceUpdate();
   }
 
   getModificationType(){
-
     return this.state.interaction.association().value;
-    //TODO
-    // return "phosphorylation";
   }
 
   render(){
 
+
     let intn = this.state.interaction;
 
-    let actVal =  intn.association().isInhibition()? "inhibits" : "activates" ;
+    let actVal =  intn.association() && intn.association().isInhibition()? "inhibits" : "activates" ;
 
     let lEnt = this.getInputParticipant();
     let rEnt = this.getOutputParticipant();
@@ -35,12 +37,17 @@ class ProteinModificationForm extends InteractionForm {
     let modVal = this.getModificationType();
 
 
+
+    if(!rEnt || !lEnt || !modVal ||!actVal)
+      return null;
+
+
+
     return h('div.form-interaction', [
-      h(EntityForm, { entity: lEnt ,   placeholder:'Controller protein', tooltipContent:'Name or ID', document: this.state.document}),
+      h(EntityForm, { entity: lEnt ,   placeholder:'Controller protein', tooltipContent:'Name or ID', document: this.state.document, bus: this.state.bus}),
       h('span', [
         h('select.form-options', {id:('activation-'+ intn.id()), value: actVal,
           onChange: e => {
-
 
             this.updateActivationInhibition(e.target.value);
           }}, [
@@ -59,7 +66,8 @@ class ProteinModificationForm extends InteractionForm {
           h('option', { value: Interaction.ASSOCIATION.UBIQUINATION.value }, 'ubiquination')
         ])
       ]),
-      h(EntityForm, { entity: rEnt, placeholder:'Controlled protein' , tooltipContent:'Name or ID', document: this.state.document} )
+
+      h(EntityForm, { entity: rEnt, placeholder:'Controlled protein' , tooltipContent:'Name or ID', document: this.state.document , bus: this.state.bus})
 
     ]);
   }

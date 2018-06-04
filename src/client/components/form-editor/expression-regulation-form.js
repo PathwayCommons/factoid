@@ -13,16 +13,19 @@ class ExpressionRegulationForm extends InteractionForm {
 
     let actVal =  intn.association().isInhibition()? "inhibits" : "activates" ;
 
+    if(!rEnt || !lEnt || !actVal)
+      return null;
+
 
     return h('div.form-interaction', [
-      h(EntityForm, { entity: lEnt , placeholder: 'Enter transcription factor', document: this.state.document}),
+      h(EntityForm, { entity: lEnt , placeholder: 'Enter transcription factor', document: this.state.document, bus: this.state.bus}),
       h('span', [
         h('select.form-options', { value: actVal, onChange: e => this.updateActivationInhibition(e.target.value) }, [
             h('option', { value: 'activates' }, 'activates expression'),
             h('option', { value: 'inhibits' }, 'inhibits expression'),
         ])
       ]),
-      h(EntityForm, { entity: rEnt, placeholder: 'Enter target protein' , document: this.state.document} ),
+      h(EntityForm, { entity: rEnt, placeholder: 'Enter target protein' , document: this.state.document, bus: this.state.bus} ),
     ]);
 
   }

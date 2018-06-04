@@ -280,6 +280,8 @@ module.exports = {
               if ( targetSign ) {
                 entry.group = targetSign.value;
               }
+
+              return entry;
             };
 
             let getAssociation = eles => {
@@ -326,16 +328,27 @@ module.exports = {
               }
             };
 
-            let eles = argFrames.map( getEntityFrame ).map( getElAndSetMap )
-                        .filter( ele => ele != null );
+            let eles = (
+              argFrames.map( getEntityFrame )
+              .map( getElAndSetMap )
+              .filter( ele => ele != null )
+            );
 
             intn.entries = eles.map( getEntryFromEl );
-            intn.entries.map( attachTargetGroup );
+
+            intn.entries.forEach( attachTargetGroup );
 
             let assoc = getAssociation( eles );
 
-            if ( assoc ) {
+            if( assoc ){
               intn.association = assoc.value;
+
+              let isDirected = intn.entries.filter( ent => ent.group != null ).length > 0;
+
+              // NB an interaction must have assoc/type + direction to be completed
+              if( isDirected ){
+                intn.completed = true;
+              }
             }
 
             if( intn.entries.length >= 2 ){

@@ -22,9 +22,6 @@
   flex-direction: column;
   background: rgba(255, 255, 255, 0.5);
   border-bottom-right-radius: 8px;
-  border: 1px solid #767676;
-  border-top: 0;
-  border-left: 0;
 }
 
 .editor-buttons-right {
@@ -38,9 +35,6 @@
   border-bottom-left-radius: 8px;
   transform: translate3d(0, 0, 0);
   transition: transform 200ms ease-out;
-  border: 1px solid #767676;
-  border-top: 0;
-  border-right: 0;
 }
 
 .editor-buttons-right-shifted {

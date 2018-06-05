@@ -131,9 +131,13 @@ class TaskListButton extends DirtyComponent {
 
     let incompleteEles = this.props.document.elements().filter(ele => !ele.completed());
     let numIncompleteEles = incompleteEles.length;
+    let indicatorContent = numIncompleteEles;
+    if( 50 < numIncompleteEles ){
+      indicatorContent = '50+';
+    }
 
     return h('div', [
-      numIncompleteEles !== 0 ? h('div.num-tasks-indicator', numIncompleteEles) : null,
+      numIncompleteEles !== 0 ? h('div.num-tasks-indicator', indicatorContent) : null,
       h('i.material-icons', 'format_list_bulleted')
     ]);
   }

@@ -1,7 +1,7 @@
 .task-list {
   position: absolute;
   top: 0;
-  left: -21.5em;
+  right: -21.5em;
   height: 98vh;
   width: 20em;
   background-color: #767676;
@@ -15,7 +15,7 @@
 }
 
 .task-list-active {
-  transform: translate3d(100%, 0, 0);
+  transform: translate3d(-21.5em, 0, 0);
   opacity: 0.8;
   z-index: 3;
 }

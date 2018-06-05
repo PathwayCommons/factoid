@@ -10,6 +10,8 @@ const debug = require('../../debug');
 const Document = require('../../../model/document');
 const { exportDocumentToOwl } = require('../../../util');
 
+const Popover = require('../popover/popover');
+
 // const DocumentWizardStepper = require('../document-wizard-stepper');
 // const AppBar = require('../app-bar');
 // const ActionLogger = require('../action-logger');
@@ -225,6 +227,9 @@ class FormEditor extends DirtyComponent {
   render(){
     let doc = this.state.document;
 
+    let { history } = this.props;
+
+
     this.state.dirty = false;
 
     const forms = [
@@ -272,7 +277,51 @@ class FormEditor extends DirtyComponent {
 //      h(AppBar, { document: this.data.document, bus: this.data.bus }),
  //     h(ActionLogger, { document: this.data.document, bus: this.data.bus }),
       h('div.page-content', [
-        h('h1.form-editor-title', 'Insert Pathway Information As Text'),
+        h('div.app-bar', [
+          h('h2', 'Factoid - Form Editor'),
+          h(Popover, {
+            tippy: {
+              position: 'right',
+              followCursor: false,
+              html: h('div.editor-more-menu', [
+                h('div.editor-more-menu-items', [
+                  h('button.editor-more-button.plain-button', {
+                    onClick: () => history.push('/new')
+                  }, [
+                    h('span', ' New factoid')
+                  ]),
+                  h('button.editor-more-button.plain-button', {
+                    onClick: () => history.push('/documents')
+                  }, [
+                    h('span', ' My factoids')
+                  ]),
+                  h('button.editor-more-button.plain-button', {
+                    onClick: () => {
+                      if( doc.editable() ){
+                        history.push(`/document/${doc.id()}/${doc.secret()}`);
+                      } else {
+                        history.push(`/document/${doc.id()}`);
+                      }
+                    }
+                  }, [
+                    h('span', ' Network editor')
+                  ]),
+                  h('button.editor-more-button.plain-button', {
+                    onClick: () => history.push('/')
+                  }, [
+                    h('span', ' About & contact')
+                  ])
+                ])
+              ])
+            }
+            }, [
+            // h(Tooltip, { description: 'More tools' }, [
+              h('button.editor-button.plain-button', [
+                h('i.material-icons', 'more_vert')
+              ])
+            // ])
+          ])
+        ]),
         h('div.form-templates', [
           ...hArr
         ]),

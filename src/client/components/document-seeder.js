@@ -1,7 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const Promise = require('bluebird');
-const ReactDom = require('react-dom');
 const DocumentWizardStepper = require('./document-wizard-stepper');
 const _ = require('lodash');
 const IntervalHighlighter = require('./interval-highlighter');
@@ -24,7 +23,11 @@ class DocumentSeeder extends React.Component {
   }
 
   getDocumentSeederTextVal(){
-    return ReactDom.findDOMNode(this).querySelector('.document-seeder-text').value;
+    return this.docText.value;
+  }
+
+  getDocumentTitleTextVal(){
+    return this.docName.value;
   }
 
   getReachResponse(){
@@ -117,7 +120,7 @@ class DocumentSeeder extends React.Component {
 
     // combine entityIntervals and triggerIntervals as basicIntervals
     let basicIntervals = [...entityIntervals, ...triggerIntervals];
-    
+
     return this.mergeIntervals(basicIntervals, sentenceIntervals);
   }
 
@@ -230,13 +233,14 @@ class DocumentSeeder extends React.Component {
 
   createDoc(){
     let text = this.getDocumentSeederTextVal();
+    let title = this.getDocumentTitleTextVal();
 
     let makeRequest = () => fetch('/api/document', {
       headers: {
         'Content-Type': 'application/json'
       },
       method: 'POST',
-      body: JSON.stringify({ text })
+      body: JSON.stringify({ text, title })
     });
 
     let toJson = res => res.json();
@@ -262,8 +266,15 @@ class DocumentSeeder extends React.Component {
   render(){
     let rootChildren = [
       h('h1', 'Enter paper text'),
+      h('label.document-seeder-text-label', 'Paper title'),
+      h('input.document-seeder-doc-title', {
+        type: 'text',
+        placeholder: 'Untitled document',
+        ref: r => this.docName = r
+      }),
       h('label.document-seeder-text-label', 'Paper text'),
       h('textarea.document-seeder-text', {
+        ref: r => this.docText = r,
         className: makeClassList({
           'document-seeder-hidden': this.state.reachHighlightEnabled
         })

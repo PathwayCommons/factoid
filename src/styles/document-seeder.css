@@ -9,6 +9,11 @@
   font-size: var(--smallFontSize);
 }
 
+.document-seeder-doc-title {
+  display: inline-block;
+  width: 100%;
+}
+
 .document-seeder-highlight-panel {
   width: 100%;
   height: calc(100vh - 10em);

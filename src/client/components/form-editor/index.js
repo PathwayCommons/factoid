@@ -267,7 +267,7 @@ class FormEditor extends DirtyComponent {
                     onClick: () => {
                       this.deleteInteractionRow({interaction: interaction});
                     }
-                  }, 'X'),
+                  }, h('i.material-icons', 'clear')),
                   h(form.clazz, {
                     key: interaction.id(),
                     document: doc,

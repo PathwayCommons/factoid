@@ -26,10 +26,10 @@ let loadDoc = ({ docDb, eleDb, id }) => {
   return doc.load().then( () => doc );
 };
 
-let createDoc = ({ docDb, eleDb, secret, title }) => {
+let createDoc = ({ docDb, eleDb, secret }) => {
   let doc = newDoc({ docDb, eleDb, secret });
 
-  return doc.create().then( () => doc.rename( title ) ).then( () => doc );
+  return doc.create().then( () => doc );
 };
 
 let tables = ['document', 'element'];
@@ -94,7 +94,8 @@ http.post('/', function( req, res ){
   let secret = uuid();
 
   ( Promise.try( loadTables )
-    .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret, title }) )
+    .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret }) )
+    .then( doc => doc.rename( title ).then( () => doc ) )
     .then( doc => fillDoc( doc, text ) )
     .then( runLayout )
     .then( getDocJson )

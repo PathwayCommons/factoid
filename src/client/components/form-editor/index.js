@@ -3,6 +3,7 @@ const h = require('react-hyperscript');
 const io = require('socket.io-client');
 const _ = require('lodash');
 const EventEmitter = require('eventemitter3');
+const Promise = require('bluebird');
 
 const logger = require('../../logger');
 const debug = require('../../debug');
@@ -153,37 +154,29 @@ class FormEditor extends DirtyComponent {
 
 
   addInteractionRow(data){
-    let entArr = [];
+    let createEnts = () => Promise.all( data.pptTypes.map( () => this.addElement() ) );
 
-    for(let i = 0; i < data.pptTypes.length; i++)
-      entArr.push(this.addElement());
+    let createIntn = () => this.addInteraction(data);
 
-    let intn = this.addInteraction(data);
+    let handlePpt = (intn, ppt, type) => intn.addParticipant(ppt, { group: type });
 
+    let handlePpts = (intn, ppts) => Promise.all( ppts.map( (ppt, i) => {
+      let type = data.pptTypes[i].value;
 
-    entArr.push(intn);
+      return handlePpt(intn, ppt, type);
+    } ) );
 
-
-
-    Promise.all(entArr).then(responses => {
-      let resp = responses[data.pptTypes.length]; // this is the interaction
-
-
-      for(let i = 0; i < data.pptTypes.length; i++) {
-        resp.addParticipant(responses[i]);
-
-        resp.setParticipantType(responses[i], data.pptTypes[i]);
-
-
-        // if(data.pptTypes[i] !== Interaction.PARTICIPANT_TYPE.UNSIGNED)
-        //   resp.association().setTarget( responses[i]);
-
-      }
-
-      //complete the interaction after all participants are added so it is displayed
-      resp.complete();
-      this.dirty();
-    });
+    return (
+      Promise.try( createEnts )
+      .then( ppts => {
+        return createIntn().then( intn => ({ intn, ppts }) );
+      } )
+      .then( ({ intn, ppts }) => {
+        return handlePpts(intn, ppts).then( () => intn );
+      } )
+      .then( intn => intn.complete() )
+      .then( () => this.dirty() )
+    );
   }
 
   toggleEntityInfo(event){

@@ -18,19 +18,19 @@ class InteractionForm extends Component {
 
 
   getInputParticipant(){
-    let intn = this.state.interaction;
-    //get source gives an error for unsigned partcipants
-    // return intn.association().getSource();
-
-    let target = intn.association().getTarget();
-    return intn.participants().filter(el =>  el !== target)[0];
-
+    try {
+      return this.state.interaction.association().getSource();
+    } catch(err){
+      return null;
+    }
   }
 
   getOutputParticipant(){
-    let intn = this.state.interaction;
-
-    return intn.association().getTarget();
+    try {
+      return this.state.interaction.association().getTarget();
+    } catch(err){
+      return null;
+    }
   }
 
 
@@ -77,4 +77,3 @@ class InteractionForm extends Component {
 }
 
 module.exports = InteractionForm;
-

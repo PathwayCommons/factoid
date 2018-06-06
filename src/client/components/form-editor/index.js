@@ -132,20 +132,19 @@ class FormEditor extends DirtyComponent {
   }
 
   addInteraction( data ){
-
     let doc = this.data.document;
 
     let el = doc.factory().make({
       data: _.assign( {
-        type: 'interaction',
-
-      }, data )
+        type: 'interaction'
+      }, data, {
+        association: data.association != null ? ( _.isString(data.association) ? data.association : data.association.value ) : 'interaction'
+      } )
     });
 
     return ( Promise.try( () => el.synch() )
         .then( () => el.create() )
         .then( () => doc.add(el) )
-        .then( () => el.associate(data.association.value))
         .then( () => el )
 
     );

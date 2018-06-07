@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  font-size: 0.8em;
 }
 
 .document-wizard-stepper-back {
@@ -31,6 +32,10 @@
 .document-wizard-stepper-forward-button {
   opacity: 0;
   pointer-events: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  word-wrap: wrap;
 }
 
 .document-wizard-stepper-button-enabled {

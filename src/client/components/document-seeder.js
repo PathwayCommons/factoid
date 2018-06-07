@@ -288,20 +288,24 @@ class DocumentSeeder extends React.Component {
       },[
         h(IntervalHighlighter, { text: this.state.reachHighlightInput, intervals: this.state.reachHighlightIntervals })
       ]),
-      h('button.document-seeder-toggle-highlight', {
-        onClick: () => {
-          this.toggleReachHighlights();
-        }
-      }, `${this.state.reachHighlightEnabled ? 'Edit Text' : 'Highlight Entities and Interactions'}`),
-      h(DocumentWizardStepper, {
-        backEnabled: false,
-        forward: () => {
-          let create = () => this.createDoc();
-          let go = () => this.goToChooser();
+      h('div.document-seeder-buttons', [
+        h('button.document-seeder-toggle-highlight', {
+          onClick: () => {
+            this.toggleReachHighlights();
+          }
+        }, `${this.state.reachHighlightEnabled ? 'Edit Text' : 'Highlight Entities and Interactions'}`),
+        h(DocumentWizardStepper, {
+          forwardText: 'Submit',
+          forwardIcon: '',
+          backEnabled: false,
+          forward: () => {
+            let create = () => this.createDoc();
+            let go = () => this.goToChooser();
 
-          return Promise.try( create ).then( go );
-        }
-      })
+            return Promise.try( create ).then( go );
+          }
+        })
+      ])
     ];
 
     return h('div.document-seeder.page-content', rootChildren);

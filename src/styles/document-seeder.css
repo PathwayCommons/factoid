@@ -30,6 +30,18 @@
   overflow: auto;
 }
 
+.document-seeder-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.document-seeder-toggle-highlight {
+  margin-bottom: 0.5em;
+  height: auto;
+}
+
 .document-seeder-highlight-panel span {
   white-space: pre-line;
 }

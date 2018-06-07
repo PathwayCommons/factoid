@@ -24,10 +24,14 @@ class DocumentWizardStepper extends Component {
       back: _.noop,
       forward: _.noop,
       backEnabled: true,
-      forwardEnabled: true
+      forwardEnabled: true,
+      forwardIcon: 'arrow_forward',
+      backIcon: 'arrow_backward',
+      fowardText: null,
+      backText: null
     }, this.props);
 
-    let { back, forward, backEnabled, forwardEnabled } = p;
+    let { back, forward, backEnabled, forwardEnabled, backText, backIcon, forwardIcon, forwardText } = p;
 
     let go = (handler, flag) => {
       this.setState({ [flag]: true });
@@ -46,7 +50,8 @@ class DocumentWizardStepper extends Component {
           disabled: !backEnabled || this.state.goingBack,
           className: makeClassList({ 'document-wizard-stepper-button-enabled': backEnabled })
         }, [
-          h('i.material-icons', 'arrow_back')
+          backText == null ? h('div', backText) : null,
+          h('i.material-icons', backIcon)
         ]),
         h('span.icon.icon-spinner.document-wizard-stepper-back-spinner', {
           className: makeClassList({
@@ -65,7 +70,8 @@ class DocumentWizardStepper extends Component {
           disabled: !forwardEnabled || this.state.goingForward,
           className: makeClassList({ 'document-wizard-stepper-button-enabled': forwardEnabled })
         }, [
-          h('i.material-icons', 'arrow_forward')
+          forwardText ? h('div', forwardText) : null,
+          h('i.material-icons', forwardIcon)
         ])
       ])
     ]);

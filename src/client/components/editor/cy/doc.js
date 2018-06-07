@@ -33,6 +33,10 @@ function listenToDoc({ bus, cy, document, controller }){
       oldAni.stop();
     }
 
+    if( el.removed() ){
+      return;
+    }
+
     el.style('overlay-color', defs.editAnimationColor);
 
     let ani = el.animation({
@@ -498,7 +502,6 @@ function listenToDoc({ bus, cy, document, controller }){
   document.on('add', onAddEle);
   document.on('remoteadd', docEl => applyEditAnimation( getCyEl( docEl ) ));
   document.on('remove', onRmEle);
-  document.on('remoteremove', docEl => applyEditAnimation( getCyEl( docEl ) ));
   cy.on('layoutstop', onLayout);
   bus.on('renamedebounce', onRenameDebounce);
   bus.on('removeselected', removeSelected);

@@ -1,6 +1,5 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const DocumentWizardStepper = require('./document-wizard-stepper');
 
 class DocumentViewChooser extends React.Component {
   goToSeeder(){
@@ -31,11 +30,7 @@ class DocumentViewChooser extends React.Component {
           h('h2', { htmlFor: 'document-view-chooser-form' }, 'Form Editor'),
           h('p', 'Add new types of interactions to your document with form template text entries.')
         ])
-      ]),
-      h(DocumentWizardStepper, {
-        forwardEnabled: false,
-        back: () => this.goToSeeder()
-      })
+      ])
     ];
 
     return h('div.document-view-chooser.page-content', rootChildren);

@@ -265,7 +265,7 @@ class DocumentSeeder extends React.Component {
 
   render(){
     let rootChildren = [
-      h('h1', 'Enter paper text'),
+      h('h1', 'Enter Paper Details'),
       h('label.document-seeder-text-label', 'Paper title'),
       h('input.document-seeder-doc-title', {
         type: 'text',

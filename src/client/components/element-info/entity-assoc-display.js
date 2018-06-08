@@ -51,20 +51,28 @@ let chemical = (m, searchTerms) => {
 };
 
 let link = m => {
-  let url;
+  let pcQ = encodeURIComponent(m.name);
+  let url, nsName;
 
   switch( m.type ){
     case 'protein':
       url = UNIPROT_LINK_BASE_URL + m.id;
+      nsName = 'UniProt';
       break;
     case 'chemical':
       url = PUBCHEM_LINK_BASE_URL + m.id;
+      nsName = 'PubChem';
       break;
   }
 
-  return h('div.entity-info-section', [
-    h('a.plain-link', { href: url, target: '_blank' }, [
-      'More information ',
+  return h('div.entity-info-section.entity-info-linkouts', [
+    h('span.entity-info-title', 'More information'),
+    h('a.plain-link.entity-info-linkout', { href: url, target: '_blank' }, [
+      nsName + ' ',
+      h('i.material-icons', 'open_in_new')
+    ]),
+    h('a.plain-link.entity-info-linkout', { href: `http://apps.pathwaycommons.org/search?q=${pcQ}`, target: '_blank' }, [
+      'Pathway Commons ',
       h('i.material-icons', 'open_in_new')
     ])
   ]);

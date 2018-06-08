@@ -29,7 +29,7 @@ class DocumentSeeder extends React.Component {
   }
 
   getDocumentTitleTextVal(){
-    return this.docName.docTitle;
+    return this.state.docTitle;
   }
 
   getReachResponse(){

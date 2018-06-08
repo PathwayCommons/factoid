@@ -18,16 +18,18 @@ class DocumentSeeder extends React.Component {
       submitting: false,
       reachHighlightIntervals: [],
       reachHighlightInput: '',
-      reachHighlightEnabled: false
+      reachHighlightEnabled: false,
+      docTitle: '',
+      docText: ''
     };
   }
 
   getDocumentSeederTextVal(){
-    return this.docText.value;
+    return this.state.docText;
   }
 
   getDocumentTitleTextVal(){
-    return this.docName.value;
+    return this.docName.docTitle;
   }
 
   getReachResponse(){
@@ -270,14 +272,14 @@ class DocumentSeeder extends React.Component {
       h('input.document-seeder-doc-title', {
         type: 'text',
         placeholder: 'Untitled document',
-        ref: r => this.docName = r
+        onChange: e => this.setState({docTitle: e.target.value})
       }),
       h('label.document-seeder-text-label', 'Paper text'),
       h('textarea.document-seeder-text', {
-        ref: r => this.docText = r,
         className: makeClassList({
           'document-seeder-hidden': this.state.reachHighlightEnabled
-        })
+        }),
+        onChange: e => this.setState({docText: e.target.value})
       }),
       h('div.document-seeder-highlight-panel', {
         className: makeClassList({

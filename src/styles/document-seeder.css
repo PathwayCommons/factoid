@@ -1,6 +1,6 @@
 .document-seeder-text {
   width: 100%;
-  height: calc(100vh - 10em);
+  height: calc(100vh - 15em);
   resize: none;
 }
 
@@ -12,6 +12,7 @@
 .document-seeder-doc-title {
   display: inline-block;
   width: 100%;
+  margin-bottom: 1em;
 }
 
 .document-seeder-highlight-panel {

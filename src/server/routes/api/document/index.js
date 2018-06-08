@@ -89,11 +89,13 @@ http.get('/:id', function( req, res ){
 
 // create new doc
 http.post('/', function( req, res ){
-  let text = req.body.text;
+  let { text, title } = req.body;
+
   let secret = uuid();
 
   ( Promise.try( loadTables )
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret }) )
+    .then( doc => doc.rename( title ).then( () => doc ) )
     .then( doc => fillDoc( doc, text ) )
     .then( runLayout )
     .then( getDocJson )

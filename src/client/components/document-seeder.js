@@ -1,7 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const Promise = require('bluebird');
-const ReactDom = require('react-dom');
 const DocumentWizardStepper = require('./document-wizard-stepper');
 const _ = require('lodash');
 const IntervalHighlighter = require('./interval-highlighter');
@@ -19,12 +18,18 @@ class DocumentSeeder extends React.Component {
       submitting: false,
       reachHighlightIntervals: [],
       reachHighlightInput: '',
-      reachHighlightEnabled: false
+      reachHighlightEnabled: false,
+      docTitle: '',
+      docText: ''
     };
   }
 
   getDocumentSeederTextVal(){
-    return ReactDom.findDOMNode(this).querySelector('.document-seeder-text').value;
+    return this.state.docText;
+  }
+
+  getDocumentTitleTextVal(){
+    return this.docName.docTitle;
   }
 
   getReachResponse(){
@@ -117,7 +122,7 @@ class DocumentSeeder extends React.Component {
 
     // combine entityIntervals and triggerIntervals as basicIntervals
     let basicIntervals = [...entityIntervals, ...triggerIntervals];
-    
+
     return this.mergeIntervals(basicIntervals, sentenceIntervals);
   }
 
@@ -230,13 +235,14 @@ class DocumentSeeder extends React.Component {
 
   createDoc(){
     let text = this.getDocumentSeederTextVal();
+    let title = this.getDocumentTitleTextVal();
 
     let makeRequest = () => fetch('/api/document', {
       headers: {
         'Content-Type': 'application/json'
       },
       method: 'POST',
-      body: JSON.stringify({ text })
+      body: JSON.stringify({ text, title })
     });
 
     let toJson = res => res.json();
@@ -261,12 +267,19 @@ class DocumentSeeder extends React.Component {
 
   render(){
     let rootChildren = [
-      h('h1', 'Enter paper text'),
+      h('h1', 'Enter Paper Details'),
+      h('label.document-seeder-text-label', 'Paper title'),
+      h('input.document-seeder-doc-title', {
+        type: 'text',
+        placeholder: 'Untitled document',
+        onChange: e => this.setState({docTitle: e.target.value})
+      }),
       h('label.document-seeder-text-label', 'Paper text'),
       h('textarea.document-seeder-text', {
         className: makeClassList({
           'document-seeder-hidden': this.state.reachHighlightEnabled
-        })
+        }),
+        onChange: e => this.setState({docText: e.target.value})
       }),
       h('div.document-seeder-highlight-panel', {
         className: makeClassList({

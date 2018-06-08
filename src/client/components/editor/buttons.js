@@ -84,11 +84,21 @@ class AppButtons extends React.Component {
       }
     };
 
-    let appButtons = [h(Tooltip, { description: 'Help' }, [
-      h('button.editor-button.plain-button', { onClick: () => bus.emit('togglehelp') }, [
-        h('i.material-icons', 'info')
+    grs.push([
+      h(Tooltip, { description: 'Factoid home' }, [
+        h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
+          h('i.app-icon')
+        ])
       ])
-    ])];
+    ]);
+
+    let appButtons = [
+      h(Tooltip, { description: 'Help' }, [
+        h('button.editor-button.plain-button', { onClick: () => bus.emit('togglehelp') }, [
+          h('i.material-icons', 'info')
+        ])
+      ])
+    ];
 
     if( document.editable() ){
       appButtons.push([
@@ -188,4 +198,3 @@ class AppButtons extends React.Component {
 }
 
 module.exports = { AppButtons, EditorButtons };
-

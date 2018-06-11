@@ -241,8 +241,13 @@ class FormEditor extends DirtyComponent {
       association: form.association[0]
     };
 
+    let addInteractionRow = () => this.addInteractionRow( rowParam );
+    let applyLayout = () => doc.applyLayout();
+
     let button = h('button.form-interaction-adder-btn', {
-      onClick: () => this.addInteractionRow( rowParam )
+      onClick: () => {
+        Promise.try( addInteractionRow ).then( applyLayout );
+      }
     }, form.type);
 
     return button;

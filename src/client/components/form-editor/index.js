@@ -8,7 +8,7 @@ const logger = require('../../logger');
 const debug = require('../../debug');
 
 const Document = require('../../../model/document');
-const { exportDocumentToOwl } = require('../../../util');
+const { exportDocumentToOwl } = require('../../util');
 
 const Popover = require('../popover/popover');
 

@@ -21,16 +21,16 @@ class EntityForm extends DirtyComponent {
     }, props );
 
 
-    this.hCompletedStatus = h('i.material-icons', 'help');
+    this.hCompletedStatus = this.getHelpIcon();
 
 
     if(this.data.entity){
       if(this.data.entity.completed())
-        this.hCompletedStatus = h('i.material-icons.entity-info-complete-icon', 'check_circle');
+        this.hCompletedStatus = this.getCompletedIcon();
 
 
       this.data.entity.on("complete", () => {
-        this.hCompletedStatus = h('i.material-icons.entity-info-complete-icon', 'check_circle');
+        this.hCompletedStatus = this.getCompletedIcon();
         this.mergeWithOtherEntities();
         if(this._isMounted)
           this.dirty();
@@ -89,6 +89,15 @@ class EntityForm extends DirtyComponent {
   componentWillUnmount(){
     this._isMounted = false;
   }
+
+  getHelpIcon(){
+    return h('i.material-icons', 'help');
+  }
+
+  getCompletedIcon(){
+    return h('i.material-icons.element-info-complete-icon', 'check_circle');
+  }
+
   mountTippy(){
 
     if(!this._tippyMounted) {
@@ -218,10 +227,10 @@ class EntityForm extends DirtyComponent {
 
     if(this.state.entity && this.state.entity.completed()) {
       this.state.entity.complete();
-      this.hCompletedStatus = h('i.material-icons.entity-info-complete-icon', 'check_circle');
+      this.hCompletedStatus = this.getCompletedIcon();
     }
     else
-      this.hCompletedStatus = h('i.material-icons', 'help');
+      this.hCompletedStatus = this.getHelpIcon();
 
 
     hFunc = h('div.form-interaction', [

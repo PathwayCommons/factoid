@@ -22,15 +22,27 @@
   justify-content: space-between;
 }
 
-.form-interaction-adder {
+.form-interaction-adder-toggle {
   color: #00ADB5;
   background-color: #EEEEEE;
   height: 2.5em;
-  margin-top: 1.5em;
-  margin-bottom: 4em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
   padding: 0 20px;
   display: flex;
   flex-direction: row;
+}
+
+.form-interaction-adder-area {
+  margin-top: 4em;
+}
+
+.form-interaction-adder-area button {
+  margin-left: 0.3em;
+}
+
+.form-hidden {
+  display: none;
 }
 
 .delete-interaction {

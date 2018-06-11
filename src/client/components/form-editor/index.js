@@ -1,4 +1,3 @@
-const DirtyComponent = require('../dirty-component');
 const h = require('react-hyperscript');
 const io = require('socket.io-client');
 const _ = require('lodash');
@@ -9,7 +8,10 @@ const logger = require('../../logger');
 const debug = require('../../debug');
 
 const Document = require('../../../model/document');
-const { exportDocumentToOwl } = require('../../../util');
+const { exportDocumentToOwl, makeClassList } = require('../../../util');
+const DirtyComponent = require('../dirty-component');
+const Tooltip = require('../popover/tooltip');
+const Toggle = require('../toggle');
 
 // const DocumentWizardStepper = require('../document-wizard-stepper');
 // const AppBar = require('../app-bar');
@@ -50,6 +52,7 @@ class FormEditor extends DirtyComponent {
     this.data = this.state = {
       document: doc,
       bus: bus,
+      showIntnAdder: false
     };
 
 
@@ -231,6 +234,51 @@ class FormEditor extends DirtyComponent {
 
   }
 
+  formToButton( form ) {
+    let rowParam = {
+      name: form.type,
+      pptTypes: form.pptTypes,
+      association: form.association[0]
+    };
+
+    let doc = this.data.document;
+    let addInteractionRow = () => this.addInteractionRow( rowParam );
+    let applyLayout = () => doc.applyLayout();
+
+    let button = h('button.form-interaction-adder-btn', {
+      onClick: () => {
+        Promise.try( addInteractionRow ).then( applyLayout );
+      }
+    }, form.type);
+
+    return button;
+  }
+
+  makeTooltip( children, description ) {
+    let opts = {
+      description: description,
+      tippy: {
+        placement: 'bottom'
+      }
+    };
+
+    let tooltip = h( Tooltip, opts, children );
+    return tooltip;
+  }
+
+  formToTooltipBtn( form ) {
+    let btn = this.formToButton( form );
+    let tooltipBtn = this.makeTooltip( [ btn ], form.description );
+
+    return tooltipBtn;
+  }
+
+  toggleIntnAdderVisibility() {
+    this.setData( {
+      showIntnAdder: !this.data.showIntnAdder
+    } );
+  }
+
   render(){
     let doc = this.state.document;
 
@@ -259,7 +307,7 @@ class FormEditor extends DirtyComponent {
                     onClick: () => {
                       this.deleteInteractionRow({interaction: interaction});
                     }
-                  }, 'X'),
+                  }, h('i.material-icons', 'clear')),
                   h(form.clazz, {
                     key: interaction.id(),
                     document: doc,
@@ -273,28 +321,50 @@ class FormEditor extends DirtyComponent {
           else return null;
       });
 
+      let notNull = obj => {
+        return obj != null;
+      };
+
+      formContent = formContent.filter( notNull );
+
+      if ( formContent.length == 0 ) {
+        return;
+      }
 
       //update form
       let hFunc = h('div.form-template-entry', [
         h('h2', form.type),
         h('p', form.description),
-        ...formContent,
-        h('div.form-action-buttons', [
-          h('button.form-interaction-adder', {
-            onClick: () => this.addInteractionRow({name:form.type, pptTypes: form.pptTypes,  association: form.association[0]})}, [
-            h('i.material-icons.add-new-interaction-icon', 'add'),
-            'ADD INTERACTION'
-          ])])
+        ...formContent
       ]);
 
       hArr.push(hFunc);
     });
+
+    let interactionAdderButtons = forms.map( form => this.formToTooltipBtn( form ) );
 
     return h('div.form-editor', [
       h('div.page-content', [
         h('h1.form-editor-title', 'Insert Pathway Information As Text'),
         h('div.form-templates', [
           ...hArr
+        ]),
+        h('div.form-interaction-adder-area', [
+          h(Toggle, {
+            className: 'form-interaction-adder-toggle',
+            onToggle: () => this.toggleIntnAdderVisibility(),
+            getState: () => this.data.showIntnAdder
+          }, [
+            h('i.material-icons.add-new-interaction-icon', 'add'),
+            'ADD INTERACTION'
+          ]),
+          h('div.form-interaction-adder-slide', {
+            className: makeClassList({
+              'form-hidden': !this.data.showIntnAdder
+            })
+          }, [
+            ...interactionAdderButtons
+          ])
         ]),
         h('button.form-submit', { onClick: () => exportDocumentToOwl(doc.id()) }, [
           'Download BioPax'

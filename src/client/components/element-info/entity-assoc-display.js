@@ -3,6 +3,7 @@ const Organism = require('../../../model/organism');
 const Highlighter = require('../highlighter');
 const Formula = require('./chemical-formula');
 const Tooltip = require('../popover/tooltip');
+const { PC_LINK_BASE_URL } = require('../../../config');
 
 const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL } = require('../../../config');
 
@@ -51,22 +52,31 @@ let chemical = (m, searchTerms) => {
 };
 
 let link = m => {
-  let url;
+  let pcQ = encodeURIComponent(m.name);
+  let pcUrl = `${PC_LINK_BASE_URL}${pcQ}`;
+  let pcName = 'Pathway Commons';
+  let url, nsName;
 
   switch( m.type ){
     case 'protein':
       url = UNIPROT_LINK_BASE_URL + m.id;
+      nsName = 'UniProt';
       break;
     case 'chemical':
       url = PUBCHEM_LINK_BASE_URL + m.id;
+      nsName = 'PubChem';
       break;
   }
 
-  return h('div.entity-info-section', [
-    h('a.plain-link', { href: url, target: '_blank' }, [
-      'More information ',
-      h('i.material-icons', 'open_in_new')
-    ])
+  let entry = (url, text) => h('a.plain-link.entity-info-linkout', { href: url, target: '_blank' }, [
+    text + ' ',
+    h('i.material-icons', 'open_in_new')
+  ]);
+
+  return h('div.entity-info-section.entity-info-linkouts', [
+    h('span.entity-info-title', 'More information'),
+    entry(url, nsName),
+    entry(pcUrl, pcName)
   ]);
 };
 

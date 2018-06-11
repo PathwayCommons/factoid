@@ -241,6 +241,7 @@ class FormEditor extends DirtyComponent {
       association: form.association[0]
     };
 
+    let doc = this.data.document;
     let addInteractionRow = () => this.addInteractionRow( rowParam );
     let applyLayout = () => doc.applyLayout();
 
@@ -251,7 +252,7 @@ class FormEditor extends DirtyComponent {
     }, form.type);
 
     return button;
-  };
+  }
 
   makeTooltip( children, description ) {
     let opts = {
@@ -263,20 +264,20 @@ class FormEditor extends DirtyComponent {
 
     let tooltip = h( Tooltip, opts, children );
     return tooltip;
-  };
+  }
 
   formToTooltipBtn( form ) {
     let btn = this.formToButton( form );
     let tooltipBtn = this.makeTooltip( [ btn ], form.description );
 
     return tooltipBtn;
-  };
+  }
 
   toggleIntnAdderVisibility() {
     this.setData( {
       showIntnAdder: !this.data.showIntnAdder
     } );
-  };
+  }
 
   render(){
     let doc = this.state.document;

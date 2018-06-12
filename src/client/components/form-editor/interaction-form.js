@@ -1,25 +1,37 @@
-const { Component } = require('react');
+const DirtyComponent = require('../dirty-component');
 const _ = require('lodash');
+const Promise = require('bluebird');
 
-class InteractionForm extends Component {
+class InteractionForm extends DirtyComponent {
   constructor(props){
     super(props);
-    this.state = this.data = {
+
+    this.data = {
       id: props.id,
       interaction: props.interaction,
       description: props.description,
       document: props.document,
-      bus: props.bus,
-      // isEntityInfoVisible: props.isEntityInfoVisible
+      bus: props.bus
     };
 
+    this.onDirty = () => {
+      this.dirty();
+    };
 
+    this.data.bus.on('dirty', this.onDirty);
   }
 
+  componentDidMount(){
+    // this.data.bus.on('dirty', this.onDirty);
+  }
+
+  componentWillUnmount(){
+    this.data.bus.removeListener('dirty', this.onDirty);
+  }
 
   getInputParticipant(){
     try {
-      return this.state.interaction.association().getSource();
+      return this.data.interaction.association().getSource();
     } catch(err){
       return null;
     }
@@ -27,15 +39,24 @@ class InteractionForm extends Component {
 
   getOutputParticipant(){
     try {
-      return this.state.interaction.association().getTarget();
+      return this.data.interaction.association().getTarget();
     } catch(err){
       return null;
     }
   }
 
+  completeIfReady(){
+    let intn = this.data.interaction;
+
+    if(!intn.completed() && intn.associated() && intn.association().isSigned()){
+      return intn.complete();
+    } else {
+      return Promise.resolve();
+    }
+  }
 
   addEntityRow(data){
-    let doc = this.state.document;
+    let doc = this.data.document;
 
     let el = doc.factory().make({
       data: _.assign( {
@@ -49,30 +70,20 @@ class InteractionForm extends Component {
       .then( () => el.create() )
       .then( () => doc.add(el) )
       .then( () => el )
-      .then( () => this.state.interaction.addParticipant(el) )
-      .then(() => this.setState(this.state));
+      .then( () => this.data.interaction.addParticipant(el) )
+      .then(() => this.dirty());
   }
 
-
-
   updateActivationInhibition(val){
-    let intn = this.state.interaction;
+    let intn = this.data.interaction;
     let rEnt = this.getOutputParticipant();
+    let assoc = intn.association();
 
-    // Promise.try( () => {
-      if (val.indexOf("activ") > -1) {
-        intn.setParticipantType(rEnt, 'positive');
-        // intn.association().setAsPromotionOf(rEnt);
+    let setPptType = () => val.indexOf("activ") > -1 ? assoc.setParticipantAsPositive(rEnt) : assoc.setParticipantAsNegative(rEnt);
+    let complete = () => this.completeIfReady();
+    let dirty = () => this.dirty();
 
-      }
-      else {
-        intn.setParticipantType(rEnt, 'negative');
-        // intn.association().setAsInhibitionOf(rEnt);
-      }
-
-      this.state.interaction.complete();
-
-      this.forceUpdate();
+    return Promise.try( setPptType ).then( complete ).then( dirty );
   }
 }
 

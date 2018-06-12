@@ -6,7 +6,7 @@ const Tooltip = require('../popover/tooltip');
 const Toggle = require('../toggle');
 const Popover = require('../popover/popover');
 const Linkout = require('../document-linkout');
-const { exportDocumentToOwl } = require('../../../util');
+const { exportDocumentToOwl } = require('../../util');
 
 const { TaskListButton } = require('./task-list');
 

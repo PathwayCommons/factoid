@@ -10,9 +10,8 @@
 
 .document-view-chooser-radios {
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
   justify-content: space-between;
-  flex-wrap: wrap;
 }
 
 .document-view-chooser-choice {

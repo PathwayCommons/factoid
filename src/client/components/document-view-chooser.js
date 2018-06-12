@@ -17,7 +17,7 @@ class DocumentViewChooser extends React.Component {
   render(){
 
     let rootChildren = [
-      h('h1.view-chooser-title', 'Choose editor'),
+      h('h1.view-chooser-title', 'Choose Editor'),
       h('p', 'Your text has been converted into digital networks that now can be explored, modified and expanded through different editors.'),
       h('div.document-view-chooser-radios', [
         h('div.document-view-chooser-choice', { onClick: () => this.goToEditor('document') }, [

@@ -43,37 +43,42 @@ class DocumentWizardStepper extends Component {
       } );
     };
 
-    return h('div.document-wizard-stepper', [
-      h('div.document-wizard-stepper-back', [
-        h('button.document-wizard-stepper-back-button', {
-          onClick: () => go( back, 'goingBack' ),
-          disabled: !backEnabled || this.state.goingBack,
-          className: makeClassList({ 'document-wizard-stepper-button-enabled': backEnabled })
-        }, [
-          backText == null ? h('div', backText) : null,
-          h('i.material-icons', backIcon)
-        ]),
-        h('span.icon.icon-spinner.document-wizard-stepper-back-spinner', {
-          className: makeClassList({
-            'document-wizard-stepper-spinner-going': this.state.goingBack
-          })
-        })
+    let backBtn = backEnabled ? h('div.document-wizard-stepper-back', [
+      h('button.document-wizard-stepper-back-button', {
+        onClick: () => go( back, 'goingBack' ),
+        disabled: !backEnabled || this.state.goingBack,
+        className: makeClassList({ 'document-wizard-stepper-button-enabled': backEnabled })
+      }, [
+        backText == null ? h('div', backText) : null,
+        h('i.material-icons', backIcon)
       ]),
-      h('div.document-wizard-stepper-forward', [
-        h('span.icon.icon-spinner.document-wizard-stepper-forward-spinner', {
-          className: makeClassList({
-            'document-wizard-stepper-spinner-going': this.state.goingForward
-          })
-        }),
-        h('button.document-wizard-stepper-forward-button', {
-          onClick: () => go( forward, 'goingForward' ),
-          disabled: !forwardEnabled || this.state.goingForward,
-          className: makeClassList({ 'document-wizard-stepper-button-enabled': forwardEnabled })
-        }, [
-          forwardText ? h('div', forwardText) : null,
-          h('i.material-icons', forwardIcon)
-        ])
+      h('span.icon.icon-spinner.document-wizard-stepper-back-spinner', {
+        className: makeClassList({
+          'document-wizard-stepper-spinner-going': this.state.goingBack
+        })
+      })
+    ]) : null;
+
+    let forwardBtn = forwardEnabled ? h('div.document-wizard-stepper-forward', [
+      h('span.icon.icon-spinner.document-wizard-stepper-forward-spinner', {
+        className: makeClassList({
+          'document-wizard-stepper-spinner-going': this.state.goingForward
+        })
+      }),
+      h('button.document-wizard-stepper-forward-button', {
+        onClick: () => go( forward, 'goingForward' ),
+        disabled: !forwardEnabled || this.state.goingForward,
+        className: makeClassList({ 'document-wizard-stepper-button-enabled': forwardEnabled })
+      }, [
+        forwardText ? h('div', forwardText) : null,
+        h('i.material-icons', forwardIcon)
       ])
+    ]) : null;
+
+
+    return h('div.document-wizard-stepper', [
+      backBtn,
+      forwardBtn
     ]);
   }
 }

@@ -34,11 +34,10 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
 }
 
 .document-seeder-toggle-highlight {
-  margin-bottom: 0.5em;
   height: auto;
 }
 

@@ -90,22 +90,18 @@ let routes = [
   {
     path: '/form/:id',
     render: props => {
-      let params = props.match.params;
+      let { id } = props.match.params;
 
-      return h( FormEditor, {
-        id: params.id
-      } );
+      return h( FormEditor, { id } );
     }
   },
   {
     path: '/form/:id/:secret',
     render: props => {
-      let params = props.match.params;
+      let { id, secret } = props.match.params;
+      let { history } = props;
 
-      return h( FormEditor, {
-        id: params.id,
-        secret: params.secret
-      } );
+      return h( FormEditor, { id, secret, history } );
     }
   },
   {

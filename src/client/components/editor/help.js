@@ -77,7 +77,9 @@ class Help extends React.Component {
     let editable = this.props.document.editable();
     let bus = this.props.bus;
     let controller = this.props.controller;
-    let cy = this.props.cy;
+    // termporarily access cy from the controller because
+    // cy is undefined as props in read-only mode in the editor
+    let cy = this.props.controller.data.cy;
 
     let showTips = () => {
       bus.emit('showtips');
@@ -131,14 +133,6 @@ class Help extends React.Component {
         }
       )
     ];
-
-    if( this.state.showHelp ){
-      helpContent.push(
-        h('div.editor-button.help-close-button', { onClick: () => this.toggleHelp()}, [
-          h('i.material-icons', 'close')
-        ])
-      );
-    }
 
     return h('div.help', helpContent);
   }

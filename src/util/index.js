@@ -8,6 +8,5 @@ module.exports = Object.assign(
   require('./cy'),
   require('./memoize'),
   require('./strings'),
-  require('./cache'),
-  require('./file')
+  require('./cache')
 );

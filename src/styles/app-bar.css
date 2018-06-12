@@ -1,0 +1,16 @@
+.app-bar {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+
+  & button {
+    font-size: 20pt;
+    margin-right: 50px;
+  }
+
+  & h2 {
+    font-size: 20pt;
+  }
+}

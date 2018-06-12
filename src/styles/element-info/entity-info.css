@@ -148,3 +148,7 @@ button.entity-info-edit {
 .entity-info-notification {
   margin-bottom: 0.75em;
 }
+
+.entity-info-linkout {
+  margin-right: 0.5em;
+}

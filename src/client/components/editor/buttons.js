@@ -6,14 +6,14 @@ const Tooltip = require('../popover/tooltip');
 const Toggle = require('../toggle');
 const Popover = require('../popover/popover');
 const Linkout = require('../document-linkout');
-const { exportDocumentToOwl } = require('../../../util');
+const { exportDocumentToOwl } = require('../../util');
 
 const { TaskListButton } = require('./task-list');
 
 
 class EditorButtons extends React.Component {
   render(){
-    let { bus, className, document, controller, history } = this.props;
+    let { bus, className, document, controller } = this.props;
     let grs = [];
 
     let baseTooltipProps = {
@@ -61,26 +61,64 @@ class EditorButtons extends React.Component {
       ]),
     ]);
 
+    return h(`div.${className}`, grs.map( btns => h('div.editor-button-group', btns) ));
+  }
+}
+
+class AppButtons extends React.Component {
+  render(){
+    let { bus, className, document, controller, history } = this.props;
+    let grs = [];
+
+    let baseTooltipProps = {
+      show: showNow => {
+        bus.on('showtips', showNow);
+      },
+      hide: hideNow => {
+        bus.on('hidetips', hideNow);
+      },
+      tippy: {
+        zIndex: tippyTopZIndex,
+        hideOnClick: false,
+        events: 'mouseenter manual'
+      }
+    };
+
     grs.push([
+      h(Tooltip, { description: 'Factoid home' }, [
+        h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
+          h('i.app-icon')
+        ])
+      ])
+    ]);
+
+    let appButtons = [
       h(Tooltip, { description: 'Help' }, [
         h('button.editor-button.plain-button', { onClick: () => bus.emit('togglehelp') }, [
           h('i.material-icons', 'info')
         ])
-      ]),
+      ])
+    ];
 
-      h(Tooltip, _.assign({}, baseTooltipProps,  { description: 'Tasks' }), [
-        h(Toggle, {
-          className: 'editor-button plain-button task-list-button',
-          controller,
-          document,
-          bus,
-          onToggle: () => controller.toggleTaskListMode(),
-          getState: () => controller.taskListMode()
-        }, [
-          h(TaskListButton, { controller, document, bus })
+    if( document.editable() ){
+      appButtons.push([
+        h(Tooltip, _.assign({}, baseTooltipProps,  { description: 'Tasks' }), [
+          h(Toggle, {
+            className: 'editor-button plain-button task-list-button',
+            controller,
+            document,
+            bus,
+            onToggle: () => controller.toggleTaskListMode(),
+            getState: () => controller.taskListMode()
+          }, [
+            h(TaskListButton, { controller, document, bus })
+          ])
         ])
-      ]),
+      ]);
+    }
 
+    grs.push(appButtons);
+    appButtons.push([
       h(Popover, {
         tippy: {
           position: 'right',
@@ -101,56 +139,62 @@ class EditorButtons extends React.Component {
           h('i.material-icons', 'save_alt')
         ])
       ]),
+    ]);
 
-      h(Popover, {
-        tippy: {
-          position: 'right',
-          html: h('div.editor-more-menu', [
-            h('div.editor-more-menu-items', [
-              h('button.editor-more-button.plain-button', {
-                onClick: () => history.push('/new')
-              }, [
-                h('span', ' New factoid')
-              ]),
-              h('button.editor-more-button.plain-button', {
-                onClick: () => history.push('/documents')
-              }, [
-                h('span', ' My factoids')
-              ]),
-              h('button.editor-more-button.plain-button', {
-                onClick: () => {
-                  let id = document.id();
-                  let secret = document.secret();
+    if( document.editable() ){
+      appButtons.push([
+        h(Popover, {
+          tippy: {
+            position: 'right',
+            html: h('div.editor-more-menu', [
+              h('div.editor-more-menu-items', [
+                h('button.editor-more-button.plain-button', {
+                  onClick: () => history.push('/new')
+                }, [
+                  h('span', ' New factoid')
+                ]),
+                h('button.editor-more-button.plain-button', {
+                  onClick: () => history.push('/documents')
+                }, [
+                  h('span', ' My factoids')
+                ]),
+                h('button.editor-more-button.plain-button', {
+                  onClick: () => {
+                    let id = document.id();
+                    let secret = document.secret();
 
-                  if( document.editable() ){
-                    history.push(`/form/${id}/${secret}`);
-                  } else {
-                    history.push(`/form/${id}`);
+                    if( document.editable() ){
+                      history.push(`/form/${id}/${secret}`);
+                    } else {
+                      history.push(`/form/${id}`);
+                    }
                   }
-                }
-              }, [
-                h('span', ' Form-based editor')
-              ]),
-              h('button.editor-more-button.plain-button', {
-                onClick: () => history.push('/')
-              }, [
-                h('span', ' About & contact')
+                }, [
+                  h('span', ' Form-based editor')
+                ]),
+                h('button.editor-more-button.plain-button', {
+                  onClick: () => history.push('/')
+                }, [
+                  h('span', ' About & contact')
+                ])
               ])
             ])
-          ])
-        }
-      }, [
-        h(Tooltip, _.assign({}, baseTooltipProps, { description: 'More tools' }), [
-          h('button.editor-button.plain-button', [
-            h('i.material-icons', 'more_vert')
+          }
+        }, [
+          h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Menu' }), [
+            h('button.editor-button.plain-button', [
+              h('i.material-icons', 'more_vert')
+            ])
           ])
         ])
-      ])
-    ]);
+      ]);
+    }
+
 
     return h(`div.${className}`, grs.map( btns => h('div.editor-button-group', btns) ));
 
   }
+
 }
 
-module.exports = EditorButtons;
+module.exports = { AppButtons, EditorButtons };

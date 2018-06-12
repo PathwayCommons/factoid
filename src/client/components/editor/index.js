@@ -105,7 +105,7 @@ class Editor extends React.Component {
 
     doc.on('load', () => {
       doc.interactions().forEach( listenForRmPpt );
-  
+
       let docs = JSON.parse(localStorage.getItem('my-factoids')) || [];
       let docData = { id: doc.id(), secret: doc.secret(), name: doc.name() };
 
@@ -391,6 +391,7 @@ class Editor extends React.Component {
 
     document.elements().forEach( el => el.removeAllListeners() );
     document.removeAllListeners();
+    bus.removeAllListeners();
   }
 }
 

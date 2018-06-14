@@ -38,28 +38,25 @@ class ProteinModificationForm extends InteractionForm {
 
     return h('div.form-interaction', [
       h(EntityForm, { entity: lEnt ,   placeholder:'Controller protein', tooltipContent:'Name or ID', document: this.data.document, bus: this.data.bus}),
-      h('span', [
-        h('select.form-options', {id:('activation-'+ intn.id()), value: actVal,
-          onChange: e => {
+      h('select.form-options', {id:('activation-'+ intn.id()), value: actVal,
+        onChange: e => {
 
-            this.updateActivationInhibition(e.target.value);
-          }}, [
-          h('option', { value: 'activates'}, 'activates'),
-          h('option', { value: 'inhibits'}, 'inhibits'),
-        ])
+          this.updateActivationInhibition(e.target.value);
+        }}, [
+        h('option', { value: 'activates'}, 'activates'),
+        h('option', { value: 'inhibits'}, 'inhibits'),
       ]),
-      h('span', [
-        h('select.form-options', {id:('modification-'+ intn.id()), value: modVal ,
-          onChange: e => {
-            this.updateModificationType(e.target.value);
-          }},
-          [
-          h('option', { value: Interaction.ASSOCIATION.PHOSPHORYLATION.value }, 'phosphorylation'),
-          h('option', { value: Interaction.ASSOCIATION.METHYLATION.value }, 'methylation'),
-          h('option', { value: Interaction.ASSOCIATION.UBIQUINATION.value }, 'ubiquination')
-        ])
+      h('span', 'the'),
+      h('select.form-options', {id:('modification-'+ intn.id()), value: modVal ,
+        onChange: e => {
+          this.updateModificationType(e.target.value);
+        }},
+        [
+        h('option', { value: Interaction.ASSOCIATION.PHOSPHORYLATION.value }, 'phosphorylation'),
+        h('option', { value: Interaction.ASSOCIATION.METHYLATION.value }, 'methylation'),
+        h('option', { value: Interaction.ASSOCIATION.UBIQUINATION.value }, 'ubiquination')
       ]),
-
+      h('span', 'of'),
       h(EntityForm, { entity: rEnt, placeholder:'Controlled protein' , tooltipContent:'Name or ID', document: this.data.document, bus: this.data.bus})
     ]);
   }

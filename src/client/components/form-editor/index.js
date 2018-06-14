@@ -78,13 +78,13 @@ class FormEditor extends DataComponent {
 
         let dirtyElEvts = ['add', 'remove', 'rename', 'retype', 'associate', 'unassociate', 'complete'];
 
-        doc.on('add', (el) => {
-          dirtyElEvts.forEach( evt => el.on(evt, dirty) );
-        });
+        let listenToDirtyEvents = el => dirtyElEvts.forEach( evt => el.on(evt, dirty) );
+        let unlistenToDirtyEvents = el => dirtyElEvts.forEach( evt => el.removeListener(evt, dirty) );
 
-        doc.on('remove', (el) => {
-          dirtyElEvts.forEach( evt => el.removeListener(evt, dirty) );
-        });
+        doc.on('add', listenToDirtyEvents);
+        doc.on('remove', unlistenToDirtyEvents);
+
+        doc.elements().forEach( listenToDirtyEvents );
 
         dirty();
 
@@ -197,9 +197,9 @@ class FormEditor extends DataComponent {
 
     const formTypes = [
       {type: 'Protein Modification' , clazz: ProteinModificationForm, pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  description:"One protein chemically modifies another protein.", association: [Interaction.ASSOCIATION.PHOSPHORYLATION, Interaction.ASSOCIATION.UBIQUINATION, Interaction.ASSOCIATION.METHYLATION] },
-      {type:'Molecular Interaction', clazz: MolecularInteractionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.UNSIGNED], description: "Two or more proteins physically interact.", association: [Interaction.ASSOCIATION.INTERACTION]},
-      {type:'Activation Inhibition', clazz:ActivationInhibitionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes the activity status of another protein.", association: [Interaction.ASSOCIATION.MODIFICATION]},
-      {type:'Expression Regulation', clazz: ExpressionRegulationForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes mRNA expression of a gene.", association: [Interaction.ASSOCIATION.EXPRESSION]}
+      // {type:'Molecular Interaction', clazz: MolecularInteractionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.UNSIGNED], description: "Two or more proteins physically interact.", association: [Interaction.ASSOCIATION.INTERACTION]},
+      // {type:'Activation Inhibition', clazz:ActivationInhibitionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes the activity status of another protein.", association: [Interaction.ASSOCIATION.MODIFICATION]},
+      // {type:'Expression Regulation', clazz: ExpressionRegulationForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes mRNA expression of a gene.", association: [Interaction.ASSOCIATION.EXPRESSION]}
     ];
 
     let hArr = [];
@@ -223,21 +223,22 @@ class FormEditor extends DataComponent {
         });
 
         if(atLeastOneAssocTypeMatches) {
-          return h('div.form-interaction-line',
+          return h('div.form-interaction-entry',
             [
-              h('button.delete-interaction', {
-                onClick: () => {
-                  this.deleteInteractionRow(interaction);
-                }
-              }, 'X'),
               h(formType.clazz, {
                 key: interaction.id(),
                 document: doc,
                 interaction: interaction,
                 description: formType.type,
                 bus: this.data.bus,
-              })
-
+              }),
+              h('button.delete-interaction.plain-button', {
+                onClick: () => {
+                  this.deleteInteractionRow(interaction);
+                }
+              }, [
+                h('i.material-icons', 'delete')
+              ])
             ]);
         } else {
           return null;

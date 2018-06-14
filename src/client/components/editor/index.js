@@ -271,10 +271,7 @@ class Editor extends React.Component {
     let create = () => el.create();
     let add = () => doc.add( el );
 
-    return Promise.all([
-      Promise.try( synch ).then( create ),
-      Promise.try( add )
-    ]).then( () => el );
+    return Promise.try( synch ).then( create ).then( add ).then( () => el );
   }
 
   getLastAddedElement(){

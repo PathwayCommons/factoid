@@ -305,6 +305,16 @@ function listenToDoc({ bus, cy, document, controller }){
     // don't animate add for now to make things snappier
   };
 
+  let onDocElLoad = function(){
+    onDoc( this, (docEl) => {
+      if( docEl.isInteraction() ){
+        docEl.participants().forEach( docPpt => {
+          cy.add( makePptEdges( docEl, docPpt ) );
+        } );
+      }
+    } );
+  };
+
   let animateAdd = function( docEl, el ){ // eslint-disable-line no-unused-vars
     let timestamp = docEl.creationTimestamp();
     let whenCreated = timestamp == null ? null : date.parse( timestamp );
@@ -386,6 +396,7 @@ function listenToDoc({ bus, cy, document, controller }){
     docEl.on('uncomplete', onDocUncomplete);
     docEl.on('retype', onDocRetypePpt);
     docEl.on('modify', onDocModify);
+    docEl.on('loadelements', onDocElLoad);
     el.on('drag', onCyPos);
     el.on('automove', onCyAutomove);
   };
@@ -408,6 +419,7 @@ function listenToDoc({ bus, cy, document, controller }){
     docEl.removeListener('uncomplete', onDocUncomplete);
     docEl.removeListener('retype', onDocRetypePpt);
     docEl.removeListener('modify', onDocModify);
+    docEl.removeListener('loadelements', onDocElLoad);
     el.removeListener('drag', onCyPos);
     el.removeListener('automove', onCyAutomove);
   };

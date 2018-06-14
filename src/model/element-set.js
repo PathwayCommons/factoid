@@ -39,6 +39,7 @@ class ElementSet {
         let nonNil = x => !_.isNil(x);
         let get = id => this.elementsById.get( id );
         let load = id => this.cache.load( id );
+        let liven = ele => this.maybeSynchElement( ele );
         let remove = id => this.elementsById.delete( id );
         let add = ele => this.elementsById.set( getId( ele ), ele );
         let getEntryId = en => en.id;
@@ -47,7 +48,7 @@ class ElementSet {
         let removedEntries = _.differenceBy( old.entries, changes.entries, getEntryId );
         let sameEntries = _.intersectionBy( changes.entries, old.entries, getEntryId );
 
-        let fillEntry = entry => load( getId( entry ) ).then( ele => ({ ele, entry }) );
+        let fillEntry = entry => load( getId( entry ) ).then( liven ).then( ele => ({ ele, entry }) );
         let fillEntries = entries => Promise.all( entries.map( fillEntry ) );
 
         // removed can be filled synchronously
@@ -101,20 +102,30 @@ class ElementSet {
         } );
       }
     });
+  }
 
-    this.emitter.on('add', ele => {
-      if( this.syncher.live && !ele.live() ){
-        ele.synch( true );
-      }
-    });
+  maybeSynchElement( ele ){
+    let synch;
+
+    if( this.syncher.live && !ele.live() ){
+      synch = () => ele.synch( true );
+    } else {
+      synch = () => Promise.resolve();
+    }
+
+    return Promise.try(synch).then( () => ele );
   }
 
   loadElements(){
     let loadEle = entry => this.cache.load( entry.id );
-    let add = ele => this.elementsById.set( ele.id(), ele );
-    let fillInEntry = entry => loadEle( entry ).then( add );
+    let add = ele => { this.elementsById.set( ele.id(), ele ); return ele; };
+    let synch = ele => this.maybeSynchElement(ele);
+    let fillInEntry = entry => loadEle( entry ).then( add ).then( synch );
 
-    return Promise.all( this.syncher.get('entries').map( fillInEntry ) );
+    return (
+      Promise.all( this.syncher.get('entries').map( fillInEntry ) )
+      .then( () => this.emitter.emit('loadelements') )
+    );
   }
 
   load(){

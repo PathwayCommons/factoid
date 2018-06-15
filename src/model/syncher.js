@@ -603,29 +603,17 @@ class Syncher {
       switch( options.type ){
         case OP_TYPE.PUSH:
           return _.mapValues( obj, ( vals, key ) => {
-            return r.branch(
-              r.row( key ).default( null ).typeOf().eq( RDB_TYPE.ARRAY ), // if
-              vals.reduce( ( arr, val ) => arr.append( val ), r.row( key ) ), // then
-              vals // else => just put the vals if empty/null/not-an-array
-            );
+            return vals.reduce( ( arr, val ) => arr.append( val ), r.row( key ).default([]) );
           } );
         case OP_TYPE.PULL:
           return _.mapValues( obj, ( vals, key ) => {
-            return r.branch(
-              r.row( key ).default( null ).typeOf().eq( RDB_TYPE.ARRAY ), // if
-              r.row( key ).difference( vals ), // then
-              [] // else => if no array in db, set empty
-            );
+            return r.row( key ).default([]).difference( vals );
           } );
         case OP_TYPE.PULL_BY_ID:
           return _.mapValues( obj, ( vals, key ) => {
-            return r.branch(
-              r.row( key ).default( null ).typeOf().eq( RDB_TYPE.ARRAY ), // if
-              r.row( key ).filter(function( o ){
-                return r.and( ...( vals.map( val => o('id').ne(val) ) ) );
-              }),
-              [] // else => if no array in db, set empty
-            );
+            return r.row( key ).default([]).filter(function( o ){
+              return r.and( ...( vals.map( val => o('id').ne(val) ) ) );
+            });
           } );
         case OP_TYPE.MERGE_BY_ID:
           return _.mapValues( obj, ( entry, key ) => {

@@ -5,21 +5,21 @@ let EntityForm = require('./entity-form.js');
 class MolecularInteractionForm extends InteractionForm {
 
   // componentDidMount(){
-  //   this.state.interaction.on('complete', ()=> this.forceUpdate());
+  //   this.data.interaction.on('complete', ()=> this.forceUpdate());
   // }
 
   getNextEntityInd(){
-    return this.state.interaction.elements().length;
+    return this.data.interaction.elements().length;
   }
 
   deleteEntity(el){
 
-    let intns = this.state.document.interactions().filter(intn => intn.has(el));
+    let intns = this.data.document.interactions().filter(intn => intn.has(el));
 
     if(intns.length <= 1)
-      this.state.document.remove(el);
+      this.data.document.remove(el);
     else {
-      this.state.interaction.removeParticipant(el);
+      this.data.interaction.removeParticipant(el);
     }
 
     this.forceUpdate();
@@ -27,35 +27,46 @@ class MolecularInteractionForm extends InteractionForm {
   }
 
   render(){
-    const intn = this.state.interaction;
+    let intn = this.data.interaction;
     let intnId = intn.id();
-    let hDeleteFunc = (el) => {return h('button.delete-entity', {
+    let eles = intn.elements();
+
+    let getDeleteButton = ( el ) => {
+      if ( eles.length <= 2 ) {
+        return null;
+      }
+
+      return h('button.delete-entity.plain-button', {
         onClick: () => {
           this.deleteEntity(el);
         }
-      }, 'x');};
+      }, h('i.material-icons', 'delete'));
+    };
 
-    if(this.state.interaction.elements().length <= 2)
-      hDeleteFunc = () => null;
-
-    let hFunc = intn.elements().map(el =>{
-      if(!el)
+    let interactionLine = eles.map( el => {
+      if ( !el ) {
         return null;
-      return h('div', [
-        hDeleteFunc(el),
+      }
+
+      return h('div.form-molecular-intn-line', [
+        getDeleteButton( el ),
         //we have to assign key because react renders component in the old position when deleted
-        h(EntityForm, {key: el.id(), entity:el, placeholder:'Molecule', tooltipContent:'Name or ID', style: 'form-entity', document: this.state.document, bus: this.state.bus}),
+        h(EntityForm, {key: el.id(), entity:el, placeholder:'Molecule', tooltipContent:'Name or ID', style: 'form-entity', document: this.data.document, bus: this.data.bus}),
       ]);
     });
 
     return h('div.form-interaction', [
-      ...hFunc,
+      ...interactionLine,
       h('div.form-action-buttons', [
-        h('button.form-entity-adder', { onClick: () => {
+        h('button.form-entity-adder', {
+           onClick: () => {
               let desc = {};
               desc[intnId] = this.getNextEntityInd();
-              this.addEntityRow({description:desc});}},
-          [ h('i.material-icons.add-new-entity-icon', 'add'), ''])
+              this.addEntityRow( { description:desc } );
+            }
+          },
+          h('i.material-icons.add-new-entity-icon', 'add')
+        )
       ])
     ]);
   }

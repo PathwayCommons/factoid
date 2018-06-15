@@ -272,7 +272,7 @@ class Syncher {
 
     filteredTable.changes({
       includeTypes: true,
-      squash: true // merge events on same obj if very close in time (helps avoid out of order msgs w/ socket.io)
+      squash: false // NB squashing can send the wrong type (e.g. `add` if there was an `add` then a `change` quickly after it)
     }).run( conn, ( err, cursor ) => {
       cursor.each(( err, diff ) => {
         if( err || !diff ){ return; }

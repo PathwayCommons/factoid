@@ -1,4 +1,5 @@
 const h = require('react-hyperscript');
+const _ = require('lodash');
 let InteractionForm = require('./interaction-form.js');
 let EntityForm = require('./entity-form.js');
 
@@ -28,36 +29,20 @@ class MolecularInteractionForm extends InteractionForm {
 
   render(){
     let intn = this.data.interaction;
-    let eles = intn.elements();
+    let nonNil = ele => !_.isNil( ele );
+    let ppts = intn.participants().filter( nonNil );
 
-    // Normally more than 2 participants is not expected and so this function is
-    // expected to return null.
-    let getDeleteButton = ( el ) => {
-      if ( eles.length <= 2 ) {
-        return null;
-      }
-
-      return h('button.delete-entity.plain-button', {
-        onClick: () => {
-          this.deleteEntity(el);
-        }
-      }, h('i.material-icons', 'delete'));
-    };
-
-    let interactionLine = eles.map( el => {
-      if ( !el ) {
-        return null;
-      }
-
+    let getInteractionLine = el => {
       return h('div.form-molecular-intn-line', [
-        getDeleteButton( el ),
         //we have to assign key because react renders component in the old position when deleted
         h(EntityForm, {key: el.id(), entity:el, placeholder:'Molecule', tooltipContent:'Name or ID', style: 'form-entity', document: this.data.document, bus: this.data.bus}),
       ]);
-    });
+    };
 
     return h('div.form-interaction', [
-      ...interactionLine
+      getInteractionLine( ppts[0] ),
+      h('span', 'interacts with'),
+      getInteractionLine( ppts[1] )
     ]);
   }
 

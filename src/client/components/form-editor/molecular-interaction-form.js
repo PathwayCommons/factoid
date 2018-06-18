@@ -28,7 +28,6 @@ class MolecularInteractionForm extends InteractionForm {
 
   render(){
     let intn = this.data.interaction;
-    let intnId = intn.id();
     let eles = intn.elements();
 
     // Normally more than 2 participants is not expected and so this function is

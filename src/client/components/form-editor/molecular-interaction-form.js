@@ -31,6 +31,8 @@ class MolecularInteractionForm extends InteractionForm {
     let intnId = intn.id();
     let eles = intn.elements();
 
+    // Normally more than 2 participants is not expected and so this function is
+    // expected to return null.
     let getDeleteButton = ( el ) => {
       if ( eles.length <= 2 ) {
         return null;
@@ -56,18 +58,7 @@ class MolecularInteractionForm extends InteractionForm {
     });
 
     return h('div.form-interaction', [
-      ...interactionLine,
-      h('div.form-action-buttons', [
-        h('button.form-entity-adder', {
-           onClick: () => {
-              let desc = {};
-              desc[intnId] = this.getNextEntityInd();
-              this.addEntityRow( { description:desc } );
-            }
-          },
-          h('i.material-icons.add-new-entity-icon', 'add')
-        )
-      ])
+      ...interactionLine
     ]);
   }
 

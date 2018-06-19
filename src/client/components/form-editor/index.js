@@ -44,7 +44,7 @@ class FormEditor extends DataComponent {
 
     let bus = new EventEmitter();
 
-    this.data = this.data = {
+    this.data = {
       document: doc,
       bus: bus,
     };

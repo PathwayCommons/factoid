@@ -42,7 +42,7 @@ class InteractionType {
 
   setParticipantAs( ppt, type ){
     let intn = this.interaction;
-    let signedPpts = intn.participantsNotOfType( PARTICIPANT_TYPE.UNSIGNED );
+    let signedPpts = intn.participantsNotOfType( PARTICIPANT_TYPE.UNSIGNED ).filter( unsignedPpt => unsignedPpt.id() !== ppt.id() );
     let makeUnsigned = ppt => intn.retypeParticipant( ppt, PARTICIPANT_TYPE.UNSIGNED );
 
     return Promise.all([
@@ -80,7 +80,7 @@ class InteractionType {
   }
 
   setAsInhibitionOf( ppt ){
-    return this.setPariticpantAsNegative( ppt );
+    return this.setParticipantAsNegative( ppt );
   }
 
   getTarget(){

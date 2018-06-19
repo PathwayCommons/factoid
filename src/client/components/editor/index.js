@@ -105,7 +105,7 @@ class Editor extends React.Component {
 
     doc.on('load', () => {
       doc.interactions().forEach( listenForRmPpt );
-  
+
       let docs = JSON.parse(localStorage.getItem('my-factoids')) || [];
       let docData = { id: doc.id(), secret: doc.secret(), name: doc.name() };
 
@@ -271,10 +271,7 @@ class Editor extends React.Component {
     let create = () => el.create();
     let add = () => doc.add( el );
 
-    return Promise.all([
-      Promise.try( synch ).then( create ),
-      Promise.try( add )
-    ]).then( () => el );
+    return Promise.try( synch ).then( create ).then( add ).then( () => el );
   }
 
   getLastAddedElement(){
@@ -394,6 +391,7 @@ class Editor extends React.Component {
 
     document.elements().forEach( el => el.removeAllListeners() );
     document.removeAllListeners();
+    bus.removeAllListeners();
   }
 }
 

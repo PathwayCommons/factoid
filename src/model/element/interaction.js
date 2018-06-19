@@ -12,6 +12,11 @@ const TYPE = 'interaction';
 const makeAssociation = ( type, intn ) => {
   let Type = _.isString(type) ? getIntnTypeByVal(type) : type;
 
+  // fall back on default type if garbage data is passed as `type` arg
+  if( Type == null || type == null ){
+    return INTERACTION_TYPE.INTERACTION.value;
+  }
+
   return new Type( intn );
 };
 

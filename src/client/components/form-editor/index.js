@@ -1,8 +1,9 @@
-const DirtyComponent = require('../dirty-component');
+const DataComponent = require('../data-component');
 const h = require('react-hyperscript');
 const io = require('socket.io-client');
 const _ = require('lodash');
 const EventEmitter = require('eventemitter3');
+const Promise = require('bluebird');
 
 const logger = require('../../logger');
 const debug = require('../../debug');
@@ -12,11 +13,6 @@ const { exportDocumentToOwl } = require('../../util');
 
 const Popover = require('../popover/popover');
 
-// const DocumentWizardStepper = require('../document-wizard-stepper');
-// const AppBar = require('../app-bar');
-// const ActionLogger = require('../action-logger');
-
-
 const ProteinModificationForm = require('./protein-modification-form');
 const ExpressionRegulationForm = require('./expression-regulation-form');
 const MolecularInteractionForm = require('./molecular-interaction-form');
@@ -24,7 +20,7 @@ const ActivationInhibitionForm = require('./activation-inhibition-form');
 
 let Interaction = require('../../../model/element/interaction');
 
-class FormEditor extends DirtyComponent {
+class FormEditor extends DataComponent {
   constructor(props){
     super(props);
 
@@ -48,12 +44,14 @@ class FormEditor extends DirtyComponent {
 
     let bus = new EventEmitter();
 
-    this.data = this.state = {
+    this.data = {
       document: doc,
-      bus: bus
+      bus: bus,
     };
 
-
+    let dirty = () => {
+      this.dirty();
+    };
 
     Promise.try( () => doc.load() )
       .then( () => logger.info('The doc already exists and is now loaded') )
@@ -75,39 +73,38 @@ class FormEditor extends DirtyComponent {
           window.editor = this;
         }
 
-        doc.on('remove', () => {
-          this.forceUpdate();
-        });
+        doc.on('add', dirty);
+        doc.on('remove', dirty);
 
+        let dirtyElEvts = ['add', 'remove', 'rename', 'retype', 'associate', 'unassociate', 'complete'];
 
-        //TODO
-        doc.on('add', (el) => {
+        let listenToDirtyEvents = el => dirtyElEvts.forEach( evt => el.on(evt, dirty) );
+        let unlistenToDirtyEvents = el => dirtyElEvts.forEach( evt => el.removeListener(evt, dirty) );
 
-          el.on('complete', () => {
+        doc.on('add', listenToDirtyEvents);
+        doc.on('remove', unlistenToDirtyEvents);
 
-            el.on('remoteupdate', () => {
-              this.dirty();
-            });
+        doc.elements().forEach( listenToDirtyEvents );
 
+        dirty();
 
-            this.dirty();
-          });
-
-
-
-        });
-
-        // force an update here
-        this.forceUpdate();
         logger.info('The editor is initialising');
       } );
 
   }
 
-  setData( obj, callback ){
-    _.assign( this.data, obj );
+  componentWillUnmount(){
+    let { document, bus } = this.data;
 
-    this.setState( obj, callback );
+    document.elements().forEach( el => el.removeAllListeners() );
+    document.removeAllListeners();
+    bus.removeAllListeners();
+  }
+
+  dirty(){
+    super.dirty();
+
+    this.data.bus.emit('dirty');
   }
 
   addElement( data){
@@ -130,20 +127,19 @@ class FormEditor extends DirtyComponent {
   }
 
   addInteraction( data ){
-
     let doc = this.data.document;
 
     let el = doc.factory().make({
       data: _.assign( {
-        type: 'interaction',
-
-      }, data )
+        type: 'interaction'
+      }, data, {
+        association: data.association != null ? ( _.isString(data.association) ? data.association : data.association.value ) : 'interaction'
+      } )
     });
 
     return ( Promise.try( () => el.synch() )
         .then( () => el.create() )
         .then( () => doc.add(el) )
-        .then( () => el.associate(data.association[0].value) )
         .then( () => el )
 
     );
@@ -152,87 +148,52 @@ class FormEditor extends DirtyComponent {
 
 
   addInteractionRow(data){
-    let entArr = [];
+    let createEnts = () => Promise.all( data.pptTypes.map( () => this.addElement() ) );
 
-    for(let i = 0; i < data.pptTypes.length; i++)
-      entArr.push(this.addElement());
+    let createIntn = () => this.addInteraction(data);
 
-    let intn = this.addInteraction(data);
+    let handlePpt = (intn, ppt, type) => intn.addParticipant(ppt, { group: type });
 
+    let handlePpts = (intn, ppts) => Promise.all( ppts.map( (ppt, i) => {
+      let type = data.pptTypes[i].value;
 
-    entArr.push(intn);
+      return handlePpt(intn, ppt, type);
+    } ) );
 
-
-    Promise.all(entArr).then(responses => {
-      let resp = responses[data.pptTypes.length]; // this is the interaction
-
-      for(let i = 0; i < data.pptTypes.length; i++) {
-        resp.addParticipant(responses[i]);
-
-        resp.setParticipantType(responses[i], data.pptTypes[i]);
-
-
-
-        // if(data.pptTypes[i] !== Interaction.PARTICIPANT_TYPE.UNSIGNED)
-        //   resp.association().setTarget( responses[i]);
-
-      }
-
-
-      this.dirty();
-    });
+    return (
+      Promise.try( createEnts )
+      .then( ppts => {
+        return createIntn().then( intn => ({ intn, ppts }) );
+      } )
+      .then( ({ intn, ppts }) => {
+        return handlePpts(intn, ppts).then( () => intn );
+      } )
+      .then( intn => intn.complete() )
+      .then( () => this.dirty() )
+    );
   }
 
-  updateState(){
-    this.dirty();
-  }
+  deleteInteractionRow(intn){
+    let doc = this.data.document;
+    let otherIntns = doc.interactions().filter(intn2 => intn2 !== intn);
+    let ppts = intn.participants();
+    let danglingPpts = ppts.filter(ppt => !otherIntns.some(intn => intn.has(ppt)));
 
-  deleteInteractionRow(data){
+    let rm = el => doc.remove(el);
+    let rmIntn = () => rm(intn);
+    let rmDanglingPpts = () => Promise.all(danglingPpts.map(rm));
+    let rmAll = () => Promise.all([ rmIntn(), rmDanglingPpts() ]);
 
-    let doc = this.state.document;
-    let intn = data.interaction;
+    let dirty = () => this.dirty();
 
-    let els = intn.participants();
-    let elsLength = els.length;
-
-
-    // intn.map(el => { if(intn.has(el))
-    // {intn.remove(el); Promise.resolve();}});
-
-    let promiseArr = [];
-    for(let i = 0; i < elsLength; i++) {
-      let participationCnt = doc.interactions().filter((interaction) => interaction.has( els[i] )).length;
-
-      promiseArr.push(Promise.try(() => intn.removeParticipant(els[i]))
-        .then(()=>{
-          if(participationCnt <= 1)
-              doc.remove(els[i]);
-          }
-        ));
-    }
-
-    Promise.all(promiseArr).then( () => {
-      try{
-        doc.remove(intn);
-      }
-      catch(e) {
-        // console.log(e);
-      }
-
-      this.dirty();
-    });
-
+    return Promise.try(rmAll).then(dirty);
   }
 
   render(){
-    let doc = this.state.document;
-
+    let doc = this.data.document;
     let { history } = this.props;
 
-
-    this.state.dirty = false;
-
-    const forms = [
+    const formTypes = [
       {type: 'Protein Modification' , clazz: ProteinModificationForm, pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  description:"One protein chemically modifies another protein.", association: [Interaction.ASSOCIATION.PHOSPHORYLATION, Interaction.ASSOCIATION.UBIQUINATION, Interaction.ASSOCIATION.METHYLATION] },
       {type:'Molecular Interaction', clazz: MolecularInteractionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.UNSIGNED], description: "Two or more proteins physically interact.", association: [Interaction.ASSOCIATION.INTERACTION]},
       {type:'Activation Inhibition', clazz:ActivationInhibitionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes the activity status of another protein.", association: [Interaction.ASSOCIATION.MODIFICATION]},
@@ -242,29 +203,55 @@ class FormEditor extends DirtyComponent {
     let hArr = [];
 
 
-    forms.forEach((form) => {
+    formTypes.forEach((formType) => {
 
       let formContent = doc.interactions().map(interaction => {
-          if(form.association.filter(assoc => assoc.value === interaction.association().value).length > 0 )
-        // if(form.type === interaction.name())
-          return h('div.form-interaction-line',
-            [
-              h('button.delete-interaction', { onClick: () => {this.deleteInteractionRow({interaction:interaction}); } }, 'X'),
-              h(form.clazz, {key: interaction.id(), document:doc, interaction:interaction, description: form.type})
+        if(!interaction.completed()){
+          return null;
+        }
 
-            ] );
-        else return null;
+        let intnAssocVal = interaction.association().value;
+
+        let atLeastOneAssocTypeMatches = false;
+
+        formType.association.forEach(assoc => {
+          if( assoc.value === intnAssocVal ){
+            atLeastOneAssocTypeMatches = true;
+          }
+        });
+
+        if(atLeastOneAssocTypeMatches) {
+          return h('div.form-interaction-entry',
+            [
+              h(formType.clazz, {
+                key: interaction.id(),
+                document: doc,
+                interaction: interaction,
+                description: formType.type,
+                bus: this.data.bus,
+              }),
+              h('button.delete-interaction.plain-button', {
+                onClick: () => {
+                  this.deleteInteractionRow(interaction);
+                }
+              }, [
+                h('i.material-icons', 'delete')
+              ])
+            ]);
+        } else {
+          return null;
+        }
       });
 
 
       //update form
       let hFunc = h('div.form-template-entry', [
-        h('h2', form.type),
-        h('p', form.description),
+        h('h2', formType.type),
+        h('p', formType.description),
         ...formContent,
         h('div.form-action-buttons', [
           h('button.form-interaction-adder', {
-            onClick: () => this.addInteractionRow({name:form.type, pptTypes:form.pptTypes,  association: form.association})}, [
+            onClick: () => this.addInteractionRow({name:formType.type, pptTypes: formType.pptTypes,  association: formType.association[0]})}, [
             h('i.material-icons.add-new-interaction-icon', 'add'),
             'ADD INTERACTION'
           ])])
@@ -274,8 +261,6 @@ class FormEditor extends DirtyComponent {
     });
 
     return h('div.form-editor', [
-//      h(AppBar, { document: this.data.document, bus: this.data.bus }),
- //     h(ActionLogger, { document: this.data.document, bus: this.data.bus }),
       h('div.page-content', [
         h('div.app-bar', [
           h('h2', 'Factoid - Form Editor'),
@@ -326,7 +311,7 @@ class FormEditor extends DirtyComponent {
           ...hArr
         ]),
         h('button.form-submit', { onClick: () => exportDocumentToOwl(doc.id()) }, [
-          'SUBMIT'
+          'Download BioPax'
         ])
       ]),
 

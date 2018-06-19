@@ -39,6 +39,7 @@ class ElementSet {
         let nonNil = x => !_.isNil(x);
         let get = id => this.elementsById.get( id );
         let load = id => this.cache.load( id );
+        let liven = ele => this.maybeSynchElement( ele );
         let remove = id => this.elementsById.delete( id );
         let add = ele => this.elementsById.set( getId( ele ), ele );
         let getEntryId = en => en.id;
@@ -47,7 +48,7 @@ class ElementSet {
         let removedEntries = _.differenceBy( old.entries, changes.entries, getEntryId );
         let sameEntries = _.intersectionBy( changes.entries, old.entries, getEntryId );
 
-        let fillEntry = entry => load( getId( entry ) ).then( ele => ({ ele, entry }) );
+        let fillEntry = entry => load( getId( entry ) ).then( liven ).then( ele => ({ ele, entry }) );
         let fillEntries = entries => Promise.all( entries.map( fillEntry ) );
 
         // removed can be filled synchronously
@@ -61,19 +62,27 @@ class ElementSet {
           }
         } ).filter( nonNil );
 
-        Promise.try( () => fillEntries( addedEntries ) ).then( filledAdded => {
+        let emits = [];
+
+        let enqueueEmit = (evt, ele, group, oldGroup) => emits.push({ evt, ele, group, oldGroup });
+
+        let dequeueEmits = () => emits.forEach( ({ evt, ele, group, oldGroup }) => {
+          this.emitter.emit(evt, ele, group, oldGroup);
+        } );
+
+        return Promise.try( () => fillEntries( addedEntries ) ).then( filledAdded => {
           filledAdded.forEach( f => {
             add( f.ele, f.entry );
 
-            this.emitter.emit( 'add', f.ele, f.entry.group );
-            this.emitter.emit( 'remoteadd', f.ele, f.entry.group );
+            enqueueEmit( 'add', f.ele, f.entry.group );
+            enqueueEmit( 'remoteadd', f.ele, f.entry.group );
           } );
 
           filledRemoved.forEach( f => {
             remove( f.ele, f.entry );
 
-            this.emitter.emit( 'remove', f.ele, f.entry.group );
-            this.emitter.emit( 'remoteremove', f.ele, f.entry.group );
+            enqueueEmit( 'remove', f.ele, f.entry.group );
+            enqueueEmit( 'remoteremove', f.ele, f.entry.group );
           } );
         } ).then( () => {
           sameEntries.forEach( ent => {
@@ -84,27 +93,39 @@ class ElementSet {
             let newEnt = changes.entries.find( sameId );
 
             if( newEnt.group !== oldEnt.group ){
-              this.emitter.emit( 'regroup', ele, newEnt.group, oldEnt.group );
-              this.emitter.emit( 'remoteregroup', ele, newEnt.group, oldEnt.group );
+              enqueueEmit( 'regroup', ele, newEnt.group, oldEnt.group );
+              enqueueEmit( 'remoteregroup', ele, newEnt.group, oldEnt.group );
             }
           } );
+        } ).then( () => {
+          dequeueEmits();
         } );
-      }
-    });
-
-    this.emitter.on('add', ele => {
-      if( this.syncher.live && !ele.live() ){
-        ele.synch( true );
       }
     });
   }
 
+  maybeSynchElement( ele ){
+    let synch;
+
+    if( this.syncher.live && !ele.live() ){
+      synch = () => ele.synch( true );
+    } else {
+      synch = () => Promise.resolve();
+    }
+
+    return Promise.try(synch).then( () => ele );
+  }
+
   loadElements(){
     let loadEle = entry => this.cache.load( entry.id );
-    let add = ele => this.elementsById.set( ele.id(), ele );
-    let fillInEntry = entry => loadEle( entry ).then( add );
+    let add = ele => { this.elementsById.set( ele.id(), ele ); return ele; };
+    let synch = ele => this.maybeSynchElement(ele);
+    let fillInEntry = entry => loadEle( entry ).then( add ).then( synch );
 
-    return Promise.all( this.syncher.get('entries').map( fillInEntry ) );
+    return (
+      Promise.all( this.syncher.get('entries').map( fillInEntry ) )
+      .then( () => this.emitter.emit('loadelements') )
+    );
   }
 
   load(){
@@ -183,8 +204,9 @@ class ElementSet {
   elements( group ){
     let matches = en => group == null || en.group == group;
     let getEle = entry => this.get( entry.id );
+    let isNonNil = x => !_.isNil(x);
 
-    return this.syncher.get('entries').filter( matches ).map( getEle );
+    return this.syncher.get('entries').filter( matches ).map( getEle ).filter( isNonNil );
   }
 
   group( ele ){

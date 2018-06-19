@@ -101,9 +101,11 @@ class EntityInfo extends DataComponent {
       progression.goToStage( s.stage );
     }
 
-    this.onRemoteRename = () => {
+    this.onRename = () => {
       this.setData({ name: this.data.element.name() });
+    };
 
+    this.onRemoteRename = () => {
       if( this.remRenameAni ){
         this.remRenameAni.pause();
       }
@@ -111,6 +113,7 @@ class EntityInfo extends DataComponent {
       this.remRenameAni = animateDomForEdit( input );
     };
 
+    s.element.on('rename', this.onRename);
     s.element.on('remoterename', this.onRemoteRename);
 
     this.onToggleOrganism = () => {
@@ -130,6 +133,7 @@ class EntityInfo extends DataComponent {
     let { document, element } = this.props;
     let update = this.data.updatePromise;
 
+    element.removeListener('rename', this.onRename);
     element.removeListener('remoterename', this.onRemoteRename);
 
     document.removeListener('toggleorganism', this.onToggleOrganism);

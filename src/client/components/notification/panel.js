@@ -1,35 +1,48 @@
-const DirtyComponent = require('../dirty-component');
+const DataComponent = require('../data-component');
 const h = require('react-hyperscript');
-const NotificationBase = require('./base');
+
+const InlineNotification = require('./inline');
 const { makeClassList } = require('../../../util');
 
 // WIP
-class NotificationPanel extends DirtyComponent {
+class NotificationPanel extends DataComponent {
   constructor( props ){
     super( props );
 
-    this.state = { open: false || props.open };
+    this.data = { open: false || props.open };
+  }
 
-    let { notificationList: nl } = props;
+  componentDidMount(){
+    let { notificationList: nl } = this.props;
 
-    nl.on('change', () => this.dirty());
+    this.onChange = () => this.dirty();
+
+    nl.on('change', this.onChange);
+  }
+
+  componentWillUnmount(){
+    let { notificationList: nl } = this.props;
+
+    nl.removeListener('change', this.onChange);
   }
 
   open(){
-    this.setState({ open: true });
+    this.setData({ open: true });
   }
 
   close(){
-    this.setState({ open: false });
+    this.setData({ open: false });
   }
 
   render(){
     let { notificationList: nl } = this.props;
-    let { open } = this.state;
+    let { open } = this.data;
 
-    let makeNtfn = notification => h(NotificationBase, { notification });
+    let makeNtfn = notification => h('div.notification-panel-entry', [
+      h(InlineNotification, { notification, key: notification.id() })
+    ]);
 
-    return super.render(
+    return (
       h('div.notification-panel', {
         className: makeClassList({ 'notification-panel-open': open })
       }, [
@@ -40,3 +53,4 @@ class NotificationPanel extends DirtyComponent {
 }
 
 module.exports = NotificationPanel;
+

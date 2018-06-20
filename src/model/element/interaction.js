@@ -12,6 +12,11 @@ const TYPE = 'interaction';
 const makeAssociation = ( type, intn ) => {
   let Type = _.isString(type) ? getIntnTypeByVal(type) : type;
 
+  // fall back on default type if garbage data is passed as `type` arg
+  if( Type == null || type == null ){
+    return INTERACTION_TYPE.INTERACTION.value;
+  }
+
   return new Type( intn );
 };
 
@@ -229,10 +234,16 @@ class Interaction extends Element {
     }
   }
 
+  associated(){
+    return this.syncher.get('association') != null;
+  }
+
   json(){
-    return _.assign( {}, super.json(), {
-      elements: this.elements().map( el => el.json() )
-    } );
+    return _.assign( {}, super.json(), _.pick( this.syncher.get(), _.keys(DEFAULTS) ) );
+  }
+
+  toBiopaxTemplate(){
+    return this.association().toBiopaxTemplate();
   }
 }
 

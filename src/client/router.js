@@ -12,6 +12,7 @@ const DebugDocumentSeeder = require('./components/debug-document-seeder');
 const ExampleDocument = require('./components/example-document');
 const DocumentSeeder = require('./components/document-seeder');
 const DocumentViewChooser = require('./components/document-view-chooser');
+const MyFactoids = require('./components/my-factoids');
 
 
 let routes = [
@@ -19,6 +20,13 @@ let routes = [
     path: '/',
     render: () => {
       return h(Home);
+    }
+  },
+  {
+    path: '/documents',
+    render: props => {
+      props.factoids = JSON.parse(localStorage.getItem('my-factoids')) || [];
+      return h( MyFactoids, props );
     }
   },
   {
@@ -82,43 +90,35 @@ let routes = [
   {
     path: '/form/:id',
     render: props => {
-      let params = props.match.params;
+      let { id } = props.match.params;
 
-      return h( FormEditor, {
-        id: params.id
-      } );
+      return h( FormEditor, { id } );
     }
   },
   {
     path: '/form/:id/:secret',
     render: props => {
-      let params = props.match.params;
+      let { id, secret } = props.match.params;
+      let { history } = props;
 
-      return h( FormEditor, {
-        id: params.id,
-        secret: params.secret
-      } );
+      return h( FormEditor, { id, secret, history } );
     }
   },
   {
     path: '/document/:id',
     render: props => {
-      let params = props.match.params;
+      let { id } = props.match.params;
 
-      return h( Editor, {
-        id: params.id
-      } );
+      return h( Editor, { id } );
     }
   },
   {
     path: '/document/:id/:secret',
     render: props => {
-      let params = props.match.params;
+      let { id, secret } = props.match.params;
+      let { history } = props;
 
-      return h( Editor, {
-        id: params.id,
-        secret: params.secret
-      } );
+      return h( Editor, { id, secret, history } );
     }
   },
   {

@@ -11,8 +11,10 @@ const NotificationBase = require('../../notification/base');
 const Notification = require('../../notification/notification');
 
 module.exports = function({ bus, cy, document }){
-  let hideAllTippies = () => {
-    cy.nodes().forEach( hideTippy );
+  let isSmallScreen = () => window.innerWidth <= 650;
+
+  let hideAllTippies = (list = '_tippies') => {
+    cy.nodes().forEach( node => hideTippy(node, list) );
   };
 
   bus.on('closetip', function( el ){
@@ -38,6 +40,23 @@ module.exports = function({ bus, cy, document }){
 
     if( el != null ){
       toggleElementInfoFor( cy.getElementById( el.id() ) );
+    }
+  });
+
+  bus.on('openpptstip', function( el ){
+    if( el != null ){
+      toggleElementInfoFor( cy.getElementById( el.id() ), { togglePpts: true, toggleOn: true } );
+    }
+  });
+
+  bus.on('closepptstip', function( el ){
+    if( el != null ){
+      let id = el.id();
+      let ele = cy.getElementById( id );
+
+      hideTippy( ele, '_pptTippies' );
+    } else {
+      hideAllTippies('_pptTippies');
     }
   });
 
@@ -84,18 +103,28 @@ module.exports = function({ bus, cy, document }){
 
     let t = tippyInfo;
     let div = t.content;
+    let refDiv = t.tippy.reference;
 
-    t.tippy.hide();
+    t.tippy.destroy();
 
     ReactDom.unmountComponentAtNode( div );
 
-    div.parentNode.removeChild( div );
+    let rm = div => {
+      try {
+        div.parentNode.removeChild( div );
+      } catch( err ){
+        // just let it fail
+      }
+    };
+
+    rm(div);
+    rm(refDiv);
   };
 
-  let destroyTippyFor = ele => {
-    let tippies = ele.scratch('_tippies');
+  let destroyTippyFor = (ele, sublist = '_tippies') => {
+    let tippies = ele.scratch(sublist);
 
-    ele.scratch('_tippies', null);
+    ele.scratch(sublist, null);
 
     if( tippies != null ){
       tippies.forEach( destroyTippy );
@@ -122,7 +151,7 @@ module.exports = function({ bus, cy, document }){
   });
 
   incompleteNotification.on('open', () => {
-    toggleElementInfoFor( incompleteTippyInfo.el, true );
+    toggleElementInfoFor( incompleteTippyInfo.el, { toggleOn: true } );
   });
 
   let makeIncompleteNotification = (el, docEl) => { // eslint-disable-line no-unused-vars
@@ -134,7 +163,9 @@ module.exports = function({ bus, cy, document }){
       className: 'incomplete-entity-notification'
     } ) );
 
-    incompleteNotification.message(`Complete this entity.`);
+    let type = docEl.isInteraction() ? 'interaction' : 'entity';
+
+    incompleteNotification.message(`Complete this ${type}.`);
 
     incompleteNotification.activate();
 
@@ -163,9 +194,9 @@ module.exports = function({ bus, cy, document }){
     }
   };
 
-  let hideTippy = ele => {
+  let hideTippy = (ele, list = '_tippies') => {
     let node = getTippyNode( ele );
-    let tippies = node.scratch('_tippies');
+    let tippies = node.scratch(list);
     let didClose = false;
 
     if( tippies != null ){
@@ -176,7 +207,7 @@ module.exports = function({ bus, cy, document }){
       });
     }
 
-    if( didClose && !isInteractionNode(node) ){
+    if( didClose && list !== '_pptTippies' ){
       let docEl = document.get( node.id() );
 
       if( docEl && !docEl.completed() ){
@@ -223,26 +254,38 @@ module.exports = function({ bus, cy, document }){
     return div;
   };
 
-  let makeTippy = ({ el, ref, content, overrides }) => {
+  let makeTippy = ({ el, ref, content, overrides, sublist }) => {
     let tippy = tippyjs( ref, _.assign( {}, tippyDefaults, {
       duration: 0,
-      placement: 'right',
+      placement: isSmallScreen() ? 'bottom' : 'right',
       hideOnClick: false,
-      onHidden: _.debounce( () => destroyTippyFor( el ), 100 ) // debounce allows toggling a tippy on an ele
+      sticky: true,
+      livePlacement: true,
+      onHidden: _.debounce( () => destroyTippyFor( el, sublist ), 100 ) // debounce allows toggling a tippy on an ele
     }, overrides, {
       html: content
     } ) ).tooltips[0];
 
-    let tippies = el.scratch('_tippies');
+    let addToList = listName => {
+      let tippies = el.scratch(listName);
 
-    if( tippies == null ){
-      tippies = [];
-      el.scratch('_tippies', tippies);
+      if( tippies == null ){
+        tippies = [];
+        el.scratch(listName, tippies);
+      }
+
+      tippies.push({ tippy, content });
+    };
+
+    addToList('_tippies');
+
+    if( sublist ){
+      addToList(sublist);
     }
 
-    tippies.push({ tippy, content });
-
     tippy.show();
+
+    return tippy;
   };
 
   let getContentDiv = component => {
@@ -253,8 +296,18 @@ module.exports = function({ bus, cy, document }){
     return div;
   };
 
-  let toggleElementInfoFor = ( tgt, toggleOn ) => {
+  let toggleElementInfoFor = ( tgt, opts ) => {
+
+
+    let { toggleOn, togglePpts } = _.assign( {
+      toggleOn: undefined,
+      togglePpts: false
+    }, opts );
+
     let node = getTippyNode( tgt );
+    let pos = node.renderedPosition();
+    let vpW = cy.width();
+    let vpH = cy.height();
     let docEl = document.get( node.id() );
 
     let tippies = node.scratch('_tippies');
@@ -264,39 +317,37 @@ module.exports = function({ bus, cy, document }){
     }
 
     if( !toggleOn ){
-      hideTippy( node );
+      if( togglePpts ){
+        hideTippy( node, '_pptTippies' );
+      } else {
+        hideTippy( node );
+      }
     } else {
-      hideAllTippies();
-      deactivateIncompleteNotification();
+      if( !togglePpts ){
+        hideAllTippies();
+        deactivateIncompleteNotification();
 
-      tippies = [];
+        lastOpenTime = Date.now();
 
-      node.scratch('_tippies', tippies);
+        tippies = [];
 
-      lastOpenTime = Date.now();
+        node.scratch('_tippies', tippies);
+      } else {
+        node.scratch('_pptTippies', []);
+      }
 
       if( docEl.isInteraction() ){
-        let bottomOfCyBb = {
-          w: cy.width(),
-          h: 1,
-          x1: 0,
-          x2: cy.width(),
-          y1: cy.height() - 1,
-          y2: cy.height()
-        };
-
-        makeTippy({
-          el: node,
-          ref: getRef( bottomOfCyBb ),
-          content: getContentDiv( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ) ),
-          overrides: {
-            placement: 'bottom',
-            arrow: false
-          }
-        });
-
         let pan = cy.pan();
         let zoom = cy.zoom();
+        let isVertical;
+        let ppts = docEl.participants();
+        let pptNodes = ppts.map( ppt => cy.getElementById( ppt.id() ) );
+        let src = pptNodes[0]; // assume binary interactions for now
+        let tgt = pptNodes[pptNodes.length - 1];
+        let pSrc = src.position();
+        let pTgt = tgt.position();
+        let dx = pTgt.x - pSrc.x;
+        let dy = pTgt.y - pSrc.y;
 
         let modelToRenderedPt = p => {
           return {
@@ -305,57 +356,107 @@ module.exports = function({ bus, cy, document }){
           };
         };
 
-        docEl.participants().forEach( ppt => {
-          if( !document.editable() ){ return; }
+        if( Math.abs(dx) > Math.abs(dy) ){
+          isVertical = false;
+        } else {
+          isVertical = true;
+        }
 
-          let pptNode = cy.getElementById( ppt.id() );
-          let edge = pptNode.edgesWith( cy.getElementById( docEl.id() ) );
+        let flipIntnTippy = (isVertical && pos.x > vpW/2) || (!isVertical && pos.y > vpH/2);
 
-          let getArrowBb = () => {
-            let arrowPos = modelToRenderedPt( edge.targetEndpoint() );
+        if( isSmallScreen() ){
+          isVertical = false;
+          flipIntnTippy = false;
+        }
 
-            let arrowBb = {
-              w: 3,
-              h: 3,
-              x1: arrowPos.x - 1,
-              x2: arrowPos.x + 1,
-              y1: arrowPos.y - 1,
-              y2: arrowPos.y + 1
-            };
+        let edgesBb = node.edgesWith( src.add(tgt) ).renderedBoundingBox();
 
-            return arrowBb;
-          };
+        let intnTippyAway = false;
 
-          let pos;
-          let pSrc = edge.source().position();
-          let pTgt = edge.target().position();
-          let dx = pTgt.x - pSrc.x;
-          let dy = pTgt.y - pSrc.y;
+        let getIntnTippyBb = () => {
+          let bb = node.renderedBoundingBox({ includeLabels: false, includeOverlays: false });
 
-          if( Math.abs(dx) > Math.abs(dy) ){
-            pos = 'top';
-          } else {
-            pos = 'right';
+          bb = _.assign( {}, bb ); // copy
+
+          if( intnTippyAway ){
+            let minDist = 40;
+            let maxDist = 100;
+            let defDist = isVertical ? edgesBb.w/2 : edgesBb.h/2;
+            let dist = Math.min( maxDist, Math.max( minDist, defDist ) ) - bb.w/2;
+
+            let dblDist = dist * 2;
+
+            bb.w += dblDist;
+            bb.h += dblDist;
+            bb.x1 -= dist;
+            bb.x2 += dist;
+            bb.y1 -= dist;
+            bb.y2 += dist;
           }
 
+          return bb;
+        };
+
+        if( !togglePpts ){
           makeTippy({
             el: node,
-            ref: getRef( getArrowBb, pptNode ),
-            content: getContentDiv( h( ParticipantInfo, { interaction: docEl, participant: ppt, bus, document, eventTarget: tgt } ) ),
+            ref: getRef( getIntnTippyBb, node ),
+            content: getContentDiv( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ) ),
             overrides: {
-              distance: 5 * zoom,
-              placement: pos
+              distance: 0,
+              placement: isVertical ? (flipIntnTippy ? 'left' : 'right') : (flipIntnTippy ? 'top' : 'bottom'),
+              duration: [250, 0]
             }
           });
-        } );
-      } else {
+
+          // cause tippy to animate a distance away
+          setTimeout(() => {
+            intnTippyAway = true;
+          }, 0);
+        } else {
+          ppts.forEach( ppt => {
+            if( !document.editable() ){ return; }
+
+            let pptNode = cy.getElementById( ppt.id() );
+            let edge = pptNode.edgesWith( cy.getElementById( docEl.id() ) );
+
+            let getArrowBb = () => {
+              let arrowPos = modelToRenderedPt( edge.targetEndpoint() );
+
+              let arrowBb = {
+                w: 3,
+                h: 3,
+                x1: arrowPos.x - 1,
+                x2: arrowPos.x + 1,
+                y1: arrowPos.y - 1,
+                y2: arrowPos.y + 1
+              };
+
+              return arrowBb;
+            };
+
+            makeTippy({
+              el: node,
+              ref: getRef( getArrowBb, pptNode ),
+              content: getContentDiv( h( ParticipantInfo, { interaction: docEl, participant: ppt, bus, document, eventTarget: tgt } ) ),
+              overrides: {
+                distance: 10 + 5 * zoom,
+                placement: isVertical ? (flipIntnTippy ? 'right' : 'left') : (flipIntnTippy ? 'bottom' : 'top'),
+                animation: 'shift-away',
+                duration: [250, 0]
+              },
+              sublist: '_pptTippies'
+            });
+          } ); // for each ppts
+        } // if toggle ppts
+      } else { // entity
         makeTippy({
           el: node,
           ref: getRef( () => node.renderedBoundingBox({ includeLabels: true, includeOverlays: false }), node ),
           content: getContentDiv( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ) )
         });
       }
-    }
+    } // if toggle on
   };
 
   cy.on('tap', 'node, edge', function( e ){

@@ -2,6 +2,7 @@ const http = require('express').Router();
 const Promise = require('bluebird');
 const _ = require('lodash');
 const uuid = require('uuid');
+const fetch = require('node-fetch');
 
 
 const Document = require('../../../../model/document');
@@ -9,6 +10,8 @@ const db = require('../../../db');
 const logger = require('../../../logger');
 
 const provider = require('./reach');
+
+const { BIOPAX_CONVERTER_URL } = require('../../../../config');
 
 let newDoc = ({ docDb, eleDb, id, secret }) => {
   return new Document( _.assign( {}, docDb, {
@@ -56,6 +59,22 @@ let runLayout = doc => {
 
 let getReachOutput = text => provider.getRawResponse( text );
 
+let handleResponseError = response => {
+  if (!response.ok) {
+    throw Error(response.statusText);
+  }
+  return response;
+};
+
+let getBiopaxFromTemplates = templates => {
+  return fetch( BIOPAX_CONVERTER_URL, {
+    method: 'POST',
+    body: JSON.stringify(templates),
+    headers: { 'Content-Type': 'application/json' }
+  } )
+  .then(handleResponseError);
+};
+
 // get existing doc
 http.get('/:id', function( req, res ){
   let id = req.params.id;
@@ -70,11 +89,13 @@ http.get('/:id', function( req, res ){
 
 // create new doc
 http.post('/', function( req, res ){
-  let text = req.body.text;
+  let { text, title } = req.body;
+
   let secret = uuid();
 
   ( Promise.try( loadTables )
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret }) )
+    .then( doc => doc.rename( title ).then( () => doc ) )
     .then( doc => fillDoc( doc, text ) )
     .then( runLayout )
     .then( getDocJson )
@@ -99,6 +120,17 @@ http.post('/query-reach', function( req, res ){
   getReachOutput( text )
   .then( reachRes => reachRes.json() )
   .then( reachJson => res.json(reachJson) );
+});
+
+http.get('/biopax/:id', function( req, res ){
+  let id = req.params.id;
+  Promise.try( loadTables )
+    .then( json => _.assign( {}, json, { id } ) )
+    .then( loadDoc )
+    .then( doc => doc.toBiopaxTemplates() )
+    .then( getBiopaxFromTemplates )
+    .then( result => result.text() )
+    .then( owl => res.send( owl ));
 });
 
 module.exports = http;

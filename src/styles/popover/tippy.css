@@ -1,9 +1,5 @@
 /* tippy theme overrides */
 
-/* resolves issue where an adjusting tippy can cause the page to shift */
-.tippy-popper {
-  position: fixed !important;
-}
 
 .tippy-popper .tippy-tooltip {
   padding: 0;
@@ -95,6 +91,11 @@
 }
 
 .tippy-popper {
-  z-index: 999999 !important;
+  /*
+   commented out to allow tooltips to be configured using custom zindex values
+   z-index: 999999 !important;
+
+  commented out to allow tooltips to be more easily aligned outside of full-screen views
   position: fixed !important;
+  */
 }

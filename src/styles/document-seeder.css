@@ -1,6 +1,6 @@
 .document-seeder-text {
   width: 100%;
-  height: calc(100vh - 10em);
+  height: calc(100vh - 15em);
   resize: none;
 }
 
@@ -9,9 +9,15 @@
   font-size: var(--smallFontSize);
 }
 
+.document-seeder-doc-title {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 1em;
+}
+
 .document-seeder-highlight-panel {
   width: 100%;
-  height: calc(100vh - 10em);
+  height: calc(100vh - 15em);
   vertical-align: middle;
   font: inherit;
   padding: 0 0.25em;
@@ -32,8 +38,12 @@
   background-color: rgba(255, 255, 0, 0.2);
 }
 
-.document-seeder-highlighted-interaction {
+.document-seeder-highlighted-interaction-sentence {
   text-decoration: underline;
+}
+
+.document-seeder-highlighted-interaction-trigger {
+  font-weight: bold;
 }
 
 .document-seeder-hidden {

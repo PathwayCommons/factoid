@@ -1,11 +1,22 @@
-const EventEmitterMixin = require('./event-emitter-mixin');
-const { mixin } = require('../util');
+const _ = require('lodash');
+const uuid = require('uuid');
+
+const EventEmitterMixin = require('../../../model/event-emitter-mixin');
+const { mixin } = require('../../../util');
 
 class NotificationList {
-  constructor( notifications = [] ){
+  constructor( notifications = [], opts ){
     EventEmitterMixin.call( this );
 
     this.set = new Set( notifications );
+
+    this.options = _.assign({
+      id: uuid()
+    }, opts);
+  }
+
+  id(){
+    return this.options.id;
   }
 
   add( ntfn ){

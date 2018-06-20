@@ -5,16 +5,22 @@ const EventEmitter = require('eventemitter3');
 const io = require('socket.io-client');
 const _ = require('lodash');
 const Promise = require('bluebird');
-const logger = require('../../logger');
-const makeCytoscape = require('./cy');
-const Document = require('../../../model/document');
-const debug = require('../../debug');
-const defs = require('./defs');
+
 const { getId, defer } = require('../../../util');
-const Buttons = require('./buttons');
+const Document = require('../../../model/document');
+
 const Notification = require('../notification');
 const CornerNotification = require('../notification/corner');
+
+const logger = require('../../logger');
+const debug = require('../../debug');
+
+const makeCytoscape = require('./cy');
+const defs = require('./defs');
+const { EditorButtons, AppButtons } = require('./buttons');
 const UndoRemove = require('./undo-remove');
+const Help = require('./help');
+const { TaskList } = require('./task-list');
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -99,6 +105,14 @@ class Editor extends React.Component {
 
     doc.on('load', () => {
       doc.interactions().forEach( listenForRmPpt );
+
+      let docs = JSON.parse(localStorage.getItem('my-factoids')) || [];
+      let docData = { id: doc.id(), secret: doc.secret(), name: doc.name() };
+
+      if( _.find(docs,  docData) == null ){
+        docs.push(docData);
+        localStorage.setItem('my-factoids', JSON.stringify(docs));
+      }
     });
 
     let bus = new EventEmitter();
@@ -111,6 +125,7 @@ class Editor extends React.Component {
       bus: bus,
       document: doc,
       drawMode: false,
+      taskListMode: false,
       newElementShift: 0,
       mountDeferred: defer(),
       initted: false,
@@ -208,6 +223,20 @@ class Editor extends React.Component {
     return this.data.drawMode;
   }
 
+  toggleTaskListMode( toggle ){
+    if( !this.editable() ){ return; }
+
+    let on = toggle === undefined ? !this.taskListMode() : toggle;
+
+    this.data.bus.emit( on ? 'taskliston' : 'tasklistoff' );
+
+    return new Promise( resolve => this.setData({ taskListMode: on }, resolve) );
+  }
+
+  taskListMode(){
+    return this.data.taskListMode;
+  }
+
   addElement( data = {} ){
     if( !this.editable() ){ return; }
 
@@ -238,11 +267,11 @@ class Editor extends React.Component {
 
     this.lastAddedElement = el;
 
-    return ( Promise.try( () => el.synch() )
-      .then( () => el.create() )
-      .then( () => doc.add(el) )
-      .then( () => el )
-    );
+    let synch = () => el.synch();
+    let create = () => el.create();
+    let add = () => doc.add( el );
+
+    return Promise.try( synch ).then( create ).then( add ).then( () => el );
   }
 
   getLastAddedElement(){
@@ -321,16 +350,30 @@ class Editor extends React.Component {
     }
   }
 
+  resetMenuState(){
+    this.data.bus.emit('closetip');
+    this.data.bus.emit('hidetips');
+    return Promise.all([this.toggleTaskListMode(false),  this.toggleDrawMode(false)]).delay(250);
+  }
+
   render(){
     let { document, bus, incompleteNotification } = this.data;
     let controller = this;
+    let { history } = this.props;
 
-    return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), this.state.initted ? [
-      h(Buttons, { controller, document, bus }),
+    let showTaskList = this.data.taskListMode;
+
+    let editorContent = this.state.initted ? [
+      h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
+      h(AppButtons, { className: showTaskList ? 'editor-buttons-right.editor-buttons-right-shifted' : 'editor-buttons-right', controller, document, bus, history } ),
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
-      h('div.editor-graph#editor-graph')
-    ] : []);
+      h(`div.${showTaskList ? 'editor-graph-shifted#editor-graph' : 'editor-graph#editor-graph'}`),
+      h(Help, { document, bus, controller }),
+      h(TaskList, { document, bus, controller, show: showTaskList })
+    ] : [];
+
+    return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), editorContent);
   }
 
   componentDidMount(){
@@ -348,6 +391,7 @@ class Editor extends React.Component {
 
     document.elements().forEach( el => el.removeAllListeners() );
     document.removeAllListeners();
+    bus.removeAllListeners();
   }
 }
 

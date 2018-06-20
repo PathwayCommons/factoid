@@ -1,9 +1,10 @@
 const { error } = require('../../../util');
-const { PARTICIPANT_TYPE, PARTICIPANT_TYPES } = require('../participant-type');
+const { PARTICIPANT_TYPE } = require('../participant-type');
 
 const VALUE = 'unset';
 const DISPLAY_VALUE = 'Unset';
 
+// abstract base class
 class InteractionType {
   constructor( interaction ){
     if( !interaction ){
@@ -13,8 +14,8 @@ class InteractionType {
     this.interaction = interaction;
   }
 
-  allowedParticipantTypes(){
-    return PARTICIPANT_TYPES;
+  allowedParticipantTypes(){ // i.e. settable by the user
+    return [ PARTICIPANT_TYPE.UNSIGNED, PARTICIPANT_TYPE.POSITIVE, PARTICIPANT_TYPE.NEGATIVE ];
   }
 
   has( pptType ){
@@ -31,9 +32,17 @@ class InteractionType {
     return this.has( PARTICIPANT_TYPE.NEGATIVE );
   }
 
+  isSigned(){
+    return this.isPositive() || this.isNegative();
+  }
+
+  areParticipantsTyped(){
+    return true;
+  }
+
   setParticipantAs( ppt, type ){
     let intn = this.interaction;
-    let signedPpts = intn.participantsNotOfType( PARTICIPANT_TYPE.UNSIGNED );
+    let signedPpts = intn.participantsNotOfType( PARTICIPANT_TYPE.UNSIGNED ).filter( unsignedPpt => unsignedPpt.id() !== ppt.id() );
     let makeUnsigned = ppt => intn.retypeParticipant( ppt, PARTICIPANT_TYPE.UNSIGNED );
 
     return Promise.all([
@@ -42,7 +51,7 @@ class InteractionType {
     ]);
   }
 
-  setPariticpantAsPositive( ppt ){
+  setParticipantAsPositive(ppt ){
     return this.setParticipantAs( ppt, PARTICIPANT_TYPE.POSITIVE );
   }
 
@@ -50,15 +59,85 @@ class InteractionType {
     return this.setParticipantAs( ppt, PARTICIPANT_TYPE.NEGATIVE );
   }
 
+  isPromotion(){
+    return this.isPositive();
+  }
+
+  setAsPromotionOf( ppt ){
+    return this.setParticipantAsPositive( ppt );
+  }
+
+  isActivation(){
+    return this.isPositive();
+  }
+
+  setAsActivationOf( ppt ){
+    return this.setParticipantAsPositive( ppt );
+  }
+
+  isInhibition(){
+    return this.isNegative();
+  }
+
+  setAsInhibitionOf( ppt ){
+    return this.setParticipantAsNegative( ppt );
+  }
+
   getTarget(){
     let intn = this.interaction;
+
     let ppts = intn.participantsNotOfType( PARTICIPANT_TYPE.UNSIGNED );
 
     if( ppts.length > 1 ){ // can't have more than one target
-      throw error(`More than two participants of interaction ${intn.id()} are signed: ` + intn.participants().map( ppt => ppt.id() ).join(', '));
+      throw error(`Can not get target, as more than two participants of interaction ${intn.id()} are signed: ` + intn.participants().map( ppt => ppt.id() ).join(', '));
     }
 
     return ppts[0];
+  }
+
+  setTarget( ppt ){
+    if( this.isNegative() ){
+      return this.setParticipantAsNegative( ppt );
+    } else if( this.isPositive() ){
+      return this.setParticipantAsPositive( ppt );
+    } else {
+      return this.setParticipantAsPositive( PARTICIPANT_TYPE.UNSIGNED_TARGET );
+    }
+  }
+
+  getSource(){
+    let intn = this.interaction;
+    let ppts = intn.participantsOfType( PARTICIPANT_TYPE.UNSIGNED );
+
+    if( ppts.length > 1 ){ // can't have more than one source
+      throw error(`Can not get source, as more than two participants of interaction ${intn.id()} are unsigned: ` + intn.participants().map( ppt => ppt.id() ).join(', '));
+    }
+
+    return ppts[0];
+  }
+
+  toBiopaxTemplate() {
+    throw `Abstract method toBiopaxTemplate() is not overridden for interaction type of ${this.value}`;
+  }
+
+  toString(expr = 'interacts with'){
+    let intn = this.interaction;
+    let src, tgt;
+
+    try {
+      src = this.getSource();
+      tgt = this.getTarget();
+    } catch( err ){
+      let ppts = intn.participants();
+
+      src = ppts[0];
+      tgt = ppts[1];
+    }
+
+    let srcName = src.name() || '(?)';
+    let tgtName = tgt.name() || '(?)';
+
+    return `${srcName} ${expr} ${tgtName}`;
   }
 
   static isAllowedForInteraction( intn ){ // eslint-disable-line no-unused-vars

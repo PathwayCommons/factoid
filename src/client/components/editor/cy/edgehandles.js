@@ -66,29 +66,26 @@ module.exports = function({ bus, cy, document, controller }){
     let intnNode = createdIntnNode ? addedNodes : isInteractionNode( source ) ? source : target;
     let idIsNotIntn = el => el.id() !== intnNode.id();
     let pptNodes = source.add( target ).filter( idIsNotIntn );
+    let ppts = pptNodes.map( n => document.get( n.id() ) );
 
-    let getIntn = () => {
+    let handleIntn = () => {
       if( createdIntnNode ){
         return controller.addInteraction({
-          position: _.clone( intnNode.position() )
+          position: _.clone( intnNode.position() ),
+          entries: ppts.map( ppt => ({ id: ppt.id() }) )
         });
       } else {
-        return document.get( intnNode.id() );
+        let intn = document.get( intnNode.id() );
+        let add = ppt => intn.add( ppt );
+
+        return Promise.all( ppts.map( add ) );
       }
     };
-
-    let addPpts = intn => Promise.all( pptNodes.map( n => intn.add( document.get( n.id() ) ) ) ).then( () => intn );
 
     let rmPreviewEles = () => {
       // remove the edgehandles eles and let the doc listeners create
       // cy elements with full data
       addedEles.remove();
-    };
-
-    let replaceEdges = () => {
-      let intn;
-
-      return getIntn().then( i => intn = i ).then( () => rmPreviewEles() ).then( () => intn );
     };
 
     let openPopover = intn => bus.emit('opentip', intn);
@@ -97,7 +94,12 @@ module.exports = function({ bus, cy, document, controller }){
 
     lastEdgeCreationTime = Date.now();
 
-    Promise.try( replaceEdges ).then( addPpts ).then( openPopover ).then( disableDrawMode );
+    return (
+      Promise.try( handleIntn )
+      .then( rmPreviewEles )
+      .then( openPopover )
+      .then( disableDrawMode )
+    );
   };
 
   let handlePosition = node => {

@@ -1,13 +1,23 @@
-const React = require('react');
+const DataComponent = require('../data-component');
 const h = require('react-hyperscript');
 const ReactDom = require('react-dom');
-const { isInteractionNode } = require('../../../util');
+const { isInteractionNode, initCache, SingleValueCache, error } = require('../../../util');
 const _ = require('lodash');
 const defs = require('../../defs');
 const { animateDomForEdit } = require('../animate');
 const uuid = require('uuid');
+const Progression = require('./progression');
+const ProgressionStepper = require('./progression-stepper');
+const EventEmitter = require('eventemitter3');
+const Notification = require('../notification/notification');
+const InlineNotification = require('../notification/inline');
+const Tooltip = require('../popover/tooltip');
 
-class InteractionInfo extends React.Component {
+let stageCache = new WeakMap();
+let assocNotificationCache = new SingleValueCache();
+let pptTypeNotificationCache = new SingleValueCache();
+
+class InteractionInfo extends DataComponent {
   constructor( props ){
     super( props );
 
@@ -22,42 +32,162 @@ class InteractionInfo extends React.Component {
     let pptNode = evtTgt.connectedNodes().filter( el => !isInteractionNode(el) );
     let ppt = doc.get( pptNode.id() );
 
-    this.state = {
-      description: props.element.description(),
+    let progression = new Progression({
+      STAGES: ['ASSOCIATE', 'PARTICIPANT_TYPES', 'COMPLETED'],
+      getStage: () => this.getStage(),
+      canGoToStage: stage => this.canGoToStage(stage),
+      goToStage: stage => this.goToStage(stage)
+    });
+
+    let { STAGES, ORDERED_STAGES } = progression;
+
+    let stage = initCache( stageCache, el, el.completed() ? STAGES.COMPLETED : ORDERED_STAGES[0] );
+
+    let assocNotification = initCache( assocNotificationCache, el, new Notification({ active: true }) );
+    let pptTypeNotification = initCache( pptTypeNotificationCache, el, new Notification({ active: true }) );
+
+    this.data = {
+      el,
+      stage,
+      description: p.element.description(),
       ppt: ppt,
-      pptType: el.participantType( ppt ),
-      assoc: el.association()
+      progression,
+      bus: p.bus || new EventEmitter(),
+      assocNotification,
+      pptTypeNotification
     };
+  }
+
+  getStage(){
+    return this.data.stage;
+  }
+
+  canGoToStage( stage ){
+    let { el, progression } = this.data;
+    let { STAGES } = progression;
+
+    switch( stage ){
+      case STAGES.ASSOCIATE:
+        return true;
+      case STAGES.PARTICIPANT_TYPES:
+        return el.associated();
+      case STAGES.COMPLETED:
+        return el.associated() && el.association().areParticipantsTyped();
+      default:
+        return false;
+    }
+  }
+
+  goToStage( stage ){
+    let { el, progression, bus, assocNotification, pptTypeNotification, stage: currentStage } = this.data;
+    let { STAGES } = progression;
+    let getPptName = ppt => ppt.completed() ? ppt.name() : '(?)';
+
+    if( this.canGoToStage(stage) ){
+      this.setData({ stage, stageError: null });
+
+      stageCache.set( el, stage );
+
+      switch( stage ){
+        case STAGES.ASSOCIATE:
+          bus.emit('closepptstip', el);
+          assocNotification.message('Select the type of interaction between ' + el.participants().map(getPptName).join(' and ') + '.');
+          break;
+
+        case STAGES.PARTICIPANT_TYPES:
+          bus.emit('openpptstip', el);
+          pptTypeNotification.message(`Activation or inhibition?`);
+          break;
+
+        case STAGES.COMPLETED:
+          bus.emit('closepptstip', el);
+          this.complete();
+          break;
+
+        default:
+          throw error(`No such stage: ${stage}`);
+      }
+    } else {
+      let stageError;
+
+      switch( currentStage ){
+        case STAGES.ASSOCIATE:
+          stageError = `Select a type before proceeding.`;
+          break;
+        default:
+          stageError = 'This step should be completed before proceeding.';
+      }
+
+      this.setData({ stageError });
+    }
+  }
+
+  animateEditByKey( domEl, key ){
+    let ans = this._animations = this._animations || {};
+
+    if( ans[key] ){
+      ans[key].pause();
+    }
+
+    ans[key] = animateDomForEdit( domEl );
   }
 
   componentDidMount(){
-    let el = this.props.element;
     let root = ReactDom.findDOMNode( this );
     let comment = root.querySelector('.interaction-info-description');
+    let { progression, bus, el } = this.data;
+    let { STAGES } = progression;
+    let stage = progression.getStage();
+
+    progression.goToStage( stage );
 
     this.onRemoteRedescribe = () => {
-      this.setState({ description: el.description() });
+      this.setData({ description: this.data.el.description() });
 
-      if( this.remRedescrAni ){
-        this.remRedescrAni.pause();
-      }
-
-      this.remRedescrAni = animateDomForEdit( comment );
+      this.animateEditByKey( comment, 'descr' );
     };
 
     this.onAssociate = () => {
-      this.setState({ assoc: el.association() });
+      this.dirty();
     };
 
+    this.onRemoteAssociate = () => {
+      this.dirty( () => {
+        let input = root.querySelector(`.interaction-info-assoc-radioset`);
+
+        this.animateEditByKey( input, 'assoc' );
+      } );
+    };
+
+    let goPastPptTypeStage = () => {
+      if( progression.getStage() === STAGES.PARTICIPANT_TYPES ){
+        progression.forward();
+      }
+    };
+
+    this.onRetypePpt = () => {
+      goPastPptTypeStage();
+    };
+
+    this.onRetypePptSkip = () => {
+      goPastPptTypeStage();
+    };
+
+    el.on('remoteassociate', this.onRemoteAssociate);
     el.on('remoteredescribe', this.onRemoteRedescribe);
     el.on('associate', this.onAssociate);
+    bus.on('retypeppt', this.onRetypePpt);
+    bus.on('retypepptskip', this.onRetypePptSkip);
   }
 
   componentWillUnmount(){
-    let el = this.props.element;
+    let { element: el, bus } = this.props;
 
+    el.removeListener('remoteassociate', this.onRemoteAssociate);
     el.removeListener('remoteredescribe', this.onRemoteRedescribe);
     el.removeListener('associate', this.onAssociate);
+    bus.removeListener('retypeppt', this.onRetypePpt);
+    bus.removeListener('retypepptskip', this.onRetypePptSkip);
   }
 
   redescribe( descr ){
@@ -68,7 +198,7 @@ class InteractionInfo extends React.Component {
 
     p.bus.emit('redescribedebounce', el, descr);
 
-    this.setState({ description: descr });
+    this.setData({ description: descr });
   }
 
   associate( assoc ){
@@ -78,33 +208,72 @@ class InteractionInfo extends React.Component {
     el.associate( assoc );
   }
 
+  complete(){
+    let p = this.props;
+    let el = p.element;
+
+    el.complete();
+  }
+
   render(){
     let children = [];
     let p = this.props;
     let el = p.element;
-    let s = this.state;
+    let s = this.data;
     let doc = p.document;
-    let descrDom, assocDom;
+    let { progression } = s;
+    let { STAGES, ORDERED_STAGES } = progression;
+    let stage = progression.getStage();
 
-    if( doc.editable() ){
-      descrDom = h('textarea.interaction-info-description', {
-        placeholder: 'Interaction description',
-        value: s.description,
-        onChange: event => this.redescribe( event.target.value )
-      });
+    let makeNotification = notification => {
+      return( h(InlineNotification, {
+        notification,
+        key: notification.id(),
+        className: 'interaction-info-notification'
+      }) );
+    };
 
+    if( !doc.editable() ){
+      children.push( h('div.interaction-info-no-assoc', [
+        h('div.element-info-message.element-info-no-data', [
+          h('i.material-icons', 'info'),
+          h('span', ' This interaction has no data associated with it.')
+        ])
+      ]) );
+    } else if( stage === STAGES.ASSOCIATE ){
       let radioName = 'interaction-info-assoc-radioset-' + el.id();
       let radiosetChildren = [];
+      let anyPptIsUnassoc = el.participants().some( ppt => !ppt.associated() );
 
       el.ASSOCIATIONS.forEach( assoc => {
+        // skip types that don't apply to the participant set
+        // but don't block options if the ent's are unassociated/untyped
+        if( !anyPptIsUnassoc && !assoc.isAllowedForInteraction(el) ){
+          return;
+        }
+
+        // skip modification base type for now and just allow users to set
+        // modification subtypes
+        if( assoc.value === el.ASSOCIATION.MODIFICATION.value ){
+          return;
+        }
+
         let radioId = 'interaction-info-assoc-radioset-item-' + uuid();
+        let checked = el.associated() && el.association().value === assoc.value;
 
         radiosetChildren.push( h('input.interaction-info-type-radio', {
           type: 'radio',
-          onChange: () => this.associate( assoc ),
+          onChange: () => {
+            this.associate( assoc );
+            progression.forward();
+          },
+          onClick: () => { // skip to next stage when clicking existing assoc
+            if( checked ){ progression.forward(); }
+          },
           id: radioId,
           name: radioName,
-          checked: this.state.assoc.value === assoc.value
+          value: assoc.value,
+          checked
         }) );
 
         radiosetChildren.push( h('label.interaction-info-assoc-radio-label', {
@@ -112,21 +281,36 @@ class InteractionInfo extends React.Component {
         }, assoc.displayValue) );
       } );
 
-      assocDom = h('div.interaction-info-assoc-radioset', radiosetChildren);
-    } else {
-      descrDom = h('div.interaction-info-description', s.description || 'This interaction has no description.');
+      children.push( makeNotification(s.assocNotification) );
+
+      children.push( h('label.interaction-info-assoc-radioset-label', 'Interaction type') );
+
+      children.push( h('div.interaction-info-assoc-radioset', radiosetChildren) );
+    } else if( stage === STAGES.PARTICIPANT_TYPES ){
+      children.push( makeNotification(s.pptTypeNotification) );
+    } else if( stage === STAGES.COMPLETED ){
+      let showEditIcon = doc.editable();
+      let summaryChildren = [];
+
+      summaryChildren.push( h('span.interaction-info-summary-text', el.association().toString()) );
+
+      if( showEditIcon ){
+        summaryChildren.push( h(Tooltip, { description: 'Edit from the beginning' }, [
+          h('button.interaction-info-edit.plain-button', {
+            onClick: () => progression.goToStage( ORDERED_STAGES[0] )
+          }, [ h('i.material-icons', 'edit') ])
+        ]) );
+      }
+
+      children.push( h('div.interaction-info-summary', summaryChildren) );
     }
 
-    children.push( h('div.interaction-info-details', [
-      h('label.interaction-info-assoc-label', 'Type'),
-      assocDom,
-
-      h('label.interaction-info-description-label', 'Description'),
-      descrDom
-    ] ) );
+    if( doc.editable() ){
+      children.push( h(ProgressionStepper, { progression }) );
+    }
 
     return h('div.interaction-info', children);
   }
 }
 
-module.exports = InteractionInfo;
+module.exports = props => h(InteractionInfo, Object.assign({ key: props.element.id() }, props));

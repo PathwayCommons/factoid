@@ -8,17 +8,27 @@ const { makeClassList } = require('../../../util');
 class NotificationBase extends DirtyComponent {
   constructor( props ){
     super( props );
+  }
 
-    let { notification: ntfn } = props;
+  componentDidMount(){
+    let { notification: ntfn } = this.props;
 
-    ntfn.on('change', () => this.dirty());
+    this.onChange = () => this.dirty();
+
+    ntfn.on('change', this.onChange);
+  }
+
+  componentWillUnmount(){
+    let { notification: ntfn } = this.props;
+
+    ntfn.removeListener('change', this.onChange);
   }
 
   render(){
     let p = this.props;
     let n = p.notification;
 
-    return super.render( h('div.notification', {
+    return ( h('div.notification', {
       className: makeClassList({
         'notification-active': n.active(),
         'notification-inactive': !n.active(),
@@ -35,13 +45,13 @@ class NotificationBase extends DirtyComponent {
         h('div.notification-message', n.message())
       ].filter( v => v != null )),
       h('div.notification-actions', [
-        h('button.notification-action.notification-dismiss', { onClick: () => n.dismiss() }, [
+        n.options.dismissable ? h('button.notification-action.notification-dismiss', { onClick: () => n.dismiss() }, [
           'Dismiss'
-        ]),
+        ]) : null,
         h('button.notification-action.notification-open', { onClick: () => n.open() }, n.openText())
       ])
     ]) );
   }
 }
 
-module.exports = NotificationBase;
+module.exports = props => h(NotificationBase, Object.assign({ key: props.notification.id() }, props));

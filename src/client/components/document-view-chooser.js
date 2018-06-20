@@ -3,57 +3,38 @@ const h = require('react-hyperscript');
 const DocumentWizardStepper = require('./document-wizard-stepper');
 
 class DocumentViewChooser extends React.Component {
-  constructor( props ){
-    super( props );
-
-    this.state = {};
-  }
-
   goToSeeder(){
     let { history } = this.props;
 
     history.go(-1);
   }
 
-  goToEditor(){
+  goToEditor(editor){
     let { id, secret } = this.props;
-    let { editor } = this.state;
 
     window.open(`/${editor}/${id}/${secret}`);
   }
 
   render(){
-    let onClick = e => this.setState({ editor: e.target.value });
 
     let rootChildren = [
-      h('h1', 'Choose editor'),
-      h('label.document-view-chooser-label', 'Editor'),
+      h('h1.view-chooser-title', 'Choose editor'),
+      h('p', 'Your text has been converted into digital networks that now can be explored, modified and expanded through different editors.'),
       h('div.document-view-chooser-radios', [
-        h('div.document-view-chooser-choice', [
-          h('input', {
-            id: 'document-view-chooser-network',
-            type: 'radio',
-            name: 'editor',
-            value: 'document',
-            defaultChecked: true,
-            onClick: e => onClick(e)
-          }),
-          h('label', { htmlFor: 'document-view-chooser-network' }, 'Network')
+        h('div.document-view-chooser-choice', { onClick: () => this.goToEditor('document') }, [
+          h('div.network-choice'),
+          h('h2', { htmlFor: 'document-view-chooser-network' }, 'Network Editor'),
+          h('p', 'View and edit your document graphically using an intuitive network editor designed for ease of use.')
         ]),
-        h('div.document-view-chooser-choice', [
-          h('input', {
-            id: 'document-view-chooser-form',
-            type: 'radio',
-            name: 'editor',
-            value: 'form',
-            onClick: e => onClick(e)
-          }),
-          h('label', { htmlFor: 'document-view-chooser-form' }, 'Form')
+        h('div.document-view-chooser-choice', { onClick: () => this.goToEditor('form') }, [
+          h('div.form-choice'),
+          h('h2', { htmlFor: 'document-view-chooser-form' }, 'Form Editor'),
+          h('p', 'Add new types of interactions to your document with form template text entries.')
         ])
       ]),
       h(DocumentWizardStepper, {
-        back: () => this.goToSeeder(),
-        forward: () => this.goToEditor()
+        forwardEnabled: false,
+        back: () => this.goToSeeder()
       })
     ];
 

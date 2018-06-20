@@ -1,3 +1,7 @@
+.form-editor {
+  /* overflow: hidden; */
+}
+
 .form-editor-title {
   text-align: center;
   color: #212F3D;
@@ -5,16 +9,24 @@
   margin-bottom: 1em;
 }
 
+.form-template-entry {
+}
+
 .form-interaction {
-  padding-bottom: 10px;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  margin-left: -0.5em;
+}
+
+.form-interaction-entry {
+   display: flex;
+   flex-direction: row;
+   margin: 0.5em 0
 }
 
 .form-action-buttons {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
 }
 
 .form-interaction-adder {
@@ -29,7 +41,6 @@
 }
 
 .delete-interaction {
-  border: none;
   color: #ED4A31;
 }
 
@@ -46,6 +57,65 @@
 
 }
 
+.form-options {
+  margin: 0 0.5em;
+  width: 10em;
+}
+
 .add-new-interaction-icon {
   font-size: 1.5em;
+}
+
+.entity-form {
+  margin: 0 0.5em;
+}
+
+.entity-form-input {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  width: 8em;
+  height: 1.5em;
+  cursor: pointer;
+}
+
+.entity-form-info {
+  opacity: 0;
+  pointer-events: none;
+  margin-top: 0.5em;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  min-width: 400px;
+  transform: translate(-50%, 0);
+  margin-top: 1em;
+  background: white;
+  box-shadow: 0 4px 20px 4px rgba(0, 20, 60, 0.2), 0 4px 80px -8px rgba(0, 20, 60, 0.3);
+  border-radius: 0.25em;
+}
+
+.entity-form-info-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0 ,0, 0.5);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.entity-form-overlay-show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.entity-form-info-show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.form-molecular-intn-line {
+  display: flex;
+  flex-direction: row;
 }

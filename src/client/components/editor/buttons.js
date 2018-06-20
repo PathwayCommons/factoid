@@ -1,57 +1,200 @@
+const React = require('react');
 const h = require('react-hyperscript');
+const _ = require('lodash');
+const { tippyTopZIndex } = require('../../defs');
 const Tooltip = require('../popover/tooltip');
 const Toggle = require('../toggle');
 const Popover = require('../popover/popover');
 const Linkout = require('../document-linkout');
+const { exportDocumentToOwl } = require('../../util');
 
-module.exports = function({ controller, document, bus }){
-  let grs = [];
+const { TaskListButton } = require('./task-list');
 
-  if( document.editable() ){
+
+class EditorButtons extends React.Component {
+  render(){
+    let { bus, className, document, controller } = this.props;
+    let grs = [];
+
+    let baseTooltipProps = {
+      show: showNow => {
+        bus.on('showtips', showNow);
+      },
+      hide: hideNow => {
+        bus.on('hidetips', hideNow);
+      },
+      tippy: {
+        zIndex: tippyTopZIndex,
+        hideOnClick: false,
+        events: 'mouseenter manual'
+      }
+    };
+
+    if( document.editable() ){
+      grs.push([
+        h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Add an entity', shortcut: 'e' }), [
+          h('button.editor-button.plain-button', { onClick: () => controller.addElement().then( el => bus.emit('opentip', el) )  }, [
+            h('i.material-icons', 'add_circle')
+          ])
+        ]),
+
+        h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Draw an interaction', shortcut: 'd' }), [
+          h(Toggle, { className: 'editor-button plain-button', onToggle: () => controller.toggleDrawMode(), getState: () => controller.drawMode()  }, [
+            h('i.material-icons', 'arrow_forward')
+          ])
+        ]),
+
+        h(Tooltip, _.assign({}, baseTooltipProps, {  description: 'Delete selected', shortcut: 'del' }), [
+          h('button.editor-button.plain-button', { onClick: () => controller.removeSelected()  }, [
+            h('i.material-icons', 'clear')
+          ])
+        ])
+
+      ]);
+    }
+
     grs.push([
-      h(Tooltip, { description: 'Add entity', shortcut: 'e' }, [
-        h('button.editor-button.plain-button', { onClick: () => controller.addElement().then( el => bus.emit('opentip', el) ) }, [
-          h('i.material-icons', 'add_circle')
+      h(Tooltip, _.assign({}, baseTooltipProps, {  description: 'Fit to screen', shortcut: 'f' }), [
+        h('button.editor-button.plain-button', { onClick: () => controller.fit()  }, [
+          h('i.material-icons', 'zoom_out_map')
         ])
       ]),
+    ]);
 
-      h(Tooltip, { description: 'Draw an interaction', shortcut: 'd' }, [
-        h(Toggle, { className: 'editor-button plain-button', onToggle: () => controller.toggleDrawMode(), getState: () => controller.drawMode() }, [
-          h('i.material-icons', 'arrow_forward')
-        ])
-      ]),
+    return h(`div.${className}`, grs.map( btns => h('div.editor-button-group', btns) ));
+  }
+}
 
-      h(Tooltip, { description: 'Delete selected', shortcut: 'del' }, [
-        h('button.editor-button.plain-button', { onClick: () => controller.removeSelected() }, [
-          h('i.material-icons', 'clear')
+class AppButtons extends React.Component {
+  render(){
+    let { bus, className, document, controller, history } = this.props;
+    let grs = [];
+
+    let baseTooltipProps = {
+      show: showNow => {
+        bus.on('showtips', showNow);
+      },
+      hide: hideNow => {
+        bus.on('hidetips', hideNow);
+      },
+      tippy: {
+        zIndex: tippyTopZIndex,
+        hideOnClick: false,
+        events: 'mouseenter manual'
+      }
+    };
+
+    grs.push([
+      h(Tooltip, { description: 'Factoid home' }, [
+        h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
+          h('i.app-icon')
         ])
       ])
-
     ]);
+
+    let appButtons = [
+      h(Tooltip, { description: 'Help' }, [
+        h('button.editor-button.plain-button', { onClick: () => bus.emit('togglehelp') }, [
+          h('i.material-icons', 'info')
+        ])
+      ])
+    ];
+
+    if( document.editable() ){
+      appButtons.push([
+        h(Tooltip, _.assign({}, baseTooltipProps,  { description: 'Tasks' }), [
+          h(Toggle, {
+            className: 'editor-button plain-button task-list-button',
+            controller,
+            document,
+            bus,
+            onToggle: () => controller.toggleTaskListMode(),
+            getState: () => controller.taskListMode()
+          }, [
+            h(TaskListButton, { controller, document, bus })
+          ])
+        ])
+      ]);
+    }
+
+    grs.push(appButtons);
+    appButtons.push([
+      h(Popover, {
+        tippy: {
+          position: 'right',
+          html: h('div.editor-linkout', [
+            h(Linkout, { document })
+          ])
+        }
+      }, [
+        h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Share link' }), [
+          h('button.editor-button.plain-button', [
+            h('i.material-icons', 'link')
+          ])
+        ])
+      ]),
+
+      h(Tooltip, _.assign( {}, baseTooltipProps, { description: 'Export to Biopax' }), [
+        h('button.editor-button.plain-button', { onClick: () => exportDocumentToOwl(document.id()) }, [
+          h('i.material-icons', 'save_alt')
+        ])
+      ]),
+    ]);
+
+    if( document.editable() ){
+      appButtons.push([
+        h(Popover, {
+          tippy: {
+            position: 'right',
+            html: h('div.editor-more-menu', [
+              h('div.editor-more-menu-items', [
+                h('button.editor-more-button.plain-button', {
+                  onClick: () => history.push('/new')
+                }, [
+                  h('span', ' New factoid')
+                ]),
+                h('button.editor-more-button.plain-button', {
+                  onClick: () => history.push('/documents')
+                }, [
+                  h('span', ' My factoids')
+                ]),
+                h('button.editor-more-button.plain-button', {
+                  onClick: () => {
+                    let id = document.id();
+                    let secret = document.secret();
+
+                    if( document.editable() ){
+                      history.push(`/form/${id}/${secret}`);
+                    } else {
+                      history.push(`/form/${id}`);
+                    }
+                  }
+                }, [
+                  h('span', ' Form-based editor')
+                ]),
+                h('button.editor-more-button.plain-button', {
+                  onClick: () => history.push('/')
+                }, [
+                  h('span', ' About & contact')
+                ])
+              ])
+            ])
+          }
+        }, [
+          h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Menu' }), [
+            h('button.editor-button.plain-button', [
+              h('i.material-icons', 'more_vert')
+            ])
+          ])
+        ])
+      ]);
+    }
+
+
+    return h(`div.${className}`, grs.map( btns => h('div.editor-button-group', btns) ));
+
   }
 
-  grs.push([
-    h(Tooltip, { description: 'Fit to screen', shortcut: 'f' }, [
-      h('button.editor-button.plain-button', { onClick: () => controller.fit() }, [
-        h('i.material-icons', 'zoom_out_map')
-      ])
-    ]),
+}
 
-    h(Popover, {
-      tippy: {
-        position: 'right',
-        html: h('div.editor-linkout', [
-          h(Linkout, { document })
-        ])
-      }
-    }, [
-      h(Tooltip, { description: 'Share link' }, [
-        h('button.editor-button.plain-button', [
-          h('i.material-icons', 'link')
-        ])
-      ])
-    ])
-  ]);
-
-  return h('div.editor-buttons', grs.map( btns => h('div.editor-button-group', btns) ));
-};
+module.exports = { AppButtons, EditorButtons };

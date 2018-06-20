@@ -1,80 +1,26 @@
-const { Component } = require('react');
+const DataComponent = require('../data-component');
 const h = require('react-hyperscript');
 const io = require('socket.io-client');
 const _ = require('lodash');
-
+const EventEmitter = require('eventemitter3');
+const Promise = require('bluebird');
 
 const logger = require('../../logger');
 const debug = require('../../debug');
 
 const Document = require('../../../model/document');
+const { exportDocumentToOwl } = require('../../util');
 
-const DocumentWizardStepper = require('../document-wizard-stepper');
+const Popover = require('../popover/popover');
 
+const ProteinModificationForm = require('./protein-modification-form');
+const ExpressionRegulationForm = require('./expression-regulation-form');
+const MolecularInteractionForm = require('./molecular-interaction-form');
+const ActivationInhibitionForm = require('./activation-inhibition-form');
 
-class EntityForm extends Component {
-  constructor(props){
-    super(props);
-    this.state = this.data = {
-      entity: props.entity
-    };
-  }
+let Interaction = require('../../../model/element/interaction');
 
-  updateEntityName( newName ){
-    this.state.entity.name( newName );
-    this.forceUpdate();
-  }
-  render(){
-    return h('input[type="text"].form-entity', {
-      value: this.state.entity.name(),
-      placeholder: 'Enter entity name',
-      onChange: e => this.updateEntityName(e.target.value)
-    });
-  }
-}
-
-class InteractionForm extends Component {
-  constructor(props){
-    super(props);
-    this.state = this.data = {
-      interaction: props.interaction
-    };
-  }
-
-  updateInteractionType(nextType){
-    const intn = this.state.interaction;
-    intn.description(nextType);
-    this.forceUpdate();
-  }
-
-  deleteInteraction() {
-    // TODO implement this
-  }
-
-  render(){
-    const intn = this.state.interaction;
-    const lEnt = intn.elements()[0];
-    const rEnt = intn.elements()[1];
-
-    return h('div.form-interaction', [
-      h(EntityForm, { entity: lEnt }),
-      h('span', [
-        h('select', { value: intn.description(), onChange: e => this.updateInteractionType(e.target.value) }, [
-          h('option', { value: 'interacts with' }, 'interacts with'),
-          h('option', { value: 'phosphorylates' }, 'phosphorylates'),
-          h('option', { value: 'enzyme reaction' }, 'enzyme reaction'),
-          h('option', { value: 'other' }, 'other')
-        ])
-      ]),
-      h(EntityForm, { entity: rEnt } ),
-      h('button.delete-interaction', { onClick: () => this.deleteInteraction() }, 'X')
-    ]);
-  }
-}
-
-
-// TODO actually build a working UI that's hooked into the model
-class FormEditor extends Component {
+class FormEditor extends DataComponent {
   constructor(props){
     super(props);
 
@@ -89,14 +35,22 @@ class FormEditor extends Component {
     let id = _.get( props, 'id' );
     let secret = _.get( props, 'secret' );
 
+
     let doc = new Document({
       socket: docSocket,
       factoryOptions: { socket: eleSocket },
       data: { id, secret }
     });
 
-    this.data = this.state = {
-      document: doc
+    let bus = new EventEmitter();
+
+    this.data = {
+      document: doc,
+      bus: bus,
+    };
+
+    let dirty = () => {
+      this.dirty();
     };
 
     Promise.try( () => doc.load() )
@@ -106,8 +60,8 @@ class FormEditor extends Component {
         logger.warn( err );
 
         return ( doc.create()
-          .then( () => logger.info('The doc was created') )
-          .catch( err => logger.error('The doc could not be created', err) )
+            .then( () => logger.info('The doc was created') )
+            .catch( err => logger.error('The doc could not be created', err) )
         );
       } )
       .then( () => doc.synch(true) )
@@ -119,87 +73,248 @@ class FormEditor extends Component {
           window.editor = this;
         }
 
-        // force an update here
+        doc.on('add', dirty);
+        doc.on('remove', dirty);
 
-        this.forceUpdate();
+        let dirtyElEvts = ['add', 'remove', 'rename', 'retype', 'associate', 'unassociate', 'complete'];
+
+        let listenToDirtyEvents = el => dirtyElEvts.forEach( evt => el.on(evt, dirty) );
+        let unlistenToDirtyEvents = el => dirtyElEvts.forEach( evt => el.removeListener(evt, dirty) );
+
+        doc.on('add', listenToDirtyEvents);
+        doc.on('remove', unlistenToDirtyEvents);
+
+        doc.elements().forEach( listenToDirtyEvents );
+
+        dirty();
+
         logger.info('The editor is initialising');
       } );
 
   }
 
-  setData( obj, callback ){
-    _.assign( this.data, obj );
+  componentWillUnmount(){
+    let { document, bus } = this.data;
 
-    this.setState( obj, callback );
+    document.elements().forEach( el => el.removeAllListeners() );
+    document.removeAllListeners();
+    bus.removeAllListeners();
   }
 
-  addElement( data = {} ){
+  dirty(){
+    super.dirty();
+
+    this.data.bus.emit('dirty');
+  }
+
+  addElement( data){
 
     let doc = this.data.document;
 
     let el = doc.factory().make({
       data: _.assign( {
         type: 'entity',
-        name: '',
+        name: ''
+
       }, data )
     });
 
     return ( Promise.try( () => el.synch() )
-      .then( () => el.create() )
-      .then( () => doc.add(el) )
-      .then( () => el )
+        .then( () => el.create() )
+        .then( () => doc.add(el) )
+        .then( () => el )
     );
   }
 
-  addInteraction( data = {} ){
+  addInteraction( data ){
+    let doc = this.data.document;
 
-    return this.addElement( _.assign({
-      type: 'interaction',
-      name: ''
-    }, data) );
-  }
-
-  addInteractionRow(){
-
-    let lEnt = this.addElement();
-    let rEnt = this.addElement();
-    let intn = this.addInteraction();
-
-    Promise.all([lEnt, rEnt, intn]).then(responses => {
-      let i = responses[2];
-
-      i.addParticipant(responses[0]);
-      i.addParticipant(responses[1]);
-
-      this.forceUpdate();
+    let el = doc.factory().make({
+      data: _.assign( {
+        type: 'interaction'
+      }, data, {
+        association: data.association != null ? ( _.isString(data.association) ? data.association : data.association.value ) : 'interaction'
+      } )
     });
 
+    return ( Promise.try( () => el.synch() )
+        .then( () => el.create() )
+        .then( () => doc.add(el) )
+        .then( () => el )
+
+    );
+
+  }
+
+
+  addInteractionRow(data){
+    let createEnts = () => Promise.all( data.pptTypes.map( () => this.addElement() ) );
+
+    let createIntn = () => this.addInteraction(data);
+
+    let handlePpt = (intn, ppt, type) => intn.addParticipant(ppt, { group: type });
+
+    let handlePpts = (intn, ppts) => Promise.all( ppts.map( (ppt, i) => {
+      let type = data.pptTypes[i].value;
+
+      return handlePpt(intn, ppt, type);
+    } ) );
+
+    return (
+      Promise.try( createEnts )
+      .then( ppts => {
+        return createIntn().then( intn => ({ intn, ppts }) );
+      } )
+      .then( ({ intn, ppts }) => {
+        return handlePpts(intn, ppts).then( () => intn );
+      } )
+      .then( intn => intn.complete() )
+      .then( () => this.dirty() )
+    );
+  }
+
+  deleteInteractionRow(intn){
+    let doc = this.data.document;
+    let otherIntns = doc.interactions().filter(intn2 => intn2 !== intn);
+    let ppts = intn.participants();
+    let danglingPpts = ppts.filter(ppt => !otherIntns.some(intn => intn.has(ppt)));
+
+    let rm = el => doc.remove(el);
+    let rmIntn = () => rm(intn);
+    let rmDanglingPpts = () => Promise.all(danglingPpts.map(rm));
+    let rmAll = () => Promise.all([ rmIntn(), rmDanglingPpts() ]);
+
+    let dirty = () => this.dirty();
+
+    return Promise.try(rmAll).then(dirty);
   }
 
   render(){
-    const doc = this.state.document;
-    const interactions = doc.interactions();
+    let doc = this.data.document;
+    let { history } = this.props;
 
-    const interactionForms = interactions.map(interaction => {
-      return h(InteractionForm, { interaction });
+    const formTypes = [
+      {type: 'Protein Modification' , clazz: ProteinModificationForm, pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  description:"One protein chemically modifies another protein.", association: [Interaction.ASSOCIATION.PHOSPHORYLATION, Interaction.ASSOCIATION.UBIQUINATION, Interaction.ASSOCIATION.METHYLATION] },
+      {type:'Molecular Interaction', clazz: MolecularInteractionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.UNSIGNED], description: "Two or more proteins physically interact.", association: [Interaction.ASSOCIATION.INTERACTION]},
+      {type:'Activation Inhibition', clazz:ActivationInhibitionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes the activity status of another protein.", association: [Interaction.ASSOCIATION.MODIFICATION]},
+      {type:'Expression Regulation', clazz: ExpressionRegulationForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes mRNA expression of a gene.", association: [Interaction.ASSOCIATION.EXPRESSION]}
+    ];
+
+    let hArr = [];
+
+
+    formTypes.forEach((formType) => {
+
+      let formContent = doc.interactions().map(interaction => {
+        if(!interaction.completed()){
+          return null;
+        }
+
+        let intnAssocVal = interaction.association().value;
+
+        let atLeastOneAssocTypeMatches = false;
+
+        formType.association.forEach(assoc => {
+          if( assoc.value === intnAssocVal ){
+            atLeastOneAssocTypeMatches = true;
+          }
+        });
+
+        if(atLeastOneAssocTypeMatches) {
+          return h('div.form-interaction-entry',
+            [
+              h(formType.clazz, {
+                key: interaction.id(),
+                document: doc,
+                interaction: interaction,
+                description: formType.type,
+                bus: this.data.bus,
+              }),
+              h('button.delete-interaction.plain-button', {
+                onClick: () => {
+                  this.deleteInteractionRow(interaction);
+                }
+              }, [
+                h('i.material-icons', 'delete')
+              ])
+            ]);
+        } else {
+          return null;
+        }
+      });
+
+
+      //update form
+      let hFunc = h('div.form-template-entry', [
+        h('h2', formType.type),
+        h('p', formType.description),
+        ...formContent,
+        h('div.form-action-buttons', [
+          h('button.form-interaction-adder', {
+            onClick: () => this.addInteractionRow({name:formType.type, pptTypes: formType.pptTypes,  association: formType.association[0]})}, [
+            h('i.material-icons.add-new-interaction-icon', 'add'),
+            'ADD INTERACTION'
+          ])])
+      ]);
+
+      hArr.push(hFunc);
     });
 
-    return h('div.document-form.page-content', [
-      h('h1.form-editor-title', 'Insert Pathway Information As Text'),
-      ...interactionForms,
-      h('div.form-action-buttons', [
-        h('button.form-interaction-adder', { onClick: () => this.addInteractionRow() }, [
-          h('i.material-icons.add-new-interaction-icon', 'add'),
-          'ADD INTERACTION'
+    return h('div.form-editor', [
+      h('div.page-content', [
+        h('div.app-bar', [
+          h('h2', 'Factoid - Form Editor'),
+          h(Popover, {
+            tippy: {
+              position: 'right',
+              followCursor: false,
+              html: h('div.editor-more-menu', [
+                h('div.editor-more-menu-items', [
+                  h('button.editor-more-button.plain-button', {
+                    onClick: () => history.push('/new')
+                  }, [
+                    h('span', ' New factoid')
+                  ]),
+                  h('button.editor-more-button.plain-button', {
+                    onClick: () => history.push('/documents')
+                  }, [
+                    h('span', ' My factoids')
+                  ]),
+                  h('button.editor-more-button.plain-button', {
+                    onClick: () => {
+                      if( doc.editable() ){
+                        history.push(`/document/${doc.id()}/${doc.secret()}`);
+                      } else {
+                        history.push(`/document/${doc.id()}`);
+                      }
+                    }
+                  }, [
+                    h('span', ' Network editor')
+                  ]),
+                  h('button.editor-more-button.plain-button', {
+                    onClick: () => history.push('/')
+                  }, [
+                    h('span', ' About & contact')
+                  ])
+                ])
+              ])
+            }
+            }, [
+            // h(Tooltip, { description: 'More tools' }, [
+              h('button.editor-button.plain-button', [
+                h('i.material-icons', 'more_vert')
+              ])
+            // ])
+          ])
         ]),
-        h('button.form-submit', { onClick: () => this.addInteractionRow() }, [
-          'SUBMIT'
+        h('div.form-templates', [
+          ...hArr
+        ]),
+        h('button.form-submit', { onClick: () => exportDocumentToOwl(doc.id()) }, [
+          'Download BioPax'
         ])
       ]),
-      h(DocumentWizardStepper, {
-        backEnabled: false,
-        // TODO
-      })
+
     ]);
   }
 }

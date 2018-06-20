@@ -1,12 +1,14 @@
 const EventEmitterMixin = require('../../../model/event-emitter-mixin');
 const { mixin, error } = require('../../../util');
+const uuid = require('uuid');
 
 const defaults = {
   title: '',
   message: '',
   openText: 'Open',
   active: false,
-  openable: false
+  openable: false,
+  dismissable: true
 };
 
 const setOrGet = ( ntfn, name, value, eventName = name ) => {
@@ -26,7 +28,13 @@ class Notification {
   constructor( options ){
     EventEmitterMixin.call( this );
 
-    this.options = Object.assign( {}, defaults, options );
+    this.options = Object.assign( {
+      id: uuid()
+    }, defaults, options );
+  }
+
+  id(){
+    return this.options.id;
   }
 
   title( newTitle ){

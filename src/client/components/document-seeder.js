@@ -1,14 +1,14 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const Promise = require('bluebird');
-const ReactDom = require('react-dom');
 const DocumentWizardStepper = require('./document-wizard-stepper');
 const _ = require('lodash');
 const IntervalHighlighter = require('./interval-highlighter');
 const { makeClassList } = require('../../util');
 
 const ENTITY_HIGHLIGHT_CLASS = 'document-seeder-highlighted-entity';
-const INTERACTION_HIGHLIGHT_CLASS = 'document-seeder-highlighted-interaction';
+const INTN_SENTENCE_HIGHLIGHT_CLASS = 'document-seeder-highlighted-interaction-sentence';
+const INTN_TRIGGER_HIGHLIGHT_CLASS = 'document-seeder-highlighted-interaction-trigger';
 
 class DocumentSeeder extends React.Component {
   constructor( props ){
@@ -18,12 +18,18 @@ class DocumentSeeder extends React.Component {
       submitting: false,
       reachHighlightIntervals: [],
       reachHighlightInput: '',
-      reachHighlightEnabled: false
+      reachHighlightEnabled: false,
+      docTitle: '',
+      docText: ''
     };
   }
 
   getDocumentSeederTextVal(){
-    return ReactDom.findDOMNode(this).querySelector('.document-seeder-text').value;
+    return this.state.docText;
+  }
+
+  getDocumentTitleTextVal(){
+    return this.state.docTitle;
   }
 
   getReachResponse(){
@@ -73,96 +79,135 @@ class DocumentSeeder extends React.Component {
       };
     };
 
+    // extract interval of the trigger word from the event frame where "trigger" field exists
+    let frameToTriggerInterval = frame => {
+      let frameText = _.get(frame, 'text');
+      let frameStart = _.get(frame, ['start-pos', 'offset']);
+      let triggerWord = _.get(frame, 'trigger');
+
+      if (triggerWord === undefined) {
+        throw 'Frame should have a trigger field!';
+      }
+
+      let relativeTriggerIndex = frameText.indexOf(triggerWord);
+      let triggerStart = frameStart + relativeTriggerIndex;
+      let triggerEnd = triggerStart + triggerWord.length;
+
+      return {
+        start: triggerStart,
+        end: triggerEnd
+      };
+    };
+
+    // attaches the given class to each of given intervals
+    let attachHighlightClass = (intervals, className) => {
+      intervals.forEach(interval => {
+        _.set(interval, 'class', className);
+      });
+    };
+
     let isEvtSentenceFrame = frame => evtSentencesSet.has( _.get( frame, 'frame-id' ) );
 
+    let evtFrames = _.get( reachResponse, ['events', 'frames'], [] );
+
     let entityIntervals = _.get( reachResponse, ['entities', 'frames'], []).map( frameToInterval );
-    let evtSentencesSet = new Set( _.get( reachResponse, ['events', 'frames'], []).map( frame => frame.sentence ) );
+    let evtSentencesSet = new Set( evtFrames.map( frame => frame.sentence ) );
 
-    let interactionIntervals = _.get( reachResponse, ['sentences', 'frames'], []).filter( isEvtSentenceFrame ).map( frameToInterval );
+    let sentenceIntervals = _.get( reachResponse, ['sentences', 'frames'], []).filter( isEvtSentenceFrame ).map( frameToInterval );
+    let triggerIntervals = evtFrames.filter( frame => frame.trigger !== undefined ).map( frameToTriggerInterval );
 
-    return this.mergeIntervals(entityIntervals, interactionIntervals);
+    attachHighlightClass(entityIntervals, ENTITY_HIGHLIGHT_CLASS);
+    attachHighlightClass(triggerIntervals, INTN_TRIGGER_HIGHLIGHT_CLASS);
+    attachHighlightClass(sentenceIntervals, INTN_SENTENCE_HIGHLIGHT_CLASS);
+
+    // combine entityIntervals and triggerIntervals as basicIntervals
+    let basicIntervals = [...entityIntervals, ...triggerIntervals];
+
+    return this.mergeIntervals(basicIntervals, sentenceIntervals);
   }
 
-  // merges entity intervals and interaction intervals, resulting array
-  // contains objects that has an extra 'classes' field
-  mergeIntervals(entityIntervals, interactionIntervals){
+  // Merges basic intervals and complex intervals, resulting array
+  // contains objects that has 'start', 'end' and 'classes' fields.
+  // Complex intervals may cover basic intervals but the other way around is
+  // not valid.
+  mergeIntervals(basicIntervals, complexIntervals){
 
     let cmp = (int1, int2) => {
       return int1.start - int2.start;
     };
 
     // sort intervals by start index
-    entityIntervals = entityIntervals.sort(cmp);
-    interactionIntervals = interactionIntervals.sort(cmp);
+    basicIntervals = basicIntervals.sort(cmp);
+    complexIntervals = complexIntervals.sort(cmp);
 
-    let entityIndex = 0;
-    let interactionIndex = 0;
+    let basicIndex = 0;
+    let complexIndex = 0;
     let retVal = [];
 
-    while ( entityIndex < entityIntervals.length && interactionIndex < interactionIntervals.length ) {
-      let entityInt = entityIntervals[entityIndex];
-      let interactionInt = interactionIntervals[interactionIndex];
+    while ( basicIndex < basicIntervals.length && complexIndex < complexIntervals.length ) {
+      let basicInt = basicIntervals[basicIndex];
+      let complexInt = complexIntervals[complexIndex];
 
-      // push an interaction object for the part of interaction that intersects no entity
-      if ( entityInt.start > interactionInt.start ) {
-        let interactionObj = {
-          start: interactionInt.start,
-          end: Math.min(entityInt.start, interactionInt.end),
-          classes: [ INTERACTION_HIGHLIGHT_CLASS ]
+      // push a complex object for the part of complex interval that intersects no basic interval
+      if ( basicInt.start > complexInt.start ) {
+        let complexObj = {
+          start: complexInt.start,
+          end: Math.min(basicInt.start, complexInt.end),
+          classes: [ complexInt.class ]
         };
 
-        retVal.push(interactionObj);
+        retVal.push(complexObj);
 
-        // update the beginining of interaction interval since we just covered some
-        interactionInt.start = interactionObj.end;
+        // update the beginining of complex interval since we just covered some
+        complexInt.start = complexObj.end;
 
-        // if the whole interaction is covered pass to the next one
-        // this would happen if interaction sentence does not include any entity
-        if ( interactionInt.end === interactionObj.end ) {
-          interactionIndex++;
+        // if the whole complex interval is covered pass to the next one
+        // this would happen if complex interval does not include any basic interval
+        if ( complexInt.end === complexObj.end ) {
+          complexIndex++;
           continue;
         }
       }
 
-      let entityObj = {
-        start: entityInt.start,
-        end: entityInt.end,
-        classes: [ ENTITY_HIGHLIGHT_CLASS ]
+      let basicObj = {
+        start: basicInt.start,
+        end: basicInt.end,
+        classes: [ basicInt.class ]
       };
 
-      // if entity is covered by interaction it makes an intersection
-      // so it should have the interaction class as well
-      if ( entityInt.start >= interactionInt.start && entityInt.end <= interactionInt.end ) {
-        entityObj.classes.push( INTERACTION_HIGHLIGHT_CLASS );
-        interactionInt.start = entityInt.end;
+      // if basic interval is covered by complex interval it makes an intersection
+      // so it should have the complex class as well
+      if ( basicInt.start >= complexInt.start && basicInt.end <= complexInt.end ) {
+        basicObj.classes.push( complexInt.class );
+        complexInt.start = basicInt.end;
 
         // we are done with this intersection pass to the next one
-        if ( interactionInt.start >= interactionInt.end ) {
-          interactionIndex++;
+        if ( complexInt.start >= complexInt.end ) {
+          complexIndex++;
         }
       }
 
-      retVal.push(entityObj);
+      retVal.push(basicObj);
 
-      // pass to next entity
-      entityIndex++;
+      // pass to next basic interval
+      basicIndex++;
     }
 
-    let iterateRemaningIntervals = ( index, intervals, higlightClass ) => {
+    let iterateRemaningIntervals = ( index, intervals ) => {
       while ( index < intervals.length ) {
         let interval = intervals[index];
         retVal.push({
           start: interval.start,
           end: interval.end,
-          classes: [ higlightClass ]
+          classes: [ interval.class ]
         });
         index++;
       }
     };
 
     // iterate through the remaining intervals
-    iterateRemaningIntervals( entityIndex, entityIntervals, ENTITY_HIGHLIGHT_CLASS );
-    iterateRemaningIntervals( interactionIndex, interactionIntervals, INTERACTION_HIGHLIGHT_CLASS );
+    iterateRemaningIntervals( basicIndex, basicIntervals );
+    iterateRemaningIntervals( complexIndex, complexIntervals );
 
     return retVal;
   }
@@ -190,13 +235,14 @@ class DocumentSeeder extends React.Component {
 
   createDoc(){
     let text = this.getDocumentSeederTextVal();
+    let title = this.getDocumentTitleTextVal();
 
     let makeRequest = () => fetch('/api/document', {
       headers: {
         'Content-Type': 'application/json'
       },
       method: 'POST',
-      body: JSON.stringify({ text })
+      body: JSON.stringify({ text, title })
     });
 
     let toJson = res => res.json();
@@ -221,12 +267,19 @@ class DocumentSeeder extends React.Component {
 
   render(){
     let rootChildren = [
-      h('h1', 'Enter paper text'),
+      h('h1', 'Enter Paper Details'),
+      h('label.document-seeder-text-label', 'Paper title'),
+      h('input.document-seeder-doc-title', {
+        type: 'text',
+        placeholder: 'Untitled document',
+        onChange: e => this.setState({docTitle: e.target.value})
+      }),
       h('label.document-seeder-text-label', 'Paper text'),
       h('textarea.document-seeder-text', {
         className: makeClassList({
           'document-seeder-hidden': this.state.reachHighlightEnabled
-        })
+        }),
+        onChange: e => this.setState({docText: e.target.value})
       }),
       h('div.document-seeder-highlight-panel', {
         className: makeClassList({

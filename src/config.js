@@ -33,7 +33,9 @@ let defaults = {
   PUBCHEM_LINK_BASE_URL: 'https://pubchem.ncbi.nlm.nih.gov/compound/',
   PUBCHEM_CACHE_SIZE: DEFAULT_CACHE_SIZE,
   AGGREGATE_CACHE_SIZE: DEFAULT_CACHE_SIZE,
-  MAX_SEARCH_SIZE: 50
+  MAX_SEARCH_SIZE: 50,
+  BIOPAX_CONVERTER_URL: 'http://causalpath.org:9090/FactoidToBiopaxServer/ConvertToOwl',
+  PC_LINK_BASE_URL: 'http://apps.pathwaycommons.org/search?q='
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );

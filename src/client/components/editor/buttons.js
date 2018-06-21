@@ -85,14 +85,6 @@ class AppButtons extends React.Component {
       }
     };
 
-    grs.push([
-      h(Tooltip, { description: 'Factoid home' }, [
-        h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
-          h('i.app-icon')
-        ])
-      ])
-    ]);
-
     let appButtons = [
       h(Tooltip, { description: 'Help' }, [
         h('button.editor-button.plain-button', { onClick: () => bus.emit('togglehelp') }, [

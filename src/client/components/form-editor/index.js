@@ -9,7 +9,10 @@ const logger = require('../../logger');
 const debug = require('../../debug');
 
 const Document = require('../../../model/document');
+const { makeClassList } = require('../../../util');
 const { exportDocumentToOwl } = require('../../util');
+const Tooltip = require('../popover/tooltip');
+const Toggle = require('../toggle');
 
 const Popover = require('../popover/popover');
 
@@ -47,6 +50,7 @@ class FormEditor extends DataComponent {
     this.data = {
       document: doc,
       bus: bus,
+      showIntnAdder: false,
     };
 
     let dirty = () => {
@@ -189,6 +193,51 @@ class FormEditor extends DataComponent {
     return Promise.try(rmAll).then(dirty);
   }
 
+  formTypeToButton( formType ) {
+    let rowParam = {
+      name: formType.type,
+      pptTypes: formType.pptTypes,
+      association: formType.association[0]
+    };
+
+    let doc = this.data.document;
+    let addInteractionRow = () => this.addInteractionRow( rowParam );
+    let applyLayout = () => doc.applyLayout();
+
+    let button = h('button.form-interaction-adder-btn', {
+      onClick: () => {
+        Promise.try( addInteractionRow ).then( applyLayout );
+      }
+    }, formType.type);
+
+    return button;
+  }
+
+  makeTooltip( children, description ) {
+    let opts = {
+      description: description,
+      tippy: {
+        placement: 'bottom'
+      }
+    };
+
+    let tooltip = h( Tooltip, opts, children );
+    return tooltip;
+  }
+
+  formTypeToTooltipBtn( formType ) {
+    let btn = this.formTypeToButton( formType );
+    let tooltipBtn = this.makeTooltip( [ btn ], formType.description );
+
+    return tooltipBtn;
+  }
+
+  toggleIntnAdderVisibility() {
+    this.setData( {
+      showIntnAdder: !this.data.showIntnAdder
+    } );
+  }
+
   render(){
     let doc = this.data.document;
     let { history } = this.props;
@@ -243,22 +292,27 @@ class FormEditor extends DataComponent {
         }
       });
 
+      let notNull = obj => {
+        return obj != null;
+      };
+
+      formContent = formContent.filter( notNull );
+
+      if ( formContent.length == 0 ) {
+        return;
+      }
 
       //update form
       let hFunc = h('div.form-template-entry', [
         h('h2', formType.type),
         h('p', formType.description),
-        ...formContent,
-        h('div.form-action-buttons', [
-          h('button.form-interaction-adder', {
-            onClick: () => this.addInteractionRow({name:formType.type, pptTypes: formType.pptTypes,  association: formType.association[0]})}, [
-            h('i.material-icons.add-new-interaction-icon', 'add'),
-            'ADD INTERACTION'
-          ])])
+        ...formContent
       ]);
 
       hArr.push(hFunc);
     });
+
+    let interactionAdderButtons = formTypes.map( formType => this.formTypeToTooltipBtn( formType ) );
 
     return h('div.form-editor', [
       h('div.page-content', [
@@ -309,6 +363,23 @@ class FormEditor extends DataComponent {
         ]),
         h('div.form-templates', [
           ...hArr
+        ]),
+        h('div.form-interaction-adder-area', [
+          h(Toggle, {
+            className: 'form-interaction-adder-toggle',
+            onToggle: () => this.toggleIntnAdderVisibility(),
+            getState: () => this.data.showIntnAdder
+          }, [
+            h('i.material-icons.add-new-interaction-icon', 'add'),
+            'ADD INTERACTION'
+          ]),
+          h('div.form-interaction-adder-slide', {
+            className: makeClassList({
+              'form-hidden': !this.data.showIntnAdder
+            })
+          }, [
+            ...interactionAdderButtons
+          ])
         ]),
         h('button.form-submit', { onClick: () => exportDocumentToOwl(doc.id()) }, [
           'Download BioPax'

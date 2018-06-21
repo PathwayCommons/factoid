@@ -231,8 +231,13 @@ class FormEditor extends DataComponent {
 
     return h('div.form-editor', [
       h('div.page-content', [
-        h('div.app-bar', [
-          h('h2', 'Factoid - Form Editor'),
+        h('div.form-app-bar', [
+          h('div.form-branding', [
+            h('button.form-home-button', { onClick: () => history.push('/') }, [
+              h('i.app-icon')
+            ]),
+            h('h2.form-editor-title', doc.name() === '' ? 'Untitled Document' : doc.name())
+          ]),
           h(Popover, {
             tippy: {
               position: 'right',
@@ -269,11 +274,9 @@ class FormEditor extends DataComponent {
               ])
             }
             }, [
-            // h(Tooltip, { description: 'More tools' }, [
-              h('button.editor-button.plain-button', [
-                h('i.material-icons', 'more_vert')
-              ])
-            // ])
+            h('button.editor-button.plain-button', [
+              h('i.material-icons', 'more_vert')
+            ])
           ])
         ]),
         h('div.form-templates', (

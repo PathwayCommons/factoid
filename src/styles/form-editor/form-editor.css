@@ -53,7 +53,7 @@
 }
 
 .delete-interaction {
-  color: #ED4A31;
+
 }
 
 
@@ -95,6 +95,7 @@
   pointer-events: none;
   margin-top: 0.5em;
   position: fixed;
+  z-index: 10;
   top: 0;
   left: 50%;
   min-width: 400px;
@@ -107,6 +108,7 @@
 
 .entity-form-info-overlay {
   position: fixed;
+  z-index: 9;
   left: 0;
   top: 0;
   right: 0;
@@ -125,6 +127,14 @@
 .entity-form-info-show {
   opacity: 1;
   pointer-events: auto;
+}
+
+.entity-form-completed-icon {
+  color: var(--completeColor);
+  position: absolute;
+  margin-left: -1.25em;
+  margin-top: 0.4em;
+  pointer-events: none;
 }
 
 .form-molecular-intn-line {

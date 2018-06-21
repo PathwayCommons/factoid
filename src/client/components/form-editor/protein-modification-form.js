@@ -33,11 +33,16 @@ class ProteinModificationForm extends InteractionForm {
     let modVal = this.getModificationType();
 
 
-    if(!rEnt || !lEnt || !modVal ||!actVal)
+    if(!rEnt || !lEnt || !modVal || !actVal){
       return null;
+    }
 
     return h('div.form-interaction', [
-      h(EntityForm, { entity: lEnt ,   placeholder:'Controller protein', tooltipContent:'Name or ID', document: this.data.document, bus: this.data.bus}),
+      h(EntityForm, {
+        entity: lEnt,
+        tooltipContent:'Name or ID',
+        document: this.data.document
+      }),
       h('select.form-options', {id:('activation-'+ intn.id()), value: actVal,
         onChange: e => {
 
@@ -57,7 +62,11 @@ class ProteinModificationForm extends InteractionForm {
         h('option', { value: Interaction.ASSOCIATION.UBIQUINATION.value }, 'ubiquination')
       ]),
       h('span', 'of'),
-      h(EntityForm, { entity: rEnt, placeholder:'Controlled protein' , tooltipContent:'Name or ID', document: this.data.document, bus: this.data.bus})
+      h(EntityForm, {
+        entity: rEnt,
+        tooltipContent:'Name or ID',
+        document: this.data.document
+      })
     ]);
   }
 }

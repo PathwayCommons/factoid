@@ -29,19 +29,31 @@
   flex-direction: row;
 }
 
-.form-interaction-adder {
+.form-interaction-adder-toggle {
   color: #00ADB5;
   background-color: #EEEEEE;
   height: 2.5em;
-  margin-top: 1.5em;
-  margin-bottom: 4em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
   padding: 0 20px;
   display: flex;
   flex-direction: row;
 }
 
+.form-interaction-adder-area {
+  margin-top: 4em;
+}
+
+.form-interaction-adder-area button {
+  margin-left: 0.3em;
+}
+
+.form-hidden {
+  display: none;
+}
+
 .delete-interaction {
-  color: #ED4A31;
+
 }
 
 
@@ -83,6 +95,7 @@
   pointer-events: none;
   margin-top: 0.5em;
   position: fixed;
+  z-index: 10;
   top: 0;
   left: 50%;
   min-width: 400px;
@@ -95,6 +108,7 @@
 
 .entity-form-info-overlay {
   position: fixed;
+  z-index: 9;
   left: 0;
   top: 0;
   right: 0;
@@ -113,6 +127,14 @@
 .entity-form-info-show {
   opacity: 1;
   pointer-events: auto;
+}
+
+.entity-form-completed-icon {
+  color: var(--completeColor);
+  position: absolute;
+  margin-left: -1.25em;
+  margin-top: 0.4em;
+  pointer-events: none;
 }
 
 .form-molecular-intn-line {

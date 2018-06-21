@@ -2,6 +2,8 @@ const DirtyComponent = require('../dirty-component');
 const _ = require('lodash');
 const Promise = require('bluebird');
 
+const dirtyEvents = ['remoteassociate', 'remoteretype'];
+
 class InteractionForm extends DirtyComponent {
   constructor(props){
     super(props);
@@ -14,19 +16,19 @@ class InteractionForm extends DirtyComponent {
       bus: props.bus
     };
 
-    this.onDirty = () => {
-      this.dirty();
-    };
-
-    this.data.bus.on('dirty', this.onDirty);
+    this.dirtyHandler = () => this.dirty();
   }
 
   componentDidMount(){
-    // this.data.bus.on('dirty', this.onDirty);
+    let intn = this.data.interaction;
+
+    dirtyEvents.forEach(e => intn.on(e, this.dirtyHandler));
   }
 
   componentWillUnmount(){
-    this.data.bus.removeListener('dirty', this.onDirty);
+    let intn = this.data.interaction;
+
+    dirtyEvents.forEach(e => intn.removeListener(e, this.dirtyHandler));
   }
 
   getInputParticipant(){

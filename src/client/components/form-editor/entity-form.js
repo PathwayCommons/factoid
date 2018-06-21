@@ -5,13 +5,25 @@ const ElementInfo = require('../element-info/element-info');
 
 const { makeClassList } = require('../../../util');
 
+const dirtyEvents = ['rename', 'complete'];
 
 class EntityForm extends DataComponent {
   constructor(props){
     super(props);
+
     this.data = _.assign( {
       show: false
     }, props );
+
+    this.dirtyHandler = () => this.dirty();
+  }
+
+  componentDidMount(){
+    dirtyEvents.forEach(e => this.data.entity.on(e, this.dirtyHandler));
+  }
+
+  componentWillUnmount(){
+    dirtyEvents.forEach(e => this.data.entity.removeListener(e, this.dirtyHandler));
   }
 
   toggleInfo(){
@@ -28,13 +40,14 @@ class EntityForm extends DataComponent {
         readOnly: true,
         onClick: () => this.toggleInfo()
       }),
+      entity.completed() ? h('i.material-icons.entity-form-completed-icon', 'check_circle') : null,
       h('div.entity-form-info-overlay', {
         className: makeClassList({ 'entity-form-overlay-show': show }),
         onClick: () => this.toggleInfo()
       }),
-      h('div.entity-form-info', { className: makeClassList({ 'entity-form-info-show': show })}, [
+      show ? h('div.entity-form-info', { className: makeClassList({ 'entity-form-info-show': show })}, [
         h(ElementInfo, { element: entity, document })
-      ])
+      ]) : null
     ]);
   }
 }

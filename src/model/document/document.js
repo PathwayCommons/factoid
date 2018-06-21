@@ -289,13 +289,22 @@ class Document {
   }
 
   // applies layout positions after the layout is done running, mostly useful for serverside
-  applyLayout(){
+  applyLayout( options = {} ){
+    let { elesToLock } = options;
+
     let cy = new Cytoscape({
       headless: true,
       elements: makeCyEles( this.elements() ),
-      layout: { name: 'grid' },
+      layout: { name: 'preset' },
       styleEnabled: true
     });
+
+    let getIdSelector = el => '#' + el.id();
+    let lockSelector = elesToLock ? elesToLock.map( getIdSelector ).join( ',' ) : null;
+
+    if ( lockSelector ) {
+      cy.elements().filter( lockSelector ).lock();
+    }
 
     let runLayout = () => {
       let layout = cy.layout( _.assign( {}, getCyLayoutOpts(), {

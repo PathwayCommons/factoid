@@ -1,4 +1,4 @@
-const React = require('react');
+const DataComponent = require('../data-component');
 const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
 const EventEmitter = require('eventemitter3');
@@ -25,7 +25,7 @@ const { TaskList } = require('./task-list');
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
 
-class Editor extends React.Component {
+class Editor extends DataComponent {
   constructor( props ){
     super( props );
 
@@ -136,8 +136,6 @@ class Editor extends React.Component {
       }
     });
 
-    this.state = _.assign( {}, this.data );
-
     logger.info('Checking if doc with id %s already exists', doc.id());
 
     Promise.try( () => doc.load() )
@@ -197,12 +195,6 @@ class Editor extends React.Component {
       } )
       .catch( (err) => logger.error('An error occurred livening the doc', err) )
     ;
-  }
-
-  setData( obj, callback ){
-    _.assign( this.data, obj );
-
-    this.setState( obj, callback );
   }
 
   editable(){

@@ -2,11 +2,32 @@
   /* overflow: hidden; */
 }
 
+.form-app-bar {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.25em;
+
+}
+
 .form-editor-title {
-  text-align: center;
-  color: #212F3D;
-  font-size: 2.5em;
   margin-bottom: 1em;
+  overflow: hidden;
+}
+
+.form-branding {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.form-home-button {
+  font-size: 1.33em;
+  padding-left: 0;
+  margin: 0;
+  border: 0;
 }
 
 .form-template-entry {

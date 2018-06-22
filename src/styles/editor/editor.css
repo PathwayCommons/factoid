@@ -67,6 +67,33 @@
   font-size: 1.25em;
 }
 
+.editor-app-icon {
+  width: 1em;
+  height: 1em;
+  background-image: url('../image/logo.svg');
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  display: inline-block;  
+}
+
+.editor-branding {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.5);
+  z-index: 1;
+  left: 45px;
+  right: 0;
+  top: 3px;
+  font-size: 1.25em;
+  overflow: hidden;
+  max-height: 10vh;
+  width: 50vw;
+
+}
+
+.editor-title {
+  margin: 0;
+}
+
 .editor-graph {
   z-index: 0;
   position: absolute;

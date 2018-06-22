@@ -12,10 +12,12 @@ const debug = require('../../debug');
 const Document = require('../../../model/document');
 const { makeClassList } = require('../../../util');
 const { exportDocumentToOwl } = require('../../util');
+
+const AppNav = require('../app-nav');
 const Tooltip = require('../popover/tooltip');
 const Toggle = require('../toggle');
-
 const Popover = require('../popover/popover');
+
 
 const ProteinModificationForm = require('./protein-modification-form');
 const ExpressionRegulationForm = require('./expression-regulation-form');
@@ -231,49 +233,23 @@ class FormEditor extends DataComponent {
 
     return h('div.form-editor', [
       h('div.page-content', [
-        h('div.app-bar', [
-          h('h2', 'Factoid - Form Editor'),
+        h('div.form-app-bar', [
+          h('div.form-branding', [
+            h('button.form-home-button', { onClick: () => history.push('/') }, [
+              h('i.app-icon')
+            ]),
+            h('h2.form-editor-title', doc.name() === '' ? 'Untitled Document' : doc.name())
+          ]),
           h(Popover, {
-            tippy: {
-              position: 'right',
-              followCursor: false,
-              html: h('div.editor-more-menu', [
-                h('div.editor-more-menu-items', [
-                  h('button.editor-more-button.plain-button', {
-                    onClick: () => history.push('/new')
-                  }, [
-                    h('span', ' New factoid')
-                  ]),
-                  h('button.editor-more-button.plain-button', {
-                    onClick: () => history.push('/documents')
-                  }, [
-                    h('span', ' My factoids')
-                  ]),
-                  h('button.editor-more-button.plain-button', {
-                    onClick: () => {
-                      if( doc.editable() ){
-                        history.push(`/document/${doc.id()}/${doc.secret()}`);
-                      } else {
-                        history.push(`/document/${doc.id()}`);
-                      }
-                    }
-                  }, [
-                    h('span', ' Network editor')
-                  ]),
-                  h('button.editor-more-button.plain-button', {
-                    onClick: () => history.push('/')
-                  }, [
-                    h('span', ' About & contact')
-                  ])
-                ])
-              ])
-            }
+              tippy: {
+                position: 'right',
+                followCursor: false,
+                html: h(AppNav, { document: doc, history, networkEditor: false })
+              }
             }, [
-            // h(Tooltip, { description: 'More tools' }, [
-              h('button.editor-button.plain-button', [
-                h('i.material-icons', 'more_vert')
-              ])
-            // ])
+            h('button.editor-button.plain-button', [
+              h('i.material-icons', 'more_vert')
+            ])
           ])
         ]),
         h('div.form-templates', (

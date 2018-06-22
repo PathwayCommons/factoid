@@ -364,6 +364,9 @@ class Editor extends React.Component {
     let showTaskList = this.data.taskListMode;
 
     let editorContent = this.state.initted ? [
+      h('div.editor-branding', [
+        h('h5.editor-title', document.name() === '' ? 'Untitled Document' : document.name())
+      ]),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
       h(AppButtons, { className: showTaskList ? 'editor-buttons-right.editor-buttons-right-shifted' : 'editor-buttons-right', controller, document, bus, history } ),
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),

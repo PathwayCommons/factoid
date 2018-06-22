@@ -4,6 +4,7 @@ const _ = require('lodash');
 const { tippyTopZIndex } = require('../../defs');
 const Tooltip = require('../popover/tooltip');
 const Toggle = require('../toggle');
+const AppNav = require('../app-nav');
 const Popover = require('../popover/popover');
 const Linkout = require('../document-linkout');
 const { exportDocumentToOwl } = require('../../util');
@@ -29,6 +30,12 @@ class EditorButtons extends React.Component {
         events: 'mouseenter manual'
       }
     };
+
+    grs.push([
+      h('button.editor-home-button.plain-button', { onClick: () => history.push('/') }, [
+        h('i.editor-app-icon')
+      ])
+    ]);
 
     if( document.editable() ){
       grs.push([
@@ -84,14 +91,6 @@ class AppButtons extends React.Component {
       }
     };
 
-    grs.push([
-      h(Tooltip, { description: 'Factoid home' }, [
-        h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
-          h('i.app-icon')
-        ])
-      ])
-    ]);
-
     let appButtons = [
       h(Tooltip, { description: 'Help' }, [
         h('button.editor-button.plain-button', { onClick: () => bus.emit('togglehelp') }, [
@@ -133,7 +132,6 @@ class AppButtons extends React.Component {
           ])
         ])
       ]),
-
       h(Tooltip, _.assign( {}, baseTooltipProps, { description: 'Export to Biopax' }), [
         h('button.editor-button.plain-button', { onClick: () => exportDocumentToOwl(document.id()) }, [
           h('i.material-icons', 'save_alt')
@@ -146,39 +144,7 @@ class AppButtons extends React.Component {
         h(Popover, {
           tippy: {
             position: 'right',
-            html: h('div.editor-more-menu', [
-              h('div.editor-more-menu-items', [
-                h('button.editor-more-button.plain-button', {
-                  onClick: () => history.push('/new')
-                }, [
-                  h('span', ' New factoid')
-                ]),
-                h('button.editor-more-button.plain-button', {
-                  onClick: () => history.push('/documents')
-                }, [
-                  h('span', ' My factoids')
-                ]),
-                h('button.editor-more-button.plain-button', {
-                  onClick: () => {
-                    let id = document.id();
-                    let secret = document.secret();
-
-                    if( document.editable() ){
-                      history.push(`/form/${id}/${secret}`);
-                    } else {
-                      history.push(`/form/${id}`);
-                    }
-                  }
-                }, [
-                  h('span', ' Form-based editor')
-                ]),
-                h('button.editor-more-button.plain-button', {
-                  onClick: () => history.push('/')
-                }, [
-                  h('span', ' About & contact')
-                ])
-              ])
-            ])
+            html: h(AppNav, { document, history, networkEditor: true })
           }
         }, [
           h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Menu' }), [

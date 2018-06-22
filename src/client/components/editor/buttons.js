@@ -14,7 +14,7 @@ const { TaskListButton } = require('./task-list');
 
 class EditorButtons extends React.Component {
   render(){
-    let { bus, className, document, controller } = this.props;
+    let { bus, className, document, controller, history } = this.props;
     let grs = [];
 
     let baseTooltipProps = {
@@ -32,8 +32,10 @@ class EditorButtons extends React.Component {
     };
 
     grs.push([
-      h('button.editor-home-button.plain-button', { onClick: () => history.push('/') }, [
-        h('i.editor-app-icon')
+      h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Factoid home' }), [
+        h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
+          h('i.app-icon')
+        ])
       ])
     ]);
 

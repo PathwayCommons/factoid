@@ -232,7 +232,7 @@ class FormEditor extends DataComponent {
             h('button.form-home-button', { onClick: () => history.push('/') }, [
               h('i.app-icon')
             ]),
-            h('h2.form-editor-title', doc.name() === '' ? 'Untitled Document' : doc.name())
+            h('h2.form-editor-title', doc.name() === '' ? 'Untitled document' : doc.name())
           ]),
           h(Popover, {
               tippy: {

@@ -132,7 +132,8 @@ class AppButtons extends React.Component {
           ])
         ])
       ]),
-      h(Tooltip, _.assign( {}, baseTooltipProps, { description: 'Export to Biopax' }), [
+
+      h(Tooltip, _.assign( {}, baseTooltipProps, { description: 'Save as BioPAX' }), [
         h('button.editor-button.plain-button', { onClick: () => exportDocumentToOwl(document.id()) }, [
           h('i.material-icons', 'save_alt')
         ])

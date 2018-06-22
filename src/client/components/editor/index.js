@@ -6,7 +6,7 @@ const io = require('socket.io-client');
 const _ = require('lodash');
 const Promise = require('bluebird');
 
-const { getId, defer } = require('../../../util');
+const { getId, defer, makeClassList } = require('../../../util');
 const Document = require('../../../model/document');
 
 const Notification = require('../notification');
@@ -363,7 +363,7 @@ class Editor extends React.Component {
 
     let showTaskList = this.data.taskListMode;
 
-    let editorContent = this.state.initted ? [
+    let editorContent = this.data.initted ? [
       h('div.editor-branding', [
         h('div.editor-title', document.name() === '' ? 'Untitled document' : document.name())
       ]),
@@ -376,7 +376,12 @@ class Editor extends React.Component {
       h(TaskList, { document, bus, controller, show: showTaskList })
     ] : [];
 
-    return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), editorContent);
+    return h('div.editor', {
+      className: makeClassList({
+        'editor-initted': this.data.initted,
+        'editor-task-list-active': this.taskListMode()
+      })
+    }, editorContent);
   }
 
   componentDidMount(){

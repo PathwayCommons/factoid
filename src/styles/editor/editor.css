@@ -82,6 +82,13 @@
   max-width: calc(100% - 8em);
 }
 
+.editor-task-list-active {
+  & .editor-branding {
+    left: calc(50% - 11em);
+    max-width: calc(100% - 32em);
+  }
+}
+
 .editor-title {
   margin: 0.25em 0;
 }

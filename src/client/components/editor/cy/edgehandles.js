@@ -78,7 +78,7 @@ module.exports = function({ bus, cy, document, controller }){
         let intn = document.get( intnNode.id() );
         let add = ppt => intn.add( ppt );
 
-        return Promise.all( ppts.map( add ) );
+        return Promise.all( ppts.map( add ) ).then( () => intn );
       }
     };
 
@@ -88,7 +88,9 @@ module.exports = function({ bus, cy, document, controller }){
       addedEles.remove();
     };
 
-    let openPopover = intn => bus.emit('opentip', intn);
+    let intn;
+
+    let openPopover = () => bus.emit('opentip', intn);
 
     let disableDrawMode = () => bus.emit('drawtoggle', false);
 
@@ -96,9 +98,10 @@ module.exports = function({ bus, cy, document, controller }){
 
     return (
       Promise.try( handleIntn )
+      .then( docIntn => intn = docIntn )
       .then( rmPreviewEles )
-      .then( openPopover )
       .then( disableDrawMode )
+      .then( openPopover )
     );
   };
 

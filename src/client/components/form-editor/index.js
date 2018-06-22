@@ -10,12 +10,10 @@ const logger = require('../../logger');
 const debug = require('../../debug');
 
 const Document = require('../../../model/document');
-const { makeClassList } = require('../../../util');
 const { exportDocumentToOwl } = require('../../util');
 
 const AppNav = require('../app-nav');
 const Tooltip = require('../popover/tooltip');
-const Toggle = require('../toggle');
 const Popover = require('../popover/popover');
 
 

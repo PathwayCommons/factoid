@@ -19,3 +19,8 @@
   opacity: 0.8;
   z-index: 3;
 }
+
+.task-list-empty-message {
+  text-align: center;
+  color: #fff;
+}

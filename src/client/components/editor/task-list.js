@@ -82,8 +82,9 @@ class TaskList extends DirtyComponent {
 
     let ntfnList = new NotificationList(ntfns);
     let ntfnPanel = h(NotificationPanel, { notificationList: ntfnList });
+    let emptyMsg = h('div.task-list-empty-message', 'No current tasks to complete');
 
-    let taskListContent = [ntfnPanel];
+    let taskListContent = ntfnList.empty() ? [ emptyMsg ] : [ ntfnPanel ];
 
     return h('div.task-list', {
       className: makeClassList({ 'task-list-active': this.props.show })

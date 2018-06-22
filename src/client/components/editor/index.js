@@ -365,9 +365,6 @@ class Editor extends React.Component {
 
     let editorContent = this.state.initted ? [
       h('div.editor-branding', [
-        h('button.editor-home-button.plain-button', { onClick: () => history.push('/') }, [
-          h('i.app-icon')
-        ]),
         h('h5.editor-title', document.name() === '' ? 'Untitled Document' : document.name())
       ]),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),

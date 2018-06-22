@@ -16,7 +16,7 @@
 .editor-buttons {
   position: absolute;
   left: 0;
-  top: 40px;
+  top: 0;
   z-index: 1;
   display: inline-flex;
   flex-direction: column;
@@ -27,7 +27,7 @@
 .editor-buttons-right {
   position: absolute;
   right: 0;
-  top: 40px;
+  top: 0;
   z-index: 1;
   display: inline-flex;
   flex-direction: column;
@@ -67,19 +67,27 @@
   font-size: 1.25em;
 }
 
+.editor-app-icon {
+  width: 1em;
+  height: 1em;
+  background-image: url('../image/logo.svg');
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  display: inline-block;  
+}
+
 .editor-branding {
   position: absolute;
   background: rgba(255, 255, 255, 0.5);
   z-index: 1;
-  top: 5px;
-  left: 5em;
+  left: 45px;
+  right: 0;
+  top: 3px;
   font-size: 1.25em;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
   overflow: hidden;
-  width: 250px;
-  height: 75px;
+  max-height: 10vh;
+  width: 50vw;
+
 }
 
 .editor-title {

@@ -31,6 +31,12 @@ class EditorButtons extends React.Component {
       }
     };
 
+    grs.push([
+      h('button.editor-home-button.plain-button', { onClick: () => history.push('/') }, [
+        h('i.editor-app-icon')
+      ])
+    ]);
+
     if( document.editable() ){
       grs.push([
         h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Add an entity', shortcut: 'e' }), [

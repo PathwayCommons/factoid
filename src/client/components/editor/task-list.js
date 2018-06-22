@@ -60,7 +60,7 @@ class TaskList extends DirtyComponent {
   render(){
     let doc = this.props.document;
     let ntfns = doc.entities().concat(doc.interactions()).filter(ele => !ele.completed()).map(ele => {
-      let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + ' (?)'}`;
+      let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + (ele.completed() ? '' : ' (?)') }`;
       let innerMsg = entMsg(ele);
 
       if( ele.isInteraction() ){

@@ -2,7 +2,7 @@ const InteractionType = require('./interaction-type');
 const { BIOPAX_TEMPLATE_TYPE } = require('./biopax-type');
 
 const VALUE = 'interaction';
-const DISPLAY_VALUE = 'General';
+const DISPLAY_VALUE = 'Binding, activation, or inhibition';
 
 class General extends InteractionType {
   constructor( intn ){

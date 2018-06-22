@@ -67,10 +67,13 @@ module.exports = function({ bus, cy, document, controller }){
     let idIsNotIntn = el => el.id() !== intnNode.id();
     let pptNodes = source.add( target ).filter( idIsNotIntn );
     let ppts = pptNodes.map( n => document.get( n.id() ) );
+    let isChemical = el => el.type() === 'chemical';
+    let isProtein = el => el.type() === 'protein';
 
     let handleIntn = () => {
       if( createdIntnNode ){
         return controller.addInteraction({
+          association: (ppts.some(isChemical) && ppts.some(isProtein)) ? 'chemicalprotein' : 'interaction',
           position: _.clone( intnNode.position() ),
           entries: ppts.map( ppt => ({ id: ppt.id() }) )
         });

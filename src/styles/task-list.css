@@ -16,6 +16,10 @@
   & > * {
     opacity: 0.8;
   }
+
+  & .notification-message {
+    font-size: var(--smallFontSize);
+  }
 }
 
 .task-list-active {

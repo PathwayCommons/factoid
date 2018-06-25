@@ -140,6 +140,23 @@ class DocumentSeeder extends React.Component {
     basicIntervals = basicIntervals.sort(cmp);
     complexIntervals = complexIntervals.sort(cmp);
 
+    let eleminateDuplication = sortedArr => {
+      return sortedArr.filter( ( currVal, currIndex ) => {
+        let compPrev = () => {
+          let prevVal = sortedArr[ currIndex - 1 ];
+
+          return currVal.start === prevVal.start && currVal.end === prevVal.end;
+        };
+
+        return currIndex === 0 || !compPrev();
+      } );
+    };
+
+    // same intervals would be repeated based on text mining results
+    // handle such cases by removing any duplication of intervals
+    basicIntervals = eleminateDuplication( basicIntervals );
+    complexIntervals = eleminateDuplication( complexIntervals );
+
     let basicIndex = 0;
     let complexIndex = 0;
     let retVal = [];

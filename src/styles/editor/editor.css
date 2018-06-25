@@ -6,7 +6,7 @@
   transition-duration: 300ms;
   transition-property: opacity;
   transition-timing-function: ease-out;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .editor-initted {
@@ -67,31 +67,30 @@
   font-size: 1.25em;
 }
 
-.editor-app-icon {
-  width: 1em;
-  height: 1em;
-  background-image: url('../image/logo.svg');
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-  display: inline-block;  
-}
-
 .editor-branding {
   position: absolute;
   background: rgba(255, 255, 255, 0.5);
   z-index: 1;
-  left: 45px;
-  right: 0;
-  top: 3px;
-  font-size: 1.25em;
-  overflow: hidden;
-  max-height: 10vh;
-  width: 50vw;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.333em 0.5em;
+  border-bottom-left-radius: 0.25em;
+  border-bottom-right-radius: 0.25em;
+  pointer-events: none;
+  cursor: default;
+  max-width: calc(100% - 8em);
+}
 
+.editor-task-list-active {
+  & .editor-branding {
+    left: calc(50% - 11em);
+    max-width: calc(100% - 32em);
+  }
 }
 
 .editor-title {
-  margin: 0;
+  margin: 0.25em 0;
 }
 
 .editor-graph {

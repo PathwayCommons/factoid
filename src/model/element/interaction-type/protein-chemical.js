@@ -3,7 +3,7 @@ const { PARTICIPANT_TYPE } = require('../participant-type');
 const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
 
 const VALUE = 'chemicalprotein';
-const DISPLAY_VALUE = 'Protein and chemical';
+const DISPLAY_VALUE = 'Protein-chemical interaction';
 
 class ProteinChemical extends InteractionType {
   constructor( intn ){

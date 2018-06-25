@@ -67,10 +67,13 @@ module.exports = function({ bus, cy, document, controller }){
     let idIsNotIntn = el => el.id() !== intnNode.id();
     let pptNodes = source.add( target ).filter( idIsNotIntn );
     let ppts = pptNodes.map( n => document.get( n.id() ) );
+    let isChemical = el => el.type() === 'chemical';
+    let isProtein = el => el.type() === 'protein';
 
     let handleIntn = () => {
       if( createdIntnNode ){
         return controller.addInteraction({
+          association: (ppts.some(isChemical) && ppts.some(isProtein)) ? 'chemicalprotein' : 'interaction',
           position: _.clone( intnNode.position() ),
           entries: ppts.map( ppt => ({ id: ppt.id() }) )
         });
@@ -78,7 +81,7 @@ module.exports = function({ bus, cy, document, controller }){
         let intn = document.get( intnNode.id() );
         let add = ppt => intn.add( ppt );
 
-        return Promise.all( ppts.map( add ) );
+        return Promise.all( ppts.map( add ) ).then( () => intn );
       }
     };
 
@@ -88,7 +91,9 @@ module.exports = function({ bus, cy, document, controller }){
       addedEles.remove();
     };
 
-    let openPopover = intn => bus.emit('opentip', intn);
+    let intn;
+
+    let openPopover = () => bus.emit('opentip', intn);
 
     let disableDrawMode = () => bus.emit('drawtoggle', false);
 
@@ -96,9 +101,10 @@ module.exports = function({ bus, cy, document, controller }){
 
     return (
       Promise.try( handleIntn )
+      .then( docIntn => intn = docIntn )
       .then( rmPreviewEles )
-      .then( openPopover )
       .then( disableDrawMode )
+      .then( openPopover )
     );
   };
 

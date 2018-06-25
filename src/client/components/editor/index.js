@@ -1,4 +1,4 @@
-const React = require('react');
+const DataComponent = require('../data-component');
 const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
 const EventEmitter = require('eventemitter3');
@@ -6,7 +6,7 @@ const io = require('socket.io-client');
 const _ = require('lodash');
 const Promise = require('bluebird');
 
-const { getId, defer } = require('../../../util');
+const { getId, defer, makeClassList } = require('../../../util');
 const Document = require('../../../model/document');
 
 const Notification = require('../notification');
@@ -25,7 +25,7 @@ const { TaskList } = require('./task-list');
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
 
-class Editor extends React.Component {
+class Editor extends DataComponent {
   constructor( props ){
     super( props );
 
@@ -136,8 +136,6 @@ class Editor extends React.Component {
       }
     });
 
-    this.state = _.assign( {}, this.data );
-
     logger.info('Checking if doc with id %s already exists', doc.id());
 
     Promise.try( () => doc.load() )
@@ -197,12 +195,6 @@ class Editor extends React.Component {
       } )
       .catch( (err) => logger.error('An error occurred livening the doc', err) )
     ;
-  }
-
-  setData( obj, callback ){
-    _.assign( this.data, obj );
-
-    this.setState( obj, callback );
   }
 
   editable(){
@@ -363,9 +355,9 @@ class Editor extends React.Component {
 
     let showTaskList = this.data.taskListMode;
 
-    let editorContent = this.state.initted ? [
+    let editorContent = this.data.initted ? [
       h('div.editor-branding', [
-        h('h5.editor-title', document.name() === '' ? 'Untitled Document' : document.name())
+        h('div.editor-title', document.name() === '' ? 'Untitled document' : document.name())
       ]),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
       h(AppButtons, { className: showTaskList ? 'editor-buttons-right.editor-buttons-right-shifted' : 'editor-buttons-right', controller, document, bus, history } ),
@@ -376,7 +368,12 @@ class Editor extends React.Component {
       h(TaskList, { document, bus, controller, show: showTaskList })
     ] : [];
 
-    return h('div.editor' + ( this.state.initted ? '.editor-initted' : '' ), editorContent);
+    return h('div.editor', {
+      className: makeClassList({
+        'editor-initted': this.data.initted,
+        'editor-task-list-active': this.taskListMode()
+      })
+    }, editorContent);
   }
 
   componentDidMount(){

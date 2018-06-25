@@ -31,6 +31,9 @@ class InteractionInfo extends DataComponent {
     let evtTgt = p.eventTarget;
     let pptNode = evtTgt.connectedNodes().filter( el => !isInteractionNode(el) );
     let ppt = doc.get( pptNode.id() );
+    let allPpts = el.participants();
+    let isChemical = el => el.type() === 'chemical';
+    let isProtein = el => el.type() === 'protein';
 
     let progression = new Progression({
       STAGES: ['ASSOCIATE', 'PARTICIPANT_TYPES', 'COMPLETED'],
@@ -40,8 +43,15 @@ class InteractionInfo extends DataComponent {
     });
 
     let { STAGES, ORDERED_STAGES } = progression;
+    let initialStage;
 
-    let stage = initCache( stageCache, el, el.completed() ? STAGES.COMPLETED : ORDERED_STAGES[0] );
+    if( allPpts.some(isProtein) && allPpts.some(isChemical) ){
+      initialStage = ORDERED_STAGES[1]; // skip first stage for protein-chemical interaction
+    } else {
+      initialStage = ORDERED_STAGES[0];
+    }
+
+    let stage = initCache( stageCache, el, el.completed() ? STAGES.COMPLETED : initialStage );
 
     let assocNotification = initCache( assocNotificationCache, el, new Notification({ active: true }) );
     let pptTypeNotification = initCache( pptTypeNotificationCache, el, new Notification({ active: true }) );

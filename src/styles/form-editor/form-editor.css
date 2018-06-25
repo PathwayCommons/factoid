@@ -40,9 +40,9 @@
 }
 
 .form-interaction-entry {
-   display: flex;
-   flex-direction: row;
-   margin: 0.5em 0
+  display: flex;
+  flex-direction: row;
+  margin: 0.5em 0;
 }
 
 .form-action-buttons {
@@ -50,33 +50,27 @@
   flex-direction: row;
 }
 
-.form-interaction-adder-toggle {
-  color: #00ADB5;
-  background-color: #EEEEEE;
-  height: 2.5em;
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-  padding: 0 20px;
-  display: flex;
-  flex-direction: row;
-}
-
 .form-interaction-adder-area {
-  margin-top: 4em;
+  margin: 2em 0;
 }
 
-.form-interaction-adder-area button {
-  margin-left: 0.3em;
-}
+.form-interaction-adder-options {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 0.25em;
+  box-sizing: border-box;
 
-.form-hidden {
-  display: none;
+  & button {
+    width: 100%;
+    margin: 0.25em 0;
+    text-align: left;
+  }
 }
 
 .delete-interaction {
 
 }
-
 
 .form-submit {
   color: #EEEEEE;
@@ -87,7 +81,6 @@
   padding: 0 20px;
   display: flex;
   flex-direction: row;
-
 }
 
 .form-options {

@@ -10,12 +10,10 @@ const logger = require('../../logger');
 const debug = require('../../debug');
 
 const Document = require('../../../model/document');
-const { makeClassList } = require('../../../util');
 const { exportDocumentToOwl } = require('../../util');
 
 const AppNav = require('../app-nav');
 const Tooltip = require('../popover/tooltip');
-const Toggle = require('../toggle');
 const Popover = require('../popover/popover');
 
 
@@ -165,21 +163,15 @@ class FormEditor extends DataComponent {
     return Promise.try(rmAll).then(dirty);
   }
 
-  toggleIntnAdderVisibility() {
-    this.setData( {
-      showIntnAdder: !this.data.showIntnAdder
-    } );
-  }
-
   render(){
     let doc = this.data.document;
     let { history } = this.props;
 
     const formTypes = [
-      { type: 'Protein modification', clazz: ProteinModificationForm, pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  description:"One protein chemically modifies another protein.", association: [Interaction.ASSOCIATION.PHOSPHORYLATION, Interaction.ASSOCIATION.UBIQUINATION, Interaction.ASSOCIATION.METHYLATION] },
-      { type: 'Molecular interaction', clazz: MolecularInteractionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.UNSIGNED], description: "Two or more proteins physically interact.", association: [Interaction.ASSOCIATION.INTERACTION] },
-      { type: 'Activation/inhibition', clazz:ActivationInhibitionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes the activity status of another protein.", association: [Interaction.ASSOCIATION.MODIFICATION] },
-      { type: 'Gene expression', clazz: ExpressionRegulationForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes mRNA expression of a gene.", association: [Interaction.ASSOCIATION.EXPRESSION] }
+      { type: 'Protein modification', clazz: ProteinModificationForm, pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  description:"E.g., A phosphorylates B.", association: [Interaction.ASSOCIATION.PHOSPHORYLATION, Interaction.ASSOCIATION.UBIQUINATION, Interaction.ASSOCIATION.METHYLATION] },
+      { type: 'Binding', clazz: MolecularInteractionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.UNSIGNED], description: "E.g., A interacts with B.", association: [Interaction.ASSOCIATION.INTERACTION] },
+      { type: 'Activation or inhibition', clazz:ActivationInhibitionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "E.g., A activates B.", association: [Interaction.ASSOCIATION.MODIFICATION] },
+      { type: 'Gene expression regulation', clazz: ExpressionRegulationForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "E.g., A promotes the expression of B.", association: [Interaction.ASSOCIATION.EXPRESSION] }
     ];
 
     let getFormType = intn => {
@@ -210,10 +202,10 @@ class FormEditor extends DataComponent {
     let FormTypeButton = ({ formType }) => h(Tooltip, {
         description: formType.description,
         tippy: {
-          placement: 'bottom'
+          placement: 'right'
         }
       }, [
-        h('button.form-interaction-adder-btn', {
+        h('button.plain-button', {
           onClick: () => {
             let doc = this.data.document;
 
@@ -238,7 +230,7 @@ class FormEditor extends DataComponent {
             h('button.form-home-button', { onClick: () => history.push('/') }, [
               h('i.app-icon')
             ]),
-            h('h2.form-editor-title', doc.name() === '' ? 'Untitled Document' : doc.name())
+            h('h2.form-editor-title', doc.name() === '' ? 'Untitled document' : doc.name())
           ]),
           h(Popover, {
               tippy: {
@@ -260,20 +252,21 @@ class FormEditor extends DataComponent {
           .map( ({ interaction, formType }) => h(IntnEntry, { interaction, formType }) )
         )),
         h('div.form-interaction-adder-area', [
-          h(Toggle, {
-            className: 'form-interaction-adder-toggle',
-            onToggle: () => this.toggleIntnAdderVisibility(),
-            getState: () => this.data.showIntnAdder
+          h(Popover, {
+            tippy: {
+              position: 'bottom',
+              html: h('div.form-interaction-adder-options', formTypes.map( formType => h(FormTypeButton, { formType }) ))
+            }
           }, [
-            h('i.material-icons.add-new-interaction-icon', 'add'),
-            'ADD INTERACTION'
-          ]),
-          h('div.form-interaction-adder-slide', {
-              className: makeClassList({
-                'form-hidden': !this.data.showIntnAdder
-              })
-            }, formTypes.map( formType => h(FormTypeButton, { formType }) )
-          )
+            h('button', {
+              className: 'form-interaction-adder',
+              onToggle: () => this.toggleIntnAdderVisibility(),
+              getState: () => this.data.showIntnAdder
+            }, [
+              h('i.material-icons.add-new-interaction-icon', 'add'),
+              'Add interaction'
+            ])
+          ])
         ]),
         h('button.form-submit', { onClick: () => exportDocumentToOwl(doc.id()) }, [
           'Download BioPax'

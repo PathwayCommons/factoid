@@ -6,7 +6,7 @@
   transition: opacity 500ms ease-out;
   pointer-events: none;
   position: fixed;
-  z-index: 10002;
+  z-index: 10000;
 }
 
 .help-overlay-active {

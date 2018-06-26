@@ -118,8 +118,9 @@ class Help extends React.Component {
     };
 
     if( !showHelp ){
-      controller.resetMenuState().then( showTips );
+      controller.resetMenuState().then( () => document.addEventListener('click', this.toggleHelpHandler)).then( showTips );
     } else {
+      document.removeEventListener('click', this.toggleHelpHandler);
       hideTips();
     }
   }
@@ -128,7 +129,6 @@ class Help extends React.Component {
   render(){
     let helpContent = [
       h('div.help-overlay', {
-        onClick: () => this.toggleHelp(),
          className: makeClassList({'help-overlay-active': this.state.showHelp})
         }
       )

@@ -14,7 +14,7 @@ const { TaskListButton } = require('./task-list');
 
 class EditorButtons extends React.Component {
   render(){
-    let { bus, className, document, controller, history } = this.props;
+    let { bus, className, document, controller } = this.props;
     let grs = [];
 
     let baseTooltipProps = {
@@ -30,14 +30,6 @@ class EditorButtons extends React.Component {
         events: 'mouseenter manual'
       }
     };
-
-    grs.push([
-      h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Factoid home' }), [
-        h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
-          h('i.app-icon')
-        ])
-      ])
-    ]);
 
     if( document.editable() ){
       grs.push([
@@ -94,6 +86,11 @@ class AppButtons extends React.Component {
     };
 
     let appButtons = [
+      h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Factoid home' }), [
+        h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
+          h('i.app-icon')
+        ])
+      ]),
       h(Tooltip, { description: 'Help' }, [
         h('button.editor-button.plain-button', { onClick: () => bus.emit('togglehelp') }, [
           h('i.material-icons', 'info')
@@ -139,7 +136,7 @@ class AppButtons extends React.Component {
         h('button.editor-button.plain-button', { onClick: () => exportDocumentToOwl(document.id()) }, [
           h('i.material-icons', 'save_alt')
         ])
-      ]),
+      ])
     ]);
 
     if( document.editable() ){

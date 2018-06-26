@@ -15,6 +15,7 @@ const { exportDocumentToOwl } = require('../../util');
 const AppNav = require('../app-nav');
 const Tooltip = require('../popover/tooltip');
 const Popover = require('../popover/popover');
+const Linkout = require('../document-linkout');
 
 
 const ProteinModificationForm = require('./protein-modification-form');
@@ -223,57 +224,74 @@ class FormEditor extends DataComponent {
       ]
     );
 
-    return h('div.form-editor', [
-      h('div.page-content', [
+    return (
+      h('div.form-editor', [
+        h('div.form-content', [
+          h('h3.form-editor-title', doc.name() === '' ? 'Untitled document' : doc.name()),
+          h('div.form-templates', (
+            doc.interactions()
+            .filter(intn => intn.completed())
+            .map(interaction => ({ interaction, formType: getFormType(interaction) }))
+            .filter(({ formType }) => formType != null)
+            .map( ({ interaction, formType }) => h(IntnEntry, { interaction, formType }) )
+          )),
+          h('div.form-interaction-adder-area', [
+            h(Popover, {
+              tippy: {
+                position: 'bottom',
+                html: h('div.form-interaction-adder-options', formTypes.map( formType => h(FormTypeButton, { formType }) ))
+              }
+            }, [
+              h('button', {
+                className: 'form-interaction-adder',
+                onToggle: () => this.toggleIntnAdderVisibility(),
+                getState: () => this.data.showIntnAdder
+              }, [
+                h('i.material-icons.add-new-interaction-icon', 'add'),
+                'Add interaction'
+              ])
+            ])
+          ])
+        ]),
         h('div.form-app-bar', [
-          h('div.form-branding', [
-            h('button.form-home-button', { onClick: () => history.push('/') }, [
-              h('i.app-icon')
+          h('div.form-app-buttons', [
+            h(Tooltip, { description: 'Home' }, [
+              h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
+                h('i.app-icon')
+              ])
             ]),
-            h('h2.form-editor-title', doc.name() === '' ? 'Untitled document' : doc.name())
-          ]),
-          h(Popover, {
+            h(Tooltip, { description: 'Save as BioPAX' }, [
+              h('button.editor-button.plain-button', { onClick: () => exportDocumentToOwl( doc.id() ) }, [
+                h('i.material-icons', 'save_alt')
+              ])
+            ]),
+            h(Popover, {
+              tippy: {
+                position: 'right',
+                html: h('div.editor-linkout', [
+                  h(Linkout, { document: doc })
+                ])
+              }
+            }, [
+              h('button.editor-button.plain-button', [
+                h('i.material-icons', 'link')
+              ])
+            ]),
+            h(Popover, {
               tippy: {
                 position: 'right',
                 followCursor: false,
                 html: h(AppNav, { document: doc, history, networkEditor: false })
               }
-            }, [
-            h('button.editor-button.plain-button', [
-              h('i.material-icons', 'more_vert')
+              }, [
+              h('button.editor-button.plain-button', [
+                h('i.material-icons', 'more_vert')
+              ])
             ])
           ])
-        ]),
-        h('div.form-templates', (
-          doc.interactions()
-          .filter(intn => intn.completed())
-          .map(interaction => ({ interaction, formType: getFormType(interaction) }))
-          .filter(({ formType }) => formType != null)
-          .map( ({ interaction, formType }) => h(IntnEntry, { interaction, formType }) )
-        )),
-        h('div.form-interaction-adder-area', [
-          h(Popover, {
-            tippy: {
-              position: 'bottom',
-              html: h('div.form-interaction-adder-options', formTypes.map( formType => h(FormTypeButton, { formType }) ))
-            }
-          }, [
-            h('button', {
-              className: 'form-interaction-adder',
-              onToggle: () => this.toggleIntnAdderVisibility(),
-              getState: () => this.data.showIntnAdder
-            }, [
-              h('i.material-icons.add-new-interaction-icon', 'add'),
-              'Add interaction'
-            ])
-          ])
-        ]),
-        h('button.form-submit', { onClick: () => exportDocumentToOwl(doc.id()) }, [
-          'Download BioPax'
         ])
-      ]),
-
-    ]);
+      ])
+    );
   }
 }
 

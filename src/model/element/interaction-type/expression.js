@@ -3,7 +3,7 @@ const { PARTICIPANT_TYPE } = require('../participant-type');
 const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
 
 const VALUE = 'expression';
-const DISPLAY_VALUE = 'Expression';
+const DISPLAY_VALUE = 'Gene expression regulation';
 
 class Expression extends InteractionType {
   constructor( intn ){

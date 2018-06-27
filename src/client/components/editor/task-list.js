@@ -60,7 +60,7 @@ class TaskList extends DirtyComponent {
   render(){
     let doc = this.props.document;
     let ntfns = doc.entities().concat(doc.interactions()).filter(ele => !ele.completed()).map(ele => {
-      let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + ' (?)'}`;
+      let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + (ele.completed() ? '' : ' (?)') }`;
       let innerMsg = entMsg(ele);
 
       if( ele.isInteraction() ){
@@ -82,8 +82,9 @@ class TaskList extends DirtyComponent {
 
     let ntfnList = new NotificationList(ntfns);
     let ntfnPanel = h(NotificationPanel, { notificationList: ntfnList });
+    let emptyMsg = h('div.task-list-empty-message', 'No current tasks to complete');
 
-    let taskListContent = [ntfnPanel];
+    let taskListContent = ntfnList.empty() ? [ emptyMsg ] : [ ntfnPanel ];
 
     return h('div.task-list', {
       className: makeClassList({ 'task-list-active': this.props.show })

@@ -4,6 +4,7 @@ const io = require('socket.io-client');
 const _ = require('lodash');
 const EventEmitter = require('eventemitter3');
 const Promise = require('bluebird');
+const uuid = require('uuid');
 
 const logger = require('../../logger');
 const debug = require('../../debug');
@@ -11,7 +12,10 @@ const debug = require('../../debug');
 const Document = require('../../../model/document');
 const { exportDocumentToOwl } = require('../../util');
 
+const AppNav = require('../app-nav');
+const Tooltip = require('../popover/tooltip');
 const Popover = require('../popover/popover');
+
 
 const ProteinModificationForm = require('./protein-modification-form');
 const ExpressionRegulationForm = require('./expression-regulation-form');
@@ -47,11 +51,12 @@ class FormEditor extends DataComponent {
     this.data = {
       document: doc,
       bus: bus,
+      showIntnAdder: false,
     };
 
-    let dirty = () => {
+    let dirty = (() => {
       this.dirty();
-    };
+    });
 
     Promise.try( () => doc.load() )
       .then( () => logger.info('The doc already exists and is now loaded') )
@@ -73,18 +78,8 @@ class FormEditor extends DataComponent {
           window.editor = this;
         }
 
-        doc.on('add', dirty);
-        doc.on('remove', dirty);
-
-        let dirtyElEvts = ['add', 'remove', 'rename', 'retype', 'associate', 'unassociate', 'complete'];
-
-        let listenToDirtyEvents = el => dirtyElEvts.forEach( evt => el.on(evt, dirty) );
-        let unlistenToDirtyEvents = el => dirtyElEvts.forEach( evt => el.removeListener(evt, dirty) );
-
-        doc.on('add', listenToDirtyEvents);
-        doc.on('remove', unlistenToDirtyEvents);
-
-        doc.elements().forEach( listenToDirtyEvents );
+        doc.on('remoteadd', dirty);
+        doc.on('remoteremove', dirty);
 
         dirty();
 
@@ -107,68 +102,47 @@ class FormEditor extends DataComponent {
     this.data.bus.emit('dirty');
   }
 
-  addElement( data){
-
+  addInteractionRow({ name, pptTypes, association }){
     let doc = this.data.document;
 
-    let el = doc.factory().make({
-      data: _.assign( {
+    let entries = [ uuid(), uuid() ].map( (id, i) => ({
+      id,
+      group: pptTypes[i].value
+    }) );
+
+    let createEnt = (pptType, i) => doc.factory().make({
+      data: {
         type: 'entity',
-        name: ''
-
-      }, data )
+        name: '',
+        id: entries[i].id
+      }
     });
 
-    return ( Promise.try( () => el.synch() )
-        .then( () => el.create() )
-        .then( () => doc.add(el) )
-        .then( () => el )
-    );
-  }
+    let createEnts = () => Promise.all( pptTypes.map( createEnt ) );
 
-  addInteraction( data ){
-    let doc = this.data.document;
-
-    let el = doc.factory().make({
-      data: _.assign( {
-        type: 'interaction'
-      }, data, {
-        association: data.association != null ? ( _.isString(data.association) ? data.association : data.association.value ) : 'interaction'
-      } )
+    let createIntn = () => doc.factory().make({
+      data:  {
+        type: 'interaction',
+        name,
+        completed: true,
+        association: association != null ? ( _.isString(association) ? association : association.value ) : 'interaction',
+        entries
+      }
     });
-
-    return ( Promise.try( () => el.synch() )
-        .then( () => el.create() )
-        .then( () => doc.add(el) )
-        .then( () => el )
-
-    );
-
-  }
-
-
-  addInteractionRow(data){
-    let createEnts = () => Promise.all( data.pptTypes.map( () => this.addElement() ) );
-
-    let createIntn = () => this.addInteraction(data);
-
-    let handlePpt = (intn, ppt, type) => intn.addParticipant(ppt, { group: type });
-
-    let handlePpts = (intn, ppts) => Promise.all( ppts.map( (ppt, i) => {
-      let type = data.pptTypes[i].value;
-
-      return handlePpt(intn, ppt, type);
-    } ) );
 
     return (
-      Promise.try( createEnts )
-      .then( ppts => {
-        return createIntn().then( intn => ({ intn, ppts }) );
+      Promise.all([ createIntn(), createEnts() ])
+      .then( ([ intn, ppts ]) => {
+        let synch = el => el.synch(true);
+        let create = el => el.create();
+        let add = el => doc.add(el);
+        let handleElCreation = el => Promise.try( () => synch(el) ).then( () => create(el) );
+        let els = [ intn, ...ppts ];
+
+        return Promise.all( els.map(handleElCreation) ).then( () => {
+          return Promise.all( ppts.map(add) ).then( () => add(intn) );
+        } );
       } )
-      .then( ({ intn, ppts }) => {
-        return handlePpts(intn, ppts).then( () => intn );
-      } )
-      .then( intn => intn.complete() )
       .then( () => this.dirty() )
     );
   }
@@ -194,121 +168,105 @@ class FormEditor extends DataComponent {
     let { history } = this.props;
 
     const formTypes = [
-      {type: 'Protein Modification' , clazz: ProteinModificationForm, pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  description:"One protein chemically modifies another protein.", association: [Interaction.ASSOCIATION.PHOSPHORYLATION, Interaction.ASSOCIATION.UBIQUINATION, Interaction.ASSOCIATION.METHYLATION] },
-      {type:'Molecular Interaction', clazz: MolecularInteractionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.UNSIGNED], description: "Two or more proteins physically interact.", association: [Interaction.ASSOCIATION.INTERACTION]},
-      {type:'Activation Inhibition', clazz:ActivationInhibitionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes the activity status of another protein.", association: [Interaction.ASSOCIATION.MODIFICATION]},
-      {type:'Expression Regulation', clazz: ExpressionRegulationForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "A protein changes mRNA expression of a gene.", association: [Interaction.ASSOCIATION.EXPRESSION]}
+      { type: 'Protein modification', clazz: ProteinModificationForm, pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  description:"E.g., A phosphorylates B.", association: [Interaction.ASSOCIATION.PHOSPHORYLATION, Interaction.ASSOCIATION.UBIQUINATION, Interaction.ASSOCIATION.METHYLATION] },
+      { type: 'Binding', clazz: MolecularInteractionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.UNSIGNED], description: "E.g., A interacts with B.", association: [Interaction.ASSOCIATION.INTERACTION] },
+      { type: 'Activation or inhibition', clazz:ActivationInhibitionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "E.g., A activates B.", association: [Interaction.ASSOCIATION.MODIFICATION] },
+      { type: 'Gene expression regulation', clazz: ExpressionRegulationForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "E.g., A promotes the expression of B.", association: [Interaction.ASSOCIATION.EXPRESSION] }
     ];
 
-    let hArr = [];
+    let getFormType = intn => {
+      let intnAssoc = intn.association();
+      let assocMatches = assoc => assoc.value === intnAssoc.value;
 
+      return formTypes.find( ft => ft.association.some(assocMatches) );
+    };
 
-    formTypes.forEach((formType) => {
-
-      let formContent = doc.interactions().map(interaction => {
-        if(!interaction.completed()){
-          return null;
-        }
-
-        let intnAssocVal = interaction.association().value;
-
-        let atLeastOneAssocTypeMatches = false;
-
-        formType.association.forEach(assoc => {
-          if( assoc.value === intnAssocVal ){
-            atLeastOneAssocTypeMatches = true;
+    let IntnEntry = ({ interaction, formType }) => h('div.form-interaction-entry', [
+      h(formType.clazz, {
+        key: interaction.id(),
+        document: doc,
+        interaction: interaction,
+        description: formType.type,
+        bus: this.data.bus,
+      }),
+      h('button.delete-interaction.plain-button', {
+          onClick: () => {
+            this.deleteInteractionRow(interaction);
           }
-        });
+        }, [
+          h('i.material-icons', 'delete')
+        ]
+      )
+    ]);
 
-        if(atLeastOneAssocTypeMatches) {
-          return h('div.form-interaction-entry',
-            [
-              h(formType.clazz, {
-                key: interaction.id(),
-                document: doc,
-                interaction: interaction,
-                description: formType.type,
-                bus: this.data.bus,
-              }),
-              h('button.delete-interaction.plain-button', {
-                onClick: () => {
-                  this.deleteInteractionRow(interaction);
-                }
-              }, [
-                h('i.material-icons', 'delete')
-              ])
-            ]);
-        } else {
-          return null;
+    let FormTypeButton = ({ formType }) => h(Tooltip, {
+        description: formType.description,
+        tippy: {
+          placement: 'right'
         }
-      });
+      }, [
+        h('button.plain-button', {
+          onClick: () => {
+            let doc = this.data.document;
 
+            let addInteractionRow = () => this.addInteractionRow( {
+              name: formType.type,
+              pptTypes: formType.pptTypes,
+              association: formType.association[0]
+            } );
 
-      //update form
-      let hFunc = h('div.form-template-entry', [
-        h('h2', formType.type),
-        h('p', formType.description),
-        ...formContent,
-        h('div.form-action-buttons', [
-          h('button.form-interaction-adder', {
-            onClick: () => this.addInteractionRow({name:formType.type, pptTypes: formType.pptTypes,  association: formType.association[0]})}, [
-            h('i.material-icons.add-new-interaction-icon', 'add'),
-            'ADD INTERACTION'
-          ])])
-      ]);
+            let applyLayout = () => doc.applyLayout();
 
-      hArr.push(hFunc);
-    });
+            Promise.try( addInteractionRow ).then( applyLayout );
+          }
+        }, formType.type)
+      ]
+    );
 
     return h('div.form-editor', [
       h('div.page-content', [
-        h('div.app-bar', [
-          h('h2', 'Factoid - Form Editor'),
+        h('div.form-app-bar', [
+          h('div.form-branding', [
+            h('button.form-home-button', { onClick: () => history.push('/') }, [
+              h('i.app-icon')
+            ]),
+            h('h2.form-editor-title', doc.name() === '' ? 'Untitled document' : doc.name())
+          ]),
           h(Popover, {
-            tippy: {
-              position: 'right',
-              followCursor: false,
-              html: h('div.editor-more-menu', [
-                h('div.editor-more-menu-items', [
-                  h('button.editor-more-button.plain-button', {
-                    onClick: () => history.push('/new')
-                  }, [
-                    h('span', ' New factoid')
-                  ]),
-                  h('button.editor-more-button.plain-button', {
-                    onClick: () => history.push('/documents')
-                  }, [
-                    h('span', ' My factoids')
-                  ]),
-                  h('button.editor-more-button.plain-button', {
-                    onClick: () => {
-                      if( doc.editable() ){
-                        history.push(`/document/${doc.id()}/${doc.secret()}`);
-                      } else {
-                        history.push(`/document/${doc.id()}`);
-                      }
-                    }
-                  }, [
-                    h('span', ' Network editor')
-                  ]),
-                  h('button.editor-more-button.plain-button', {
-                    onClick: () => history.push('/')
-                  }, [
-                    h('span', ' About & contact')
-                  ])
-                ])
-              ])
-            }
+              tippy: {
+                position: 'right',
+                followCursor: false,
+                html: h(AppNav, { document: doc, history, networkEditor: false })
+              }
             }, [
-            // h(Tooltip, { description: 'More tools' }, [
-              h('button.editor-button.plain-button', [
-                h('i.material-icons', 'more_vert')
-              ])
-            // ])
+            h('button.editor-button.plain-button', [
+              h('i.material-icons', 'more_vert')
+            ])
           ])
         ]),
-        h('div.form-templates', [
-          ...hArr
+        h('div.form-templates', (
+          doc.interactions()
+          .filter(intn => intn.completed())
+          .map(interaction => ({ interaction, formType: getFormType(interaction) }))
+          .filter(({ formType }) => formType != null)
+          .map( ({ interaction, formType }) => h(IntnEntry, { interaction, formType }) )
+        )),
+        h('div.form-interaction-adder-area', [
+          h(Popover, {
+            tippy: {
+              position: 'bottom',
+              html: h('div.form-interaction-adder-options', formTypes.map( formType => h(FormTypeButton, { formType }) ))
+            }
+          }, [
+            h('button', {
+              className: 'form-interaction-adder',
+              onToggle: () => this.toggleIntnAdderVisibility(),
+              getState: () => this.data.showIntnAdder
+            }, [
+              h('i.material-icons.add-new-interaction-icon', 'add'),
+              'Add interaction'
+            ])
+          ])
         ]),
         h('button.form-submit', { onClick: () => exportDocumentToOwl(doc.id()) }, [
           'Download BioPax'

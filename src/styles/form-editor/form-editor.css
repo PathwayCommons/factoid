@@ -2,11 +2,32 @@
   /* overflow: hidden; */
 }
 
+.form-app-bar {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.25em;
+
+}
+
 .form-editor-title {
-  text-align: center;
-  color: #212F3D;
-  font-size: 2.5em;
   margin-bottom: 1em;
+  overflow: hidden;
+}
+
+.form-branding {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.form-home-button {
+  font-size: 1.33em;
+  padding-left: 0;
+  margin: 0;
+  border: 0;
 }
 
 .form-template-entry {
@@ -19,9 +40,9 @@
 }
 
 .form-interaction-entry {
-   display: flex;
-   flex-direction: row;
-   margin: 0.5em 0
+  display: flex;
+  flex-direction: row;
+  margin: 0.5em 0;
 }
 
 .form-action-buttons {
@@ -29,21 +50,27 @@
   flex-direction: row;
 }
 
-.form-interaction-adder {
-  color: #00ADB5;
-  background-color: #EEEEEE;
-  height: 2.5em;
-  margin-top: 1.5em;
-  margin-bottom: 4em;
-  padding: 0 20px;
+.form-interaction-adder-area {
+  margin: 2em 0;
+}
+
+.form-interaction-adder-options {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  position: relative;
+  padding: 0.25em;
+  box-sizing: border-box;
+
+  & button {
+    width: 100%;
+    margin: 0.25em 0;
+    text-align: left;
+  }
 }
 
 .delete-interaction {
-  color: #ED4A31;
-}
 
+}
 
 .form-submit {
   color: #EEEEEE;
@@ -54,7 +81,6 @@
   padding: 0 20px;
   display: flex;
   flex-direction: row;
-
 }
 
 .form-options {
@@ -83,6 +109,7 @@
   pointer-events: none;
   margin-top: 0.5em;
   position: fixed;
+  z-index: 10;
   top: 0;
   left: 50%;
   min-width: 400px;
@@ -95,6 +122,7 @@
 
 .entity-form-info-overlay {
   position: fixed;
+  z-index: 9;
   left: 0;
   top: 0;
   right: 0;
@@ -113,6 +141,14 @@
 .entity-form-info-show {
   opacity: 1;
   pointer-events: auto;
+}
+
+.entity-form-completed-icon {
+  color: var(--completeColor);
+  position: absolute;
+  margin-left: -1.25em;
+  margin-top: 0.4em;
+  pointer-events: none;
 }
 
 .form-molecular-intn-line {

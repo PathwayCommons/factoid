@@ -57,6 +57,10 @@ class NotificationList {
   forEach( fn, thisArg ){
     return this.set.forEach( fn, thisArg );
   }
+
+  empty(){
+    return this.set.size === 0;
+  }
 }
 
 NotificationList.prototype[ Symbol.iterator ] = NotificationList.prototype.values;

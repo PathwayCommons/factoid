@@ -92,7 +92,7 @@ class AppButtons extends React.Component {
         ])
       ]),
       h(Tooltip, { description: 'Help' }, [
-        h('button.editor-button.plain-button', { onClick: () => bus.emit('togglehelp') }, [
+        h('button.editor-button.plain-button', { onClick: _.debounce(() => bus.emit('togglehelp'), 300) }, [
           h('i.material-icons', 'info')
         ])
       ])

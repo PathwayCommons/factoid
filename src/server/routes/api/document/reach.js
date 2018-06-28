@@ -301,13 +301,6 @@ module.exports = {
                       return INTERACTION_TYPE.METHYLATION;
                   }
                 }
-                else if ( argsAreEnts ) {
-                  // more cases would be added in the future
-                  switch ( frame.type ) {
-                    case REACH_EVENT_TYPE.ACTIVATION:
-                      return INTERACTION_TYPE.MODIFICATION;
-                  }
-                }
               }
               // protein - chemical
               else if ( protCount == 1 ) {
@@ -320,7 +313,7 @@ module.exports = {
                 }
               }
 
-              return INTERACTION_TYPE.GENERAL;
+              return INTERACTION_TYPE.INTERACTION;
             };
 
             let getEntityFrame = frame => {

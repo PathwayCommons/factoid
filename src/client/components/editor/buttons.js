@@ -144,7 +144,37 @@ class AppButtons extends React.Component {
         h(Popover, {
           tippy: {
             position: 'right',
-            html: h(AppNav, { document, history, networkEditor: true })
+            html: h(AppNav, [
+              h('button.editor-more-button.plain-button', {
+                onClick: () => history.push('/new')
+              }, [
+                h('span', ' New factoid')
+              ]),
+              h('button.editor-more-button.plain-button', {
+                onClick: () => history.push('/documents')
+              }, [
+                h('span', ' My factoids')
+              ]),
+              h('button.editor-more-button.plain-button', {
+                onClick: () => {
+                  let id = document.id();
+                  let secret = document.secret();
+
+                  if( document.editable() ){
+                    history.push(`/form/${id}/${secret}`);
+                  } else {
+                    history.push(`/form/${id}`);
+                  }
+                }
+              }, [
+                h('span', 'Form-based editor')
+              ]),
+              h('button.editor-more-button.plain-button', {
+                onClick: () => history.push('/')
+              }, [
+                h('span', ' About & contact')
+              ])
+            ])
           }
         }, [
           h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Menu' }), [

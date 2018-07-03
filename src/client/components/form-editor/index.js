@@ -281,7 +281,37 @@ class FormEditor extends DataComponent {
               tippy: {
                 position: 'right',
                 followCursor: false,
-                html: h(AppNav, { document: doc, history, networkEditor: false })
+                html: h(AppNav, [
+                  h('button.editor-more-button.plain-button', {
+                    onClick: () => history.push('/new')
+                  }, [
+                    h('span', ' New factoid')
+                  ]),
+                  h('button.editor-more-button.plain-button', {
+                    onClick: () => history.push('/documents')
+                  }, [
+                    h('span', ' My factoids')
+                  ]),
+                  h('button.editor-more-button.plain-button', {
+                    onClick: () => {
+                      let id = document.id();
+                      let secret = document.secret();
+
+                      if( document.editable() ){
+                        history.push(`/document/${id}/${secret}`);
+                      } else {
+                        history.push(`/document/${id}`);
+                      }
+                    }
+                  }, [
+                    h('span', 'Network editor')
+                  ]),
+                  h('button.editor-more-button.plain-button', {
+                    onClick: () => history.push('/')
+                  }, [
+                    h('span', ' About & contact')
+                  ])
+                ])
               }
               }, [
               h('button.editor-button.plain-button', [

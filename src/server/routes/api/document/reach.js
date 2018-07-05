@@ -160,6 +160,7 @@ module.exports = {
 
         let supportedTypes = {
           'protein': 'protein',
+          'gene': 'protein',
           'simple-chemical': 'chemical'
         };
 
@@ -227,7 +228,7 @@ module.exports = {
           let evtArg = frame.arguments.find( arg => isSingleArgEvt( getFrame( getArgId(arg) ) ) );
           let haveEvtArg = evtArg != null;
           let isBinaryCollapsible = argsAreEntAndEvt && argsAreControllerControlled && haveEvtArg;
-          let isProtein = ele => ele.type == 'protein';
+          let isProtein = ele => ele.type == 'protein' || ele.type === 'gene';
 
           if( argsAreEnts || isBinaryCollapsible ){
             let intn = {

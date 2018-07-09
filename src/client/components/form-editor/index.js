@@ -52,7 +52,6 @@ class FormEditor extends DataComponent {
     this.data = {
       document: doc,
       bus: bus,
-      showIntnAdder: false,
     };
 
     let dirty = (() => {
@@ -243,9 +242,7 @@ class FormEditor extends DataComponent {
               }
             }, [
               h('button', {
-                className: 'form-interaction-adder',
-                onToggle: () => this.toggleIntnAdderVisibility(),
-                getState: () => this.data.showIntnAdder
+                className: 'form-interaction-adder'
               }, [
                 h('i.material-icons.add-new-interaction-icon', 'add'),
                 'Add interaction'

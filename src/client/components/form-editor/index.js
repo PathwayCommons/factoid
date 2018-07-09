@@ -209,6 +209,7 @@ class FormEditor extends DataComponent {
         h('button.plain-button', {
           onClick: () => {
             let doc = this.data.document;
+            let existingEntities = doc.entities();
 
             let addInteractionRow = () => this.addInteractionRow( {
               name: formType.type,
@@ -216,7 +217,7 @@ class FormEditor extends DataComponent {
               association: formType.association[0]
             } );
 
-            let applyLayout = () => doc.applyLayout();
+            let applyLayout = () => doc.applyLayout( { elesToLock: existingEntities } );
 
             Promise.try( addInteractionRow ).then( applyLayout );
           }

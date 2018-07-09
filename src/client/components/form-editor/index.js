@@ -295,8 +295,6 @@ class FormEditor extends DataComponent {
       }, [
         h('button.plain-button', {
           onClick: () => {
-            let doc = this.data.document;
-
             let addInteractionRow = () => this.addInteractionRow( {
               name: formType.type,
               pptTypes: formType.pptTypes,

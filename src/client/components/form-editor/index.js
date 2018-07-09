@@ -5,12 +5,14 @@ const _ = require('lodash');
 const EventEmitter = require('eventemitter3');
 const Promise = require('bluebird');
 const uuid = require('uuid');
+const Cytoscape = require('cytoscape');
 
 const logger = require('../../logger');
 const debug = require('../../debug');
 
 const Document = require('../../../model/document');
 const { exportDocumentToOwl } = require('../../util');
+const { makeCyEles, getCyLayoutOpts } = require('../../../util');
 
 const AppNav = require('../app-nav');
 const Tooltip = require('../popover/tooltip');
@@ -48,6 +50,15 @@ class FormEditor extends DataComponent {
     });
 
     let bus = new EventEmitter();
+
+    // list of new elements to add
+    this.elesToAdd = [];
+    // set of elements that are currently being added
+    this.beingAdded = new Set();
+    // whether a layout is just disrupted by the last one before completed
+    this.layoutDisrupted = false;
+    // the last layout performed repositions new elements
+    this.lastLayout = null;
 
     this.data = {
       document: doc,
@@ -140,8 +151,84 @@ class FormEditor extends DataComponent {
         let handleElCreation = el => Promise.try( () => synch(el) ).then( () => create(el) );
         let els = [ intn, ...ppts ];
 
-        return Promise.all( els.map(handleElCreation) ).then( () => {
-          return Promise.all( ppts.map(add) ).then( () => add(intn) );
+        let runLayout = cy => {
+          let layout = cy.layout( _.assign( {}, getCyLayoutOpts(), {
+            animate: false,
+            randomize: true
+          } ) );
+
+          // if there is an existing layout disrupt it
+          if ( this.lastLayout ) {
+            this.layoutDisrupted = true;
+            this.lastLayout.stop();
+          }
+
+          this.lastLayout = layout;
+
+          let layoutDone = layout.promiseOn('layoutstop');
+
+          layout.run();
+
+          return layoutDone;
+        };
+
+        let updatePos = el => {
+          let cyEle = cy.getElementById( el.id() );
+          let pos =  _.clone( cyEle.position() );
+
+          el.reposition( pos );
+        };
+
+        let cy = new Cytoscape({
+          headless: true,
+          elements: makeCyEles( doc.elements() ),
+          layout: { name: 'preset' },
+          styleEnabled: true
+        });
+
+        // already existing elements are supposed to be locked during the layout
+        cy.elements().lock();
+
+        this.elesToAdd.push( ...els );
+
+        // create cy eles for the new elements that are not represented in cy
+        // yet because they were not in document while cy is created
+        let missingEles = this.elesToAdd.filter( el => cy.getElementById( el.id() ).length === 0 );
+        cy.add( makeCyEles( missingEles ) );
+
+        let layoutDone = runLayout( cy );
+
+        return layoutDone.then( () => {
+          // skip disrupted layouts
+          if ( this.layoutDisrupted ) {
+            this.layoutDisrupted = false;
+            return;
+          }
+
+          let isIntn = el => el.isInteraction();
+          let isPpt = el => el.isEntity();
+
+          // skip elements that are already being added
+          let elesToAdd = this.elesToAdd.filter( ( el ) => !this.beingAdded.has( el ) );
+          let pptsToAdd = elesToAdd.filter( isPpt );
+          let intnsToAdd = elesToAdd.filter( isIntn );
+
+          return Promise.all( elesToAdd.map( updatePos ) ).then( () => {
+            this.lastLayout = null;
+            els.forEach( el => this.beingAdded.add( el ) );
+
+            let postAdd = () => {
+              let toAddSet = new Set( elesToAdd );
+              _.remove( this.elesToAdd, ele => toAddSet.has( ele ) );
+              els.forEach( el => this.beingAdded.delete( el ) );
+            };
+
+            return Promise.all( elesToAdd.map( handleElCreation ) ).then( () => {
+              return Promise.all( pptsToAdd.map( add ) ).then( () => {
+                return Promise.all( intnsToAdd.map( add ) );
+              } ).then( postAdd );
+            } );
+          } );
         } );
       } )
       .then( () => this.dirty() )
@@ -216,9 +303,7 @@ class FormEditor extends DataComponent {
               association: formType.association[0]
             } );
 
-            let applyLayout = () => doc.applyLayout();
-
-            Promise.try( addInteractionRow ).then( applyLayout );
+            addInteractionRow();
           }
         }, formType.type)
       ]

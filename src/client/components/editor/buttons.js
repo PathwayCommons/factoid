@@ -136,6 +136,23 @@ class AppButtons extends React.Component {
         h('button.editor-button.plain-button', { onClick: () => exportDocumentToOwl(document.id()) }, [
           h('i.material-icons', 'save_alt')
         ])
+      ]),
+
+      h(Tooltip, _.assign( {}, baseTooltipProps, { description: 'Form-based editor' }), [
+        h('button.editor-button.plain-button', {
+          onClick: () => {
+            let id = document.id();
+            let secret = document.secret();
+
+            if( document.editable() ){
+              history.push(`/form/${id}/${secret}`);
+            } else {
+              history.push(`/form/${id}`);
+            }
+          }
+        }, [
+          h('i.material-icons', 'swap_horiz')
+        ])
       ])
     ]);
 
@@ -154,20 +171,6 @@ class AppButtons extends React.Component {
                 onClick: () => history.push('/documents')
               }, [
                 h('span', ' My factoids')
-              ]),
-              h('button.editor-more-button.plain-button', {
-                onClick: () => {
-                  let id = document.id();
-                  let secret = document.secret();
-
-                  if( document.editable() ){
-                    history.push(`/form/${id}/${secret}`);
-                  } else {
-                    history.push(`/form/${id}`);
-                  }
-                }
-              }, [
-                h('span', 'Form-based editor')
               ]),
               h('button.editor-more-button.plain-button', {
                 onClick: () => history.push('/')

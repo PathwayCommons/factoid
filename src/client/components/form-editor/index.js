@@ -262,6 +262,22 @@ class FormEditor extends DataComponent {
                 h('i.material-icons', 'save_alt')
               ])
             ]),
+            h(Tooltip, { description: 'Network editor' }, [
+              h('button.editor-button.plain-button', {
+                onClick: () => {
+                  let id = doc.id();
+                  let secret = doc.secret();
+
+                  if( doc.editable() ){
+                    history.push(`/document/${id}/${secret}`);
+                  } else {
+                    history.push(`/document/${id}`);
+                  }
+                }
+              }, [
+                h('i.material-icons', 'swap_horiz')
+              ])
+            ]),
             h(Popover, {
               tippy: {
                 position: 'right',
@@ -288,20 +304,6 @@ class FormEditor extends DataComponent {
                     onClick: () => history.push('/documents')
                   }, [
                     h('span', ' My factoids')
-                  ]),
-                  h('button.editor-more-button.plain-button', {
-                    onClick: () => {
-                      let id = document.id();
-                      let secret = document.secret();
-
-                      if( document.editable() ){
-                        history.push(`/document/${id}/${secret}`);
-                      } else {
-                        history.push(`/document/${id}`);
-                      }
-                    }
-                  }, [
-                    h('span', 'Network editor')
                   ]),
                   h('button.editor-more-button.plain-button', {
                     onClick: () => history.push('/')

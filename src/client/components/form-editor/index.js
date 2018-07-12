@@ -257,6 +257,20 @@ class FormEditor extends DataComponent {
                 h('i.app-icon')
               ])
             ]),
+            h(Popover, {
+              tippy: {
+                position: 'right',
+                html: h('div.editor-linkout', [
+                  h(Linkout, { document: doc })
+                ])
+              }
+            }, [
+              h(Tooltip, { description: 'Share link' }, [
+                h('button.editor-button.plain-button', [
+                  h('i.material-icons', 'link')
+                ])
+              ])
+            ]),
             h(Tooltip, { description: 'Save as BioPAX' }, [
               h('button.editor-button.plain-button', { onClick: () => exportDocumentToOwl( doc.id() ) }, [
                 h('i.material-icons', 'save_alt')
@@ -276,18 +290,6 @@ class FormEditor extends DataComponent {
                 }
               }, [
                 h('i.material-icons', 'swap_horiz')
-              ])
-            ]),
-            h(Popover, {
-              tippy: {
-                position: 'right',
-                html: h('div.editor-linkout', [
-                  h(Linkout, { document: doc })
-                ])
-              }
-            }, [
-              h('button.editor-button.plain-button', [
-                h('i.material-icons', 'link')
               ])
             ]),
             h(Popover, {

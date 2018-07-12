@@ -1,5 +1,4 @@
 const h = require('react-hyperscript');
-const { Link } = require('react-router-dom');
 const { Component } = require('react');
 const AnchorLink = require('react-anchor-link-smooth-scroll').default;
 const Popover = require('./popover/popover');

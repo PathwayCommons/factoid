@@ -141,6 +141,14 @@ class FormEditor extends DataComponent {
       }
     });
 
+    let cy = null;
+
+    let destroyCy = () => {
+      if ( cy !== null ) {
+        cy.destroy();
+      }
+    };
+
     return (
       Promise.all([ createIntn(), createEnts() ])
       .then( ([ intn, ppts ]) => {
@@ -153,7 +161,7 @@ class FormEditor extends DataComponent {
         let runLayout = cy => {
           let layout = cy.layout( _.assign( {}, getCyLayoutOpts(), {
             animate: false,
-            randomize: true
+            randomize: false
           } ) );
 
           // if there is an existing layout disrupt it
@@ -178,7 +186,7 @@ class FormEditor extends DataComponent {
           el.reposition( pos );
         };
 
-        let cy = new Cytoscape({
+        cy = new Cytoscape({
           headless: true,
           elements: makeCyEles( doc.elements() ),
           layout: { name: 'preset' },
@@ -217,20 +225,22 @@ class FormEditor extends DataComponent {
             els.forEach( el => this.beingAdded.add( el ) );
 
             let postAdd = () => {
-              let toAddSet = new Set( elesToAdd );
-              _.remove( this.elesToAdd, ele => toAddSet.has( ele ) );
+              _.remove( this.elesToAdd, el => _.includes( elesToAdd, el ) );
               els.forEach( el => this.beingAdded.delete( el ) );
             };
 
-            return Promise.all( elesToAdd.map( handleElCreation ) ).then( () => {
+            let addAll = () => {
               return Promise.all( pptsToAdd.map( add ) ).then( () => {
                 return Promise.all( intnsToAdd.map( add ) );
               } ).then( postAdd );
-            } );
+            };
+
+            return Promise.all( elesToAdd.map( handleElCreation ) ).then( addAll );
           } );
         } );
       } )
       .then( () => this.dirty() )
+      .finally( destroyCy )
     );
   }
 

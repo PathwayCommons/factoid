@@ -51,15 +51,6 @@ class FormEditor extends DataComponent {
 
     let bus = new EventEmitter();
 
-    // list of new elements to add
-    this.elesToAdd = [];
-    // set of elements that are currently being added
-    this.beingAdded = new Set();
-    // whether a layout is just disrupted by the last one before completed
-    this.layoutDisrupted = false;
-    // the last layout performed repositions new elements
-    this.lastLayout = null;
-
     this.data = {
       document: doc,
       bus: bus,
@@ -116,6 +107,8 @@ class FormEditor extends DataComponent {
   addInteractionRow({ name, pptTypes, association }){
     let doc = this.data.document;
 
+    let dirty = () => this.dirty();
+
     let entries = [ uuid(), uuid() ].map( (id, i) => ({
       id,
       group: pptTypes[i].value
@@ -141,52 +134,29 @@ class FormEditor extends DataComponent {
       }
     });
 
-    let cy = null;
-
-    let destroyCy = () => {
-      if ( cy !== null ) {
+    let destroyCy = ({ cy }) => {
+      if ( cy != null ) {
         cy.destroy();
       }
     };
 
-    return (
+    let runLayout = cy => {
+      let layout = cy.layout( _.assign( {}, getCyLayoutOpts(), {
+        animate: false,
+        randomize: false
+      } ) );
+
+      let layoutDone = Promise.try( () => layout.promiseOn('layoutstop') );
+
+      layout.run();
+
+      return layoutDone;
+    };
+
+    let createElsAndRunLayout = () => Promise.try( () =>
       Promise.all([ createIntn(), createEnts() ])
       .then( ([ intn, ppts ]) => {
-        let synch = el => el.synch(true);
-        let create = el => el.create();
-        let add = el => doc.add(el);
-        let handleElCreation = el => Promise.try( () => synch(el) ).then( () => create(el) );
-        let els = [ intn, ...ppts ];
-
-        let runLayout = cy => {
-          let layout = cy.layout( _.assign( {}, getCyLayoutOpts(), {
-            animate: false,
-            randomize: false
-          } ) );
-
-          // if there is an existing layout disrupt it
-          if ( this.lastLayout ) {
-            this.layoutDisrupted = true;
-            this.lastLayout.stop();
-          }
-
-          this.lastLayout = layout;
-
-          let layoutDone = layout.promiseOn('layoutstop');
-
-          layout.run();
-
-          return layoutDone;
-        };
-
-        let updatePos = el => {
-          let cyEle = cy.getElementById( el.id() );
-          let pos =  _.clone( cyEle.position() );
-
-          el.reposition( pos );
-        };
-
-        cy = new Cytoscape({
+        let cy = new Cytoscape({
           headless: true,
           elements: makeCyEles( doc.elements() ),
           layout: { name: 'preset' },
@@ -194,53 +164,46 @@ class FormEditor extends DataComponent {
         });
 
         // already existing elements are supposed to be locked during the layout
-        cy.elements().lock();
-
-        this.elesToAdd.push( ...els );
+        cy.nodes().lock();
 
         // create cy eles for the new elements that are not represented in cy
         // yet because they were not in document while cy is created
-        let missingEles = this.elesToAdd.filter( el => cy.getElementById( el.id() ).length === 0 );
-        cy.add( makeCyEles( missingEles ) );
+        cy.add( makeCyEles([intn, ...ppts]) ).nodes().forEach(n => n.position({
+          x: Math.random() * 10,
+          y: Math.random() * 10
+        }));
 
-        let layoutDone = runLayout( cy );
-
-        return layoutDone.then( () => {
-          // skip disrupted layouts
-          if ( this.layoutDisrupted ) {
-            this.layoutDisrupted = false;
-            return;
-          }
-
-          let isIntn = el => el.isInteraction();
-          let isPpt = el => el.isEntity();
-
-          // skip elements that are already being added
-          let elesToAdd = this.elesToAdd.filter( ( el ) => !this.beingAdded.has( el ) );
-          let pptsToAdd = elesToAdd.filter( isPpt );
-          let intnsToAdd = elesToAdd.filter( isIntn );
-
-          return Promise.all( elesToAdd.map( updatePos ) ).then( () => {
-            this.lastLayout = null;
-            els.forEach( el => this.beingAdded.add( el ) );
-
-            let postAdd = () => {
-              _.remove( this.elesToAdd, el => _.includes( elesToAdd, el ) );
-              els.forEach( el => this.beingAdded.delete( el ) );
-            };
-
-            let addAll = () => {
-              return Promise.all( pptsToAdd.map( add ) ).then( () => {
-                return Promise.all( intnsToAdd.map( add ) );
-              } ).then( postAdd );
-            };
-
-            return Promise.all( elesToAdd.map( handleElCreation ) ).then( addAll );
-          } );
-        } );
+        return runLayout(cy).then( () => ({ cy, intn, ppts }) );
       } )
-      .then( () => this.dirty() )
-      .finally( destroyCy )
+    );
+
+    let updatePos = (el, cy) => {
+      let cyEle = cy.getElementById( el.id() );
+      let pos =  _.clone( cyEle.position() );
+
+      return el.reposition( pos );
+    };
+
+    let synch = el => el.synch(true);
+    let create = el => el.create();
+    let add = el => doc.add(el);
+    let handleElCreation = el => Promise.try( () => synch(el) ).then( () => create(el) );
+
+    let saveResults = ({ intn, ppts, cy }) => {
+      return (
+        Promise.all( ppts.map(ppt => updatePos(ppt, cy)) )
+        .then( () => Promise.all([intn, ...ppts].map(handleElCreation)) )
+        .then( () => ppts.map(add) )
+        .then( () => add(intn) )
+        .then( () => ({ intn, ppts, cy }) )
+      );
+    };
+
+    return (
+      Promise.try( createElsAndRunLayout )
+      .then( saveResults )
+      .then( destroyCy )
+      .then( dirty )
     );
   }
 

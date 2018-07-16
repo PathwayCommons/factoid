@@ -5,12 +5,14 @@ const _ = require('lodash');
 const EventEmitter = require('eventemitter3');
 const Promise = require('bluebird');
 const uuid = require('uuid');
+const Cytoscape = require('cytoscape');
 
 const logger = require('../../logger');
 const debug = require('../../debug');
 
 const Document = require('../../../model/document');
 const { exportDocumentToOwl } = require('../../util');
+const { makeCyEles, getCyLayoutOpts } = require('../../../util');
 
 const AppNav = require('../app-nav');
 const Tooltip = require('../popover/tooltip');
@@ -105,6 +107,8 @@ class FormEditor extends DataComponent {
   addInteractionRow({ name, pptTypes, association }){
     let doc = this.data.document;
 
+    let dirty = () => this.dirty();
+
     let entries = [ uuid(), uuid() ].map( (id, i) => ({
       id,
       group: pptTypes[i].value
@@ -130,20 +134,76 @@ class FormEditor extends DataComponent {
       }
     });
 
-    return (
+    let destroyCy = ({ cy }) => {
+      if ( cy != null ) {
+        cy.destroy();
+      }
+    };
+
+    let runLayout = cy => {
+      let layout = cy.layout( _.assign( {}, getCyLayoutOpts(), {
+        animate: false,
+        randomize: false
+      } ) );
+
+      let layoutDone = Promise.try( () => layout.promiseOn('layoutstop') );
+
+      layout.run();
+
+      return layoutDone;
+    };
+
+    let createElsAndRunLayout = () => Promise.try( () =>
       Promise.all([ createIntn(), createEnts() ])
       .then( ([ intn, ppts ]) => {
-        let synch = el => el.synch(true);
-        let create = el => el.create();
-        let add = el => doc.add(el);
-        let handleElCreation = el => Promise.try( () => synch(el) ).then( () => create(el) );
-        let els = [ intn, ...ppts ];
+        let cy = new Cytoscape({
+          headless: true,
+          elements: makeCyEles( doc.elements() ),
+          layout: { name: 'preset' },
+          styleEnabled: true
+        });
 
-        return Promise.all( els.map(handleElCreation) ).then( () => {
-          return Promise.all( ppts.map(add) ).then( () => add(intn) );
-        } );
+        // already existing elements are supposed to be locked during the layout
+        cy.nodes().lock();
+
+        // create cy eles for the new elements that are not represented in cy
+        // yet because they were not in document while cy is created
+        cy.add( makeCyEles([intn, ...ppts]) ).nodes().forEach(n => n.position({
+          x: Math.random() * 10,
+          y: Math.random() * 10
+        }));
+
+        return runLayout(cy).then( () => ({ cy, intn, ppts }) );
       } )
-      .then( () => this.dirty() )
+    );
+
+    let updatePos = (el, cy) => {
+      let cyEle = cy.getElementById( el.id() );
+      let pos =  _.clone( cyEle.position() );
+
+      return el.reposition( pos );
+    };
+
+    let synch = el => el.synch(true);
+    let create = el => el.create();
+    let add = el => doc.add(el);
+    let handleElCreation = el => Promise.try( () => synch(el) ).then( () => create(el) );
+
+    let saveResults = ({ intn, ppts, cy }) => {
+      return (
+        Promise.all( ppts.map(ppt => updatePos(ppt, cy)) )
+        .then( () => Promise.all([intn, ...ppts].map(handleElCreation)) )
+        .then( () => ppts.map(add) )
+        .then( () => add(intn) )
+        .then( () => ({ intn, ppts, cy }) )
+      );
+    };
+
+    return (
+      Promise.try( createElsAndRunLayout )
+      .then( saveResults )
+      .then( destroyCy )
+      .then( dirty )
     );
   }
 
@@ -207,17 +267,13 @@ class FormEditor extends DataComponent {
       }, [
         h('button.plain-button', {
           onClick: () => {
-            let doc = this.data.document;
-
             let addInteractionRow = () => this.addInteractionRow( {
               name: formType.type,
               pptTypes: formType.pptTypes,
               association: formType.association[0]
             } );
 
-            let applyLayout = () => doc.applyLayout();
-
-            Promise.try( addInteractionRow ).then( applyLayout );
+            addInteractionRow();
           }
         }, formType.type)
       ]

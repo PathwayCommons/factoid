@@ -346,6 +346,14 @@ class Document {
     return templates;
   }
 
+  toText(){
+    let interactions = this.interactions();
+    let strings = interactions.map( intn => intn.toString() );
+    let dotOrEmptyStr = interactions.length > 0 ? '.' : '';
+
+    return strings.join( ', ' ) + dotOrEmptyStr;
+  }
+
   fromJson( json ){
     let els = json.elements || [];
     let makeEl = json => Promise.try( () => this.factory().make({ data: json }) );

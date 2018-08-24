@@ -245,6 +245,10 @@ class Interaction extends Element {
   toBiopaxTemplate(){
     return this.association().toBiopaxTemplate();
   }
+
+  toString(){
+    return this.association().toString();
+  }
 }
 
 // forward common calls to the element set

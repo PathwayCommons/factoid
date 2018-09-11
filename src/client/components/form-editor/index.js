@@ -11,13 +11,10 @@ const logger = require('../../logger');
 const debug = require('../../debug');
 
 const Document = require('../../../model/document');
-const { exportDocumentToOwl } = require('../../util');
 const { makeCyEles, getCyLayoutOpts } = require('../../../util');
 
-const AppNav = require('../app-nav');
 const Tooltip = require('../popover/tooltip');
 const Popover = require('../popover/popover');
-const Linkout = require('../document-linkout');
 
 
 const ProteinModificationForm = require('./protein-modification-form');
@@ -225,7 +222,6 @@ class FormEditor extends DataComponent {
 
   render(){
     let doc = this.data.document;
-    let { history } = this.props;
 
     const formTypes = [
       { type: 'Protein modification', clazz: ProteinModificationForm, pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  description:"E.g., A phosphorylates B.", association: [Interaction.ASSOCIATION.PHOSPHORYLATION, Interaction.ASSOCIATION.UBIQUINATION, Interaction.ASSOCIATION.METHYLATION] },
@@ -302,77 +298,6 @@ class FormEditor extends DataComponent {
               }, [
                 h('i.material-icons.add-new-interaction-icon', 'add'),
                 'Add interaction'
-              ])
-            ])
-          ])
-        ]),
-        h('div.form-app-bar', [
-          h('div.form-app-buttons', [
-            h(Tooltip, { description: 'Home' }, [
-              h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
-                h('i.app-icon')
-              ])
-            ]),
-            h(Popover, {
-              tippy: {
-                position: 'right',
-                html: h('div.editor-linkout', [
-                  h(Linkout, { document: doc })
-                ])
-              }
-            }, [
-              h(Tooltip, { description: 'Share link' }, [
-                h('button.editor-button.plain-button', [
-                  h('i.material-icons', 'link')
-                ])
-              ])
-            ]),
-            h(Tooltip, { description: 'Save as BioPAX' }, [
-              h('button.editor-button.plain-button', { onClick: () => exportDocumentToOwl( doc.id() ) }, [
-                h('i.material-icons', 'save_alt')
-              ])
-            ]),
-            h(Tooltip, { description: 'Network editor' }, [
-              h('button.editor-button.plain-button', {
-                onClick: () => {
-                  let id = doc.id();
-                  let secret = doc.secret();
-
-                  if( doc.editable() ){
-                    history.push(`/document/${id}/${secret}`);
-                  } else {
-                    history.push(`/document/${id}`);
-                  }
-                }
-              }, [
-                h('i.material-icons', 'swap_horiz')
-              ])
-            ]),
-            h(Popover, {
-              tippy: {
-                position: 'right',
-                followCursor: false,
-                html: h(AppNav, [
-                  h('button.editor-more-button.plain-button', {
-                    onClick: () => history.push('/new')
-                  }, [
-                    h('span', ' New factoid')
-                  ]),
-                  h('button.editor-more-button.plain-button', {
-                    onClick: () => history.push('/documents')
-                  }, [
-                    h('span', ' My factoids')
-                  ]),
-                  h('button.editor-more-button.plain-button', {
-                    onClick: () => history.push('/')
-                  }, [
-                    h('span', ' About & contact')
-                  ])
-                ])
-              }
-              }, [
-              h('button.editor-button.plain-button', [
-                h('i.material-icons', 'more_vert')
               ])
             ])
           ])

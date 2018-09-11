@@ -341,6 +341,10 @@ button {
   transform: rotate(270deg);
 }
 
+.icon-rot-45 {
+  transform: rotate(45deg);
+}
+
 h1,
 h2,
 h3 {

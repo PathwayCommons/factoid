@@ -17,10 +17,9 @@ const debug = require('../../debug');
 
 const makeCytoscape = require('./cy');
 const defs = require('./defs');
-const { EditorButtons, AppButtons } = require('./buttons');
+const EditorButtons = require('./buttons');
+const MainMenu = require('../main-menu');
 const UndoRemove = require('./undo-remove');
-const Help = require('./help');
-const { TaskList } = require('./task-list');
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -353,19 +352,17 @@ class Editor extends DataComponent {
     let controller = this;
     let { history } = this.props;
 
-    let showTaskList = this.data.taskListMode;
-
     let editorContent = this.data.initted ? [
       h('div.editor-branding', [
         h('div.editor-title', document.name() === '' ? 'Untitled document' : document.name())
       ]),
+      h('div.editor-main-menu', [
+        h(MainMenu, { bus, document, history })
+      ]),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
-      h(AppButtons, { className: showTaskList ? 'editor-buttons-right.editor-buttons-right-shifted' : 'editor-buttons-right', controller, document, bus, history } ),
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
-      h(`div.${showTaskList ? 'editor-graph-shifted#editor-graph' : 'editor-graph#editor-graph'}`),
-      h(Help, { document, bus, controller }),
-      h(TaskList, { document, bus, controller, show: showTaskList })
+      h('div.editor-graph#editor-graph')
     ] : [];
 
     return h('div.editor', {

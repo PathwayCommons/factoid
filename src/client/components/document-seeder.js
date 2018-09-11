@@ -4,12 +4,8 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const { makeClassList } = require('../../util');
 
-
 const DocumentWizardStepper = require('./document-wizard-stepper');
 const IntervalHighlighter = require('./interval-highlighter');
-const Tooltip = require('./popover/tooltip');
-const Popover = require('./popover/popover');
-const AppNav = require('./app-nav');
 
 const ENTITY_HIGHLIGHT_CLASS = 'document-seeder-highlighted-entity';
 const INTN_SENTENCE_HIGHLIGHT_CLASS = 'document-seeder-highlighted-interaction-sentence';
@@ -288,8 +284,6 @@ class DocumentSeeder extends React.Component {
   }
 
   render(){
-    let { history } = this.props;
-
     return h('div.document-seeder', [
       h('div.document-seeder-content', [
         h('h2', 'Enter Paper Details'),
@@ -330,42 +324,6 @@ class DocumentSeeder extends React.Component {
               return Promise.try( create ).then( go );
             }
           })
-        ])
-      ]),
-      h('div.document-stepper-app-bar', [
-        h('div.document-stepper-app-buttons', [
-          h(Tooltip, { description: 'Home' }, [
-            h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
-              h('i.app-icon')
-            ])
-          ]),
-          h(Popover, {
-            tippy: {
-              position: 'right',
-              followCursor: false,
-              html: h(AppNav, [
-                h('button.editor-more-button.plain-button', {
-                  onClick: () => history.push('/new')
-                }, [
-                  h('span', ' New factoid')
-                ]),
-                h('button.editor-more-button.plain-button', {
-                  onClick: () => history.push('/documents')
-                }, [
-                  h('span', ' My factoids')
-                ]),
-                h('button.editor-more-button.plain-button', {
-                  onClick: () => history.push('/')
-                }, [
-                  h('span', ' About & contact')
-                ])
-              ])
-            }
-            }, [
-            h('button.editor-button.plain-button', [
-              h('i.material-icons', 'more_vert')
-            ])
-          ])
         ])
       ])
 

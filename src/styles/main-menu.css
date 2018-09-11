@@ -1,0 +1,56 @@
+.main-menu {
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.main-menu-button {
+  margin: 0.25em;
+  width: 1.75em;
+  height: 1.75em;
+  font-size: 1.25em;
+}
+
+.main-menu-set {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.125em;
+
+  & + * {
+    border-top: 1px solid #ccc;
+  }
+}
+
+.main-menu-item {
+  width: 100%;
+  text-align: left;
+}
+
+.main-menu-linkouts {
+  min-width: 14em;
+  max-width: 40em;
+  width: 40vw;
+  padding: 0.25em;
+
+  & .document-linkout-address-name:first-child {
+    margin-top: 0;
+  }
+
+  & .document-linkout-address:last-child .document-linkout-address-val {
+    margin-bottom: 0;
+  }
+}
+
+.main-menu-logo {
+  font-size: 2.25em;
+  margin-right: 0.125em;
+  transition-property: filter;
+  transition-timing-function: ease-out;
+  transition-duration: 250ms;
+
+  &:active {
+    filter: brightness(50%);
+  }
+}

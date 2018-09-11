@@ -1,51 +1,66 @@
-<!--
-Are you submitting a bug report or a feature request?  If so, use the appropriate template that follows.
+## Description
 
-When submitting a bug report, check the following:
-- The report has a descriptive title.
-- The bug still exists in the master branch and the unstable (dev) branch.
+<!-- Fill in the answers below the questions -->
+
+**Q: What is the name of the feature?**
+
+A: 
+
+**Q: What does this feature enable the user to do?**
+
+A: 
+
+**Q: What information must the user provide to use the feature?**
+
+A: 
+
+**Q: What are the applicable constraints, e.g. compatibility or performance?**
+
+A: 
+
+**Q: How does this feature affect each class of user (persona)?**
+
+A:
+
+- Biologist: 
+- Editor: 
+- Computational biologist: 
+- Curator: 
+
+<!-- Reference:
+
+Biologist
+- Position: Lab student/staff
+- Standards: None known
+- Pathway knowledge: Figures
+
+Editor
+- Position: Journal editor 
+- Standards: None known
+- Pathway knowledge: Figures
+
+Computational biologist
+- Position: Lab student/staff
+- Standards: BioPAX/SBGN (or maybe others instead)
+- Pathway knowledge: Enrichment analysis, Knowledge representation
+
+Curator
+- Position: Lab PI/staff
+- Standards: BioPAX/SBGN
+- Pathway knowledge: Knowledge representation
+
+See personas doc for more details.
 -->
 
+## Specification
+
+### Mockup
+
+<!-- Provide a detailed mockup of the feature.  The mockup should show how and where the feature fits into the interface, and it should include all steps that a user would carry out. -->
 
 
 
-<!-- BUG REPORT : Delete if requesting a feature -->
+### Details
 
-## Environment info
+<!-- Provide text that describes what is shown in the mockup.  Explain design decisions made. -->
 
-- Browser version (client) :
-- Node.js version (server) :
-
-
-## Current (buggy) behaviour
-
-<!-- What does the bug do? -->
-
-
-## Desired behaviour
-
-<!-- What do you expect Factoid to do instead? -->
-
-
-## Minimum steps to reproduce
-
-<!-- Write out an overview of what you need to do to reproduce the issue. -->
-
-<!-- END BUG REPORT -->
-
-
-
-
-<!-- FEATURE REQUEST : Delete if reporting a bug -->
-
-## Description of new feature
-
-<!-- What should the new feature do?  That is, what is the goal that the user will accomplish? -->
-
-
-## Motivation for new feature
-
-<!-- Describe the use case for this new feature.  Why is the goal the user will accomplish important? -->
-
-
-<!-- END FEATURE REQUEST -->

@@ -1,5 +1,5 @@
 let _ = require('lodash');
-let hash = require('hash.js');
+let sha512 = require('hash.js/lib/hash/sha/512');
 
 function firstDefined( value, defaultValue /* ... */ ){ // eslint-disable-line no-unused-vars
   let arg;
@@ -126,7 +126,7 @@ function serialize( obj, filter = () => true ){
 function jsonHash( obj, filter ){
   let serializedJson = serialize( obj, filter );
 
-  return hash.sha512().update( serializedJson ).digest('hex');
+  return sha512().update( serializedJson ).digest('hex');
 }
 
 function isNonNil(v){

@@ -1,8 +1,7 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const Promise = require('bluebird');
 const _ = require('lodash');
-const { makeClassList } = require('../../util');
+const { makeClassList, tryPromise } = require('../../util');
 
 const DocumentWizardStepper = require('./document-wizard-stepper');
 const IntervalHighlighter = require('./interval-highlighter');
@@ -46,7 +45,7 @@ class DocumentSeeder extends React.Component {
 
     let toJson = res => res.json();
 
-    return Promise.try( makeRequest ).then( toJson );
+    return tryPromise( makeRequest ).then( toJson );
   }
 
   updateReachHighlightInput(){
@@ -239,7 +238,7 @@ class DocumentSeeder extends React.Component {
 
     let highlightOrClear = () => {
       if (this.state.reachHighlightEnabled) {
-        Promise.try(this.updateReachHighlightInput.bind(this))
+        tryPromise(this.updateReachHighlightInput.bind(this))
                     .then(this.getReachResponse.bind(this))
                     .then(this.updateReachHighlightIntervals.bind(this));
       }
@@ -248,7 +247,7 @@ class DocumentSeeder extends React.Component {
       }
     };
 
-    Promise.try(toggleHighlightState).then(highlightOrClear);
+    tryPromise(toggleHighlightState).then(highlightOrClear);
   }
 
   createDoc(){
@@ -273,7 +272,7 @@ class DocumentSeeder extends React.Component {
 
     this.setState({ submitting: true });
 
-    return Promise.try( makeRequest ).then( toJson ).then( updateState );
+    return tryPromise( makeRequest ).then( toJson ).then( updateState );
   }
 
   goToChooser(){
@@ -321,7 +320,7 @@ class DocumentSeeder extends React.Component {
               let create = () => this.createDoc();
               let go = () => this.goToChooser();
 
-              return Promise.try( create ).then( go );
+              return tryPromise( create ).then( go );
             }
           })
         ])

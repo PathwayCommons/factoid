@@ -3,7 +3,6 @@ const h = require('react-hyperscript');
 const io = require('socket.io-client');
 const _ = require('lodash');
 const EventEmitter = require('eventemitter3');
-const Promise = require('bluebird');
 const uuid = require('uuid');
 const Cytoscape = require('cytoscape');
 
@@ -11,7 +10,7 @@ const logger = require('../../logger');
 const debug = require('../../debug');
 
 const Document = require('../../../model/document');
-const { makeCyEles, getCyLayoutOpts } = require('../../../util');
+const { makeCyEles, getCyLayoutOpts, tryPromise } = require('../../../util');
 
 const Tooltip = require('../popover/tooltip');
 const Popover = require('../popover/popover');
@@ -57,7 +56,7 @@ class FormEditor extends DataComponent {
       this.dirty();
     });
 
-    Promise.try( () => doc.load() )
+    tryPromise( () => doc.load() )
       .then( () => logger.info('The doc already exists and is now loaded') )
       .catch( err => {
         logger.info('The doc does not exist or an error occurred');
@@ -143,14 +142,14 @@ class FormEditor extends DataComponent {
         randomize: false
       } ) );
 
-      let layoutDone = Promise.try( () => layout.promiseOn('layoutstop') );
+      let layoutDone = tryPromise( () => layout.promiseOn('layoutstop') );
 
       layout.run();
 
       return layoutDone;
     };
 
-    let createElsAndRunLayout = () => Promise.try( () =>
+    let createElsAndRunLayout = () => tryPromise( () =>
       Promise.all([ createIntn(), createEnts() ])
       .then( ([ intn, ppts ]) => {
         let cy = new Cytoscape({
@@ -184,7 +183,7 @@ class FormEditor extends DataComponent {
     let synch = el => el.synch(true);
     let create = el => el.create();
     let add = el => doc.add(el);
-    let handleElCreation = el => Promise.try( () => synch(el) ).then( () => create(el) );
+    let handleElCreation = el => tryPromise( () => synch(el) ).then( () => create(el) );
 
     let saveResults = ({ intn, ppts, cy }) => {
       return (
@@ -197,7 +196,7 @@ class FormEditor extends DataComponent {
     };
 
     return (
-      Promise.try( createElsAndRunLayout )
+      tryPromise( createElsAndRunLayout )
       .then( saveResults )
       .then( destroyCy )
       .then( dirty )
@@ -217,7 +216,7 @@ class FormEditor extends DataComponent {
 
     let dirty = () => this.dirty();
 
-    return Promise.try(rmAll).then(dirty);
+    return tryPromise(rmAll).then(dirty);
   }
 
   render(){

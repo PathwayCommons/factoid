@@ -1,6 +1,6 @@
 const DirtyComponent = require('../dirty-component');
 const _ = require('lodash');
-const Promise = require('bluebird');
+const { tryPromise } = require('../../../util');
 
 const dirtyEvents = ['remoteassociate', 'remoteretype'];
 
@@ -68,7 +68,7 @@ class InteractionForm extends DirtyComponent {
       }, data )
     });
 
-    Promise.try( () => el.synch() )
+    tryPromise( () => el.synch() )
       .then( () => el.create() )
       .then( () => doc.add(el) )
       .then( () => el )
@@ -85,7 +85,7 @@ class InteractionForm extends DirtyComponent {
     let complete = () => this.completeIfReady();
     let dirty = () => this.dirty();
 
-    return Promise.try( setPptType ).then( complete ).then( dirty );
+    return tryPromise( setPptType ).then( complete ).then( dirty );
   }
 }
 

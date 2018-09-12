@@ -5,7 +5,6 @@ const isAfter = require('date-fns/is_after');
 const subSeconds = require('date-fns/sub_seconds');
 const date = { parse, isAfter, subSeconds };
 const onKey = require('./on-key');
-const Promise = require('bluebird');
 const { isInteractionNode, makeCyEles, makePptEdges } = require('../../../../util');
 
 function listenToDoc({ bus, cy, document, controller }){

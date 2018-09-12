@@ -1,5 +1,5 @@
-const Promise = require('bluebird');
 const _ = require('lodash');
+const { tryPromise } = require('../../../../util');
 const uuid = require('uuid');
 const toJson = res => res.json();
 const fetch = require('node-fetch');
@@ -121,7 +121,7 @@ module.exports = {
             id: ground.id
           };
 
-          let applyGround = Promise.try( () => {
+          let applyGround = tryPromise( () => {
             switch( ground.namespace ){
             case 'uniprot':
               return uniprot.get( q );
@@ -369,7 +369,7 @@ module.exports = {
         elements = elements.filter( el => elIsIntn(el) || elIsInSomeIntn(el) );
       }
 
-      return Promise.try( () => {
+      return tryPromise( () => {
         return Promise.all( groundPromises );
       } ).then( () => {
 
@@ -383,6 +383,6 @@ module.exports = {
       } );
     };
 
-    return Promise.try( makeRequest ).then( toJson ).then( makeDocJson );
+    return tryPromise( makeRequest ).then( toJson ).then( makeDocJson );
   }
 };

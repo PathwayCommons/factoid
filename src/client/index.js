@@ -1,10 +1,3 @@
-// polyfills
-let Promise = require('bluebird');
-
-Promise.config({
-  cancellation: true
-});
-
 let debug = require('./debug');
 let Router = require('./router');
 let ReactDom = require('react-dom');

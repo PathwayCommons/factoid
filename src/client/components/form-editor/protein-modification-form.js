@@ -2,7 +2,7 @@ const h = require('react-hyperscript');
 const InteractionForm = require('./interaction-form.js');
 const EntityForm = require('./entity-form.js');
 const Interaction = require('../../../model/element/interaction');
-const Promise = require('bluebird');
+const { tryPromise } = require('../../../util');
 
 class ProteinModificationForm extends InteractionForm {
   constructor(props){
@@ -15,7 +15,7 @@ class ProteinModificationForm extends InteractionForm {
     let complete = () => this.completeIfReady();
     let dirty = () => this.dirty();
 
-    return Promise.try(associate).then(complete).then(dirty);
+    return tryPromise(associate).then(complete).then(dirty);
   }
 
   getModificationType(){

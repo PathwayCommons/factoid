@@ -1,7 +1,6 @@
 const { Component } = require('react');
 const h = require('react-hyperscript');
-const Promise = require('bluebird');
-const { makeClassList } = require('../../util');
+const { makeClassList, tryPromise } = require('../../util');
 const Tooltip = require('./popover/tooltip');
 
 const EXAMPLE_TEXT = `Upon detection of DNA damage, the ATM kinase mediates the phosphorylation of the Mdm2 protein to block its interaction with p53. The p53 protein activates the transcription of cyclin-dependent kinase inhibitor, p21. p21 inactivates the CCNE1:Cdk2 complex.`;
@@ -48,7 +47,7 @@ class DemoInput extends Component {
     let loading = passthrough(() => this.setState({ loading: true }));
     let notLoading = passthrough(() => this.setState({ loading: false }));
 
-    return Promise.try( loading ).then( makeRequest ).then( notLoading ).then( redirect );
+    return tryPromise( loading ).then( makeRequest ).then( notLoading ).then( redirect );
   }
 
   render(){

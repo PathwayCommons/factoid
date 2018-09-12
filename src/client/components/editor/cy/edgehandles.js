@@ -1,9 +1,8 @@
 const on = require('./on-key');
 const uuid = require('uuid');
 const _ = require('lodash');
-const Promise = require('bluebird');
 
-const { isInteractionNode } = require('../../../../util');
+const { isInteractionNode, tryPromise } = require('../../../../util');
 
 const SELECT_ON_HANDLE_TAP = false;
 const DRAW_ON_HANDLE_TAP = true;
@@ -100,7 +99,7 @@ module.exports = function({ bus, cy, document, controller }){
     lastEdgeCreationTime = Date.now();
 
     return (
-      Promise.try( handleIntn )
+      tryPromise( handleIntn )
       .then( docIntn => intn = docIntn )
       .then( rmPreviewEles )
       .then( disableDrawMode )

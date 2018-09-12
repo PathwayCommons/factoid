@@ -1,5 +1,6 @@
 const FileSaver = require('file-saver');
 const _ = require('lodash');
+const { tryPromise } = require('../../util');
 
 function exportContentToFile(content, fileName){
   var file = new File([content], fileName, {type: "text/plain;charset=utf-8"});
@@ -24,7 +25,7 @@ function exportDocumentToOwl(docId, fileName){
 
   fileName = fileName || docId;
 
-  Promise.try( makeRequest ).then( result => result.text() )
+  tryPromise( makeRequest ).then( result => result.text() )
           .then( content => exportContentToOwl(content, fileName) );
 }
 

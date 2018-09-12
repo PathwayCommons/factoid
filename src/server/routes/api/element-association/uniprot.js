@@ -1,10 +1,9 @@
 const fetch = require('node-fetch');
-const Promise = require('bluebird');
 const querystring = require('querystring');
 const _ = require('lodash');
 const Organism = require('../../../../model/organism');
 const LRUCache = require('lru-cache');
-const { memoize, lazySlice } = require('../../../../util');
+const { memoize, lazySlice, tryPromise } = require('../../../../util');
 const xml = require('xml-js');
 const convert = require('./search-string-conversion');
 
@@ -197,8 +196,7 @@ const getRequestUrl = ( endpt, query ) => BASE_URL + `/${endpt}` + ( query != nu
 
 const rawTabDelimRequest = ( endpt, query ) => { // eslint-disable-line no-unused-vars
   return (
-    Promise
-      .try( () => fetch( getRequestUrl( endpt, _.assign({}, query, { format: 'tab' }) ) ) )
+    tryPromise( () => fetch( getRequestUrl( endpt, _.assign({}, query, { format: 'tab' }) ) ) )
       .then( res => res.text() )
       .then( processTabDelim )
   );
@@ -208,8 +206,7 @@ const rawXmlRequest = ( endpt, query ) => {
   let url = getRequestUrl( endpt, _.assign({}, query, { format: 'xml' }) );
 
   return (
-    Promise
-      .try( () => fetch( url ) )
+    tryPromise( () => fetch( url ) )
       .then( res => res.text() )
       .then( processXml )
   );
@@ -225,7 +222,7 @@ const search = opts => {
   if( offset == null ){ offset = 0; }
 
   return (
-    Promise.try( () => request( '', searchQuery( _.assign({}, opts, {
+    tryPromise( () => request( '', searchQuery( _.assign({}, opts, {
       name: convert( opts.name ),
       offset: 0,
       limit: MAX_SEARCH_SIZE
@@ -237,7 +234,7 @@ const search = opts => {
 
 const get = opts => {
   return (
-    Promise.try( () => request( '', getQuery(opts) ) )
+    tryPromise( () => request( '', getQuery(opts) ) )
     .then( res => res[0] )
   );
 };

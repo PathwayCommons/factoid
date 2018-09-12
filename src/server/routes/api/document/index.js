@@ -1,9 +1,8 @@
 const http = require('express').Router();
-const Promise = require('bluebird');
 const _ = require('lodash');
 const uuid = require('uuid');
 const fetch = require('node-fetch');
-
+const { tryPromise } = require('../../../../util');
 
 const Document = require('../../../../model/document');
 const db = require('../../../db');
@@ -54,7 +53,7 @@ let runLayout = doc => {
   let run = () => doc.applyLayout();
   let getDoc = () => doc;
 
-  return Promise.try( run ).then( getDoc );
+  return tryPromise( run ).then( getDoc );
 };
 
 let getReachOutput = text => provider.getRawResponse( text );
@@ -79,7 +78,7 @@ let getBiopaxFromTemplates = templates => {
 http.get('/:id', function( req, res ){
   let id = req.params.id;
 
-  ( Promise.try( loadTables )
+  ( tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
     .then( getDocJson )
@@ -93,7 +92,7 @@ http.post('/', function( req, res ){
 
   let secret = uuid();
 
-  ( Promise.try( loadTables )
+  ( tryPromise( loadTables )
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret }) )
     .then( doc => doc.rename( title ).then( () => doc ) )
     .then( doc => fillDoc( doc, text ) )
@@ -124,7 +123,7 @@ http.post('/query-reach', function( req, res ){
 
 http.get('/biopax/:id', function( req, res ){
   let id = req.params.id;
-  Promise.try( loadTables )
+  tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
     .then( doc => doc.toBiopaxTemplates() )

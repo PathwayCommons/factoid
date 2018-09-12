@@ -32,7 +32,6 @@
   },
   "dependencies": {
     "animejs": "^2.0.2",
-    "bluebird": "^3.4.1",
     "body-parser": "^1.15.1",
     "clipboard": "^1.7.1",
     "cookie-parser": "^1.4.3",
@@ -61,6 +60,7 @@
     "mousetrap": "^1.6.1",
     "node-fetch": "^2.1.1",
     "normalize.css": "^5.0.0",
+    "p-cancelable": "^0.5.1",
     "popper.js": "^1.13.0",
     "query-string": "^4.3.4",
     "react": "^16.5.0",

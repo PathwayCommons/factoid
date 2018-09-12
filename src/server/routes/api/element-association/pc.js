@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
-const Promise = require('bluebird');
 const querystring = require('querystring');
 const _ = require('lodash');
+const { tryPromise } = require('../../../../util');
 
 const BASE_URL = 'http://www.pathwaycommons.org/pc2';
 const LIMIT = 10;
@@ -43,18 +43,17 @@ const request = ( endpt, query ) => {
   let addr = BASE_URL + `/${endpt}?` + querystring.stringify( query );
 
   return (
-    Promise
-      .try( () => fetch( addr ) )
+    tryPromise( () => fetch( addr ) )
       .then( res => res.json() )
   );
 };
 
 module.exports = {
   search( opts ){
-    return Promise.try( () => request( 'search', searchQuery(opts) ) ).then( searchPostprocess );
+    return tryPromise( () => request( 'search', searchQuery(opts) ) ).then( searchPostprocess );
   },
 
   get( opts ){
-    return Promise.try( () => request( 'get', getQuery(opts) ) ).then( getPostprocess );
+    return tryPromise( () => request( 'get', getQuery(opts) ) ).then( getPostprocess );
   }
 };

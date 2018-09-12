@@ -1,7 +1,4 @@
 // polyfills
-require('babel-polyfill');
-require('whatwg-fetch');
-
 let Promise = require('bluebird');
 
 Promise.config({

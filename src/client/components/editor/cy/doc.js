@@ -1,6 +1,9 @@
 const _ = require('lodash');
 const defs = require('./defs');
-const date = require('date-fns');
+const parse = require('date-fns/parse');
+const isAfter = require('date-fns/is_after');
+const subSeconds = require('date-fns/sub_seconds');
+const date = { parse, isAfter, subSeconds };
 const onKey = require('./on-key');
 const Promise = require('bluebird');
 const { isInteractionNode, makeCyEles, makePptEdges } = require('../../../../util');

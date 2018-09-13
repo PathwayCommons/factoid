@@ -12,9 +12,9 @@ Note: Removed all formats other than WOFF.  WOFF files will be inlined.
 @font-face {
   font-family: 'FontAwesome';
   src:
-    url('./fonts/font-awesome/fontawesome-webfont.woff') format('woff')
+    /* url('./fonts/font-awesome/fontawesome-webfont.woff') format('woff') */
     /* disabled to reduce file size; switch to woff2 when there's universal browser support */
-    /*url('./fonts/font-awesome/fontawesome-webfont.woff2') format('woff2')*/
+    url('./fonts/font-awesome/fontawesome-webfont.woff2') format('woff2')
   ;
   font-weight: normal;
   font-style: normal;

@@ -18,6 +18,12 @@ let conf = {
         url: 'inline',
         encodeType: 'base64',
         maxSize: Number.MAX_SAFE_INTEGER
+      },
+      {
+        filter: '**/*.woff2',
+        url: 'inline',
+        encodeType: 'base64',
+        maxSize: Number.MAX_SAFE_INTEGER
       }
     ]),
     require('postcss-cssnext')({

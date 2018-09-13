@@ -1,7 +1,7 @@
 const _ = require('lodash');
-const chebi = require('./chebi');
+const pubchem = require('./pubchem');
 const uniprot = require('./uniprot');
-const providers = [ uniprot, chebi ];
+const providers = [ uniprot, pubchem ];
 const { memoize, stringDistanceMetric, tryPromise } = require('../../../../util');
 const LRUCache = require('lru-cache');
 const Organism = require('../../../../model/organism');

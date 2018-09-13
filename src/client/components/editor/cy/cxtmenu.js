@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-const icon = name => '<span class="cxtmenu-command-icon"><i class="material-icons">' + name + '</i></span>';
+const icon = (name, cls) => `<span class="cxtmenu-command-icon"><i class="material-icons ${cls}">${name}</i></span>`;
 
 const DEFAULTS = Object.freeze({
   fillColor: 'rgba(0, 0, 0, 0.85)',
@@ -12,7 +12,7 @@ module.exports = function({ cy, document, bus }){
   if( !document.editable() ){ return; }
 
   let drawCmd = {
-    content: icon('keyboard_tab'),
+    content: icon('remove', 'icon-rot-45'),
     select: function( el ){
       bus.emit( 'drawfrom', el );
     }
@@ -33,14 +33,14 @@ module.exports = function({ cy, document, bus }){
   };
 
   let addEntCmd = {
-    content: icon('add_circle'),
+    content: icon('fiber_manual_record'),
     select: function(){
       bus.emit('addelementmouse');
     }
   };
 
   let drawModeCmd = {
-    content: icon('keyboard_tab'),
+    content: icon('remove', 'icon-rot-45'),
     select: function(){
       bus.emit('drawtoggle');
     }

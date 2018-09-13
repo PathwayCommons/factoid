@@ -11,11 +11,19 @@ const unbabelifiedDependencies = [
   'p-cancelable'
 ];
 
+const polyfills = [
+  'babel-polyfill',
+  'whatwg-fetch'
+];
+
 let conf = {
-  entry: './src/client/index.js',
+  entry: {
+    bundle: './src/client/index.js',
+    polyfills: './src/client/polyfills.js'
+  },
 
   output: {
-    filename: './build/bundle.js'
+    filename: './build/[name].js'
   },
 
   devtool: 'inline-source-map',
@@ -46,7 +54,7 @@ let conf = {
       minChunks( module ){
         let context = module.context || '';
 
-        return context.indexOf('node_modules') >= 0;
+        return context.indexOf('node_modules') >= 0 && !polyfills.some(pf => context.indexOf(pf) >= 0);
       }
     }),
 

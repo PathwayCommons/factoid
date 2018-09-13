@@ -38,7 +38,7 @@ class DocumentViewChooser extends React.Component {
         h('div.document-stepper-app-buttons', [
           h(Tooltip, { description: 'Home' }, [
             h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
-              h('i.app-icon')
+              h('i.icon.icon-logo')
             ])
           ])
         ])

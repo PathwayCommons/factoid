@@ -1,15 +1,10 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const Promise = require('bluebird');
 const _ = require('lodash');
-const { makeClassList } = require('../../util');
-
+const { makeClassList, tryPromise } = require('../../util');
 
 const DocumentWizardStepper = require('./document-wizard-stepper');
 const IntervalHighlighter = require('./interval-highlighter');
-const Tooltip = require('./popover/tooltip');
-const Popover = require('./popover/popover');
-const AppNav = require('./app-nav');
 
 const ENTITY_HIGHLIGHT_CLASS = 'document-seeder-highlighted-entity';
 const INTN_SENTENCE_HIGHLIGHT_CLASS = 'document-seeder-highlighted-interaction-sentence';
@@ -50,7 +45,7 @@ class DocumentSeeder extends React.Component {
 
     let toJson = res => res.json();
 
-    return Promise.try( makeRequest ).then( toJson );
+    return tryPromise( makeRequest ).then( toJson );
   }
 
   updateReachHighlightInput(){
@@ -243,7 +238,7 @@ class DocumentSeeder extends React.Component {
 
     let highlightOrClear = () => {
       if (this.state.reachHighlightEnabled) {
-        Promise.try(this.updateReachHighlightInput.bind(this))
+        tryPromise(this.updateReachHighlightInput.bind(this))
                     .then(this.getReachResponse.bind(this))
                     .then(this.updateReachHighlightIntervals.bind(this));
       }
@@ -252,7 +247,7 @@ class DocumentSeeder extends React.Component {
       }
     };
 
-    Promise.try(toggleHighlightState).then(highlightOrClear);
+    tryPromise(toggleHighlightState).then(highlightOrClear);
   }
 
   createDoc(){
@@ -277,7 +272,7 @@ class DocumentSeeder extends React.Component {
 
     this.setState({ submitting: true });
 
-    return Promise.try( makeRequest ).then( toJson ).then( updateState );
+    return tryPromise( makeRequest ).then( toJson ).then( updateState );
   }
 
   goToChooser(){
@@ -288,8 +283,6 @@ class DocumentSeeder extends React.Component {
   }
 
   render(){
-    let { history } = this.props;
-
     return h('div.document-seeder', [
       h('div.document-seeder-content', [
         h('h2', 'Enter Paper Details'),
@@ -327,45 +320,9 @@ class DocumentSeeder extends React.Component {
               let create = () => this.createDoc();
               let go = () => this.goToChooser();
 
-              return Promise.try( create ).then( go );
+              return tryPromise( create ).then( go );
             }
           })
-        ])
-      ]),
-      h('div.document-stepper-app-bar', [
-        h('div.document-stepper-app-buttons', [
-          h(Tooltip, { description: 'Home' }, [
-            h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
-              h('i.app-icon')
-            ])
-          ]),
-          h(Popover, {
-            tippy: {
-              position: 'right',
-              followCursor: false,
-              html: h(AppNav, [
-                h('button.editor-more-button.plain-button', {
-                  onClick: () => history.push('/new')
-                }, [
-                  h('span', ' New factoid')
-                ]),
-                h('button.editor-more-button.plain-button', {
-                  onClick: () => history.push('/documents')
-                }, [
-                  h('span', ' My factoids')
-                ]),
-                h('button.editor-more-button.plain-button', {
-                  onClick: () => history.push('/')
-                }, [
-                  h('span', ' About & contact')
-                ])
-              ])
-            }
-            }, [
-            h('button.editor-button.plain-button', [
-              h('i.material-icons', 'more_vert')
-            ])
-          ])
         ])
       ])
 

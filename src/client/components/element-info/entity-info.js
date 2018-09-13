@@ -1,10 +1,9 @@
 const DataComponent = require('../data-component');
 const h = require('react-hyperscript');
 const ReactDom = require('react-dom');
-const { focusDomElement, makeClassList, initCache, SingleValueCache } = require('../../../util');
+const { focusDomElement, makeClassList, initCache, SingleValueCache, tryPromise, makeCancelable } = require('../../../util');
 const _ = require('lodash');
 const defs = require('../../defs');
-const Promise = require('bluebird');
 const Heap = require('heap');
 const Highlighter = require('../highlighter');
 const Notification = require('../notification');
@@ -13,6 +12,7 @@ const Tooltip = require('../popover/tooltip');
 const assocDisp = require('./entity-assoc-display');
 const Progression = require('./progression');
 const ProgressionStepper = require('./progression-stepper');
+const CancelablePromise = require('p-cancelable');
 
 const { stringDistanceMetric } = require('../../../util');
 const { animateDomForEdit } = require('../animate');
@@ -230,78 +230,83 @@ class EntityInfo extends DataComponent {
     let update;
 
     if( name ){
-      update = (
-        Promise.try( () => fetch( '/api/element-association/search', {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json'
-          },
-          body: JSON.stringify(q)
-        } ) )
-        .then( res => res.json() )
-        .then( matches => {
-          if( this._unmounted ){ return; }
+      let makeRequest = () => fetch( '/api/element-association/search', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify(q)
+      } );
 
-          let getShortSynonyms = (synonyms, cmpStr = name) => {
-            if (synonyms.length <= MAX_SYNONYMS_SHOWN) {
-              return synonyms;
-            }
+      let jsonify = res => res.json();
 
-            // use a memoized distance function to avoid re-calculating the same distances inside nsmallest function
-            let distance = _.memoize( s => {
-              return stringDistanceMetric(s, cmpStr);
-            } );
+      let updateView = matches => {
+        if( this._unmounted ){ return; }
 
-            let cmp = (s1, s2) => {
-              return distance(s1) - distance(s2);
-            };
-
-            // fix the first constant number of synonyms
-            let fixed = synonyms.slice(0, MAX_FIXED_SYNONYMS);
-            // complete the short list by the best matches among the remaining synonyms
-            let remainingBestMatch = Heap.nsmallest(synonyms.slice(MAX_FIXED_SYNONYMS), MAX_SYNONYMS_SHOWN - MAX_FIXED_SYNONYMS, cmp);
-
-            return [...fixed, ...remainingBestMatch];
-          };
-
-          matches.forEach( (match) => {
-            if (match.synonyms) {
-              match.shortSynonyms = getShortSynonyms(match.synonyms);
-            }
-          } );
-
-          if( clearOldMatches ){
-            s.matches = matches;
-          } else {
-            matches.forEach( m => s.matches.push(m) );
+        let getShortSynonyms = (synonyms, cmpStr = name) => {
+          if (synonyms.length <= MAX_SYNONYMS_SHOWN) {
+            return synonyms;
           }
 
-          // cache the matches in the element for re-creation of component
-          associationCache.set( el, {
-            matches: s.matches,
-            offset: offset
+          // use a memoized distance function to avoid re-calculating the same distances inside nsmallest function
+          let distance = _.memoize( s => {
+            return stringDistanceMetric(s, cmpStr);
           } );
 
-          this.setData({
-            matches: s.matches,
-            replacingMatches: false,
-            loadingMatches: false,
-            updatePromise: null,
-            updateDirty: false
-          }, () => {
-            if( clearOldMatches ){
-              let root = ReactDom.findDOMNode(this);
-              let matchesDom = root != null ? root.querySelector('.entity-info-matches') : null;
+          let cmp = (s1, s2) => {
+            return distance(s1) - distance(s2);
+          };
 
-              if( matchesDom != null ){
-                matchesDom.scrollTop = 0;
-              }
+          // fix the first constant number of synonyms
+          let fixed = synonyms.slice(0, MAX_FIXED_SYNONYMS);
+          // complete the short list by the best matches among the remaining synonyms
+          let remainingBestMatch = Heap.nsmallest(synonyms.slice(MAX_FIXED_SYNONYMS), MAX_SYNONYMS_SHOWN - MAX_FIXED_SYNONYMS, cmp);
+
+          return [...fixed, ...remainingBestMatch];
+        };
+
+        matches.forEach( (match) => {
+          if (match.synonyms) {
+            match.shortSynonyms = getShortSynonyms(match.synonyms);
+          }
+        } );
+
+        if( clearOldMatches ){
+          s.matches = matches;
+        } else {
+          matches.forEach( m => s.matches.push(m) );
+        }
+
+        // cache the matches in the element for re-creation of component
+        associationCache.set( el, {
+          matches: s.matches,
+          offset: offset
+        } );
+
+        this.setData({
+          matches: s.matches,
+          replacingMatches: false,
+          loadingMatches: false,
+          updatePromise: null,
+          updateDirty: false
+        }, () => {
+          if( clearOldMatches ){
+            let root = ReactDom.findDOMNode(this);
+            let matchesDom = root != null ? root.querySelector('.entity-info-matches') : null;
+
+            if( matchesDom != null ){
+              matchesDom.scrollTop = 0;
             }
-          });
-        } )
+          }
+        });
+      };
+
+      update = (
+        makeCancelable( tryPromise(makeRequest).then(jsonify) )
+        .then( matches => makeCancelable( tryPromise( () => updateView(matches) ) ) )
       );
     } else {
-      update = Promise.resolve();
+      update = new CancelablePromise(resolve => resolve());
 
       associationCache.set( el, { matches: [], offset: 0 } );
 

@@ -1,12 +1,3 @@
 body.app {
   overflow: auto;
 }
-
-.app-icon {
-  width: 0.875em;
-  height: 0.875em;
-  background-image: url('./image/logo.svg');
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-  display: inline-block;
-}

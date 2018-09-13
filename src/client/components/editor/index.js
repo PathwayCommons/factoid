@@ -4,9 +4,8 @@ const h = require('react-hyperscript');
 const EventEmitter = require('eventemitter3');
 const io = require('socket.io-client');
 const _ = require('lodash');
-const Promise = require('bluebird');
 
-const { getId, defer, makeClassList } = require('../../../util');
+const { getId, defer, makeClassList, tryPromise } = require('../../../util');
 const Document = require('../../../model/document');
 
 const Notification = require('../notification');
@@ -17,10 +16,9 @@ const debug = require('../../debug');
 
 const makeCytoscape = require('./cy');
 const defs = require('./defs');
-const { EditorButtons, AppButtons } = require('./buttons');
+const EditorButtons = require('./buttons');
+const MainMenu = require('../main-menu');
 const UndoRemove = require('./undo-remove');
-const Help = require('./help');
-const { TaskList } = require('./task-list');
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -138,7 +136,7 @@ class Editor extends DataComponent {
 
     logger.info('Checking if doc with id %s already exists', doc.id());
 
-    Promise.try( () => doc.load() )
+    tryPromise( () => doc.load() )
       .then( () => logger.info('The doc already exists and is now loaded') )
       .catch( err => {
         logger.info('The doc does not exist or an error occurred');
@@ -263,7 +261,7 @@ class Editor extends DataComponent {
     let create = () => el.create();
     let add = () => doc.add( el );
 
-    return Promise.try( synch ).then( create ).then( add ).then( () => el );
+    return tryPromise( synch ).then( create ).then( add ).then( () => el );
   }
 
   getLastAddedElement(){
@@ -288,7 +286,7 @@ class Editor extends DataComponent {
     let allIntnsRmPpt = () => Promise.all( doc.interactions().map( rmPpt ) );
     let rmEl = () => doc.remove( docEl );
 
-    Promise.try( allIntnsRmPpt ).then( rmEl );
+    tryPromise( allIntnsRmPpt ).then( rmEl );
   }
 
   undoRemove(){
@@ -308,7 +306,7 @@ class Editor extends DataComponent {
       let restorePpt = () => intn.add( ppt );
       let restoreType = () => intn.participantType( ppt, type );
 
-      return Promise.try( restorePpt ).then( restoreType );
+      return tryPromise( restorePpt ).then( restoreType );
     } ) );
 
     return Promise.all([ restoreEls(), restorePpts() ]).then( makeRmUnavil );
@@ -353,19 +351,17 @@ class Editor extends DataComponent {
     let controller = this;
     let { history } = this.props;
 
-    let showTaskList = this.data.taskListMode;
-
     let editorContent = this.data.initted ? [
       h('div.editor-branding', [
         h('div.editor-title', document.name() === '' ? 'Untitled document' : document.name())
       ]),
+      h('div.editor-main-menu', [
+        h(MainMenu, { bus, document, history })
+      ]),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
-      h(AppButtons, { className: showTaskList ? 'editor-buttons-right.editor-buttons-right-shifted' : 'editor-buttons-right', controller, document, bus, history } ),
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
-      h(`div.${showTaskList ? 'editor-graph-shifted#editor-graph' : 'editor-graph#editor-graph'}`),
-      h(Help, { document, bus, controller }),
-      h(TaskList, { document, bus, controller, show: showTaskList })
+      h('div.editor-graph#editor-graph')
     ] : [];
 
     return h('div.editor', {

@@ -3,9 +3,8 @@ const Syncher = require('../syncher');
 const Entity = require('./entity');
 const Element = require('./element');
 const Interaction = require('./interaction');
-const Promise = require('bluebird');
 const { isEntity, isInteraction } = require('./element-type');
-const { error } = require('../../util');
+const { error, tryPromise } = require('../../util');
 
 /**
 A factory to
@@ -87,7 +86,7 @@ class ElementFactory {
     // just treat as generic syncher json obj b/c we don't know the type yet
     let genObj = new Syncher( opts );
 
-    return Promise.try( () => {
+    return tryPromise( () => {
       return genObj.load();
     } ).then( () => { // get the proper object type
       let Type = this.getType( genObj.get('type') );

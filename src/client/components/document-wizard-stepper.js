@@ -1,8 +1,7 @@
 const { Component } = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
-const { makeClassList } = require('../../util');
-const Promise = require('bluebird');
+const { makeClassList, tryPromise } = require('../../util');
 
 class DocumentWizardStepper extends Component {
   constructor(props){
@@ -36,7 +35,7 @@ class DocumentWizardStepper extends Component {
     let go = (handler, flag) => {
       this.setState({ [flag]: true });
 
-      return Promise.try( handler ).then( () => {
+      return tryPromise( handler ).then( () => {
         if( this._mounted ){
           this.setState({ [flag]: false });
         }

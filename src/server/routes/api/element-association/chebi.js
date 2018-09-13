@@ -1,7 +1,6 @@
 const soap = require('soap');
-const Promise = require('bluebird');
 const _ = require('lodash');
-const { memoize, error } = require('../../../../util');
+const { memoize, error, tryPromise } = require('../../../../util');
 const LRUCache = require('lru-cache');
 const { CHEBI_WSDL_URL, CHEBI_JAVA_PACKAGE, CHEBI_CACHE_SIZE, MAX_SEARCH_SIZE } = require('../../../../config');
 const NS = 'chebi';
@@ -35,14 +34,14 @@ const mapChemical = chem => {
 };
 
 const getClient = memoize( () => {
-  return Promise.try( () => soap.createClientAsync( CHEBI_WSDL_URL ) );
+  return tryPromise( () => soap.createClientAsync( CHEBI_WSDL_URL ) );
 }, new Map() );
 
 const liteEntityCache = LRUCache({ max: CHEBI_CACHE_SIZE });
 
 const getLiteEntities = memoize( ( search ) => {
   return (
-    Promise.try( getClient )
+    tryPromise( getClient )
     .then( client => client.getLiteEntityAsync({
       search: search,
       maximumResults: MAX_SEARCH_SIZE,
@@ -57,7 +56,7 @@ const getLiteEntitiesAtOffset = ( search, offset = 0, limit = MAX_SEARCH_SIZE ) 
   search = convert( search );
 
   return (
-    Promise.try( () => getLiteEntities( search ) )
+    tryPromise( () => getLiteEntities( search ) )
     .then( liteEnts => liteEnts.slice( offset, offset + limit ) )
   );
 };
@@ -70,7 +69,7 @@ const getCompleteEntity = ( id ) => {
   }
 
   return (
-    Promise.try( getClient )
+    tryPromise( getClient )
     .then( client => client.getCompleteEntityAsync({ chebiId: id }) )
     .then( res => {
       if( res == null ){ throw error(`No chemical with ID ${id} found by Chebi`); }
@@ -87,7 +86,7 @@ const getCompleteEntity = ( id ) => {
 
 const getCompleteEntityByList = ( ids ) => {
   let rawRequest = ids => (
-    Promise.try( getClient )
+    tryPromise( getClient )
     .then( client => client.getCompleteEntityByListAsync({ ListOfChEBIIds: ids }) )
     .then( res => _.get(res, ['return'], []).map( mapChemical ) )
   );
@@ -98,7 +97,7 @@ const getCompleteEntityByList = ( ids ) => {
   let getEntsFromCache = () => ids.map( id => completeEntityCache.get(id) );
 
   return (
-    Promise.try( getUncachedEnts )
+    tryPromise( getUncachedEnts )
     .then( fillCacheWithEnts )
     .then( getEntsFromCache )
   );
@@ -109,7 +108,7 @@ const entHasChargeDefined = ent => ent.charge != null;
 
 const search = opts => {
   return (
-    Promise.try( () => getLiteEntitiesAtOffset( opts.name || opts.id, opts.offset, opts.limit ) )
+    tryPromise( () => getLiteEntitiesAtOffset( opts.name || opts.id, opts.offset, opts.limit ) )
     .then( liteEnts => getCompleteEntityByList( liteEnts.map( le => le.id ) ) )
     .then( ents => ents.filter( ent => entHasFormulae(ent) && entHasChargeDefined(ent) ) )
   );
@@ -117,7 +116,7 @@ const search = opts => {
 
 const get = opts => {
   return (
-    Promise.try( () => getCompleteEntity( opts.id ) )
+    tryPromise( () => getCompleteEntity( opts.id ) )
   );
 };
 

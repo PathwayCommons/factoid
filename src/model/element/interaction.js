@@ -1,8 +1,7 @@
 const Element = require('./element');
 const _ = require('lodash');
-const Promise = require('bluebird');
 const ElementSet = require('../element-set');
-const { assertFieldsDefined } = require('../../util');
+const { assertFieldsDefined, tryPromise } = require('../../util');
 
 const { INTERACTION_TYPE, INTERACTION_TYPES, getIntnTypeByVal } = require('./interaction-type/enum');
 const { PARTICIPANT_TYPE, PARTICIPANT_TYPES, getPptTypeByVal } = require('./participant-type');
@@ -112,7 +111,7 @@ class Interaction extends Element {
   }
 
   synch( enable ){
-    return Promise.try( () => {
+    return tryPromise( () => {
       return super.synch( enable );
     } ).then( () => {
       return this.elementSet.synch( enable );

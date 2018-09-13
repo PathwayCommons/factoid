@@ -3,7 +3,6 @@ const h = require('react-hyperscript');
 const io = require('socket.io-client');
 const _ = require('lodash');
 const EventEmitter = require('eventemitter3');
-const Promise = require('bluebird');
 const uuid = require('uuid');
 const Cytoscape = require('cytoscape');
 
@@ -11,13 +10,10 @@ const logger = require('../../logger');
 const debug = require('../../debug');
 
 const Document = require('../../../model/document');
-const { exportDocumentToOwl } = require('../../util');
-const { makeCyEles, getCyLayoutOpts } = require('../../../util');
+const { makeCyEles, getCyLayoutOpts, tryPromise } = require('../../../util');
 
-const AppNav = require('../app-nav');
 const Tooltip = require('../popover/tooltip');
 const Popover = require('../popover/popover');
-const Linkout = require('../document-linkout');
 
 
 const ProteinModificationForm = require('./protein-modification-form');
@@ -60,7 +56,7 @@ class FormEditor extends DataComponent {
       this.dirty();
     });
 
-    Promise.try( () => doc.load() )
+    tryPromise( () => doc.load() )
       .then( () => logger.info('The doc already exists and is now loaded') )
       .catch( err => {
         logger.info('The doc does not exist or an error occurred');
@@ -146,14 +142,14 @@ class FormEditor extends DataComponent {
         randomize: false
       } ) );
 
-      let layoutDone = Promise.try( () => layout.promiseOn('layoutstop') );
+      let layoutDone = tryPromise( () => layout.promiseOn('layoutstop') );
 
       layout.run();
 
       return layoutDone;
     };
 
-    let createElsAndRunLayout = () => Promise.try( () =>
+    let createElsAndRunLayout = () => tryPromise( () =>
       Promise.all([ createIntn(), createEnts() ])
       .then( ([ intn, ppts ]) => {
         let cy = new Cytoscape({
@@ -187,7 +183,7 @@ class FormEditor extends DataComponent {
     let synch = el => el.synch(true);
     let create = el => el.create();
     let add = el => doc.add(el);
-    let handleElCreation = el => Promise.try( () => synch(el) ).then( () => create(el) );
+    let handleElCreation = el => tryPromise( () => synch(el) ).then( () => create(el) );
 
     let saveResults = ({ intn, ppts, cy }) => {
       return (
@@ -200,7 +196,7 @@ class FormEditor extends DataComponent {
     };
 
     return (
-      Promise.try( createElsAndRunLayout )
+      tryPromise( createElsAndRunLayout )
       .then( saveResults )
       .then( destroyCy )
       .then( dirty )
@@ -220,12 +216,11 @@ class FormEditor extends DataComponent {
 
     let dirty = () => this.dirty();
 
-    return Promise.try(rmAll).then(dirty);
+    return tryPromise(rmAll).then(dirty);
   }
 
   render(){
     let doc = this.data.document;
-    let { history } = this.props;
 
     const formTypes = [
       { type: 'Protein modification', clazz: ProteinModificationForm, pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  description:"E.g., A phosphorylates B.", association: [Interaction.ASSOCIATION.PHOSPHORYLATION, Interaction.ASSOCIATION.UBIQUINATION, Interaction.ASSOCIATION.METHYLATION] },
@@ -302,77 +297,6 @@ class FormEditor extends DataComponent {
               }, [
                 h('i.material-icons.add-new-interaction-icon', 'add'),
                 'Add interaction'
-              ])
-            ])
-          ])
-        ]),
-        h('div.form-app-bar', [
-          h('div.form-app-buttons', [
-            h(Tooltip, { description: 'Home' }, [
-              h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
-                h('i.app-icon')
-              ])
-            ]),
-            h(Popover, {
-              tippy: {
-                position: 'right',
-                html: h('div.editor-linkout', [
-                  h(Linkout, { document: doc })
-                ])
-              }
-            }, [
-              h(Tooltip, { description: 'Share link' }, [
-                h('button.editor-button.plain-button', [
-                  h('i.material-icons', 'link')
-                ])
-              ])
-            ]),
-            h(Tooltip, { description: 'Save as BioPAX' }, [
-              h('button.editor-button.plain-button', { onClick: () => exportDocumentToOwl( doc.id() ) }, [
-                h('i.material-icons', 'save_alt')
-              ])
-            ]),
-            h(Tooltip, { description: 'Network editor' }, [
-              h('button.editor-button.plain-button', {
-                onClick: () => {
-                  let id = doc.id();
-                  let secret = doc.secret();
-
-                  if( doc.editable() ){
-                    history.push(`/document/${id}/${secret}`);
-                  } else {
-                    history.push(`/document/${id}`);
-                  }
-                }
-              }, [
-                h('i.material-icons', 'swap_horiz')
-              ])
-            ]),
-            h(Popover, {
-              tippy: {
-                position: 'right',
-                followCursor: false,
-                html: h(AppNav, [
-                  h('button.editor-more-button.plain-button', {
-                    onClick: () => history.push('/new')
-                  }, [
-                    h('span', ' New factoid')
-                  ]),
-                  h('button.editor-more-button.plain-button', {
-                    onClick: () => history.push('/documents')
-                  }, [
-                    h('span', ' My factoids')
-                  ]),
-                  h('button.editor-more-button.plain-button', {
-                    onClick: () => history.push('/')
-                  }, [
-                    h('span', ' About & contact')
-                  ])
-                ])
-              }
-              }, [
-              h('button.editor-button.plain-button', [
-                h('i.material-icons', 'more_vert')
               ])
             ])
           ])

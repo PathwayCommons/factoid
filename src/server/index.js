@@ -6,10 +6,9 @@ let logger = require('./logger');
 let cookieParser = require('cookie-parser');
 let bodyParser = require('body-parser');
 let http = require('http');
-let Promise = require('bluebird');
 let stream = require('stream');
 let fs = require('fs');
-let { regCyLayouts } = require('../util');
+let { regCyLayouts, tryPromise } = require('../util');
 
 let config = require('../config');
 let app = express();
@@ -101,7 +100,7 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 // setup the table and live synching for each model type
-Promise.try( () => {
+tryPromise( () => {
   let log = (...msg) => function( val ){ logger.debug( ...msg ); return val; };
   let access = name => db.accessTable( name );
   let synch = (t, name) => Syncher.synch({ rethink: t.rethink, table: t.table, conn: t.conn, io: io.of( '/' + name ) });

@@ -1,5 +1,4 @@
 let domReady = require('fready');
-let Promise = require('bluebird');
 let logger = require('./logger');
 
 let debug = window.dbg = {
@@ -15,13 +14,6 @@ let debug = window.dbg = {
     }
   },
 
-  debugPromises: function(){
-    Promise.config({
-      warnings: true,
-      longStackTraces: true
-    });
-  },
-
   livereload: function(){
     let script = document.createElement('script');
     script.src = 'http://' + window.location.hostname + ':3001/browser-sync/browser-sync-client.js';
@@ -31,8 +23,6 @@ let debug = window.dbg = {
 
   init: function(){
     domReady( () => this.livereload() );
-
-    this.debugPromises();
   },
 
   logger: function(){

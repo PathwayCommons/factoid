@@ -2,9 +2,8 @@ const React = require('react');
 const h = require('react-hyperscript');
 const { Link } = require('react-router-dom');
 const Linkout = require('./document-linkout');
-const Promise = require('bluebird');
 const ReactDom = require('react-dom');
-const { makeClassList } = require('../../util');
+const { makeClassList, tryPromise } = require('../../util');
 const anime = require('animejs');
 
 class DebugDocumentSeeder extends React.Component {
@@ -54,7 +53,7 @@ class DebugDocumentSeeder extends React.Component {
 
     this.setState({ submitting: true });
 
-    Promise.try( makeRequest ).then( toJson ).then( updateState );
+    tryPromise( makeRequest ).then( toJson ).then( updateState );
   }
 
   render(){

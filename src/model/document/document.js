@@ -1,14 +1,12 @@
 const _ = require('lodash');
-const Promise = require('bluebird');
 const Syncher = require('../syncher');
 const EventEmitterMixin = require('../event-emitter-mixin');
 const ElementSet = require('../element-set');
 const ElementCache = require('../element-cache');
 const ElementFactory = require('../element');
-const { assertOneOfFieldsDefined, mixin, getId } = require('../../util');
+const { assertOneOfFieldsDefined, mixin, getId, makeCyEles, getCyLayoutOpts, isNonNil, tryPromise } = require('../../util');
 const Organism = require('../organism');
 const Cytoscape = require('cytoscape');
-const { makeCyEles, getCyLayoutOpts, isNonNil } = require('../../util');
 
 const DEFAULTS = Object.freeze({
   entries: [], // used by elementSet
@@ -127,7 +125,7 @@ class Document {
   }
 
   synch( enable ){
-    return Promise.try( () => {
+    return tryPromise( () => {
       return this.syncher.synch( enable );
     } ).then( () => {
       return this.elementSet.synch( enable );
@@ -316,7 +314,7 @@ class Document {
       return docEl.reposition( _.clone( el.position() ) );
     } ) );
 
-    return Promise.try( runLayout ).then( savePositions );
+    return tryPromise( runLayout ).then( savePositions );
   }
 
   json(){
@@ -348,7 +346,7 @@ class Document {
 
   fromJson( json ){
     let els = json.elements || [];
-    let makeEl = json => Promise.try( () => this.factory().make({ data: json }) );
+    let makeEl = json => tryPromise( () => this.factory().make({ data: json }) );
     let createEl = el => el.create();
     let addEl = el => this.add( el );
     let handleEl = json => makeEl( json ).then( createEl ).then( addEl );

@@ -1,5 +1,4 @@
-let { fill, getId, error, assertFieldsDefined } = require('../util');
-let Promise = require('bluebird');
+let { fill, getId, error, assertFieldsDefined, tryPromise } = require('../util');
 let _ = require('lodash');
 
 /**
@@ -70,7 +69,7 @@ class ElementSet {
           this.emitter.emit(evt, ele, group, oldGroup);
         } );
 
-        return Promise.try( () => fillEntries( addedEntries ) ).then( filledAdded => {
+        return tryPromise( () => fillEntries( addedEntries ) ).then( filledAdded => {
           filledAdded.forEach( f => {
             add( f.ele, f.entry );
 
@@ -113,7 +112,7 @@ class ElementSet {
       synch = () => Promise.resolve();
     }
 
-    return Promise.try(synch).then( () => ele );
+    return tryPromise(synch).then( () => ele );
   }
 
   loadElements(){

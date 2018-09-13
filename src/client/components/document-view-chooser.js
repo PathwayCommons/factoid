@@ -1,8 +1,6 @@
 const React = require('react');
 const h = require('react-hyperscript');
 
-const AppNav = require('./app-nav');
-const Popover = require('./popover/popover');
 const Tooltip = require('./popover/tooltip');
 
 class DocumentViewChooser extends React.Component {
@@ -40,34 +38,7 @@ class DocumentViewChooser extends React.Component {
         h('div.document-stepper-app-buttons', [
           h(Tooltip, { description: 'Home' }, [
             h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
-              h('i.app-icon')
-            ])
-          ]),
-          h(Popover, {
-            tippy: {
-              position: 'right',
-              followCursor: false,
-              html: h(AppNav, [
-                h('button.editor-more-button.plain-button', {
-                  onClick: () => history.push('/new')
-                }, [
-                  h('span', ' New factoid')
-                ]),
-                h('button.editor-more-button.plain-button', {
-                  onClick: () => history.push('/documents')
-                }, [
-                  h('span', ' My factoids')
-                ]),
-                h('button.editor-more-button.plain-button', {
-                  onClick: () => history.push('/')
-                }, [
-                  h('span', ' About & contact')
-                ])
-              ])
-            }
-            }, [
-            h('button.editor-button.plain-button', [
-              h('i.material-icons', 'more_vert')
+              h('i.icon.icon-logo')
             ])
           ])
         ])

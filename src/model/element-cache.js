@@ -1,5 +1,4 @@
-let { fill, assertFieldsDefined, getId } = require('../util');
-let Promise = require('bluebird');
+let { fill, assertFieldsDefined, getId, tryPromise } = require('../util');
 
 let defaults = {
   secret: 'read-only',
@@ -68,7 +67,7 @@ class ElementCache {
       } );
     };
 
-    return Promise.try( get ).then( loadAndAddIfNoEle );
+    return tryPromise( get ).then( loadAndAddIfNoEle );
   }
 }
 

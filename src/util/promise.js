@@ -1,6 +1,7 @@
-var { error } = require('./obj');
+const { error } = require('./obj');
+const CancelablePromise = require('p-cancelable');
 
-let slice = ( arr, i, j ) => Array.prototype.slice.call( arr, i, j );
+const slice = ( arr, i, j ) => Array.prototype.slice.call( arr, i, j );
 
 function passthrough( fn ){
   return function( val ){
@@ -55,4 +56,14 @@ function defer() {
   };
 }
 
-module.exports = { passthrough, promisifyEmit, promiseOn, delay, delayPassthrough, defer };
+function tryPromise( fn ){
+  return Promise.resolve().then(fn);
+}
+
+function makeCancelable( p ){
+  return new CancelablePromise( (resolve, reject) => {
+    p.then(resolve).catch(reject);
+  } );
+}
+
+module.exports = { passthrough, promisifyEmit, promiseOn, delay, delayPassthrough, defer, tryPromise, makeCancelable };

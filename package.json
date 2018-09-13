@@ -1,7 +1,7 @@
 {
   "name": "factoid",
   "private": true,
-  "browserslist": "last 3 versions",
+  "browserslist": "since 2015",
   "scripts": {
     "postinstall": "run-s build",
     "start": "forever ./src/server",

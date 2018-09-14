@@ -145,4 +145,79 @@ class TaskListButton extends DirtyComponent {
 }
 
 
-module.exports = { TaskListButton, TaskList };
+class TaskView extends DirtyComponent {
+  shouldComponentUpdate() {
+    return true;
+  }
+  componentDidMount(){
+    this.eleEvts = eleEvts;
+
+    let update = () => this.dirty();
+    this.update = update;
+
+    this.onAdd = ele => {
+      bindEleEvts(ele, update);
+      this.dirty();
+    };
+
+    this.onRemove = ele => {
+      unbindEleEvts(ele, update);
+      this.dirty();
+    };
+
+    this.props.document.on('add', this.onAdd);
+    this.props.document.on('remove', this.onRemove);
+
+    this.props.document.elements().forEach(ele => bindEleEvts(ele, update));
+  }
+
+  componentWillUnmount(){
+    this.props.document.elements().forEach( ele => unbindEleEvts(ele, this.update));
+
+    this.props.document.removeListener(this.onAdd);
+    this.props.document.removeListener(this.onRemove);
+
+  }
+
+  render(){
+    let { document } = this.props;
+    let incompleteEles = this.props.document.elements().filter(ele => !ele.completed());
+
+    let ntfns = document.entities().concat(doc.interactions()).filter(ele => !ele.completed()).map(ele => {
+      let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + (ele.completed() ? '' : ' (?)') }`;
+      let innerMsg = entMsg(ele);
+
+      if( ele.isInteraction() ){
+        let participants = ele.participants();
+        innerMsg = `the interaction between ${participants.map(entMsg).join(' and ')}`;
+      }
+
+      return innerMsg;
+    });
+
+    let tasksMsg = () => {
+      let numIncompleteEles = incompleteEles.length > 50 ? '50+' : incompleteEles.length;
+      if( numIncompleteEles === 0 ){
+        return `You have no outstanding tasks left`;
+      }
+
+      if( numIncompleteEles === 1 ){
+        return `You have 1 incomplete item:`;
+      } 
+
+      return `You have ${numIncompleteEles} incomplete items:`;
+    };
+
+    return h('div.task-view', [ 
+      incompleteEles.length > 0 ? h('div.task-view-header', tasksMsg()) : null,
+      incompleteEles.length > 0 ? h('div.task-view-items', [
+        h('ul', ntfns.map( msg => h('li', msg) ))
+      ]) : null,
+      h('div.task-view-confirm', 'Are you sure you want to submit?'),
+      h('button.editor-submit-button', 'Yes, submit')
+    ]);
+  }
+}
+
+
+module.exports = { TaskListButton, TaskList, TaskView };

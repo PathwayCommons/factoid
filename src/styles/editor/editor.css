@@ -34,6 +34,21 @@
   top: 0;
 }
 
+.editor-submit {
+  position: absolute;
+  right: 2em;
+  padding: 0.5em 0.25em;
+  z-index: 1;
+}
+
+.editor-submit-button {
+  border-color: #3996db;
+  background-color: rgba(255, 255, 255, 0.5);
+  color: #3996db;
+  border-width: 1px;
+  text-transform: uppercase;
+}
+
 .editor-button-group {
   display: inline-flex;
   flex-direction: column;

@@ -146,6 +146,13 @@ class TaskListButton extends DirtyComponent {
 
 
 class TaskView extends DirtyComponent {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      submitted: false
+    };
+  }
   shouldComponentUpdate() {
     return true;
   }
@@ -181,6 +188,7 @@ class TaskView extends DirtyComponent {
 
   render(){
     let { document } = this.props;
+    let { submitted } = this.state;
     let incompleteEles = this.props.document.elements().filter(ele => !ele.completed());
 
     let ntfns = document.entities().concat(doc.interactions()).filter(ele => !ele.completed()).map(ele => {
@@ -213,8 +221,8 @@ class TaskView extends DirtyComponent {
       incompleteEles.length > 0 ? h('div.task-view-items', [
         h('ul', ntfns.map( msg => h('li', msg) ))
       ]) : null,
-      h('div.task-view-confirm', 'Are you sure you want to submit?'),
-      h('button.editor-submit-button', 'Yes, submit')
+      !submitted ? h('div.task-view-confirm', 'Are you sure you want to submit?') : null,
+      !submitted ? h('button.editor-submit-button', { onClick: () => this.setState({ submitted: true }) }, 'Yes, submit') : h('div.task-submitted', [ 'Document submitted', h('i.material-icons.element-info-complete-icon', 'check_circle')])
     ]);
   }
 }

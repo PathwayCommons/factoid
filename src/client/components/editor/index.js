@@ -103,6 +103,8 @@ class Editor extends DataComponent {
       }
     });
 
+    doc.on('submit', () => this.dirty());
+
     doc.on('load', () => {
       doc.interactions().forEach( listenForRmPpt );
 
@@ -346,8 +348,8 @@ class Editor extends DataComponent {
         h(MainMenu, { bus, document, history })
       ]),
       h('div.editor-submit', [
-        h(Popover, { tippy: { html: h(TaskView, { document } ) } }, [
-          h('button.editor-submit-button', 'Submit')
+        h(Popover, { tippy: { html: h(TaskView, { document, bus } ) } }, [
+          document.submitted() ? h('button.editor-submit-button', 'Submitted') : h('button.editor-submit-button.salient-button', 'Submit')
         ])
       ]),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),

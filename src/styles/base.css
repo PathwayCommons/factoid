@@ -84,6 +84,11 @@ button.button-toggle {
   }
 }
 
+button.salient-button {
+  border-color: var(--activeColor);
+  color: var(--activeColor);
+}
+
 .radioset {
   display: flex;
 

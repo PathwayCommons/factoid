@@ -1,4 +1,5 @@
 const DirtyComponent = require('../dirty-component');
+const DataComponent = require('../data-component');
 const h = require('react-hyperscript');
 
 const { makeClassList } = require('../../../util');
@@ -93,7 +94,7 @@ class TaskList extends DirtyComponent {
 }
 
 
-class TaskListButton extends DirtyComponent {
+class TaskListButton extends DataComponent {
   constructor(props){
     super(props);
   }
@@ -145,7 +146,7 @@ class TaskListButton extends DirtyComponent {
 }
 
 
-class TaskView extends DirtyComponent {
+class TaskView extends DataComponent {
   constructor(props){
     super(props);
 
@@ -153,9 +154,7 @@ class TaskView extends DirtyComponent {
       submitted: false
     };
   }
-  shouldComponentUpdate() {
-    return true;
-  }
+
   componentDidMount(){
     this.eleEvts = eleEvts;
 
@@ -172,8 +171,13 @@ class TaskView extends DirtyComponent {
       this.dirty();
     };
 
+    this.onSubmit = () => {
+      this.dirty();
+    };
+
     this.props.document.on('add', this.onAdd);
     this.props.document.on('remove', this.onRemove);
+    this.props.document.on('submit', this.onSubmit);
 
     this.props.document.elements().forEach(ele => bindEleEvts(ele, update));
   }
@@ -183,15 +187,19 @@ class TaskView extends DirtyComponent {
 
     this.props.document.removeListener(this.onAdd);
     this.props.document.removeListener(this.onRemove);
+    this.props.document.removeListener(this.onSubmit);
+  }
 
+  submit(){
+    return this.props.document.submit();
   }
 
   render(){
-    let { document } = this.props;
-    let { submitted } = this.state;
+    let { document, bus } = this.props;
+    let submitted = this.props.document.submitted();
     let incompleteEles = this.props.document.elements().filter(ele => !ele.completed());
 
-    let ntfns = document.entities().concat(doc.interactions()).filter(ele => !ele.completed()).map(ele => {
+    let ntfns = document.entities().concat(document.interactions()).filter(ele => !ele.completed()).map(ele => {
       let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + (ele.completed() ? '' : ' (?)') }`;
       let innerMsg = entMsg(ele);
 
@@ -200,7 +208,7 @@ class TaskView extends DirtyComponent {
         innerMsg = `the interaction between ${participants.map(entMsg).join(' and ')}`;
       }
 
-      return innerMsg;
+      return { ele, msg: innerMsg };
     });
 
     let tasksMsg = () => {
@@ -211,19 +219,36 @@ class TaskView extends DirtyComponent {
 
       if( numIncompleteEles === 1 ){
         return `You have 1 incomplete item:`;
-      } 
+      }
 
       return `You have ${numIncompleteEles} incomplete items:`;
     };
 
-    return h('div.task-view', [ 
-      incompleteEles.length > 0 ? h('div.task-view-header', tasksMsg()) : null,
-      incompleteEles.length > 0 ? h('div.task-view-items', [
-        h('ul', ntfns.map( msg => h('li', msg) ))
-      ]) : null,
-      !submitted ? h('div.task-view-confirm', 'Are you sure you want to submit?') : null,
-      !submitted ? h('button.editor-submit-button', { onClick: () => this.setState({ submitted: true }) }, 'Yes, submit') : h('div.task-submitted', [ 'Document submitted', h('i.material-icons.element-info-complete-icon', 'check_circle')])
-    ]);
+    if( !submitted ){
+      return h('div.task-view', [
+        incompleteEles.length > 0 ? h('div.task-view-header', tasksMsg()) : null,
+        incompleteEles.length > 0 ? h('div.task-view-items', [
+          h('ul', ntfns.map( ({ msg, ele }) => h('li', [
+            h('a.plain-link', {
+              onClick: () => bus.emit('opentip', ele)
+            }, msg)
+          ]) ))
+        ]) : null,
+        h('div.task-view-confirm', 'Are you sure you want to submit?'),
+        h('div.task-view-confirm-button-area', [
+          h('button.salient-button.task-view-confirm-button', { onClick: () => this.submit() }, 'Yes, submit')
+        ])
+      ]);
+    } else {
+      return h('div.task-view', [
+        h('div.task-view-done', [
+          h('div.task-view-done-message', 'Submitted for review'),
+          h('div.task-view-done-icon', [
+            h('i.material-icons.element-info-complete-icon', 'check_circle')
+          ])
+        ])
+      ]);
+    }
   }
 }
 

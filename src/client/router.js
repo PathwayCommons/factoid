@@ -18,8 +18,8 @@ const MyFactoids = require('./components/my-factoids');
 let routes = [
   {
     path: '/',
-    render: () => {
-      return h(Home);
+    render: (props) => {
+      return h(Home, { history: props.history });
     }
   },
   {

@@ -26,7 +26,7 @@ header.nav-bar {
 }
 
 .nav-bar-link:hover {
-  color: #00adb5;
+  color: var(--activeColor);
 }
 
 .hero {
@@ -69,22 +69,14 @@ header.nav-bar {
 }
 
 .hero-button {
-  background-color: #00a84c;
+  border-color: #3996db;
+  background-color: rgba(255, 255, 255, 0.5);
+  color: #3996db;
   width: 8em;
   height: 2.5em;
-  color: #eee;
   border-width: 2px;
   font-size: 1.35em;
-  margin: 0.25em 0;
-  margin-right: 10px;
-}
-
-.hero-button:hover {
-  background-color: #00adb5;
-}
-
-.hero-alt {
-  border-color: #00adb5;
+  text-transform: uppercase;
 }
 
 .hero-buttons {

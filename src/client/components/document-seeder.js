@@ -1,10 +1,15 @@
 const React = require('react');
 const h = require('react-hyperscript');
 const Promise = require('bluebird');
-const DocumentWizardStepper = require('./document-wizard-stepper');
 const _ = require('lodash');
-const IntervalHighlighter = require('./interval-highlighter');
 const { makeClassList } = require('../../util');
+
+
+const DocumentWizardStepper = require('./document-wizard-stepper');
+const IntervalHighlighter = require('./interval-highlighter');
+const Tooltip = require('./popover/tooltip');
+const Popover = require('./popover/popover');
+const AppNav = require('./app-nav');
 
 const ENTITY_HIGHLIGHT_CLASS = 'document-seeder-highlighted-entity';
 const INTN_SENTENCE_HIGHLIGHT_CLASS = 'document-seeder-highlighted-interaction-sentence';
@@ -140,6 +145,23 @@ class DocumentSeeder extends React.Component {
     basicIntervals = basicIntervals.sort(cmp);
     complexIntervals = complexIntervals.sort(cmp);
 
+    let eliminateDuplication = sortedArr => {
+      return sortedArr.filter( ( currVal, currIndex ) => {
+        let compPrev = () => {
+          let prevVal = sortedArr[ currIndex - 1 ];
+
+          return currVal.start === prevVal.start && currVal.end === prevVal.end;
+        };
+
+        return currIndex === 0 || !compPrev();
+      } );
+    };
+
+    // same intervals would be repeated based on text mining results
+    // handle such cases by removing any duplication of intervals
+    basicIntervals = eliminateDuplication( basicIntervals );
+    complexIntervals = eliminateDuplication( complexIntervals );
+
     let basicIndex = 0;
     let complexIndex = 0;
     let retVal = [];
@@ -266,49 +288,88 @@ class DocumentSeeder extends React.Component {
   }
 
   render(){
-    let rootChildren = [
-      h('h1', 'Enter Paper Details'),
-      h('label.document-seeder-text-label', 'Paper title'),
-      h('input.document-seeder-doc-title', {
-        type: 'text',
-        placeholder: 'Untitled document',
-        onChange: e => this.setState({docTitle: e.target.value})
-      }),
-      h('label.document-seeder-text-label', 'Paper text'),
-      h('textarea.document-seeder-text', {
-        className: makeClassList({
-          'document-seeder-hidden': this.state.reachHighlightEnabled
+    let { history } = this.props;
+
+    return h('div.document-seeder', [
+      h('div.document-seeder-content', [
+        h('h2', 'Enter Paper Details'),
+        h('label.document-seeder-text-label', 'Paper title'),
+        h('input.document-seeder-doc-title', {
+          type: 'text',
+          placeholder: 'Untitled document',
+          onChange: e => this.setState({docTitle: e.target.value})
         }),
-        onChange: e => this.setState({docText: e.target.value})
-      }),
-      h('div.document-seeder-highlight-panel', {
-        className: makeClassList({
-          'document-seeder-hidden': !this.state.reachHighlightEnabled
-        })
-      },[
-        h(IntervalHighlighter, { text: this.state.reachHighlightInput, intervals: this.state.reachHighlightIntervals })
+        h('label.document-seeder-text-label', 'Paper text'),
+        h('textarea.document-seeder-text', {
+          className: makeClassList({
+            'document-seeder-hidden': this.state.reachHighlightEnabled
+          }),
+          onChange: e => this.setState({docText: e.target.value})
+        }),
+        h('div.document-seeder-highlight-panel', {
+          className: makeClassList({
+            'document-seeder-hidden': !this.state.reachHighlightEnabled
+          })
+        },[
+          h(IntervalHighlighter, { text: this.state.reachHighlightInput, intervals: this.state.reachHighlightIntervals })
+        ]),
+        h('div.document-seeder-buttons', [
+          h('button.document-seeder-toggle-highlight', {
+            onClick: () => {
+              this.toggleReachHighlights();
+            }
+          }, `${this.state.reachHighlightEnabled ? 'Edit Text' : 'Highlight Entities and Interactions'}`),
+          h(DocumentWizardStepper, {
+            forwardText: 'Submit',
+            forwardIcon: '',
+            backEnabled: false,
+            forward: () => {
+              let create = () => this.createDoc();
+              let go = () => this.goToChooser();
+
+              return Promise.try( create ).then( go );
+            }
+          })
+        ])
       ]),
-      h('div.document-seeder-buttons', [
-        h('button.document-seeder-toggle-highlight', {
-          onClick: () => {
-            this.toggleReachHighlights();
-          }
-        }, `${this.state.reachHighlightEnabled ? 'Edit Text' : 'Highlight Entities and Interactions'}`),
-        h(DocumentWizardStepper, {
-          forwardText: 'Submit',
-          forwardIcon: '',
-          backEnabled: false,
-          forward: () => {
-            let create = () => this.createDoc();
-            let go = () => this.goToChooser();
-
-            return Promise.try( create ).then( go );
-          }
-        })
+      h('div.document-stepper-app-bar', [
+        h('div.document-stepper-app-buttons', [
+          h(Tooltip, { description: 'Home' }, [
+            h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
+              h('i.app-icon')
+            ])
+          ]),
+          h(Popover, {
+            tippy: {
+              position: 'right',
+              followCursor: false,
+              html: h(AppNav, [
+                h('button.editor-more-button.plain-button', {
+                  onClick: () => history.push('/new')
+                }, [
+                  h('span', ' New factoid')
+                ]),
+                h('button.editor-more-button.plain-button', {
+                  onClick: () => history.push('/documents')
+                }, [
+                  h('span', ' My factoids')
+                ]),
+                h('button.editor-more-button.plain-button', {
+                  onClick: () => history.push('/')
+                }, [
+                  h('span', ' About & contact')
+                ])
+              ])
+            }
+            }, [
+            h('button.editor-button.plain-button', [
+              h('i.material-icons', 'more_vert')
+            ])
+          ])
+        ])
       ])
-    ];
 
-    return h('div.document-seeder.page-content', rootChildren);
+    ]);
   }
 }
 

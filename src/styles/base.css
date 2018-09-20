@@ -366,6 +366,7 @@ h3 {
 a {
   color: inherit;
   text-decoration: none;
+  cursor: pointer;
 
   &.plain-link {
     box-shadow: 0 -1px color(var(--activeColor) a(50%)) inset;

@@ -5,16 +5,19 @@ const _ = require('lodash');
 const EventEmitter = require('eventemitter3');
 const Promise = require('bluebird');
 const uuid = require('uuid');
+const Cytoscape = require('cytoscape');
 
 const logger = require('../../logger');
 const debug = require('../../debug');
 
 const Document = require('../../../model/document');
 const { exportDocumentToOwl } = require('../../util');
+const { makeCyEles, getCyLayoutOpts } = require('../../../util');
 
 const AppNav = require('../app-nav');
 const Tooltip = require('../popover/tooltip');
 const Popover = require('../popover/popover');
+const Linkout = require('../document-linkout');
 
 
 const ProteinModificationForm = require('./protein-modification-form');
@@ -51,7 +54,6 @@ class FormEditor extends DataComponent {
     this.data = {
       document: doc,
       bus: bus,
-      showIntnAdder: false,
     };
 
     let dirty = (() => {
@@ -105,6 +107,8 @@ class FormEditor extends DataComponent {
   addInteractionRow({ name, pptTypes, association }){
     let doc = this.data.document;
 
+    let dirty = () => this.dirty();
+
     let entries = [ uuid(), uuid() ].map( (id, i) => ({
       id,
       group: pptTypes[i].value
@@ -130,20 +134,76 @@ class FormEditor extends DataComponent {
       }
     });
 
-    return (
+    let destroyCy = ({ cy }) => {
+      if ( cy != null ) {
+        cy.destroy();
+      }
+    };
+
+    let runLayout = cy => {
+      let layout = cy.layout( _.assign( {}, getCyLayoutOpts(), {
+        animate: false,
+        randomize: false
+      } ) );
+
+      let layoutDone = Promise.try( () => layout.promiseOn('layoutstop') );
+
+      layout.run();
+
+      return layoutDone;
+    };
+
+    let createElsAndRunLayout = () => Promise.try( () =>
       Promise.all([ createIntn(), createEnts() ])
       .then( ([ intn, ppts ]) => {
-        let synch = el => el.synch(true);
-        let create = el => el.create();
-        let add = el => doc.add(el);
-        let handleElCreation = el => Promise.try( () => synch(el) ).then( () => create(el) );
-        let els = [ intn, ...ppts ];
+        let cy = new Cytoscape({
+          headless: true,
+          elements: makeCyEles( doc.elements() ),
+          layout: { name: 'preset' },
+          styleEnabled: true
+        });
 
-        return Promise.all( els.map(handleElCreation) ).then( () => {
-          return Promise.all( ppts.map(add) ).then( () => add(intn) );
-        } );
+        // already existing elements are supposed to be locked during the layout
+        cy.nodes().lock();
+
+        // create cy eles for the new elements that are not represented in cy
+        // yet because they were not in document while cy is created
+        cy.add( makeCyEles([intn, ...ppts]) ).nodes().forEach(n => n.position({
+          x: Math.random() * 10,
+          y: Math.random() * 10
+        }));
+
+        return runLayout(cy).then( () => ({ cy, intn, ppts }) );
       } )
-      .then( () => this.dirty() )
+    );
+
+    let updatePos = (el, cy) => {
+      let cyEle = cy.getElementById( el.id() );
+      let pos =  _.clone( cyEle.position() );
+
+      return el.reposition( pos );
+    };
+
+    let synch = el => el.synch(true);
+    let create = el => el.create();
+    let add = el => doc.add(el);
+    let handleElCreation = el => Promise.try( () => synch(el) ).then( () => create(el) );
+
+    let saveResults = ({ intn, ppts, cy }) => {
+      return (
+        Promise.all( ppts.map(ppt => updatePos(ppt, cy)) )
+        .then( () => Promise.all([intn, ...ppts].map(handleElCreation)) )
+        .then( () => ppts.map(add) )
+        .then( () => add(intn) )
+        .then( () => ({ intn, ppts, cy }) )
+      );
+    };
+
+    return (
+      Promise.try( createElsAndRunLayout )
+      .then( saveResults )
+      .then( destroyCy )
+      .then( dirty )
     );
   }
 
@@ -207,73 +267,118 @@ class FormEditor extends DataComponent {
       }, [
         h('button.plain-button', {
           onClick: () => {
-            let doc = this.data.document;
-
             let addInteractionRow = () => this.addInteractionRow( {
               name: formType.type,
               pptTypes: formType.pptTypes,
               association: formType.association[0]
             } );
 
-            let applyLayout = () => doc.applyLayout();
-
-            Promise.try( addInteractionRow ).then( applyLayout );
+            addInteractionRow();
           }
         }, formType.type)
       ]
     );
 
-    return h('div.form-editor', [
-      h('div.page-content', [
+    return (
+      h('div.form-editor', [
+        h('div.form-content', [
+          h('h3.form-editor-title', doc.name() === '' ? 'Untitled document' : doc.name()),
+          h('div.form-templates', (
+            doc.interactions()
+            .filter(intn => intn.completed())
+            .map(interaction => ({ interaction, formType: getFormType(interaction) }))
+            .filter(({ formType }) => formType != null)
+            .map( ({ interaction, formType }) => h(IntnEntry, { interaction, formType }) )
+          )),
+          h('div.form-interaction-adder-area', [
+            h(Popover, {
+              tippy: {
+                position: 'bottom',
+                html: h('div.form-interaction-adder-options', formTypes.map( formType => h(FormTypeButton, { formType }) ))
+              }
+            }, [
+              h('button', {
+                className: 'form-interaction-adder'
+              }, [
+                h('i.material-icons.add-new-interaction-icon', 'add'),
+                'Add interaction'
+              ])
+            ])
+          ])
+        ]),
         h('div.form-app-bar', [
-          h('div.form-branding', [
-            h('button.form-home-button', { onClick: () => history.push('/') }, [
-              h('i.app-icon')
+          h('div.form-app-buttons', [
+            h(Tooltip, { description: 'Home' }, [
+              h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
+                h('i.app-icon')
+              ])
             ]),
-            h('h2.form-editor-title', doc.name() === '' ? 'Untitled document' : doc.name())
-          ]),
-          h(Popover, {
+            h(Popover, {
+              tippy: {
+                position: 'right',
+                html: h('div.editor-linkout', [
+                  h(Linkout, { document: doc })
+                ])
+              }
+            }, [
+              h(Tooltip, { description: 'Share link' }, [
+                h('button.editor-button.plain-button', [
+                  h('i.material-icons', 'link')
+                ])
+              ])
+            ]),
+            h(Tooltip, { description: 'Save as BioPAX' }, [
+              h('button.editor-button.plain-button', { onClick: () => exportDocumentToOwl( doc.id() ) }, [
+                h('i.material-icons', 'save_alt')
+              ])
+            ]),
+            h(Tooltip, { description: 'Network editor' }, [
+              h('button.editor-button.plain-button', {
+                onClick: () => {
+                  let id = doc.id();
+                  let secret = doc.secret();
+
+                  if( doc.editable() ){
+                    history.push(`/document/${id}/${secret}`);
+                  } else {
+                    history.push(`/document/${id}`);
+                  }
+                }
+              }, [
+                h('i.material-icons', 'swap_horiz')
+              ])
+            ]),
+            h(Popover, {
               tippy: {
                 position: 'right',
                 followCursor: false,
-                html: h(AppNav, { document: doc, history, networkEditor: false })
+                html: h(AppNav, [
+                  h('button.editor-more-button.plain-button', {
+                    onClick: () => history.push('/new')
+                  }, [
+                    h('span', ' New factoid')
+                  ]),
+                  h('button.editor-more-button.plain-button', {
+                    onClick: () => history.push('/documents')
+                  }, [
+                    h('span', ' My factoids')
+                  ]),
+                  h('button.editor-more-button.plain-button', {
+                    onClick: () => history.push('/')
+                  }, [
+                    h('span', ' About & contact')
+                  ])
+                ])
               }
-            }, [
-            h('button.editor-button.plain-button', [
-              h('i.material-icons', 'more_vert')
+              }, [
+              h('button.editor-button.plain-button', [
+                h('i.material-icons', 'more_vert')
+              ])
             ])
           ])
-        ]),
-        h('div.form-templates', (
-          doc.interactions()
-          .filter(intn => intn.completed())
-          .map(interaction => ({ interaction, formType: getFormType(interaction) }))
-          .filter(({ formType }) => formType != null)
-          .map( ({ interaction, formType }) => h(IntnEntry, { interaction, formType }) )
-        )),
-        h('div.form-interaction-adder-area', [
-          h(Popover, {
-            tippy: {
-              position: 'bottom',
-              html: h('div.form-interaction-adder-options', formTypes.map( formType => h(FormTypeButton, { formType }) ))
-            }
-          }, [
-            h('button', {
-              className: 'form-interaction-adder',
-              onToggle: () => this.toggleIntnAdderVisibility(),
-              getState: () => this.data.showIntnAdder
-            }, [
-              h('i.material-icons.add-new-interaction-icon', 'add'),
-              'Add interaction'
-            ])
-          ])
-        ]),
-        h('button.form-submit', { onClick: () => exportDocumentToOwl(doc.id()) }, [
-          'Download BioPax'
         ])
-      ]),
-
-    ]);
+      ])
+    );
   }
 }
 

@@ -160,6 +160,7 @@ module.exports = {
 
         let supportedTypes = {
           'protein': 'protein',
+          'gene': 'protein',
           'simple-chemical': 'chemical'
         };
 
@@ -227,7 +228,7 @@ module.exports = {
           let evtArg = frame.arguments.find( arg => isSingleArgEvt( getFrame( getArgId(arg) ) ) );
           let haveEvtArg = evtArg != null;
           let isBinaryCollapsible = argsAreEntAndEvt && argsAreControllerControlled && haveEvtArg;
-          let isProtein = ele => ele.type == 'protein';
+          let isProtein = ele => ele.type == 'protein' || ele.type === 'gene';
 
           if( argsAreEnts || isBinaryCollapsible ){
             let intn = {
@@ -299,8 +300,6 @@ module.exports = {
                       return INTERACTION_TYPE.PHOSPHORYLATION;
                     case REACH_EVENT_TYPE.METHYLATION:
                       return INTERACTION_TYPE.METHYLATION;
-                    default:
-                      return null;
                   }
                 }
               }
@@ -311,13 +310,11 @@ module.exports = {
                   switch ( frame.type ) {
                     case REACH_EVENT_TYPE.ACTIVATION:
                       return INTERACTION_TYPE.PROTEIN_CHEMICAL;
-                    default:
-                      return null;
                   }
                 }
               }
 
-              return null;
+              return INTERACTION_TYPE.INTERACTION;
             };
 
             let getEntityFrame = frame => {
@@ -351,7 +348,7 @@ module.exports = {
               }
             }
 
-            if( intn.entries.length >= 2 ){
+            if( intn.entries.length >= 2 && intn.completed ){
               addElement( intn, frame );
             }
           }

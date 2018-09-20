@@ -14,7 +14,7 @@ const { TaskListButton } = require('./task-list');
 
 class EditorButtons extends React.Component {
   render(){
-    let { bus, className, document, controller, history } = this.props;
+    let { bus, className, document, controller } = this.props;
     let grs = [];
 
     let baseTooltipProps = {
@@ -30,14 +30,6 @@ class EditorButtons extends React.Component {
         events: 'mouseenter manual'
       }
     };
-
-    grs.push([
-      h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Factoid home' }), [
-        h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
-          h('i.app-icon')
-        ])
-      ])
-    ]);
 
     if( document.editable() ){
       grs.push([
@@ -94,8 +86,13 @@ class AppButtons extends React.Component {
     };
 
     let appButtons = [
+      h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Factoid home' }), [
+        h('button.editor-button.plain-button', { onClick: () => history.push('/') }, [
+          h('i.app-icon')
+        ])
+      ]),
       h(Tooltip, { description: 'Help' }, [
-        h('button.editor-button.plain-button', { onClick: () => bus.emit('togglehelp') }, [
+        h('button.editor-button.plain-button', { onClick: _.debounce(() => bus.emit('togglehelp'), 300) }, [
           h('i.material-icons', 'info')
         ])
       ])
@@ -140,6 +137,23 @@ class AppButtons extends React.Component {
           h('i.material-icons', 'save_alt')
         ])
       ]),
+
+      h(Tooltip, _.assign( {}, baseTooltipProps, { description: 'Form-based editor' }), [
+        h('button.editor-button.plain-button', {
+          onClick: () => {
+            let id = document.id();
+            let secret = document.secret();
+
+            if( document.editable() ){
+              history.push(`/form/${id}/${secret}`);
+            } else {
+              history.push(`/form/${id}`);
+            }
+          }
+        }, [
+          h('i.material-icons', 'swap_horiz')
+        ])
+      ])
     ]);
 
     if( document.editable() ){
@@ -147,7 +161,23 @@ class AppButtons extends React.Component {
         h(Popover, {
           tippy: {
             position: 'right',
-            html: h(AppNav, { document, history, networkEditor: true })
+            html: h(AppNav, [
+              h('button.editor-more-button.plain-button', {
+                onClick: () => history.push('/new')
+              }, [
+                h('span', ' New factoid')
+              ]),
+              h('button.editor-more-button.plain-button', {
+                onClick: () => history.push('/documents')
+              }, [
+                h('span', ' My factoids')
+              ]),
+              h('button.editor-more-button.plain-button', {
+                onClick: () => history.push('/')
+              }, [
+                h('span', ' About & contact')
+              ])
+            ])
           }
         }, [
           h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Menu' }), [

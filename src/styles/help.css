@@ -25,11 +25,3 @@
     margin: 0;
   }
 }
-
-.help-close-button {
-  position: absolute;
-  top: 0.5em;
-  right: 0.5em;
-  z-index: 10001;
-  cursor: pointer;
-}

@@ -10,6 +10,10 @@ class MolecularInteractionForm extends InteractionForm {
     let nonNil = ele => !_.isNil( ele );
     let ppts = intn.participants().filter( nonNil );
 
+    if( ppts.length < 2 ){
+      return null;
+    }
+
     let getInteractionLine = el => {
       return h('div.form-molecular-intn-line', [
         //we have to assign key because react renders component in the old position when deleted

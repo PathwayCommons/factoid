@@ -75,6 +75,11 @@ class Document {
         addedIds.forEach( id => emit( id, true ) );
         rmedIds.forEach( id => emit( id, false ) );
       }
+
+      if( changes.submitted ){
+        this.emit('submit');
+        this.emit('remotesubmit');
+      }
     });
   }
 
@@ -315,6 +320,18 @@ class Document {
     } ) );
 
     return tryPromise( runLayout ).then( savePositions );
+  }
+
+  submit(){
+    let p = this.syncher.update({ submitted: true });
+
+    this.emit('submit');
+
+    return p;
+  }
+
+  submitted(){
+    return this.syncher.get('submitted') ? true : false;
   }
 
   json(){

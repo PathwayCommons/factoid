@@ -10,6 +10,7 @@ const Document = require('../../../model/document');
 
 const Notification = require('../notification');
 const CornerNotification = require('../notification/corner');
+const Popover = require('../popover/popover');
 
 const logger = require('../../logger');
 const debug = require('../../debug');
@@ -19,6 +20,7 @@ const defs = require('./defs');
 const EditorButtons = require('./buttons');
 const MainMenu = require('../main-menu');
 const UndoRemove = require('./undo-remove');
+const { TaskView } = require('./tasks');
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -101,6 +103,8 @@ class Editor extends DataComponent {
       }
     });
 
+    doc.on('submit', () => this.dirty());
+
     doc.on('load', () => {
       doc.interactions().forEach( listenForRmPpt );
 
@@ -123,7 +127,6 @@ class Editor extends DataComponent {
       bus: bus,
       document: doc,
       drawMode: false,
-      taskListMode: false,
       newElementShift: 0,
       mountDeferred: defer(),
       initted: false,
@@ -211,20 +214,6 @@ class Editor extends DataComponent {
 
   drawMode(){
     return this.data.drawMode;
-  }
-
-  toggleTaskListMode( toggle ){
-    if( !this.editable() ){ return; }
-
-    let on = toggle === undefined ? !this.taskListMode() : toggle;
-
-    this.data.bus.emit( on ? 'taskliston' : 'tasklistoff' );
-
-    return new Promise( resolve => this.setData({ taskListMode: on }, resolve) );
-  }
-
-  taskListMode(){
-    return this.data.taskListMode;
   }
 
   addElement( data = {} ){
@@ -343,7 +332,7 @@ class Editor extends DataComponent {
   resetMenuState(){
     this.data.bus.emit('closetip');
     this.data.bus.emit('hidetips');
-    return Promise.all([this.toggleTaskListMode(false),  this.toggleDrawMode(false)]).delay(250);
+    return Promise.all([this.toggleDrawMode(false)]).delay(250);
   }
 
   render(){
@@ -358,6 +347,11 @@ class Editor extends DataComponent {
       h('div.editor-main-menu', [
         h(MainMenu, { bus, document, history })
       ]),
+      h('div.editor-submit', [
+        h(Popover, { tippy: { html: h(TaskView, { document, bus } ) } }, [
+          document.submitted() ? h('button.editor-submit-button', 'Submitted') : h('button.editor-submit-button.salient-button', 'Submit')
+        ])
+      ]),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
@@ -366,8 +360,7 @@ class Editor extends DataComponent {
 
     return h('div.editor', {
       className: makeClassList({
-        'editor-initted': this.data.initted,
-        'editor-task-list-active': this.taskListMode()
+        'editor-initted': this.data.initted
       })
     }, editorContent);
   }

@@ -411,6 +411,7 @@ class Document {
     return _.assign({
       id: this.id(),
       secret: this.secret(),
+      name: this.name(),
       organisms: this.organisms().map( toJson ),
       elements: this.elements().map( toJson ),
       publicUrl: this.publicUrl(),

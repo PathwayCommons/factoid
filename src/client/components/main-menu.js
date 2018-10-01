@@ -7,17 +7,19 @@ const { exportDocumentToOwl } = require('../client-util');
 const EventEmitter = require('eventemitter3');
 const Tooltip = require('./popover/tooltip');
 const { Link } = require('react-router-dom');
+const MyFactoids = require('./my-factoids');
 
 class MenuContent extends Component {
   constructor(props){
     super(props);
 
     this.state = {
-      selectedLinkouts: false
+      selectedLinkouts: false,
+      selectedMyFactoids: false
     };
 
     this.onHide = () => {
-      this.setState({ selectedLinkouts: false });
+      this.setState({ selectedLinkouts: false, selectedMyFactoids: false });
     };
 
     this.props.emitter.on('hide', this.onHide);
@@ -31,9 +33,13 @@ class MenuContent extends Component {
     this.setState({ selectedLinkouts: true });
   }
 
+  selectMyFactoids(){
+    this.setState({ selectedMyFactoids: true });
+  }
+
   render(){
     const { bus, document, history, emitter } = this.props;
-    const { selectedLinkouts } = this.state;
+    const { selectedLinkouts, selectedMyFactoids } = this.state;
 
     const set = (props, children) => h('div.main-menu-set', props, children);
 
@@ -55,18 +61,22 @@ class MenuContent extends Component {
       content = h('div.main-menu-linkouts', [
         h(Linkout, { document })
       ]);
+    } else if( selectedMyFactoids ){
+      content = h('div.main-menu-my-factoids', [
+        h(MyFactoids)
+      ]);
     } else {
       content = h('div.main-menu-list', [
-        set({ key: 'util' }, [
+        document ? set({ key: 'util' }, [
           item({ label: 'Help', action: () => _.debounce(() => bus.emit('togglehelp'), 300) }),
           item({ label: 'Share', action: () => this.selectLinkouts(), actionCloses: false })
-        ]),
-        set({ key: 'dl' }, [
+        ]) : null,
+        document ? set({ key: 'dl' }, [
           item({ label: 'Download BioPAX', action: () => exportDocumentToOwl(document.id()) })
-        ]),
+        ]) : null,
         set({ key: 'nav' }, [
           item({ label: 'New factoid', action: () => history.push('/new') }),
-          item({ label: 'My factoids', action: () => history.push('/documents') })
+          item({ label: 'My factoids', action: () => this.selectMyFactoids(), actionCloses: false })
         ])
       ]);
     }
@@ -84,7 +94,7 @@ class MainMenu extends Component {
 
   render(){
     let { emitter } = this;
-    let { bus, document, history } = this.props;
+    let { bus, document, history, title } = this.props;
 
     return h('div.main-menu', [
       h(Popover, {
@@ -109,7 +119,9 @@ class MainMenu extends Component {
             h('i.icon.icon-logo')
           ])
         ])
-      ])
+      ]),
+
+      title ? h('h1.main-menu-title', title) : null
     ]);
 
   }

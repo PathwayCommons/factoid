@@ -46,7 +46,7 @@ class Home extends Component {
               h(Link, {
                 className: 'plain-link',
                 to: '/new'
-              }, 'Or try the Factoid journal editor wizard')
+              }, 'Or try the Factoid journal publisher portal')
             ])
           ])
         ])

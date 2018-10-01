@@ -3,6 +3,8 @@ const _ = require('lodash');
 const uuid = require('uuid');
 const fetch = require('node-fetch');
 const { tryPromise } = require('../../../../util');
+const emailTransport = require('../../../email-transport');
+const h = require('hyperscript');
 
 const Document = require('../../../../model/document');
 const db = require('../../../db');
@@ -10,12 +12,12 @@ const logger = require('../../../logger');
 
 const provider = require('./reach');
 
-const { BIOPAX_CONVERTER_URL } = require('../../../../config');
+const { BIOPAX_CONVERTER_URL, BASE_URL } = require('../../../../config');
 
-let newDoc = ({ docDb, eleDb, id, secret }) => {
+let newDoc = ({ docDb, eleDb, id, secret, meta }) => {
   return new Document( _.assign( {}, docDb, {
     factoryOptions: eleDb,
-    data: _.defaults( {}, { id, secret } )
+    data: _.assign( {}, { id, secret }, meta )
   } ) );
 };
 
@@ -25,8 +27,8 @@ let loadDoc = ({ docDb, eleDb, id }) => {
   return doc.load().then( () => doc );
 };
 
-let createDoc = ({ docDb, eleDb, secret }) => {
-  let doc = newDoc({ docDb, eleDb, secret });
+let createDoc = ({ docDb, eleDb, secret, meta }) => {
+  let doc = newDoc({ docDb, eleDb, secret, meta });
 
   return doc.create().then( () => doc );
 };
@@ -74,6 +76,48 @@ let getBiopaxFromTemplates = templates => {
   .then(handleResponseError);
 };
 
+let sendEmail = json => {
+  const j = json;
+
+  return emailTransport.sendMail({
+    from: { name: 'Factoid', address: 'noreply@pathwaycommons.org' },
+    to: { name: j.authorName, address: j.authorEmail },
+    cc: { name: j.editorName, address: j.editorEmail },
+    replyTo: { name: 'Pathway Commons Team', address: 'pathway-commons-dev@googlegroups.com ' },
+    subject: `Action required: "${json.name}"`,
+    html: h('div', {
+      style: {
+      }
+    }, [
+      h('p', `Dear ${j.authorName},`),
+      h('p', [
+        h('span', `Share your pathway with the world:  Publishing and getting your paper noticed is essential.  `),
+        h('a', { href: BASE_URL }, 'Factoid'),
+        h('span', `, a project by `),
+        h('a', { href: 'https://pathwaycommons.org' }, `Pathway Commons`),
+        h('span', `, helps you increase the visibility of your publications by linking your research to pathways.`)
+      ]),
+      h('p', [
+        h('span', `Factoid will capture the pathway data in `),
+        h('strong', `"${j.authorName} et el.  ${j.name}.  Submission ${j.trackingId}"`),
+        h('span', ` by helping you draw and describe genes and interactions:`)
+      ]),
+      h('ul', [
+        h('li', `Launch Factoid for your article by clicking the link.`),
+        h('li', `Check over genes and interactions Factoid may have found in your text.`),
+        h('li', `Draw genes (circles) or interactions (lines or arrows) then add information at the prompts.`),
+      ]),
+      h('p', `That's it!  We'll get the pathway data to researchers who need it.`),
+      h('a', {
+        href: `${BASE_URL}/document/${j.id}/${j.secret}`
+      }, `Launch Factoid for ${j.authorName} et al.`),
+      h('p', [
+        h('small', `You may also start Factoid by passing ${BASE_URL}/document/${j.id}/${j.secret} into your browser.`)
+      ])
+    ]).outerHTML
+  });
+};
+
 // get existing doc
 http.get('/:id', function( req, res ){
   let id = req.params.id;
@@ -88,23 +132,49 @@ http.get('/:id', function( req, res ){
 
 // create new doc
 http.post('/', function( req, res ){
-  let { text, title } = req.body;
+  let { abstract, text, legends } = req.body;
+  let meta = _.assign({}, req.body);
+
+  // make sure the year is an int
+  meta.year = parseInt(meta.year, 10) || (new Date()).getFullYear();
+
+  let seedText = [abstract, text, legends].filter(text => text ? true : false).join('\n\n');
 
   let secret = uuid();
 
   ( tryPromise( loadTables )
-    .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret }) )
-    .then( doc => doc.rename( title ).then( () => doc ) )
-    .then( doc => fillDoc( doc, text ) )
+    .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret, meta }) )
+    .then( doc => fillDoc( doc, seedText ) )
     .then( runLayout )
     .then( getDocJson )
     .then( json => {
       logger.info(`Created new doc ${json.id}`);
-      return res.json( json );
+
+      return json;
     } )
+    .then(json => {
+      if( !json.authorEmail ){
+        logger.info(`Author email address missing for new doc ${json.id}; not sending email`);
+
+        return Promise.resolve(json);
+      }
+
+      if( !json.editorEmail ){
+        logger.info(`Editor email address missing for new doc ${json.id}; not sending email`);
+
+        return Promise.resolve(json);
+      }
+
+      logger.info(`Sending new doc ${json.id} to ${json.authorEmail} and copying to ${json.editorEmail}`);
+
+      return sendEmail(json).then(() => json);
+    })
+    .then(json => {
+      return res.json( json );
+    })
     .catch( e => {
       logger.error(`Could not fill doc from text: ${text}`);
-      logger.error('REACH exception thrown :', e.message);
+      logger.error('Exception thrown :', e.message);
       res.sendStatus(500);
 
       throw e;

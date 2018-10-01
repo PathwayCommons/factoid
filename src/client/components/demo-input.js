@@ -20,14 +20,14 @@ class DemoInput extends Component {
 
   submit(){
     let { text } = this.state;
-    let title = 'Demo';
+    let name = 'Demo';
 
     let makeRequest = () => fetch('/api/document', {
       headers: {
         'Content-Type': 'application/json'
       },
       method: 'POST',
-      body: JSON.stringify({ text, title })
+      body: JSON.stringify({ text, name })
     }).then( res => res.json() );
 
     let redirect = docJson => {

@@ -341,8 +341,15 @@ class Editor extends DataComponent {
     let { history } = this.props;
 
     let editorContent = this.data.initted ? [
-      h('div.editor-branding', [
-        h('div.editor-title', document.name() === '' ? 'Untitled document' : document.name())
+      h('div.editor-title', [
+        h('div.editor-title-content', [
+          h('div.editor-title-name', document.name() || 'Unnamed document'),
+          h('div.editor-title-info', [
+            h('span', document.authorName() ? `${document.authorName()} et al., ` : ``),
+            h('span', `${document.year()}`),
+            h('span', document.journalName() ? `, ${document.journalName()}` : ``)
+          ])
+        ])
       ]),
       h('div.editor-main-menu', [
         h(MainMenu, { bus, document, history })

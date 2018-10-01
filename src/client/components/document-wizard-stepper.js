@@ -42,7 +42,7 @@ class DocumentWizardStepper extends Component {
       } );
     };
 
-    let backBtn = backEnabled ? h('div.document-wizard-stepper-back', [
+    let backBtn = h('div.document-wizard-stepper-back', [
       h('button.document-wizard-stepper-back-button', {
         onClick: () => go( back, 'goingBack' ),
         disabled: !backEnabled || this.state.goingBack,
@@ -56,9 +56,9 @@ class DocumentWizardStepper extends Component {
           'document-wizard-stepper-spinner-going': this.state.goingBack
         })
       })
-    ]) : null;
+    ]);
 
-    let forwardBtn = forwardEnabled ? h('div.document-wizard-stepper-forward', [
+    let forwardBtn = h('div.document-wizard-stepper-forward', [
       h('span.icon.icon-spinner.document-wizard-stepper-forward-spinner', {
         className: makeClassList({
           'document-wizard-stepper-spinner-going': this.state.goingForward
@@ -72,7 +72,7 @@ class DocumentWizardStepper extends Component {
         forwardText ? h('div', forwardText) : null,
         h('i.material-icons', forwardIcon)
       ])
-    ]) : null;
+    ]);
 
 
     return h('div.document-wizard-stepper', [

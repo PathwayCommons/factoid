@@ -54,3 +54,7 @@
     filter: brightness(50%);
   }
 }
+
+.main-menu-title {
+  margin-left: 0.5em;
+}

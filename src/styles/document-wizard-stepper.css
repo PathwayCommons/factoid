@@ -5,24 +5,27 @@
   font-size: 0.8em;
 }
 
-.document-wizard-stepper-back {
-  margin: 0.5em;
-  margin-left: 0;
-  font-size: 1.25em;
-}
-
+.document-wizard-stepper-back,
 .document-wizard-stepper-forward {
   margin: 0.5em;
-  margin-right: 0;
   font-size: 1.25em;
   display: flex;
   flex-direction: row;
+  align-items: center;
+}
+
+.document-wizard-stepper-back {
+  margin-left: 0;
+}
+
+.document-wizard-stepper-forward {
+  margin-right: 0;
 }
 
 .document-wizard-stepper-back-spinner,
 .document-wizard-stepper-forward-spinner {
-  margin: 0 0.5em;
   opacity: 0;
+  margin: 0 0.5em;
   transition: opacity 250ms ease;
 }
 

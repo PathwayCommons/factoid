@@ -18,6 +18,7 @@ General:
 - `NODE_ENV` : the environment mode; either `production` or `development` (default)
 - `PORT` : the port on which the server runs (default `3000`)
 - `LOG_LEVEL` : minimum log level; one of `info` (default), `warn`, `error`
+- `BASE_URL` : used for email linkouts (e.g. `https://factoid.baderlab.org`)
 
 Database:
 

@@ -1,14 +1,10 @@
 const React = require('react');
 const h = require('react-hyperscript');
-const _ = require('lodash');
-const { makeClassList, tryPromise } = require('../../util');
+const { Link } = require('react-router-dom');
 
-const DocumentWizardStepper = require('./document-wizard-stepper');
-const IntervalHighlighter = require('./interval-highlighter');
-
-const ENTITY_HIGHLIGHT_CLASS = 'document-seeder-highlighted-entity';
-const INTN_SENTENCE_HIGHLIGHT_CLASS = 'document-seeder-highlighted-interaction-sentence';
-const INTN_TRIGGER_HIGHLIGHT_CLASS = 'document-seeder-highlighted-interaction-trigger';
+const { tryPromise } = require('../../util');
+const example = require('./document-seeder-example');
+const MainMenu = require('./main-menu');
 
 class DocumentSeeder extends React.Component {
   constructor( props ){
@@ -16,250 +12,19 @@ class DocumentSeeder extends React.Component {
 
     this.state = {
       submitting: false,
-      reachHighlightIntervals: [],
-      reachHighlightInput: '',
-      reachHighlightEnabled: false,
-      docTitle: '',
-      docText: ''
+      year: (new Date()).getFullYear()
     };
-  }
-
-  getDocumentSeederTextVal(){
-    return this.state.docText;
-  }
-
-  getDocumentTitleTextVal(){
-    return this.state.docTitle;
-  }
-
-  getReachResponse(){
-    let text = this.state.reachHighlightInput;
-
-    let makeRequest = () => fetch('/api/document/query-reach', {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      method: 'POST',
-      body: JSON.stringify({ text })
-    });
-
-    let toJson = res => res.json();
-
-    return tryPromise( makeRequest ).then( toJson );
-  }
-
-  updateReachHighlightInput(){
-    let reachInput = this.getDocumentSeederTextVal();
-    this.setState({
-      reachHighlightInput: reachInput
-    });
-  }
-
-  updateReachHighlightIntervals(reachResponse){
-    let intervals = this.getReachHighlightIntervals(reachResponse);
-
-    this.setState({
-      reachHighlightIntervals: intervals
-    });
-  }
-
-  clearReachHighlightState(){
-    this.setState({
-      reachHighlightInput: '',
-      reachHighlightIntervals: []
-    });
-  }
-
-  getReachHighlightIntervals(reachResponse){
-
-    let frameToInterval = frame => {
-      return {
-        start: _.get( frame, ['start-pos', 'offset'] ),
-        end: _.get( frame, ['end-pos', 'offset'] )
-      };
-    };
-
-    // extract interval of the trigger word from the event frame where "trigger" field exists
-    let frameToTriggerInterval = frame => {
-      let frameText = _.get(frame, 'text');
-      let frameStart = _.get(frame, ['start-pos', 'offset']);
-      let triggerWord = _.get(frame, 'trigger');
-
-      if (triggerWord === undefined) {
-        throw 'Frame should have a trigger field!';
-      }
-
-      let relativeTriggerIndex = frameText.indexOf(triggerWord);
-      let triggerStart = frameStart + relativeTriggerIndex;
-      let triggerEnd = triggerStart + triggerWord.length;
-
-      return {
-        start: triggerStart,
-        end: triggerEnd
-      };
-    };
-
-    // attaches the given class to each of given intervals
-    let attachHighlightClass = (intervals, className) => {
-      intervals.forEach(interval => {
-        _.set(interval, 'class', className);
-      });
-    };
-
-    let isEvtSentenceFrame = frame => evtSentencesSet.has( _.get( frame, 'frame-id' ) );
-
-    let evtFrames = _.get( reachResponse, ['events', 'frames'], [] );
-
-    let entityIntervals = _.get( reachResponse, ['entities', 'frames'], []).map( frameToInterval );
-    let evtSentencesSet = new Set( evtFrames.map( frame => frame.sentence ) );
-
-    let sentenceIntervals = _.get( reachResponse, ['sentences', 'frames'], []).filter( isEvtSentenceFrame ).map( frameToInterval );
-    let triggerIntervals = evtFrames.filter( frame => frame.trigger !== undefined ).map( frameToTriggerInterval );
-
-    attachHighlightClass(entityIntervals, ENTITY_HIGHLIGHT_CLASS);
-    attachHighlightClass(triggerIntervals, INTN_TRIGGER_HIGHLIGHT_CLASS);
-    attachHighlightClass(sentenceIntervals, INTN_SENTENCE_HIGHLIGHT_CLASS);
-
-    // combine entityIntervals and triggerIntervals as basicIntervals
-    let basicIntervals = [...entityIntervals, ...triggerIntervals];
-
-    return this.mergeIntervals(basicIntervals, sentenceIntervals);
-  }
-
-  // Merges basic intervals and complex intervals, resulting array
-  // contains objects that has 'start', 'end' and 'classes' fields.
-  // Complex intervals may cover basic intervals but the other way around is
-  // not valid.
-  mergeIntervals(basicIntervals, complexIntervals){
-
-    let cmp = (int1, int2) => {
-      return int1.start - int2.start;
-    };
-
-    // sort intervals by start index
-    basicIntervals = basicIntervals.sort(cmp);
-    complexIntervals = complexIntervals.sort(cmp);
-
-    let eliminateDuplication = sortedArr => {
-      return sortedArr.filter( ( currVal, currIndex ) => {
-        let compPrev = () => {
-          let prevVal = sortedArr[ currIndex - 1 ];
-
-          return currVal.start === prevVal.start && currVal.end === prevVal.end;
-        };
-
-        return currIndex === 0 || !compPrev();
-      } );
-    };
-
-    // same intervals would be repeated based on text mining results
-    // handle such cases by removing any duplication of intervals
-    basicIntervals = eliminateDuplication( basicIntervals );
-    complexIntervals = eliminateDuplication( complexIntervals );
-
-    let basicIndex = 0;
-    let complexIndex = 0;
-    let retVal = [];
-
-    while ( basicIndex < basicIntervals.length && complexIndex < complexIntervals.length ) {
-      let basicInt = basicIntervals[basicIndex];
-      let complexInt = complexIntervals[complexIndex];
-
-      // push a complex object for the part of complex interval that intersects no basic interval
-      if ( basicInt.start > complexInt.start ) {
-        let complexObj = {
-          start: complexInt.start,
-          end: Math.min(basicInt.start, complexInt.end),
-          classes: [ complexInt.class ]
-        };
-
-        retVal.push(complexObj);
-
-        // update the beginining of complex interval since we just covered some
-        complexInt.start = complexObj.end;
-
-        // if the whole complex interval is covered pass to the next one
-        // this would happen if complex interval does not include any basic interval
-        if ( complexInt.end === complexObj.end ) {
-          complexIndex++;
-          continue;
-        }
-      }
-
-      let basicObj = {
-        start: basicInt.start,
-        end: basicInt.end,
-        classes: [ basicInt.class ]
-      };
-
-      // if basic interval is covered by complex interval it makes an intersection
-      // so it should have the complex class as well
-      if ( basicInt.start >= complexInt.start && basicInt.end <= complexInt.end ) {
-        basicObj.classes.push( complexInt.class );
-        complexInt.start = basicInt.end;
-
-        // we are done with this intersection pass to the next one
-        if ( complexInt.start >= complexInt.end ) {
-          complexIndex++;
-        }
-      }
-
-      retVal.push(basicObj);
-
-      // pass to next basic interval
-      basicIndex++;
-    }
-
-    let iterateRemaningIntervals = ( index, intervals ) => {
-      while ( index < intervals.length ) {
-        let interval = intervals[index];
-        retVal.push({
-          start: interval.start,
-          end: interval.end,
-          classes: [ interval.class ]
-        });
-        index++;
-      }
-    };
-
-    // iterate through the remaining intervals
-    iterateRemaningIntervals( basicIndex, basicIntervals );
-    iterateRemaningIntervals( complexIndex, complexIntervals );
-
-    return retVal;
-  }
-
-  toggleReachHighlights() {
-    let toggleHighlightState = () => {
-      this.setState({
-        reachHighlightEnabled: !this.state.reachHighlightEnabled
-      });
-    };
-
-    let highlightOrClear = () => {
-      if (this.state.reachHighlightEnabled) {
-        tryPromise(this.updateReachHighlightInput.bind(this))
-                    .then(this.getReachResponse.bind(this))
-                    .then(this.updateReachHighlightIntervals.bind(this));
-      }
-      else {
-        this.clearReachHighlightState();
-      }
-    };
-
-    tryPromise(toggleHighlightState).then(highlightOrClear);
   }
 
   createDoc(){
-    let text = this.getDocumentSeederTextVal();
-    let title = this.getDocumentTitleTextVal();
+    let { name, year, journalName, authorName, authorEmail, editorName, editorEmail, trackingId, abstract, text, legends } = this.state;
 
     let makeRequest = () => fetch('/api/document', {
       headers: {
         'Content-Type': 'application/json'
       },
       method: 'POST',
-      body: JSON.stringify({ text, title })
+      body: JSON.stringify({ name, year, journalName, authorName, authorEmail, editorName, editorEmail, trackingId, abstract, text, legends })
     });
 
     let toJson = res => res.json();
@@ -275,54 +40,162 @@ class DocumentSeeder extends React.Component {
     return tryPromise( makeRequest ).then( toJson ).then( updateState );
   }
 
-  goToChooser(){
+  goToPreview(){
     let { history } = this.props;
     let { id, secret } = this.state.documentJson;
 
-    history.push(`/new/choice/${id}/${secret}`);
+    history.push(`/new/preview/${id}/${secret}`);
+  }
+
+  fillExample(){
+    this.setState(example);
+  }
+
+  fillQuickExample(){
+    this.setState(Object.assign({}, example, {
+      abstract: 'PCNA phosphorylates RAD51',
+      text: '',
+      legends: ''
+    }));
+  }
+
+  clear(){
+    this.setState({
+      name: '',
+      journalName: '',
+      authorName: '',
+      authorEmail: '',
+      editorName: '',
+      editorEmail: '',
+      trackingId: '',
+      abstract: '',
+      text: '',
+      legends: ''
+    });
+  }
+
+  submit(){
+    return (
+      Promise.resolve()
+      .then( () => this.createDoc() )
+    );
   }
 
   render(){
-    return h('div.document-seeder', [
-      h('div.document-seeder-content', [
-        h('h2', 'Enter Paper Details'),
-        h('label.document-seeder-text-label', 'Paper title'),
-        h('input.document-seeder-doc-title', {
-          type: 'text',
-          placeholder: 'Untitled document',
-          onChange: e => this.setState({docTitle: e.target.value})
-        }),
-        h('label.document-seeder-text-label', 'Paper text'),
-        h('textarea.document-seeder-text', {
-          className: makeClassList({
-            'document-seeder-hidden': this.state.reachHighlightEnabled
-          }),
-          onChange: e => this.setState({docText: e.target.value})
-        }),
-        h('div.document-seeder-highlight-panel', {
-          className: makeClassList({
-            'document-seeder-hidden': !this.state.reachHighlightEnabled
-          })
-        },[
-          h(IntervalHighlighter, { text: this.state.reachHighlightInput, intervals: this.state.reachHighlightIntervals })
-        ]),
-        h('div.document-seeder-buttons', [
-          h('button.document-seeder-toggle-highlight', {
-            onClick: () => {
-              this.toggleReachHighlights();
-            }
-          }, `${this.state.reachHighlightEnabled ? 'Edit Text' : 'Highlight Entities and Interactions'}`),
-          h(DocumentWizardStepper, {
-            forwardText: 'Submit',
-            forwardIcon: '',
-            backEnabled: false,
-            forward: () => {
-              let create = () => this.createDoc();
-              let go = () => this.goToChooser();
+    let { history, demo } = this.props;
+    let { documentJson } = this.state;
 
-              return tryPromise( create ).then( go );
-            }
-          })
+    let onChange = key => {
+      return e => this.setState({ [key]: e.target.value });
+    };
+
+    let value = key => {
+      return this.state[key] || '';
+    };
+
+    return h('div.document-seeder.page-content', [
+      h('div.document-seeder-content', [
+        h(MainMenu, { history, title: 'Publisher portal : New factoid' }),
+
+        h('p', 'Enter the information for the paper you would like to submit to Factoid.  An email will be sent to the corresponding author once submitted, with the email requesting that the author edit the resulant pathway.  You, the journal editor, will be copied on the email.  Once the author has completed the pathway, you will be notified so that the pathway may be used in peer review and publication.'),
+
+        demo ? h('p.document-seeder-example-buttons', [
+          h('button', {
+            onClick: () => this.fillExample()
+          }, 'Use an example'),
+
+          h('button', {
+            onClick: () => this.fillQuickExample()
+          }, 'Use a quick example')
+        ]) : null,
+
+        h('label.document-seeder-text-label', 'Paper title'),
+        h('input.document-seeder-doc-name', {
+          type: 'text',
+          value: value('name'),
+          onChange: onChange('name')
+        }),
+
+        h('label.document-seeder-text-label', 'Jounal name'),
+        h('input.document-seeder-journal-name', {
+          type: 'text',
+          value: value('journalName'),
+          onChange: onChange('journalName')
+        }),
+
+        h('label.document-seeder-text-label', 'Publication year'),
+        h('input.document-seeder-year', {
+          type: 'text',
+          value: value('year'),
+          onChange: onChange('year')
+        }),
+
+        h('label.document-seeder-text-label', 'Corresponding author name'),
+        h('input.document-seeder-author-name', {
+          type: 'text',
+          value: value('authorName'),
+          onChange: onChange('authorName')
+        }),
+
+        h('label.document-seeder-text-label', 'Corresponding author email'),
+        h('input.document-seeder-author-email', {
+          type: 'text',
+          value: value('authorEmail'),
+          onChange: onChange('authorEmail')
+        }),
+
+        h('label.document-seeder-text-label', 'Editor name'),
+        h('input.document-seeder-author-name', {
+          type: 'text',
+          value: value('editorName'),
+          onChange: onChange('editorName')
+        }),
+
+        h('label.document-seeder-text-label', 'Editor email'),
+        h('input.document-seeder-author-email', {
+          type: 'text',
+          value: value('editorEmail'),
+          onChange: onChange('editorEmail')
+        }),
+
+        h('label.document-seeder-text-label', 'Tracking ID'),
+        h('input.document-seeder-tracking', {
+          type: 'text',
+          value: value('trackingId'),
+          onChange: onChange('trackingId')
+        }),
+
+        h('label.document-seeder-text-label', 'Abstract'),
+        h('textarea.document-seeder-abstract', {
+          value: value('abstract'),
+          onChange: onChange('abstract')
+        }),
+
+        h('label.document-seeder-text-label', 'Text'),
+        h('textarea.document-seeder-text', {
+          value: value('text'),
+          onChange: onChange('text')
+        }),
+
+        h('label.document-seeder-text-label', 'Figure legends text'),
+        h('textarea.document-seeder-legends', {
+          value: value('legends'),
+          onChange: onChange('legends')
+        }),
+
+        h('p', [
+          h('button.document-seeder-submit.salient-button', {
+            onClick: () => this.submit()
+          }, 'Submit'),
+
+          this.state.submitting ? h('span', [
+            h('span', ' Submitting.  This may take a few minutes.  '),
+            h('i.icon.icon-spinner.document-seeder-submit-spinner')
+          ]) : this.state.documentJson ? h('span', [
+            h('span', ' Submitted and email sent.  You can now '),
+            h(Link, { className: 'plain-link', to: `/document/${documentJson.id}/${documentJson.secret}`, target: '_blank'}, 'view the Factoid document'),
+            h('span', '.')
+          ]) : null
         ])
       ])
 

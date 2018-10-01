@@ -37,8 +37,15 @@
 .editor-submit {
   position: absolute;
   right: 0;
-  margin: 0.75em 0.5em;
+  box-sizing: border-box;
   z-index: 1;
+  padding: 0.75em 0.5em;
+  background: rgba(255, 255, 255, 0.5);
+  border-bottom-left-radius: 0.5em;
+}
+
+.editor-submit-button {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .editor-button-group {
@@ -66,19 +73,27 @@
   font-size: 1.25em;
 }
 
-.editor-branding {
+.editor-title {
+  z-index: 10;
   position: absolute;
-  background: rgba(255, 255, 255, 0.5);
-  z-index: 1;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0.333em 0.5em;
+  text-align: center;
+  width: 100%;
+  pointer-events: none;
+}
+
+.editor-title-content {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0.375em 0.5em;
   border-bottom-left-radius: 0.25em;
   border-bottom-right-radius: 0.25em;
-  pointer-events: none;
-  cursor: default;
-  max-width: calc(100% - 8em);
+  max-width: calc(100% - 13em);
+  pointer-events: all;
+}
+
+.editor-title-info {
+  font-size: var(--smallFontSize);
 }
 
 .editor-task-list-active {
@@ -86,10 +101,6 @@
     left: calc(50% - 11em);
     max-width: calc(100% - 32em);
   }
-}
-
-.editor-title {
-  margin: 0.25em 0;
 }
 
 .editor-graph {

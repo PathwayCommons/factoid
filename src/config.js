@@ -20,6 +20,8 @@ let defaults = {
   DB_PASS: undefined, // password if db uses auth
   DB_CERT: undefined,  // path to a certificate (cert) file if db uses ssl
 
+  BASE_URL: 'https://factoid.baderlab.org',
+
   // Services
   REACH_URL: 'http://reach.baderlab.org/api/uploadFile',
   UNIPROT_URL: 'http://www.uniprot.org/uniprot',

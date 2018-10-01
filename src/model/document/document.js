@@ -9,10 +9,25 @@ const Organism = require('../organism');
 const Cytoscape = require('cytoscape');
 
 const DEFAULTS = Object.freeze({
+  // data
   entries: [], // used by elementSet
+  organisms: [], // list of ids
+
+  // metadata
   name: '',
-  organisms: [] // list of ids
+  journalName: '',
+  year: 0,
+  authorName: '',
+  authorEmail: '',
+  editorName: '',
+  editorEmail: '',
+  trackingId: '',
+  abstract: '',
+  text: '',
+  legends: ''
 });
+
+const METADATA_FIELDS = ['name', 'journalName', 'year', 'authorName', 'authorEmail', 'editorName', 'editorEmail', 'trackingId', 'abstract', 'text', 'legends'];
 
 /**
 A document that contains a set of biological elements (i.e. entities and interactions).
@@ -152,6 +167,62 @@ class Document {
     } else {
       return this.syncher.get('name');
     }
+  }
+
+  // helper for get/set of simple paper metadata
+  rwMeta(field, newVal){
+    if( newVal != null ){
+      let event = field.replace(/([A-Z])/g, (match, letter) => '-' + letter.toLowerCase());
+
+      let updatePromise = this.syncher.update(field, newVal);
+
+      this.emit('meta' + event, newVal);
+      this.emit('localmeta' + event, newVal);
+
+      return updatePromise;
+    } else {
+      return this.syncher.get(field);
+    }
+  }
+
+  journalName(newName){
+    return this.rwMeta('journalName', newName);
+  }
+
+  year(newYear){
+    return this.rwMeta('year', newYear);
+  }
+
+  authorName(newName){
+    return this.rwMeta('authorName', newName);
+  }
+
+  authorEmail(newEmail){
+    return this.rwMeta('authorEmail', newEmail);
+  }
+
+  editorName(newName){
+    return this.rwMeta('editorName', newName);
+  }
+
+  editorEmail(newEmail){
+    return this.rwMeta('editorEmail', newEmail);
+  }
+
+  trackingId(newId){
+    return this.rwMeta('trackingId', newId);
+  }
+
+  abstract(newAbstract){
+    return this.rwMeta('abstract', newAbstract);
+  }
+
+  text(newText){
+    return this.rwMeta('text', newText);
+  }
+
+  legends(newLegends){
+    return this.rwMeta('legends', newLegends);
   }
 
   entities(){
@@ -337,14 +408,14 @@ class Document {
   json(){
     let toJson = obj => obj.json();
 
-    return {
+    return _.assign({
       id: this.id(),
       secret: this.secret(),
       organisms: this.organisms().map( toJson ),
       elements: this.elements().map( toJson ),
       publicUrl: this.publicUrl(),
-      privateUrl: this.privateUrl()
-    };
+      privateUrl: this.privateUrl(),
+    }, _.pick(this.syncher.get(), METADATA_FIELDS));
   }
 
   toBiopaxTemplates(){
@@ -373,7 +444,10 @@ class Document {
     let addOrganism = id => this.toggleOrganism( id, true );
     let addOrganisms = () => Promise.all( orgIds.map( addOrganism ) );
 
+    let updateMetadata = () => this.syncher.update( _.pick(json, METADATA_FIELDS) );
+
     return Promise.all([
+      updateMetadata(),
       handleEls(),
       addOrganisms()
     ]);

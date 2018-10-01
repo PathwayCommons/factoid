@@ -83,7 +83,7 @@ let sendEmail = json => {
     from: { name: 'Factoid', address: 'noreply@pathwaycommons.org' },
     to: { name: j.authorName, address: j.authorEmail },
     cc: { name: j.editorName, address: j.editorEmail },
-    replyTo: { name: 'Pathway Commons Team', address: 'pathway-commons-dev@googlegroups.com ' },
+    replyTo: { name: 'Pathway Commons Team', address: 'pathway-commons-help@googlegroups.com ' },
     subject: `Action required: "${json.name}"`,
     html: h('div', {
       style: {

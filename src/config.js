@@ -36,8 +36,13 @@ let defaults = {
   AGGREGATE_CACHE_SIZE: DEFAULT_CACHE_SIZE,
   MAX_SEARCH_SIZE: 50,
   BIOPAX_CONVERTER_URL: 'http://causalpath.org:9090/FactoidToBiopaxServer/ConvertToOwl',
+<<<<<<< HEAD
   PC_LINK_BASE_URL: 'http://apps.pathwaycommons.org/search?q=',
   PC_URL: 'http://apps.pathwaycommons.org'
+=======
+  PC_URL: 'http://localhost:3000/',
+  PC_LINK_BASE_URL: 'http://apps.pathwaycommons.org/search?q='
+>>>>>>> hard code pc apps url for now until #370 is resolved
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );

@@ -2,6 +2,8 @@ const DirtyComponent = require('../dirty-component');
 const DataComponent = require('../data-component');
 const h = require('react-hyperscript');
 
+const { PC_URL } = require('../../../config');
+
 const { makeClassList } = require('../../../util');
 
 const Notification = require('../notification');
@@ -242,6 +244,7 @@ class TaskView extends DataComponent {
     } else {
       return h('div.task-view', [
         h('div.task-view-done', [
+          h('a.plain-link', { href: PC_URL + 'factoids/' + document.id(), target: '_blank' }, 'result'),
           h('div.task-view-done-message', 'Submitted for review'),
           h('div.task-view-done-icon', [
             h('i.material-icons.element-info-complete-icon', 'check_circle')

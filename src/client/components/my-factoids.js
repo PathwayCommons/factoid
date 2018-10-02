@@ -20,7 +20,7 @@ class MyFactoids extends Component {
         ]);
       }),
 
-      factoids.length === 0 ? h('div.my-factoids-empty', 'You have no previously viewed Factoids.') : null,
+      factoids.length === 0 ? h('div.my-factoids-empty', 'You have no previously viewed factoids.') : null,
 
       h('button.my-factoids-clear', {
         onClick: () => this.clear()

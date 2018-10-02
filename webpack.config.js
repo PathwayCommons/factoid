@@ -6,6 +6,8 @@ const isNonNil = x => x != null;
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const path = require('path');
 
+const envVars = ['NODE_ENV', 'PC_URL', 'BASE_URL', 'PC_LINK_BASE_URL'];
+
 // dependencies that we need to babelify ourselves
 const unbabelifiedDependencies = [
   'p-cancelable'
@@ -46,7 +48,7 @@ let conf = {
   plugins: [
     isProfile ? new BundleAnalyzerPlugin() : null,
 
-    new webpack.EnvironmentPlugin(['NODE_ENV']),
+    new webpack.EnvironmentPlugin(envVars),
 
     new webpack.optimize.CommonsChunkPlugin({
       name: 'deps',

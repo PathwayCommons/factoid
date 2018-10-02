@@ -1,4 +1,3 @@
-let process = require('process');
 let _ = require('lodash');
 let { isClient } = require('./util');
 
@@ -37,10 +36,22 @@ let defaults = {
   AGGREGATE_CACHE_SIZE: DEFAULT_CACHE_SIZE,
   MAX_SEARCH_SIZE: 50,
   BIOPAX_CONVERTER_URL: 'http://causalpath.org:9090/FactoidToBiopaxServer/ConvertToOwl',
-  PC_LINK_BASE_URL: 'http://apps.pathwaycommons.org/search?q='
+  PC_LINK_BASE_URL: 'http://apps.pathwaycommons.org/search?q=',
+  PC_URL: 'http://apps.pathwaycommons.org'
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );
+
+// these vars are always included in the bundle because they ref `process.env.${name}` directly
+// NB DO NOT include passwords etc. here
+let clientVars = {
+  NODE_ENV: process.env.NODE_ENV,
+  BASE_URL: process.env.BASE_URL,
+  PC_URL: process.env.PC_URL,
+  PC_LINK_BASE_URL: process.env.PC_LINK_BASE_URL
+};
+
+_.assign(envVars, clientVars);
 
 for( let key in envVars ){
   let val = envVars[key];

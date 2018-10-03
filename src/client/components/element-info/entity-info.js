@@ -1,7 +1,7 @@
 const DataComponent = require('../data-component');
 const h = require('react-hyperscript');
 const ReactDom = require('react-dom');
-const { focusDomElement, makeClassList, initCache, SingleValueCache, tryPromise, makeCancelable } = require('../../../util');
+const { focusDomElement, makeClassList, initCache, SingleValueCache, makeCancelable } = require('../../../util');
 const _ = require('lodash');
 const defs = require('../../defs');
 const Heap = require('heap');

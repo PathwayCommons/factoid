@@ -37,7 +37,7 @@ let defaults = {
   MAX_SEARCH_SIZE: 50,
   BIOPAX_CONVERTER_URL: 'http://causalpath.org:9090/FactoidToBiopaxServer/ConvertToOwl',
   PC_LINK_BASE_URL: 'http://apps.pathwaycommons.org/search?q=',
-  PC_URL: 'http://apps.pathwaycommons.org'
+  PC_URL: 'http://apps.pathwaycommons.org/'
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );

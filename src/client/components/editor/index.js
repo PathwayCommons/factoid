@@ -63,12 +63,12 @@ class Editor extends DataComponent {
       l.lastTime = now;
     };
 
-    let rmAvailTimeout = null;
+    this.rmAvailTimeout = null;
 
     let makeRmAvailable = () => {
-      clearTimeout( rmAvailTimeout );
+      clearTimeout( this.rmAvailTimeout );
 
-      rmAvailTimeout = setTimeout( () => {
+      this.rmAvailTimeout = setTimeout( () => {
         this.setData({ undoRemoveAvailable: false });
       }, RM_AVAIL_DURATION );
 
@@ -388,6 +388,7 @@ class Editor extends DataComponent {
     document.elements().forEach( el => el.removeAllListeners() );
     document.removeAllListeners();
     bus.removeAllListeners();
+    clearTimeout( this.rmAvailTimeout );
   }
 }
 

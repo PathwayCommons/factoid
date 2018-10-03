@@ -118,6 +118,23 @@ let sendEmail = json => {
   });
 };
 
+http.get('/', function( req, res ){
+  let limit = req.params.limit || 50;
+
+  return (
+    tryPromise( () => loadTable('document') )
+    .then( t => {
+      let { table, conn } = t;
+      return table
+        .limit(limit)
+        .pluck( [ 'id', 'publicUrl' ] )
+        .run( conn )
+        .then( cursor => cursor.toArray() )
+        .then( results => res.json( results ) );
+    })
+  );
+});
+
 // get existing doc
 http.get('/:id', function( req, res ){
   let id = req.params.id;

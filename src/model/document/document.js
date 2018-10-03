@@ -273,6 +273,14 @@ class Document {
     return this.organismCounts().get( org );
   }
 
+  toText(){
+    let interactions = this.interactions();
+    let strings = interactions.map( intn => intn.toString() );
+    let dotOrEmptyStr = interactions.length > 0 ? '.' : '';
+     return strings.join( ', ' ) + dotOrEmptyStr;
+  }
+
+
   // get list of all orgs (incl. explicit mentions and implicit mentions via entity assoc)
   organisms(){
     let hasMentions = ([ org, mentions ]) => mentions > 0; // eslint-disable-line no-unused-vars
@@ -411,6 +419,8 @@ class Document {
     return _.assign({
       id: this.id(),
       secret: this.secret(),
+      name: this.name(),
+      summary: this.toText(),
       organisms: this.organisms().map( toJson ),
       elements: this.elements().map( toJson ),
       publicUrl: this.publicUrl(),

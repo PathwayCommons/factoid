@@ -230,15 +230,15 @@ class EntityInfo extends DataComponent {
     let update;
 
     if( name ){
-      let makeRequest = () => fetch( '/api/element-association/search', {
+      let makeRequest = () => makeCancelable(fetch( '/api/element-association/search', {
         method: 'POST',
         headers: {
           'content-type': 'application/json'
         },
         body: JSON.stringify(q)
-      } );
+      } ));
 
-      let jsonify = res => res.json();
+      let jsonify = res => makeCancelable(res.json());
 
       let updateView = matches => {
         if( this._unmounted ){ return; }
@@ -301,11 +301,11 @@ class EntityInfo extends DataComponent {
         });
       };
 
-      update = (
-        makeCancelable(Promise.resolve()) // propagate cancellability down
+      update = makeCancelable(
+        Promise.resolve()
         .then(makeRequest)
         .then(jsonify)
-        .then( matches => tryPromise( () => updateView(matches) ) )
+        .then(updateView)
       );
     } else {
       update = new CancelablePromise(resolve => resolve());

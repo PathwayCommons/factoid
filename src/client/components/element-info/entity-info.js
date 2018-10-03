@@ -302,8 +302,10 @@ class EntityInfo extends DataComponent {
       };
 
       update = (
-        makeCancelable( tryPromise(makeRequest).then(jsonify) )
-        .then( matches => makeCancelable( tryPromise( () => updateView(matches) ) ) )
+        makeCancelable(Promise.resolve()) // propagate cancellability down
+        .then(makeRequest)
+        .then(jsonify)
+        .then( matches => tryPromise( () => updateView(matches) ) )
       );
     } else {
       update = new CancelablePromise(resolve => resolve());

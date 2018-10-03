@@ -219,4 +219,13 @@ http.get('/biopax/:id', function( req, res ){
     .then( owl => res.send( owl ));
 });
 
+http.get('/text/:id', function( req, res ){
+  let id = req.params.id;
+  tryPromise( loadTables )
+    .then( json => _.assign( {}, json, { id } ) )
+    .then( loadDoc )
+    .then( doc => doc.toText() )
+    .then( txt => res.send( txt ));
+});
+
 module.exports = http;

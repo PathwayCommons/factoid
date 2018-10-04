@@ -1,7 +1,7 @@
 const DataComponent = require('../data-component');
 const h = require('react-hyperscript');
 const ReactDom = require('react-dom');
-const { focusDomElement, makeClassList, initCache, SingleValueCache, tryPromise, makeCancelable } = require('../../../util');
+const { focusDomElement, makeClassList, initCache, SingleValueCache, makeCancelable } = require('../../../util');
 const _ = require('lodash');
 const defs = require('../../defs');
 const Heap = require('heap');
@@ -230,15 +230,15 @@ class EntityInfo extends DataComponent {
     let update;
 
     if( name ){
-      let makeRequest = () => fetch( '/api/element-association/search', {
+      let makeRequest = () => makeCancelable(fetch( '/api/element-association/search', {
         method: 'POST',
         headers: {
           'content-type': 'application/json'
         },
         body: JSON.stringify(q)
-      } );
+      } ));
 
-      let jsonify = res => res.json();
+      let jsonify = res => makeCancelable(res.json());
 
       let updateView = matches => {
         if( this._unmounted ){ return; }
@@ -301,9 +301,11 @@ class EntityInfo extends DataComponent {
         });
       };
 
-      update = (
-        makeCancelable( tryPromise(makeRequest).then(jsonify) )
-        .then( matches => makeCancelable( tryPromise( () => updateView(matches) ) ) )
+      update = makeCancelable(
+        Promise.resolve()
+        .then(makeRequest)
+        .then(jsonify)
+        .then(updateView)
       );
     } else {
       update = new CancelablePromise(resolve => resolve());

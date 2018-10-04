@@ -13,11 +13,6 @@ const unbabelifiedDependencies = [
   'p-cancelable'
 ];
 
-const polyfills = [
-  'babel-polyfill',
-  'whatwg-fetch'
-];
-
 let conf = {
   entry: {
     bundle: './src/client/index.js',
@@ -56,7 +51,15 @@ let conf = {
       minChunks( module ){
         let context = module.context || '';
 
-        return context.indexOf('node_modules') >= 0 && !polyfills.some(pf => context.indexOf(pf) >= 0);
+        return context.indexOf('node_modules') >= 0 && !module.chunks.some(chunk => chunk.name === 'polyfills');
+      }
+    }),
+
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'webpackjsonp',
+      chunks: ['deps'],
+      minChunks: function(){
+        return false;
       }
     }),
 

@@ -1,0 +1,15 @@
+.reach-interval-highlighter span {
+  white-space: pre-line;
+}
+
+.reach-interval-highlighter-entity {
+  background-color: rgba(255, 255, 0, 0.2);
+}
+
+.reach-interval-highlighter-interaction-sentence {
+  text-decoration: underline;
+}
+
+.reach-interval-highlighter-interaction-trigger {
+  font-weight: bold;
+}

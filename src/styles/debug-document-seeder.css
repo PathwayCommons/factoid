@@ -44,7 +44,9 @@
 }
 
 .debug-document-seeder-linkout,
-.debug-document-seeder-textmining {
+.debug-document-seeder-textmining,
+.debug-document-seeder-textmining-params,
+.debug-document-seeder-textmining-json {
   margin-top: 1em;
   border-radius: 0.25em;
   box-shadow: 0 4px 20px 4px rgba(0, 20, 60, 0.2), 0 4px 80px -8px rgba(0, 20, 60, 0.3);
@@ -61,7 +63,19 @@
   text-align: center;
 }
 
-.debug-document-seeder-textmining {
+.debug-document-seeder-textmining,
+.debug-document-seeder-textmining-params,
+.debug-document-seeder-textmining-json {
   padding: 1em;
   line-height: 1.5;
+}
+
+.debug-document-seeder-textmining-param {
+  margin: 1em 0;
+}
+
+.debug-document-seeder-textmining-json-body {
+  border: 1px solid #ccc;
+  border-radius: 0.25em;
+  overflow-x: scroll;
 }

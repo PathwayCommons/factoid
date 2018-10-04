@@ -6,6 +6,8 @@ const ReactDom = require('react-dom');
 const { makeClassList, tryPromise } = require('../../util');
 const anime = require('animejs');
 const ReachIntervalHighlighter = require('./reach-interval-highlighter');
+const CopyField = require('./copy-field');
+const { BASE_URL } = require('../../config');
 
 const EXAMPLE_TEXT = `Upon detection of DNA damage, the ATM kinase mediates the phosphorylation of the Mdm2 protein to block its interaction with p53. The p53 protein activates the transcription of cyclin-dependent kinase inhibitor, p21. p21 inactivates the CCNE1:Cdk2 complex.`;
 
@@ -40,12 +42,12 @@ class DebugDocumentSeeder extends React.Component {
     let toJson = res => res.json();
 
     let animateResult = () => {
-      let linkout = ReactDom.findDOMNode(this).querySelector('.debug-document-seeder-linkout');
+      let result = ReactDom.findDOMNode(this).querySelector('.debug-document-seeder-result');
 
-      linkout.style.opacity = 0;
+      result.style.opacity = 0;
 
-      if( linkout ){
-        anime({ targets: linkout, opacity: [0, 1], duration: 2000, easing: 'linear' });
+      if( result ){
+        anime({ targets: result, opacity: [0, 1], duration: 2000, easing: 'linear' });
       }
     };
 
@@ -58,6 +60,15 @@ class DebugDocumentSeeder extends React.Component {
     this.setState({ submitting: true });
 
     tryPromise( makeRequest ).then( toJson ).then( updateState );
+  }
+
+  getHighlightRequestParams(){
+    return {
+      url: location.protocol + '//' + location.host + '/api/document/query-reach',
+      method: 'post',
+      headers: 'Content-Type: application/json',
+      text: this.state.text
+    };
   }
 
   getHighlights(){
@@ -108,25 +119,27 @@ class DebugDocumentSeeder extends React.Component {
       ])
     ];
 
+    let resultChildren = [];
+
     if( documentJson != null ){
-      rootChildren.push( h('div.debug-document-seeder-arrow', [
+      resultChildren.push( h('div.debug-document-seeder-arrow', [
         h('i.material-icons', 'arrow_downward')
       ]) );
 
-      rootChildren.push( h('div.debug-document-seeder-result-title', [
+      resultChildren.push( h('div.debug-document-seeder-result-title', [
         h(Link, { target: '_blank', to: documentJson.privateUrl }, [
           h('span', 'Open editor '),
           h('i.material-icons', 'open_in_new')
         ])
       ]) );
 
-      rootChildren.push( h('div.debug-document-seeder-linkout', [
+      resultChildren.push( h('div.debug-document-seeder-linkout', [
         h(Linkout, { documentJson })
       ]) );
     }
 
     if( documentJson != null && reachResponse != null ){
-      rootChildren.push( h('div.debug-document-seeder-result-title', [
+      resultChildren.push( h('div.debug-document-seeder-result-title', [
         h('form', {
           action: '/api/document/query-reach',
           method: 'post',
@@ -147,10 +160,34 @@ class DebugDocumentSeeder extends React.Component {
         ])
       ]) );
 
-      rootChildren.push( h('div.debug-document-seeder-textmining', [
+      resultChildren.push( h('div.debug-document-seeder-textmining', [
+        h('h3', 'Highlighted response'),
         h(ReachIntervalHighlighter, { text, reachResponse })
       ]) );
+
+      let params = this.getHighlightRequestParams();
+
+      let paramsArr = Object.keys(params).map(key => {
+        let val = params[key];
+
+        return { key, val };
+      });
+
+      resultChildren.push( h('div.debug-document-seeder-textmining-params', [
+        h('h3', 'Request parameters'),
+        ...paramsArr.map(param => h('div.debug-document-seeder-textmining-param', [
+          h('label', param.key),
+          h(CopyField, { value: param.val })
+        ]))
+      ]) );
+
+      resultChildren.push( h('div.debug-document-seeder-textmining-json', [
+        h('h3', 'Response JSON'),
+        h('pre.debug-document-seeder-textmining-json-body', JSON.stringify(reachResponse, null, 2))
+      ]) );
     }
+
+    rootChildren.push( h('div.debug-document-seeder-result', resultChildren) );
 
     return h('div.debug-document-seeder', rootChildren);
   }

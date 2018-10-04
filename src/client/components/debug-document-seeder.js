@@ -7,7 +7,6 @@ const { makeClassList, tryPromise } = require('../../util');
 const anime = require('animejs');
 const ReachIntervalHighlighter = require('./reach-interval-highlighter');
 const CopyField = require('./copy-field');
-const { BASE_URL } = require('../../config');
 
 const EXAMPLE_TEXT = `Upon detection of DNA damage, the ATM kinase mediates the phosphorylation of the Mdm2 protein to block its interaction with p53. The p53 protein activates the transcription of cyclin-dependent kinase inhibitor, p21. p21 inactivates the CCNE1:Cdk2 complex.`;
 

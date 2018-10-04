@@ -46,6 +46,7 @@ Services:
 - `AGGREGATE_CACHE_SIZE`: overrides default cache size for aggregate searches across all entity types
 - `MAX_SEARCH_SIZE`: max number of entities returned for each entity lookup/search service
 - `PC_LINK_BASE_URL` : base url concatenated to id to generate a pc search linkout
+- `PC_URL` : base url for pathway commons apps
 
 
 

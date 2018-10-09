@@ -142,7 +142,7 @@ class FormEditor extends DataComponent {
         randomize: false
       } ) );
 
-      let layoutDone = tryPromise( () => layout.promiseOn('layoutstop') );
+      let layoutDone = layout.promiseOn('layoutstop');
 
       layout.run();
 

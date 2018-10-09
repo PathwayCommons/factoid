@@ -4,7 +4,7 @@ const isProd = env.NODE_ENV === 'production';
 const isProfile = env.PROFILE == 'true';
 const isNonNil = x => x != null;
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const { PC_URL, BASE_URL, PC_LINK_BASE_URL } = require('./src/config');
+const { NODE_ENV, PC_URL, BASE_URL, PC_LINK_BASE_URL } = require('./src/config');
 const path = require('path');
 
 
@@ -45,7 +45,7 @@ let conf = {
     isProfile ? new BundleAnalyzerPlugin() : null,
 
     new webpack.EnvironmentPlugin({
-      NODE_ENV: 'development',
+      NODE_ENV,
       BASE_URL,
       PC_URL,
       PC_LINK_BASE_URL

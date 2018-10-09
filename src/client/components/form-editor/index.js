@@ -76,8 +76,18 @@ class FormEditor extends DataComponent {
           window.editor = this;
         }
 
-        doc.on('remoteadd', dirty);
-        doc.on('remoteremove', dirty);
+        doc.elements().forEach( el => {
+          el.on('remotecomplete', dirty);
+        });
+
+        doc.on('remoteadd', docEl => {
+          docEl.on('remotecomplete', dirty);
+          dirty();
+        });
+        doc.on('remoteremove', docEl => {
+          docEl.removeListener('remotecomplete', dirty);
+          dirty();
+        });
 
         dirty();
 

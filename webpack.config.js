@@ -4,10 +4,9 @@ const isProd = env.NODE_ENV === 'production';
 const isProfile = env.PROFILE == 'true';
 const isNonNil = x => x != null;
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const { PC_URL, BASE_URL, PC_LINK_BASE_URL } = require('./src/config');
 const path = require('path');
 
-
+const envVars = ['NODE_ENV', 'PC_URL', 'BASE_URL', 'PC_LINK_BASE_URL'];
 
 // dependencies that we need to babelify ourselves
 const unbabelifiedDependencies = [
@@ -44,12 +43,7 @@ let conf = {
   plugins: [
     isProfile ? new BundleAnalyzerPlugin() : null,
 
-    new webpack.EnvironmentPlugin({
-      NODE_ENV: 'development',
-      BASE_URL,
-      PC_URL,
-      PC_LINK_BASE_URL
-    }),
+    new webpack.EnvironmentPlugin(envVars),
 
     new webpack.optimize.CommonsChunkPlugin({
       name: 'deps',

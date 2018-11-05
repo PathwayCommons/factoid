@@ -20,7 +20,7 @@ const defs = require('./defs');
 const EditorButtons = require('./buttons');
 const MainMenu = require('../main-menu');
 const UndoRemove = require('./undo-remove');
-const { TaskView } = require('./tasks');
+const { TaskView } = require('../tasks');
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;

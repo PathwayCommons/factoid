@@ -1,14 +1,14 @@
-const DirtyComponent = require('../dirty-component');
-const DataComponent = require('../data-component');
+const DirtyComponent = require('./dirty-component');
+const DataComponent = require('./data-component');
 const h = require('react-hyperscript');
 
-const { PC_URL } = require('../../../config');
+const { PC_URL } = require('../../config');
 
-const { makeClassList } = require('../../../util');
+const { makeClassList } = require('../../util');
 
-const Notification = require('../notification');
-const NotificationList = require('../notification/list');
-const NotificationPanel = require('../notification/panel');
+const Notification = require('./notification');
+const NotificationList = require('./notification/list');
+const NotificationPanel = require('./notification/panel');
 
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete' ];

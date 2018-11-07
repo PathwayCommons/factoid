@@ -1,9 +1,10 @@
 const InteractionType = require('./interaction-type');
 const { PARTICIPANT_TYPE } = require('../participant-type');
+const { ENTITY_TYPE } = require('../entity-type');
 const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
 
 const VALUE = 'modification';
-const DISPLAY_VALUE = 'Modification';
+const DISPLAY_VALUE = 'Post-translational modification';
 
 class Modification extends InteractionType {
   constructor( intn ){
@@ -22,11 +23,12 @@ class Modification extends InteractionType {
 
   static isAllowedForInteraction( intn ){
     let ppts = intn.participants();
-    let isProtein = ent => ent.type() === 'protein';
+    let isProtein = ent => ent.type() === ENTITY_TYPE.PROTEIN;
 
     return ppts.length === 2 && ppts.every( isProtein );
   }
 
+  // TODO BIOPAX
   toBiopaxTemplate(effect){
     let source = this.getSource();
     let target = this.getTarget();
@@ -53,10 +55,7 @@ class Modification extends InteractionType {
   }
 
   toString( mod = 'modification' ){
-    let verb = (this.isInhibition() ? 'inhibits' : 'promotes');
-    let obj = `the ${mod} of`;
-
-    return super.toString( `${verb} ${obj}` );
+    return super.toString(null, `via ${mod}`);
   }
 
   static get value(){ return VALUE; }

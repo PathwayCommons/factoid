@@ -1,3 +1,5 @@
+// TODO BIOPAX
+
 const BIOPAX_TEMPLATE_TYPE = Object.freeze({
   PROTEIN_CONTROLS_STATE: 'Protein Controls State',
   CHEMICAL_AFFECTS_STATE: 'Chemical Affects State',

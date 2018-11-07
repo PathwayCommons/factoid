@@ -2,14 +2,15 @@ const InteractionType = require('./interaction-type');
 const { BIOPAX_TEMPLATE_TYPE } = require('./biopax-type');
 
 const VALUE = 'interaction';
-const DISPLAY_VALUE = 'Binding, activation, or inhibition';
+const DISPLAY_VALUE = 'Other';
 
-class General extends InteractionType {
+class Interaction extends InteractionType {
   constructor( intn ){
     super( intn );
   }
 
   toBiopaxTemplate(){
+    // TODO BIOPAX
     let participants = this.interaction.participants();
     let participantTemplates = participants.map( participant => participant.toBiopaxTemplate() );
 
@@ -26,4 +27,4 @@ class General extends InteractionType {
   get displayValue(){ return DISPLAY_VALUE; }
 }
 
-module.exports = General;
+module.exports = Interaction;

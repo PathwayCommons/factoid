@@ -1,10 +1,10 @@
 const Modification = require('./modification');
 
-const VALUE = 'ubiquination';
-const DISPLAY_VALUE = 'Ubiquination';
-const EFFECT = 'ubiquinated';
+const VALUE = 'dephosphorylation';
+const DISPLAY_VALUE = 'Dephosphorylation';
+const EFFECT = 'dephosphorylated';
 
-class Ubiquination extends Modification {
+class Dephosphorylation extends Modification {
   constructor( intn ){
     super( intn );
   }
@@ -15,7 +15,7 @@ class Ubiquination extends Modification {
   }
 
   toString(){
-    return super.toString(VALUE);
+    return super.toString('dephosphorylation');
   }
 
   static get value(){ return VALUE; }
@@ -25,4 +25,4 @@ class Ubiquination extends Modification {
   get displayValue(){ return DISPLAY_VALUE; }
 }
 
-module.exports = Ubiquination;
+module.exports = Dephosphorylation;

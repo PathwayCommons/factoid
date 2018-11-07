@@ -10,6 +10,7 @@ class Phosphorylation extends Modification {
   }
 
   toBiopaxTemplate(){
+    // TODO BIOPAX
     return super.toBiopaxTemplate(EFFECT);
   }
 

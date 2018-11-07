@@ -1,11 +1,12 @@
 const InteractionType = require('./interaction-type');
 const { PARTICIPANT_TYPE } = require('../participant-type');
+const { ENTITY_TYPE } = require('../entity-type');
 const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
 
-const VALUE = 'expression';
-const DISPLAY_VALUE = 'Gene expression regulation';
+const VALUE = 'transcription-translation';
+const DISPLAY_VALUE = 'Transcription/translation';
 
-class Expression extends InteractionType {
+class TranscriptionTranslation extends InteractionType {
   constructor( intn ){
     super( intn );
   }
@@ -21,13 +22,14 @@ class Expression extends InteractionType {
   }
 
   static isAllowedForInteraction( intn ){
+    let isProtein = ent => ent.type() === ENTITY_TYPE.PROTEIN;
     let ppts = intn.participants();
-    let isProtein = ent => ent.type() === 'protein';
 
-    return ppts.length === 2 && ppts.every( isProtein );
+    return ppts.length === 2 && ppts.some(isProtein);
   }
 
   toBiopaxTemplate(){
+    // TODO BIOPAX
     let source = this.getSource();
     let target = this.getTarget();
 
@@ -45,7 +47,7 @@ class Expression extends InteractionType {
   }
 
   toString(){
-    return super.toString( (this.isInhibition() ? 'inhibits' : 'promotes') + ' the expression of' );
+    return super.toString( (this.isInhibition() ? 'inhibits' : 'activates') + ' the transcription/translation of' );
   }
 
   static get value(){ return VALUE; }
@@ -55,4 +57,4 @@ class Expression extends InteractionType {
   get displayValue(){ return DISPLAY_VALUE; }
 }
 
-module.exports = Expression;
+module.exports = TranscriptionTranslation;

@@ -581,19 +581,19 @@ describe('Interaction', function(){
     } );
 
     // example of using convenience functions on associations, e.g. setAsPromotionOf()
-    it('sets interaction participant type via type object for promotion expression', function(){
+    it('sets interaction participant type via type object for promotion transcription/translation', function(){
       return Promise.resolve().then( () => {
         return intnC1.add( entC1 );
       } ).then( () => {
         return intnC1.add( ent2C1 );
       } ).then( () => {
-        return intnC1.associate( Interaction.ASSOCIATION.EXPRESSION );
+        return intnC1.associate( Interaction.ASSOCIATION.TRANSCRIPTION_TRANSLATION );
       } ).then( () => {
         return intnC1.association().setAsPromotionOf( entC1 );
       } ).then( () => {
         return intnC1.complete();
       } ).then( () => {
-        expect( intnC1.association().value ).to.equal( Interaction.ASSOCIATION.EXPRESSION.value );
+        expect( intnC1.association().value ).to.equal( Interaction.ASSOCIATION.TRANSCRIPTION_TRANSLATION.value );
         expect( intnC1.association().isPositive() ).to.be.true;
         expect( intnC1.association().getTarget().id() ).to.equal( entC1.id() );
       } );

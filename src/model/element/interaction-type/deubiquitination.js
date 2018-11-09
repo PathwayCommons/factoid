@@ -1,10 +1,10 @@
 const Modification = require('./modification');
 
-const VALUE = 'deubiquination';
-const DISPLAY_VALUE = 'Deubiquination';
-const EFFECT = 'deubiquinated';
+const VALUE = 'deubiquitination';
+const DISPLAY_VALUE = 'Deubiquitination';
+const EFFECT = 'deubiquitination';
 
-class Deubiquination extends Modification {
+class Deubiquitination extends Modification {
   constructor( intn ){
     super( intn );
   }
@@ -25,4 +25,4 @@ class Deubiquination extends Modification {
   get displayValue(){ return DISPLAY_VALUE; }
 }
 
-module.exports = Deubiquination;
+module.exports = Deubiquitination;

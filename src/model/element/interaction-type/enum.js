@@ -8,8 +8,8 @@ const Phosphorylation = require('./phosphorylation');
 const Dephosphorylation = require('./dephosphorylation');
 const Methylation = require('./methylation');
 const Demethylation = require('./demethylation');
-const Ubiquination = require('./ubiquination');
-const Deubiquination = require('./deubiquination');
+const Ubiquitination = require('./ubiquitination');
+const Deubiquitination = require('./deubiquitination');
 
 const INTERACTION_TYPE = Object.freeze({
   BINDING: Binding,
@@ -19,8 +19,8 @@ const INTERACTION_TYPE = Object.freeze({
   DEPHOSPHORYLATION: Dephosphorylation,
   METHYLATION: Methylation,
   DEMETHYLATION: Demethylation,
-  UBIQUINATION: Ubiquination,
-  DEUBIQUINATION: Deubiquination,
+  UBIQUITINATION: Ubiquitination,
+  DEUBIQUITINATION: Deubiquitination,
   INTERACTION: Interaction
 });
 

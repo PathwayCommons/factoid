@@ -4,7 +4,7 @@ const VALUE = 'demethylation';
 const DISPLAY_VALUE = 'Demethylation';
 const EFFECT = 'demethylated';
 
-class Methylation extends Modification {
+class Demethylation extends Modification {
   constructor( intn ){
     super( intn );
   }
@@ -25,4 +25,4 @@ class Methylation extends Modification {
   get displayValue(){ return DISPLAY_VALUE; }
 }
 
-module.exports = Methylation;
+module.exports = Demethylation;

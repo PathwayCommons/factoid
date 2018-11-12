@@ -4,7 +4,7 @@ const { ENTITY_TYPE } = require('../entity-type');
 const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
 
 const VALUE = 'modification';
-const DISPLAY_VALUE = 'Modification/activity change';
+const DISPLAY_VALUE = 'Post-translational modification';
 
 class Modification extends InteractionType {
   constructor( intn ){

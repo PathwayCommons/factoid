@@ -295,7 +295,7 @@ module.exports = {
 
                   switch ( type ) {
                     case REACH_EVENT_TYPE.TRANSCRIPTION:
-                      return INTERACTION_TYPE.EXPRESSION;
+                      return INTERACTION_TYPE.TRANSCRIPTION_TRANSLATION;
                     case REACH_EVENT_TYPE.PHOSPHORYLATION:
                       return INTERACTION_TYPE.PHOSPHORYLATION;
                     case REACH_EVENT_TYPE.METHYLATION:
@@ -309,7 +309,7 @@ module.exports = {
                   // more cases would be added in the future
                   switch ( frame.type ) {
                     case REACH_EVENT_TYPE.ACTIVATION:
-                      return INTERACTION_TYPE.PROTEIN_CHEMICAL;
+                      return INTERACTION_TYPE.INTERACTION;
                   }
                 }
               }

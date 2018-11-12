@@ -1,9 +1,10 @@
 const InteractionType = require('./interaction-type');
 const { PARTICIPANT_TYPE } = require('../participant-type');
+const { ENTITY_TYPE } = require('../entity-type');
 const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
 
 const VALUE = 'modification';
-const DISPLAY_VALUE = 'Modification';
+const DISPLAY_VALUE = 'Post-translational modification';
 
 class Modification extends InteractionType {
   constructor( intn ){
@@ -22,27 +23,29 @@ class Modification extends InteractionType {
 
   static isAllowedForInteraction( intn ){
     let ppts = intn.participants();
-    let isProtein = ent => ent.type() === 'protein';
+    let isProtein = ent => ent.type() === ENTITY_TYPE.PROTEIN;
 
     return ppts.length === 2 && ppts.every( isProtein );
   }
 
-  toBiopaxTemplate(effect){
+  toBiopaxTemplate(effect){ //effect is undefined in base Modification case (i.e., no phys. mod. feature)
     let source = this.getSource();
     let target = this.getTarget();
 
     let srcTemplate = source.toBiopaxTemplate();
     let tgtTemplate = target.toBiopaxTemplate();
-    let templateType = ( effect === undefined )
-            ? BIOPAX_TEMPLATE_TYPE.PROTEIN_CONTROLS_STATE : BIOPAX_TEMPLATE_TYPE.PROTEIN_MODIFICATION;
 
-    let controlType = this.isInhibition() ? BIOPAX_CONTROL_TYPE.INHIBITION : BIOPAX_CONTROL_TYPE.ACTIVATION;
+    let controlType = this.isInhibition()
+      ? BIOPAX_CONTROL_TYPE.INHIBITION
+      : BIOPAX_CONTROL_TYPE.ACTIVATION;
 
     let template = {
-      type: templateType,
-      controllerProtein: srcTemplate,
-      targetProtein: tgtTemplate,
+      type: BIOPAX_TEMPLATE_TYPE.PROTEIN_CONTROLS_STATE,
+      controller: srcTemplate, //controller protein
+      target: tgtTemplate,
       controlType: controlType
+      //here controlType is not bp:controlType but is about whether
+      //target's state switches from 'inactive' to 'active' or the other way around.
     };
 
     if (effect) {
@@ -53,10 +56,7 @@ class Modification extends InteractionType {
   }
 
   toString( mod = 'modification' ){
-    let verb = (this.isInhibition() ? 'inhibits' : 'promotes');
-    let obj = `the ${mod} of`;
-
-    return super.toString( `${verb} ${obj}` );
+    return super.toString(null, `via ${mod}`);
   }
 
   static get value(){ return VALUE; }

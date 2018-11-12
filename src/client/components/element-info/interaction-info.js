@@ -31,9 +31,6 @@ class InteractionInfo extends DataComponent {
     let evtTgt = p.eventTarget;
     let pptNode = evtTgt.connectedNodes().filter( el => !isInteractionNode(el) );
     let ppt = doc.get( pptNode.id() );
-    let allPpts = el.participants();
-    let isChemical = el => el.type() === 'chemical';
-    let isProtein = el => el.type() === 'protein';
 
     let progression = new Progression({
       STAGES: ['ASSOCIATE', 'PARTICIPANT_TYPES', 'COMPLETED'],
@@ -43,13 +40,7 @@ class InteractionInfo extends DataComponent {
     });
 
     let { STAGES, ORDERED_STAGES } = progression;
-    let initialStage;
-
-    if( allPpts.some(isProtein) && allPpts.some(isChemical) ){
-      initialStage = ORDERED_STAGES[1]; // skip first stage for protein-chemical interaction
-    } else {
-      initialStage = ORDERED_STAGES[0];
-    }
+    let initialStage = ORDERED_STAGES[0];
 
     let stage = initCache( stageCache, el, el.completed() ? STAGES.COMPLETED : initialStage );
 
@@ -259,12 +250,6 @@ class InteractionInfo extends DataComponent {
         // skip types that don't apply to the participant set
         // but don't block options if the ent's are unassociated/untyped
         if( !anyPptIsUnassoc && !assoc.isAllowedForInteraction(el) ){
-          return;
-        }
-
-        // skip modification base type for now and just allow users to set
-        // modification subtypes
-        if( assoc.value === el.ASSOCIATION.MODIFICATION.value ){
           return;
         }
 

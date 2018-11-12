@@ -89,7 +89,8 @@ class InteractionType {
     let ppts = intn.participantsNotOfType( PARTICIPANT_TYPE.UNSIGNED );
 
     if( ppts.length > 1 ){ // can't have more than one target
-      throw error(`Can not get target, as more than two participants of interaction ${intn.id()} are signed: ` + intn.participants().map( ppt => ppt.id() ).join(', '));
+      throw error(`Can not get target, as more than two participants of interaction ${intn.id()} are signed: `
+        + intn.participants().map( ppt => ppt.id() ).join(', '));
     }
 
     return ppts[0];
@@ -110,17 +111,18 @@ class InteractionType {
     let ppts = intn.participantsOfType( PARTICIPANT_TYPE.UNSIGNED );
 
     if( ppts.length > 1 ){ // can't have more than one source
-      throw error(`Can not get source, as more than two participants of interaction ${intn.id()} are unsigned: ` + intn.participants().map( ppt => ppt.id() ).join(', '));
+      throw error(`Can not get source, as more than two participants of interaction ${intn.id()} are unsigned: `
+        + intn.participants().map( ppt => ppt.id() ).join(', '));
     }
 
     return ppts[0];
   }
 
   toBiopaxTemplate() {
-    throw `Abstract method toBiopaxTemplate() is not overridden for interaction type of ${this.value}`;
+    throw new Error(`Abstract method toBiopaxTemplate() is not overridden for interaction type of ${this.value}`);
   }
 
-  toString(expr = 'interacts with'){
+  toString(verbPhrase, post = ''){
     let intn = this.interaction;
     let src, tgt;
 
@@ -134,10 +136,20 @@ class InteractionType {
       tgt = ppts[1];
     }
 
+    if( verbPhrase == null ){
+      if( this.isActivation() ){
+        verbPhrase = 'activates';
+      } else if( this.isInhibition() ){
+        verbPhrase = 'inhibits';
+      } else {
+        verbPhrase = 'interacts with';
+      }
+    }
+
     let srcName = src.name() || '(?)';
     let tgtName = tgt.name() || '(?)';
 
-    return `${srcName} ${expr} ${tgtName}`;
+    return `${srcName} ${verbPhrase} ${tgtName} ${post}`;
   }
 
   static isAllowedForInteraction( intn ){ // eslint-disable-line no-unused-vars

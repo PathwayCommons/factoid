@@ -43,13 +43,7 @@ class InteractionInfo extends DataComponent {
     });
 
     let { STAGES, ORDERED_STAGES } = progression;
-    let initialStage;
-
-    if( allPpts.some(isProtein) && allPpts.some(isChemical) ){//TODO why skip?
-      initialStage = ORDERED_STAGES[1]; // skip first stage for protein-chemical interaction
-    } else {
-      initialStage = ORDERED_STAGES[0];
-    }
+    let initialStage = ORDERED_STAGES[0];
 
     let stage = initCache( stageCache, el, el.completed() ? STAGES.COMPLETED : initialStage );
 
@@ -261,13 +255,6 @@ class InteractionInfo extends DataComponent {
         if( !anyPptIsUnassoc && !assoc.isAllowedForInteraction(el) ){
           return;
         }
-
-        //DON'T skip base Modification type - used for prot-prot activation/inactivation without phys. mod. feature.
-        // (control of state change)
-        // // skip modification base type for now and just allow users to set modification subtypes
-        // if( assoc.value === el.ASSOCIATION.MODIFICATION.value ){
-        //   return;
-        // }
 
         let radioId = 'interaction-info-assoc-radioset-item-' + uuid();
         let checked = el.associated() && el.association().value === assoc.value;

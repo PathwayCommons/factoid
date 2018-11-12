@@ -43,10 +43,6 @@ class Interaction extends InteractionType {
 
   static get displayValue(){ return DISPLAY_VALUE; }
   get displayValue(){ return DISPLAY_VALUE; }
-
-  toString(){
-    return super.toString('interacts with');
-  }
 }
 
 module.exports = Interaction;

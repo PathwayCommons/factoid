@@ -28,23 +28,24 @@ class Modification extends InteractionType {
     return ppts.length === 2 && ppts.every( isProtein );
   }
 
-  // TODO BIOPAX
-  toBiopaxTemplate(effect){
+  toBiopaxTemplate(effect){ //effect is undefined in base Modification case (i.e., no phys. mod. feature)
     let source = this.getSource();
     let target = this.getTarget();
 
     let srcTemplate = source.toBiopaxTemplate();
     let tgtTemplate = target.toBiopaxTemplate();
-    let templateType = ( effect === undefined )
-            ? BIOPAX_TEMPLATE_TYPE.PROTEIN_CONTROLS_STATE : BIOPAX_TEMPLATE_TYPE.PROTEIN_MODIFICATION;
 
-    let controlType = this.isInhibition() ? BIOPAX_CONTROL_TYPE.INHIBITION : BIOPAX_CONTROL_TYPE.ACTIVATION;
+    let controlType = this.isInhibition()
+      ? BIOPAX_CONTROL_TYPE.INHIBITION
+      : BIOPAX_CONTROL_TYPE.ACTIVATION;
 
     let template = {
-      type: templateType,
-      controllerProtein: srcTemplate,
-      targetProtein: tgtTemplate,
+      type: BIOPAX_TEMPLATE_TYPE.PROTEIN_CONTROLS_STATE,
+      controller: srcTemplate, //controller protein
+      target: tgtTemplate,
       controlType: controlType
+      //here controlType is not bp:controlType but is about whether
+      //target's state switches from 'inactive' to 'active' or the other way around.
     };
 
     if (effect) {

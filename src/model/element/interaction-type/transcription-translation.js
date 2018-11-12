@@ -29,7 +29,6 @@ class TranscriptionTranslation extends InteractionType {
   }
 
   toBiopaxTemplate(){
-    // TODO BIOPAX
     let source = this.getSource();
     let target = this.getTarget();
 
@@ -40,14 +39,15 @@ class TranscriptionTranslation extends InteractionType {
 
     return {
       type: BIOPAX_TEMPLATE_TYPE.EXPRESSION_REGULATION,
-      transcriptionFactor: srcTemplate,
-      targetProtein: tgtTemplate,
+      controller: srcTemplate,
+      target: tgtTemplate,
       controlType: controlType
     };
   }
 
   toString(){
-    return super.toString( (this.isInhibition() ? 'inhibits' : 'activates') + ' the transcription/translation of' );
+    return super.toString( (this.isInhibition() ? 'inhibits' : 'activates')
+      + ' the transcription/translation of' );
   }
 
   static get value(){ return VALUE; }

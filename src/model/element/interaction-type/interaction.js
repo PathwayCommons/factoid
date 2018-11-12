@@ -1,23 +1,41 @@
 const InteractionType = require('./interaction-type');
-const { BIOPAX_TEMPLATE_TYPE } = require('./biopax-type');
+const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
 
 const VALUE = 'interaction';
 const DISPLAY_VALUE = 'Other';
 
 class Interaction extends InteractionType {
+
   constructor( intn ){
     super( intn );
   }
 
   toBiopaxTemplate(){
-    // TODO BIOPAX
+    // "Other" type; see 4A-E in "Factoid binary interaction types" doc.
     let participants = this.interaction.participants();
     let participantTemplates = participants.map( participant => participant.toBiopaxTemplate() );
 
-    return {
-      type: BIOPAX_TEMPLATE_TYPE.MOLECULAR_INTERACTION,
-      moleculeList: participantTemplates
+    let controlType = this.isInhibition()
+      ? BIOPAX_CONTROL_TYPE.INHIBITION
+      : BIOPAX_CONTROL_TYPE.ACTIVATION;
+
+    let template = {
+      type: BIOPAX_TEMPLATE_TYPE.OTHER_INTERACTION,
+      participants: participantTemplates
     };
+
+    if(controlType)
+      template.controlType = controlType;
+
+    let source = this.getSource();
+    if(source)
+      template.controller = source.toBiopaxTemplate();
+
+    let target = this.getTarget();
+    if(target)
+      template.target = target.toBiopaxTemplate();
+
+    return template;
   }
 
   static get value(){ return VALUE; }

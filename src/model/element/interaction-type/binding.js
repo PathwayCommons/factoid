@@ -1,6 +1,7 @@
 const InteractionType = require('./interaction-type');
 const { PARTICIPANT_TYPE } = require('../participant-type');
 const { ENTITY_TYPE } = require('../entity-type');
+const { BIOPAX_TEMPLATE_TYPE } = require('./biopax-type');
 
 const VALUE = 'binding';
 const DISPLAY_VALUE = 'Binding';
@@ -24,7 +25,13 @@ class Binding extends InteractionType {
   }
 
   toBiopaxTemplate(){
-    // TODO BIOPAX
+    let participants = this.interaction.participants();
+    let participantTemplates = participants.map( participant => participant.toBiopaxTemplate() );
+
+    return {
+      type: BIOPAX_TEMPLATE_TYPE.MOLECULAR_INTERACTION,
+      participants: participantTemplates
+    };
   }
 
   toString(){

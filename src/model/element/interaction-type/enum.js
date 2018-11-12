@@ -21,7 +21,7 @@ const INTERACTION_TYPE = Object.freeze({
   DEMETHYLATION: Demethylation,
   UBIQUITINATION: Ubiquitination,
   DEUBIQUITINATION: Deubiquitination,
-  INTERACTION: Interaction
+  INTERACTION: Interaction // other / catch-all
 });
 
 const INTERACTION_TYPE_VALS = ( () => {
@@ -30,7 +30,6 @@ const INTERACTION_TYPE_VALS = ( () => {
 
   keys.forEach( key => {
     let val = INTERACTION_TYPE[key].value;
-
     vals[ key ] = val;
   } );
 

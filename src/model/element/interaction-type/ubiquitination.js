@@ -10,7 +10,6 @@ class Ubiquitination extends Modification {
   }
 
   toBiopaxTemplate(){
-    // TODO BIOPAX
     return super.toBiopaxTemplate(EFFECT);
   }
 

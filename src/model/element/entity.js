@@ -101,15 +101,16 @@ class Entity extends Element {
 
     return {
       id: assoc.id,
-      namespace: assoc.namespace
+      db: assoc.namespace
     };
   }
 
   toBiopaxTemplate(){
+    let type = this.type();
     let name = this.name() || '';
     let xref = this.getBiopaxXref();
     
-    return { name, xref };
+    return { type, name, xref };
   }
 }
 

@@ -14,7 +14,6 @@ const Deubiquitination = require('./deubiquitination');
 const INTERACTION_TYPE = Object.freeze({
   BINDING: Binding,
   TRANSCRIPTION_TRANSLATION: TranscriptionTranslation,
-  //next are 1 base and 6 sub-classes of protein-protein modification and state change -
   MODIFICATION: Modification,
   PHOSPHORYLATION: Phosphorylation,
   DEPHOSPHORYLATION: Dephosphorylation,
@@ -22,10 +21,7 @@ const INTERACTION_TYPE = Object.freeze({
   DEMETHYLATION: Demethylation,
   UBIQUITINATION: Ubiquitination,
   DEUBIQUITINATION: Deubiquitination,
-  //TODO keep defining specific interaction types as needed
-  //for other interactions (participant type, sign, etc. combinations),
-  //such as modulation (chemical affects protein activity), conversion (chemical->chemical), etc.
-  INTERACTION: Interaction //other
+  INTERACTION: Interaction // other / catch-all
 });
 
 const INTERACTION_TYPE_VALS = ( () => {

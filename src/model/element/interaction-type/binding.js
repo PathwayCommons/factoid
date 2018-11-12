@@ -4,7 +4,7 @@ const { ENTITY_TYPE } = require('../entity-type');
 const { BIOPAX_TEMPLATE_TYPE } = require('./biopax-type');
 
 const VALUE = 'binding';
-const DISPLAY_VALUE = 'Binding'; //several (two?) proteins binding
+const DISPLAY_VALUE = 'Binding';
 
 class Binding extends InteractionType {
   constructor( intn ){

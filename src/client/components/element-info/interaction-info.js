@@ -31,9 +31,6 @@ class InteractionInfo extends DataComponent {
     let evtTgt = p.eventTarget;
     let pptNode = evtTgt.connectedNodes().filter( el => !isInteractionNode(el) );
     let ppt = doc.get( pptNode.id() );
-    let allPpts = el.participants();
-    let isChemical = el => el.type() === 'chemical';
-    let isProtein = el => el.type() === 'protein';
 
     let progression = new Progression({
       STAGES: ['ASSOCIATE', 'PARTICIPANT_TYPES', 'COMPLETED'],

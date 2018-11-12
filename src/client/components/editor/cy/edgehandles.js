@@ -66,8 +66,6 @@ module.exports = function({ bus, cy, document, controller }){
     let idIsNotIntn = el => el.id() !== intnNode.id();
     let pptNodes = source.add( target ).filter( idIsNotIntn );
     let ppts = pptNodes.map( n => document.get( n.id() ) );
-    let isChemical = el => el.type() === 'chemical';
-    let isProtein = el => el.type() === 'protein';
 
     let handleIntn = () => {
       if( createdIntnNode ){

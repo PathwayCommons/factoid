@@ -1,10 +1,10 @@
 const _ = require('lodash');
 
-const ENTITY_TYPE = {
+const ENTITY_TYPE = Object.freeze({
   ENTITY: 'entity',
   PROTEIN: 'protein',
   CHEMICAL: 'chemical'
-};
+});
 
 const ENTITY_TYPES = _.flatMap( ENTITY_TYPE );
 

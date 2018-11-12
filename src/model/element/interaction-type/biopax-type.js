@@ -1,13 +1,12 @@
-// TODO BIOPAX
-
 const BIOPAX_TEMPLATE_TYPE = Object.freeze({
-  PROTEIN_CONTROLS_STATE: 'Protein Controls State',
-  CHEMICAL_AFFECTS_STATE: 'Chemical Affects State',
-  EXPRESSION_REGULATION: 'Expression Regulation',
+  //case: 1 (intn. type: Binding)
   MOLECULAR_INTERACTION: 'Molecular Interaction',
-  PROTEIN_MODIFICATION: 'Protein Modification',
-  PROTEIN_CONTROLS_CONSUMPTION: 'Protein Controls Consumption',
-  PROTEIN_CONTROLS_PRODUCTION: 'Protein Controls Production'
+  // case: 2 (TranscriptionTranslation)
+  EXPRESSION_REGULATION: 'Expression Regulation',
+  //case: 3 (Modification affects active/inactive state, possibly via e.g. ubiquitination)
+  PROTEIN_CONTROLS_STATE: 'Protein Controls State',
+  //case: 4A-E; biopax converter results are based on the ent. types, order, sign.
+  OTHER_INTERACTION: 'Other Interaction',
 });
 
 const BIOPAX_CONTROL_TYPE = Object.freeze({

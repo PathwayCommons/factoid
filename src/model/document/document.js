@@ -431,6 +431,7 @@ class Document {
       }
     } );
 
+    console.log(JSON.stringify(templates));//TODO remove debug log
     return templates;
   }
 

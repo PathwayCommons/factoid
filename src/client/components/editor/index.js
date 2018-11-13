@@ -352,7 +352,7 @@ class Editor extends DataComponent {
         ])
       ]),
       h('div.editor-main-menu', [
-        h(MainMenu, { bus, document, history })
+        h(MainMenu, { bus, document, history, networkEditor: true })
       ]),
       h('div.editor-submit', [
         h(Popover, { tippy: { html: h(TaskView, { document, bus } ) } }, [

@@ -81,8 +81,9 @@ let routes = [
     path: '/form/:id',
     render: props => {
       let { id } = props.match.params;
+      let { history } = props;
 
-      return h( FormEditor, { id } );
+      return h( FormEditor, { id, history } );
     }
   },
   {
@@ -98,8 +99,9 @@ let routes = [
     path: '/document/:id',
     render: props => {
       let { id } = props.match.params;
+      let { history } = props;
 
-      return h( Editor, { id } );
+      return h( Editor, { id, history } );
     }
   },
   {

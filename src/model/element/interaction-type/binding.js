@@ -11,6 +11,10 @@ class Binding extends InteractionType {
     super( intn );
   }
 
+  isComplete() {
+    return true; //can be unsigned or even have untyped participants
+  }
+
   allowedParticipantTypes(){
     const T = PARTICIPANT_TYPE;
 

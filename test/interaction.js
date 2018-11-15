@@ -574,6 +574,7 @@ describe('Interaction', function(){
           } ).then( () => {
             expect( intnC1.association().value ).to.equal( intnType.value );
             expect( intnC1.association().isPositive() ).to.equal( pptType.value === Interaction.PARTICIPANT_TYPE.POSITIVE.value );
+            expect( intnC1.association().getTarget() ).to.equal(entC1);
             expect( intnC1.association().getTarget().id() ).to.equal( entC1.id() );
           } );
         });
@@ -595,6 +596,7 @@ describe('Interaction', function(){
       } ).then( () => {
         expect( intnC1.association().value ).to.equal( Interaction.ASSOCIATION.TRANSCRIPTION_TRANSLATION.value );
         expect( intnC1.association().isPositive() ).to.be.true;
+        expect( intnC1.association().getTarget() ).to.equal(entC1);
         expect( intnC1.association().getTarget().id() ).to.equal( entC1.id() );
       } );
     });

@@ -17,7 +17,7 @@ class TranscriptionTranslation extends InteractionType {
     return [T.POSITIVE, T.NEGATIVE];
   }
 
-  areParticipantsTyped(){
+  isComplete(){
     return this.isSigned();
   }
 
@@ -29,20 +29,22 @@ class TranscriptionTranslation extends InteractionType {
   }
 
   toBiopaxTemplate(){
-    let source = this.getSource();
-    let target = this.getTarget();
+    //src, tgt shouldn't be null at this point (barring bug)
+    let srcTemplate = this.getSource().toBiopaxTemplate();
+    let tgtTemplate = this.getTarget().toBiopaxTemplate();
 
-    let srcTemplate = source.toBiopaxTemplate();
-    let tgtTemplate = target.toBiopaxTemplate();
-
-    let controlType = this.isInhibition() ? BIOPAX_CONTROL_TYPE.INHIBITION : BIOPAX_CONTROL_TYPE.ACTIVATION;
-
-    return {
+    let template = {
       type: BIOPAX_TEMPLATE_TYPE.EXPRESSION_REGULATION,
       controller: srcTemplate,
-      target: tgtTemplate,
-      controlType: controlType
+      target: tgtTemplate
     };
+
+    if(this.isInhibition())
+      template.controlType = BIOPAX_CONTROL_TYPE.INHIBITION;
+    else if(this.isActivation())
+      template.controlType = BIOPAX_CONTROL_TYPE.ACTIVATION;
+
+    return template;
   }
 
   toString(){

@@ -10,30 +10,29 @@ class Interaction extends InteractionType {
     super( intn );
   }
 
+  isComplete() {
+    //TODO: according to the doc (4A-E), we'd define conditions of completeness in each case
+    return true; //base case (can be unsigned or have untyped participants if the UI allows)
+  }
+
   toBiopaxTemplate(){
     // "Other" type; see 4A-E in "Factoid binary interaction types" doc.
-    let participants = this.interaction.participants();
-    let participantTemplates = participants.map( participant => participant.toBiopaxTemplate() );
-
-    let controlType = this.isInhibition()
-      ? BIOPAX_CONTROL_TYPE.INHIBITION
-      : BIOPAX_CONTROL_TYPE.ACTIVATION;
-
     let template = {
-      type: BIOPAX_TEMPLATE_TYPE.OTHER_INTERACTION,
-      participants: participantTemplates
+      type: BIOPAX_TEMPLATE_TYPE.OTHER_INTERACTION
     };
 
-    if(controlType)
-      template.controlType = controlType;
+    //optional controlType
+    if(this.isInhibition())
+      template.controlType = BIOPAX_CONTROL_TYPE.INHIBITION;
+    else if(this.isActivation())
+      template.controlType = BIOPAX_CONTROL_TYPE.ACTIVATION;
 
+    //optional source, target are either both null or both defined (unless there is a bug)
     let source = this.getSource();
-    if(source)
-      template.controller = source.toBiopaxTemplate();
-
     let target = this.getTarget();
-    if(target)
-      template.target = target.toBiopaxTemplate();
+    //ensure participants order is always [source,target] if defined
+    let participants = (source && target) ? [source, target] : this.interaction.participants();
+    template.participants = participants.map( participant => participant.toBiopaxTemplate() );
 
     return template;
   }

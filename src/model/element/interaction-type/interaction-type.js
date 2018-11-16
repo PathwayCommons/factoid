@@ -36,8 +36,8 @@ class InteractionType {
     return this.isPositive() || this.isNegative();
   }
 
-  areParticipantsTyped(){
-    return true;
+  isComplete(){
+    return false;
   }
 
   setParticipantAs( ppt, type ){
@@ -85,15 +85,10 @@ class InteractionType {
 
   getTarget(){
     let intn = this.interaction;
-
     let ppts = intn.participantsNotOfType( PARTICIPANT_TYPE.UNSIGNED );
-
-    if( ppts.length > 1 ){ // can't have more than one target
-      throw error(`Can not get target, as more than two participants of interaction ${intn.id()} are signed: `
-        + intn.participants().map( ppt => ppt.id() ).join(', '));
-    }
-
-    return ppts[0];
+    // assoc. cannot have more than one target,
+    // but this must be checked somewhere else (no need to throw an exception here)
+    return( ppts.length > 1 ) ? null : ppts[0];
   }
 
   setTarget( ppt ){
@@ -109,13 +104,9 @@ class InteractionType {
   getSource(){
     let intn = this.interaction;
     let ppts = intn.participantsOfType( PARTICIPANT_TYPE.UNSIGNED );
-
-    if( ppts.length > 1 ){ // can't have more than one source
-      throw error(`Can not get source, as more than two participants of interaction ${intn.id()} are unsigned: `
-        + intn.participants().map( ppt => ppt.id() ).join(', '));
-    }
-
-    return ppts[0];
+    // assoc. cannot have more than one source,
+    // but this must be checked somewhere else (no need to throw an exception here)
+    return ( ppts.length > 1 ) ? null : ppts[0];
   }
 
   toBiopaxTemplate() {
@@ -123,15 +114,15 @@ class InteractionType {
   }
 
   toString(verbPhrase, post = ''){
-    let intn = this.interaction;
     let src, tgt;
 
-    try {
+    if(this.isSigned()) {
       src = this.getSource();
       tgt = this.getTarget();
-    } catch( err ){
-      let ppts = intn.participants();
-
+      if(!src || !tgt) //any null or undefined
+        throw new Error(`Source or target is undefined for signed interaction type ${this.value}`);
+    } else { //currently, unsigned also means undirected (signed - always directed, directed - signed)
+      let ppts = this.interaction.participants();
       src = ppts[0];
       tgt = ppts[1];
     }

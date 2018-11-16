@@ -32,19 +32,11 @@ class InteractionForm extends DirtyComponent {
   }
 
   getInputParticipant(){
-    try {
-      return this.data.interaction.association().getSource();
-    } catch(err){
-      return null;
-    }
+    return this.data.interaction.association().getSource(); //null if not set
   }
 
   getOutputParticipant(){
-    try {
-      return this.data.interaction.association().getTarget();
-    } catch(err){
-      return null;
-    }
+    return this.data.interaction.association().getTarget(); //null if not set
   }
 
   completeIfReady(){

@@ -14,6 +14,8 @@ const { makeCyEles, getCyLayoutOpts, tryPromise } = require('../../../util');
 
 const Tooltip = require('../popover/tooltip');
 const Popover = require('../popover/popover');
+const MainMenu = require('../main-menu');
+const { TaskView } = require('../tasks');
 
 
 const ProteinModificationForm = require('./protein-modification-form');
@@ -88,6 +90,8 @@ class FormEditor extends DataComponent {
           docEl.removeListener('remotecomplete', dirty);
           dirty();
         });
+
+        doc.on('submit', dirty);
 
         dirty();
 
@@ -231,6 +235,8 @@ class FormEditor extends DataComponent {
 
   render(){
     let doc = this.data.document;
+    let { bus } = this.data;
+    let { history } = this.props;
 
     const formTypes = [
       { type: 'Protein modification', clazz: ProteinModificationForm, pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  description:"E.g., A phosphorylates B.", association: [Interaction.ASSOCIATION.PHOSPHORYLATION, Interaction.ASSOCIATION.UBIQUINATION, Interaction.ASSOCIATION.METHYLATION] },
@@ -286,28 +292,38 @@ class FormEditor extends DataComponent {
     );
 
     return (
-      h('div.form-editor', [
-        h('div.form-content', [
-          h('h3.form-editor-title', doc.name() === '' ? 'Untitled document' : doc.name()),
-          h('div.form-templates', (
-            doc.interactions()
-            .filter(intn => intn.completed())
-            .map(interaction => ({ interaction, formType: getFormType(interaction) }))
-            .filter(({ formType }) => formType != null)
-            .map( ({ interaction, formType }) => h(IntnEntry, { interaction, formType }) )
-          )),
-          h('div.form-interaction-adder-area', [
-            h(Popover, {
-              tippy: {
-                position: 'bottom',
-                html: h('div.form-interaction-adder-options', formTypes.map( formType => h(FormTypeButton, { formType }) ))
-              }
-            }, [
-              h('button', {
-                className: 'form-interaction-adder'
+      h('div', [
+        h('div.form-main-menu', [
+          h(MainMenu, { bus, document: doc, history })
+        ]),
+        h('div.form-submit', [
+          h(Popover, { tippy: { html: h(TaskView, { document: doc, bus } ) } }, [
+            doc.submitted() ? h('button.form-submit-button', 'Submitted') : h('button.form-submit-button.salient-button', 'Submit')
+          ])
+        ]),
+        h('div.form-editor', [
+          h('div.form-content', [
+            h('h3.form-editor-title', doc.name() === '' ? 'Untitled document' : doc.name()),
+            h('div.form-templates', (
+              doc.interactions()
+              .filter(intn => intn.completed())
+              .map(interaction => ({ interaction, formType: getFormType(interaction) }))
+              .filter(({ formType }) => formType != null)
+              .map( ({ interaction, formType }) => h(IntnEntry, { interaction, formType }) )
+            )),
+            h('div.form-interaction-adder-area', [
+              h(Popover, {
+                tippy: {
+                  position: 'bottom',
+                  html: h('div.form-interaction-adder-options', formTypes.map( formType => h(FormTypeButton, { formType }) ))
+                }
               }, [
-                h('i.material-icons.add-new-interaction-icon', 'add'),
-                'Add interaction'
+                h('button', {
+                  className: 'form-interaction-adder'
+                }, [
+                  h('i.material-icons.add-new-interaction-icon', 'add'),
+                  'Add interaction'
+                ])
               ])
             ])
           ])

@@ -38,7 +38,7 @@ class MenuContent extends Component {
   }
 
   render(){
-    const { bus, document, history, emitter } = this.props;
+    const { bus, document, history, emitter, networkEditor } = this.props;
     const { selectedLinkouts, selectedMyFactoids } = this.state;
 
     const set = (props, children) => h('div.main-menu-set', props, children);
@@ -54,6 +54,17 @@ class MenuContent extends Component {
     }, [
       h('span', label)
     ]);
+
+    let editorSwitcher = ( document, networkEditor) => {
+      if( document == null ){ return null; }
+
+      let id = document.id();
+      let secret = document.secret();
+      let label = networkEditor ? 'Form Editor' : 'Network Editor';
+      let url = `/${networkEditor ? 'form' : 'document'}/${id}/${secret}`;
+
+      return item({ label, action: () => history.push(url) });
+    };
 
     let content;
 
@@ -77,7 +88,8 @@ class MenuContent extends Component {
         ]) : null,
         set({ key: 'nav' }, [
           item({ label: 'New factoid', action: () => history.push('/new') }),
-          item({ label: 'My factoids', action: () => this.selectMyFactoids(), actionCloses: false })
+          item({ label: 'My factoids', action: () => this.selectMyFactoids(), actionCloses: false }),
+          editorSwitcher( document, networkEditor )
         ])
       ]);
     }
@@ -95,7 +107,7 @@ class MainMenu extends Component {
 
   render(){
     let { emitter } = this;
-    let { bus, document, history, title } = this.props;
+    let { bus, document, history, title, networkEditor } = this.props;
 
     return h('div.main-menu', [
       h(Popover, {
@@ -104,7 +116,7 @@ class MainMenu extends Component {
           onHide: () => emitter.emit('hide'),
           onShow: () => emitter.emit('show'),
           placement: 'bottom',
-          html: h(MenuContent, { bus, document, history, emitter })
+          html: h(MenuContent, { bus, document, history, emitter, networkEditor })
         }
       }, [
         h(Tooltip, { description: 'Menu', tippy: { placement: 'bottom' } }, [

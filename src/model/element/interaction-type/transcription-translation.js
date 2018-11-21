@@ -18,7 +18,7 @@ class TranscriptionTranslation extends InteractionType {
   }
 
   isComplete(){
-    return this.isSigned();
+    return this.isSigned() && TranscriptionTranslation.isAllowedForInteraction(this.interaction);
   }
 
   static isAllowedForInteraction( intn ){

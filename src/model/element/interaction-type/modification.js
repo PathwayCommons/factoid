@@ -6,6 +6,7 @@ const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
 const VALUE = 'modification';
 const DISPLAY_VALUE = 'Post-translational modification';
 
+
 class Modification extends InteractionType {
   constructor( intn ){
     super( intn );
@@ -18,7 +19,7 @@ class Modification extends InteractionType {
   }
 
   isComplete(){
-    return this.isSigned();
+    return this.isSigned() && Modification.isAllowedForInteraction(this.interaction);
   }
 
   static isAllowedForInteraction( intn ){

@@ -71,7 +71,9 @@ let getBiopaxFromTemplates = templates => {
   return fetch( BIOPAX_CONVERTER_URL, {
     method: 'POST',
     body: JSON.stringify(templates),
-    headers: { 'Content-Type': 'application/json' }
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept':'application/vnd.biopax.rdf+xml' }
   } )
   .then(handleResponseError);
 };

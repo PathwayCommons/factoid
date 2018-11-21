@@ -35,7 +35,7 @@ let defaults = {
   PUBCHEM_CACHE_SIZE: DEFAULT_CACHE_SIZE,
   AGGREGATE_CACHE_SIZE: DEFAULT_CACHE_SIZE,
   MAX_SEARCH_SIZE: 50,
-  BIOPAX_CONVERTER_URL: 'http://causalpath.org:9090/FactoidToBiopaxServer/ConvertToOwl',
+  BIOPAX_CONVERTER_URL: 'http://biopax.baderlab.org/convert/v2/json-to-biopax',
   PC_LINK_BASE_URL: 'http://apps.pathwaycommons.org/search?q=',
   PC_URL: 'http://apps.pathwaycommons.org/'
 };

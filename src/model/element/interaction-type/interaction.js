@@ -10,9 +10,12 @@ class Interaction extends InteractionType {
     super( intn );
   }
 
+  static isAllowedForInteraction( intn ){ // eslint-disable-line no-unused-vars
+    return true;
+  }
+
   isComplete() {
-    //TODO: according to the doc (4A-E), we'd define conditions of completeness in each case
-    return true; //base case (can be unsigned or have untyped participants if the UI allows)
+    return this.interaction.participants().length === 2;
   }
 
   toBiopaxTemplate(){

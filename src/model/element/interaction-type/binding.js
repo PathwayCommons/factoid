@@ -12,7 +12,7 @@ class Binding extends InteractionType {
   }
 
   isComplete() {
-    return true; //can be unsigned or even have untyped participants
+    return !this.isSigned() && Binding.isAllowedForInteraction(this.interaction);
   }
 
   allowedParticipantTypes(){

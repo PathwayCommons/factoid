@@ -144,7 +144,7 @@ class InteractionType {
   }
 
   static isAllowedForInteraction( intn ){ // eslint-disable-line no-unused-vars
-    return true;
+    return false;
   }
 
   static get value(){ return VALUE; }

@@ -262,10 +262,6 @@ module.exports = {
                 return null;
               }
 
-              if ( subtype === REACH_EVENT_TYPE.TRANSCRIPTION ){
-                return PARTICIPANT_TYPE.POSITIVE;
-              }
-
               if ( subtype.startsWith( 'positive' ) ) {
                 return PARTICIPANT_TYPE.POSITIVE;
               }
@@ -317,6 +313,9 @@ module.exports = {
                       return INTERACTION_TYPE.METHYLATION;
                     case REACH_EVENT_TYPE.DEMETHYLATION:
                       return INTERACTION_TYPE.DEMETHYLATION;
+                    case REACH_EVENT_TYPE.REGULATION:
+                      return INTERACTION_TYPE.INTERACTION;
+
                   }
                 }
               }

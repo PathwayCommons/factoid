@@ -26,8 +26,13 @@ const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
 const REACH_EVENT_TYPE = Object.freeze({
   TRANSCRIPTION: 'transcription',
   PHOSPHORYLATION: 'phosphorylation',
+  DEPHOSPHORYLATION: 'dephosphorylation',
   METHYLATION: 'methylation',
-  ACTIVATION: 'activation'
+  DEMETHYLATION: 'demethylation',
+  UBIQUITINATION: 'ubiquitination',
+  DEUBIQUITINATION: 'deubiquitination',
+  ACTIVATION: 'activation',
+  REGULATION: 'regulation'
 });
 
 module.exports = {
@@ -298,8 +303,19 @@ module.exports = {
                       return INTERACTION_TYPE.TRANSCRIPTION_TRANSLATION;
                     case REACH_EVENT_TYPE.PHOSPHORYLATION:
                       return INTERACTION_TYPE.PHOSPHORYLATION;
+                    case REACH_EVENT_TYPE.DEPHOSPHORYLATION:
+                      return INTERACTION_TYPE.DEPHOSPHORYLATION;
+                    case REACH_EVENT_TYPE.UBIQUITINATION:
+                      return INTERACTION_TYPE.UBIQUITINATION;
+                    case REACH_EVENT_TYPE.DEUBIQUITINATION:
+                      return INTERACTION_TYPE.DEUBIQUITINATION;
                     case REACH_EVENT_TYPE.METHYLATION:
                       return INTERACTION_TYPE.METHYLATION;
+                    case REACH_EVENT_TYPE.DEMETHYLATION:
+                      return INTERACTION_TYPE.DEMETHYLATION;
+                    case REACH_EVENT_TYPE.REGULATION:
+                      return INTERACTION_TYPE.INTERACTION;
+
                   }
                 }
               }

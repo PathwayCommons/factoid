@@ -29,9 +29,7 @@ class ProteinModificationForm extends InteractionForm {
 
     let lEnt = this.getInputParticipant();
     let rEnt = this.getOutputParticipant();
-
     let modVal = this.getModificationType();
-
 
     if(!rEnt || !lEnt || !modVal || !actVal){
       return null;
@@ -52,21 +50,25 @@ class ProteinModificationForm extends InteractionForm {
         h('option', { value: 'inhibits'}, 'inhibits'),
       ]),
       h('span', 'the'),
+      h(EntityForm, {
+        entity: rEnt,
+        tooltipContent:'Name or ID',
+        document: this.data.document
+      }),
+      h('span', 'via'),
       h('select.form-options', {id:('modification-'+ intn.id()), value: modVal ,
         onChange: e => {
           this.updateModificationType(e.target.value);
         }},
         [
+        h('option', { value: Interaction.ASSOCIATION.MODIFICATION.value }, 'modification'),
         h('option', { value: Interaction.ASSOCIATION.PHOSPHORYLATION.value }, 'phosphorylation'),
         h('option', { value: Interaction.ASSOCIATION.METHYLATION.value }, 'methylation'),
-        h('option', { value: Interaction.ASSOCIATION.UBIQUINATION.value }, 'ubiquination')
-      ]),
-      h('span', 'of'),
-      h(EntityForm, {
-        entity: rEnt,
-        tooltipContent:'Name or ID',
-        document: this.data.document
-      })
+        h('option', { value: Interaction.ASSOCIATION.UBIQUITINATION.value }, 'ubiquitination'),
+        h('option', { value: Interaction.ASSOCIATION.DEPHOSPHORYLATION.value }, 'dephosphorylation'),
+        h('option', { value: Interaction.ASSOCIATION.DEMETHYLATION.value }, 'demethylation'),
+        h('option', { value: Interaction.ASSOCIATION.DEUBIQUITINATION.value }, 'deubiquitination')
+      ])
     ]);
   }
 }

@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-const Interaction = require('./interaction');
+const OtherInteraction = require('./other-interaction');
 const Binding = require('./binding');
 const TranscriptionTranslation = require('./transcription-translation');
 const Modification = require('./modification');
@@ -21,7 +21,7 @@ const INTERACTION_TYPE = Object.freeze({
   DEMETHYLATION: Demethylation,
   UBIQUITINATION: Ubiquitination,
   DEUBIQUITINATION: Deubiquitination,
-  INTERACTION: Interaction // other / catch-all
+  INTERACTION: OtherInteraction // other / catch-all
 });
 
 const INTERACTION_TYPE_VALS = ( () => {

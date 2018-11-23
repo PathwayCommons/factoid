@@ -23,7 +23,7 @@ class MolecularInteractionForm extends InteractionForm {
 
     return h('div.form-interaction', [
       getInteractionLine( ppts[0] ),
-      h('span', 'interacts with'),
+      h('span', 'binds'),
       getInteractionLine( ppts[1] )
     ]);
   }

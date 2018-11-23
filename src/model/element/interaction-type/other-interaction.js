@@ -2,20 +2,20 @@ const InteractionType = require('./interaction-type');
 const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
 
 const VALUE = 'interaction';
-const DISPLAY_VALUE = 'Other';
+const DISPLAY_VALUE = 'Other interaction';
 
-class Interaction extends InteractionType {
+class OtherInteraction extends InteractionType {
 
   constructor( intn ){
     super( intn );
   }
 
-  static isAllowedForInteraction( intn ){ // eslint-disable-line no-unused-vars
-    return true;
+  static isAllowedForInteraction( intn ){
+    return intn.participants().length === 2;
   }
 
   isComplete() {
-    return this.interaction.participants().length === 2;
+    return OtherInteraction.isAllowedForInteraction(this.interaction);
   }
 
   toBiopaxTemplate(){
@@ -47,4 +47,4 @@ class Interaction extends InteractionType {
   get displayValue(){ return DISPLAY_VALUE; }
 }
 
-module.exports = Interaction;
+module.exports = OtherInteraction;

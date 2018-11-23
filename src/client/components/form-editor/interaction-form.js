@@ -1,7 +1,6 @@
 const DirtyComponent = require('../dirty-component');
 const _ = require('lodash');
 const { tryPromise } = require('../../../util');
-
 const dirtyEvents = ['remoteassociate', 'remoteretype'];
 
 class InteractionForm extends DirtyComponent {

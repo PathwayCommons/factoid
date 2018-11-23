@@ -22,8 +22,9 @@ const ProteinModificationForm = require('./protein-modification-form');
 const ExpressionRegulationForm = require('./expression-regulation-form');
 const MolecularInteractionForm = require('./molecular-interaction-form');
 const ActivationInhibitionForm = require('./activation-inhibition-form');
+const OtherInteractionForm = require('./other-interaction-form');
 
-let Interaction = require('../../../model/element/interaction');
+const Interaction = require('../../../model/element/interaction');
 
 class FormEditor extends DataComponent {
   constructor(props){
@@ -32,7 +33,7 @@ class FormEditor extends DataComponent {
     let docSocket = io.connect('/document');
     let eleSocket = io.connect('/element');
 
-    let logSocketErr = (err) => logger.error('An error occurred during clientside socket communication', err);
+    let logSocketErr = (err) => logger.error('An error occurred during client-side socket communication', err);
 
     docSocket.on('error', logSocketErr);
     eleSocket.on('error', logSocketErr);
@@ -239,16 +240,38 @@ class FormEditor extends DataComponent {
     let { history } = this.props;
 
     const formTypes = [
-      { type: 'Protein modification', clazz: ProteinModificationForm, pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  description:"E.g., A phosphorylates B.", association: [Interaction.ASSOCIATION.PHOSPHORYLATION, Interaction.ASSOCIATION.UBIQUINATION, Interaction.ASSOCIATION.METHYLATION] },
-      { type: 'Binding', clazz: MolecularInteractionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.UNSIGNED], description: "E.g., A interacts with B.", association: [Interaction.ASSOCIATION.BINDING] },
-      { type: 'Activation or inhibition', clazz:ActivationInhibitionForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "E.g., A activates B.", association: [Interaction.ASSOCIATION.MODIFICATION] },
-      { type: 'Gene expression regulation', clazz: ExpressionRegulationForm, pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], description: "E.g., A promotes the expression of B.", association: [Interaction.ASSOCIATION.EXPRESSION] }
-      //TODO add "other" (see the design doc, biopax 4A-E) type and form that supports all participants types { type: 'Other',..,association: [Interaction.ASSOCIATION.INTERACTION] }
+      { type: 'Protein-protein modification', clazz: ProteinModificationForm, 
+        pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  
+        description:"E.g., A phosphorylates and activates B.", 
+        association: [
+          Interaction.ASSOCIATION.MODIFICATION, //and specific sub-types:
+          Interaction.ASSOCIATION.PHOSPHORYLATION, Interaction.ASSOCIATION.UBIQUINATION, 
+          Interaction.ASSOCIATION.METHYLATION, Interaction.ASSOCIATION.DEPHOSPHORYLATION, 
+          Interaction.ASSOCIATION.DEUBIQUITINATION, Interaction.ASSOCIATION.DEMETHYLATION] },
+      { type: 'Protein-protein binding', clazz: MolecularInteractionForm, 
+        pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.UNSIGNED], 
+        description: "E.g., A binds B.", 
+        association: [Interaction.ASSOCIATION.BINDING] },
+      { type: 'Activation or inhibition', clazz: ActivationInhibitionForm, 
+        pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], 
+        description: "E.g., A activates B.", 
+        association: [Interaction.ASSOCIATION.INTERACTION] },
+      { type: 'Transcription/translation regulation', clazz: ExpressionRegulationForm, 
+        pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], 
+        description: "E.g., A promotes the expression of B.", 
+        association: [Interaction.ASSOCIATION.TRANSCRIPTION_TRANSLATION] },
+      { type: 'Other interaction', clazz: OtherInteractionForm, 
+        //TODO (bug) fields do not render if it has other combinations of pptTypes, e.g., both unsigned...
+        pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], 
+        description: "E.g., A and B interact.", 
+        association: [Interaction.ASSOCIATION.INTERACTION] },
     ];
 
     let getFormType = intn => {
       let intnAssoc = intn.association();
-      let assocMatches = assoc => assoc.value === intnAssoc.value;
+      let assocMatches = function(assoc) {
+        return assoc && assoc.value === intnAssoc.value;
+      };
 
       return formTypes.find( ft => ft.association.some(assocMatches) );
     };

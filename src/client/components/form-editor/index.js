@@ -5,26 +5,15 @@ const _ = require('lodash');
 const EventEmitter = require('eventemitter3');
 const uuid = require('uuid');
 const Cytoscape = require('cytoscape');
-
 const logger = require('../../logger');
-const debug = require('../../debug');
-
 const Document = require('../../../model/document');
 const { makeCyEles, getCyLayoutOpts, tryPromise } = require('../../../util');
-
 const Tooltip = require('../popover/tooltip');
 const Popover = require('../popover/popover');
 const MainMenu = require('../main-menu');
 const { TaskView } = require('../tasks');
-
-
-const ProteinModificationForm = require('./protein-modification-form');
-const ExpressionRegulationForm = require('./expression-regulation-form');
-const MolecularInteractionForm = require('./molecular-interaction-form');
-const ActivationInhibitionForm = require('./activation-inhibition-form');
-const OtherInteractionForm = require('./other-interaction-form');
-
 const Interaction = require('../../../model/element/interaction');
+const InteractionForm = require('./interaction-form');
 
 class FormEditor extends DataComponent {
   constructor(props){
@@ -74,11 +63,6 @@ class FormEditor extends DataComponent {
       .then( () => logger.info('Document synch active') )
       .then( () => {
 
-        if( debug.enabled() ){
-          window.doc = doc;
-          window.editor = this;
-        }
-
         doc.elements().forEach( el => {
           el.on('remotecomplete', dirty);
         });
@@ -115,32 +99,33 @@ class FormEditor extends DataComponent {
     this.data.bus.emit('dirty');
   }
 
-  addInteractionRow({ name, pptTypes, association }){
+  addInteractionRow({ name, association }){
     let doc = this.data.document;
 
     let dirty = () => this.dirty();
 
-    let entries = [ uuid(), uuid() ].map( (id, i) => ({
+    let entries = [ uuid(), uuid() ].map( (id) => ({
       id,
-      group: pptTypes[i].value
+      group: Interaction.PARTICIPANT_TYPE.UNSIGNED
     }) );
 
-    let createEnt = (pptType, i) => doc.factory().make({
+    let createEnt = (entry) => doc.factory().make({
       data: {
         type: 'entity',
         name: '',
-        id: entries[i].id
+        id: entry.id
       }
     });
 
-    let createEnts = () => Promise.all( pptTypes.map( createEnt ) );
+    let createEnts = () => Promise.all(entries.map(e => createEnt(e)));
 
     let createIntn = () => doc.factory().make({
       data:  {
         type: 'interaction',
         name,
         completed: true,
-        association: association != null ? ( _.isString(association) ? association : association.value ) : 'interaction',
+        association: association != null
+          ? ( _.isString(association) ? association : association.value ) : 'interaction',
         entries
       }
     });
@@ -228,7 +213,6 @@ class FormEditor extends DataComponent {
     let rmIntn = () => rm(intn);
     let rmDanglingPpts = () => Promise.all(danglingPpts.map(rm));
     let rmAll = () => Promise.all([ rmIntn(), rmDanglingPpts() ]);
-
     let dirty = () => this.dirty();
 
     return tryPromise(rmAll).then(dirty);
@@ -239,49 +223,12 @@ class FormEditor extends DataComponent {
     let { bus } = this.data;
     let { history } = this.props;
 
-    const formTypes = [
-      { type: 'Protein-protein modification', clazz: ProteinModificationForm, 
-        pptTypes:[Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE],  
-        description:"E.g., A phosphorylates and activates B.", 
-        association: [
-          Interaction.ASSOCIATION.MODIFICATION, //and specific sub-types:
-          Interaction.ASSOCIATION.PHOSPHORYLATION, Interaction.ASSOCIATION.UBIQUINATION, 
-          Interaction.ASSOCIATION.METHYLATION, Interaction.ASSOCIATION.DEPHOSPHORYLATION, 
-          Interaction.ASSOCIATION.DEUBIQUITINATION, Interaction.ASSOCIATION.DEMETHYLATION] },
-      { type: 'Protein-protein binding', clazz: MolecularInteractionForm, 
-        pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.UNSIGNED], 
-        description: "E.g., A binds B.", 
-        association: [Interaction.ASSOCIATION.BINDING] },
-      { type: 'Activation or inhibition', clazz: ActivationInhibitionForm, 
-        pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], 
-        description: "E.g., A activates B.", 
-        association: [Interaction.ASSOCIATION.INTERACTION] },
-      { type: 'Transcription/translation regulation', clazz: ExpressionRegulationForm, 
-        pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], 
-        description: "E.g., A promotes the expression of B.", 
-        association: [Interaction.ASSOCIATION.TRANSCRIPTION_TRANSLATION] },
-      { type: 'Other interaction', clazz: OtherInteractionForm, 
-        //TODO (bug) fields do not render if it has other combinations of pptTypes, e.g., both unsigned...
-        pptTypes: [Interaction.PARTICIPANT_TYPE.UNSIGNED, Interaction.PARTICIPANT_TYPE.POSITIVE], 
-        description: "E.g., A and B interact.", 
-        association: [Interaction.ASSOCIATION.INTERACTION] },
-    ];
-
-    let getFormType = intn => {
-      let intnAssoc = intn.association();
-      let assocMatches = function(assoc) {
-        return assoc && assoc.value === intnAssoc.value;
-      };
-
-      return formTypes.find( ft => ft.association.some(assocMatches) );
-    };
-
-    let IntnEntry = ({ interaction, formType }) => h('div.form-interaction-entry', [
-      h(formType.clazz, {
+    let IntnEntry = ({ interaction }) => h('div.form-interaction-entry', [
+      h(InteractionForm, {
         key: interaction.id(),
         document: doc,
         interaction: interaction,
-        description: formType.type,
+        description: "interaction",
         bus: this.data.bus,
       }),
       h('button.delete-interaction.plain-button', {
@@ -294,8 +241,8 @@ class FormEditor extends DataComponent {
       )
     ]);
 
-    let FormTypeButton = ({ formType }) => h(Tooltip, {
-        description: formType.description,
+    let FormTypeButton = () => h(Tooltip, {
+        description: "new interaction",
         tippy: {
           placement: 'right'
         }
@@ -303,14 +250,12 @@ class FormEditor extends DataComponent {
         h('button.plain-button', {
           onClick: () => {
             let addInteractionRow = () => this.addInteractionRow( {
-              name: formType.type,
-              pptTypes: formType.pptTypes,
-              association: formType.association[0]
+              name: Interaction.ASSOCIATION.INTERACTION.toString(),
+              association: Interaction.ASSOCIATION.INTERACTION
             } );
-
             addInteractionRow();
           }
-        }, formType.type)
+        }, "Add interaction")
       ]
     );
 
@@ -320,34 +265,24 @@ class FormEditor extends DataComponent {
           h(MainMenu, { bus, document: doc, history })
         ]),
         h('div.form-submit', [
-          h(Popover, { tippy: { html: h(TaskView, { document: doc, bus } ) } }, [
-            doc.submitted() ? h('button.form-submit-button', 'Submitted') : h('button.form-submit-button.salient-button', 'Submit')
+          h(Popover, { tippy: { html: h(TaskView, { document: doc, bus } ) } },
+            [
+            doc.submitted() ? h('button.form-submit-button', 'Submitted')
+              : h('button.form-submit-button.salient-button', 'Submit')
           ])
         ]),
         h('div.form-editor', [
           h('div.form-content', [
-            h('h3.form-editor-title', doc.name() === '' ? 'Untitled document' : doc.name()),
+            h('h3.form-editor-title',
+              doc.name() === '' ? 'Untitled document' : doc.name()),
             h('div.form-templates', (
-              doc.interactions()
-              .filter(intn => intn.completed())
-              .map(interaction => ({ interaction, formType: getFormType(interaction) }))
-              .filter(({ formType }) => formType != null)
-              .map( ({ interaction, formType }) => h(IntnEntry, { interaction, formType }) )
+              doc.interactions().filter(intn => intn.completed())
+                .map( (interaction) =>  h(IntnEntry, { interaction }))
             )),
             h('div.form-interaction-adder-area', [
-              h(Popover, {
-                tippy: {
-                  position: 'bottom',
-                  html: h('div.form-interaction-adder-options', formTypes.map( formType => h(FormTypeButton, { formType }) ))
-                }
-              }, [
-                h('button', {
-                  className: 'form-interaction-adder'
-                }, [
-                  h('i.material-icons.add-new-interaction-icon', 'add'),
-                  'Add interaction'
-                ])
-              ])
+              h(FormTypeButton, {
+                className: 'form-interaction-adder'
+              })
             ])
           ])
         ])

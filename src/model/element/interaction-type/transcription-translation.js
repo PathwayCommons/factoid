@@ -12,9 +12,7 @@ class TranscriptionTranslation extends InteractionType {
   }
 
   allowedParticipantTypes(){
-    const T = PARTICIPANT_TYPE;
-
-    return [T.POSITIVE, T.NEGATIVE];
+    return [PARTICIPANT_TYPE.POSITIVE, PARTICIPANT_TYPE.NEGATIVE];
   }
 
   isComplete(){

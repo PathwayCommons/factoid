@@ -59,6 +59,10 @@ class InteractionType {
     return this.setParticipantAs( ppt, PARTICIPANT_TYPE.NEGATIVE );
   }
 
+  setParticipantAsUnsigned( ppt ){
+    return this.setParticipantAs( ppt, PARTICIPANT_TYPE.UNSIGNED );
+  }
+
   isPromotion(){
     return this.isPositive();
   }

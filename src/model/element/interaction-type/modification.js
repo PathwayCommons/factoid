@@ -4,7 +4,7 @@ const { ENTITY_TYPE } = require('../entity-type');
 const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
 
 const VALUE = 'modification';
-const DISPLAY_VALUE = 'Other modification (PTM)';
+const DISPLAY_VALUE = 'Post-translational modification';
 
 
 class Modification extends InteractionType {
@@ -42,9 +42,9 @@ class Modification extends InteractionType {
 
     //here controlType is not bp:controlType but is about the
     //target's state change between 'inactive' and 'active'.
-    if(this.isInhibition())
+    if(this.isNegative())
       template.controlType = BIOPAX_CONTROL_TYPE.INHIBITION;
-    else if(this.isActivation())
+    else if(this.isPositive())
       template.controlType = BIOPAX_CONTROL_TYPE.ACTIVATION;
 
     if (effect) {

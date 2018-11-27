@@ -247,7 +247,8 @@ class FormEditor extends DataComponent {
           placement: 'right'
         }
       }, [
-        h('button.plain-button', {
+        h('button', {
+          className: 'form-interaction-adder',
           onClick: () => {
             let addInteractionRow = () => this.addInteractionRow( {
               name: Interaction.ASSOCIATION.INTERACTION.toString(),

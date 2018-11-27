@@ -39,7 +39,7 @@ class Binding extends InteractionType {
   }
 
   toString(){
-    return super.toString('binds with');
+    return super.toString('binds');
   }
 
   static get value(){ return VALUE; }

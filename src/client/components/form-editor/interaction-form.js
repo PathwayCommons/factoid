@@ -3,11 +3,11 @@ const _ = require('lodash');
 const { tryPromise } = require('../../../util');
 const dirtyEvents = ['remoteassociate', 'remoteretype'];
 const EntityForm = require('./entity-form.js');
-const ASSOCIATION = require('../../../model/element/interaction').ASSOCIATION;
+const Interaction = require('../../../model/element/interaction');
 const h = require('react-hyperscript');
 
-//common interaction form
 class InteractionForm extends DirtyComponent {
+
   constructor(props){
     super(props);
 
@@ -24,13 +24,11 @@ class InteractionForm extends DirtyComponent {
 
   componentDidMount(){
     let intn = this.data.interaction;
-
     dirtyEvents.forEach(e => intn.on(e, this.dirtyHandler));
   }
 
   componentWillUnmount(){
     let intn = this.data.interaction;
-
     dirtyEvents.forEach(e => intn.removeListener(e, this.dirtyHandler));
   }
 
@@ -46,7 +44,6 @@ class InteractionForm extends DirtyComponent {
 
   completeIfReady(){
     let intn = this.data.interaction;
-
     if(!intn.completed() && intn.associated() && intn.association().isSigned()){
       return intn.complete();
     } else {
@@ -56,7 +53,6 @@ class InteractionForm extends DirtyComponent {
 
   addEntityRow(data){
     let doc = this.data.document;
-
     let el = doc.factory().make({
       data: _.assign( {
         type: 'entity',
@@ -74,18 +70,11 @@ class InteractionForm extends DirtyComponent {
   }
 
   updateActivationInhibition(val){
-    let intn = this.data.interaction;
     let rEnt = this.getOutputParticipant();
-    let assoc = intn.association();
-
+    let assoc = this.data.interaction.association();
     let setPptType = () => {
-      assoc.setParticipantAsUnsigned(rEnt);
-      if(val.indexOf("activ") > -1)
-        assoc.setParticipantAsPositive(rEnt);
-      else if(val.indexOf("inhib") > -1)
-        assoc.setParticipantAsNegative(rEnt);
+      assoc.setParticipantAs( rEnt, Interaction.getPptTypeByVal(val));
     };
-
     let complete = () => this.completeIfReady();
     let dirty = () => this.dirty();
 
@@ -97,38 +86,21 @@ class InteractionForm extends DirtyComponent {
   }
 
   updateModificationType(val){
-    let intn = this.data.interaction;
-    let associate = () => intn.associate(val);
+    let associate = () => this.data.interaction.associate(val);
     let complete = () => this.completeIfReady();
     let dirty = () => this.dirty();
 
     return tryPromise(associate).then(complete).then(dirty);
   }
 
-  sign() {
-    let assoc = this.data.interaction.association();
-    let sign =  "interacts with";
-    if(assoc) {
-      if(assoc.isInhibition())
-        sign = "inhibits";
-      else if (assoc.isActivation())
-        sign = "activates";
-    }
-
-    return sign;
-  }
-
   render(){
     let intn = this.data.interaction;
-    let lEnt = this.getInputParticipant();
-    let rEnt = this.getOutputParticipant();
+    let lEnt = this.getInputParticipant(); //or the first
+    let rEnt = this.getOutputParticipant();//or the second
     let modVal = this.getModificationType();
-
-    if(!rEnt || !lEnt){
-      return null;
-    }
-
-    let actVal =  this.sign();
+    let actVal =  intn.association().getSignValue();
+    const SIG = Interaction.PARTICIPANT_TYPE;
+    const ASS = Interaction.ASSOCIATION;
 
     return h('div.form-interaction', [
       h(EntityForm,
@@ -136,11 +108,11 @@ class InteractionForm extends DirtyComponent {
       h('select.form-options', {id:('activation-'+ intn.id()), value: actVal,
         onChange: e => {
           this.updateActivationInhibition(e.target.value);
-        }}, [
-        h('option', { value: 'interacts with'}, 'interacts with'),
-        h('option', { value: 'activates'}, 'activates'),
-        h('option', { value: 'inhibits'}, 'inhibits'),
-      ]),
+        }},
+        Interaction.PARTICIPANT_TYPES
+          .filter(p => p != SIG.UNSIGNED_TARGET) //except unsupported (e.g., by biopax converter)
+          .map(ppt => h('option', { value: ppt.value}, ppt.verb))
+      ),
       h(EntityForm,
         { entity: rEnt, tooltipContent:'Name or ID', document: this.data.document }),
       h('span', 'via'),
@@ -149,27 +121,37 @@ class InteractionForm extends DirtyComponent {
           onChange: e => {this.updateModificationType(e.target.value);}
         },
         [
-          h('option', { value: ASSOCIATION.BINDING.value },
-            ASSOCIATION.BINDING.value),
-          h('option', { value: ASSOCIATION.INTERACTION.value },
-            ASSOCIATION.INTERACTION.value),
-          h('option', { value: ASSOCIATION.MODIFICATION.value },
-            ASSOCIATION.MODIFICATION.value),
-          h('option', { value: ASSOCIATION.PHOSPHORYLATION.value },
-            ASSOCIATION.PHOSPHORYLATION.value),
-          h('option', { value: ASSOCIATION.METHYLATION.value },
-            ASSOCIATION.METHYLATION.value),
-          h('option', { value: ASSOCIATION.UBIQUITINATION.value },
-            ASSOCIATION.UBIQUITINATION.value),
-          h('option', { value: ASSOCIATION.DEPHOSPHORYLATION.value },
-            ASSOCIATION.DEPHOSPHORYLATION.value),
-          h('option', { value: ASSOCIATION.DEMETHYLATION.value },
-            ASSOCIATION.DEMETHYLATION.value),
-          h('option', { value: ASSOCIATION.DEUBIQUITINATION.value },
-            ASSOCIATION.DEUBIQUITINATION.value),
-          h('option', { value: ASSOCIATION.TRANSCRIPTION_TRANSLATION.value },
-            ASSOCIATION.TRANSCRIPTION_TRANSLATION.value)
-        ])
+          {h: h('option', { value: ASS.BINDING.value},
+              ASS.BINDING.displayValue), actVals: [SIG.UNSIGNED.value]},
+          {h: h('option', { value: ASS.PHOSPHORYLATION.value },
+              ASS.PHOSPHORYLATION.displayValue),
+            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
+          {h: h('option', { value: ASS.METHYLATION.value },
+              ASS.METHYLATION.displayValue),
+            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
+          {h: h('option', { value: ASS.UBIQUITINATION.value },
+              ASS.UBIQUITINATION.displayValue),
+            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
+          {h: h('option', { value: ASS.DEPHOSPHORYLATION.value },
+              ASS.DEPHOSPHORYLATION.displayValue),
+            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
+          {h: h('option', { value: ASS.DEMETHYLATION.value },
+              ASS.DEMETHYLATION.displayValue),
+            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
+          {h: h('option', { value: ASS.DEUBIQUITINATION.value },
+              ASS.DEUBIQUITINATION.displayValue),
+            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
+          {h: h('option', { value: ASS.TRANSCRIPTION_TRANSLATION.value },
+              ASS.TRANSCRIPTION_TRANSLATION.displayValue),
+            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
+          {h: h('option', { value: ASS.MODIFICATION.value },
+              ASS.MODIFICATION.displayValue),
+            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
+          {h: h('option', { value: ASS.INTERACTION.value },
+              ASS.INTERACTION.displayValue),
+            actVals: [SIG.UNSIGNED.value, SIG.POSITIVE.value, SIG.NEGATIVE.value]}
+        ].filter(o => o.actVals.indexOf(actVal)>-1).map(o => o.h))
+      //TODO: also use participants for filtering; e.g., any chemical - show INTERACTION only, etc.
     ]);
   }
 

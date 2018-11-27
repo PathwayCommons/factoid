@@ -37,17 +37,16 @@ class TranscriptionTranslation extends InteractionType {
       target: tgtTemplate
     };
 
-    if(this.isInhibition())
+    if(this.isNegative())
       template.controlType = BIOPAX_CONTROL_TYPE.INHIBITION;
-    else if(this.isActivation())
+    else if(this.isPositive())
       template.controlType = BIOPAX_CONTROL_TYPE.ACTIVATION;
 
     return template;
   }
 
   toString(){
-    return super.toString( (this.isInhibition() ? 'inhibits' : 'activates')
-      + ' the transcription/translation of' );
+    return super.toString(null, 'the transcription/translation of');
   }
 
   static get value(){ return VALUE; }

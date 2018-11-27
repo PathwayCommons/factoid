@@ -2,7 +2,7 @@ const InteractionType = require('./interaction-type');
 const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
 
 const VALUE = 'interaction';
-const DISPLAY_VALUE = 'Other interaction';
+const DISPLAY_VALUE = 'Interaction';
 
 class OtherInteraction extends InteractionType {
 
@@ -25,9 +25,9 @@ class OtherInteraction extends InteractionType {
     };
 
     //optional controlType
-    if(this.isInhibition())
+    if(this.isNegative())
       template.controlType = BIOPAX_CONTROL_TYPE.INHIBITION;
-    else if(this.isActivation())
+    else if(this.isPositive())
       template.controlType = BIOPAX_CONTROL_TYPE.ACTIVATION;
 
     //optional source, target are either both null or both defined (unless there is a bug)

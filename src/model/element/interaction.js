@@ -70,21 +70,26 @@ class Interaction extends Element {
     });
   }
 
+  // the following 12 methods simply provide convenient access to the
+  // interaction/participant enum methods/values through this object/class
   static get PARTICIPANT_TYPE(){ return PARTICIPANT_TYPE; }
-
   get PARTICIPANT_TYPE(){ return PARTICIPANT_TYPE; }
 
   static get PARTICIPANT_TYPES(){ return PARTICIPANT_TYPES; }
-
   get PARTICIPANT_TYPES(){ return PARTICIPANT_TYPES; }
 
   static get ASSOCIATION(){ return INTERACTION_TYPE; }
-
   get ASSOCIATION(){ return INTERACTION_TYPE; }
 
   static get ASSOCIATIONS(){ return INTERACTION_TYPES; }
-
   get ASSOCIATIONS(){ return INTERACTION_TYPES; }
+
+  static get getIntnTypeByVal(){ return getIntnTypeByVal; }
+  get getIntnTypeByVal(){ return getIntnTypeByVal; }
+
+  static get getPptTypeByVal(){ return getPptTypeByVal; }
+  get getPptTypeByVal(){ return getPptTypeByVal; }
+
 
   static type(){ return TYPE; }
 
@@ -134,6 +139,7 @@ class Interaction extends Element {
     return getPptTypeByVal( this.elementSet.group( ele ) );
   }
 
+  //TODO simplify (and test) this weird method; what happens when type is UNSIGNED_TARGET?..
   setParticipantType( ele, type ){
     let oldType = this.getParticipantType( ele );
     let typeVal;

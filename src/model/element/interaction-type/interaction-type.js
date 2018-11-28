@@ -19,9 +19,7 @@ class InteractionType {
   }
 
   has( pptType ){
-    let intn = this.interaction;
-
-    return intn.participantsOfType(pptType).length > 0;
+    return this.interaction.participantsOfType(pptType).length > 0;
   }
 
   isPositive(){
@@ -32,8 +30,24 @@ class InteractionType {
     return this.has( PARTICIPANT_TYPE.NEGATIVE );
   }
 
+  isUnsignedTarget(){
+    return this.has( PARTICIPANT_TYPE.UNSIGNED_TARGET );
+  }
+
   isSigned(){
     return this.isPositive() || this.isNegative();
+  }
+
+  getSignValue() {
+    let value =  PARTICIPANT_TYPE.UNSIGNED.value;
+    if (this.isNegative())
+      value = PARTICIPANT_TYPE.NEGATIVE.value;
+    else if (this.isPositive())
+      value = PARTICIPANT_TYPE.POSITIVE.value;
+    else if (this.isUnsignedTarget())
+      value = PARTICIPANT_TYPE.UNSIGNED_TARGET.value;
+
+    return value;
   }
 
   isComplete(){
@@ -51,38 +65,6 @@ class InteractionType {
     ]);
   }
 
-  setParticipantAsPositive(ppt ){
-    return this.setParticipantAs( ppt, PARTICIPANT_TYPE.POSITIVE );
-  }
-
-  setParticipantAsNegative( ppt ){
-    return this.setParticipantAs( ppt, PARTICIPANT_TYPE.NEGATIVE );
-  }
-
-  isPromotion(){
-    return this.isPositive();
-  }
-
-  setAsPromotionOf( ppt ){
-    return this.setParticipantAsPositive( ppt );
-  }
-
-  isActivation(){
-    return this.isPositive();
-  }
-
-  setAsActivationOf( ppt ){
-    return this.setParticipantAsPositive( ppt );
-  }
-
-  isInhibition(){
-    return this.isNegative();
-  }
-
-  setAsInhibitionOf( ppt ){
-    return this.setParticipantAsNegative( ppt );
-  }
-
   getTarget(){
     let intn = this.interaction;
     let ppts = intn.participantsNotOfType( PARTICIPANT_TYPE.UNSIGNED );
@@ -93,11 +75,11 @@ class InteractionType {
 
   setTarget( ppt ){
     if( this.isNegative() ){
-      return this.setParticipantAsNegative( ppt );
+      return this.setParticipantAs( ppt, PARTICIPANT_TYPE.NEGATIVE );
     } else if( this.isPositive() ){
-      return this.setParticipantAsPositive( ppt );
+      return this.setParticipantAs( ppt, PARTICIPANT_TYPE.POSITIVE );
     } else {
-      return this.setParticipantAsPositive( PARTICIPANT_TYPE.UNSIGNED_TARGET );
+      return this.setParticipantAs( ppt, PARTICIPANT_TYPE.UNSIGNED_TARGET );
     }
   }
 
@@ -113,7 +95,7 @@ class InteractionType {
     throw new Error(`Abstract method toBiopaxTemplate() is not overridden for interaction type of ${this.value}`);
   }
 
-  toString(verbPhrase, post = ''){
+  toString(verbPhrase, pref = '', post = ''){
     let src, tgt;
 
     if(this.isSigned()) {
@@ -127,20 +109,21 @@ class InteractionType {
       tgt = ppts[1];
     }
 
-    if( verbPhrase == null ){
-      if( this.isActivation() ){
-        verbPhrase = 'activates';
-      } else if( this.isInhibition() ){
-        verbPhrase = 'inhibits';
-      } else {
-        verbPhrase = 'interacts with';
-      }
+    if (!verbPhrase) {
+      if (this.isPositive())
+        verbPhrase = PARTICIPANT_TYPE.POSITIVE.verb;
+      else if (this.isNegative())
+        verbPhrase = PARTICIPANT_TYPE.NEGATIVE.verb;
+      else if (this.isUnsignedTarget())
+        verbPhrase = PARTICIPANT_TYPE.UNSIGNED_TARGET.verb;
+      else
+        verbPhrase = PARTICIPANT_TYPE.UNSIGNED.verb;
     }
 
     let srcName = src.name() || '(?)';
     let tgtName = tgt.name() || '(?)';
 
-    return `${srcName} ${verbPhrase} ${tgtName} ${post}`;
+    return `${srcName} ${verbPhrase} ${pref} ${tgtName} ${post}`;
   }
 
   static isAllowedForInteraction( intn ){ // eslint-disable-line no-unused-vars

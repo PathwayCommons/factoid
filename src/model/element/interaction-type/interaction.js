@@ -2,7 +2,7 @@ const InteractionType = require('./interaction-type');
 const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
 
 const VALUE = 'interaction';
-const DISPLAY_VALUE = 'Other';
+const DISPLAY_VALUE = 'Interaction';
 
 class Interaction extends InteractionType {
 
@@ -10,12 +10,12 @@ class Interaction extends InteractionType {
     super( intn );
   }
 
-  static isAllowedForInteraction( intn ){ // eslint-disable-line no-unused-vars
-    return true;
+  static isAllowedForInteraction( intn ){
+    return intn.participants().length === 2;
   }
 
   isComplete() {
-    return this.interaction.participants().length === 2;
+    return Interaction.isAllowedForInteraction(this.interaction);
   }
 
   toBiopaxTemplate(){
@@ -25,9 +25,9 @@ class Interaction extends InteractionType {
     };
 
     //optional controlType
-    if(this.isInhibition())
+    if(this.isNegative())
       template.controlType = BIOPAX_CONTROL_TYPE.INHIBITION;
-    else if(this.isActivation())
+    else if(this.isPositive())
       template.controlType = BIOPAX_CONTROL_TYPE.ACTIVATION;
 
     //optional source, target are either both null or both defined (unless there is a bug)

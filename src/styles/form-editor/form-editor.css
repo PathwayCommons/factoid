@@ -112,7 +112,6 @@
 .entity-form-info {
   opacity: 0;
   pointer-events: none;
-  margin-top: 0.5em;
   position: fixed;
   z-index: 10;
   top: 0;
@@ -132,7 +131,7 @@
   top: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0 ,0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   cursor: pointer;
   opacity: 0;
   pointer-events: none;

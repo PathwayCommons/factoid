@@ -590,7 +590,7 @@ describe('Interaction', function(){
       } ).then( () => {
         return intnC1.associate( Interaction.ASSOCIATION.TRANSCRIPTION_TRANSLATION );
       } ).then( () => {
-        return intnC1.association().setAsPromotionOf( entC1 );
+        return intnC1.association().setParticipantAs( entC1, Interaction.PARTICIPANT_TYPE.POSITIVE );
       } ).then( () => {
         return intnC1.complete();
       } ).then( () => {

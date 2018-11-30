@@ -1,13 +1,9 @@
 # Factoid
 
-
-
 ## Required software
 
 - [Node.js](https://nodejs.org/en/) >=6.3.0
 - [RethinkDB](http://rethinkdb.com/) ^2.3.0
-
-
 
 ## Configuration
 
@@ -45,10 +41,8 @@ Services:
 - `PUBCHEM_CACHE_SIZE`: overrides default cache size of pubchem query cache,
 - `AGGREGATE_CACHE_SIZE`: overrides default cache size for aggregate searches across all entity types
 - `MAX_SEARCH_SIZE`: max number of entities returned for each entity lookup/search service
-- `PC_LINK_BASE_URL` : base url concatenated to id to generate a pc search linkout
-- `PC_URL` : base url for pathway commons apps
-
-
+- `PC_URL` : base url for pathway commons apps, to search or link
+- `BIOPAX_CONVERTER_URL` : url for the factoid to biopax/sbgn converter
 
 ## Run targets
 
@@ -62,8 +56,6 @@ Services:
 - `npm test` : run tests
 - `npm run lint` : lint the project
 - `npm run fix` : fix minor linting errors (ones that can be automatically fixed)
-
-
 
 ## Running via Docker
 
@@ -97,11 +89,6 @@ Notes:
   - [Documentation of docker-node](https://github.com/nodejs/docker-node)
   - [Docker CLI docs](https://docs.docker.com/engine/reference/commandline/cli/)
 
-
-
-
-
-
 ## Testing
 
 All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm test` to run all tests, or you can run `mocha -g specific-test-name` (prerequisite: `npm install -g mocha`) to run specific tests.
@@ -114,8 +101,6 @@ Notes:
 
 - The `Syncher.synch()` is setup separately for each test file and namespaced.  The reason for this is that the tests need to be able to be run independently and previous `Syncher.synch()` calls from other files would otherwise conflict.
 - Each test file should `require('./util/conf')` to make debugging with promises easier etc.
-
-
 
 ## Publishing a release
 

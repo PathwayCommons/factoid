@@ -3,7 +3,7 @@ const h = require('react-hyperscript');
 const _ = require('lodash');
 const Popover = require('./popover/popover');
 const Linkout = require('./document-linkout');
-const { exportDocumentToOwl, exportDocumentToTxt } = require('../client-util');
+const { exportDocumentToBiopax, exportDocumentToTxt, exportDocumentToSbgn } = require('../client-util');
 const EventEmitter = require('eventemitter3');
 const Tooltip = require('./popover/tooltip');
 const { Link } = require('react-router-dom');
@@ -83,7 +83,8 @@ class MenuContent extends Component {
           item({ label: 'Share', action: () => this.selectLinkouts(), actionCloses: false })
         ]) : null,
         document ? set({ key: 'dl' }, [
-          item({ label: 'Download BioPAX', action: () => exportDocumentToOwl(document.id()) }),
+          item({ label: 'Download BioPAX', action: () => exportDocumentToBiopax(document.id()) }),
+          item({ label: 'Download SBGN', action: () => exportDocumentToSbgn(document.id()) }),
           item({ label: 'Download text', action: () => exportDocumentToTxt(document.id()) })
         ]) : null,
         set({ key: 'nav' }, [

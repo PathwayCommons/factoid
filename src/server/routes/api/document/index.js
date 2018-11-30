@@ -68,7 +68,7 @@ let handleResponseError = response => {
 };
 
 let getBiopaxFromTemplates = templates => {
-  return fetch( BIOPAX_CONVERTER_URL, {
+  return fetch( BIOPAX_CONVERTER_URL + 'json-to-biopax', {
     method: 'POST',
     body: JSON.stringify(templates),
     headers: {
@@ -76,6 +76,17 @@ let getBiopaxFromTemplates = templates => {
       'Accept':'application/vnd.biopax.rdf+xml' }
   } )
   .then(handleResponseError);
+};
+
+let getSbgnFromTemplates = templates => {
+  return fetch( BIOPAX_CONVERTER_URL + 'json-to-sbgn', {
+    method: 'POST',
+    body: JSON.stringify(templates),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept':'application/xml' }
+  } )
+    .then(handleResponseError);
 };
 
 let sendEmail = json => {
@@ -219,6 +230,17 @@ http.get('/biopax/:id', function( req, res ){
     .then( getBiopaxFromTemplates )
     .then( result => result.text() )
     .then( owl => res.send( owl ));
+});
+
+http.get('/sbgn/:id', function( req, res ){
+  let id = req.params.id;
+  tryPromise( loadTables )
+    .then( json => _.assign( {}, json, { id } ) )
+    .then( loadDoc )
+    .then( doc => doc.toBiopaxTemplates() )
+    .then( getSbgnFromTemplates )
+    .then( result => result.text() )
+    .then( xml => res.send( xml ));
 });
 
 http.get('/text/:id', function( req, res ){

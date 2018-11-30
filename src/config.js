@@ -35,9 +35,8 @@ let defaults = {
   PUBCHEM_CACHE_SIZE: DEFAULT_CACHE_SIZE,
   AGGREGATE_CACHE_SIZE: DEFAULT_CACHE_SIZE,
   MAX_SEARCH_SIZE: 50,
-  BIOPAX_CONVERTER_URL: 'http://biopax.baderlab.org/convert/v2/json-to-biopax',
-  PC_LINK_BASE_URL: 'http://apps.pathwaycommons.org/search?q=',
-  PC_URL: 'http://apps.pathwaycommons.org/'
+  BIOPAX_CONVERTER_URL: 'https://biopax.baderlab.org/convert/v2/',
+  PC_URL: 'https://apps.pathwaycommons.org/'
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );
@@ -47,8 +46,7 @@ let envVars = _.pick( process.env, Object.keys( defaults ) );
 let clientVars = {
   NODE_ENV: process.env.NODE_ENV,
   BASE_URL: process.env.BASE_URL,
-  PC_URL: process.env.PC_URL,
-  PC_LINK_BASE_URL: process.env.PC_LINK_BASE_URL
+  PC_URL: process.env.PC_URL
 };
 
 _.assign(envVars, clientVars);

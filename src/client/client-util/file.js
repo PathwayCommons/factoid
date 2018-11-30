@@ -12,7 +12,7 @@ function exportContentToFile(content, fileName, ext){
   FileSaver.saveAs(file);
 }
 
-function exportDocumentToOwl(docId, fileName){
+function exportDocumentToBiopax(docId, fileName){
   // in case document itself is given instead of document id
   if( !_.isString(docId) ){
       docId = docId.id();
@@ -24,6 +24,20 @@ function exportDocumentToOwl(docId, fileName){
 
   tryPromise( makeRequest ).then( result => result.text() )
           .then( content => exportContentToFile(content, fileName, '.owl') );
+}
+
+function exportDocumentToSbgn(docId, fileName){
+  // in case document itself is given instead of document id
+  if( !_.isString(docId) ){
+    docId = docId.id();
+  }
+
+  let makeRequest = () => fetch(`/api/document/sbgn/${docId}`);
+
+  fileName = fileName || docId;
+
+  tryPromise( makeRequest ).then( result => result.text() )
+    .then( content => exportContentToFile(content, fileName, '.sbgn.xml') );
 }
 
 function exportDocumentToTxt(docId, fileName){
@@ -40,4 +54,4 @@ function exportDocumentToTxt(docId, fileName){
           .then( content => exportContentToFile(content, fileName, '.txt') );
 }
 
-module.exports = { exportContentToFile, exportDocumentToOwl, exportDocumentToTxt };
+module.exports = { exportContentToFile, exportDocumentToBiopax, exportDocumentToTxt, exportDocumentToSbgn };

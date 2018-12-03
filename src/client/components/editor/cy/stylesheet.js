@@ -67,6 +67,12 @@ function makeStylesheet(){
       }
     },
     {
+      selector: 'node[?isInteraction] -> node',
+      style: {
+        'source-endpoint': 'inside-to-node'
+      }
+    },
+    {
       selector: 'edge[type="positive"]',
       style: {
         'target-arrow-shape': 'triangle'
@@ -122,9 +128,7 @@ function makeStylesheet(){
         'background-color': activeColor,
         'line-color': activeColor,
         'target-arrow-color': activeColor,
-        'source-arrow-color': activeColor,
-        'source-endpoint': 'inside-to-node',
-        'target-endpoint': 'inside-to-node'
+        'source-arrow-color': activeColor
       }
     },
     {
@@ -146,6 +150,12 @@ function makeStylesheet(){
         'border-color': activeColor,
         'border-width': 4,
         'border-style': 'double'
+      }
+    },
+    {
+      selector: '.eh-ghost-edge.eh-preview-active',
+      style: {
+        'opacity': 0
       }
     }
   ].filter( block => block != null );

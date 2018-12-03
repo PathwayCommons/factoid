@@ -1,0 +1,35 @@
+.icon {
+  &.icon-spinner {
+    transform: translate3d(0, 0, 0);
+    background-image: url('./image/spinner.svg');
+    animation: spin 750ms infinite linear;
+  }
+
+  &.icon-logo {
+    background-image: url('./image/logo.svg');
+  }
+
+  &.icon-arrow-positive {
+    background-image: url('./image/arrow-positive-long-filled.svg');
+
+    &.icon-white {
+      background-image: url('./image/arrow-positive-long-filled-white.svg');
+    }
+  }
+
+  &.icon-arrow-negative {
+    background-image: url('./image/arrow-negative-small.svg');
+
+    &.icon-white {
+      background-image: url('./image/arrow-negative-small-white.svg');
+    }
+  }
+
+  &.icon-arrow-unsigned {
+    background-image: url('./image/arrow-unsigned.svg');
+
+    &.icon-white {
+      background-image: url('./image/arrow-unsigned-white.svg');
+    }
+  }
+}

@@ -12,6 +12,8 @@ const EventEmitter = require('eventemitter3');
 const Notification = require('../notification/notification');
 const InlineNotification = require('../notification/inline');
 const Tooltip = require('../popover/tooltip');
+const { INTERACTION_TYPES, INTERACTION_TYPE } = require('../../../model/element/interaction-type');
+const { PARTICIPANT_TYPE } = require('../../../model/element/participant-type');
 
 let stageCache = new WeakMap();
 let assocNotificationCache = new SingleValueCache();
@@ -33,14 +35,14 @@ class InteractionInfo extends DataComponent {
     let ppt = doc.get( pptNode.id() );
 
     let progression = new Progression({
-      STAGES: ['ASSOCIATE', 'PARTICIPANT_TYPES', 'COMPLETED'],
+      STAGES: ['PARTICIPANT_TYPES', 'ASSOCIATE', 'COMPLETED'],
       getStage: () => this.getStage(),
       canGoToStage: stage => this.canGoToStage(stage),
       goToStage: stage => this.goToStage(stage)
     });
 
     let { STAGES, ORDERED_STAGES } = progression;
-    let initialStage = ORDERED_STAGES[0];
+    let initialStage = ORDERED_STAGES[1]; // skip the arrow / ppt types stage b/c the user drew the edge with the arrow already
 
     let stage = initCache( stageCache, el, el.completed() ? STAGES.COMPLETED : initialStage );
 
@@ -68,10 +70,10 @@ class InteractionInfo extends DataComponent {
     let { STAGES } = progression;
 
     switch( stage ){
+      case STAGES.PARTICIPANT_TYPES:
+        return true;
       case STAGES.ASSOCIATE:
         return true;
-      case STAGES.PARTICIPANT_TYPES:
-        return el.associated();
       case STAGES.COMPLETED:
         return el.associated() && el.association().isComplete();
       default:
@@ -246,20 +248,37 @@ class InteractionInfo extends DataComponent {
       let radiosetChildren = [];
       let anyPptIsUnassoc = el.participants().some( ppt => !ppt.associated() );
 
-      el.ASSOCIATIONS.forEach( assoc => {
+      INTERACTION_TYPES.forEach( IntnType => {
         // skip types that don't apply to the participant set
         // but don't block options if the ent's are unassociated/untyped
-        if( !anyPptIsUnassoc && !assoc.isAllowedForInteraction(el) ){
+        let pptAssocsAllowed = anyPptIsUnassoc || IntnType.isAllowedForInteraction(el);
+        let pptType = (
+          el.participants()
+          .map(ppt => el.participantType(ppt))
+          .filter(type => type.value !== PARTICIPANT_TYPE.UNSIGNED.value)[0] // assume one typed ppt, others unsigned
+          || PARTICIPANT_TYPE.UNSIGNED // if no other type found, then it's unsigned overall
+        );
+        let pptTypeAllowed = IntnType.allowedParticipantTypes().some(type => type.value === pptType.value);
+
+        if( !pptAssocsAllowed || !pptTypeAllowed ){
           return;
         }
 
         let radioId = 'interaction-info-assoc-radioset-item-' + uuid();
-        let checked = el.associated() && el.association().value === assoc.value;
+        let checked = el.associated() && el.association().value === IntnType.value;
+        let indented = [
+          INTERACTION_TYPE.PHOSPHORYLATION,
+          INTERACTION_TYPE.DEPHOSPHORYLATION,
+          INTERACTION_TYPE.METHYLATION,
+          INTERACTION_TYPE.DEMETHYLATION,
+          INTERACTION_TYPE.UBIQUITINATION,
+          INTERACTION_TYPE.DEUBIQUITINATION
+        ].some( IndentedType => IndentedType.value === IntnType.value );
 
         radiosetChildren.push( h('input.interaction-info-type-radio', {
           type: 'radio',
           onChange: () => {
-            this.associate( assoc );
+            this.associate( IntnType );
             progression.forward();
           },
           onClick: () => { // skip to next stage when clicking existing assoc
@@ -267,13 +286,14 @@ class InteractionInfo extends DataComponent {
           },
           id: radioId,
           name: radioName,
-          value: assoc.value,
+          value: IntnType.value,
           checked
         }) );
 
         radiosetChildren.push( h('label.interaction-info-assoc-radio-label', {
+          className: indented ? 'interaction-info-type-radio-indented' : '',
           htmlFor: radioId
-        }, assoc.displayValue) );
+        }, IntnType.displayValue) );
       } );
 
       children.push( makeNotification(s.assocNotification) );

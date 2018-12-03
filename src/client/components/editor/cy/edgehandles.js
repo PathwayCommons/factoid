@@ -4,6 +4,8 @@ const _ = require('lodash');
 
 const { isInteractionNode, tryPromise } = require('../../../../util');
 
+const { PARTICIPANT_TYPE } = require('../../../../model/element/participant-type');
+
 const SELECT_ON_HANDLE_TAP = false;
 const DRAW_ON_HANDLE_TAP = true;
 const TAP_IN_DRAW_MODE = true;
@@ -14,6 +16,7 @@ module.exports = function({ bus, cy, document, controller }){
   if( !document.editable() ){ return; }
 
   let inDrawMode = false;
+  let pptType = PARTICIPANT_TYPE.UNSIGNED;
   let lastEdgeCreationTime = 0;
 
   let edgeType = function( source, target ){
@@ -53,10 +56,22 @@ module.exports = function({ bus, cy, document, controller }){
     return nodeJson;
   };
 
-  let edgeParams = function( /*source, target, i*/ ){
-    let edgeJson = {};
+  let edgeParams = function( source, target, i ){
+    let edgeJson = {
+      data: {
+        type: i === 1 ? pptType.value : null
+      }
+    };
 
     return edgeJson;
+  };
+
+  let ghostEdgeParams = function(){
+    return {
+      data: {
+        type: pptType.value
+      }
+    };
   };
 
   let complete = function( source, target, addedEles ){
@@ -66,19 +81,24 @@ module.exports = function({ bus, cy, document, controller }){
     let idIsNotIntn = el => el.id() !== intnNode.id();
     let pptNodes = source.add( target ).filter( idIsNotIntn );
     let ppts = pptNodes.map( n => document.get( n.id() ) );
+    let isTarget = ppt => ppt.id() === target.id();
 
     let handleIntn = () => {
       if( createdIntnNode ){
         return controller.addInteraction({
           association: 'interaction',
           position: _.clone( intnNode.position() ),
-          entries: ppts.map( ppt => ({ id: ppt.id() }) )
+          entries: ppts.map( ppt => ({
+            id: ppt.id(),
+            group: isTarget(ppt) ? pptType.value : null
+          }) )
         });
       } else {
         let intn = document.get( intnNode.id() );
         let add = ppt => intn.add( ppt );
+        let addPpts = () => Promise.all( ppts.map(add) );
 
-        return Promise.all( ppts.map( add ) ).then( () => intn );
+        return addPpts().then( () => intn );
       }
     };
 
@@ -123,8 +143,10 @@ module.exports = function({ bus, cy, document, controller }){
     loopAllowed,
     nodeParams,
     edgeParams,
+    ghostEdgeParams,
     complete,
-    start: onStart
+    start: onStart,
+    snap: true
   });
 
   cy.on('ehstart', () => bus.emit('drawstart'));
@@ -169,9 +191,11 @@ module.exports = function({ bus, cy, document, controller }){
     });
   }
 
-  bus.on('drawon', () => {
+  bus.on('drawon', (type) => {
     eh.enableDrawMode();
+
     inDrawMode = true;
+    pptType = type;
   });
 
   bus.on('drawoff', () => {
@@ -180,7 +204,11 @@ module.exports = function({ bus, cy, document, controller }){
     inDrawMode = false;
   });
 
-  bus.on('drawfrom', el => eh.start(el));
+  bus.on('drawfrom', (el, type) => {
+    pptType = type;
+
+    eh.start(el);
+  });
 
   on('d', () => bus.emit('drawtoggle'));
 };

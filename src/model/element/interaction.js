@@ -3,8 +3,8 @@ const _ = require('lodash');
 const ElementSet = require('../element-set');
 const { assertFieldsDefined, tryPromise } = require('../../util');
 
-const { INTERACTION_TYPE, INTERACTION_TYPES, getIntnTypeByVal } = require('./interaction-type/enum');
-const { PARTICIPANT_TYPE, PARTICIPANT_TYPES, getPptTypeByVal } = require('./participant-type');
+const { INTERACTION_TYPE, getIntnTypeByVal } = require('./interaction-type/enum');
+const { PARTICIPANT_TYPE, getPptTypeByVal } = require('./participant-type');
 
 const TYPE = 'interaction';
 
@@ -70,27 +70,6 @@ class Interaction extends Element {
     });
   }
 
-  // the following 12 methods simply provide convenient access to the
-  // interaction/participant enum methods/values through this object/class
-  static get PARTICIPANT_TYPE(){ return PARTICIPANT_TYPE; }
-  get PARTICIPANT_TYPE(){ return PARTICIPANT_TYPE; }
-
-  static get PARTICIPANT_TYPES(){ return PARTICIPANT_TYPES; }
-  get PARTICIPANT_TYPES(){ return PARTICIPANT_TYPES; }
-
-  static get ASSOCIATION(){ return INTERACTION_TYPE; }
-  get ASSOCIATION(){ return INTERACTION_TYPE; }
-
-  static get ASSOCIATIONS(){ return INTERACTION_TYPES; }
-  get ASSOCIATIONS(){ return INTERACTION_TYPES; }
-
-  static get getIntnTypeByVal(){ return getIntnTypeByVal; }
-  get getIntnTypeByVal(){ return getIntnTypeByVal; }
-
-  static get getPptTypeByVal(){ return getPptTypeByVal; }
-  get getPptTypeByVal(){ return getPptTypeByVal; }
-
-
   static type(){ return TYPE; }
 
   isInteraction(){ return true; }
@@ -139,7 +118,6 @@ class Interaction extends Element {
     return getPptTypeByVal( this.elementSet.group( ele ) );
   }
 
-  //TODO simplify (and test) this weird method; what happens when type is UNSIGNED_TARGET?..
   setParticipantType( ele, type ){
     let oldType = this.getParticipantType( ele );
     let typeVal;
@@ -218,7 +196,7 @@ class Interaction extends Element {
     let oldType = makeAssociation( this.syncher.get('association'), this );
 
     let update = this.syncher.update({
-      association: null,
+      association: INTERACTION_TYPE.INTERACTION.value,
       type: TYPE
     }).then( () => {
       this.emit('unassociated', oldType);

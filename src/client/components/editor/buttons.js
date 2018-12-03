@@ -4,6 +4,7 @@ const _ = require('lodash');
 const { tippyTopZIndex } = require('../../defs');
 const Tooltip = require('../popover/tooltip');
 const Toggle = require('../toggle');
+const { PARTICIPANT_TYPE } = require('../../../model/element/participant-type');
 
 class EditorButtons extends React.Component {
   render(){
@@ -25,6 +26,20 @@ class EditorButtons extends React.Component {
     };
 
     if( document.editable() ){
+      const PptTypeBtn = (type, description, shortcut) => (
+        h(Tooltip, _.assign({}, baseTooltipProps, { description, shortcut }), [
+          h(Toggle, {
+            className: 'editor-button plain-button',
+            onToggle: () => controller.toggleDrawMode(null, type),
+            getState: () => controller.drawMode() && controller.drawModeType().value === type.value
+          }, [
+            h('i', {
+              className: type.icon + ' icon-rot-345'
+            })
+          ])
+        ])
+      );
+
       grs.push([
         h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Add an entity', shortcut: 'e' }), [
           h('button.editor-button.plain-button', { onClick: () => controller.addElement().then( el => bus.emit('opentip', el) )  }, [
@@ -32,11 +47,9 @@ class EditorButtons extends React.Component {
           ])
         ]),
 
-        h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Draw an interaction', shortcut: 'd' }), [
-          h(Toggle, { className: 'editor-button plain-button', onToggle: () => controller.toggleDrawMode(), getState: () => controller.drawMode()  }, [
-            h('i.material-icons.icon-rot-45', 'remove')
-          ])
-        ])
+        PptTypeBtn(PARTICIPANT_TYPE.UNSIGNED, 'Draw an undirected interaction', 'd'),
+        PptTypeBtn(PARTICIPANT_TYPE.POSITIVE, 'Draw an activation interaction', 'd'),
+        PptTypeBtn(PARTICIPANT_TYPE.NEGATIVE, 'Draw an inhibition interaction', 'd')
       ]);
     }
 

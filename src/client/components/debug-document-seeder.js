@@ -205,33 +205,36 @@ class DebugDocumentSeeder extends React.Component {
         }
       }
 
-      resultChildren.push( h('div.debug-document-seeder-arrow', [
-        h('i.material-icons', 'arrow_downward')
-      ]) );
+      if( !techDemo ){
+        resultChildren.push( h('div.debug-document-seeder-arrow', [
+          h('i.material-icons', 'arrow_downward')
+        ]) );
 
 
-      resultChildren.push( h('div.debug-document-seeder-result-title', [
-        h(Link, { target: '_blank', to: documentJson.privateUrl }, [
-          h('span', 'REACH API response'),
-          h('i.material-icons', 'open_in_new')
-        ])
-      ]) );
+        resultChildren.push( h('div.debug-document-seeder-result-title', [
+          h(Link, { target: '_blank', to: documentJson.privateUrl }, [
+            h('span', 'REACH API response'),
+            h('i.material-icons', 'open_in_new')
+          ])
+        ]) );
 
-      resultChildren.push( h('div.debug-document-seeder-textmining-params', [
-        h('h3', 'Request parameters'),
-        ...paramsArr.map(param => h('div.debug-document-seeder-textmining-param', [
-          h('label', param.key),
-          h(CopyField, { value: param.val })
-        ]))
-      ]) );
+        resultChildren.push( h('div.debug-document-seeder-textmining-params', [
+          h('h3', 'Request parameters'),
+          ...paramsArr.map(param => h('div.debug-document-seeder-textmining-param', [
+            h('label', param.key),
+            h(CopyField, { value: param.val })
+          ]))
+        ]) );
 
-      resultChildren.push( h('div.debug-document-seeder-textmining-json', [
-        h('h3', 'Response JSON'),
-        h('pre.debug-document-seeder-textmining-json-body', JSON.stringify(reachResponse, null, 2))
-      ]) );
-    }
+        resultChildren.push( h('div.debug-document-seeder-textmining-json', [
+          h('h3', 'Response JSON'),
+          h('pre.debug-document-seeder-textmining-json-body', JSON.stringify(reachResponse, null, 2))
+        ]) );
+      }
 
-    rootChildren.push( h('div.debug-document-seeder-result', resultChildren) );
+      rootChildren.push( h('div.debug-document-seeder-result', resultChildren) );
+
+      }
 
     return h('div.debug-document-seeder', rootChildren);
   }

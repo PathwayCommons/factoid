@@ -7,6 +7,7 @@ const _ = require('lodash');
 
 const { getId, defer, makeClassList, tryPromise } = require('../../../util');
 const Document = require('../../../model/document');
+const { PARTICIPANT_TYPE } = require('../../../model/element/participant-type');
 
 const Notification = require('../notification');
 const CornerNotification = require('../notification/corner');
@@ -202,18 +203,36 @@ class Editor extends DataComponent {
     return this.data.document.editable();
   }
 
-  toggleDrawMode( toggle ){
+  toggleDrawMode( toggle, type = PARTICIPANT_TYPE.UNSIGNED ){
     if( !this.editable() ){ return; }
 
-    let on = toggle === undefined ? !this.drawMode() : toggle;
+    let on;
 
-    this.data.bus.emit( on ? 'drawon' : 'drawoff' );
+    if( toggle == null ){
+      if( this.data.drawModeType == null || type.value !== this.data.drawModeType.value ){
+        on = true; // keep on if just changing type
+      } else {
+        on = !this.drawMode(); // otherwise flip
+      }
+    } else {
+      on = !!toggle; // ensure bool
+    }
 
-    return new Promise( resolve => this.setData({ drawMode: on }, resolve) );
+    if( on ){
+      this.data.bus.emit('drawon', type );
+    } else {
+      this.data.bus.emit('drawoff');
+    }
+
+    return new Promise( resolve => this.setData({ drawMode: on, drawModeType: type }, resolve) );
   }
 
   drawMode(){
     return this.data.drawMode;
+  }
+
+  drawModeType(){
+    return this.data.drawModeType;
   }
 
   addElement( data = {} ){

@@ -6,13 +6,23 @@ const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
 const VALUE = 'transcription-translation';
 const DISPLAY_VALUE = 'Transcription/translation';
 
+const allowedParticipantTypes = () => {
+  const T = PARTICIPANT_TYPE;
+
+  return [T.POSITIVE, T.NEGATIVE];
+};
+
 class TranscriptionTranslation extends InteractionType {
   constructor( intn ){
     super( intn );
   }
 
+  static allowedParticipantTypes(){
+    return allowedParticipantTypes();
+  }
+
   allowedParticipantTypes(){
-    return [PARTICIPANT_TYPE.POSITIVE, PARTICIPANT_TYPE.NEGATIVE];
+    return allowedParticipantTypes();
   }
 
   isComplete(){
@@ -46,7 +56,7 @@ class TranscriptionTranslation extends InteractionType {
   }
 
   toString(){
-    return super.toString(null, 'the transcription/translation of');
+    return super.toString(this.getSign().verbPhrase + ' the transcription/translation of');
   }
 
   static get value(){ return VALUE; }

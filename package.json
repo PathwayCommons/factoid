@@ -39,7 +39,7 @@
     "cytoscape-automove": "^1.9.0",
     "cytoscape-cose-bilkent": "^1.6.10",
     "cytoscape-cxtmenu": "^2.10.3",
-    "cytoscape-edgehandles": "^3.2.1",
+    "cytoscape-edgehandles": "^3.5.0",
     "cytoscape-popper": "^1.0.1",
     "date-fns": "^1.28.5",
     "debug": "^2.2.0",

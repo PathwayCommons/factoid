@@ -12,8 +12,9 @@ const Tooltip = require('../popover/tooltip');
 const Popover = require('../popover/popover');
 const MainMenu = require('../main-menu');
 const { TaskView } = require('../tasks');
-const Interaction = require('../../../model/element/interaction');
 const InteractionForm = require('./interaction-form');
+const { PARTICIPANT_TYPE } = require('../../../model/element/participant-type');
+const { INTERACTION_TYPE } = require('../../../model/element/interaction-type');
 
 class FormEditor extends DataComponent {
   constructor(props){
@@ -106,7 +107,7 @@ class FormEditor extends DataComponent {
 
     let entries = [ uuid(), uuid() ].map( (id) => ({
       id,
-      group: Interaction.PARTICIPANT_TYPE.UNSIGNED
+      group: PARTICIPANT_TYPE.UNSIGNED
     }) );
 
     let createEnt = (entry) => doc.factory().make({
@@ -251,8 +252,8 @@ class FormEditor extends DataComponent {
           className: 'form-interaction-adder',
           onClick: () => {
             let addInteractionRow = () => this.addInteractionRow( {
-              name: Interaction.ASSOCIATION.INTERACTION.toString(),
-              association: Interaction.ASSOCIATION.INTERACTION
+              name: INTERACTION_TYPE.INTERACTION.toString(),
+              association: INTERACTION_TYPE.INTERACTION
             } );
             addInteractionRow();
           }
@@ -277,8 +278,7 @@ class FormEditor extends DataComponent {
             h('h3.form-editor-title',
               doc.name() === '' ? 'Untitled document' : doc.name()),
             h('div.form-templates', (
-              doc.interactions().filter(intn => intn.completed())
-                .map( (interaction) =>  h(IntnEntry, { interaction }))
+              doc.interactions().map( (interaction) =>  h(IntnEntry, { interaction }))
             )),
             h('div.form-interaction-adder-area', [
               h(FormTypeButton, {

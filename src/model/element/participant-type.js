@@ -1,18 +1,11 @@
 const _ = require('lodash');
 
-const pptType = ( value, displayValue, icon, verb ) => Object.freeze({ value, displayValue, icon, verb });
+const pptType = ( value, displayValue, icon, verbPhrase ) => Object.freeze({ value, displayValue, icon, verbPhrase });
 
 const PARTICIPANT_TYPE = Object.freeze({
-  //target cannot be UNSIGNED but can be UNSIGNED_TARGET (special value)
-  UNSIGNED: pptType('unsigned', '–',
-    '<i class="material-icons">remove</i>', 'interacts with'),
-  // unsigned target only indicates the target of an interaction; not meant for ui display
-  UNSIGNED_TARGET: pptType('unsigned target', '–',
-    '<i class="material-icons">remove</i>', 'affects'),
-  POSITIVE: pptType('positive', '→',
-    '<i class="material-icons">arrow_forward</i>', 'positively affects'),
-  NEGATIVE: pptType('negative', '⊣',
-    '<i class="material-icons icon-rot-90">title</i>', 'negatively affects')
+  UNSIGNED: pptType('unsigned', 'unsigned', 'icon icon-arrow-unsigned', 'interacts with'),
+  POSITIVE: pptType('positive', 'positive', 'icon icon-arrow-positive', 'activates'),
+  NEGATIVE: pptType('negative', 'negative', 'icon icon-arrow-negative', 'inhibits')
 });
 
 //pptType objects array

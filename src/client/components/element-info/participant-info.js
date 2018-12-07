@@ -3,6 +3,7 @@ const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
 const uuid = require('uuid');
 const { animateDomForEdit } = require('../animate');
+const { PARTICIPANT_TYPES } = require('../../../model/element/participant-type');
 
 class ParticipantInfo extends React.Component {
   constructor( props ){
@@ -26,6 +27,7 @@ class ParticipantInfo extends React.Component {
     intn.participants().forEach( retypeToNull );
 
     intn.participantType( ppt, type );
+    intn.unassociate(); // if we change the arrow, we can't guarantee the assoc is compatible anymore
 
     this.setState({ pptType: type });
   }
@@ -42,11 +44,7 @@ class ParticipantInfo extends React.Component {
       let radioName = 'participant-info-type-radioset-' + ppt.id();
       let radiosetChildren = [];
 
-      intn.PARTICIPANT_TYPES.forEach( type => {
-        if( !intn.association().allowedParticipantTypes().some( t => t.value === type.value ) ){
-          return; // ignore unsupported ppt types for the interaction type
-        }
-
+      PARTICIPANT_TYPES.forEach( type => {
         let radioId = 'participant-info-type-radioset-item-' + uuid();
         let checked = this.state.pptType.value === type.value;
 
@@ -67,9 +65,10 @@ class ParticipantInfo extends React.Component {
         }) );
 
         radiosetChildren.push( h('label.participant-info-type-label', {
-          htmlFor: radioId,
-          dangerouslySetInnerHTML: { __html: type.icon }
-        }) );
+          htmlFor: radioId
+        }, [
+          h('i', { className: type.icon })
+        ]) );
       } );
 
       children.push( h('div.radioset.participant-info-type-radioset', radiosetChildren) );

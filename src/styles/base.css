@@ -323,16 +323,18 @@ button {
   width: 1em;
   height: 1em;
   background-size: contain;
+}
 
-  &.icon-spinner {
-    transform: translate3d(0, 0, 0);
-    background-image: url('./image/spinner.svg');
-    animation: spin 750ms infinite linear;
-  }
+.icon-rot-15 {
+  transform: rotate(30deg);
+}
 
-  &.icon-logo {
-    background-image: url('./image/logo.svg');
-  }
+.icon-rot-30 {
+  transform: rotate(30deg);
+}
+
+.icon-rot-45 {
+  transform: rotate(45deg);
 }
 
 .icon-rot-90 {
@@ -347,8 +349,16 @@ button {
   transform: rotate(270deg);
 }
 
-.icon-rot-45 {
-  transform: rotate(45deg);
+.icon-rot-315 {
+  transform: rotate(315deg);
+}
+
+.icon-rot-330 {
+  transform: rotate(330deg);
+}
+
+.icon-rot-345 {
+  transform: rotate(345deg);
 }
 
 h1,

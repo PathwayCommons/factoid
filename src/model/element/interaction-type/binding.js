@@ -6,6 +6,12 @@ const { BIOPAX_TEMPLATE_TYPE } = require('./biopax-type');
 const VALUE = 'binding';
 const DISPLAY_VALUE = 'Binding';
 
+const allowedParticipantTypes = () => {
+  const T = PARTICIPANT_TYPE;
+
+  return [ T.UNSIGNED ];
+};
+
 class Binding extends InteractionType {
   constructor( intn ){
     super( intn );
@@ -15,10 +21,12 @@ class Binding extends InteractionType {
     return !this.isSigned() && Binding.isAllowedForInteraction(this.interaction);
   }
 
-  allowedParticipantTypes(){
-    const T = PARTICIPANT_TYPE;
+  static allowedParticipantTypes(){
+    return allowedParticipantTypes();
+  }
 
-    return [T.UNSIGNED];
+  allowedParticipantTypes(){
+    return allowedParticipantTypes();
   }
 
   static isAllowedForInteraction( intn ){
@@ -39,7 +47,7 @@ class Binding extends InteractionType {
   }
 
   toString(){
-    return super.toString('binds');
+    return super.toString('binds with');
   }
 
   static get value(){ return VALUE; }

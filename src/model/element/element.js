@@ -15,8 +15,6 @@ const DEFAULTS = Object.freeze({
 
 const sanitizePosition = pos => _.pick( pos, _.keys( DEFAULTS.position ) );
 
-const { ELEMENT_TYPES, ELEMENT_TYPE } = require('./element-type');
-
 /**
 A generic biological element of no specific type
 
@@ -25,12 +23,6 @@ This allows for reading and writing on the DB and keeping the object synched
 with remote updates.
 */
 class Element {
-  static get TYPES(){ return ELEMENT_TYPES; }
-  get TYPES(){ return ELEMENT_TYPES; }
-
-  static get TYPE(){ return ELEMENT_TYPE; }
-  get TYPE(){ return ELEMENT_TYPE; }
-
   constructor( opts = {} ){
     EventEmitterMixin.call( this ); // defines this.emitter
 

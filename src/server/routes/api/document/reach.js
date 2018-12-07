@@ -270,7 +270,7 @@ module.exports = {
                 return PARTICIPANT_TYPE.NEGATIVE;
               }
 
-              return PARTICIPANT_TYPE.UNSIGNED_TARGET;
+              return PARTICIPANT_TYPE.UNSIGNED;
             };
 
             let attachTargetGroup = entry => {

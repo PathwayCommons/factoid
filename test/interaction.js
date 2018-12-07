@@ -5,6 +5,8 @@ let Syncher = require('../src/model/syncher');
 let ElementFactory = require('../src/model/element/factory');
 let Entity = require('../src/model/element/entity');
 let Interaction = require('../src/model/element/interaction');
+let { PARTICIPANT_TYPE, PARTICIPANT_TYPES } = require('../src/model/element/participant-type');
+let { INTERACTION_TYPES, INTERACTION_TYPE } = require('../src/model/element/interaction-type');
 let MockSocket = require('./mock/socket');
 let MockCache = require('./mock/cache');
 let TableUtil = require('./util/table');
@@ -556,10 +558,10 @@ describe('Interaction', function(){
       } );
     });
 
-    let isNotUnsigned = type => type.value !== Interaction.PARTICIPANT_TYPE.UNSIGNED.value;
+    let isNotUnsigned = type => type.value !== PARTICIPANT_TYPE.UNSIGNED.value;
 
-    Interaction.ASSOCIATIONS.forEach( intnType => {
-      Interaction.PARTICIPANT_TYPES.filter( isNotUnsigned ).forEach( pptType => {
+    INTERACTION_TYPES.forEach( intnType => {
+      PARTICIPANT_TYPES.filter( isNotUnsigned ).forEach( pptType => {
         it(`sets interaction type as ${intnType.value}:${pptType.value}`, function(){
           return Promise.resolve().then( () => {
             return intnC1.add( entC1 );
@@ -573,7 +575,7 @@ describe('Interaction', function(){
             return intnC1.complete();
           } ).then( () => {
             expect( intnC1.association().value ).to.equal( intnType.value );
-            expect( intnC1.association().isPositive() ).to.equal( pptType.value === Interaction.PARTICIPANT_TYPE.POSITIVE.value );
+            expect( intnC1.association().isPositive() ).to.equal( pptType.value === PARTICIPANT_TYPE.POSITIVE.value );
             expect( intnC1.association().getTarget() ).to.equal(entC1);
             expect( intnC1.association().getTarget().id() ).to.equal( entC1.id() );
           } );
@@ -588,13 +590,13 @@ describe('Interaction', function(){
       } ).then( () => {
         return intnC1.add( ent2C1 );
       } ).then( () => {
-        return intnC1.associate( Interaction.ASSOCIATION.TRANSCRIPTION_TRANSLATION );
+        return intnC1.associate( INTERACTION_TYPE.TRANSCRIPTION_TRANSLATION );
       } ).then( () => {
-        return intnC1.association().setParticipantAs( entC1, Interaction.PARTICIPANT_TYPE.POSITIVE );
+        return intnC1.association().setParticipantAs( entC1, PARTICIPANT_TYPE.POSITIVE );
       } ).then( () => {
         return intnC1.complete();
       } ).then( () => {
-        expect( intnC1.association().value ).to.equal( Interaction.ASSOCIATION.TRANSCRIPTION_TRANSLATION.value );
+        expect( intnC1.association().value ).to.equal( INTERACTION_TYPE.TRANSCRIPTION_TRANSLATION.value );
         expect( intnC1.association().isPositive() ).to.be.true;
         expect( intnC1.association().getTarget() ).to.equal(entC1);
         expect( intnC1.association().getTarget().id() ).to.equal( entC1.id() );

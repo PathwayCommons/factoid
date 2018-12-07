@@ -3,8 +3,9 @@ const _ = require('lodash');
 const { tryPromise } = require('../../../util');
 const dirtyEvents = ['remoteassociate', 'remoteretype'];
 const EntityForm = require('./entity-form.js');
-const Interaction = require('../../../model/element/interaction');
 const h = require('react-hyperscript');
+const { INTERACTION_TYPES, INTERACTION_TYPE } = require('../../../model/element/interaction-type');
+const { PARTICIPANT_TYPES, getPptTypeByVal } = require('../../../model/element/participant-type');
 
 class InteractionForm extends DirtyComponent {
 
@@ -70,22 +71,24 @@ class InteractionForm extends DirtyComponent {
   }
 
   updateActivationInhibition(val){
+    let intn = this.data.interaction;
+    let assoc = intn.association();
+    let newPptType = getPptTypeByVal(val);
+    let resetNeeded = !this.isInteractionTypeAllowedForSign(assoc, newPptType);
     let rEnt = this.getOutputParticipant();
-    let assoc = this.data.interaction.association();
-    let setPptType = () => {
-      assoc.setParticipantAs( rEnt, Interaction.getPptTypeByVal(val));
-    };
+    let setPptType = () => assoc.setParticipantAs(rEnt, newPptType);
+    let resetIntnType = () => resetNeeded ? this.updateInteractionAssociation(INTERACTION_TYPE.INTERACTION) : Promise.resolve();
     let complete = () => this.completeIfReady();
     let dirty = () => this.dirty();
 
-    return tryPromise( setPptType ).then( complete ).then( dirty );
+    return Promise.all([ setPptType(), resetIntnType() ]).then( complete ).then( dirty );
   }
 
   getModificationType(){
     return this.data.interaction.association().value;
   }
 
-  updateModificationType(val){
+  updateInteractionAssociation(val){
     let associate = () => this.data.interaction.associate(val);
     let complete = () => this.completeIfReady();
     let dirty = () => this.dirty();
@@ -93,64 +96,43 @@ class InteractionForm extends DirtyComponent {
     return tryPromise(associate).then(complete).then(dirty);
   }
 
+  isInteractionTypeAllowedForSign(intnType, sign){
+    return intnType.allowedParticipantTypes().some(at => at.value === sign.value);
+  }
+
   render(){
     let intn = this.data.interaction;
-    let lEnt = this.getInputParticipant(); //or the first
-    let rEnt = this.getOutputParticipant();//or the second
+    let lEnt = this.getInputParticipant(); // or the first
+    let rEnt = this.getOutputParticipant(); // or the second
     let modVal = this.getModificationType();
-    let actVal =  intn.association().getSignValue();
-    const SIG = Interaction.PARTICIPANT_TYPE;
-    const ASS = Interaction.ASSOCIATION;
+    let sign = intn.association().getSign();
+    let actVal =  sign.value;
 
     return h('div.form-interaction', [
       h(EntityForm,
         { entity: lEnt, tooltipContent:'Name or ID', document: this.data.document }),
-      h('select.form-options', {id:('activation-'+ intn.id()), value: actVal,
+      h('select.form-options.form-verb-phrase', {id:('activation-'+ intn.id()), value: actVal,
         onChange: e => {
           this.updateActivationInhibition(e.target.value);
         }},
-        Interaction.PARTICIPANT_TYPES
-          .filter(p => p != SIG.UNSIGNED_TARGET) //except unsupported (e.g., by biopax converter)
-          .map(ppt => h('option', { value: ppt.value}, ppt.verb))
+        PARTICIPANT_TYPES
+          .map(ppt => h('option', { value: ppt.value}, ppt.verbPhrase.toLowerCase()))
       ),
       h(EntityForm,
         { entity: rEnt, tooltipContent:'Name or ID', document: this.data.document }),
       h('span', 'via'),
-      h('select.form-options',
-        {id:('modification-'+ intn.id()), value: modVal,
-          onChange: e => {this.updateModificationType(e.target.value);}
+      h('select.form-options.form-post-phrase',
+        {
+          id: 'modification-' + intn.id(),
+          value: modVal,
+          onChange: e => this.updateInteractionAssociation(e.target.value)
         },
-        [
-          {h: h('option', { value: ASS.BINDING.value},
-              ASS.BINDING.displayValue), actVals: [SIG.UNSIGNED.value]},
-          {h: h('option', { value: ASS.PHOSPHORYLATION.value },
-              ASS.PHOSPHORYLATION.displayValue),
-            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
-          {h: h('option', { value: ASS.METHYLATION.value },
-              ASS.METHYLATION.displayValue),
-            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
-          {h: h('option', { value: ASS.UBIQUITINATION.value },
-              ASS.UBIQUITINATION.displayValue),
-            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
-          {h: h('option', { value: ASS.DEPHOSPHORYLATION.value },
-              ASS.DEPHOSPHORYLATION.displayValue),
-            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
-          {h: h('option', { value: ASS.DEMETHYLATION.value },
-              ASS.DEMETHYLATION.displayValue),
-            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
-          {h: h('option', { value: ASS.DEUBIQUITINATION.value },
-              ASS.DEUBIQUITINATION.displayValue),
-            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
-          {h: h('option', { value: ASS.TRANSCRIPTION_TRANSLATION.value },
-              ASS.TRANSCRIPTION_TRANSLATION.displayValue),
-            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
-          {h: h('option', { value: ASS.MODIFICATION.value },
-              ASS.MODIFICATION.displayValue),
-            actVals: [SIG.POSITIVE.value, SIG.NEGATIVE.value]},
-          {h: h('option', { value: ASS.INTERACTION.value },
-              ASS.INTERACTION.displayValue),
-            actVals: [SIG.UNSIGNED.value, SIG.POSITIVE.value, SIG.NEGATIVE.value]}
-        ].filter(o => o.actVals.indexOf(actVal)>-1).map(o => o.h))
+        (
+          INTERACTION_TYPES
+          .filter(t => this.isInteractionTypeAllowedForSign(t, sign))
+          .map(t => h('option', { value: t.value }, t.displayValue.toLowerCase()))
+        )
+      )
       //TODO: also use participants for filtering; e.g., any chemical - show INTERACTION only, etc.
     ]);
   }

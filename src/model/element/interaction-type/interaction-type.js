@@ -4,6 +4,12 @@ const { PARTICIPANT_TYPE } = require('../participant-type');
 const VALUE = 'unset';
 const DISPLAY_VALUE = 'Unset';
 
+const allowedParticipantTypes = () => { // i.e. settable by the user
+  const T = PARTICIPANT_TYPE;
+
+  return [ T.UNSIGNED, T.POSITIVE, T.NEGATIVE ];
+};
+
 // abstract base class
 class InteractionType {
   constructor( interaction ){
@@ -14,8 +20,12 @@ class InteractionType {
     this.interaction = interaction;
   }
 
-  allowedParticipantTypes(){ // i.e. settable by the user
-    return [ PARTICIPANT_TYPE.UNSIGNED, PARTICIPANT_TYPE.POSITIVE, PARTICIPANT_TYPE.NEGATIVE ];
+  static allowedParticipantTypes(){
+    return allowedParticipantTypes();
+  }
+
+  allowedParticipantTypes(){
+    return allowedParticipantTypes();
   }
 
   has( pptType ){
@@ -30,24 +40,20 @@ class InteractionType {
     return this.has( PARTICIPANT_TYPE.NEGATIVE );
   }
 
-  isUnsignedTarget(){
-    return this.has( PARTICIPANT_TYPE.UNSIGNED_TARGET );
-  }
-
   isSigned(){
     return this.isPositive() || this.isNegative();
   }
 
-  getSignValue() {
-    let value =  PARTICIPANT_TYPE.UNSIGNED.value;
-    if (this.isNegative())
-      value = PARTICIPANT_TYPE.NEGATIVE.value;
-    else if (this.isPositive())
-      value = PARTICIPANT_TYPE.POSITIVE.value;
-    else if (this.isUnsignedTarget())
-      value = PARTICIPANT_TYPE.UNSIGNED_TARGET.value;
+  getSign() {
+    let T = PARTICIPANT_TYPE;
 
-    return value;
+    if( this.isNegative() ){
+      return T.NEGATIVE;
+    } else if ( this.isPositive() ){
+      return T.POSITIVE;
+    } else {
+      return T.UNSIGNED;
+    }
   }
 
   isComplete(){
@@ -79,7 +85,7 @@ class InteractionType {
     } else if( this.isPositive() ){
       return this.setParticipantAs( ppt, PARTICIPANT_TYPE.POSITIVE );
     } else {
-      return this.setParticipantAs( ppt, PARTICIPANT_TYPE.UNSIGNED_TARGET );
+      throw new Error(`Can not set target of unsigned/undirected interaction`);
     }
   }
 
@@ -95,35 +101,30 @@ class InteractionType {
     throw new Error(`Abstract method toBiopaxTemplate() is not overridden for interaction type of ${this.value}`);
   }
 
-  toString(verbPhrase, pref = '', post = ''){
+  toString(verbPhrase, post = ''){
     let src, tgt;
 
-    if(this.isSigned()) {
-      src = this.getSource();
-      tgt = this.getTarget();
-      if(!src || !tgt) //any null or undefined
+    // covers cases: positive, negative, unsigned-target
+    src = this.getSource();
+    tgt = this.getTarget();
+
+    if( !src || !tgt ){
+      if( this.isSigned() ){
         throw new Error(`Source or target is undefined for signed interaction type ${this.value}`);
-    } else { //currently, unsigned also means undirected (signed - always directed, directed - signed)
-      let ppts = this.interaction.participants();
-      src = ppts[0];
-      tgt = ppts[1];
+      }
+
+      // fall back on unordered list
+      [src, tgt] = this.interaction.participants();
     }
 
-    if (!verbPhrase) {
-      if (this.isPositive())
-        verbPhrase = PARTICIPANT_TYPE.POSITIVE.verb;
-      else if (this.isNegative())
-        verbPhrase = PARTICIPANT_TYPE.NEGATIVE.verb;
-      else if (this.isUnsignedTarget())
-        verbPhrase = PARTICIPANT_TYPE.UNSIGNED_TARGET.verb;
-      else
-        verbPhrase = PARTICIPANT_TYPE.UNSIGNED.verb;
+    if( !verbPhrase ){
+      verbPhrase = this.getSign().verbPhrase;
     }
 
     let srcName = src.name() || '(?)';
     let tgtName = tgt.name() || '(?)';
 
-    return `${srcName} ${verbPhrase} ${pref} ${tgtName} ${post}`;
+    return `${srcName} ${verbPhrase} ${tgtName} ${post}`;
   }
 
   static isAllowedForInteraction( intn ){ // eslint-disable-line no-unused-vars

@@ -120,7 +120,7 @@ class Editor extends DataComponent {
 
     let bus = new EventEmitter();
 
-    bus.on('drawtoggle', toggle => this.toggleDrawMode(toggle));
+    bus.on('drawtoggle', (toggle, type) => this.toggleDrawMode(toggle, type));
     bus.on('addelement', data => this.addElement( data ));
     bus.on('remove', docEl => this.remove( docEl ));
 

@@ -6,7 +6,7 @@ const isNonNil = x => x != null;
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const path = require('path');
 
-const envVars = ['NODE_ENV', 'PC_URL', 'BASE_URL', 'PC_LINK_BASE_URL'];
+const envVars = ['NODE_ENV', 'PC_URL', 'BASE_URL'];
 
 // dependencies that we need to babelify ourselves
 const unbabelifiedDependencies = [

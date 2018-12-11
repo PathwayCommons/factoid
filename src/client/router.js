@@ -78,6 +78,17 @@ let routes = [
     }
   },
   {
+    path: '/tech-demo',
+    render: () => {
+      return h( DebugDocumentSeeder, {
+        title: 'Technical demo',
+        description: 'Explore the technology behind Factoid in depth.',
+        editorSectionText: 'Choose editor ',
+        techDemo: true
+      } );
+    }
+  },
+  {
     path: '/form/:id',
     render: props => {
       let { id } = props.match.params;

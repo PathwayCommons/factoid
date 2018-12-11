@@ -47,6 +47,12 @@ class Home extends Component {
                 className: 'plain-link',
                 to: '/new'
               }, 'Or try the Factoid journal publisher portal')
+            ]),
+            h('p', [
+              h(Link, {
+                className: 'plain-link',
+                to: '/tech-demo'
+              }, 'Or learn more about the technology behind Factoid')
             ])
           ])
         ])

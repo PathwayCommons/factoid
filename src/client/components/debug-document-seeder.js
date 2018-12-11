@@ -93,11 +93,22 @@ class DebugDocumentSeeder extends React.Component {
   }
 
   render(){
-    let { documentJson, reachResponse, text } = this.state;
+    let {
+      documentJson,
+      reachResponse,
+      text
+    } = this.state;
+
+    let {
+      title = 'Textmining debug page',
+      description = 'This is a debug page for textmining.  It is for testing purposes only; it is not for users.  This page may be removed at any time.',
+      editorSectionText = 'Open editor ',
+      techDemo = false
+    } = this.props;
 
     let rootChildren = [
-      h('h1', 'Textmining debug page'),
-      h('p', 'This is a debug page for textmining.  It is for testing purposes only; it is not for users.  This page may be removed at any time.'),
+      h('h1', title),
+      h('p', description),
       h('label.debug-document-seeder-text-label', 'Document text'),
       h('textarea.debug-document-seeder-text', {
         onChange: e => this.setState({ text: e.target.value }),
@@ -119,23 +130,6 @@ class DebugDocumentSeeder extends React.Component {
     ];
 
     let resultChildren = [];
-
-    if( documentJson != null ){
-      resultChildren.push( h('div.debug-document-seeder-arrow', [
-        h('i.material-icons', 'arrow_downward')
-      ]) );
-
-      resultChildren.push( h('div.debug-document-seeder-result-title', [
-        h(Link, { target: '_blank', to: documentJson.privateUrl }, [
-          h('span', 'Open editor '),
-          h('i.material-icons', 'open_in_new')
-        ])
-      ]) );
-
-      resultChildren.push( h('div.debug-document-seeder-linkout', [
-        h(Linkout, { documentJson })
-      ]) );
-    }
 
     if( documentJson != null && reachResponse != null ){
       resultChildren.push( h('div.debug-document-seeder-result-title', [
@@ -172,21 +166,75 @@ class DebugDocumentSeeder extends React.Component {
         return { key, val };
       });
 
-      resultChildren.push( h('div.debug-document-seeder-textmining-params', [
-        h('h3', 'Request parameters'),
-        ...paramsArr.map(param => h('div.debug-document-seeder-textmining-param', [
-          h('label', param.key),
-          h(CopyField, { value: param.val })
-        ]))
-      ]) );
+      if( documentJson != null ){
+        let createFormLink = ( document ) => [ '/form', document.id, document.secret ].join('/');
+        let techDemoEditorChooser = h('div.debug-document-seeder-linkout', [
+          h('div.debug-editor-chooser', [
+            h('h3', 'One model, multiple views'),
+            h('p', 'Choose from a form-based or network editor to edit your Factoid document'),
+            h('div', [
+              h(Link, { className: 'plain-link', to: createFormLink( documentJson ), target: '_blank' }, 'Form Editor')
+            ]),
+            h('div', [ h('p', ' ')]),
+            h('div', [
+              h(Link, { className: 'plain-link', to: documentJson.privateUrl, target: '_blank' }, 'Network Editor')
+            ])
+          ])
 
-      resultChildren.push( h('div.debug-document-seeder-textmining-json', [
-        h('h3', 'Response JSON'),
-        h('pre.debug-document-seeder-textmining-json-body', JSON.stringify(reachResponse, null, 2))
-      ]) );
-    }
+        ]);
 
-    rootChildren.push( h('div.debug-document-seeder-result', resultChildren) );
+        resultChildren.push( h('div.debug-document-seeder-arrow', [
+          h('i.material-icons', 'arrow_downward')
+        ]) );
+
+        resultChildren.push( h('div.debug-document-seeder-result-title', [
+          h(Link, { target: '_blank', to: documentJson.privateUrl }, [
+            h('span', editorSectionText),
+            h('i.material-icons', 'open_in_new')
+          ])
+        ]) );
+
+
+        if( techDemo ){
+          resultChildren.push( techDemoEditorChooser );
+        } else {
+
+          resultChildren.push( h('div.debug-document-seeder-linkout', [
+            h(Linkout, { documentJson })
+          ]) );
+        }
+      }
+
+      if( !techDemo ){
+        resultChildren.push( h('div.debug-document-seeder-arrow', [
+          h('i.material-icons', 'arrow_downward')
+        ]) );
+
+
+        resultChildren.push( h('div.debug-document-seeder-result-title', [
+          h(Link, { target: '_blank', to: documentJson.privateUrl }, [
+            h('span', 'REACH API response'),
+            h('i.material-icons', 'open_in_new')
+          ])
+        ]) );
+
+        resultChildren.push( h('div.debug-document-seeder-textmining-params', [
+          h('h3', 'Request parameters'),
+          ...paramsArr.map(param => h('div.debug-document-seeder-textmining-param', [
+            h('label', param.key),
+            h(CopyField, { value: param.val })
+          ]))
+        ]) );
+
+        resultChildren.push( h('div.debug-document-seeder-textmining-json', [
+          h('h3', 'Response JSON'),
+          h('pre.debug-document-seeder-textmining-json-body', JSON.stringify(reachResponse, null, 2))
+        ]) );
+      }
+
+      rootChildren.push( h('div.debug-document-seeder-result', resultChildren) );
+
+      }
 
     return h('div.debug-document-seeder', rootChildren);
   }

@@ -22,3 +22,7 @@
   height: 10em;
   max-width: 100vw;
 }
+
+.debug-editor-chooser {
+  margin: 0.5em 0;
+}

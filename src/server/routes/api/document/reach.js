@@ -81,6 +81,7 @@ module.exports = {
       let getArgId = arg => arg.arg;
       let groundIsSame = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
       let elIsIntn = el => el.entries != null;
+      let contains = ( arr, str ) => arr.indexOf( str.toLowerCase() ) >= 0;
 
       let getSentenceText = id => {
         let f = getFrame(id);
@@ -169,11 +170,15 @@ module.exports = {
           'simple-chemical': 'chemical'
         };
 
-        let contains = ( arr, str ) => arr.indexOf( str.toLowerCase() ) >= 0;
+        const supportedGrounds = [
+          'uniprot',
+          'pubchem'
+        ];
+
         let type = frame.type;
         let typeIsSupported = supportedTypes[type] != null;
-        let supportedGrounds = ['uniprot', 'pubchem'];
         let ground = frame.xrefs != null ? frame.xrefs.find( ref => contains( supportedGrounds, ref.namespace ) ) : null;
+        // ground := {id, species, namespace}
         let isGrounded = ground != null;
 
         let org = !isGrounded ? null : Organism.fromName( ground.species );
@@ -219,156 +224,143 @@ module.exports = {
 
       // add interactions
       evtFrames.forEach( frame => {
-        let args = frame.arguments;
 
-        if( args.length === 2 ){
-          let argFrames = args.map( getArgId ).map( getFrame ).filter( frame => frame != null );
-          let argsAreEnts = argFrames.every( frameIsEntity );
-          let isControllerArg = arg => arg.type === 'controller';
-          let isControlledArg = arg => arg.type === 'controlled';
-          let argsAreControllerControlled = args.length === 2 && args.some( isControllerArg ) && args.some( isControlledArg );
-          let argsAreEntAndEvt = argFrames.every( frame => frameIsEntity(frame) || frameIsEvent(frame) );
-          let getEntryFromEl = el => el == null ? null : ({ id: el.id });
-          let isSingleArgEvt = frame => frameIsEvent(frame) && _.get(frame, ['arguments', 0, 'argument-type']) === 'entity';
-          let evtArg = frame.arguments.find( arg => isSingleArgEvt( getFrame( getArgId(arg) ) ) );
-          let haveEvtArg = evtArg != null;
-          let isBinaryCollapsible = argsAreEntAndEvt && argsAreControllerControlled && haveEvtArg;
-          let isProtein = ele => ele.type == 'protein' || ele.type === 'gene';
+        const eventArgs = frame.arguments;
+        const argFrames = eventArgs.map( getArgId ).map( getFrame ).filter( frame => frame != null );
+        const isControlType = frame.type === 'regulation' || frame.type === 'activation';
 
-          if( argsAreEnts || isBinaryCollapsible ){
-            let intn = {
-              id: uuid(),
-              type: 'interaction',
-              description: getSentenceText( frame.sentence )
-            };
+        if( isControlType ){
 
-            let elIdToFrameId = new Map();
-            let controllerId = argsAreControllerControlled ? getArgId( args.find( isControllerArg ) ) : null;
+          const controllerArg = eventArgs.find( arg => arg.type === 'controller' );
+          const controlledArg = eventArgs.find( arg => arg.type === 'controlled' );
+          const controlledFrame = getFrame( controlledArg.arg );
 
-            let getElAndSetMap = frame => {
-              let el = getElFromFrame( frame );
+          // Short circuit if either args do not consist of single participants
+          const nonBinaryArgTypes = new Set( ['complex', 'complex-assembly'] );
+          const controllerNonBinaryCollapsible = nonBinaryArgTypes.has( controllerArg['argument-type'] );
+          const controlledNonBinaryCollapsible = nonBinaryArgTypes.has( getFrame( controlledArg.arg )['type'] );
+          if( controllerNonBinaryCollapsible || controlledNonBinaryCollapsible ) return;
 
-              if ( el ) {
-                elIdToFrameId.set( el.id, frame['frame-id'] );
-              }
+          const elIdToFrameId = new Map();
+          const getEntryFromEl = el => el == null ? null : ({ id: el.id });
+          const isProtein = ele => ele.type == 'protein' || ele.type === 'gene';
+          const intn = {
+            id: uuid(),
+            type: 'interaction',
+            description: getSentenceText( frame.sentence )
+          };
 
-              return el;
-            };
+          let getElAndSetMap = frame => {
+            let el = getElFromFrame( frame );
 
-            let getTargetSign = () => {
-              let subtype = frame.subtype;
-
-              if ( !subtype ) {
-                return null;
-              }
-
-              if ( subtype.startsWith( 'positive' ) ) {
-                return PARTICIPANT_TYPE.POSITIVE;
-              }
-
-              if ( subtype.startsWith( 'negative' ) ) {
-                return PARTICIPANT_TYPE.NEGATIVE;
-              }
-
-              return PARTICIPANT_TYPE.UNSIGNED;
-            };
-
-            let attachTargetGroup = entry => {
-              let elFrameId = elIdToFrameId.get( entry.id );
-
-              // If the entry does not represent the controlled arg return directly
-              if ( !argsAreControllerControlled || elFrameId == controllerId ) {
-                return;
-              }
-
-              let targetSign = getTargetSign();
-
-              if ( targetSign ) {
-                entry.group = targetSign.value;
-              }
-
-              return entry;
-            };
-
-            let getAssociation = eles => {
-              let protCount = eles.filter( isProtein ).length;
-
-              // protein - protein
-              if ( protCount == 2 ) {
-                if ( isBinaryCollapsible ) {
-                  let type = getFrame( getArgId( evtArg ) ).subtype;
-
-                  switch ( type ) {
-                    case REACH_EVENT_TYPE.TRANSCRIPTION:
-                      return INTERACTION_TYPE.TRANSCRIPTION_TRANSLATION;
-                    case REACH_EVENT_TYPE.PHOSPHORYLATION:
-                      return INTERACTION_TYPE.PHOSPHORYLATION;
-                    case REACH_EVENT_TYPE.DEPHOSPHORYLATION:
-                      return INTERACTION_TYPE.DEPHOSPHORYLATION;
-                    case REACH_EVENT_TYPE.UBIQUITINATION:
-                      return INTERACTION_TYPE.UBIQUITINATION;
-                    case REACH_EVENT_TYPE.DEUBIQUITINATION:
-                      return INTERACTION_TYPE.DEUBIQUITINATION;
-                    case REACH_EVENT_TYPE.METHYLATION:
-                      return INTERACTION_TYPE.METHYLATION;
-                    case REACH_EVENT_TYPE.DEMETHYLATION:
-                      return INTERACTION_TYPE.DEMETHYLATION;
-                    case REACH_EVENT_TYPE.REGULATION:
-                      return INTERACTION_TYPE.INTERACTION;
-
-                  }
-                }
-              }
-              // protein - chemical
-              else if ( protCount == 1 ) {
-                if ( argsAreEnts ) {
-                  // more cases would be added in the future
-                  switch ( frame.type ) {
-                    case REACH_EVENT_TYPE.ACTIVATION:
-                      return INTERACTION_TYPE.INTERACTION;
-                  }
-                }
-              }
-
-              return INTERACTION_TYPE.INTERACTION;
-            };
-
-            let getEntityFrame = frame => {
-              if( frameIsEvent( frame ) ){
-                return getFrame( getArgId( frame.arguments[0] ) );
-              } else {
-                return frame;
-              }
-            };
-
-            let eles = (
-              argFrames.map( getEntityFrame )
-              .map( getElAndSetMap )
-              .filter( ele => ele != null )
-            );
-
-            intn.entries = eles.map( getEntryFromEl );
-
-            intn.entries.forEach( attachTargetGroup );
-
-            let assoc = getAssociation( eles );
-
-            if( assoc ){
-              intn.association = assoc.value;
-
-              let isDirected = intn.entries.filter( ent => ent.group != null ).length > 0;
-
-              // NB an interaction must have assoc/type + direction to be completed
-              if( isDirected ){
-                intn.completed = true;
-              }
+            if ( el ) {
+              elIdToFrameId.set( el.id, frame['frame-id'] );
             }
 
-            if( intn.entries.length >= 2 && intn.completed ){
-              addElement( intn, frame );
+            return el;
+          };
+
+          let getTargetSign = () => {
+            let subtype = frame.subtype;
+
+            if ( !subtype ) {
+              return null;
+            }
+
+            if ( subtype.startsWith( 'positive' ) ) {
+              return PARTICIPANT_TYPE.POSITIVE;
+            }
+
+            if ( subtype.startsWith( 'negative' ) ) {
+              return PARTICIPANT_TYPE.NEGATIVE;
+            }
+
+            return PARTICIPANT_TYPE.UNSIGNED;
+          };
+
+          let attachTargetGroup = entry => {
+            let elFrameId = elIdToFrameId.get( entry.id );
+
+            // If the entry does not represent the controlled arg return directly
+            // want controlled.
+            if ( elFrameId == controllerArg.arg ) {
+              return;
+            }
+
+            let targetSign = getTargetSign();
+
+            if ( targetSign ) {
+              entry.group = targetSign.value;
+            }
+
+            return entry;
+          };
+
+          let getAssociation = () => {
+
+            if ( frame.type === 'regulation' ){
+
+              let type = controlledFrame.subtype;
+
+              switch ( type ) {
+                case REACH_EVENT_TYPE.TRANSCRIPTION:
+                  return INTERACTION_TYPE.TRANSCRIPTION_TRANSLATION;
+                case REACH_EVENT_TYPE.PHOSPHORYLATION:
+                  return INTERACTION_TYPE.PHOSPHORYLATION;
+                case REACH_EVENT_TYPE.DEPHOSPHORYLATION:
+                  return INTERACTION_TYPE.DEPHOSPHORYLATION;
+                case REACH_EVENT_TYPE.UBIQUITINATION:
+                  return INTERACTION_TYPE.UBIQUITINATION;
+                case REACH_EVENT_TYPE.DEUBIQUITINATION:
+                  return INTERACTION_TYPE.DEUBIQUITINATION;
+                case REACH_EVENT_TYPE.METHYLATION:
+                  return INTERACTION_TYPE.METHYLATION;
+                case REACH_EVENT_TYPE.DEMETHYLATION:
+                  return INTERACTION_TYPE.DEMETHYLATION;
+              }
+
+            } else {
+              return INTERACTION_TYPE.INTERACTION;
+            }
+          };
+
+          let getEntityFrame = frame => {
+            if( frameIsEvent( frame ) ){
+              // 'simple' events can have varying arg cardinality and types
+              return getFrame( getArgId( frame.arguments.find( arg => arg.type === 'theme' ) ) );
+            } else {
+              return frame;
+            }
+          };
+
+          let eles = (
+            argFrames.map( getEntityFrame )
+            .map( getElAndSetMap )
+            .filter( ele => ele != null )
+          );
+
+          intn.entries = eles.map( getEntryFromEl );
+
+          intn.entries.forEach( attachTargetGroup );
+
+          let assoc = getAssociation( eles );
+
+          if( assoc ){
+            intn.association = assoc.value;
+
+            let isDirected = intn.entries.filter( ent => ent.group != null ).length > 0;
+
+            // NB an interaction must have assoc/type + direction to be completed
+            if( isDirected ){
+              intn.completed = true;
             }
           }
-        }
+
+          if( intn.entries.length >= 2 && intn.completed ){
+            addElement( intn, frame );
+          }
+
+        } // END if( isBinaryCollapsible )
       } );
 
       if( REMOVE_DISCONNECTED_ENTS ){

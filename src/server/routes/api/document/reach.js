@@ -18,13 +18,14 @@ const logger = require('../../../logger');
 const { REACH_URL } = require('../../../../config');
 const MERGE_ENTS_WITH_SAME_GROUND = true;
 const ALLOW_IMPLICIT_ORG_SPEC = true;
+const ONLY_BINARY_INTERACTIONS = true;
 const REMOVE_DISCONNECTED_ENTS = true;
 const REMOVE_UNGROUNDED_ENTS = false;
 const APPLY_GROUND = true;
 const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
 
 const REACH_EVENT_TYPE = Object.freeze({
-  TRANSCRIPTION: 'transcription',
+  REGULATION: 'regulation',
   PROTEIN_MODIFICATION: 'protein-modification',
   PHOSPHORYLATION: 'phosphorylation',
   DEPHOSPHORYLATION: 'dephosphorylation',
@@ -32,21 +33,56 @@ const REACH_EVENT_TYPE = Object.freeze({
   DEMETHYLATION: 'demethylation',
   UBIQUITINATION: 'ubiquitination',
   DEUBIQUITINATION: 'deubiquitination',
+  SUMOLYLATION: 'sumoylation',
+  DESUMOLYLATION: 'desumoylation',
+  GLYCOSYLATION: 'glycosylation',
+  DEGLYCOSYLATION: 'deglycosylation',
+  ACETYLATION: 'acetylation',
+  DEACETYLATION: 'deacetylation',
+  FARNESYLATION: 'farnesylation',
+  DEFARNESYLATION: 'defarnesylation',
+  RIBOSYLATION: 'ribosylation',
+  DERIBOSYLATION: 'deribosylation',
+  HYDROXYLATION: 'hydroxylation',
+  DEHYDROXYLATION: 'dehydroxylation',
+  HYDROLYSIS: 'hydrolysis',
+  DEHYDROLYSIS: 'dehydrolysis',
   COMPLEX_ASEMBLY: 'complex-assembly',
-  ACTIVATION: 'activation',
-  REGULATION: 'regulation'
+  TRANSLOCATION: 'translocation',
+  TRANSCRIPTION: 'transcription',
+  AMOUNT: 'amount',
+  ACTIVATION: 'activation'
 });
 
 const REACH_TO_FACTOID_MECHANISM = new Map([
-  [ REACH_EVENT_TYPE.TRANSCRIPTION, INTERACTION_TYPE.TRANSCRIPTION_TRANSLATION ],
   [ REACH_EVENT_TYPE.PHOSPHORYLATION, INTERACTION_TYPE.PHOSPHORYLATION ],
   [ REACH_EVENT_TYPE.DEPHOSPHORYLATION, INTERACTION_TYPE.DEPHOSPHORYLATION ],
   [ REACH_EVENT_TYPE.UBIQUITINATION, INTERACTION_TYPE.UBIQUITINATION ],
   [ REACH_EVENT_TYPE.DEUBIQUITINATION, INTERACTION_TYPE.DEUBIQUITINATION ],
   [ REACH_EVENT_TYPE.METHYLATION, INTERACTION_TYPE.METHYLATION ],
   [ REACH_EVENT_TYPE.DEMETHYLATION, INTERACTION_TYPE.DEMETHYLATION ],
-  [ REACH_EVENT_TYPE.ACTIVATION, INTERACTION_TYPE.INTERACTION ],
-  [ REACH_EVENT_TYPE.COMPLEX_ASEMBLY, INTERACTION_TYPE.BINDING ]
+  [ REACH_EVENT_TYPE.UBIQUITINATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DEUBIQUITINATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.SUMOLYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DESUMOLYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.GLYCOSYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DEGLYCOSYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.ACETYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DEACETYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.FARNESYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DEFARNESYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.RIBOSYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DERIBOSYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.HYDROXYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DEHYDROXYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.HYDROLYSIS, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DEHYDROLYSIS, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.TRANSLOCATION, INTERACTION_TYPE.INTERACTION ],
+  [ REACH_EVENT_TYPE.AMOUNT, INTERACTION_TYPE.AMOUNT ],
+  [ REACH_EVENT_TYPE.PROTEIN_MODIFICATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.TRANSCRIPTION, INTERACTION_TYPE.TRANSCRIPTION_TRANSLATION ],
+  [ REACH_EVENT_TYPE.COMPLEX_ASEMBLY, INTERACTION_TYPE.BINDING ],
+  [ REACH_EVENT_TYPE.ACTIVATION, INTERACTION_TYPE.INTERACTION ]
 ]);
 
 module.exports = {
@@ -89,7 +125,6 @@ module.exports = {
       let getFrame = id => framesMap.get( id );
       let getReachId = frame => frame['frame-id'];
       let addFrame = frame => framesMap.set( getReachId(frame), frame );
-      let getElFromFrame = frame => elementsReachMap.get( getReachId( frame ) );
       const argIsEvent = arg => arg['argument-type'] === 'event';
       const argIsComplex = arg => arg['argument-type'] === 'complex';
       const argIsEntity = arg => arg['argument-type'] === 'entity';
@@ -330,6 +365,15 @@ module.exports = {
           addElement( intn, frame );
         }
       } );
+
+      // filter 'duplicate' interactions based upon equal { entries, association }
+      // filter non-binary interactions
+
+      if( ONLY_BINARY_INTERACTIONS ) {
+        const binaryInts = elements.filter( elIsIntn ).filter( int => int.entries.length === 2 );
+        const entities = elements.filter( e => !elIsIntn( e ) );
+        elements = _.concat( entities, binaryInts );
+      }
 
       if( REMOVE_DISCONNECTED_ENTS ){
         let interactions = elements.filter( elIsIntn );

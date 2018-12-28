@@ -320,9 +320,10 @@ module.exports = {
 
         const entryFromEl = el => el == null ? null : ({ id: el.id });
         const getEntryByEntity = ( entity, subtype ) => {
+
           const el = elementsReachMap.get( getReachId( entity.record ) );
           const entry = entryFromEl( el );
-          if( subtype && isTargetArgType( entity.type ) ) entry.group = getTargetSign( subtype ).value;
+          if( entry && subtype && isTargetArgType( entity.type ) ) entry.group = getTargetSign( subtype ).value;
           return entry;
         };
 

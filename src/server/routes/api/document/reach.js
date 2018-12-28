@@ -321,7 +321,7 @@ module.exports = {
         const entryFromEl = el => el == null ? null : ({ id: el.id });
         const getEntryByEntity = ( entity, subtype ) => {
           const el = elementsReachMap.get( getReachId( entity.record ) );
-          const entry = entryFromEl( el );console.log(`subtype: ${subtype}`);
+          const entry = entryFromEl( el );
           if( subtype && isTargetArgType( entity.type ) ) entry.group = getTargetSign( subtype ).value;
           return entry;
         };
@@ -350,24 +350,12 @@ module.exports = {
           association: getMechanism( frame ).value
         };
 
-        let entities, subtype;
+        if( frame.type === REACH_EVENT_TYPE.REGULATION || frame.type === REACH_EVENT_TYPE.ACTIVATION || frame.type === REACH_EVENT_TYPE.COMPLEX_ASSEMBLY ){
 
-        if( frame.type === REACH_EVENT_TYPE.REGULATION || frame.type === REACH_EVENT_TYPE.ACTIVATION ){
-
-          const controllerEntities = getArgEntities( argByType( frame, 'controller' ) );
-          const controlledEntities = getArgEntities( argByType( frame, 'controlled' ) );
-          entities = _.concat( controllerEntities, controlledEntities );
-          subtype = frame.subtype;
-
-        } else if( frame.type === REACH_EVENT_TYPE.COMPLEX_ASSEMBLY ) {
-          entities =  _.flatten( frame.arguments.map( getArgEntities ) );
-          subtype = null;
-        }
-
-        intn.entries = entities.map( entity => getEntryByEntity( entity, subtype ) ).filter( e => e != null );
-        intn.completed = true;
-
-        if( intn.completed ){
+          intn.entries =  _.flatten( frame.arguments.map( getArgEntities ) )
+            .map( entity => getEntryByEntity( entity, frame.subtype ) )
+            .filter( e => e != null );
+          intn.completed = true;
           addElement( intn, frame );
         }
       }); // END evtFrames.forEach

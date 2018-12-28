@@ -25,15 +25,29 @@ const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
 
 const REACH_EVENT_TYPE = Object.freeze({
   TRANSCRIPTION: 'transcription',
+  PROTEIN_MODIFICATION: 'protein-modification',
   PHOSPHORYLATION: 'phosphorylation',
   DEPHOSPHORYLATION: 'dephosphorylation',
   METHYLATION: 'methylation',
   DEMETHYLATION: 'demethylation',
   UBIQUITINATION: 'ubiquitination',
   DEUBIQUITINATION: 'deubiquitination',
+  COMPLEX_ASEMBLY: 'complex-assembly',
   ACTIVATION: 'activation',
   REGULATION: 'regulation'
 });
+
+const REACH_TO_FACTOID_MECHANISM = new Map([
+  [ REACH_EVENT_TYPE.TRANSCRIPTION, INTERACTION_TYPE.TRANSCRIPTION_TRANSLATION ],
+  [ REACH_EVENT_TYPE.PHOSPHORYLATION, INTERACTION_TYPE.PHOSPHORYLATION ],
+  [ REACH_EVENT_TYPE.DEPHOSPHORYLATION, INTERACTION_TYPE.DEPHOSPHORYLATION ],
+  [ REACH_EVENT_TYPE.UBIQUITINATION, INTERACTION_TYPE.UBIQUITINATION ],
+  [ REACH_EVENT_TYPE.DEUBIQUITINATION, INTERACTION_TYPE.DEUBIQUITINATION ],
+  [ REACH_EVENT_TYPE.METHYLATION, INTERACTION_TYPE.METHYLATION ],
+  [ REACH_EVENT_TYPE.DEMETHYLATION, INTERACTION_TYPE.DEMETHYLATION ],
+  [ REACH_EVENT_TYPE.ACTIVATION, INTERACTION_TYPE.INTERACTION ],
+  [ REACH_EVENT_TYPE.COMPLEX_ASEMBLY, INTERACTION_TYPE.BINDING ]
+]);
 
 module.exports = {
   // TODO remove this function as reach should never need to be exposed directly
@@ -71,20 +85,22 @@ module.exports = {
       let evtFrames = _.get( res, ['events', 'frames'] ) || [];
       let senFrames = _.get( res, ['sentences', 'frames'] ) || [];
 
-      let frames = new Map();
-      let getFrame = id => frames.get( id );
+      let framesMap = new Map();
+      let getFrame = id => framesMap.get( id );
       let getReachId = frame => frame['frame-id'];
-      let addFrame = frame => frames.set( getReachId(frame), frame );
+      let addFrame = frame => framesMap.set( getReachId(frame), frame );
       let getElFromFrame = frame => elementsReachMap.get( getReachId( frame ) );
-      let frameIsEntity = frame => frame['frame-type'] === 'entity-mention';
-      let frameIsEvent = frame => frame['frame-type'] === 'event-mention';
-      let getArgId = arg => arg.arg;
+      const argIsEvent = arg => arg['argument-type'] === 'event';
+      const argIsComplex = arg => arg['argument-type'] === 'complex';
+      const argIsEntity = arg => arg['argument-type'] === 'entity';
+      const getArgId = arg => arg.arg;
+      const getArgIds = arg => _.values( arg.args );
       let groundIsSame = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
       let elIsIntn = el => el.entries != null;
       let contains = ( arr, str ) => arr.indexOf( str.toLowerCase() ) >= 0;
 
       let getSentenceText = id => {
-        let f = getFrame(id);
+        let f = getFrame( id );
         let i1 = _.get(f, ['start-pos', 'offset']);
         let i2 = _.get(f, ['end-pos', 'offset']);
 
@@ -225,157 +241,109 @@ module.exports = {
       // add interactions
       evtFrames.forEach( frame => {
 
-        const eventArgs = frame.arguments;
-        const argFrames = eventArgs.map( getArgId ).map( getFrame ).filter( frame => frame != null );
-        const isControlType = frame.type === 'regulation' || frame.type === 'activation';
+        const argByType = ( frame, type ) => frame.arguments.find( arg => arg.type === type  );
 
-        if( isControlType ){
+        const entityTemplate = arg => ({
+          type: arg.type,
+          record: getFrame( getArgId( arg ) )
+        });
 
-          const controllerArg = eventArgs.find( arg => arg.type === 'controller' );
-          const controlledArg = eventArgs.find( arg => arg.type === 'controlled' );
-          const controlledFrame = getFrame( controlledArg.arg );
+        // Traverse into the frame.
+        // Record the frame arguments.arg.type ('theme', 'site')
+        const traverseFrameEntities = frame => frame.arguments.map( entityTemplate );
 
-          // Short circuit if either args do not consist of single participants
-          const nonBinaryArgTypes = new Set( ['complex', 'complex-assembly'] );
-          const controllerNonBinaryCollapsible = nonBinaryArgTypes.has( controllerArg['argument-type'] );
-          const controlledNonBinaryCollapsible = nonBinaryArgTypes.has( getFrame( controlledArg.arg )['type'] );
-          if( controllerNonBinaryCollapsible || controlledNonBinaryCollapsible ) return;
+        const getArgEntities = arg => {
+          let entities = [];
 
-          const elIdToFrameId = new Map();
-          const getEntryFromEl = el => el == null ? null : ({ id: el.id });
-          const isProtein = ele => ele.type == 'protein' || ele.type === 'gene';
-          const intn = {
-            id: uuid(),
-            type: 'interaction',
-            description: getSentenceText( frame.sentence )
-          };
+          if ( argIsEvent( arg ) ){
+            entities = traverseFrameEntities( getFrame( getArgId( arg ) ) );
 
-          let getElAndSetMap = frame => {
-            let el = getElFromFrame( frame );
+          } else if( argIsEntity( arg ) ) {
+            entities.push( entityTemplate ( arg ) );
 
-            if ( el ) {
-              elIdToFrameId.set( el.id, frame['frame-id'] );
-            }
+          } else if( argIsComplex( arg ) ) { //no explicit reference to event
+            entities = getArgIds( arg ).map( entId => ({
+              type: arg.type,
+              record: getFrame( entId )
+            }));
+           }
+          return entities;
+        };
 
-            return el;
-          };
+        const getTargetSign = subtype => {
+          let sign = PARTICIPANT_TYPE.UNSIGNED;
 
-          let getTargetSign = () => {
-            let subtype = frame.subtype;
-
-            if ( !subtype ) {
-              return null;
-            }
-
-            if ( subtype.startsWith( 'positive' ) ) {
-              return PARTICIPANT_TYPE.POSITIVE;
-            }
-
-            if ( subtype.startsWith( 'negative' ) ) {
-              return PARTICIPANT_TYPE.NEGATIVE;
-            }
-
-            return PARTICIPANT_TYPE.UNSIGNED;
-          };
-
-          let attachTargetGroup = entry => {
-            let elFrameId = elIdToFrameId.get( entry.id );
-
-            // If the entry does not represent the controlled arg return directly
-            // want controlled.
-            if ( elFrameId == controllerArg.arg ) {
-              return;
-            }
-
-            let targetSign = getTargetSign();
-
-            if ( targetSign ) {
-              entry.group = targetSign.value;
-            }
-
-            return entry;
-          };
-
-          let getAssociation = () => {
-
-            if ( frame.type === 'regulation' ){
-
-              let type = controlledFrame.subtype;
-
-              switch ( type ) {
-                case REACH_EVENT_TYPE.TRANSCRIPTION:
-                  return INTERACTION_TYPE.TRANSCRIPTION_TRANSLATION;
-                case REACH_EVENT_TYPE.PHOSPHORYLATION:
-                  return INTERACTION_TYPE.PHOSPHORYLATION;
-                case REACH_EVENT_TYPE.DEPHOSPHORYLATION:
-                  return INTERACTION_TYPE.DEPHOSPHORYLATION;
-                case REACH_EVENT_TYPE.UBIQUITINATION:
-                  return INTERACTION_TYPE.UBIQUITINATION;
-                case REACH_EVENT_TYPE.DEUBIQUITINATION:
-                  return INTERACTION_TYPE.DEUBIQUITINATION;
-                case REACH_EVENT_TYPE.METHYLATION:
-                  return INTERACTION_TYPE.METHYLATION;
-                case REACH_EVENT_TYPE.DEMETHYLATION:
-                  return INTERACTION_TYPE.DEMETHYLATION;
-              }
-
-            } else {
-              return INTERACTION_TYPE.INTERACTION;
-            }
-          };
-
-          let getEntityFrame = frame => {
-            if( frameIsEvent( frame ) ){
-              // 'simple' events can have varying arg cardinality and types
-              return getFrame( getArgId( frame.arguments.find( arg => arg.type === 'theme' ) ) );
-            } else {
-              return frame;
-            }
-          };
-
-          let eles = (
-            argFrames.map( getEntityFrame )
-            .map( getElAndSetMap )
-            .filter( ele => ele != null )
-          );
-
-          intn.entries = eles.map( getEntryFromEl );
-
-          intn.entries.forEach( attachTargetGroup );
-
-          let assoc = getAssociation( eles );
-
-          if( assoc ){
-            intn.association = assoc.value;
-
-            let isDirected = intn.entries.filter( ent => ent.group != null ).length > 0;
-
-            // NB an interaction must have assoc/type + direction to be completed
-            if( isDirected ){
-              intn.completed = true;
-            }
+          if ( subtype.startsWith( 'positive' ) ) {
+            sign = PARTICIPANT_TYPE.POSITIVE;
+          } else if ( subtype.startsWith( 'negative' ) ) {
+            sign = PARTICIPANT_TYPE.NEGATIVE;
           }
+          return sign;
+        };
 
-          if( intn.entries.length >= 2 && intn.completed ){
-            addElement( intn, frame );
+        const entryFromEl = el => el == null ? null : ({ id: el.id });
+        const getEntryByEntity = ( entity, subtype ) => {
+          const el = elementsReachMap.get( getReachId( entity.record ) );
+          const entry = entryFromEl( el );
+          if( entity.type === 'theme' ) entry.group = getTargetSign( subtype ).value;
+          return entry;
+        };
+
+        const getSimpleMechanism = frame => frame.type === REACH_EVENT_TYPE.PROTEIN_MODIFICATION ? frame.subtype : frame.type;
+
+        const getMechanism = frame => {
+          let reachMech;
+          if( frame.type === REACH_EVENT_TYPE.REGULATION ){
+            const controlledFrame = getFrame( getArgId( argByType( frame, 'controlled' ) ) );
+            reachMech = getSimpleMechanism( controlledFrame );
+
+          } else if ( frame.type === REACH_EVENT_TYPE.ACTIVATION ) {
+            reachMech = REACH_EVENT_TYPE.ACTIVATION;
+
+          } else {
+            reachMech = getSimpleMechanism( frame );
           }
+          return REACH_TO_FACTOID_MECHANISM.get( reachMech );
+        };
 
-        } // END if( isBinaryCollapsible )
+        const intn = {
+          id: uuid(),
+          type: 'interaction',
+          description: getSentenceText( frame.sentence )
+        };
+
+        if( frame.type === REACH_EVENT_TYPE.REGULATION || frame.type === REACH_EVENT_TYPE.ACTIVATION ){
+
+          const controllerArg = argByType( frame, 'controller' );
+          const controlledArg = argByType( frame, 'controlled' );
+          const controllerEntities = getArgEntities( controllerArg );
+          const controlledEntities = getArgEntities( controlledArg );
+          const association = getMechanism( frame );
+
+          intn.entries = _.concat( controllerEntities, controlledEntities )
+            .map( entity => getEntryByEntity( entity, frame.subtype ) );
+          intn.association = association.value;
+          intn.completed = true;
+          addElement( intn, frame );
+        } // END if( isControlInteraction )
       } );
 
-      if( REMOVE_DISCONNECTED_ENTS ){
-        let interactions = elements.filter( elIsIntn );
-        let pptIds = ( () => {
-          let set = new Set();
 
-          interactions.forEach( intn => intn.entries.forEach( en => set.add( en.id ) ) );
+      //remove duplicates based upon { entries, association }
 
-          return set;
-        } )();
-        let elIsInSomeIntn = el => pptIds.has( el.id );
+      // if( REMOVE_DISCONNECTED_ENTS ){
+      //   let interactions = elements.filter( elIsIntn );
+      //   let pptIds = ( () => {
+      //     let set = new Set();
 
-        elements = elements.filter( el => elIsIntn(el) || elIsInSomeIntn(el) );
-      }
+      //     interactions.forEach( intn => intn.entries.forEach( en => set.add( en.id ) ) );
+
+      //     return set;
+      //   } )();
+      //   let elIsInSomeIntn = el => pptIds.has( el.id );
+
+      //   elements = elements.filter( el => elIsIntn(el) || elIsInSomeIntn(el) );
+      // }
 
       return tryPromise( () => {
         return Promise.all( groundPromises );

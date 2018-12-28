@@ -47,7 +47,7 @@ const REACH_EVENT_TYPE = Object.freeze({
   DEHYDROXYLATION: 'dehydroxylation',
   HYDROLYSIS: 'hydrolysis',
   DEHYDROLYSIS: 'dehydrolysis',
-  COMPLEX_ASEMBLY: 'complex-assembly',
+  COMPLEX_ASSEMBLY: 'complex-assembly',
   TRANSLOCATION: 'translocation',
   TRANSCRIPTION: 'transcription',
   AMOUNT: 'amount',
@@ -81,7 +81,7 @@ const REACH_TO_FACTOID_MECHANISM = new Map([
   [ REACH_EVENT_TYPE.AMOUNT, INTERACTION_TYPE.AMOUNT ],
   [ REACH_EVENT_TYPE.PROTEIN_MODIFICATION, INTERACTION_TYPE.MODIFICATION ],
   [ REACH_EVENT_TYPE.TRANSCRIPTION, INTERACTION_TYPE.TRANSCRIPTION_TRANSLATION ],
-  [ REACH_EVENT_TYPE.COMPLEX_ASEMBLY, INTERACTION_TYPE.BINDING ],
+  [ REACH_EVENT_TYPE.COMPLEX_ASSEMBLY, INTERACTION_TYPE.BINDING ],
   [ REACH_EVENT_TYPE.ACTIVATION, INTERACTION_TYPE.INTERACTION ]
 ]);
 
@@ -321,8 +321,8 @@ module.exports = {
         const entryFromEl = el => el == null ? null : ({ id: el.id });
         const getEntryByEntity = ( entity, subtype ) => {
           const el = elementsReachMap.get( getReachId( entity.record ) );
-          const entry = entryFromEl( el );
-          if( isTargetArgType( entity.type ) ) entry.group = getTargetSign( subtype ).value;
+          const entry = entryFromEl( el );console.log(`subtype: ${subtype}`);
+          if( subtype && isTargetArgType( entity.type ) ) entry.group = getTargetSign( subtype ).value;
           return entry;
         };
 
@@ -346,28 +346,33 @@ module.exports = {
         const intn = {
           id: uuid(),
           type: 'interaction',
-          description: getSentenceText( frame.sentence )
+          description: getSentenceText( frame.sentence ),
+          association: getMechanism( frame ).value
         };
+
+        let entities, subtype;
 
         if( frame.type === REACH_EVENT_TYPE.REGULATION || frame.type === REACH_EVENT_TYPE.ACTIVATION ){
 
-          const controllerArg = argByType( frame, 'controller' );
-          const controlledArg = argByType( frame, 'controlled' );
-          const controllerEntities = getArgEntities( controllerArg );
-          const controlledEntities = getArgEntities( controlledArg );
-          const association = getMechanism( frame );
+          const controllerEntities = getArgEntities( argByType( frame, 'controller' ) );
+          const controlledEntities = getArgEntities( argByType( frame, 'controlled' ) );
+          entities = _.concat( controllerEntities, controlledEntities );
+          subtype = frame.subtype;
 
-          intn.entries = _.concat( controllerEntities, controlledEntities )
-            .map( entity => getEntryByEntity( entity, frame.subtype ) )
-            .filter( e => e != null );
-          intn.association = association.value;
-          intn.completed = true;
+        } else if( frame.type === REACH_EVENT_TYPE.COMPLEX_ASSEMBLY ) {
+          entities =  _.flatten( frame.arguments.map( getArgEntities ) );
+          subtype = null;
+        }
+
+        intn.entries = entities.map( entity => getEntryByEntity( entity, subtype ) ).filter( e => e != null );
+        intn.completed = true;
+
+        if( intn.completed ){
           addElement( intn, frame );
         }
-      } );
+      }); // END evtFrames.forEach
 
       // filter 'duplicate' interactions based upon equal { entries, association }
-      // filter non-binary interactions
 
       if( ONLY_BINARY_INTERACTIONS ) {
         const binaryInts = elements.filter( elIsIntn ).filter( int => int.entries.length === 2 );

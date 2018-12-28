@@ -270,6 +270,8 @@ module.exports = {
           return entities;
         };
 
+        const targetArgTypes = new Set([ 'theme', 'controlled' ]);
+        const isTargetArgType = type => targetArgTypes.has( type );
         const getTargetSign = subtype => {
           let sign = PARTICIPANT_TYPE.UNSIGNED;
 
@@ -285,7 +287,7 @@ module.exports = {
         const getEntryByEntity = ( entity, subtype ) => {
           const el = elementsReachMap.get( getReachId( entity.record ) );
           const entry = entryFromEl( el );
-          if( entity.type === 'theme' ) entry.group = getTargetSign( subtype ).value;
+          if( isTargetArgType( entity.type ) ) entry.group = getTargetSign( subtype ).value;
           return entry;
         };
 
@@ -321,29 +323,27 @@ module.exports = {
           const association = getMechanism( frame );
 
           intn.entries = _.concat( controllerEntities, controlledEntities )
-            .map( entity => getEntryByEntity( entity, frame.subtype ) );
+            .map( entity => getEntryByEntity( entity, frame.subtype ) )
+            .filter( e => e != null );
           intn.association = association.value;
           intn.completed = true;
           addElement( intn, frame );
-        } // END if( isControlInteraction )
+        }
       } );
 
+      if( REMOVE_DISCONNECTED_ENTS ){
+        let interactions = elements.filter( elIsIntn );
+        let pptIds = ( () => {
+          let set = new Set();
 
-      //remove duplicates based upon { entries, association }
+          interactions.forEach( intn => intn.entries.forEach( en => set.add( en.id ) ) );
 
-      // if( REMOVE_DISCONNECTED_ENTS ){
-      //   let interactions = elements.filter( elIsIntn );
-      //   let pptIds = ( () => {
-      //     let set = new Set();
+          return set;
+        } )();
+        let elIsInSomeIntn = el => pptIds.has( el.id );
 
-      //     interactions.forEach( intn => intn.entries.forEach( en => set.add( en.id ) ) );
-
-      //     return set;
-      //   } )();
-      //   let elIsInSomeIntn = el => pptIds.has( el.id );
-
-      //   elements = elements.filter( el => elIsIntn(el) || elIsInSomeIntn(el) );
-      // }
+        elements = elements.filter( el => elIsIntn(el) || elIsInSomeIntn(el) );
+      }
 
       return tryPromise( () => {
         return Promise.all( groundPromises );

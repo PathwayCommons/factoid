@@ -4,4 +4,18 @@ function stringDistanceMetric(a, b){
   return 1 - dice(a, b);
 }
 
-module.exports = { stringDistanceMetric };
+function longestCommonPrefixLength(str1, str2){
+  var minL = Math.min(str1.length, str2.length);
+  let i = 0;
+  while( i < minL ) {
+    if ( str1[i] !== str2[i] ) {
+      break;
+    }
+
+    i++;
+  }
+
+  return i;
+}
+
+module.exports = { stringDistanceMetric, longestCommonPrefixLength };

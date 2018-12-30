@@ -55,6 +55,7 @@ const REACH_EVENT_TYPE = Object.freeze({
 });
 
 const REACH_TO_FACTOID_MECHANISM = new Map([
+  [ REACH_EVENT_TYPE.REGULATION, INTERACTION_TYPE.INTERACTION ],
   [ REACH_EVENT_TYPE.PHOSPHORYLATION, INTERACTION_TYPE.PHOSPHORYLATION ],
   [ REACH_EVENT_TYPE.DEPHOSPHORYLATION, INTERACTION_TYPE.DEPHOSPHORYLATION ],
   [ REACH_EVENT_TYPE.UBIQUITINATION, INTERACTION_TYPE.UBIQUITINATION ],
@@ -125,6 +126,7 @@ module.exports = {
       let getFrame = id => framesMap.get( id );
       let getReachId = frame => frame['frame-id'];
       let addFrame = frame => framesMap.set( getReachId(frame), frame );
+      const frameIsControlType = frame => frame.type === REACH_EVENT_TYPE.REGULATION || frame.type === REACH_EVENT_TYPE.ACTIVATION;
       const argIsEvent = arg => arg['argument-type'] === 'event';
       const argIsComplex = arg => arg['argument-type'] === 'complex';
       const argIsEntity = arg => arg['argument-type'] === 'entity';
@@ -277,32 +279,30 @@ module.exports = {
       evtFrames.forEach( frame => {
 
         const argByType = ( frame, type ) => frame.arguments.find( arg => arg.type === type  );
+        const entityTemplate = ( arg, type ) => ({ type, record: getFrame( getArgId( arg ) ) });
 
-        const entityTemplate = arg => ({
-          type: arg.type,
-          record: getFrame( getArgId( arg ) )
-        });
-
-        // Traverse into the frame.
         // Record the frame arguments.arg.type ('theme', 'site')
-        const traverseFrameEntities = frame => frame.arguments.map( entityTemplate );
+        const getEventArgEntities = arg => {
+          const eventFrame = getFrame( getArgId( arg ) );
+          if ( frameIsControlType( eventFrame ) ){
+            return entityTemplate( argByType( eventFrame, 'controller' ), arg.type );
+          } else {
+            return eventFrame.arguments.map( arg => entityTemplate( arg, arg.type ) );
+          }
+        };
 
+        // How to handle nested? Traverse once to fetch either the Simple event theme or the Nested event controller
         const getArgEntities = arg => {
-          let entities = [];
+          if ( argIsEntity( arg ) ) {
+            return entityTemplate ( arg );
 
-          if ( argIsEvent( arg ) ){
-            entities = traverseFrameEntities( getFrame( getArgId( arg ) ) );
+          } else if ( argIsComplex( arg ) ) {
+            return getArgIds( arg ).map( themeId => entityTemplate( { arg: themeId }, arg.type ) );
 
-          } else if( argIsEntity( arg ) ) {
-            entities.push( entityTemplate ( arg ) );
-
-          } else if( argIsComplex( arg ) ) { //no explicit reference to event
-            entities = getArgIds( arg ).map( entId => ({
-              type: arg.type,
-              record: getFrame( entId )
-            }));
-           }
-          return entities;
+          }
+          else if ( argIsEvent( arg ) ){
+            return getEventArgEntities( arg );
+          }
         };
 
         const targetArgTypes = new Set([ 'theme', 'controlled' ]);
@@ -320,7 +320,6 @@ module.exports = {
 
         const entryFromEl = el => el == null ? null : ({ id: el.id });
         const getEntryByEntity = ( entity, subtype ) => {
-
           const el = elementsReachMap.get( getReachId( entity.record ) );
           const entry = entryFromEl( el );
           if( entry && subtype && isTargetArgType( entity.type ) ) entry.group = getTargetSign( subtype ).value;
@@ -332,8 +331,9 @@ module.exports = {
         const getMechanism = frame => {
           let reachMech;
           if( frame.type === REACH_EVENT_TYPE.REGULATION ){
+            // Beware of nested ?
             const controlledFrame = getFrame( getArgId( argByType( frame, 'controlled' ) ) );
-            reachMech = getSimpleMechanism( controlledFrame );
+            reachMech = controlledFrame.type === REACH_EVENT_TYPE.REGULATION ? REACH_EVENT_TYPE.REGULATION : getSimpleMechanism( controlledFrame );
 
           } else if ( frame.type === REACH_EVENT_TYPE.ACTIVATION ) {
             reachMech = REACH_EVENT_TYPE.ACTIVATION;
@@ -341,21 +341,28 @@ module.exports = {
           } else {
             reachMech = getSimpleMechanism( frame );
           }
-          return REACH_TO_FACTOID_MECHANISM.get( reachMech );
+          let out =  REACH_TO_FACTOID_MECHANISM.get( reachMech );
+          if( !out ) {
+            console.log(`getMechanism !out - frame: ${JSON.stringify(frame, null, 2)}`);
+            console.log(`getMechanism !out - reachMech: ${JSON.stringify(reachMech, null, 2)}`);
+          }
+          return out;
         };
 
         const intn = {
           id: uuid(),
           type: 'interaction',
-          description: getSentenceText( frame.sentence ),
-          association: getMechanism( frame ).value
+          description: getSentenceText( frame.sentence )
         };
 
-        if( frame.type === REACH_EVENT_TYPE.REGULATION || frame.type === REACH_EVENT_TYPE.ACTIVATION || frame.type === REACH_EVENT_TYPE.COMPLEX_ASSEMBLY ){
+        if( frameIsControlType( frame ) || frame.type === REACH_EVENT_TYPE.COMPLEX_ASSEMBLY ){
 
           intn.entries =  _.flatten( frame.arguments.map( getArgEntities ) )
             .map( entity => getEntryByEntity( entity, frame.subtype ) )
             .filter( e => e != null );
+
+          intn.association = getMechanism( frame ).value;
+          intn.frameType = frame.type;
           intn.completed = true;
           addElement( intn, frame );
         }
@@ -363,11 +370,11 @@ module.exports = {
 
       // filter 'duplicate' interactions based upon equal { entries, association }
 
-      if( ONLY_BINARY_INTERACTIONS ) {
-        const binaryInts = elements.filter( elIsIntn ).filter( int => int.entries.length === 2 );
-        const entities = elements.filter( e => !elIsIntn( e ) );
-        elements = _.concat( entities, binaryInts );
-      }
+      // if( ONLY_BINARY_INTERACTIONS ) {
+      //   const binaryInts = elements.filter( elIsIntn ).filter( int => int.entries.length === 2 );
+      //   const entities = elements.filter( e => !elIsIntn( e ) );
+      //   elements = _.concat( entities, binaryInts );
+      // }
 
       if( REMOVE_DISCONNECTED_ENTS ){
         let interactions = elements.filter( elIsIntn );

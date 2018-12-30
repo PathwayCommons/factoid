@@ -220,6 +220,7 @@ module.exports = {
         let supportedTypes = {
           'protein': 'protein',
           'gene': 'protein',
+          'gene-or-gene-product': 'protein',
           'simple-chemical': 'chemical'
         };
 
@@ -294,7 +295,7 @@ module.exports = {
         // How to handle nested? Traverse once to fetch either the Simple event theme or the Nested event controller
         const getArgEntities = arg => {
           if ( argIsEntity( arg ) ) {
-            return entityTemplate ( arg );
+            return entityTemplate ( arg, arg.type );
 
           } else if ( argIsComplex( arg ) ) {
             return getArgIds( arg ).map( themeId => entityTemplate( { arg: themeId }, arg.type ) );
@@ -352,7 +353,9 @@ module.exports = {
         if( frameIsControlType( frame ) || frame.type === REACH_EVENT_TYPE.COMPLEX_ASSEMBLY ){
 
           intn.entries =  _.flatten( frame.arguments.map( getArgEntities ) )
+            // .map( entity => { console.log(`entity: ${entity.record.text} (${entity.type})`); return entity; } )
             .map( entity => getEntryByEntity( entity, frame.subtype ) )
+            // .map( entry => { console.log(`entry: ${JSON.stringify(entry, null, 2)}`); return entry; } )
             .filter( e => e != null );
 
           const mechanism =  getMechanism( frame );
@@ -366,7 +369,8 @@ module.exports = {
 
       if( ONLY_BINARY_INTERACTIONS ) {
         const binaryInts = elements.filter( elIsIntn )
-          .filter( int => ( _.uniqBy( int.entries, 'id' ) ).length === 2 );
+          .filter( int => int.entries.length === 2 ) // must be two entries
+          .filter( int => ( _.uniqBy( int.entries, 'id' ) ).length === 2 ); // those two must be unique
         const entities = elements.filter( e => !elIsIntn( e ) );
         elements = _.concat( entities, binaryInts );
       }

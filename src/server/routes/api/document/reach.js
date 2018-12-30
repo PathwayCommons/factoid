@@ -341,12 +341,7 @@ module.exports = {
           } else {
             reachMech = getSimpleMechanism( frame );
           }
-          let out =  REACH_TO_FACTOID_MECHANISM.get( reachMech );
-          if( !out ) {
-            console.log(`getMechanism !out - frame: ${JSON.stringify(frame, null, 2)}`);
-            console.log(`getMechanism !out - reachMech: ${JSON.stringify(reachMech, null, 2)}`);
-          }
-          return out;
+          return REACH_TO_FACTOID_MECHANISM.get( reachMech );
         };
 
         const intn = {
@@ -362,7 +357,6 @@ module.exports = {
             .filter( e => e != null );
 
           intn.association = getMechanism( frame ).value;
-          intn.frameType = frame.type;
           intn.completed = true;
           addElement( intn, frame );
         }
@@ -370,11 +364,12 @@ module.exports = {
 
       // filter 'duplicate' interactions based upon equal { entries, association }
 
-      // if( ONLY_BINARY_INTERACTIONS ) {
-      //   const binaryInts = elements.filter( elIsIntn ).filter( int => int.entries.length === 2 );
-      //   const entities = elements.filter( e => !elIsIntn( e ) );
-      //   elements = _.concat( entities, binaryInts );
-      // }
+      if( ONLY_BINARY_INTERACTIONS ) {
+        const binaryInts = elements.filter( elIsIntn )
+          .filter( int => ( _.uniqBy( int.entries, 'id' ) ).length === 2 );
+        const entities = elements.filter( e => !elIsIntn( e ) );
+        elements = _.concat( entities, binaryInts );
+      }
 
       if( REMOVE_DISCONNECTED_ENTS ){
         let interactions = elements.filter( elIsIntn );

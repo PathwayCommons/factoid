@@ -79,7 +79,7 @@ const REACH_TO_FACTOID_MECHANISM = new Map([
   [ REACH_EVENT_TYPE.HYDROLYSIS, INTERACTION_TYPE.MODIFICATION ],
   [ REACH_EVENT_TYPE.DEHYDROLYSIS, INTERACTION_TYPE.MODIFICATION ],
   [ REACH_EVENT_TYPE.TRANSLOCATION, INTERACTION_TYPE.INTERACTION ],
-  [ REACH_EVENT_TYPE.AMOUNT, INTERACTION_TYPE.AMOUNT ],
+  [ REACH_EVENT_TYPE.AMOUNT, INTERACTION_TYPE.INTERACTION ],
   [ REACH_EVENT_TYPE.PROTEIN_MODIFICATION, INTERACTION_TYPE.MODIFICATION ],
   [ REACH_EVENT_TYPE.TRANSCRIPTION, INTERACTION_TYPE.TRANSCRIPTION_TRANSLATION ],
   [ REACH_EVENT_TYPE.COMPLEX_ASSEMBLY, INTERACTION_TYPE.BINDING ],
@@ -331,7 +331,6 @@ module.exports = {
         const getMechanism = frame => {
           let reachMech;
           if( frame.type === REACH_EVENT_TYPE.REGULATION ){
-            // Beware of nested ?
             const controlledFrame = getFrame( getArgId( argByType( frame, 'controlled' ) ) );
             reachMech = controlledFrame.type === REACH_EVENT_TYPE.REGULATION ? REACH_EVENT_TYPE.REGULATION : getSimpleMechanism( controlledFrame );
 
@@ -356,7 +355,8 @@ module.exports = {
             .map( entity => getEntryByEntity( entity, frame.subtype ) )
             .filter( e => e != null );
 
-          intn.association = getMechanism( frame ).value;
+          const mechanism =  getMechanism( frame );
+          intn.association = mechanism.value;
           intn.completed = true;
           addElement( intn, frame );
         }

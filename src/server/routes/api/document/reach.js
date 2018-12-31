@@ -126,12 +126,6 @@ module.exports = {
       let getFrame = id => framesMap.get( id );
       let getReachId = frame => frame['frame-id'];
       let addFrame = frame => framesMap.set( getReachId(frame), frame );
-      const frameIsControlType = frame => frame.type === REACH_EVENT_TYPE.REGULATION || frame.type === REACH_EVENT_TYPE.ACTIVATION;
-      const argIsEvent = arg => arg['argument-type'] === 'event';
-      const argIsComplex = arg => arg['argument-type'] === 'complex';
-      const argIsEntity = arg => arg['argument-type'] === 'entity';
-      const getArgId = arg => arg.arg;
-      const getArgIds = arg => _.values( arg.args );
       let groundIsSame = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
       let elIsIntn = el => el.entries != null;
       let contains = ( arr, str ) => arr.indexOf( str.toLowerCase() ) >= 0;
@@ -279,7 +273,13 @@ module.exports = {
       // add interactions
       evtFrames.forEach( frame => {
 
+        const frameIsControlType = frame => frame.type === REACH_EVENT_TYPE.REGULATION || frame.type === REACH_EVENT_TYPE.ACTIVATION;
+        const argIsEvent = arg => arg['argument-type'] === 'event';
+        const argIsComplex = arg => arg['argument-type'] === 'complex';
+        const argIsEntity = arg => arg['argument-type'] === 'entity';
         const argByType = ( frame, type ) => frame.arguments.find( arg => arg.type === type  );
+        const getArgId = arg => arg.arg;
+        const getArgIds = arg => _.values( arg.args );
         const entityTemplate = ( arg, type ) => ({ type, record: getFrame( getArgId( arg ) ) });
 
         // Record the frame arguments.arg.type ('theme', 'site')
@@ -353,9 +353,7 @@ module.exports = {
         if( frameIsControlType( frame ) || frame.type === REACH_EVENT_TYPE.COMPLEX_ASSEMBLY ){
 
           intn.entries =  _.flatten( frame.arguments.map( getArgEntities ) )
-            // .map( entity => { console.log(`entity: ${entity.record.text} (${entity.type})`); return entity; } )
             .map( entity => getEntryByEntity( entity, frame.subtype ) )
-            // .map( entry => { console.log(`entry: ${JSON.stringify(entry, null, 2)}`); return entry; } )
             .filter( e => e != null );
 
           const mechanism =  getMechanism( frame );
@@ -364,8 +362,6 @@ module.exports = {
           addElement( intn, frame );
         }
       }); // END evtFrames.forEach
-
-      // filter 'duplicate' interactions based upon equal { entries, association }
 
       if( ONLY_BINARY_INTERACTIONS ) {
         const binaryInts = elements.filter( elIsIntn )

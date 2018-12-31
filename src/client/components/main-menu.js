@@ -38,7 +38,7 @@ class MenuContent extends Component {
   }
 
   render(){
-    const { bus, document, history, emitter, networkEditor } = this.props;
+    const { bus, document, history, emitter } = this.props;
     const { selectedLinkouts, selectedMyFactoids } = this.state;
 
     const set = (props, children) => h('div.main-menu-set', props, children);

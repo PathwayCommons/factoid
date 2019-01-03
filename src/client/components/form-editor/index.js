@@ -11,6 +11,7 @@ const { makeCyEles, getCyLayoutOpts, tryPromise } = require('../../../util');
 const Tooltip = require('../popover/tooltip');
 const Popover = require('../popover/popover');
 const MainMenu = require('../main-menu');
+const EditorTypeSwitcher = require('../editor-type-switcher');
 const { TaskView } = require('../tasks');
 const InteractionForm = require('./interaction-form');
 const { PARTICIPANT_TYPE } = require('../../../model/element/participant-type');
@@ -275,8 +276,11 @@ class FormEditor extends DataComponent {
         ]),
         h('div.form-editor', [
           h('div.form-content', [
-            h('h3.form-editor-title',
-              doc.name() === '' ? 'Untitled document' : doc.name()),
+            h('div.form-header', [
+              h('h3.form-editor-title',
+                doc.name() === '' ? 'Untitled document' : doc.name()),
+              h(EditorTypeSwitcher, { networkEditor: false, document: doc })
+            ]),
             h('div.form-templates', (
               doc.interactions().map( (interaction) =>  h(IntnEntry, { interaction }))
             )),

@@ -98,23 +98,6 @@ class MainMenu extends Component {
     let { emitter } = this;
     let { bus, document, history, title, networkEditor } = this.props;
 
-    let editorSwitcher = () => {
-      if( document == null ){ return null; }
-
-      let id = document.id();
-      let secret = document.secret();
-      let description = networkEditor ? 'Form Editor' : 'Network Editor';
-      let url = `/${networkEditor ? 'form' : 'document'}/${id}/${secret}`;
-
-      return h(Tooltip, { description, tippy: { placement: 'bottom' } }, [
-        h('div.main-menu-switcher', [
-          h(Link, { to: url }, [
-            h('i.material-icons', 'swap_horiz')
-          ])
-        ])
-      ]);
-    };
-
     return h('div.main-menu', [
       h(Popover, {
         hide: hideNow => emitter.on('close', hideNow),
@@ -139,8 +122,6 @@ class MainMenu extends Component {
           ])
         ])
       ]),
-
-      editorSwitcher(),
 
       title ? h('h1.main-menu-title', title) : null
     ]);

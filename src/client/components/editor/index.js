@@ -22,6 +22,7 @@ const EditorButtons = require('./buttons');
 const MainMenu = require('../main-menu');
 const UndoRemove = require('./undo-remove');
 const { TaskView } = require('../tasks');
+const EditorTypeSwitcher = require('../editor-type-switcher');
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -360,18 +361,19 @@ class Editor extends DataComponent {
     let { history } = this.props;
 
     let editorContent = this.data.initted ? [
-      h('div.editor-title', [
-        h('div.editor-title-content', [
+      h('div.editor-header', [
+        h('div.editor-header-content', [
           h('div.editor-title-name', document.name() || 'Unnamed document'),
           h('div.editor-title-info', [
             h('span', document.authorName() ? `${document.authorName()} et al., ` : ``),
             h('span', `${document.year()}`),
-            h('span', document.journalName() ? `, ${document.journalName()}` : ``)
-          ])
+            h('span', document.journalName() ? `, ${document.journalName()}` : ``),
+          ]),
+          h(EditorTypeSwitcher, { networkEditor: true, document })
         ])
       ]),
       h('div.editor-main-menu', [
-        h(MainMenu, { bus, document, history, networkEditor: true })
+        h(MainMenu, { bus, document, history })
       ]),
       h('div.editor-submit', [
         h(Popover, { tippy: { html: h(TaskView, { document, bus } ) } }, [

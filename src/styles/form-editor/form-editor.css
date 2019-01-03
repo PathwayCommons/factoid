@@ -39,8 +39,13 @@
   flex-direction: column;
 }
 
-.form-editor-title {
+.form-header {
   margin-bottom: 2em;
+  display: flex;
+  align-items: center;
+}
+
+.form-editor-title {
   overflow: hidden;
 }
 

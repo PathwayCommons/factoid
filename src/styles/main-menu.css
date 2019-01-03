@@ -43,8 +43,7 @@
   }
 }
 
-.main-menu-logo,
-.main-menu-switcher {
+.main-menu-logo {
   font-size: 2.25em;
   margin-right: 0.125em;
   transition-property: filter;

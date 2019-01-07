@@ -105,7 +105,6 @@ module.exports = {
 
     let makeDocJson = res => {
       let elements = [];
-      let elementsMap = new Map();
       let elementsReachMap = new Map();
       let groundReachMap = new Map();
       let organisms = [];
@@ -166,7 +165,6 @@ module.exports = {
 
         if( !foundMerge ){
           elements.push( el );
-          elementsMap.set( el.id, el );
         }
 
         if( APPLY_GROUND && ground != null ){
@@ -226,7 +224,6 @@ module.exports = {
         let type = frame.type;
         let typeIsSupported = supportedTypes[type] != null;
         let ground = frame.xrefs != null ? frame.xrefs.find( ref => contains( supportedGrounds, ref.namespace ) ) : null;
-        // ground := {id, species, namespace}
         let isGrounded = ground != null;
 
         let org = !isGrounded ? null : Organism.fromName( ground.species );
@@ -282,7 +279,7 @@ module.exports = {
         const getArgIds = arg => _.values( arg.args );
         const entityTemplate = ( arg, type ) => ({ type, record: getFrame( getArgId( arg ) ) });
 
-        // Record the frame arguments.arg.type ('theme', 'site')
+        // In the case controlled is itself a control, make the controllers source/target
         const getEventArgEntities = arg => {
           const eventFrame = getFrame( getArgId( arg ) );
           if ( frameIsControlType( eventFrame ) ){
@@ -292,7 +289,6 @@ module.exports = {
           }
         };
 
-        // How to handle nested? Traverse once to fetch either the Simple event theme or the Nested event controller
         const getArgEntities = arg => {
           if ( argIsEntity( arg ) ) {
             return entityTemplate ( arg, arg.type );
@@ -308,12 +304,12 @@ module.exports = {
 
         const targetArgTypes = new Set([ 'theme', 'controlled' ]);
         const isTargetArgType = type => targetArgTypes.has( type );
-        const getTargetSign = subtype => {
+        const getTargetSign = signKey => {
           let sign = PARTICIPANT_TYPE.UNSIGNED;
 
-          if ( subtype.startsWith( 'positive' ) ) {
+          if ( signKey.startsWith( 'positive' ) ) {
             sign = PARTICIPANT_TYPE.POSITIVE;
-          } else if ( subtype.startsWith( 'negative' ) ) {
+          } else if ( signKey.startsWith( 'negative' ) ) {
             sign = PARTICIPANT_TYPE.NEGATIVE;
           }
           return sign;
@@ -321,9 +317,10 @@ module.exports = {
 
         const entryFromEl = el => el == null ? null : ({ id: el.id });
         const getEntryByEntity = ( entity, subtype ) => {
+          const signKey = subtype || '';
           const el = elementsReachMap.get( getReachId( entity.record ) );
           const entry = entryFromEl( el );
-          if( entry && subtype && isTargetArgType( entity.type ) ) entry.group = getTargetSign( subtype ).value;
+          if( entry && isTargetArgType( entity.type ) ) entry.group = getTargetSign( signKey ).value;
           return entry;
         };
 

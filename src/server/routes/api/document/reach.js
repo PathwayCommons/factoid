@@ -29,6 +29,7 @@ const REACH_EVENT_TYPE = Object.freeze({
   PROTEIN_MODIFICATION: 'protein-modification',
   PHOSPHORYLATION: 'phosphorylation',
   DEPHOSPHORYLATION: 'dephosphorylation',
+  AUTOPHOSPHORYLATION: 'autophosphorylation',
   METHYLATION: 'methylation',
   DEMETHYLATION: 'demethylation',
   UBIQUITINATION: 'ubiquitination',
@@ -58,6 +59,7 @@ const REACH_TO_FACTOID_MECHANISM = new Map([
   [ REACH_EVENT_TYPE.REGULATION, INTERACTION_TYPE.INTERACTION ],
   [ REACH_EVENT_TYPE.PHOSPHORYLATION, INTERACTION_TYPE.PHOSPHORYLATION ],
   [ REACH_EVENT_TYPE.DEPHOSPHORYLATION, INTERACTION_TYPE.DEPHOSPHORYLATION ],
+  [ REACH_EVENT_TYPE.AUTOPHOSPHORYLATION, INTERACTION_TYPE.PHOSPHORYLATION ],
   [ REACH_EVENT_TYPE.UBIQUITINATION, INTERACTION_TYPE.UBIQUITINATION ],
   [ REACH_EVENT_TYPE.DEUBIQUITINATION, INTERACTION_TYPE.DEUBIQUITINATION ],
   [ REACH_EVENT_TYPE.METHYLATION, INTERACTION_TYPE.METHYLATION ],
@@ -271,33 +273,35 @@ module.exports = {
       evtFrames.forEach( frame => {
 
         const frameIsControlType = frame => frame.type === REACH_EVENT_TYPE.REGULATION || frame.type === REACH_EVENT_TYPE.ACTIVATION;
-        const argIsEvent = arg => arg['argument-type'] === 'event';
         const argIsComplex = arg => arg['argument-type'] === 'complex';
         const argIsEntity = arg => arg['argument-type'] === 'entity';
         const argByType = ( frame, type ) => frame.arguments.find( arg => arg.type === type  );
         const getArgId = arg => arg.arg;
         const getArgIds = arg => _.values( arg.args );
-        const entityTemplate = ( arg, type ) => ({ type, record: getFrame( getArgId( arg ) ) });
+        const entityTemplate = ( arg, type ) => ({ record: getFrame( getArgId( arg ) ), type });
 
-        // In the case controlled is itself a control, make the controllers source/target
+        // NB: Event args can reference events (simple, nested). I dunno what to do with
+        // controller that is event so punt.
         const getEventArgEntities = arg => {
-          const eventFrame = getFrame( getArgId( arg ) );
-          if ( frameIsControlType( eventFrame ) ){
-            return entityTemplate( argByType( eventFrame, 'controller' ), arg.type );
+          const eventArgFrame = getFrame( getArgId( arg ) );
+          if ( frameIsControlType( eventArgFrame ) ){
+            return entityTemplate( argByType( eventArgFrame, 'controller' ), arg.type );
           } else {
-            return eventFrame.arguments.map( arg => entityTemplate( arg, arg.type ) );
+            return eventArgFrame.arguments.map( argFrameArg => entityTemplate( argFrameArg, argFrameArg.type ) );
           }
         };
 
         const getArgEntities = arg => {
+          const argType = arg.type;
           if ( argIsEntity( arg ) ) {
-            return entityTemplate ( arg, arg.type );
+            return entityTemplate ( arg, argType );
 
           } else if ( argIsComplex( arg ) ) {
-            return getArgIds( arg ).map( themeId => entityTemplate( { arg: themeId }, arg.type ) );
+            return getArgIds( arg ).map( themeId => entityTemplate( { arg: themeId }, argType ) );
 
           }
-          else if ( argIsEvent( arg ) ){
+          else { // must be event
+            if( argType == 'controller' ) return null; //dunno what to do here
             return getEventArgEntities( arg );
           }
         };
@@ -350,6 +354,7 @@ module.exports = {
         if( frameIsControlType( frame ) || frame.type === REACH_EVENT_TYPE.COMPLEX_ASSEMBLY ){
 
           intn.entries =  _.flatten( frame.arguments.map( getArgEntities ) )
+            .filter( e => e != null )
             .map( entity => getEntryByEntity( entity, frame.subtype ) )
             .filter( e => e != null );
 

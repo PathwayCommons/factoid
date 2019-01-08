@@ -275,6 +275,7 @@ module.exports = {
         const frameIsControlType = frame => frame.type === REACH_EVENT_TYPE.REGULATION || frame.type === REACH_EVENT_TYPE.ACTIVATION;
         const argIsComplex = arg => arg['argument-type'] === 'complex';
         const argIsEntity = arg => arg['argument-type'] === 'entity';
+        const argIsEvent = arg => arg['argument-type'] === 'event';
         const argByType = ( frame, type ) => frame.arguments.find( arg => arg.type === type  );
         const getArgId = arg => arg.arg;
         const getArgIds = arg => _.values( arg.args );
@@ -300,10 +301,10 @@ module.exports = {
             return getArgIds( arg ).map( themeId => entityTemplate( { arg: themeId }, argType ) );
 
           }
-          else { // must be event
-            if( argType == 'controller' ) return null; //dunno what to do here
-            return getEventArgEntities( arg );
+          else if ( argIsEvent( arg ) ) {
+            return argType === 'controlled' ? getEventArgEntities( arg ): null;
           }
+          return null;
         };
 
         const targetArgTypes = new Set([ 'theme', 'controlled' ]);

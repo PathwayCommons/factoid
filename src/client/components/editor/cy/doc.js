@@ -502,8 +502,7 @@ function listenToDoc({ bus, cy, document, controller }){
   bus.on('addelementmouse', () => controller.addElement({ position: lastMousePos }).then( el => bus.emit('opentip', el) ));
   bus.on('addinteractionmouse', () => bus.emit('addinteraction', { position: lastMousePos }));
 
-  onKey('e', () => bus.emit('addelementmouse'));
-  onKey('i', () => bus.emit('addinteractionmouse'));
+  onKey('1', () => bus.emit('addelementmouse'));
   onKey('a', selectAll);
   onKey('n', selectNone);
   onKey('backspace', removeSelected);

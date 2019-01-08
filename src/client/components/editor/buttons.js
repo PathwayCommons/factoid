@@ -41,15 +41,15 @@ class EditorButtons extends React.Component {
       );
 
       grs.push([
-        h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Add an entity', shortcut: 'e' }), [
+        h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Add an entity', shortcut: '1' }), [
           h('button.editor-button.plain-button', { onClick: () => controller.addElement().then( el => bus.emit('opentip', el) )  }, [
             h('i.material-icons', 'fiber_manual_record')
           ])
         ]),
 
-        PptTypeBtn(PARTICIPANT_TYPE.UNSIGNED, 'Draw an undirected interaction', 'd'),
-        PptTypeBtn(PARTICIPANT_TYPE.POSITIVE, 'Draw an activation interaction', 'd'),
-        PptTypeBtn(PARTICIPANT_TYPE.NEGATIVE, 'Draw an inhibition interaction', 'd')
+        PptTypeBtn(PARTICIPANT_TYPE.UNSIGNED, 'Draw an undirected interaction', '2'),
+        PptTypeBtn(PARTICIPANT_TYPE.POSITIVE, 'Draw an activation interaction', '3'),
+        PptTypeBtn(PARTICIPANT_TYPE.NEGATIVE, 'Draw an inhibition interaction', '4')
       ]);
     }
 

@@ -210,5 +210,7 @@ module.exports = function({ bus, cy, document, controller }){
     eh.start(el);
   });
 
-  on('d', () => bus.emit('drawtoggle'));
+  on('2', () => bus.emit('drawtoggle', null, PARTICIPANT_TYPE.UNSIGNED));
+  on('3', () => bus.emit('drawtoggle', null, PARTICIPANT_TYPE.POSITIVE));
+  on('4', () => bus.emit('drawtoggle', null, PARTICIPANT_TYPE.NEGATIVE));
 };

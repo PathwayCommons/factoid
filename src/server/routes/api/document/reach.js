@@ -18,22 +18,75 @@ const logger = require('../../../logger');
 const { REACH_URL } = require('../../../../config');
 const MERGE_ENTS_WITH_SAME_GROUND = true;
 const ALLOW_IMPLICIT_ORG_SPEC = true;
+const ONLY_BINARY_INTERACTIONS = true;
 const REMOVE_DISCONNECTED_ENTS = true;
 const REMOVE_UNGROUNDED_ENTS = false;
 const APPLY_GROUND = true;
 const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
 
 const REACH_EVENT_TYPE = Object.freeze({
-  TRANSCRIPTION: 'transcription',
+  REGULATION: 'regulation',
+  PROTEIN_MODIFICATION: 'protein-modification',
   PHOSPHORYLATION: 'phosphorylation',
   DEPHOSPHORYLATION: 'dephosphorylation',
+  AUTOPHOSPHORYLATION: 'autophosphorylation',
   METHYLATION: 'methylation',
   DEMETHYLATION: 'demethylation',
   UBIQUITINATION: 'ubiquitination',
   DEUBIQUITINATION: 'deubiquitination',
-  ACTIVATION: 'activation',
-  REGULATION: 'regulation'
+  SUMOLYLATION: 'sumoylation',
+  DESUMOLYLATION: 'desumoylation',
+  GLYCOSYLATION: 'glycosylation',
+  DEGLYCOSYLATION: 'deglycosylation',
+  ACETYLATION: 'acetylation',
+  DEACETYLATION: 'deacetylation',
+  FARNESYLATION: 'farnesylation',
+  DEFARNESYLATION: 'defarnesylation',
+  RIBOSYLATION: 'ribosylation',
+  DERIBOSYLATION: 'deribosylation',
+  HYDROXYLATION: 'hydroxylation',
+  DEHYDROXYLATION: 'dehydroxylation',
+  HYDROLYSIS: 'hydrolysis',
+  DEHYDROLYSIS: 'dehydrolysis',
+  COMPLEX_ASSEMBLY: 'complex-assembly',
+  TRANSLOCATION: 'translocation',
+  TRANSCRIPTION: 'transcription',
+  AMOUNT: 'amount',
+  ACTIVATION: 'activation'
 });
+
+const REACH_TO_FACTOID_MECHANISM = new Map([
+  [ REACH_EVENT_TYPE.REGULATION, INTERACTION_TYPE.INTERACTION ],
+  [ REACH_EVENT_TYPE.PHOSPHORYLATION, INTERACTION_TYPE.PHOSPHORYLATION ],
+  [ REACH_EVENT_TYPE.DEPHOSPHORYLATION, INTERACTION_TYPE.DEPHOSPHORYLATION ],
+  [ REACH_EVENT_TYPE.AUTOPHOSPHORYLATION, INTERACTION_TYPE.PHOSPHORYLATION ],
+  [ REACH_EVENT_TYPE.UBIQUITINATION, INTERACTION_TYPE.UBIQUITINATION ],
+  [ REACH_EVENT_TYPE.DEUBIQUITINATION, INTERACTION_TYPE.DEUBIQUITINATION ],
+  [ REACH_EVENT_TYPE.METHYLATION, INTERACTION_TYPE.METHYLATION ],
+  [ REACH_EVENT_TYPE.DEMETHYLATION, INTERACTION_TYPE.DEMETHYLATION ],
+  [ REACH_EVENT_TYPE.UBIQUITINATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DEUBIQUITINATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.SUMOLYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DESUMOLYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.GLYCOSYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DEGLYCOSYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.ACETYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DEACETYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.FARNESYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DEFARNESYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.RIBOSYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DERIBOSYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.HYDROXYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DEHYDROXYLATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.HYDROLYSIS, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.DEHYDROLYSIS, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.TRANSLOCATION, INTERACTION_TYPE.INTERACTION ],
+  [ REACH_EVENT_TYPE.AMOUNT, INTERACTION_TYPE.INTERACTION ],
+  [ REACH_EVENT_TYPE.PROTEIN_MODIFICATION, INTERACTION_TYPE.MODIFICATION ],
+  [ REACH_EVENT_TYPE.TRANSCRIPTION, INTERACTION_TYPE.TRANSCRIPTION_TRANSLATION ],
+  [ REACH_EVENT_TYPE.COMPLEX_ASSEMBLY, INTERACTION_TYPE.BINDING ],
+  [ REACH_EVENT_TYPE.ACTIVATION, INTERACTION_TYPE.INTERACTION ]
+]);
 
 module.exports = {
   // TODO remove this function as reach should never need to be exposed directly
@@ -54,7 +107,6 @@ module.exports = {
 
     let makeDocJson = res => {
       let elements = [];
-      let elementsMap = new Map();
       let elementsReachMap = new Map();
       let groundReachMap = new Map();
       let organisms = [];
@@ -71,19 +123,16 @@ module.exports = {
       let evtFrames = _.get( res, ['events', 'frames'] ) || [];
       let senFrames = _.get( res, ['sentences', 'frames'] ) || [];
 
-      let frames = new Map();
-      let getFrame = id => frames.get( id );
+      let framesMap = new Map();
+      let getFrame = id => framesMap.get( id );
       let getReachId = frame => frame['frame-id'];
-      let addFrame = frame => frames.set( getReachId(frame), frame );
-      let getElFromFrame = frame => elementsReachMap.get( getReachId( frame ) );
-      let frameIsEntity = frame => frame['frame-type'] === 'entity-mention';
-      let frameIsEvent = frame => frame['frame-type'] === 'event-mention';
-      let getArgId = arg => arg.arg;
+      let addFrame = frame => framesMap.set( getReachId(frame), frame );
       let groundIsSame = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
       let elIsIntn = el => el.entries != null;
+      let contains = ( arr, str ) => arr.indexOf( str.toLowerCase() ) >= 0;
 
       let getSentenceText = id => {
-        let f = getFrame(id);
+        let f = getFrame( id );
         let i1 = _.get(f, ['start-pos', 'offset']);
         let i2 = _.get(f, ['end-pos', 'offset']);
 
@@ -118,7 +167,6 @@ module.exports = {
 
         if( !foundMerge ){
           elements.push( el );
-          elementsMap.set( el.id, el );
         }
 
         if( APPLY_GROUND && ground != null ){
@@ -166,13 +214,17 @@ module.exports = {
         let supportedTypes = {
           'protein': 'protein',
           'gene': 'protein',
+          'gene-or-gene-product': 'protein',
           'simple-chemical': 'chemical'
         };
 
-        let contains = ( arr, str ) => arr.indexOf( str.toLowerCase() ) >= 0;
+        const supportedGrounds = [
+          'uniprot',
+          'pubchem'
+        ];
+
         let type = frame.type;
         let typeIsSupported = supportedTypes[type] != null;
-        let supportedGrounds = ['uniprot', 'pubchem'];
         let ground = frame.xrefs != null ? frame.xrefs.find( ref => contains( supportedGrounds, ref.namespace ) ) : null;
         let isGrounded = ground != null;
 
@@ -219,157 +271,108 @@ module.exports = {
 
       // add interactions
       evtFrames.forEach( frame => {
-        let args = frame.arguments;
 
-        if( args.length === 2 ){
-          let argFrames = args.map( getArgId ).map( getFrame ).filter( frame => frame != null );
-          let argsAreEnts = argFrames.every( frameIsEntity );
-          let isControllerArg = arg => arg.type === 'controller';
-          let isControlledArg = arg => arg.type === 'controlled';
-          let argsAreControllerControlled = args.length === 2 && args.some( isControllerArg ) && args.some( isControlledArg );
-          let argsAreEntAndEvt = argFrames.every( frame => frameIsEntity(frame) || frameIsEvent(frame) );
-          let getEntryFromEl = el => el == null ? null : ({ id: el.id });
-          let isSingleArgEvt = frame => frameIsEvent(frame) && _.get(frame, ['arguments', 0, 'argument-type']) === 'entity';
-          let evtArg = frame.arguments.find( arg => isSingleArgEvt( getFrame( getArgId(arg) ) ) );
-          let haveEvtArg = evtArg != null;
-          let isBinaryCollapsible = argsAreEntAndEvt && argsAreControllerControlled && haveEvtArg;
-          let isProtein = ele => ele.type == 'protein' || ele.type === 'gene';
+        const frameIsControlType = frame => frame.type === REACH_EVENT_TYPE.REGULATION || frame.type === REACH_EVENT_TYPE.ACTIVATION;
+        const argIsComplex = arg => arg['argument-type'] === 'complex';
+        const argIsEntity = arg => arg['argument-type'] === 'entity';
+        const argIsEvent = arg => arg['argument-type'] === 'event';
+        const argByType = ( frame, type ) => frame.arguments.find( arg => arg.type === type  );
+        const getArgId = arg => arg.arg;
+        const getArgIds = arg => _.values( arg.args );
+        const entityTemplate = ( arg, type ) => ({ record: getFrame( getArgId( arg ) ), type });
 
-          if( argsAreEnts || isBinaryCollapsible ){
-            let intn = {
-              id: uuid(),
-              type: 'interaction',
-              description: getSentenceText( frame.sentence )
-            };
-
-            let elIdToFrameId = new Map();
-            let controllerId = argsAreControllerControlled ? getArgId( args.find( isControllerArg ) ) : null;
-
-            let getElAndSetMap = frame => {
-              let el = getElFromFrame( frame );
-
-              if ( el ) {
-                elIdToFrameId.set( el.id, frame['frame-id'] );
-              }
-
-              return el;
-            };
-
-            let getTargetSign = () => {
-              let subtype = frame.subtype;
-
-              if ( !subtype ) {
-                return null;
-              }
-
-              if ( subtype.startsWith( 'positive' ) ) {
-                return PARTICIPANT_TYPE.POSITIVE;
-              }
-
-              if ( subtype.startsWith( 'negative' ) ) {
-                return PARTICIPANT_TYPE.NEGATIVE;
-              }
-
-              return PARTICIPANT_TYPE.UNSIGNED;
-            };
-
-            let attachTargetGroup = entry => {
-              let elFrameId = elIdToFrameId.get( entry.id );
-
-              // If the entry does not represent the controlled arg return directly
-              if ( !argsAreControllerControlled || elFrameId == controllerId ) {
-                return;
-              }
-
-              let targetSign = getTargetSign();
-
-              if ( targetSign ) {
-                entry.group = targetSign.value;
-              }
-
-              return entry;
-            };
-
-            let getAssociation = eles => {
-              let protCount = eles.filter( isProtein ).length;
-
-              // protein - protein
-              if ( protCount == 2 ) {
-                if ( isBinaryCollapsible ) {
-                  let type = getFrame( getArgId( evtArg ) ).subtype;
-
-                  switch ( type ) {
-                    case REACH_EVENT_TYPE.TRANSCRIPTION:
-                      return INTERACTION_TYPE.TRANSCRIPTION_TRANSLATION;
-                    case REACH_EVENT_TYPE.PHOSPHORYLATION:
-                      return INTERACTION_TYPE.PHOSPHORYLATION;
-                    case REACH_EVENT_TYPE.DEPHOSPHORYLATION:
-                      return INTERACTION_TYPE.DEPHOSPHORYLATION;
-                    case REACH_EVENT_TYPE.UBIQUITINATION:
-                      return INTERACTION_TYPE.UBIQUITINATION;
-                    case REACH_EVENT_TYPE.DEUBIQUITINATION:
-                      return INTERACTION_TYPE.DEUBIQUITINATION;
-                    case REACH_EVENT_TYPE.METHYLATION:
-                      return INTERACTION_TYPE.METHYLATION;
-                    case REACH_EVENT_TYPE.DEMETHYLATION:
-                      return INTERACTION_TYPE.DEMETHYLATION;
-                    case REACH_EVENT_TYPE.REGULATION:
-                      return INTERACTION_TYPE.INTERACTION;
-
-                  }
-                }
-              }
-              // protein - chemical
-              else if ( protCount == 1 ) {
-                if ( argsAreEnts ) {
-                  // more cases would be added in the future
-                  switch ( frame.type ) {
-                    case REACH_EVENT_TYPE.ACTIVATION:
-                      return INTERACTION_TYPE.INTERACTION;
-                  }
-                }
-              }
-
-              return INTERACTION_TYPE.INTERACTION;
-            };
-
-            let getEntityFrame = frame => {
-              if( frameIsEvent( frame ) ){
-                return getFrame( getArgId( frame.arguments[0] ) );
-              } else {
-                return frame;
-              }
-            };
-
-            let eles = (
-              argFrames.map( getEntityFrame )
-              .map( getElAndSetMap )
-              .filter( ele => ele != null )
-            );
-
-            intn.entries = eles.map( getEntryFromEl );
-
-            intn.entries.forEach( attachTargetGroup );
-
-            let assoc = getAssociation( eles );
-
-            if( assoc ){
-              intn.association = assoc.value;
-
-              let isDirected = intn.entries.filter( ent => ent.group != null ).length > 0;
-
-              // NB an interaction must have assoc/type + direction to be completed
-              if( isDirected ){
-                intn.completed = true;
-              }
-            }
-
-            if( intn.entries.length >= 2 && intn.completed ){
-              addElement( intn, frame );
-            }
+        // NB: Event args can reference events (simple, nested). I dunno what to do with
+        // controller that is event so punt.
+        const getEventArgEntities = arg => {
+          const eventArgFrame = getFrame( getArgId( arg ) );
+          if ( frameIsControlType( eventArgFrame ) ){
+            return entityTemplate( argByType( eventArgFrame, 'controller' ), arg.type );
+          } else {
+            return eventArgFrame.arguments.map( argFrameArg => entityTemplate( argFrameArg, argFrameArg.type ) );
           }
+        };
+
+        const getArgEntities = arg => {
+          const argType = arg.type;
+          if ( argIsEntity( arg ) ) {
+            return entityTemplate ( arg, argType );
+
+          } else if ( argIsComplex( arg ) ) {
+            return getArgIds( arg ).map( themeId => entityTemplate( { arg: themeId }, argType ) );
+
+          }
+          else if ( argIsEvent( arg ) ) {
+            return argType === 'controlled' ? getEventArgEntities( arg ): null;
+          }
+          return null;
+        };
+
+        const targetArgTypes = new Set([ 'theme', 'controlled' ]);
+        const isTargetArgType = type => targetArgTypes.has( type );
+        const getTargetSign = signKey => {
+          let sign = PARTICIPANT_TYPE.UNSIGNED;
+
+          if ( signKey.startsWith( 'positive' ) ) {
+            sign = PARTICIPANT_TYPE.POSITIVE;
+          } else if ( signKey.startsWith( 'negative' ) ) {
+            sign = PARTICIPANT_TYPE.NEGATIVE;
+          }
+          return sign;
+        };
+
+        const entryFromEl = el => el == null ? null : ({ id: el.id });
+        const getEntryByEntity = ( entity, subtype ) => {
+          const signKey = subtype || '';
+          const el = elementsReachMap.get( getReachId( entity.record ) );
+          const entry = entryFromEl( el );
+          if( entry && isTargetArgType( entity.type ) ) entry.group = getTargetSign( signKey ).value;
+          return entry;
+        };
+
+        const getSimpleMechanism = frame => frame.type === REACH_EVENT_TYPE.PROTEIN_MODIFICATION ? frame.subtype : frame.type;
+
+        const getMechanism = frame => {
+          let reachMech;
+          if( frame.type === REACH_EVENT_TYPE.REGULATION ){
+            const controlledFrame = getFrame( getArgId( argByType( frame, 'controlled' ) ) );
+            reachMech = controlledFrame.type === REACH_EVENT_TYPE.REGULATION ? REACH_EVENT_TYPE.REGULATION : getSimpleMechanism( controlledFrame );
+
+          } else if ( frame.type === REACH_EVENT_TYPE.ACTIVATION ) {
+            reachMech = REACH_EVENT_TYPE.ACTIVATION;
+
+          } else {
+            reachMech = getSimpleMechanism( frame );
+          }
+          return REACH_TO_FACTOID_MECHANISM.get( reachMech );
+        };
+
+        const intn = {
+          id: uuid(),
+          type: 'interaction',
+          description: getSentenceText( frame.sentence )
+        };
+
+        if( frameIsControlType( frame ) || frame.type === REACH_EVENT_TYPE.COMPLEX_ASSEMBLY ){
+
+          intn.entries =  _.flatten( frame.arguments.map( getArgEntities ) )
+            .filter( e => e != null )
+            .map( entity => getEntryByEntity( entity, frame.subtype ) )
+            .filter( e => e != null );
+
+          const mechanism =  getMechanism( frame );
+          intn.association = mechanism.value;
+          intn.completed = true;
+          addElement( intn, frame );
         }
-      } );
+      }); // END evtFrames.forEach
+
+      if( ONLY_BINARY_INTERACTIONS ) {
+        const binaryInts = elements.filter( elIsIntn )
+          .filter( int => int.entries.length === 2 ) // must be two entries
+          .filter( int => ( _.uniqBy( int.entries, 'id' ) ).length === 2 ); // those two must be unique
+        const entities = elements.filter( e => !elIsIntn( e ) );
+        elements = _.concat( entities, binaryInts );
+      }
 
       if( REMOVE_DISCONNECTED_ENTS ){
         let interactions = elements.filter( elIsIntn );

@@ -281,15 +281,20 @@ module.exports = {
         const getArgIds = arg => _.values( arg.args );
         const entityTemplate = ( arg, type ) => ({ record: getFrame( getArgId( arg ) ), type });
 
-        // NB: Event args can reference events (simple, nested). I dunno what to do with
-        // controller that is event so punt.
-        const getEventArgEntities = arg => {
-          const eventArgFrame = getFrame( getArgId( arg ) );
-          if ( frameIsControlType( eventArgFrame ) ){
-            return entityTemplate( argByType( eventArgFrame, 'controller' ), arg.type );
-          } else {
-            return eventArgFrame.arguments.map( argFrameArg => entityTemplate( argFrameArg, argFrameArg.type ) );
+        const getEventArgs = arg => {
+          let eventArgs = [];
+          const argType = arg.type;
+          if ( argType === 'controlled' ){
+            const eventArgFrame = getFrame( getArgId( arg ) );
+            if ( frameIsControlType( eventArgFrame ) ){
+              const controllerArg = argByType( eventArgFrame, 'controller' );
+              const isControllerEntity = argIsEntity( controllerArg ) || argIsComplex( controllerArg );
+              if ( isControllerEntity ) eventArgs.push( controllerArg );
+            } else { // Simple event
+              eventArgs = eventArgFrame.arguments;
+            }
           }
+          return eventArgs;
         };
 
         const getArgEntities = arg => {
@@ -302,7 +307,7 @@ module.exports = {
 
           }
           else if ( argIsEvent( arg ) ) {
-            return argType === 'controlled' ? getEventArgEntities( arg ): null;
+            return getEventArgs( arg ).map( getArgEntities );
           }
           return null;
         };
@@ -354,7 +359,7 @@ module.exports = {
 
         if( frameIsControlType( frame ) || frame.type === REACH_EVENT_TYPE.COMPLEX_ASSEMBLY ){
 
-          intn.entries =  _.flatten( frame.arguments.map( getArgEntities ) )
+          intn.entries =  _.flattenDeep( frame.arguments.map( getArgEntities ) )
             .filter( e => e != null )
             .map( entity => getEntryByEntity( entity, frame.subtype ) )
             .filter( e => e != null );

@@ -1,5 +1,4 @@
 const on = require('./on-key');
-const uuid = require('uuid');
 const _ = require('lodash');
 
 const { isInteractionNode, tryPromise } = require('../../../../util');
@@ -19,47 +18,18 @@ module.exports = function({ bus, cy, document, controller }){
   let pptType = PARTICIPANT_TYPE.UNSIGNED;
   let lastEdgeCreationTime = 0;
 
-  let edgeType = function( source, target ){
-    let alreadyConnectedByEdge = source.edgesWith( target ).length > 0;
-    let srcDocEl = document.get( source.id() );
-    let tgtDocEl = document.get( target.id() );
-    let alreadyConnectedByIntn = document.interactions().some( intn => {
-      return intn.has( srcDocEl ) && intn.has( tgtDocEl );
-    } );
-    let alreadyConnected = alreadyConnectedByEdge || alreadyConnectedByIntn;
-
-    if( alreadyConnected ){
-      return null;
-    } if( isInteractionNode( source ) || isInteractionNode( target ) ){
-      return null; // disable hyperedge-like interactions for now
-      // return 'flat';
-    } else  {
-      return 'node';
-    }
+  let edgeType = function( /*source, target*/ ){
+    return 'flat';
   };
 
   let loopAllowed = function( /*node*/ ){
     return false;
   };
 
-  let nodeParams = function( /*source, target*/ ){ // for interaction nodes
-    let nodeJson = {
-      data: {
-        id: uuid(),
-        type: 'interaction',
-        isInteraction: true,
-        isEntity: false,
-        arity: 2
-      }
-    };
-
-    return nodeJson;
-  };
-
-  let edgeParams = function( source, target, i ){
+  let edgeParams = function( /*source, target, i*/ ){ //
     let edgeJson = {
       data: {
-        type: i === 1 ? pptType.value : null
+        sign: pptType.value
       }
     };
 
@@ -69,37 +39,24 @@ module.exports = function({ bus, cy, document, controller }){
   let ghostEdgeParams = function(){
     return {
       data: {
-        type: pptType.value
+        sign: pptType.value
       }
     };
   };
 
   let complete = function( source, target, addedEles ){
-    let addedNodes = addedEles.nodes();
-    let createdIntnNode = addedNodes.nonempty();
-    let intnNode = createdIntnNode ? addedNodes : isInteractionNode( source ) ? source : target;
-    let idIsNotIntn = el => el.id() !== intnNode.id();
-    let pptNodes = source.add( target ).filter( idIsNotIntn );
+    let pptNodes = source.add( target );
     let ppts = pptNodes.map( n => document.get( n.id() ) );
     let isTarget = ppt => ppt.id() === target.id();
 
     let handleIntn = () => {
-      if( createdIntnNode ){
-        return controller.addInteraction({
-          association: 'interaction',
-          position: _.clone( intnNode.position() ),
-          entries: ppts.map( ppt => ({
-            id: ppt.id(),
-            group: isTarget(ppt) ? pptType.value : null
-          }) )
-        });
-      } else {
-        let intn = document.get( intnNode.id() );
-        let add = ppt => intn.add( ppt );
-        let addPpts = () => Promise.all( ppts.map(add) );
-
-        return addPpts().then( () => intn );
-      }
+      return controller.addInteraction({
+        association: 'interaction',
+        entries: ppts.map( ppt => ({
+          id: ppt.id(),
+          group: isTarget(ppt) ? pptType.value : null
+        }) )
+      });
     };
 
     let rmPreviewEles = () => {
@@ -114,12 +71,18 @@ module.exports = function({ bus, cy, document, controller }){
 
     let disableDrawMode = () => bus.emit('drawtoggle', false);
 
+    let startBatch = () => cy.startBatch();
+
+    let endBatch = () => cy.endBatch();
+
     lastEdgeCreationTime = Date.now();
 
     return (
-      tryPromise( handleIntn )
+      tryPromise( startBatch )
+      .then( handleIntn )
       .then( docIntn => intn = docIntn )
       .then( rmPreviewEles )
+      .then( endBatch )
       .then( disableDrawMode )
       .then( openPopover )
     );
@@ -141,7 +104,6 @@ module.exports = function({ bus, cy, document, controller }){
     handlePosition,
     edgeType,
     loopAllowed,
-    nodeParams,
     edgeParams,
     ghostEdgeParams,
     complete,

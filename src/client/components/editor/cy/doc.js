@@ -5,7 +5,7 @@ const isAfter = require('date-fns/is_after');
 const subSeconds = require('date-fns/sub_seconds');
 const date = { parse, isAfter, subSeconds };
 const onKey = require('./on-key');
-const { isInteractionNode, makeCyEles, makePptEdges } = require('../../../../util');
+const { isInteractionNode, makeCyEles } = require('../../../../util');
 
 function listenToDoc({ bus, cy, document, controller }){
   let getCyEl = function( docEl ){
@@ -196,13 +196,12 @@ function listenToDoc({ bus, cy, document, controller }){
     } );
   };
 
-  let onDocRetypePpt = function( docEl, type ){
-    onDoc( this, function( docIntn, intnNode ){
-      let edges = intnNode.connectedEdges();
-      let isElNode = n => n.id() === docEl.id();
-      let tgtEdge = edges.filter( e => e.connectedNodes().some( isElNode ) );
+  let onDocRetypePpt = function( docPpt, type ){
+    onDoc( this, function( docIntn, intnEdge ){
+      let reversed = intnEdge.target().id() !== docPpt.id();
 
-      tgtEdge.data('type', type.value);
+      intnEdge.data('sign', type.value);
+      intnEdge.data('reversed', reversed);
     } );
   };
 
@@ -265,13 +264,9 @@ function listenToDoc({ bus, cy, document, controller }){
     } );
   };
 
-  let onDocAddPpt = function( docPpt ){
-    onDoc( this, function( docIntn/*, el*/ ){
-      let edges = cy.add( makePptEdges( docIntn, docPpt ) );
-
-      edges.forEach( edge => onAddNewEle( docIntn, edge ) );
-
-      updateIntnArity( docIntn );
+  let onDocAddPpt = function( /*docPpt*/ ){
+    onDoc( this, function( /*docIntn, el*/ ){
+      // disabled for binary interactions
     } );
   };
 
@@ -308,12 +303,8 @@ function listenToDoc({ bus, cy, document, controller }){
   };
 
   let onDocElLoad = function(){
-    onDoc( this, (docEl) => {
-      if( docEl.isInteraction() ){
-        docEl.participants().forEach( docPpt => {
-          cy.add( makePptEdges( docEl, docPpt ) );
-        } );
-      }
+    onDoc( this, (/*docEl*/) => {
+      // not needed for binary interactions
     } );
   };
 
@@ -440,38 +431,9 @@ function listenToDoc({ bus, cy, document, controller }){
   };
 
   function removeByCyEles( eles ){
-    let rm = docEl => document.remove( docEl );
+    let rm = el => document.remove( getDocEl(el) );
 
-    let rmNode = el => {
-      let docEl = getDocEl( el );
-
-      if( docEl ){ rm( docEl ); }
-    };
-
-    let rmFromIntn = (intn, ppt) => {
-      let docIntn = getDocEl( intn );
-      let docPpt = getDocEl( ppt );
-
-      if( docIntn != null && docIntn.isInteraction() && docIntn.has( docPpt ) ){
-        docIntn.remove( docPpt );
-      }
-    };
-
-    let rmEdge = el => {
-      let src = el.source();
-      let tgt = el.target();
-
-      rmFromIntn( src, tgt );
-      rmFromIntn( tgt, src );
-    };
-
-    eles.forEach( el => {
-      if( el.isNode() ){
-        rmNode( el );
-      } else if( el.isEdge() ){
-        rmEdge( el );
-      }
-    } );
+    eles.forEach( rm );
   }
 
   function removeSelected(){

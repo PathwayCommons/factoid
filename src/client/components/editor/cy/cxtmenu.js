@@ -57,11 +57,6 @@ module.exports = function({ cy, document, bus }){
   };
 
   cy.cxtmenu( _.assign( {}, DEFAULTS, {
-    selector: 'node[?isInteraction]',
-    commands: [ drawUnsignedCmd, drawPositiveCmd, drawNegativeCmd, rmElCmd ]
-  } ) );
-
-  cy.cxtmenu( _.assign( {}, DEFAULTS, {
     selector: 'node[?isEntity]',
     commands: [ drawUnsignedCmd, drawPositiveCmd, drawNegativeCmd, rmElCmd ]
   } ) );

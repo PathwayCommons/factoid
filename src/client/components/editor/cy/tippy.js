@@ -3,7 +3,6 @@ const h = require('react-hyperscript');
 const hh = require('hyperscript');
 const ElementInfo = require('../../element-info/element-info');
 const ParticipantInfo = require('../../element-info/participant-info');
-const { isInteractionNode } = require('../../../../util');
 const tippyjs = require('tippy.js');
 const _ = require('lodash');
 const { tippyDefaults } = require('../../../defs');
@@ -14,7 +13,7 @@ module.exports = function({ bus, cy, document }){
   let isSmallScreen = () => window.innerWidth <= 650;
 
   let hideAllTippies = (list = '_tippies') => {
-    cy.nodes().forEach( node => hideTippy(node, list) );
+    cy.elements().forEach( el => hideTippy(el, list) );
   };
 
   bus.on('closetip', function( el ){
@@ -87,7 +86,7 @@ module.exports = function({ bus, cy, document }){
   cy.on('ehstop', () => ehStopTime = Date.now());
 
   let destroyAllTippies = () => {
-    cy.nodes().forEach( n => {
+    cy.elements().forEach( n => {
       let infos = n.scratch('_tippies');
 
       if( infos ){
@@ -129,10 +128,6 @@ module.exports = function({ bus, cy, document }){
     if( tippies != null ){
       tippies.forEach( destroyTippy );
     }
-  };
-
-  let getTippyNode = ele => {
-    return ele.isNode() ? ele : ele.connectedNodes().filter( isInteractionNode );
   };
 
   let incompleteNotification = new Notification({
@@ -195,8 +190,7 @@ module.exports = function({ bus, cy, document }){
   };
 
   let hideTippy = (ele, list = '_tippies') => {
-    let node = getTippyNode( ele );
-    let tippies = node.scratch(list);
+    let tippies = ele.scratch(list);
     let didClose = false;
 
     if( tippies != null ){
@@ -208,10 +202,10 @@ module.exports = function({ bus, cy, document }){
     }
 
     if( didClose && list !== '_pptTippies' ){
-      let docEl = document.get( node.id() );
+      let docEl = document.get( ele.id() );
 
       if( docEl && !docEl.completed() ){
-        makeIncompleteNotification( node, docEl );
+        makeIncompleteNotification( ele, docEl );
       }
     }
   };
@@ -296,21 +290,29 @@ module.exports = function({ bus, cy, document }){
     return div;
   };
 
-  let toggleElementInfoFor = ( tgt, opts ) => {
-
-
+  let toggleElementInfoFor = ( el, opts ) => {
     let { toggleOn, togglePpts } = _.assign( {
       toggleOn: undefined,
       togglePpts: false
     }, opts );
 
-    let node = getTippyNode( tgt );
-    let pos = node.renderedPosition();
+    let pan = cy.pan();
+    let zoom = cy.zoom();
+
+    let modelToRenderedPt = p => {
+      return {
+        x: p.x * zoom + pan.x,
+        y: p.y * zoom + pan.y
+      };
+    };
+
+    let mid = bb => ({ x: (bb.x1 + bb.x2)/2, y: (bb.y1 + bb.y2)/2 });
+    let pos = mid(el.renderedBoundingBox());
     let vpW = cy.width();
     let vpH = cy.height();
-    let docEl = document.get( node.id() );
+    let docEl = document.get( el.id() );
 
-    let tippies = node.scratch('_tippies');
+    let tippies = el.scratch('_tippies');
 
     if( toggleOn === undefined ){
       toggleOn = tippies == null;
@@ -318,9 +320,9 @@ module.exports = function({ bus, cy, document }){
 
     if( !toggleOn ){
       if( togglePpts ){
-        hideTippy( node, '_pptTippies' );
+        hideTippy( el, '_pptTippies' );
       } else {
-        hideTippy( node );
+        hideTippy( el );
       }
     } else {
       if( !togglePpts ){
@@ -331,30 +333,22 @@ module.exports = function({ bus, cy, document }){
 
         tippies = [];
 
-        node.scratch('_tippies', tippies);
+        el.scratch('_tippies', tippies);
       } else {
-        node.scratch('_pptTippies', []);
+        el.scratch('_pptTippies', []);
       }
 
       if( docEl.isInteraction() ){
-        let pan = cy.pan();
-        let zoom = cy.zoom();
         let isVertical;
         let ppts = docEl.participants();
-        let pptNodes = ppts.map( ppt => cy.getElementById( ppt.id() ) );
-        let src = pptNodes[0]; // assume binary interactions for now
-        let tgt = pptNodes[pptNodes.length - 1];
-        let pSrc = src.position();
-        let pTgt = tgt.position();
+        let srcNode = el.source();
+        let tgtNode = el.target();
+
+        let pSrc = srcNode.position();
+        let pTgt = tgtNode.position();
+
         let dx = pTgt.x - pSrc.x;
         let dy = pTgt.y - pSrc.y;
-
-        let modelToRenderedPt = p => {
-          return {
-            x: p.x * zoom + pan.x,
-            y: p.y * zoom + pan.y
-          };
-        };
 
         if( Math.abs(dx) > Math.abs(dy) ){
           isVertical = false;
@@ -369,12 +363,19 @@ module.exports = function({ bus, cy, document }){
           flipIntnTippy = false;
         }
 
-        let edgesBb = node.edgesWith( src.add(tgt) ).renderedBoundingBox();
+        let edgesBb = el.add(el.connectedNodes()).renderedBoundingBox();
 
-        let intnTippyAway = false;
+        let intnTippyAway = true; // always shift
 
         let getIntnTippyBb = () => {
-          let bb = node.renderedBoundingBox({ includeLabels: false, includeOverlays: false });
+          let bb = el.isNode () ? el.renderedBoundingBox({ includeLabels: false, includeOverlays: false }) : {
+            x1: pos.x - 1,
+            x2: pos.x + 1,
+            w: 2,
+            y1: pos.y - 1,
+            y2: pos.y + 1,
+            h: 2
+          };
 
           bb = _.assign( {}, bb ); // copy
 
@@ -399,11 +400,11 @@ module.exports = function({ bus, cy, document }){
 
         if( !togglePpts ){
           makeTippy({
-            el: node,
-            ref: getRef( getIntnTippyBb, node ),
-            content: getContentDiv( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ) ),
+            el: el,
+            ref: getRef( getIntnTippyBb, el ),
+            content: getContentDiv( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgtNode } ) ),
             overrides: {
-              distance: 0,
+              distance: 10,
               placement: isVertical ? (flipIntnTippy ? 'left' : 'right') : (flipIntnTippy ? 'top' : 'bottom'),
               duration: [250, 0]
             }
@@ -412,20 +413,20 @@ module.exports = function({ bus, cy, document }){
           // cause tippy to animate a distance away
           setTimeout(() => {
             intnTippyAway = true;
-          }, 0);
+          }, 1);
         } else {
           ppts.forEach( ppt => {
             if( !document.editable() ){ return; }
 
             let pptNode = cy.getElementById( ppt.id() );
-            let edge = pptNode.edgesWith( cy.getElementById( docEl.id() ) );
+            let edge = el;
 
             let getArrowBb = () => {
-              let arrowPos = modelToRenderedPt( edge.targetEndpoint() );
+              let arrowPos = modelToRenderedPt( ppt.id() === tgtNode.id() ? edge.targetEndpoint() : edge.sourceEndpoint() );
 
               let arrowBb = {
-                w: 3,
-                h: 3,
+                w: 2,
+                h: 2,
                 x1: arrowPos.x - 1,
                 x2: arrowPos.x + 1,
                 y1: arrowPos.y - 1,
@@ -436,9 +437,9 @@ module.exports = function({ bus, cy, document }){
             };
 
             makeTippy({
-              el: node,
+              el: el,
               ref: getRef( getArrowBb, pptNode ),
-              content: getContentDiv( h( ParticipantInfo, { interaction: docEl, participant: ppt, bus, document, eventTarget: tgt } ) ),
+              content: getContentDiv( h( ParticipantInfo, { interaction: docEl, participant: ppt, bus, document, eventTarget: tgtNode } ) ),
               overrides: {
                 distance: 10 + 5 * zoom,
                 placement: isVertical ? (flipIntnTippy ? 'right' : 'left') : (flipIntnTippy ? 'bottom' : 'top'),
@@ -451,9 +452,9 @@ module.exports = function({ bus, cy, document }){
         } // if toggle ppts
       } else { // entity
         makeTippy({
-          el: node,
-          ref: getRef( () => node.renderedBoundingBox({ includeLabels: true, includeOverlays: false }), node ),
-          content: getContentDiv( h( ElementInfo, { element: docEl, bus, document, eventTarget: tgt } ) )
+          el: el,
+          ref: getRef( () => el.renderedBoundingBox({ includeLabels: true, includeOverlays: false }), el ),
+          content: getContentDiv( h( ElementInfo, { element: docEl, bus, document, eventTarget: el } ) )
         });
       }
     } // if toggle on

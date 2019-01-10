@@ -1,7 +1,7 @@
 const DataComponent = require('../data-component');
 const h = require('react-hyperscript');
 const ReactDom = require('react-dom');
-const { isInteractionNode, initCache, SingleValueCache, error } = require('../../../util');
+const { initCache, SingleValueCache, error } = require('../../../util');
 const _ = require('lodash');
 const defs = require('../../defs');
 const { animateDomForEdit } = require('../animate');
@@ -29,10 +29,6 @@ class InteractionInfo extends DataComponent {
 
     let p = this.props;
     let el = p.element;
-    let doc = p.document;
-    let evtTgt = p.eventTarget;
-    let pptNode = evtTgt.connectedNodes().filter( el => !isInteractionNode(el) );
-    let ppt = doc.get( pptNode.id() );
 
     let progression = new Progression({
       STAGES: ['PARTICIPANT_TYPES', 'ASSOCIATE', 'COMPLETED'],
@@ -53,7 +49,6 @@ class InteractionInfo extends DataComponent {
       el,
       stage,
       description: p.element.description(),
-      ppt: ppt,
       progression,
       bus: p.bus || new EventEmitter(),
       assocNotification,

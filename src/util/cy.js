@@ -37,33 +37,33 @@ function makeCyElesForEle( docEl ){
       name: docEl.name(),
       type: docEl.type(),
       isEntity: docEl.isEntity(),
-      isInteraction: docEl.isInteraction(),
-      associated: docEl.isEntity() ? docEl.associated() : undefined,
-      completed: docEl.isEntity() ? docEl.completed() : undefined
-    },
-    position: _.clone( docEl.position() )
+      isInteraction: docEl.isInteraction()
+    }
   };
 
-  els.push( el );
-
-  if( docEl.isInteraction() ){ // add edges connecting participants to interaction node
-    let edges = makePptEdges( docEl );
-
-    els.push( ...edges );
+  if( docEl.isEntity() ){
+    el.position = _.clone( docEl.position() );
+    el.data.associated = docEl.associated();
+    el.data.completed = docEl.completed();
   }
 
-  return els;
-}
+  if( docEl.isInteraction() ){
+    let ppts = docEl.participants();
+    let assoc = docEl.association();
+    let src = assoc.getSource();
+    let tgt = assoc.getTarget();
 
-function makePptEdges( docIntn, docPpt ){
-  let els = [];
-  let ppts = docPpt ? [ docPpt ] : docIntn.participants();
+    if( !src || !tgt ){
+      src = ppts[0];
+      tgt = ppts[1];
+    }
 
-  ppts.forEach( ppt => {
-    els.push({
-      data: { source: docIntn.id(), target: ppt.id(), type: docIntn.participantType( ppt ).value }
-    });
-  } );
+    el.data.source = src.id();
+    el.data.target = tgt.id();
+    el.data.sign = assoc.getSign().value;
+  }
+
+  els.push( el );
 
   return els;
 }
@@ -80,4 +80,4 @@ function isInteractionNode( el ){
   return el.data('isInteraction') === true;
 }
 
-module.exports = { makeCyEles, makePptEdges, regCyExts, regCyLayouts, getCyLayoutOpts, isInteractionNode };
+module.exports = { makeCyEles, regCyExts, regCyLayouts, getCyLayoutOpts, isInteractionNode };

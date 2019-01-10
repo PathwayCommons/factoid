@@ -13,33 +13,39 @@
   opacity: 1;
 }
 
-.editor-buttons {
+.editor-buttons,
+.editor-main-menu {
+  box-sizing: border-box;
   position: absolute;
   left: 0;
-  top: 0;
   z-index: 1;
   display: inline-flex;
   flex-direction: column;
   background: rgba(255, 255, 255, 0.5);
-  border-bottom-right-radius: 8px;
+  border-bottom-right-radius: 0.5em;
 }
 
-.editor-buttons-right {
+.editor-buttons {
+  border-top-right-radius: 0.5em;
+  top: 6em;
+}
+
+.editor-main-menu {
+  top: 0;
+}
+
+.editor-submit {
   position: absolute;
   right: 0;
-  top: 0;
+  box-sizing: border-box;
   z-index: 1;
-  display: inline-flex;
-  flex-direction: column;
+  padding: 0.75em 0.5em;
   background: rgba(255, 255, 255, 0.5);
-  border-bottom-left-radius: 8px;
-  transform: translate3d(0, 0, 0);
-  transition: transform 200ms ease-out;
+  border-bottom-left-radius: 0.5em;
 }
 
-.editor-buttons-right-shifted {
-  transform: translate3d(-21.5em, 0, 0);
-  transition: transform 200ms ease-out;
+.editor-submit-button {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .editor-button-group {
@@ -67,19 +73,27 @@
   font-size: 1.25em;
 }
 
-.editor-branding {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.5);
+.editor-title {
   z-index: 1;
+  position: absolute;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0.333em 0.5em;
+  text-align: center;
+  width: 100%;
+  pointer-events: none;
+}
+
+.editor-title-content {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0.375em 0.5em;
   border-bottom-left-radius: 0.25em;
   border-bottom-right-radius: 0.25em;
-  pointer-events: none;
-  cursor: default;
-  max-width: calc(100% - 8em);
+  max-width: calc(100% - 13em);
+  pointer-events: all;
+}
+
+.editor-title-info {
+  font-size: var(--smallFontSize);
 }
 
 .editor-task-list-active {
@@ -87,10 +101,6 @@
     left: calc(50% - 11em);
     max-width: calc(100% - 32em);
   }
-}
-
-.editor-title {
-  margin: 0.25em 0;
 }
 
 .editor-graph {
@@ -132,21 +142,6 @@
   width: 100%;
 }
 
-.editor-linkout {
-  min-width: 14em;
-  max-width: 40em;
-  width: 40vw;
-  padding: 0.25em;
-
-  & .document-linkout-address-name:first-child {
-    margin-top: 0;
-  }
-
-  & .document-linkout-address:last-child .document-linkout-address-val {
-    margin-bottom: 0;
-  }
-}
-
 .task-list-button {
   position: relative;
 }
@@ -164,20 +159,4 @@
   border: 2px solid;
   border-radius: 15px;
   text-align: center;
-}
-
-.editor-more-menu {
-  padding: 0.25em;
-}
-
-.editor-more-menu-items {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.editor-more-button {
-  width: 100%;
-  text-align: left;
-  margin: 0.25em 0;
 }

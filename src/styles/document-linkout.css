@@ -1,3 +1,7 @@
-.document-linkout-address-url {
-  width: calc(100% - 2em);
+.document-linkout-address-val {
+  margin: 1em 0;
+
+  & .copy-field-input {
+    width: calc(100% - 2em);
+  }
 }

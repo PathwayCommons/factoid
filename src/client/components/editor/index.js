@@ -4,23 +4,24 @@ const h = require('react-hyperscript');
 const EventEmitter = require('eventemitter3');
 const io = require('socket.io-client');
 const _ = require('lodash');
-const Promise = require('bluebird');
 
-const { getId, defer, makeClassList } = require('../../../util');
+const { getId, defer, makeClassList, tryPromise } = require('../../../util');
 const Document = require('../../../model/document');
+const { PARTICIPANT_TYPE } = require('../../../model/element/participant-type');
 
 const Notification = require('../notification');
 const CornerNotification = require('../notification/corner');
+const Popover = require('../popover/popover');
 
 const logger = require('../../logger');
 const debug = require('../../debug');
 
 const makeCytoscape = require('./cy');
 const defs = require('./defs');
-const { EditorButtons, AppButtons } = require('./buttons');
+const EditorButtons = require('./buttons');
+const MainMenu = require('../main-menu');
 const UndoRemove = require('./undo-remove');
-const Help = require('./help');
-const { TaskList } = require('./task-list');
+const { TaskView } = require('../tasks');
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -63,12 +64,12 @@ class Editor extends DataComponent {
       l.lastTime = now;
     };
 
-    let rmAvailTimeout = null;
+    this.rmAvailTimeout = null;
 
     let makeRmAvailable = () => {
-      clearTimeout( rmAvailTimeout );
+      clearTimeout( this.rmAvailTimeout );
 
-      rmAvailTimeout = setTimeout( () => {
+      this.rmAvailTimeout = setTimeout( () => {
         this.setData({ undoRemoveAvailable: false });
       }, RM_AVAIL_DURATION );
 
@@ -103,6 +104,8 @@ class Editor extends DataComponent {
       }
     });
 
+    doc.on('submit', () => this.dirty());
+
     doc.on('load', () => {
       doc.interactions().forEach( listenForRmPpt );
 
@@ -117,7 +120,7 @@ class Editor extends DataComponent {
 
     let bus = new EventEmitter();
 
-    bus.on('drawtoggle', toggle => this.toggleDrawMode(toggle));
+    bus.on('drawtoggle', (toggle, type) => this.toggleDrawMode(toggle, type));
     bus.on('addelement', data => this.addElement( data ));
     bus.on('remove', docEl => this.remove( docEl ));
 
@@ -125,7 +128,6 @@ class Editor extends DataComponent {
       bus: bus,
       document: doc,
       drawMode: false,
-      taskListMode: false,
       newElementShift: 0,
       mountDeferred: defer(),
       initted: false,
@@ -138,7 +140,7 @@ class Editor extends DataComponent {
 
     logger.info('Checking if doc with id %s already exists', doc.id());
 
-    Promise.try( () => doc.load() )
+    tryPromise( () => doc.load() )
       .then( () => logger.info('The doc already exists and is now loaded') )
       .catch( err => {
         logger.info('The doc does not exist or an error occurred');
@@ -201,32 +203,36 @@ class Editor extends DataComponent {
     return this.data.document.editable();
   }
 
-  toggleDrawMode( toggle ){
+  toggleDrawMode( toggle, type = PARTICIPANT_TYPE.UNSIGNED ){
     if( !this.editable() ){ return; }
 
-    let on = toggle === undefined ? !this.drawMode() : toggle;
+    let on;
 
-    this.data.bus.emit( on ? 'drawon' : 'drawoff' );
+    if( toggle == null ){
+      if( this.data.drawModeType == null || type.value !== this.data.drawModeType.value ){
+        on = true; // keep on if just changing type
+      } else {
+        on = !this.drawMode(); // otherwise flip
+      }
+    } else {
+      on = !!toggle; // ensure bool
+    }
 
-    return new Promise( resolve => this.setData({ drawMode: on }, resolve) );
+    if( on ){
+      this.data.bus.emit('drawon', type );
+    } else {
+      this.data.bus.emit('drawoff');
+    }
+
+    return new Promise( resolve => this.setData({ drawMode: on, drawModeType: type }, resolve) );
   }
 
   drawMode(){
     return this.data.drawMode;
   }
 
-  toggleTaskListMode( toggle ){
-    if( !this.editable() ){ return; }
-
-    let on = toggle === undefined ? !this.taskListMode() : toggle;
-
-    this.data.bus.emit( on ? 'taskliston' : 'tasklistoff' );
-
-    return new Promise( resolve => this.setData({ taskListMode: on }, resolve) );
-  }
-
-  taskListMode(){
-    return this.data.taskListMode;
+  drawModeType(){
+    return this.data.drawModeType;
   }
 
   addElement( data = {} ){
@@ -263,7 +269,7 @@ class Editor extends DataComponent {
     let create = () => el.create();
     let add = () => doc.add( el );
 
-    return Promise.try( synch ).then( create ).then( add ).then( () => el );
+    return tryPromise( synch ).then( create ).then( add ).then( () => el );
   }
 
   getLastAddedElement(){
@@ -288,7 +294,7 @@ class Editor extends DataComponent {
     let allIntnsRmPpt = () => Promise.all( doc.interactions().map( rmPpt ) );
     let rmEl = () => doc.remove( docEl );
 
-    Promise.try( allIntnsRmPpt ).then( rmEl );
+    tryPromise( allIntnsRmPpt ).then( rmEl );
   }
 
   undoRemove(){
@@ -308,7 +314,7 @@ class Editor extends DataComponent {
       let restorePpt = () => intn.add( ppt );
       let restoreType = () => intn.participantType( ppt, type );
 
-      return Promise.try( restorePpt ).then( restoreType );
+      return tryPromise( restorePpt ).then( restoreType );
     } ) );
 
     return Promise.all([ restoreEls(), restorePpts() ]).then( makeRmUnavil );
@@ -345,7 +351,7 @@ class Editor extends DataComponent {
   resetMenuState(){
     this.data.bus.emit('closetip');
     this.data.bus.emit('hidetips');
-    return Promise.all([this.toggleTaskListMode(false),  this.toggleDrawMode(false)]).delay(250);
+    return Promise.all([this.toggleDrawMode(false)]).delay(250);
   }
 
   render(){
@@ -353,25 +359,34 @@ class Editor extends DataComponent {
     let controller = this;
     let { history } = this.props;
 
-    let showTaskList = this.data.taskListMode;
-
     let editorContent = this.data.initted ? [
-      h('div.editor-branding', [
-        h('div.editor-title', document.name() === '' ? 'Untitled document' : document.name())
+      h('div.editor-title', [
+        h('div.editor-title-content', [
+          h('div.editor-title-name', document.name() || 'Unnamed document'),
+          h('div.editor-title-info', [
+            h('span', document.authorName() ? `${document.authorName()} et al., ` : ``),
+            h('span', `${document.year()}`),
+            h('span', document.journalName() ? `, ${document.journalName()}` : ``)
+          ])
+        ])
+      ]),
+      h('div.editor-main-menu', [
+        h(MainMenu, { bus, document, history, networkEditor: true })
+      ]),
+      h('div.editor-submit', [
+        h(Popover, { tippy: { html: h(TaskView, { document, bus } ) } }, [
+          document.submitted() ? h('button.editor-submit-button', 'Submitted') : h('button.editor-submit-button.salient-button', 'Submit')
+        ])
       ]),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
-      h(AppButtons, { className: showTaskList ? 'editor-buttons-right.editor-buttons-right-shifted' : 'editor-buttons-right', controller, document, bus, history } ),
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
-      h(`div.${showTaskList ? 'editor-graph-shifted#editor-graph' : 'editor-graph#editor-graph'}`),
-      h(Help, { document, bus, controller }),
-      h(TaskList, { document, bus, controller, show: showTaskList })
+      h('div.editor-graph#editor-graph')
     ] : [];
 
     return h('div.editor', {
       className: makeClassList({
-        'editor-initted': this.data.initted,
-        'editor-task-list-active': this.taskListMode()
+        'editor-initted': this.data.initted
       })
     }, editorContent);
   }
@@ -392,6 +407,7 @@ class Editor extends DataComponent {
     document.elements().forEach( el => el.removeAllListeners() );
     document.removeAllListeners();
     bus.removeAllListeners();
+    clearTimeout( this.rmAvailTimeout );
   }
 }
 

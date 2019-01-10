@@ -10,6 +10,30 @@
   justify-content: space-between;
 }
 
+.form-main-menu,
+.form-submit {
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 1;
+  display: inline-flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.5);
+  border-bottom-right-radius: 0.5em;
+}
+
+.form-submit-button {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.form-main-menu {
+  left: 0;
+}
+
+.form-submit {
+  right: 0;
+  padding: 0.75em 0.5em;
+}
+
 .form-app-bar {
   display: flex;
   flex-direction: column;
@@ -60,24 +84,16 @@
   }
 }
 
-.delete-interaction {
-
-}
-
-.form-submit {
-  color: #EEEEEE;
-  background-color: #00A84C;
-  height: 2.5em;
-  margin-top: 1.5em;
-  margin-bottom: 4em;
-  padding: 0 20px;
-  display: flex;
-  flex-direction: row;
-}
-
 .form-options {
   margin: 0 0.5em;
-  width: 10em;
+}
+
+.form-verb-phrase {
+  width: 9em;
+}
+
+.form-post-phrase {
+  width: 17em;
 }
 
 .add-new-interaction-icon {
@@ -99,7 +115,6 @@
 .entity-form-info {
   opacity: 0;
   pointer-events: none;
-  margin-top: 0.5em;
   position: fixed;
   z-index: 10;
   top: 0;
@@ -119,7 +134,7 @@
   top: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0 ,0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   cursor: pointer;
   opacity: 0;
   pointer-events: none;

@@ -1,8 +1,7 @@
 const fetch = require('node-fetch');
-const Promise = require('bluebird');
 const querystring = require('querystring');
 const _ = require('lodash');
-const { memoize } = require('../../../../util');
+const { memoize, tryPromise } = require('../../../../util');
 const LRUCache = require('lru-cache');
 const convert = require('./search-string-conversion');
 
@@ -98,7 +97,7 @@ const searchForAllIds = memoize( search => {
   let url = PUBCHEM_BASE_URL + '/substance/name/' + querystring.escape( search ) + '/cids/json?name_type=word&&listkey_count=' + MAX_SEARCH_SIZE;
 
   return (
-    Promise.try( () => fetch( url ) )
+    tryPromise( () => fetch( url ) )
     .then( res => res.json() )
     .then( res => {
       let ents = _.get( res, ['InformationList', 'Information']);
@@ -148,7 +147,7 @@ const getEntriesById = ( ids ) => {
   let synonyms = new Map();
 
   let getSynonymsPromise = addSyns && uncachedIds.length > 0 ? (
-    Promise.try( () => fetch(`${PUBCHEM_BASE_URL}/compound/cid/${uncachedIds.join(',')}/synonyms/json`) )
+    tryPromise( () => fetch(`${PUBCHEM_BASE_URL}/compound/cid/${uncachedIds.join(',')}/synonyms/json`) )
     .then( res => res.json() )
     .then( res => res.InformationList.Information )
     .then( list => {
@@ -172,13 +171,13 @@ const getEntriesById = ( ids ) => {
 
   let handleSynonyms = () => {
     return (
-      Promise.try( () => getSynonymsPromise )
+      tryPromise( () => getSynonymsPromise )
       .then( storeSynonymsInCache )
     );
   };
 
   return (
-    Promise.try( () => fetch( url ) )
+    tryPromise( () => fetch( url ) )
     .then( res => res.json() )
     .then( processEnts )
     .then( putEntsInCache )
@@ -189,7 +188,7 @@ const getEntriesById = ( ids ) => {
 
 const get = opts => {
   return (
-    Promise.try( () => getEntriesById([ +opts.id ]) )
+    tryPromise( () => getEntriesById([ +opts.id ]) )
     .then( ents => ents[0] )
   );
 };
@@ -199,7 +198,7 @@ const search = opts => {
   let limit = _.get( opts, ['limit'], MAX_SEARCH_SIZE );
 
   return (
-    Promise.try( () => searchForAllIds( opts.name || opts.id ) )
+    tryPromise( () => searchForAllIds( opts.name || opts.id ) )
     .then( getEntriesById )
     .then( ents => ents.slice( offset, offset + limit ) )
   );

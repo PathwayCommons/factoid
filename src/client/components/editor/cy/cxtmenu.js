@@ -1,6 +1,7 @@
 const _ = require('lodash');
 
-const icon = name => '<span class="cxtmenu-command-icon"><i class="material-icons">' + name + '</i></span>';
+const matIcon = (name, cls) => `<span class="cxtmenu-command-icon"><i class="material-icons ${cls}">${name}</i></span>`;
+const customIcon = (name, cls) => `<span class="cxtmenu-command-icon"><i class="icon icon-white ${name} ${cls}"></i></span>`;
 
 const DEFAULTS = Object.freeze({
   fillColor: 'rgba(0, 0, 0, 0.85)',
@@ -8,52 +9,56 @@ const DEFAULTS = Object.freeze({
   openMenuEvents: 'cxttapstart'
 });
 
+const { PARTICIPANT_TYPE } = require('../../../../model/element/participant-type');
+
 module.exports = function({ cy, document, bus }){
   if( !document.editable() ){ return; }
 
-  let drawCmd = {
-    content: icon('keyboard_tab'),
+  let drawUnsignedCmd = {
+    content: customIcon('icon-arrow-unsigned', 'icon-rot-345'),
     select: function( el ){
-      bus.emit( 'drawfrom', el );
+      bus.emit( 'drawfrom', el, PARTICIPANT_TYPE.UNSIGNED );
+    }
+  };
+
+  let drawPositiveCmd = {
+    content: customIcon('icon-arrow-positive', 'icon-rot-345'),
+    select: function( el ){
+      bus.emit( 'drawfrom', el, PARTICIPANT_TYPE.POSITIVE );
+    }
+  };
+
+  let drawNegativeCmd = {
+    content: customIcon('icon-arrow-negative', 'icon-rot-345'),
+    select: function( el ){
+      bus.emit( 'drawfrom', el, PARTICIPANT_TYPE.NEGATIVE );
     }
   };
 
   let rmElCmd = {
-    content: icon('clear'),
+    content: matIcon('clear'),
     select: function( el ){
       bus.emit('removebycy', el);
     }
   };
 
   let rmSelCmd = {
-    content: icon('clear'),
+    content: matIcon('clear'),
     select: function(){
       bus.emit('removeselected');
     }
   };
 
   let addEntCmd = {
-    content: icon('add_circle'),
+    content: matIcon('fiber_manual_record'),
     select: function(){
       bus.emit('addelementmouse');
     }
   };
 
-  let drawModeCmd = {
-    content: icon('keyboard_tab'),
-    select: function(){
-      bus.emit('drawtoggle');
-    }
-  };
-
-  cy.cxtmenu( _.assign( {}, DEFAULTS, {
-    selector: 'node[?isInteraction]',
-    commands: [ drawCmd, rmElCmd ]
-  } ) );
-
   cy.cxtmenu( _.assign( {}, DEFAULTS, {
     selector: 'node[?isEntity]',
-    commands: [ drawCmd, rmElCmd ]
+    commands: [ drawUnsignedCmd, drawPositiveCmd, drawNegativeCmd, rmElCmd ]
   } ) );
 
   cy.cxtmenu( _.assign( {}, DEFAULTS, {
@@ -61,7 +66,7 @@ module.exports = function({ cy, document, bus }){
     commands: [ rmElCmd ]
   } ) );
 
-  let bgCmds = [ drawModeCmd, addEntCmd, rmSelCmd ];
+  let bgCmds = [ addEntCmd, rmSelCmd ];
 
   cy.cxtmenu( _.assign( {}, DEFAULTS, {
     selector: 'core',

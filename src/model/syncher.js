@@ -1,5 +1,4 @@
-const { fill, error, promisifyEmit, mixin, ensureArray, assert, jsonHash } = require('../util');
-const Promise = require('bluebird');
+const { fill, error, promisifyEmit, mixin, ensureArray, assert, jsonHash, tryPromise } = require('../util');
 const EventEmitterMixin = require('./event-emitter-mixin');
 const _ = require('lodash');
 const uuid = require('uuid');
@@ -380,7 +379,7 @@ class Syncher {
       };
     }
 
-    return Promise.try( insert ).then( setup ).then( () => this );
+    return tryPromise( insert ).then( setup ).then( () => this );
   }
 
   load( setup = _.noop ){
@@ -410,7 +409,7 @@ class Syncher {
       };
     }
 
-    return Promise.try( find ).then( assign ).then( setup ).then( () => {
+    return tryPromise( find ).then( assign ).then( setup ).then( () => {
       // let alreadyFilled = this.filled;
 
       this.filled = true;
@@ -746,7 +745,7 @@ class Syncher {
     if( this.table ){
       let write = () => this.updateDatabaseWithOp( op, obj );
 
-      update = () => Promise.try( write ).then( checkStatus ).then( emitSelf );
+      update = () => tryPromise( write ).then( checkStatus ).then( emitSelf );
     } else if( !this.filled ){ // only a local (not yet synched) instance
       update = () => Promise.resolve().then( emitSelf );
     } else {
@@ -757,14 +756,13 @@ class Syncher {
 
         emitSelf(); // update synchronously and optimistically on the clientside
 
-        return Promise
-          .try( () => emitServer( 'update', this.data.id, this.data.secret, this.data.liveId, op.id, options.type, obj ) )
+        return tryPromise( () => emitServer( 'update', this.data.id, this.data.secret, this.data.liveId, op.id, options.type, obj ) )
           .then( () => this.removeLocalOp( op.id ) )
         ;
       };
     }
 
-    return Promise.try( update ).then( () => this );
+    return tryPromise( update ).then( () => this );
   }
 
   updateByType( type, field, value, options ){
@@ -835,7 +833,7 @@ class Syncher {
       let markDb = () => this.updateDatabase({ destroyed: true, liveId: this.data.liveId });
       let del = () => this.table.get( this.data.id ).delete().run( this.conn );
 
-      remove = () => Promise.try( markDb ).then( checkStatus ).then( del ).then( checkStatus ).then( markDestroyed ).then( emitSelf );
+      remove = () => tryPromise( markDb ).then( checkStatus ).then( del ).then( checkStatus ).then( markDestroyed ).then( emitSelf );
     } else if( !this.filled ){ // i.e. local instance, yet unsynched
       remove = () => Promise.resolve().then( markDestroyed ).then( emitSelf );
     } else {
@@ -854,7 +852,7 @@ class Syncher {
       remove = () => unsynch().then( del );
     }
 
-    return Promise.try( remove ).then( teardown ).then( () => this );
+    return tryPromise( remove ).then( teardown ).then( () => this );
   }
 
   json(){

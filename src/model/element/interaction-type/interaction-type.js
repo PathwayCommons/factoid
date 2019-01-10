@@ -4,6 +4,12 @@ const { PARTICIPANT_TYPE } = require('../participant-type');
 const VALUE = 'unset';
 const DISPLAY_VALUE = 'Unset';
 
+const allowedParticipantTypes = () => { // i.e. settable by the user
+  const T = PARTICIPANT_TYPE;
+
+  return [ T.UNSIGNED, T.POSITIVE, T.NEGATIVE ];
+};
+
 // abstract base class
 class InteractionType {
   constructor( interaction ){
@@ -14,14 +20,16 @@ class InteractionType {
     this.interaction = interaction;
   }
 
-  allowedParticipantTypes(){ // i.e. settable by the user
-    return [ PARTICIPANT_TYPE.UNSIGNED, PARTICIPANT_TYPE.POSITIVE, PARTICIPANT_TYPE.NEGATIVE ];
+  static allowedParticipantTypes(){
+    return allowedParticipantTypes();
+  }
+
+  allowedParticipantTypes(){
+    return allowedParticipantTypes();
   }
 
   has( pptType ){
-    let intn = this.interaction;
-
-    return intn.participantsOfType(pptType).length > 0;
+    return this.interaction.participantsOfType(pptType).length > 0;
   }
 
   isPositive(){
@@ -36,8 +44,20 @@ class InteractionType {
     return this.isPositive() || this.isNegative();
   }
 
-  areParticipantsTyped(){
-    return true;
+  getSign() {
+    let T = PARTICIPANT_TYPE;
+
+    if( this.isNegative() ){
+      return T.NEGATIVE;
+    } else if ( this.isPositive() ){
+      return T.POSITIVE;
+    } else {
+      return T.UNSIGNED;
+    }
+  }
+
+  isComplete(){
+    return false;
   }
 
   setParticipantAs( ppt, type ){
@@ -51,97 +71,64 @@ class InteractionType {
     ]);
   }
 
-  setParticipantAsPositive(ppt ){
-    return this.setParticipantAs( ppt, PARTICIPANT_TYPE.POSITIVE );
-  }
-
-  setParticipantAsNegative( ppt ){
-    return this.setParticipantAs( ppt, PARTICIPANT_TYPE.NEGATIVE );
-  }
-
-  isPromotion(){
-    return this.isPositive();
-  }
-
-  setAsPromotionOf( ppt ){
-    return this.setParticipantAsPositive( ppt );
-  }
-
-  isActivation(){
-    return this.isPositive();
-  }
-
-  setAsActivationOf( ppt ){
-    return this.setParticipantAsPositive( ppt );
-  }
-
-  isInhibition(){
-    return this.isNegative();
-  }
-
-  setAsInhibitionOf( ppt ){
-    return this.setParticipantAsNegative( ppt );
-  }
-
   getTarget(){
     let intn = this.interaction;
-
     let ppts = intn.participantsNotOfType( PARTICIPANT_TYPE.UNSIGNED );
-
-    if( ppts.length > 1 ){ // can't have more than one target
-      throw error(`Can not get target, as more than two participants of interaction ${intn.id()} are signed: ` + intn.participants().map( ppt => ppt.id() ).join(', '));
-    }
-
-    return ppts[0];
+    // assoc. cannot have more than one target,
+    // but this must be checked somewhere else (no need to throw an exception here)
+    return( ppts.length > 1 ) ? null : ppts[0];
   }
 
   setTarget( ppt ){
     if( this.isNegative() ){
-      return this.setParticipantAsNegative( ppt );
+      return this.setParticipantAs( ppt, PARTICIPANT_TYPE.NEGATIVE );
     } else if( this.isPositive() ){
-      return this.setParticipantAsPositive( ppt );
+      return this.setParticipantAs( ppt, PARTICIPANT_TYPE.POSITIVE );
     } else {
-      return this.setParticipantAsPositive( PARTICIPANT_TYPE.UNSIGNED_TARGET );
+      throw new Error(`Can not set target of unsigned/undirected interaction`);
     }
   }
 
   getSource(){
     let intn = this.interaction;
     let ppts = intn.participantsOfType( PARTICIPANT_TYPE.UNSIGNED );
-
-    if( ppts.length > 1 ){ // can't have more than one source
-      throw error(`Can not get source, as more than two participants of interaction ${intn.id()} are unsigned: ` + intn.participants().map( ppt => ppt.id() ).join(', '));
-    }
-
-    return ppts[0];
+    // assoc. cannot have more than one source,
+    // but this must be checked somewhere else (no need to throw an exception here)
+    return ( ppts.length > 1 ) ? null : ppts[0];
   }
 
   toBiopaxTemplate() {
-    throw `Abstract method toBiopaxTemplate() is not overridden for interaction type of ${this.value}`;
+    throw new Error(`Abstract method toBiopaxTemplate() is not overridden for interaction type of ${this.value}`);
   }
 
-  toString(expr = 'interacts with'){
-    let intn = this.interaction;
+  toString(verbPhrase, post = ''){
     let src, tgt;
 
-    try {
-      src = this.getSource();
-      tgt = this.getTarget();
-    } catch( err ){
-      let ppts = intn.participants();
+    // covers cases: positive, negative, unsigned-target
+    src = this.getSource();
+    tgt = this.getTarget();
 
-      src = ppts[0];
-      tgt = ppts[1];
+    if( !src || !tgt ){
+      if( this.isSigned() ){
+        throw new Error(`Source or target is undefined for signed interaction type ${this.value}`);
+      }
+
+      // fall back on unordered list
+      [src, tgt] = this.interaction.participants();
+    }
+
+    if( !verbPhrase ){
+      verbPhrase = this.getSign().verbPhrase;
     }
 
     let srcName = src.name() || '(?)';
     let tgtName = tgt.name() || '(?)';
 
-    return `${srcName} ${expr} ${tgtName}`;
+    return `${srcName} ${verbPhrase} ${tgtName} ${post}`;
   }
 
   static isAllowedForInteraction( intn ){ // eslint-disable-line no-unused-vars
-    return true;
+    return false;
   }
 
   static get value(){ return VALUE; }

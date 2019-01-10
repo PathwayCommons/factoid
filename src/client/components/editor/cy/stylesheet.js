@@ -55,27 +55,35 @@ function makeStylesheet(){
         'curve-style': 'bezier',
         'line-color': defaultColor,
         'target-arrow-color': defaultColor,
-        'source-arrow-color': defaultColor,
-        'source-endpoint': 'inside-to-node',
-        'target-endpoint': 'outside-to-node'
+        'source-arrow-color': defaultColor
       }
     },
     {
-      selector: 'node -> node[?isInteraction]',
+      selector: 'edge[sign="positive"]',
       style: {
-        'target-endpoint': 'inside-to-node'
-      }
-    },
-    {
-      selector: 'edge[type="positive"]',
-      style: {
+        'source-arrow-shape': 'none',
         'target-arrow-shape': 'triangle'
       }
     },
     {
-      selector: 'edge[type="negative"]',
+      selector: 'edge[sign="negative"]',
       style: {
+        'source-arrow-shape': 'none',
         'target-arrow-shape': 'tee'
+      }
+    },
+    {
+      selector: 'edge[sign="positive"][?reversed]',
+      style: {
+        'source-arrow-shape': 'triangle',
+        'target-arrow-shape': 'none'
+      }
+    },
+    {
+      selector: 'edge[sign="negative"][?reversed]',
+      style: {
+        'source-arrow-shape': 'tee',
+        'target-arrow-shape': 'none'
       }
     },
     {
@@ -83,6 +91,7 @@ function makeStylesheet(){
       style: {
         'line-color': activeColor,
         'target-arrow-color': activeColor,
+        'source-arrow-color': activeColor,
         'z-index': 999,
         'z-compound-depth': 'top'
       }
@@ -122,9 +131,7 @@ function makeStylesheet(){
         'background-color': activeColor,
         'line-color': activeColor,
         'target-arrow-color': activeColor,
-        'source-arrow-color': activeColor,
-        'source-endpoint': 'inside-to-node',
-        'target-endpoint': 'inside-to-node'
+        'source-arrow-color': activeColor
       }
     },
     {
@@ -146,6 +153,12 @@ function makeStylesheet(){
         'border-color': activeColor,
         'border-width': 4,
         'border-style': 'double'
+      }
+    },
+    {
+      selector: '.eh-ghost-edge.eh-preview-active',
+      style: {
+        'opacity': 0
       }
     }
   ].filter( block => block != null );

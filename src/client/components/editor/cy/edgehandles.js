@@ -1,9 +1,9 @@
 const on = require('./on-key');
-const uuid = require('uuid');
 const _ = require('lodash');
-const Promise = require('bluebird');
 
-const { isInteractionNode } = require('../../../../util');
+const { isInteractionNode, tryPromise } = require('../../../../util');
+
+const { PARTICIPANT_TYPE } = require('../../../../model/element/participant-type');
 
 const SELECT_ON_HANDLE_TAP = false;
 const DRAW_ON_HANDLE_TAP = true;
@@ -15,74 +15,48 @@ module.exports = function({ bus, cy, document, controller }){
   if( !document.editable() ){ return; }
 
   let inDrawMode = false;
+  let pptType = PARTICIPANT_TYPE.UNSIGNED;
   let lastEdgeCreationTime = 0;
 
-  let edgeType = function( source, target ){
-    let alreadyConnectedByEdge = source.edgesWith( target ).length > 0;
-    let srcDocEl = document.get( source.id() );
-    let tgtDocEl = document.get( target.id() );
-    let alreadyConnectedByIntn = document.interactions().some( intn => {
-      return intn.has( srcDocEl ) && intn.has( tgtDocEl );
-    } );
-    let alreadyConnected = alreadyConnectedByEdge || alreadyConnectedByIntn;
-
-    if( alreadyConnected ){
-      return null;
-    } if( isInteractionNode( source ) || isInteractionNode( target ) ){
-      return null; // disable hyperedge-like interactions for now
-      // return 'flat';
-    } else  {
-      return 'node';
-    }
+  let edgeType = function( /*source, target*/ ){
+    return 'flat';
   };
 
   let loopAllowed = function( /*node*/ ){
     return false;
   };
 
-  let nodeParams = function( /*source, target*/ ){ // for interaction nodes
-    let nodeJson = {
+  let edgeParams = function( /*source, target, i*/ ){ //
+    let edgeJson = {
       data: {
-        id: uuid(),
-        type: 'interaction',
-        isInteraction: true,
-        isEntity: false,
-        arity: 2
+        sign: pptType.value
       }
     };
-
-    return nodeJson;
-  };
-
-  let edgeParams = function( /*source, target, i*/ ){
-    let edgeJson = {};
 
     return edgeJson;
   };
 
+  let ghostEdgeParams = function(){
+    return {
+      data: {
+        sign: pptType.value
+      }
+    };
+  };
+
   let complete = function( source, target, addedEles ){
-    let addedNodes = addedEles.nodes();
-    let createdIntnNode = addedNodes.nonempty();
-    let intnNode = createdIntnNode ? addedNodes : isInteractionNode( source ) ? source : target;
-    let idIsNotIntn = el => el.id() !== intnNode.id();
-    let pptNodes = source.add( target ).filter( idIsNotIntn );
+    let pptNodes = source.add( target );
     let ppts = pptNodes.map( n => document.get( n.id() ) );
-    let isChemical = el => el.type() === 'chemical';
-    let isProtein = el => el.type() === 'protein';
+    let isTarget = ppt => ppt.id() === target.id();
 
     let handleIntn = () => {
-      if( createdIntnNode ){
-        return controller.addInteraction({
-          association: (ppts.some(isChemical) && ppts.some(isProtein)) ? 'chemicalprotein' : 'interaction',
-          position: _.clone( intnNode.position() ),
-          entries: ppts.map( ppt => ({ id: ppt.id() }) )
-        });
-      } else {
-        let intn = document.get( intnNode.id() );
-        let add = ppt => intn.add( ppt );
-
-        return Promise.all( ppts.map( add ) ).then( () => intn );
-      }
+      return controller.addInteraction({
+        association: 'interaction',
+        entries: ppts.map( ppt => ({
+          id: ppt.id(),
+          group: isTarget(ppt) ? pptType.value : null
+        }) )
+      });
     };
 
     let rmPreviewEles = () => {
@@ -97,12 +71,18 @@ module.exports = function({ bus, cy, document, controller }){
 
     let disableDrawMode = () => bus.emit('drawtoggle', false);
 
+    let startBatch = () => cy.startBatch();
+
+    let endBatch = () => cy.endBatch();
+
     lastEdgeCreationTime = Date.now();
 
     return (
-      Promise.try( handleIntn )
+      tryPromise( startBatch )
+      .then( handleIntn )
       .then( docIntn => intn = docIntn )
       .then( rmPreviewEles )
+      .then( endBatch )
       .then( disableDrawMode )
       .then( openPopover )
     );
@@ -124,10 +104,11 @@ module.exports = function({ bus, cy, document, controller }){
     handlePosition,
     edgeType,
     loopAllowed,
-    nodeParams,
     edgeParams,
+    ghostEdgeParams,
     complete,
-    start: onStart
+    start: onStart,
+    snap: true
   });
 
   cy.on('ehstart', () => bus.emit('drawstart'));
@@ -172,9 +153,11 @@ module.exports = function({ bus, cy, document, controller }){
     });
   }
 
-  bus.on('drawon', () => {
+  bus.on('drawon', (type) => {
     eh.enableDrawMode();
+
     inDrawMode = true;
+    pptType = type;
   });
 
   bus.on('drawoff', () => {
@@ -183,7 +166,13 @@ module.exports = function({ bus, cy, document, controller }){
     inDrawMode = false;
   });
 
-  bus.on('drawfrom', el => eh.start(el));
+  bus.on('drawfrom', (el, type) => {
+    pptType = type;
 
-  on('d', () => bus.emit('drawtoggle'));
+    eh.start(el);
+  });
+
+  on('2', () => bus.emit('drawtoggle', null, PARTICIPANT_TYPE.UNSIGNED));
+  on('3', () => bus.emit('drawtoggle', null, PARTICIPANT_TYPE.POSITIVE));
+  on('4', () => bus.emit('drawtoggle', null, PARTICIPANT_TYPE.NEGATIVE));
 };

@@ -1,6 +1,5 @@
 let r = require('rethinkdb');
 let fs = require('fs');
-let Promise = require('bluebird');
 let config = require('../config');
 
 let db = {

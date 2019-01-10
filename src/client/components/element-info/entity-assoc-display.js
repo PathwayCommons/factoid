@@ -3,7 +3,7 @@ const Organism = require('../../../model/organism');
 const Highlighter = require('../highlighter');
 const Formula = require('./chemical-formula');
 const Tooltip = require('../popover/tooltip');
-const { PC_LINK_BASE_URL } = require('../../../config');
+const { PC_URL } = require('../../../config');
 
 const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL } = require('../../../config');
 
@@ -53,7 +53,7 @@ let chemical = (m, searchTerms) => {
 
 let link = m => {
   let pcQ = encodeURIComponent(m.name);
-  let pcUrl = `${PC_LINK_BASE_URL}${pcQ}`;
+  let pcUrl = `${PC_URL}search?q=${pcQ}`;
   let pcName = 'Pathway Commons';
   let url, nsName;
 

@@ -29,6 +29,10 @@ textarea.interaction-info-description {
   }
 }
 
+.interaction-info-type-radio-indented {
+  margin-left: 1.25em;
+}
+
 .interaction-info-assoc-radio-label {
   display: block;
 }

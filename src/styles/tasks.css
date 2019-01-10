@@ -32,3 +32,36 @@
   text-align: center;
   color: #fff;
 }
+
+.task-view {
+  width: 300px;
+  padding: 0.25em 0.33em;
+}
+
+.task-view-items {
+  margin-left: 1em;
+
+  & li {
+    margin: 0;
+  }
+}
+
+.task-view-confirm {
+  margin-bottom: 1em;
+}
+
+.task-view-confirm-button-area {
+  text-align: right;
+}
+
+.task-view-done {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-view-done-icon {
+  font-size: 1.25em;
+  text-align: right;
+}

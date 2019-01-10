@@ -3,6 +3,7 @@
 /* app styles */
 @import "./animations.css";
 @import "./base.css";
+@import "./custom-icons.css";
 @import "./popover";
 @import "./react-tabs.css";
 @import "./init-app.css";
@@ -19,10 +20,13 @@
 @import "./example-document.css";
 @import "./document-seeder.css";
 @import "./document-wizard-stepper.css";
-@import "./document-view-chooser.css";
+@import "./document-preview.css";
 @import "./form-editor";
 @import "./document-renamer.css";
 @import "./my-factoids.css";
 @import "./help.css";
-@import "./task-list.css";
+@import "./tasks.css";
 @import "./demo-input.css";
+@import "./main-menu.css";
+@import "./reach-interval-highlighter.css";
+@import "./copy-field.css";

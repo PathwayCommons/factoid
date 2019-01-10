@@ -3,6 +3,7 @@ const { Component } = require('react');
 const AnchorLink = require('react-anchor-link-smooth-scroll').default;
 const Popover = require('./popover/popover');
 const DemoInput = require('./demo-input');
+const { Link } = require('react-router-dom');
 
 class Home extends Component {
   render(){
@@ -32,21 +33,18 @@ class Home extends Component {
           h('div.hero-subtitle', 'SHARE YOUR PATHWAY WITH THE WORLD'),
           h('div.hero-description', 'Publishing and getting your research noticed is essential. Factoid helps you increase the visibility of your publications by linking your research to pathways.'),
           h('div.hero-buttons', [
-            h(Popover, {
-              tippy: {
-                html: h(DemoInput, { history: this.props.history })
-              }
-            }, [
-              h('button.hero-button', 'Try Factoid'),
+            h('p', [
+              h(Popover, {
+                tippy: {
+                  html: h(DemoInput, { history: this.props.history })
+                }
+              }, [
+                h('button.hero-button', 'Try Factoid'),
+              ])
             ])
           ])
         ])
       ]),
-      // h('section.home-section#what', [
-      //   h('div.page-content', [
-      //     h('div.infographic-container', [ h('span.home-infographic') ])
-      //   ])
-      // ]),
       h('section.home-section#why', [
         h('div.page-content', [
           h('h2.section-title', 'Our Mission'),
@@ -74,7 +72,10 @@ class Home extends Component {
           h('h2.section-title', 'For Journals'),
           h('h2', 'Enhance Your Content And Increase Your Reach'),
           h('p', 'Your content contains key biological knowledge that readers need to stay on top of their field and push their research in novel directions. Increase the value that you bring to your readers with Factoid.'),
-          h('p', 'Factoid brings your content to the fore with enhanced articles using cutting edge technology.'),
+          h('p', [
+            'Factoid brings your content to the fore with enhanced articles using cutting edge technology. ',
+            h(Link, { className: 'plain-link', to: '/tech-demo' }, 'Learn more about the technology behind Factoid.')
+          ]),
           h('p', 'Foster deep connections with the researchers you work with by embedding article content within the pathway information they access for their day-to-day research.'),
           h('p', 'Integrating Factoid in your manuscript workflow is simple and lightweight.  Providing you with a plethora of benefits for minimal investment.'),
           h('div.how-it-works-detailed'),

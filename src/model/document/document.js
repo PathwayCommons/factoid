@@ -1,20 +1,33 @@
 const _ = require('lodash');
-const Promise = require('bluebird');
 const Syncher = require('../syncher');
 const EventEmitterMixin = require('../event-emitter-mixin');
 const ElementSet = require('../element-set');
 const ElementCache = require('../element-cache');
 const ElementFactory = require('../element');
-const { assertOneOfFieldsDefined, mixin, getId } = require('../../util');
+const { assertOneOfFieldsDefined, mixin, getId, makeCyEles, getCyLayoutOpts, isNonNil, tryPromise } = require('../../util');
 const Organism = require('../organism');
 const Cytoscape = require('cytoscape');
-const { makeCyEles, getCyLayoutOpts, isNonNil } = require('../../util');
 
 const DEFAULTS = Object.freeze({
+  // data
   entries: [], // used by elementSet
+  organisms: [], // list of ids
+
+  // metadata
   name: '',
-  organisms: [] // list of ids
+  journalName: '',
+  year: 0,
+  authorName: '',
+  authorEmail: '',
+  editorName: '',
+  editorEmail: '',
+  trackingId: '',
+  abstract: '',
+  text: '',
+  legends: ''
 });
+
+const METADATA_FIELDS = ['name', 'journalName', 'year', 'authorName', 'authorEmail', 'editorName', 'editorEmail', 'trackingId', 'abstract', 'text', 'legends'];
 
 /**
 A document that contains a set of biological elements (i.e. entities and interactions).
@@ -77,6 +90,11 @@ class Document {
         addedIds.forEach( id => emit( id, true ) );
         rmedIds.forEach( id => emit( id, false ) );
       }
+
+      if( changes.submitted ){
+        this.emit('submit');
+        this.emit('remotesubmit');
+      }
     });
   }
 
@@ -127,7 +145,7 @@ class Document {
   }
 
   synch( enable ){
-    return Promise.try( () => {
+    return tryPromise( () => {
       return this.syncher.synch( enable );
     } ).then( () => {
       return this.elementSet.synch( enable );
@@ -149,6 +167,62 @@ class Document {
     } else {
       return this.syncher.get('name');
     }
+  }
+
+  // helper for get/set of simple paper metadata
+  rwMeta(field, newVal){
+    if( newVal != null ){
+      let event = field.replace(/([A-Z])/g, (match, letter) => '-' + letter.toLowerCase());
+
+      let updatePromise = this.syncher.update(field, newVal);
+
+      this.emit('meta' + event, newVal);
+      this.emit('localmeta' + event, newVal);
+
+      return updatePromise;
+    } else {
+      return this.syncher.get(field);
+    }
+  }
+
+  journalName(newName){
+    return this.rwMeta('journalName', newName);
+  }
+
+  year(newYear){
+    return this.rwMeta('year', newYear);
+  }
+
+  authorName(newName){
+    return this.rwMeta('authorName', newName);
+  }
+
+  authorEmail(newEmail){
+    return this.rwMeta('authorEmail', newEmail);
+  }
+
+  editorName(newName){
+    return this.rwMeta('editorName', newName);
+  }
+
+  editorEmail(newEmail){
+    return this.rwMeta('editorEmail', newEmail);
+  }
+
+  trackingId(newId){
+    return this.rwMeta('trackingId', newId);
+  }
+
+  abstract(newAbstract){
+    return this.rwMeta('abstract', newAbstract);
+  }
+
+  text(newText){
+    return this.rwMeta('text', newText);
+  }
+
+  legends(newLegends){
+    return this.rwMeta('legends', newLegends);
   }
 
   entities(){
@@ -316,20 +390,34 @@ class Document {
       return docEl.reposition( _.clone( el.position() ) );
     } ) );
 
-    return Promise.try( runLayout ).then( savePositions );
+    return tryPromise( runLayout ).then( savePositions );
+  }
+
+  submit(){
+    let p = this.syncher.update({ submitted: true });
+
+    this.emit('submit');
+
+    return p;
+  }
+
+  submitted(){
+    return this.syncher.get('submitted') ? true : false;
   }
 
   json(){
     let toJson = obj => obj.json();
 
-    return {
+    return _.assign({
       id: this.id(),
       secret: this.secret(),
+      name: this.name(),
+      summary: this.toText(),
       organisms: this.organisms().map( toJson ),
       elements: this.elements().map( toJson ),
       publicUrl: this.publicUrl(),
-      privateUrl: this.privateUrl()
-    };
+      privateUrl: this.privateUrl(),
+    }, _.pick(this.syncher.get(), METADATA_FIELDS));
   }
 
   toBiopaxTemplates(){
@@ -346,9 +434,16 @@ class Document {
     return templates;
   }
 
+  toText(){
+    let interactions = this.interactions();
+    let strings = interactions.map( intn => intn.toString() + '.' );
+
+    return strings.join('\n');
+  }
+
   fromJson( json ){
     let els = json.elements || [];
-    let makeEl = json => Promise.try( () => this.factory().make({ data: json }) );
+    let makeEl = json => tryPromise( () => this.factory().make({ data: json }) );
     let createEl = el => el.create();
     let addEl = el => this.add( el );
     let handleEl = json => makeEl( json ).then( createEl ).then( addEl );
@@ -358,7 +453,10 @@ class Document {
     let addOrganism = id => this.toggleOrganism( id, true );
     let addOrganisms = () => Promise.all( orgIds.map( addOrganism ) );
 
+    let updateMetadata = () => this.syncher.update( _.pick(json, METADATA_FIELDS) );
+
     return Promise.all([
+      updateMetadata(),
       handleEls(),
       addOrganisms()
     ]);

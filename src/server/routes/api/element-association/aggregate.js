@@ -1,9 +1,8 @@
 const _ = require('lodash');
-const Promise = require('bluebird');
-const pubchem = require('./pubchem');
+// const pubchem = require('./pubchem'); // TODO re-enable pubchem later...
 const uniprot = require('./uniprot');
-const providers = [ uniprot, pubchem ];
-const { memoize, stringDistanceMetric } = require('../../../../util');
+const providers = [ uniprot ];
+const { memoize, stringDistanceMetric, tryPromise } = require('../../../../util');
 const LRUCache = require('lru-cache');
 const Organism = require('../../../../model/organism');
 const { MAX_SEARCH_SIZE, AGGREGATE_CACHE_SIZE } = require('../../../../config');
@@ -93,7 +92,7 @@ const search = q => {
   let { limit, offset } = q;
 
   return (
-    Promise.try( () => searchAll(q) )
+    tryPromise( () => searchAll(q) )
     .then( ents => ents.slice( offset, offset + limit ) )
     .catch( err => {
       logger.error(`Aggregate search failed`);

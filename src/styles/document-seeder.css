@@ -1,81 +1,36 @@
 .document-seeder {
-  display: flex;
-  flex-direction: row;
-  width: 60em;
-  box-sizing: border-box;
-  padding: 0 1em;
-  max-width: 100vw;
-  margin: 0 auto;
+  & input,
+  & textarea {
+    width: 100%;
+    margin-bottom: 1em;
+  }
+
+  & textarea {
+    min-height: 6em;
+    resize: vertical;
+  }
 }
 
 .document-seeder-content {
   width: 100%;
 }
 
-.document-stepper-app-bar {
-  margin-top: 10px;
-  margin-left: 10px;
-}
-
-.document-seeder-text {
-  width: 100%;
-  height: calc(100vh - 15em);
-  resize: none;
-}
-
 .document-seeder-text-label {
   font-weight: bold;
   font-size: var(--smallFontSize);
+  cursor: default;
 }
 
-.document-seeder-doc-title {
-  display: inline-block;
-  width: 100%;
-  margin-bottom: 1em;
+.document-seeder-submit {
+  margin-right: 0.5em;
 }
 
-.document-seeder-highlight-panel {
-  width: 100%;
-  height: calc(100vh - 15em);
+.document-seeder-submit-spinner {
   vertical-align: middle;
-  font: inherit;
-  padding: 0 0.25em;
-  min-height: var(--widgetHeight);
-  line-height: var(--widgetHeight);
-  box-sizing: border-box;
-  display: inline-block;
-  border-radius: var(--widgetBorderRadius);
-  border: 1px solid var(--widgetBorderColor);
-  overflow: auto;
 }
 
-.document-seeder-buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.document-seeder-toggle-highlight {
-  height: auto;
-}
-
-.document-seeder-highlight-panel span {
-  white-space: pre-line;
-}
-
-.document-seeder-highlighted-entity {
-  background-color: rgba(255, 255, 0, 0.2);
-}
-
-.document-seeder-highlighted-interaction-sentence {
-  text-decoration: underline;
-}
-
-.document-seeder-highlighted-interaction-trigger {
-  font-weight: bold;
-}
-
-.document-seeder-hidden {
-  display: none;
+.document-seeder-example-buttons {
+  & button + button {
+    margin-left: 0.5em;
+  }
 }

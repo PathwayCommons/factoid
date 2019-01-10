@@ -3,7 +3,6 @@ let conf = require('./util/conf');
 let { expect, assert } = require('chai');
 let Syncher = require('../src/model/syncher');
 let _ = require('lodash');
-let Promise = require('bluebird');
 let MockSocket = require('./mock/socket');
 let TableUtil = require('./util/table');
 let io = require('./util/socket-io');
@@ -1212,7 +1211,7 @@ describe('Syncher', function(){
           fail = false;
         }).catch(function(){
           fail = true;
-        }).finally(function(){
+        }).then(function(){
           expect( fail, 'fail' ).to.be.true;
         });
       });

@@ -1,21 +1,27 @@
 const _ = require('lodash');
 
-const General = require('./general');
-const Expression = require('./expression');
+const Interaction = require('./interaction');
+const Binding = require('./binding');
+const TranscriptionTranslation = require('./transcription-translation');
 const Modification = require('./modification');
 const Phosphorylation = require('./phosphorylation');
+const Dephosphorylation = require('./dephosphorylation');
 const Methylation = require('./methylation');
-const Ubiquination = require('./ubiquination');
-const ProteinChemical = require('./protein-chemical');
+const Demethylation = require('./demethylation');
+const Ubiquitination = require('./ubiquitination');
+const Deubiquitination = require('./deubiquitination');
 
 const INTERACTION_TYPE = Object.freeze({
-  INTERACTION: General,
-  EXPRESSION: Expression,
+  BINDING: Binding,
+  TRANSCRIPTION_TRANSLATION: TranscriptionTranslation,
   MODIFICATION: Modification,
   PHOSPHORYLATION: Phosphorylation,
+  DEPHOSPHORYLATION: Dephosphorylation,
   METHYLATION: Methylation,
-  UBIQUINATION: Ubiquination,
-  PROTEIN_CHEMICAL: ProteinChemical
+  DEMETHYLATION: Demethylation,
+  UBIQUITINATION: Ubiquitination,
+  DEUBIQUITINATION: Deubiquitination,
+  INTERACTION: Interaction // other / catch-all
 });
 
 const INTERACTION_TYPE_VALS = ( () => {
@@ -24,7 +30,6 @@ const INTERACTION_TYPE_VALS = ( () => {
 
   keys.forEach( key => {
     let val = INTERACTION_TYPE[key].value;
-
     vals[ key ] = val;
   } );
 

@@ -1,49 +1,58 @@
 const InteractionType = require('./interaction-type');
 const { PARTICIPANT_TYPE } = require('../participant-type');
+const { ENTITY_TYPE } = require('../entity-type');
 const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
 
 const VALUE = 'modification';
-const DISPLAY_VALUE = 'Modification';
+const DISPLAY_VALUE = 'Post-translational modification';
+
+const allowedParticipantTypes = () => {
+  const T = PARTICIPANT_TYPE;
+
+  return [T.POSITIVE, T.NEGATIVE];
+};
 
 class Modification extends InteractionType {
   constructor( intn ){
     super( intn );
   }
 
-  allowedParticipantTypes(){
-    const T = PARTICIPANT_TYPE;
-
-    return [T.POSITIVE, T.NEGATIVE];
+  static allowedParticipantTypes(){
+    return allowedParticipantTypes();
   }
 
-  areParticipantsTyped(){
-    return this.isSigned();
+  allowedParticipantTypes(){
+    return allowedParticipantTypes();
+  }
+
+  isComplete(){
+    return this.isSigned() && Modification.isAllowedForInteraction(this.interaction);
   }
 
   static isAllowedForInteraction( intn ){
     let ppts = intn.participants();
-    let isProtein = ent => ent.type() === 'protein';
+    let isProtein = ent => ent.type() === ENTITY_TYPE.PROTEIN;
 
     return ppts.length === 2 && ppts.every( isProtein );
   }
 
-  toBiopaxTemplate(effect){
-    let source = this.getSource();
-    let target = this.getTarget();
-
-    let srcTemplate = source.toBiopaxTemplate();
-    let tgtTemplate = target.toBiopaxTemplate();
-    let templateType = ( effect === undefined )
-            ? BIOPAX_TEMPLATE_TYPE.PROTEIN_CONTROLS_STATE : BIOPAX_TEMPLATE_TYPE.PROTEIN_MODIFICATION;
-
-    let controlType = this.isInhibition() ? BIOPAX_CONTROL_TYPE.INHIBITION : BIOPAX_CONTROL_TYPE.ACTIVATION;
+  toBiopaxTemplate(effect){//effect is undefined in base Modification case (i.e., no phys. mod. feature)
+    // src and tgt must be both set, not null, by this point
+    let srcTemplate = this.getSource().toBiopaxTemplate();
+    let tgtTemplate = this.getTarget().toBiopaxTemplate();
 
     let template = {
-      type: templateType,
-      controllerProtein: srcTemplate,
-      targetProtein: tgtTemplate,
-      controlType: controlType
+      type: BIOPAX_TEMPLATE_TYPE.PROTEIN_CONTROLS_STATE,
+      controller: srcTemplate, //controller protein
+      target: tgtTemplate
     };
+
+    //here controlType is not bp:controlType but is about the
+    //target's state change between 'inactive' and 'active'.
+    if(this.isNegative())
+      template.controlType = BIOPAX_CONTROL_TYPE.INHIBITION;
+    else if(this.isPositive())
+      template.controlType = BIOPAX_CONTROL_TYPE.ACTIVATION;
 
     if (effect) {
       template.modification = effect;
@@ -53,10 +62,7 @@ class Modification extends InteractionType {
   }
 
   toString( mod = 'modification' ){
-    let verb = (this.isInhibition() ? 'inhibits' : 'promotes');
-    let obj = `the ${mod} of`;
-
-    return super.toString( `${verb} ${obj}` );
+    return super.toString(null, `via ${mod}`);
   }
 
   static get value(){ return VALUE; }

@@ -1,4 +1,3 @@
-let process = require('process');
 let _ = require('lodash');
 let { isClient } = require('./util');
 
@@ -20,6 +19,8 @@ let defaults = {
   DB_PASS: undefined, // password if db uses auth
   DB_CERT: undefined,  // path to a certificate (cert) file if db uses ssl
 
+  BASE_URL: 'https://factoid.baderlab.org',
+
   // Services
   REACH_URL: 'http://reach.baderlab.org/api/uploadFile',
   UNIPROT_URL: 'http://www.uniprot.org/uniprot',
@@ -34,11 +35,21 @@ let defaults = {
   PUBCHEM_CACHE_SIZE: DEFAULT_CACHE_SIZE,
   AGGREGATE_CACHE_SIZE: DEFAULT_CACHE_SIZE,
   MAX_SEARCH_SIZE: 50,
-  BIOPAX_CONVERTER_URL: 'http://causalpath.org:9090/FactoidToBiopaxServer/ConvertToOwl',
-  PC_LINK_BASE_URL: 'http://apps.pathwaycommons.org/search?q='
+  BIOPAX_CONVERTER_URL: 'https://biopax.baderlab.org/convert/v2/',
+  PC_URL: 'https://apps.pathwaycommons.org/'
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );
+
+// these vars are always included in the bundle because they ref `process.env.${name}` directly
+// NB DO NOT include passwords etc. here
+let clientVars = {
+  NODE_ENV: process.env.NODE_ENV,
+  BASE_URL: process.env.BASE_URL,
+  PC_URL: process.env.PC_URL
+};
+
+_.assign(envVars, clientVars);
 
 for( let key in envVars ){
   let val = envVars[key];

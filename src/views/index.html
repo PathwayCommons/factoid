@@ -10,6 +10,23 @@
     <link type="text/css" rel="stylesheet" href="/deps.css" />
     <link type="text/css" rel="stylesheet" href="/bundle.css" />
 
+    <script defer src="/webpackjsonp.js"></script>
+
+    <script>
+      (function(){
+        var needPolyfills = !('fetch' in window && 'assign' in Object);
+
+        if(needPolyfills){
+          var script = document.createElement('script');
+
+          script.defer = true;
+          script.src = '/polyfills.js';
+
+          document.head.appendChild(script);
+        }
+      })();
+    </script>
+
     <script defer src="/deps.js"></script>
     <script defer src="/bundle.js"></script>
 

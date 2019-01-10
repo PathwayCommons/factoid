@@ -17,12 +17,15 @@ class DocumentRenamer extends Component {
     });
   }
 
+  getText(){
+    return this.state.docName || this.props.document.name();
+  }
+
   render(){
-    const p = this.props;
     return h('input.doc-name', {
       type: 'text',
       placeholder: 'Untitled document',
-      value:  this.state.docName || p.document.name(),
+      value:  this.getText(),
       onChange: e => this.updateDocName(e.target.value)
     });
 

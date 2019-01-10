@@ -1,8 +1,7 @@
 const { Component } = require('react');
 const h = require('react-hyperscript');
 const _ = require('lodash');
-const { makeClassList } = require('../../util');
-const Promise = require('bluebird');
+const { makeClassList, tryPromise } = require('../../util');
 
 class DocumentWizardStepper extends Component {
   constructor(props){
@@ -36,14 +35,14 @@ class DocumentWizardStepper extends Component {
     let go = (handler, flag) => {
       this.setState({ [flag]: true });
 
-      return Promise.try( handler ).then( () => {
+      return tryPromise( handler ).then( () => {
         if( this._mounted ){
           this.setState({ [flag]: false });
         }
       } );
     };
 
-    let backBtn = backEnabled ? h('div.document-wizard-stepper-back', [
+    let backBtn = h('div.document-wizard-stepper-back', [
       h('button.document-wizard-stepper-back-button', {
         onClick: () => go( back, 'goingBack' ),
         disabled: !backEnabled || this.state.goingBack,
@@ -57,9 +56,9 @@ class DocumentWizardStepper extends Component {
           'document-wizard-stepper-spinner-going': this.state.goingBack
         })
       })
-    ]) : null;
+    ]);
 
-    let forwardBtn = forwardEnabled ? h('div.document-wizard-stepper-forward', [
+    let forwardBtn = h('div.document-wizard-stepper-forward', [
       h('span.icon.icon-spinner.document-wizard-stepper-forward-spinner', {
         className: makeClassList({
           'document-wizard-stepper-spinner-going': this.state.goingForward
@@ -73,7 +72,7 @@ class DocumentWizardStepper extends Component {
         forwardText ? h('div', forwardText) : null,
         h('i.material-icons', forwardIcon)
       ])
-    ]) : null;
+    ]);
 
 
     return h('div.document-wizard-stepper', [

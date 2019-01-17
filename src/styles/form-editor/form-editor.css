@@ -167,3 +167,9 @@
   display: flex;
   flex-direction: row;
 }
+
+.form-content {
+  width: 60%;
+  position: fixed;
+  left: 20%;
+}

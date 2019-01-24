@@ -7,7 +7,7 @@ const uuid = require('uuid');
 const Cytoscape = require('cytoscape');
 const logger = require('../../logger');
 const Document = require('../../../model/document');
-const { makeCyEles, getCyLayoutOpts, tryPromise } = require('../../../util');
+const { getCyLayoutOpts, tryPromise } = require('../../../util');
 const Tooltip = require('../popover/tooltip');
 const Popover = require('../popover/popover');
 const MainMenu = require('../main-menu');
@@ -150,12 +150,41 @@ class FormEditor extends DataComponent {
       return layoutDone;
     };
 
+    let makeEdgeJson = ( intn, ppts ) => {
+      // if optional ppts parameter is not set use participants list of interaction
+      if ( !ppts ) {
+        ppts = intn.participants();
+      }
+
+      return {
+        data: {
+          id: intn.id(),
+          source: ppts[0].id(),
+          target: ppts[1].id()
+        }
+      };
+    };
+
+    let makeNodeJson = ppt => {
+      return {
+        data: {
+          id: ppt.id()
+        }
+      };
+    };
+
+    let makeElesJson = els => {
+      return els.map( el => {
+        return el.isEntity() ? makeNodeJson( el ) : makeEdgeJson( el );
+      } );
+    };
+
     let createElsAndRunLayout = () => tryPromise( () =>
       Promise.all([ createIntn(), createEnts() ])
       .then( ([ intn, ppts ]) => {
         let cy = new Cytoscape({
           headless: true,
-          elements: makeCyEles( doc.elements() ),
+          elements: makeElesJson( doc.elements() ),
           layout: { name: 'preset' },
           styleEnabled: true
         });
@@ -163,9 +192,13 @@ class FormEditor extends DataComponent {
         // already existing elements are supposed to be locked during the layout
         cy.nodes().lock();
 
+        // since intn and ppts are not properly added to the document yet intn.participants()
+        // will not work properly. Therefore, it is needed to set ppts param for makeEdgeJson
+        var newElesJson = [ makeEdgeJson( intn, ppts ), ...ppts.map( makeNodeJson ) ];
+
         // create cy eles for the new elements that are not represented in cy
         // yet because they were not in document while cy is created
-        cy.add( makeCyEles([intn, ...ppts]) ).nodes().forEach(n => n.position({
+        cy.add( newElesJson ).nodes().forEach(n => n.position({
           x: Math.random() * 10,
           y: Math.random() * 10
         }));

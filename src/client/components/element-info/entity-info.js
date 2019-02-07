@@ -95,11 +95,8 @@ class EntityInfo extends DataComponent {
     let s = this.data;
     let doc = p.document;
     let progression = s.progression;
-    let { ORDERED_STAGES } = progression;
 
-    if( s.stage === ORDERED_STAGES[0] ){
-      progression.goToStage( s.stage );
-    }
+    progression.goToStage( s.stage );
 
     this.onRename = () => {
       this.setData({ name: this.data.element.name() });

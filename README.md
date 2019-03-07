@@ -1,5 +1,7 @@
 # Factoid
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/PathwayCommons/factoid.svg)](https://greenkeeper.io/)
+
 ## Required software
 
 - [Node.js](https://nodejs.org/en/) >=6.3.0

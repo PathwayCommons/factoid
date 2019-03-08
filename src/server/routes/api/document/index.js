@@ -252,4 +252,9 @@ http.get('/text/:id', function( req, res ){
     .then( txt => res.send( txt ));
 });
 
+// create new doc
+http.post('/elements', function( req, res ){
+  provider.get( req.body.text ).then( reachOut => res.json( reachOut ) );
+});
+
 module.exports = http;

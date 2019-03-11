@@ -388,29 +388,26 @@ module.exports = {
 
       }); // END evtFrames.forEach
 
-      // Filtering
-      const entities = elements.filter( e => !elIsIntn( e ) );
-      let interactions = elements.filter( elIsIntn );
-      const pickByNumParticipants = ( interactions, numParticipants ) =>  interactions.filter( interaction => interaction.entries.length === numParticipants );
+      // Filtering - NB that order matters.
+      let entityElements = elements.filter( e => !elIsIntn( e ) );
+      let interactionElements = elements.filter( elIsIntn );
+
+      // Interaction elements where 'entries' are unique
       const pickByUniqueParticipants = interactions =>  interactions.filter( interaction => _.uniqBy( interaction.entries, 'id' ).length === interaction.entries.length );
-      if( ONLY_BINARY_INTERACTIONS ) interactions = pickByNumParticipants( interactions, 2 );
-      if( ONLY_UNIQUE_PARTICIPANTS ) interactions = pickByUniqueParticipants( interactions );
+      if( ONLY_UNIQUE_PARTICIPANTS ) interactionElements = pickByUniqueParticipants( interactionElements );
 
-      elements = _.concat( entities, interactions );
+      // Interaction elements where 'entries' has 2 elements
+      const pickByNumParticipants = ( interactions, numParticipants ) =>  interactions.filter( interaction => interaction.entries.length === numParticipants );
+      if( ONLY_BINARY_INTERACTIONS ) interactionElements = pickByNumParticipants( interactionElements, 2 );
 
+      // Entity elements that are a participant in an interaction
       if( REMOVE_DISCONNECTED_ENTS ){
-        let interactions = elements.filter( elIsIntn );
-        let pptIds = ( () => {
-          let set = new Set();
-
-          interactions.forEach( intn => intn.entries.forEach( en => set.add( en.id ) ) );
-
-          return set;
-        } )();
-        let elIsInSomeIntn = el => pptIds.has( el.id );
-
-        elements = elements.filter( el => elIsIntn(el) || elIsInSomeIntn(el) );
+        const participantIds = new Set();
+        interactionElements.forEach( intn => intn.entries.forEach( en => participantIds.add( en.id ) ) );
+        entityElements = entityElements.filter( el => participantIds.has( el.id ) );
       }
+
+      elements = _.concat( entityElements, interactionElements );
 
       return tryPromise( () => {
         return Promise.all( groundPromises );

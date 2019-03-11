@@ -21,7 +21,7 @@ const ALLOW_IMPLICIT_ORG_SPEC = true;
 const ONLY_BINARY_INTERACTIONS = true;
 const NO_SELF_INTERACTIONS = true;
 const REMOVE_DISCONNECTED_ENTS = true;
-const REMOVE_UNGROUNDED_ENTS = true;
+const REMOVE_UNGROUNDED_ENTS = false;
 const APPLY_GROUND = true;
 const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
 
@@ -321,6 +321,9 @@ module.exports = {
 
           } else if ( frameIsControlType( frame ) ){
             entities = fargs.map( getControlTypeArgEntity );
+          } else {
+
+            entities.push( null );
           }
           return entities;
         };
@@ -374,9 +377,8 @@ module.exports = {
 
         const entityList = getFrameEntities( frame );
         const entries =  entityList.map( entity => getEntryByEntity( entity, frame.subtype ) );
-        // NB: If nothing comes back, or there was a null participant, then it wasn't supported
-        // so we should skip it due to contract with downstream functions.
-        if( _.isEmpty( entries ) || entries.some( _.isNull ) ) return;
+        // NB: If there is a null participant, then skip.
+        if( entries.some( _.isNull ) ) return;
 
         intn.entries = entries;
         const mechanism =  getMechanism( frame );

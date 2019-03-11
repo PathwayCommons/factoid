@@ -383,7 +383,6 @@ module.exports = {
         intn.entries = entries;
         const mechanism =  getMechanism( frame );
         intn.association = mechanism.value;
-        intn.reach = frame;
         intn.completed = true;
         addElement( intn, frame );
 

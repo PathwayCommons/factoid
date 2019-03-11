@@ -19,7 +19,7 @@ const { REACH_URL } = require('../../../../config');
 const MERGE_ENTS_WITH_SAME_GROUND = true;
 const ALLOW_IMPLICIT_ORG_SPEC = true;
 const ONLY_BINARY_INTERACTIONS = true;
-const NO_SELF_INTERACTIONS = true;
+const ONLY_UNIQUE_PARTICIPANTS = true;
 const REMOVE_DISCONNECTED_ENTS = true;
 const REMOVE_UNGROUNDED_ENTS = false;
 const APPLY_GROUND = true;
@@ -395,7 +395,7 @@ module.exports = {
       const pickByNumParticipants = ( interactions, numParticipants ) =>  interactions.filter( interaction => interaction.entries.length === numParticipants );
       const pickByUniqueParticipants = interactions =>  interactions.filter( interaction => _.uniqBy( interaction.entries, 'id' ).length === interaction.entries.length );
       if( ONLY_BINARY_INTERACTIONS ) interactions = pickByNumParticipants( interactions, 2 );
-      if( NO_SELF_INTERACTIONS ) interactions = pickByUniqueParticipants( interactions );
+      if( ONLY_UNIQUE_PARTICIPANTS ) interactions = pickByUniqueParticipants( interactions );
 
       elements = _.concat( entities, interactions );
 

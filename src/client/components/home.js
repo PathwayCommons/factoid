@@ -1,8 +1,6 @@
 const h = require('react-hyperscript');
 const { Component } = require('react');
 const AnchorLink = require('react-anchor-link-smooth-scroll').default;
-const Popover = require('./popover/popover');
-const DemoInput = require('./demo-input');
 const { Link } = require('react-router-dom');
 
 class Home extends Component {
@@ -31,18 +29,7 @@ class Home extends Component {
             h('div.hero-title', 'Factoid')
           ]),
           h('div.hero-subtitle', 'SHARE YOUR PATHWAY WITH THE WORLD'),
-          h('div.hero-description', 'Publishing and getting your research noticed is essential. Factoid helps you increase the visibility of your publications by linking your research to pathways.'),
-          h('div.hero-buttons', [
-            h('p', [
-              h(Popover, {
-                tippy: {
-                  html: h(DemoInput, { history: this.props.history })
-                }
-              }, [
-                h('button.hero-button', 'Try Factoid'),
-              ])
-            ])
-          ])
+          h('div.hero-description', 'Publishing and getting your research noticed is essential. Factoid helps you increase the visibility of your publications by linking your research to pathways.')
         ])
       ]),
       h('section.home-section#why', [

@@ -3,7 +3,6 @@ const Organism = require('../../../model/organism');
 const Highlighter = require('../highlighter');
 const Formula = require('./chemical-formula');
 const Tooltip = require('../popover/tooltip');
-const { PC_URL } = require('../../../config');
 
 const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL } = require('../../../config');
 

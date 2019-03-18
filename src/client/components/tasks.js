@@ -2,8 +2,6 @@ const DirtyComponent = require('./dirty-component');
 const DataComponent = require('./data-component');
 const h = require('react-hyperscript');
 
-const { PC_URL } = require('../../config');
-
 const { makeClassList } = require('../../util');
 
 const Notification = require('./notification');

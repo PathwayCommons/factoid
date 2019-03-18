@@ -70,7 +70,7 @@ class InteractionInfo extends DataComponent {
       case STAGES.ASSOCIATE:
         return true;
       case STAGES.COMPLETED:
-        return el.associated() && el.association().isComplete();
+        return el.associated();
       default:
         return false;
     }

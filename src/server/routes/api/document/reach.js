@@ -19,8 +19,9 @@ const { REACH_URL } = require('../../../../config');
 const MERGE_ENTS_WITH_SAME_GROUND = true;
 const ALLOW_IMPLICIT_ORG_SPEC = true;
 const ONLY_BINARY_INTERACTIONS = true;
+const ONLY_UNIQUE_PARTICIPANTS = true;
 const REMOVE_DISCONNECTED_ENTS = true;
-const REMOVE_UNGROUNDED_ENTS = false;
+const REMOVE_UNGROUNDED_ENTS = true;
 const APPLY_GROUND = true;
 const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
 
@@ -272,44 +273,59 @@ module.exports = {
       // add interactions
       evtFrames.forEach( frame => {
 
+        const VALID_CONTROLLED_TYPES = new Set([
+          REACH_EVENT_TYPE.PROTEIN_MODIFICATION,
+          REACH_EVENT_TYPE.TRANSLOCATION,
+          REACH_EVENT_TYPE.TRANSCRIPTION,
+          REACH_EVENT_TYPE.AMOUNT
+        ]);
+        const frameIsBindingType = frame => frame.type === REACH_EVENT_TYPE.COMPLEX_ASSEMBLY;
         const frameIsControlType = frame => frame.type === REACH_EVENT_TYPE.REGULATION || frame.type === REACH_EVENT_TYPE.ACTIVATION;
-        const argIsComplex = arg => arg['argument-type'] === 'complex';
+        const argIsControlled = arg => arg['type'] === 'controlled';
         const argIsEntity = arg => arg['argument-type'] === 'entity';
         const argIsEvent = arg => arg['argument-type'] === 'event';
         const argByType = ( frame, type ) => frame.arguments.find( arg => arg.type === type  );
         const getArgId = arg => arg.arg;
-        const getArgIds = arg => _.values( arg.args );
         const entityTemplate = ( arg, type ) => ({ record: getFrame( getArgId( arg ) ), type });
 
-        const getEventArgs = arg => {
-          let eventArgs = [];
-          const argType = arg.type;
-          if ( argType === 'controlled' ){
-            const eventArgFrame = getFrame( getArgId( arg ) );
-            if ( frameIsControlType( eventArgFrame ) ){
-              const controllerArg = argByType( eventArgFrame, 'controller' );
-              const isControllerEntity = argIsEntity( controllerArg ) || argIsComplex( controllerArg );
-              if ( isControllerEntity ) eventArgs.push( controllerArg );
-            } else { // Simple event
-              eventArgs = eventArgFrame.arguments;
-            }
-          }
-          return eventArgs;
+        const getArgEntity = arg => {
+          const type = _.get( arg, ['type'] );
+          return entityTemplate( arg, type );
         };
 
-        const getArgEntities = arg => {
-          const argType = arg.type;
-          if ( argIsEntity( arg ) ) {
-            return entityTemplate ( arg, argType );
+        // NB: In case we do not support it, return null
+        const getControlTypeArgEntity = arg => {
+          let entity = null;
 
-          } else if ( argIsComplex( arg ) ) {
-            return getArgIds( arg ).map( themeId => entityTemplate( { arg: themeId }, argType ) );
+          if ( argIsEntity( arg ) ){
+            entity = getArgEntity( arg );
 
+          } else if( argIsEvent( arg ) && argIsControlled( arg ) ){
+            const eventArgFrame = getFrame( getArgId( arg ) );
+            const eventArgFrameType = eventArgFrame.type;
+
+            if( VALID_CONTROLLED_TYPES.has( eventArgFrameType ) ){
+              const entityArg = argByType( eventArgFrame, 'theme' );
+              entity = getArgEntity( entityArg );
+            }
           }
-          else if ( argIsEvent( arg ) ) {
-            return getEventArgs( arg ).map( getArgEntities );
+          return entity;
+        };
+
+        const getFrameEntities = frame => {
+          let entities = [];
+          const fargs = _.get( frame, ['arguments'] );
+
+          if( frameIsBindingType( frame ) ){
+            entities = fargs.map( getArgEntity );
+
+          } else if ( frameIsControlType( frame ) ){
+            entities = fargs.map( getControlTypeArgEntity );
+          } else {
+
+            entities.push( null );
           }
-          return null;
+          return entities;
         };
 
         const targetArgTypes = new Set([ 'theme', 'controlled' ]);
@@ -327,6 +343,8 @@ module.exports = {
 
         const entryFromEl = el => el == null ? null : ({ id: el.id });
         const getEntryByEntity = ( entity, subtype ) => {
+          if( !entity || !elementsReachMap.has( getReachId( entity.record ) ) ) return null;
+
           const signKey = subtype || '';
           const el = elementsReachMap.get( getReachId( entity.record ) );
           const entry = entryFromEl( el );
@@ -357,41 +375,39 @@ module.exports = {
           description: getSentenceText( frame.sentence )
         };
 
-        if( frameIsControlType( frame ) || frame.type === REACH_EVENT_TYPE.COMPLEX_ASSEMBLY ){
+        const entityList = getFrameEntities( frame );
+        const entries =  entityList.map( entity => getEntryByEntity( entity, frame.subtype ) );
+        // NB: If there is a null participant, then skip.
+        if( entries.some( _.isNull ) ) return;
 
-          intn.entries =  _.flattenDeep( frame.arguments.map( getArgEntities ) )
-            .filter( e => e != null )
-            .map( entity => getEntryByEntity( entity, frame.subtype ) )
-            .filter( e => e != null );
+        intn.entries = entries;
+        const mechanism =  getMechanism( frame );
+        intn.association = mechanism.value;
+        intn.completed = true;
+        addElement( intn, frame );
 
-          const mechanism =  getMechanism( frame );
-          intn.association = mechanism.value;
-          intn.completed = true;
-          addElement( intn, frame );
-        }
       }); // END evtFrames.forEach
 
-      if( ONLY_BINARY_INTERACTIONS ) {
-        const binaryInts = elements.filter( elIsIntn )
-          .filter( int => int.entries.length === 2 ) // must be two entries
-          .filter( int => ( _.uniqBy( int.entries, 'id' ) ).length === 2 ); // those two must be unique
-        const entities = elements.filter( e => !elIsIntn( e ) );
-        elements = _.concat( entities, binaryInts );
-      }
+      // Filtering - NB that order matters.
+      let entityElements = elements.filter( e => !elIsIntn( e ) );
+      let interactionElements = elements.filter( elIsIntn );
 
+      // Interaction elements where 'entries' are unique
+      const pickByUniqueParticipants = interactions =>  interactions.filter( interaction => _.uniqBy( interaction.entries, 'id' ).length === interaction.entries.length );
+      if( ONLY_UNIQUE_PARTICIPANTS ) interactionElements = pickByUniqueParticipants( interactionElements );
+
+      // Interaction elements where 'entries' has 2 elements
+      const pickByNumParticipants = ( interactions, numParticipants ) =>  interactions.filter( interaction => interaction.entries.length === numParticipants );
+      if( ONLY_BINARY_INTERACTIONS ) interactionElements = pickByNumParticipants( interactionElements, 2 );
+
+      // Entity elements that are a participant in an interaction
       if( REMOVE_DISCONNECTED_ENTS ){
-        let interactions = elements.filter( elIsIntn );
-        let pptIds = ( () => {
-          let set = new Set();
-
-          interactions.forEach( intn => intn.entries.forEach( en => set.add( en.id ) ) );
-
-          return set;
-        } )();
-        let elIsInSomeIntn = el => pptIds.has( el.id );
-
-        elements = elements.filter( el => elIsIntn(el) || elIsInSomeIntn(el) );
+        const participantIds = new Set();
+        interactionElements.forEach( intn => intn.entries.forEach( en => participantIds.add( en.id ) ) );
+        entityElements = entityElements.filter( el => participantIds.has( el.id ) );
       }
+
+      elements = _.concat( entityElements, interactionElements );
 
       return tryPromise( () => {
         return Promise.all( groundPromises );

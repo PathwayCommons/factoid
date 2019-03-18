@@ -52,9 +52,6 @@ let chemical = (m, searchTerms) => {
 };
 
 let link = m => {
-  let pcQ = encodeURIComponent(m.name);
-  let pcUrl = `${PC_URL}search?q=${pcQ}`;
-  let pcName = 'Pathway Commons';
   let url, nsName;
 
   switch( m.type ){
@@ -75,8 +72,7 @@ let link = m => {
 
   return h('div.entity-info-section.entity-info-linkouts', [
     h('span.entity-info-title', 'More information'),
-    entry(url, nsName),
-    entry(pcUrl, pcName)
+    entry(url, nsName)
   ]);
 };
 

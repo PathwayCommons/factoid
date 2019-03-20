@@ -231,13 +231,25 @@ class InteractionInfo extends DataComponent {
       }) );
     };
 
-    if( !doc.editable() ){
-      children.push( h('div.interaction-info-no-assoc', [
-        h('div.element-info-message.element-info-no-data', [
-          h('i.material-icons', 'info'),
-          h('span', ' This interaction has no data associated with it.')
-        ])
+    if( stage === STAGES.COMPLETED || !doc.editable() ){
+      let showEditIcon = doc.editable();
+      let assoc = el.association();
+      let summaryChildren = [];
+
+      summaryChildren.push( h('span.interaction-info-summary-text', assoc ? assoc.toString() : [
+        h('i.material-icons', 'info'),
+        h('span', ' This interaction has no data associated with it.')
       ]) );
+
+      if( showEditIcon ){
+        summaryChildren.push( h(Tooltip, { description: 'Edit from the beginning' }, [
+          h('button.interaction-info-edit.plain-button', {
+            onClick: () => progression.goToStage( ORDERED_STAGES[0] )
+          }, [ h('i.material-icons', 'edit') ])
+        ]) );
+      }
+
+      children.push( h('div.interaction-info-summary', summaryChildren) );
     } else if( stage === STAGES.ASSOCIATE ){
       let radioName = 'interaction-info-assoc-radioset-' + el.id();
       let radiosetChildren = [];
@@ -298,21 +310,6 @@ class InteractionInfo extends DataComponent {
       children.push( h('div.interaction-info-assoc-radioset', radiosetChildren) );
     } else if( stage === STAGES.PARTICIPANT_TYPES ){
       children.push( makeNotification(s.pptTypeNotification) );
-    } else if( stage === STAGES.COMPLETED ){
-      let showEditIcon = doc.editable();
-      let summaryChildren = [];
-
-      summaryChildren.push( h('span.interaction-info-summary-text', el.association().toString()) );
-
-      if( showEditIcon ){
-        summaryChildren.push( h(Tooltip, { description: 'Edit from the beginning' }, [
-          h('button.interaction-info-edit.plain-button', {
-            onClick: () => progression.goToStage( ORDERED_STAGES[0] )
-          }, [ h('i.material-icons', 'edit') ])
-        ]) );
-      }
-
-      children.push( h('div.interaction-info-summary', summaryChildren) );
     }
 
     if( doc.editable() ){

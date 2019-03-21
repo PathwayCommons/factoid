@@ -12,7 +12,7 @@ const logger = require('../../../logger');
 
 const provider = require('./reach');
 
-const { BIOPAX_CONVERTER_URL, BASE_URL } = require('../../../../config');
+const { BIOPAX_CONVERTER_URL, BASE_URL, EMAIL_FROM, EMAIL_FROM_ADDR } = require('../../../../config');
 
 let newDoc = ({ docDb, eleDb, id, secret, meta }) => {
   return new Document( _.assign( {}, docDb, {
@@ -93,10 +93,9 @@ let sendEmail = json => {
   const j = json;
 
   return emailTransport.sendMail({
-    from: { name: 'Factoid', address: 'noreply@pathwaycommons.org' },
+    from: { name: EMAIL_FROM, address: EMAIL_FROM_ADDR },
     to: { name: j.authorName, address: j.authorEmail },
     cc: { name: j.editorName, address: j.editorEmail },
-    replyTo: { name: 'Pathway Commons Team', address: 'pathway-commons-help@googlegroups.com ' },
     subject: `Action required: "${json.name}"`,
     html: h('div', {
       style: {
@@ -105,27 +104,27 @@ let sendEmail = json => {
       h('p', `Dear ${j.authorName},`),
       h('p', [
         h('span', `Share your pathway with the world:  Publishing and getting your paper noticed is essential.  `),
-        h('a', { href: BASE_URL }, 'Factoid'),
+        h('a', { href: BASE_URL }, 'Mentena'),
         h('span', `, a project by `),
         h('a', { href: 'https://pathwaycommons.org' }, `Pathway Commons`),
         h('span', `, helps you increase the visibility of your publications by linking your research to pathways.`)
       ]),
       h('p', [
-        h('span', `Factoid will capture the pathway data in `),
+        h('span', `Mentena will capture the pathway data in `),
         h('strong', `"${j.authorName} et el.  ${j.name}.  Submission ${j.trackingId}"`),
         h('span', ` by helping you draw and describe genes and interactions:`)
       ]),
       h('ul', [
-        h('li', `Launch Factoid for your article by clicking the link.`),
-        h('li', `Check over genes and interactions Factoid may have found in your text.`),
+        h('li', `Launch Mentena for your article by clicking the link.`),
+        h('li', `Check over genes and interactions Mentena may have found in your text.`),
         h('li', `Draw genes (circles) or interactions (lines or arrows) then add information at the prompts.`),
       ]),
       h('p', `That's it!  We'll get the pathway data to researchers who need it.`),
       h('a', {
         href: `${BASE_URL}/document/${j.id}/${j.secret}`
-      }, `Launch Factoid for ${j.authorName} et al.`),
+      }, `Launch Mentena for ${j.authorName} et al.`),
       h('p', [
-        h('small', `You may also start Factoid by passing ${BASE_URL}/document/${j.id}/${j.secret} into your browser.`)
+        h('small', `You may also start Mentena by passing ${BASE_URL}/document/${j.id}/${j.secret} into your browser.`)
       ])
     ]).outerHTML
   });

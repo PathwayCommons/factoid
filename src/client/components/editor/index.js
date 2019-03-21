@@ -109,12 +109,12 @@ class Editor extends DataComponent {
     doc.on('load', () => {
       doc.interactions().forEach( listenForRmPpt );
 
-      let docs = JSON.parse(localStorage.getItem('my-factoids')) || [];
+      let docs = JSON.parse(localStorage.getItem('documents')) || [];
       let docData = { id: doc.id(), secret: doc.secret(), name: doc.name() };
 
       if( _.find(docs,  docData) == null ){
         docs.push(docData);
-        localStorage.setItem('my-factoids', JSON.stringify(docs));
+        localStorage.setItem('documents', JSON.stringify(docs));
       }
     });
 

@@ -36,7 +36,15 @@ let defaults = {
   AGGREGATE_CACHE_SIZE: DEFAULT_CACHE_SIZE,
   MAX_SEARCH_SIZE: 50,
   BIOPAX_CONVERTER_URL: 'https://biopax.baderlab.org/convert/v2/',
-  PC_URL: 'https://apps.pathwaycommons.org/'
+  PC_URL: 'https://apps.pathwaycommons.org/',
+
+  // Email
+  EMAIL_FROM: 'Mentena',
+  EMAIL_FROM_ADDR: 'support@mentana.org',
+  SMTP_PORT: 465,
+  SMTP_HOST: 'localhost',
+  SMTP_USER: 'user',
+  SMTP_PASSWORD: 'password'
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );
@@ -63,7 +71,8 @@ let conf = Object.assign( {}, defaults, envVars );
 
 let intKeys = [
   'PORT', 'DB_PORT',
-  'UNIPROT_CACHE_SIZE', 'CHEBI_CACHE_SIZE', 'MAX_SEARCH_SIZE'
+  'UNIPROT_CACHE_SIZE', 'CHEBI_CACHE_SIZE', 'MAX_SEARCH_SIZE',
+  'SMTP_PORT'
 ];
 
 intKeys.forEach( k => conf[k] = parseInt( conf[k] ) );

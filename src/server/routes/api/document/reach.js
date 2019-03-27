@@ -8,6 +8,7 @@ const Organism = require('../../../../model/organism');
 const { INTERACTION_TYPE } = require('../../../../model/element/interaction-type/enum');
 const { PARTICIPANT_TYPE } = require('../../../../model/element/participant-type');
 const uniprot = require('../element-association/uniprot');
+const { pickByUniqueParticipants, pickByNumParticipants, pickTopInteractions, pickEntitiesInInteractions } = require('./filters');
 
 // TODO re-enable once a more stable solution for pubchem xrefs is found
 // https://github.com/PathwayCommons/factoid/issues/228
@@ -20,6 +21,7 @@ const MERGE_ENTS_WITH_SAME_GROUND = true;
 const ALLOW_IMPLICIT_ORG_SPEC = true;
 const ONLY_BINARY_INTERACTIONS = true;
 const ONLY_UNIQUE_PARTICIPANTS = true;
+const TOP_INTERACTIONS_ONLY = true;
 const REMOVE_DISCONNECTED_ENTS = true;
 const REMOVE_UNGROUNDED_ENTS = true;
 const APPLY_GROUND = true;
@@ -392,20 +394,10 @@ module.exports = {
       let entityElements = elements.filter( e => !elIsIntn( e ) );
       let interactionElements = elements.filter( elIsIntn );
 
-      // Interaction elements where 'entries' are unique
-      const pickByUniqueParticipants = interactions =>  interactions.filter( interaction => _.uniqBy( interaction.entries, 'id' ).length === interaction.entries.length );
       if( ONLY_UNIQUE_PARTICIPANTS ) interactionElements = pickByUniqueParticipants( interactionElements );
-
-      // Interaction elements where 'entries' has 2 elements
-      const pickByNumParticipants = ( interactions, numParticipants ) =>  interactions.filter( interaction => interaction.entries.length === numParticipants );
-      if( ONLY_BINARY_INTERACTIONS ) interactionElements = pickByNumParticipants( interactionElements, 2 );
-
-      // Entity elements that are a participant in an interaction
-      if( REMOVE_DISCONNECTED_ENTS ){
-        const participantIds = new Set();
-        interactionElements.forEach( intn => intn.entries.forEach( en => participantIds.add( en.id ) ) );
-        entityElements = entityElements.filter( el => participantIds.has( el.id ) );
-      }
+      if( ONLY_BINARY_INTERACTIONS ) interactionElements = pickByNumParticipants( interactionElements );
+      if( TOP_INTERACTIONS_ONLY ) interactionElements = pickTopInteractions( interactionElements );
+      if( REMOVE_DISCONNECTED_ENTS ) entityElements = pickEntitiesInInteractions( interactionElements, entityElements );
 
       elements = _.concat( entityElements, interactionElements );
 

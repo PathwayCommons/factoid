@@ -1,17 +1,22 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 255 255" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
-    <g transform="matrix(1,0,0,1,-335.75,-1313.75)">
-        <g>
-            <g transform="matrix(-1.53423,-1.88017e-16,2.04696e-16,-1.67212,2506.8,3766.3)">
-                <ellipse cx="1332" cy="1390.5" rx="79" ry="72.5" style="fill:rgb(236,240,241);stroke:rgb(42,62,80);stroke-width:7.79px;"/>
-            </g>
-            <g transform="matrix(-1.16721,-1.4304e-16,1.55729e-16,-1.27212,2017.93,3232.82)">
-                <ellipse cx="1332" cy="1390.5" rx="79" ry="72.5" style="fill:rgb(236,240,241);stroke:rgb(42,62,80);stroke-width:10.24px;"/>
-            </g>
-            <g transform="matrix(-0.823219,-1.00884e-16,1.09833e-16,-0.897203,1559.73,2733.24)">
-                <path d="M1332,1318C1375.6,1318 1411,1350.49 1411,1390.5C1411,1430.51 1375.6,1463 1332,1463C1288.4,1463 1252.96,1430.51 1252.96,1390.5C1252.96,1350.49 1288.4,1318 1332,1318Z" style="fill:rgb(236,240,241);stroke:rgb(42,62,80);stroke-width:14.52px;"/>
-            </g>
-        </g>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="109" height="109" viewBox="0, 0, 109, 109">
+  <g id="Layer_1" display="none">
+    <g>
+      <text transform="matrix(0.24, 0, 0, 0.24, 4.432, 45.275)">
+        <tspan x="-56.066" y="147.5" font-family="Helvetica" font-size="400" fill="#4B5F83" fill-opacity="0.651">[</tspan>
+      </text>
+      <text transform="matrix(0.24, 0, 0, 0.24, 54.216, 55.276)">
+        <tspan x="-167.102" y="147.5" font-family="Helvetica" font-size="400" fill="#34495E">M</tspan>
+      </text>
+      <text transform="matrix(0.24, 0, 0, 0.24, 107.536, 45.275)">
+        <tspan x="-56.066" y="147.5" font-family="Helvetica" font-size="400" fill="#4B5F83" fill-opacity="0.651">]</tspan>
+      </text>
     </g>
+  </g>
+  <g id="Layer_2">
+    <path d="M20.117,19.912 L20.117,88.967 L28.822,88.967 L28.822,31.518 L29.015,31.518 L50.583,88.967 L58.417,88.967 L79.985,31.518 L80.178,31.518 L80.178,88.967 L88.883,88.967 L88.883,19.912 L76.31,19.912 L54.452,77.942 L32.69,19.912 z" fill="#224A5B"/>
+    <path d="M7.859,15.493 L7.859,93.507 L16.956,93.507 L16.956,96.54 L4.368,96.54 L4.368,12.46 L16.956,12.46 L16.956,15.493 z" fill="#224A5B" opacity="0.65"/>
+    <path d="M101.83,93.447 L101.83,15.432 L92.733,15.432 L92.733,12.4 L105.322,12.4 L105.322,96.479 L92.733,96.479 L92.733,93.447 z" fill="#224A5B" opacity="0.65"/>
+  </g>
 </svg>

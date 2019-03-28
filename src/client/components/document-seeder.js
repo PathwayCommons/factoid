@@ -95,9 +95,9 @@ class DocumentSeeder extends React.Component {
 
     return h('div.document-seeder.page-content', [
       h('div.document-seeder-content', [
-        h(MainMenu, { history, title: 'Publisher portal : New factoid' }),
+        h(MainMenu, { history, title: 'Publisher portal : New paper' }),
 
-        h('p', 'Enter the information for the paper you would like to submit to Factoid.  An email will be sent to the corresponding author once submitted, with the email requesting that the author edit the resulant pathway.  You, the journal editor, will be copied on the email.  Once the author has completed the pathway, you will be notified so that the pathway may be used in peer review and publication.'),
+        h('p', 'Enter the information for the paper you would like to submit to Mentena.  An email will be sent to the corresponding author once submitted, with the email requesting that the author edit the resulant pathway.  You, the journal editor, will be copied on the email.  Once the author has completed the pathway, you will be notified so that the pathway may be used in peer review and publication.'),
 
         demo ? h('p.document-seeder-example-buttons', [
           h('button', {
@@ -193,7 +193,7 @@ class DocumentSeeder extends React.Component {
             h('i.icon.icon-spinner.document-seeder-submit-spinner')
           ]) : this.state.documentJson ? h('span', [
             h('span', ' Submitted and email sent.  You can now '),
-            h(Link, { className: 'plain-link', to: `/document/${documentJson.id}/${documentJson.secret}`, target: '_blank'}, 'view the Factoid document'),
+            h(Link, { className: 'plain-link', to: `/document/${documentJson.id}/${documentJson.secret}`, target: '_blank'}, 'view the document'),
             h('span', '.')
           ]) : null
         ])

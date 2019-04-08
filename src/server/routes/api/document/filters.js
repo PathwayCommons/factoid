@@ -67,11 +67,10 @@ const getTopIdsPerParticipants = interactionsPerParticipants => {
     topIdsPerParticipants.push( idList );   
   }
 
-   topIdsPerParticipants.sort( ( a, b ) => b.length - a.length );    
   return topIdsPerParticipants;
 };
 
-const filterTopIdsPerParticipants = ( idsList, maxInteractions, minMentions ) => idsList.slice( 0, maxInteractions ).filter( idList => idList.length >= minMentions ).map( idList => _.head( idList ) );
+const filterTopIdsPerParticipants = ( idsList, maxInteractions, minMentions ) => idsList.sort( ( a, b ) => b.length - a.length ).filter( idList => idList.length >= minMentions ).map( idList => _.head( idList ) ).slice( 0, maxInteractions );
 const pickTopInteractionElements = ( interactionElements, topIdsPerParticipants, maxInteractions, minMentions  ) => {
   const topInteractionSet = new Set();
   const rankedIdListPerParticipants = filterTopIdsPerParticipants( topIdsPerParticipants, maxInteractions, minMentions );
@@ -82,8 +81,7 @@ const pickTopInteractionElements = ( interactionElements, topIdsPerParticipants,
 /**
  * pickTopInteractions
  * Return top interactions as determined by frequency of detection, one for each pair of participants.
- * @param { Array } interactionElements Array of interaction elements
- * @param { Number }  maxInteractions  The maximum number of interactions to return
+ * @param { Array } interactionElements Array of interaction elements * @param { Number }  maxInteractions  The maximum number of interactions to return
  * @param { Number }  minMentions  The minimum number of times an interaction must have been detected to be considered
  */
 const pickTopInteractions = ( interactionElements, maxInteractions = DEFAULT_MAX_INTERACTIONS, minMentions = DEFAULT_MIN_INTERACTION_MENTIONS) => {    

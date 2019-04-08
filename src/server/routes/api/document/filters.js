@@ -81,7 +81,8 @@ const pickTopInteractionElements = ( interactionElements, topIdsPerParticipants,
 /**
  * pickTopInteractions
  * Return top interactions as determined by frequency of detection, one for each pair of participants.
- * @param { Array } interactionElements Array of interaction elements * @param { Number }  maxInteractions  The maximum number of interactions to return
+ * @param { Array } interactionElements Array of interaction elements
+ * @param { Number }  maxInteractions  The maximum number of interactions to return
  * @param { Number }  minMentions  The minimum number of times an interaction must have been detected to be considered
  */
 const pickTopInteractions = ( interactionElements, maxInteractions = DEFAULT_MAX_INTERACTIONS, minMentions = DEFAULT_MIN_INTERACTION_MENTIONS) => {    

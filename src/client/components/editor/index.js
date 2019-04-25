@@ -362,10 +362,9 @@ class Editor extends DataComponent {
     let editorContent = this.data.initted ? [
       h('div.editor-title', [
         h('div.editor-title-content', [
-          h('div.editor-title-name', document.name() || 'Unnamed document'),
+          h('div.editor-title-name', document.title() || 'Unnamed document'),
           h('div.editor-title-info', [
-            h('span', document.authorName() ? `${document.authorName()} et al., ` : ``),
-            h('span', `${document.year()}`),
+            h('span', document.contributorName() ? `${document.contributorName()} et al., ` : ``),
             h('span', document.journalName() ? `, ${document.journalName()}` : ``)
           ])
         ])

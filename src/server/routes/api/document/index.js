@@ -94,14 +94,14 @@ let sendEmail = json => {
 
   return emailTransport.sendMail({
     from: { name: EMAIL_FROM, address: EMAIL_FROM_ADDR },
-    to: { name: j.authorName, address: j.authorEmail },
+    to: { name: j.contributorName, address: j.contributorEmail },
     cc: { name: j.editorName, address: j.editorEmail },
     subject: `Action required: "${json.name}"`,
     html: h('div', {
       style: {
       }
     }, [
-      h('p', `Dear ${j.authorName},`),
+      h('p', `Dear ${j.contributorName},`),
       h('p', [
         h('span', `Share your pathway with the world:  Publishing and getting your paper noticed is essential.  `),
         h('a', { href: BASE_URL }, 'Mentena'),
@@ -111,7 +111,7 @@ let sendEmail = json => {
       ]),
       h('p', [
         h('span', `Mentena will capture the pathway data in `),
-        h('strong', `"${j.authorName} et el.  ${j.name}.  Submission ${j.trackingId}"`),
+        h('strong', `"${j.contributorName} et el.  ${j.name}.  Submission ${j.trackingId}"`),
         h('span', ` by helping you draw and describe genes and interactions:`)
       ]),
       h('ul', [
@@ -122,7 +122,7 @@ let sendEmail = json => {
       h('p', `That's it!  We'll get the pathway data to researchers who need it.`),
       h('a', {
         href: `${BASE_URL}/document/${j.id}/${j.secret}`
-      }, `Launch Mentena for ${j.authorName} et al.`),
+      }, `Launch Mentena for ${j.contributorName} et al.`),
       h('p', [
         h('small', `You may also start Mentena by passing ${BASE_URL}/document/${j.id}/${j.secret} into your browser.`)
       ])
@@ -161,13 +161,9 @@ http.get('/:id', function( req, res ){
 
 // create new doc
 http.post('/', function( req, res ){
-  let { abstract, text, legends } = req.body;
+  let { abstract, text } = req.body;
   let meta = _.assign({}, req.body);
-
-  // make sure the year is an int
-  meta.year = parseInt(meta.year, 10) || (new Date()).getFullYear();
-
-  let seedText = [abstract, text, legends].filter(text => text ? true : false).join('\n\n');
+  let seedText = [abstract, text].filter(text => text ? true : false).join('\n\n');
 
   let secret = uuid();
 
@@ -182,8 +178,8 @@ http.post('/', function( req, res ){
       return json;
     } )
     .then(json => {
-      if( !json.authorEmail ){
-        logger.info(`Author email address missing for new doc ${json.id}; not sending email`);
+      if( !json.contributorEmail ){
+        logger.info(`Contributor email address missing for new doc ${json.id}; not sending email`);
 
         return Promise.resolve(json);
       }
@@ -194,9 +190,10 @@ http.post('/', function( req, res ){
         return Promise.resolve(json);
       }
 
-      logger.info(`Sending new doc ${json.id} to ${json.authorEmail} and copying to ${json.editorEmail}`);
+      logger.info(`Sending new doc ${json.id} to ${json.contributorEmail} and copying to ${json.editorEmail}`);
 
-      return sendEmail(json).then(() => json);
+      //return sendEmail(json).then(() => json);
+      return json;
     })
     .then(json => {
       return res.json( json );

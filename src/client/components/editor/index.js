@@ -110,7 +110,7 @@ class Editor extends DataComponent {
       doc.interactions().forEach( listenForRmPpt );
 
       let docs = JSON.parse(localStorage.getItem('documents')) || [];
-      let docData = { id: doc.id(), secret: doc.secret(), name: doc.name() };
+      let docData = { id: doc.id(), secret: doc.secret(), name: doc.title() };
 
       if( _.find(docs,  docData) == null ){
         docs.push(docData);
@@ -358,14 +358,27 @@ class Editor extends DataComponent {
     let { document, bus, incompleteNotification } = this.data;
     let controller = this;
     let { history } = this.props;
+    const formatAuthors = authors => {
+      const tokens = [];
+      if( authors ){
+        const authorList = authors.split(',');
+        tokens.push( authorList.shift() );
+        if( authorList.length ){
+          authorList.length === 1 ? tokens.push(` & `) :  tokens.push(` ... `);
+          tokens.push(`${authorList.pop()}`);
+        }
+        tokens.push(' | ') 
+      } 
+      return tokens.join('');
+    };
 
     let editorContent = this.data.initted ? [
       h('div.editor-title', [
         h('div.editor-title-content', [
           h('div.editor-title-name', document.title() || 'Unnamed document'),
           h('div.editor-title-info', [
-            h('span', document.contributorName() ? `${document.contributorName()} et al., ` : ``),
-            h('span', document.journalName() ? `, ${document.journalName()}` : ``)
+            h('span', `${formatAuthors(document.authors())}`),
+            h('span', document.journalName() ? ` ${document.journalName()}` : ``)
           ])
         ])
       ]),

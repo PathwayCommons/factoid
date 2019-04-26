@@ -358,7 +358,7 @@ class Editor extends DataComponent {
     let { document, bus, incompleteNotification } = this.data;
     let controller = this;
     let { history } = this.props;
-    const formatAuthors = authors => {
+    const formatTitle = ( authors, journalName ) => {
       const tokens = [];
       if( authors ){
         const authorList = authors.split(',');
@@ -367,18 +367,19 @@ class Editor extends DataComponent {
           authorList.length === 1 ? tokens.push(` & `) :  tokens.push(` ... `);
           tokens.push(`${authorList.pop()}`);
         }
-        tokens.push(' | ') 
+        if( journalName ) tokens.push(' | ');
       } 
+      tokens.push( journalName );
       return tokens.join('');
     };
+    const title = formatTitle( document.authors(), document.journalName() ); 
 
     let editorContent = this.data.initted ? [
       h('div.editor-title', [
         h('div.editor-title-content', [
           h('div.editor-title-name', document.title() || 'Unnamed document'),
           h('div.editor-title-info', [
-            h('span', `${formatAuthors(document.authors())}`),
-            h('span', document.journalName() ? ` ${document.journalName()}` : ``)
+            h('span', title )
           ])
         ])
       ]),

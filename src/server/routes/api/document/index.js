@@ -12,7 +12,7 @@ const logger = require('../../../logger');
 
 const provider = require('./reach');
 
-const { BIOPAX_CONVERTER_URL, BASE_URL, EMAIL_FROM, EMAIL_FROM_ADDR } = require('../../../../config');
+const { BIOPAX_CONVERTER_URL, BASE_URL, EMAIL_ENABLED, EMAIL_FROM, EMAIL_FROM_ADDR } = require('../../../../config');
 
 let newDoc = ({ docDb, eleDb, id, secret, meta }) => {
   return new Document( _.assign( {}, docDb, {
@@ -178,6 +178,8 @@ http.post('/', function( req, res ){
       return json;
     } )
     .then(json => {
+      if( !EMAIL_ENABLED ) return json;
+
       if( !json.contributorEmail ){
         logger.info(`Contributor email address missing for new doc ${json.id}; not sending email`);
 
@@ -192,8 +194,7 @@ http.post('/', function( req, res ){
 
       logger.info(`Sending new doc ${json.id} to ${json.contributorEmail} and copying to ${json.editorEmail}`);
 
-      //return sendEmail(json).then(() => json);
-      return json;
+      return sendEmail(json).then(() => json);
     })
     .then(json => {
       return res.json( json );

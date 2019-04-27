@@ -81,6 +81,10 @@ class Element {
     return false;
   }
 
+  isComplex(){
+    return false;
+  }
+
   id(){
     return this.syncher.get('id');
   }

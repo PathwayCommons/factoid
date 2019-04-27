@@ -233,6 +233,10 @@ class Document {
     return this.elements().filter( el => el.isInteraction() );
   }
 
+  complexes(){
+    return this.elements().filter( el => el.isComplex() );
+  }
+
   // mention count for all organisms (toggle + ent mentions)
   organismCounts(){
     let cnt = new Map(); // org => mention count

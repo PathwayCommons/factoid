@@ -7,6 +7,7 @@ let addEdgehandles = require('./edgehandles');
 let addCxtMenu = require('./cxtmenu');
 let addTippy = require('./tippy');
 let addAutomove = require('./automove');
+let addCompoundDnd = require('./compound-dnd');
 let handleDoc = require('./doc');
 let debug = require('../../../debug');
 let defs = require('./defs');
@@ -38,7 +39,8 @@ function makeCytoscape( opts ){
     addTippy,
     handleDoc,
     addAutomove,
-    addCxtMenu
+    addCxtMenu,
+    addCompoundDnd
   ].forEach( fn => fn( handleOpts ) );
 
   return cy;

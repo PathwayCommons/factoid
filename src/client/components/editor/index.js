@@ -76,11 +76,11 @@ class Editor extends DataComponent {
       this.setData({ undoRemoveAvailable: true });
     };
 
-    let addRmPptToList = (intn, ppt, type) => {
+    let addRmPptToList = (el, ppt, type) => {
       checkToClearRmList();
       makeRmAvailable();
 
-      this.data.rmList.ppts.push({ intn, ppt, type });
+      this.data.rmList.ppts.push({ el, ppt, type });
     };
 
     let addRmToList = el => {
@@ -90,7 +90,7 @@ class Editor extends DataComponent {
       this.data.rmList.els.push( el );
     };
 
-    let listenForRmPpt = intn => intn.on('remove', (el, type) => addRmPptToList(intn, el, type));
+    let listenForRmPpt = el => el.on('remove', (ppt, type) => addRmPptToList(el, ppt, type));
 
     doc.on('remove', el => {
       addRmToList( el );
@@ -99,7 +99,7 @@ class Editor extends DataComponent {
     });
 
     doc.on('add', el => {
-      if( el.isInteraction() ){
+      if( el.isInteraction() || el.isComplex() ){
         listenForRmPpt( el );
       }
     });
@@ -107,7 +107,7 @@ class Editor extends DataComponent {
     doc.on('submit', () => this.dirty());
 
     doc.on('load', () => {
-      doc.interactions().forEach( listenForRmPpt );
+      doc.interactions().concat( doc.complexes() ).forEach( listenForRmPpt );
 
       let docs = JSON.parse(localStorage.getItem('documents')) || [];
       let docData = { id: doc.id(), secret: doc.secret(), name: doc.name() };
@@ -285,16 +285,27 @@ class Editor extends DataComponent {
     }, data) );
   }
 
+  addComplex( data = {} ){
+    if( !this.editable() ){ return; }
+
+    return this.addElement( _.assign({
+      type: 'complex',
+      name: ''
+    }, data) );
+  }
+
   remove( docElOrId ){
     if( !this.editable() ){ return; }
 
     let doc = this.data.document;
     let docEl = doc.get( getId( docElOrId ) ); // in case id passed
     let rmPpt = intn => intn.has( docEl ) ? intn.remove( docEl ) : Promise.resolve();
+    let updatePptParent = complex => complex.has( docEl ) ? docEl.updateParent( null, complex ) : Promise.resolve();
     let allIntnsRmPpt = () => Promise.all( doc.interactions().map( rmPpt ) );
+    let allComplexesRmPpt = () => Promise.all( doc.complexes().map( updatePptParent ) );
     let rmEl = () => doc.remove( docEl );
 
-    tryPromise( allIntnsRmPpt ).then( rmEl );
+    tryPromise( allIntnsRmPpt ).then( allComplexesRmPpt ).then( rmEl );
   }
 
   undoRemove(){
@@ -310,9 +321,21 @@ class Editor extends DataComponent {
 
     let restoreEls = () => Promise.all( rmList.els.map( el => document.add(el) ) );
 
-    let restorePpts = () => Promise.all( rmList.ppts.map( ({ intn, ppt, type }) => {
-      let restorePpt = () => intn.add( ppt );
-      let restoreType = () => intn.participantType( ppt, type );
+    let restorePpts = () => Promise.all( rmList.ppts.map( ({ el, ppt, type }) => {
+      let restorePpt = () => {
+        if ( el.isInteraction() ) {
+          return el.add( ppt );
+        }
+        if ( el.isComplex() ) {
+          let getDocEl = id => id != null ? document.get( id ) : null;
+          let newParent = getDocEl( el.id() );
+          let oldParent = getDocEl( ppt.getParentId() );
+          return ppt.updateParent(newParent, oldParent);
+        }
+
+        return Promise.resolve();
+      };
+      let restoreType = () => el.isInteraction() ? el.participantType( ppt, type ) : Promise.resolve();
 
       return tryPromise( restorePpt ).then( restoreType );
     } ) );

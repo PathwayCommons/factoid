@@ -34,7 +34,7 @@ function makeStylesheet(){
       selector: 'node:parent',
       style: {
         'background-opacity': 0.5,
-        'background-color': '	#FFFFFF'
+        'background-color': '#FFFFFF'
       }
     },
     {

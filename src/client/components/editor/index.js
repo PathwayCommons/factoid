@@ -300,12 +300,10 @@ class Editor extends DataComponent {
     let doc = this.data.document;
     let docEl = doc.get( getId( docElOrId ) ); // in case id passed
     let rmPpt = intn => intn.has( docEl ) ? intn.remove( docEl ) : Promise.resolve();
-    let updatePptParent = complex => complex.has( docEl ) ? docEl.updateParent( null, complex ) : Promise.resolve();
     let allIntnsRmPpt = () => Promise.all( doc.interactions().map( rmPpt ) );
-    let allComplexesRmPpt = () => Promise.all( doc.complexes().map( updatePptParent ) );
     let rmEl = () => doc.remove( docEl );
 
-    tryPromise( allIntnsRmPpt ).then( allComplexesRmPpt ).then( rmEl );
+    tryPromise( allIntnsRmPpt ).then( rmEl );
   }
 
   undoRemove(){

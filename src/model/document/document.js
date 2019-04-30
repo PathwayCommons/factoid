@@ -14,20 +14,19 @@ const DEFAULTS = Object.freeze({
   organisms: [], // list of ids
 
   // metadata
-  name: '',
   journalName: '',
-  year: 0,
-  authorName: '',
-  authorEmail: '',
-  editorName: '',
-  editorEmail: '',
-  trackingId: '',
+  title: '',
+  authors: '',
   abstract: '',
   text: '',
-  legends: ''
+  trackingId: '',
+  contributorName: '',
+  contributorEmail: '',
+  editorName: '',
+  editorEmail: ''
 });
 
-const METADATA_FIELDS = ['name', 'journalName', 'year', 'authorName', 'authorEmail', 'editorName', 'editorEmail', 'trackingId', 'abstract', 'text', 'legends'];
+const METADATA_FIELDS = ['journalName', 'title', 'authors', 'abstract', 'text', 'trackingId', 'contributorName', 'contributorEmail', 'editorName', 'editorEmail'];
 
 /**
 A document that contains a set of biological elements (i.e. entities and interactions).
@@ -153,7 +152,7 @@ class Document {
   }
 
   rename( newName ){
-    let updatePromise = this.syncher.update( 'name', newName );
+    let updatePromise = this.syncher.update( 'title', newName );
 
     this.emit( 'rename', newName );
     this.emit( 'localrename', newName );
@@ -161,11 +160,11 @@ class Document {
     return updatePromise;
   }
 
-  name( newName ){
+  title( newName ){
     if( newName != null ){
       return this.rename( newName );
     } else {
-      return this.syncher.get('name');
+      return this.syncher.get('title');
     }
   }
 
@@ -189,16 +188,16 @@ class Document {
     return this.rwMeta('journalName', newName);
   }
 
-  year(newYear){
-    return this.rwMeta('year', newYear);
+  authors(newNames){
+    return this.rwMeta('authors', newNames);
   }
 
-  authorName(newName){
-    return this.rwMeta('authorName', newName);
+  contributorName(newName){
+    return this.rwMeta('contributorName', newName);
   }
 
-  authorEmail(newEmail){
-    return this.rwMeta('authorEmail', newEmail);
+  contributorEmail(newEmail){
+    return this.rwMeta('contributorEmail', newEmail);
   }
 
   editorName(newName){
@@ -219,10 +218,6 @@ class Document {
 
   text(newText){
     return this.rwMeta('text', newText);
-  }
-
-  legends(newLegends){
-    return this.rwMeta('legends', newLegends);
   }
 
   entities(){
@@ -411,7 +406,7 @@ class Document {
     return _.assign({
       id: this.id(),
       secret: this.secret(),
-      name: this.name(),
+      title: this.title(),
       summary: this.toText(),
       organisms: this.organisms().map( toJson ),
       elements: this.elements().map( toJson ),

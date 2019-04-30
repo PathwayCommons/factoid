@@ -39,6 +39,7 @@ let defaults = {
   PC_URL: 'https://apps.pathwaycommons.org/',
 
   // Email
+  EMAIL_ENABLED: false,
   EMAIL_FROM: 'Mentena',
   EMAIL_FROM_ADDR: 'support@mentana.org',
   SMTP_PORT: 465,

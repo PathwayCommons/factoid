@@ -1,7 +1,7 @@
 const DataComponent = require('../data-component');
 const ReactDom = require('react-dom');
 const h = require('react-hyperscript');
-const EventEmitter = require('eventemitter3');
+const EventEmitter = require('../../../model/event-emitter');
 const io = require('socket.io-client');
 const _ = require('lodash');
 

@@ -279,6 +279,8 @@ function listenToDoc({ bus, cy, document, controller }){
   };
 
   let onAddEles = function( docEls ){
+    docEls.forEach( el => el.undoLastRemoveAllListeners( el ) );
+
     cy.add( makeCyEles( docEls ) );
 
     for( let docEl of docEls ){

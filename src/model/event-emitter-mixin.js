@@ -1,4 +1,4 @@
-let EventEmitter = require('eventemitter3');
+let EventEmitter = require('./event-emitter');
 let _ = require('lodash');
 let m;
 
@@ -32,6 +32,18 @@ _.extend( m.prototype, {
 
   removeAllListeners: function( name ){
     this.emitter.removeAllListeners( name );
+
+    return this;
+  },
+
+  undoRemoveAllListeners: function( listenerSelf ){
+    this.emitter.undoRemoveAllListeners( listenerSelf );
+
+    return this;
+  },
+
+  undoLastRemoveAllListeners: function( listenerSelf ){
+    this.emitter.undoLastRemoveAllListeners( listenerSelf );
 
     return this;
   },

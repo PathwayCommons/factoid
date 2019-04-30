@@ -2,7 +2,7 @@ const { fill, error, promisifyEmit, mixin, ensureArray, assert, jsonHash, tryPro
 const EventEmitterMixin = require('./event-emitter-mixin');
 const _ = require('lodash');
 const uuid = require('uuid');
-const EventEmitter = require('eventemitter3');
+const EventEmitter = require('./event-emitter');
 
 const OP_TYPE = Object.freeze({
   CREATE: 'CREATE',

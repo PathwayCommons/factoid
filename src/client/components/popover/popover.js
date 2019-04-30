@@ -6,7 +6,7 @@ const tippyjs = require('tippy.js');
 const _ = require('lodash');
 const { tippyDefaults } = require('../../defs');
 const Mousetrap = require('mousetrap');
-const EventEmitter = require('eventemitter3');
+const EventEmitter = require('../../../model/event-emitter');
 
 const emitter = new EventEmitter();
 

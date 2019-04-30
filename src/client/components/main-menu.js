@@ -1,6 +1,6 @@
 const { Component } = require('react');
 const h = require('react-hyperscript');
-const EventEmitter = require('eventemitter3');
+const EventEmitter = require('../../model/event-emitter');
 const Tooltip = require('./popover/tooltip');
 const { Link } = require('react-router-dom');
 

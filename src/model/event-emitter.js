@@ -3,7 +3,7 @@ let _ = require('lodash');
 
 class EventEmitter extends EventEmitter3 {
   constructor() {
-    super(); //must call super for "this" to be defined.
+    super();
 
     this.listenersToRestore = [];
   }

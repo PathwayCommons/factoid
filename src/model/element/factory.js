@@ -2,8 +2,9 @@ const _ = require('lodash');
 const Syncher = require('../syncher');
 const Entity = require('./entity');
 const Element = require('./element');
+const Complex = require('./complex');
 const Interaction = require('./interaction');
-const { isEntity, isInteraction } = require('./element-type');
+const { isEntity, isInteraction, isComplex } = require('./element-type');
 const { error, tryPromise } = require('../../util');
 
 /**
@@ -29,7 +30,12 @@ class ElementFactory {
   getType( typeStr ){
     if( isInteraction(typeStr) ){
       return Interaction;
-    } else if( isEntity(typeStr) ){
+    } else if( isComplex(typeStr) ){
+      // since Complex is a subclass of Entity it is critical to make isComplex() check
+      // earlier than isEntity() check.
+      return Complex;
+    } 
+    else if( isEntity(typeStr) ){
       return Entity;
     } else {
       throw error(`The type '${typeStr}' is invalid for element creation`);

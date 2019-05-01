@@ -16,4 +16,8 @@ const isInteraction = type => {
   return INTERACTION_TYPES.indexOf(type) >= 0;
 };
 
-module.exports = { ELEMENT_TYPE, ELEMENT_TYPES, isEntity, isInteraction };
+const isComplex = type => {
+  return type == ENTITY_TYPE.COMPLEX;
+};
+
+module.exports = { ELEMENT_TYPE, ELEMENT_TYPES, isEntity, isInteraction, isComplex };

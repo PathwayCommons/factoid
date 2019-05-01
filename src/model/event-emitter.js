@@ -48,7 +48,7 @@ class EventEmitter extends EventEmitter3 {
       const rebind = eventname => {
         let listeners = listenersMap.get( eventname );
         listeners.forEach( l => {
-          let bindedL = _.isNil( l ) ? l : l.bind( listenerSelf );
+          let bindedL = _.isNil( listenerSelf ) ? l : l.bind( listenerSelf );
           this.on( eventname, bindedL );
         } );
       };

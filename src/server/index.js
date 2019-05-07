@@ -61,35 +61,34 @@ if( app.get('env') === 'development' ){
 app.use( '/', require('./routes/index') );
 
 // catch 404 and forward to error handler
-// app.use(function(req, res, next) {
-//   let err = new Error('URL not found: ' + req.url);
+app.use(function(req, res, next) {
+  let err = new Error('URL not found: ' + req.url);
 
-//   err.status = 404;
+  err.status = 404;
 
-//   next( err );
-// });
+  next( err );
+});
 
 // general error handler
-// app.use(function(err, req, res, next) {
-//   let status = err.status || 500;
+app.use(function(err, req, res, next) {
+  let status = err.status || 500;
 
-//   logger.error('An error occurred serving a resource');
-//   logger.error('Status code: ' + (status || 'none'));
-//   logger.error( err );
+  logger.error('An error occurred serving a resource');
+  logger.error('Status code: ' + (status || 'none'));
+  logger.error( err );
 
-//   res.status( status );
+  res.status( status );
 
-//   switch( status ){
-//     case 404:
-//       res.render('404');
-//       break;
-//     default:
-//       res.render('error');
-//       break;
-//   }
+  switch( status ){
+    case 404:
+      res.render('404');
+      break;
+    default:
+      res.render('error');
+      break;
+  }
 
-//   next( err );
-// });
+});
 
 
 let port = normalizePort(config.PORT);

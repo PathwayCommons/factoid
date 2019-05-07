@@ -10,6 +10,7 @@
 @import "./app.css";
 @import "./highlighter.css";
 @import "./editor";
+@import "./help";
 @import "./home.css";
 @import "./document-linkout.css";
 @import "./notification.css";

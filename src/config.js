@@ -40,7 +40,7 @@ let defaults = {
 
   // Email
   EMAIL_ENABLED: false,
-  EMAIL_FROM: 'Mentena',
+  EMAIL_FROM: 'Factoid',
   EMAIL_FROM_ADDR: 'support@mentana.org',
   SMTP_PORT: 465,
   SMTP_HOST: 'localhost',

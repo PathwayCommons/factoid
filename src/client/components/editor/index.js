@@ -59,6 +59,7 @@ class Editor extends DataComponent {
       if( now - l.lastTime > RM_DEBOUNCE_TIME ){
         l.els = [];
         l.ppts = [];
+        l.oldIdToEl = new Map();
       }
 
       l.lastTime = now;
@@ -134,6 +135,7 @@ class Editor extends DataComponent {
       rmList: {
         els: [],
         ppts: [],
+        oldIdToEl: new Map(),
         lastTime: 0
       }
     });
@@ -235,24 +237,33 @@ class Editor extends DataComponent {
     return this.data.drawModeType;
   }
 
-  addElement( data = {} ){
+  addElement( data = {}, isRestore = false ){
     if( !this.editable() ){ return; }
 
-    let cy = this.data.cy;
-    let pan = cy.pan();
-    let zoom = cy.zoom();
-    let getPosition = rpos => ({
-      x: ( rpos.x - pan.x ) / zoom,
-      y: ( rpos.y - pan.y ) / zoom
-    });
-    let shift = ( pos, delta ) => ({ x: pos.x + delta.x, y: pos.y + delta.y });
-    let shiftSize = defs.newElementShift;
-    let shiftI = this.data.newElementShift;
-    let delta = { x: 0, y: shiftSize * shiftI };
-    let pos = getPosition( shift( _.clone( defs.newElementPosition ), delta ) );
+    let getDefaultPos = () => {
+      if ( !_.isNil( this.data.position ) ) {
+        return null;
+      }
 
-    this.setData({ newElementShift: (shiftI + 1) % defs.newElementMaxShifts });
+      let cy = this.data.cy;
+      let pan = cy.pan();
+      let zoom = cy.zoom();
+      let getPosition = rpos => ({
+        x: ( rpos.x - pan.x ) / zoom,
+        y: ( rpos.y - pan.y ) / zoom
+      });
+      let shift = ( pos, delta ) => ({ x: pos.x + delta.x, y: pos.y + delta.y });
+      let shiftSize = defs.newElementShift;
+      let shiftI = this.data.newElementShift;
+      let delta = { x: 0, y: shiftSize * shiftI };
+      let pos = getPosition( shift( _.clone( defs.newElementPosition ), delta ) );
 
+      this.setData({ newElementShift: (shiftI + 1) % defs.newElementMaxShifts });
+
+      return pos;
+    };
+
+    let pos = getDefaultPos();
     let doc = this.data.document;
 
     let el = doc.factory().make({
@@ -263,7 +274,9 @@ class Editor extends DataComponent {
       }, data )
     });
 
-    this.lastAddedElement = el;
+    if ( !isRestore ) {
+      this.lastAddedElement = el;
+    }
 
     let synch = () => el.synch();
     let create = () => el.create();
@@ -298,7 +311,7 @@ class Editor extends DataComponent {
   }
 
   undoRemove(){
-    let { rmList, document } = this.data;
+    let { rmList } = this.data;
 
     if( rmList.els.length === 0 && rmList.ppts.length === 0 ){ return Promise.resolve(); }
 
@@ -308,16 +321,38 @@ class Editor extends DataComponent {
 
     let makeRmUnavil = () => this.setData({ undoRemoveAvailable: false });
 
-    let restoreEls = () => Promise.all( rmList.els.map( el => document.add(el) ) );
+    let restoreEl = el => {
+      let oldId = el.id();
+      let elJson = _.omit( el.json(), [ 'id', 'secret' ] );
 
-    let restorePpts = () => Promise.all( rmList.ppts.map( ({ intn, ppt, type }) => {
-      let restorePpt = () => intn.add( ppt );
-      let restoreType = () => intn.participantType( ppt, type );
+      if ( el.isInteraction() ) {
+        let relatedPpts = rmList.ppts.filter( ( { intn } ) => intn.id() == el.id() );
+        let newEntities = relatedPpts.map( ( { ppt, type } ) => {
+          let oldId = ppt.id();
+          let id = rmList.oldIdToEl.has( oldId ) ? rmList.oldIdToEl.get( oldId ).id() : oldId;
 
-      return tryPromise( restorePpt ).then( restoreType );
-    } ) );
+          return { id, group: type };
+        } );
 
-    return Promise.all([ restoreEls(), restorePpts() ]).then( makeRmUnavil );
+        elJson.entries = elJson.entries.concat( newEntities );
+      }
+
+      let isRestore = true;
+      return this.addElement( elJson, isRestore )
+        .then( newEl => rmList.oldIdToEl.set( oldId, newEl ) );
+    };
+
+    let restoreEls = els => Promise.all( els.map( restoreEl ) );
+
+    let rmEntities = rmList.els.filter( el => el.isEntity() );
+    let rmIntns = rmList.els.filter( el => el.isInteraction() );
+
+    let restoreEntities = () => restoreEls( rmEntities );
+    let restoreIntns = () => restoreEls( rmIntns );
+
+    return tryPromise( restoreEntities )
+      .then( restoreIntns )
+      .then( makeRmUnavil );
   }
 
   layout(){

@@ -66,7 +66,7 @@ class InteractionInfo extends DataComponent {
 
     switch( stage ){
       case STAGES.PARTICIPANT_TYPES:
-        return true;
+        return false; // disable this phase for now, maybe delete all related code eventually
       case STAGES.ASSOCIATE:
         return true;
       case STAGES.COMPLETED:

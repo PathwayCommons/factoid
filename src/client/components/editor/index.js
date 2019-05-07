@@ -123,6 +123,15 @@ class Editor extends DataComponent {
     bus.on('drawtoggle', (toggle, type) => this.toggleDrawMode(toggle, type));
     bus.on('addelement', data => this.addElement( data ));
     bus.on('remove', docEl => this.remove( docEl ));
+    bus.on('togglehelp', () => this.toggleHelp());
+
+    let showHelp = JSON.parse(localStorage.getItem('showHelp'));
+
+    if( showHelp == null ){
+      showHelp = true;
+    }
+
+    localStorage.setItem('showHelp', false);
 
     this.data = ({
       bus: bus,
@@ -131,6 +140,7 @@ class Editor extends DataComponent {
       newElementShift: 0,
       mountDeferred: defer(),
       initted: false,
+      showHelp,
       rmList: {
         els: [],
         ppts: [],
@@ -354,10 +364,19 @@ class Editor extends DataComponent {
     return Promise.all([this.toggleDrawMode(false)]).delay(250);
   }
 
+  toggleHelp(bool){
+    if( bool == null ){
+      bool = !this.data.showHelp;
+    }
+
+    this.setData({ showHelp: bool });
+  }
+
   render(){
-    let { document, bus, incompleteNotification } = this.data;
+    let { document, bus, incompleteNotification, showHelp } = this.data;
     let controller = this;
     let { history } = this.props;
+
     const formatTitle = ( authors, journalName ) => {
       const tokens = [];
       if( authors ){
@@ -368,11 +387,12 @@ class Editor extends DataComponent {
           tokens.push(`${authorList.pop()}`);
         }
         if( journalName ) tokens.push(' | ');
-      } 
+      }
       tokens.push( journalName );
       return tokens.join('');
     };
-    const title = formatTitle( document.authors(), document.journalName() ); 
+
+    const title = formatTitle( document.authors(), document.journalName() );
 
     let editorContent = this.data.initted ? [
       h('div.editor-title', [
@@ -394,7 +414,20 @@ class Editor extends DataComponent {
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
-      h('div.editor-graph#editor-graph')
+      h('div.editor-graph#editor-graph'),
+      h('div.editor-help' + (showHelp ? '.editor-help-shown' : ''), showHelp ? [
+        h('div.editor-help-background', {
+          onClick: () => this.toggleHelp()
+        }),
+        h('div.editor-help-video-embed.video-embed', [
+          h('iframe.video-embed-iframe', {
+            src: 'https://www.youtube.com/embed/5qTcWopNf7k',
+            frameBorder: 0,
+            allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
+            allowFullScreen: true
+            })
+        ])
+      ] : [])
     ] : [];
 
     return h('div.editor', {

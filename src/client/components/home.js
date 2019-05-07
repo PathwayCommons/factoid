@@ -24,7 +24,15 @@ class Home extends Component {
         h('div.page-content', [
           h('h2.section-title', 'Our mission'),
           h('h2', 'Make the findings in your article easy to discover'),
-          h('p', `Your figure can be discovered and explored by other researchers, because it's smart:  It's more than just a picture.   What other papers mention my gene?  What other papers mention a particular interaction?   What other papers are related to my research?    Factoid gives you that.`)
+          h('p', `Your figure can be discovered and explored by other researchers, because it's smart:  It's more than just a picture.   What other papers mention my gene?  What other papers mention a particular interaction?   What other papers are related to my research?    Factoid gives you that.`),
+          h('div.video-embed', [
+            h('iframe.video-embed-iframe', {
+              src: 'https://www.youtube.com/embed/GdeMi5RFNTU',
+              frameBorder: 0,
+              allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
+              allowFullScreen: true
+              })
+          ])
         ])
       ]),
       h('section.home-section#why-biologists', [

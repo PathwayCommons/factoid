@@ -1,12 +1,9 @@
 const { Component } = require('react');
 const h = require('react-hyperscript');
-const _ = require('lodash');
 const Popover = require('./popover/popover');
 const Linkout = require('./document-linkout');
-const { exportDocumentToBiopax, exportDocumentToTxt, exportDocumentToSbgn } = require('../client-util');
 const EventEmitter = require('eventemitter3');
 const Tooltip = require('./popover/tooltip');
-const { Link } = require('react-router-dom');
 
 class MenuContent extends Component {
   constructor(props){
@@ -86,7 +83,7 @@ class MainMenu extends Component {
 
   render(){
     let { emitter } = this;
-    let { bus, document, history, title, networkEditor } = this.props;
+    let { bus, document, history, networkEditor } = this.props;
 
     return h('div.main-menu', [
       h(Popover, {

@@ -70,7 +70,7 @@ app.use(function(req, res, next) {
 });
 
 // general error handler
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
   let status = err.status || 500;
 
   logger.error('An error occurred serving a resource');

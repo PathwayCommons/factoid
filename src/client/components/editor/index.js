@@ -456,7 +456,7 @@ class Editor extends DataComponent {
         }),
         h('div.editor-help-video-embed.video-embed', [
           h('iframe.video-embed-iframe', {
-            src: 'https://www.youtube.com/embed/5qTcWopNf7k',
+            src: 'https://www.youtube.com/embed/Do5VaIcB4B8',
             frameBorder: 0,
             allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
             allowFullScreen: true

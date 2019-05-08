@@ -19,6 +19,10 @@ class Interaction extends InteractionType {
   }
 
   toBiopaxTemplate(){
+    if ( !this.validatePpts() ){
+      return this.makeInvalidBiopaxTemplate();
+    }
+    
     // "Other" type; see 4A-E in "Factoid binary interaction types" doc.
     let template = {
       type: BIOPAX_TEMPLATE_TYPE.OTHER_INTERACTION

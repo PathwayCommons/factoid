@@ -106,6 +106,10 @@ const search = q => {
 const get = q => {
   let provider = providers.find( p => p.namespace === q.namespace );
 
+  if ( !provider ){
+    return null;
+  }
+
   return provider.get( q ).catch( err => {
     logger.error(`Aggregate get failed`);
     logger.error(err);

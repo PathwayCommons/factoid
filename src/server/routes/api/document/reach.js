@@ -7,12 +7,10 @@ const FormData = require('form-data');
 const Organism = require('../../../../model/organism');
 const { INTERACTION_TYPE } = require('../../../../model/element/interaction-type/enum');
 const { PARTICIPANT_TYPE } = require('../../../../model/element/participant-type');
-const uniprot = require('../element-association/uniprot');
+const aggregate = require('../element-association/aggregate');
+const groundingSearch = require('../element-association/grounding-search');
+const { USE_PC_GROUNDING_SEARCH } = require('../../../../config');
 const { pickByUniqueParticipants, pickByNumParticipants, pickTopInteractions, pickEntitiesInInteractions } = require('./filters');
-
-// TODO re-enable once a more stable solution for pubchem xrefs is found
-// https://github.com/PathwayCommons/factoid/issues/228
-// const pubchem = require('../element-association/pubchem');
 
 const logger = require('../../../logger');
 
@@ -26,6 +24,7 @@ const REMOVE_DISCONNECTED_ENTS = true;
 const REMOVE_UNGROUNDED_ENTS = true;
 const APPLY_GROUND = true;
 const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
+const provider = USE_PC_GROUNDING_SEARCH ? groundingSearch : aggregate;
 
 const REACH_EVENT_TYPE = Object.freeze({
   REGULATION: 'regulation',
@@ -174,27 +173,17 @@ module.exports = {
 
         if( APPLY_GROUND && ground != null ){
           let q = {
-            id: ground.id
+            id: ground.id,
+            namespace: ground.namespace
           };
 
-          let applyGround = tryPromise( () => {
-            switch( ground.namespace ){
-            case 'uniprot':
-              return uniprot.get( q );
-            case 'pubchem':
-              return null;
-              // TODO re-enable once a more stable solution for pubchem xrefs is found
-              // https://github.com/PathwayCommons/factoid/issues/228
-              // return pubchem.get( q );
-            default:
-              return null;
-            }
-          } ).then( assoc => {
-            if( assoc ){
-              el.association = assoc;
-              el.completed = true;
-            }
-          } );
+          let applyGround = tryPromise( () => provider.get( q ) )
+            .then( assoc => {
+              if( assoc ){
+                el.association = assoc;
+                el.completed = true;
+              }
+            } );
 
           groundPromises.push( applyGround );
         }
@@ -223,7 +212,9 @@ module.exports = {
 
         const supportedGrounds = [
           'uniprot',
-          'pubchem'
+          'pubchem',
+          'ncbi',
+          'chebi'
         ];
 
         let type = frame.type;

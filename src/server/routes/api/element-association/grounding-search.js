@@ -3,6 +3,7 @@ const fetch = require('node-fetch');
 
 const { GROUNDING_SEARCH_URL, AGGREGATE_CACHE_SIZE } = require('../../../../config');
 const { memoize } = require('../../../../util');
+const logger = require('../../../logger');
 
 const query = ( opts, endpt ) => {
   return fetch( GROUNDING_SEARCH_URL + `/${endpt}`, {

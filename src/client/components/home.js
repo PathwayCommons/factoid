@@ -24,11 +24,11 @@ class Home extends Component {
         h('div.page-content', [
           h('div.video-embed', [
             h('iframe.video-embed-iframe', {
-              src: 'https://www.youtube.com/embed/HDW9AVYifxQ',
+              src: 'https://www.youtube.com/embed/HDW9AVYifxQ?rel=0',
               frameBorder: 0,
               allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
               allowFullScreen: true
-              })
+            })
           ])
         ])
       ]),

@@ -1,5 +1,6 @@
 const { error } = require('../../../util');
 const { PARTICIPANT_TYPE } = require('../participant-type');
+const { BIOPAX_TEMPLATE_TYPE } = require('./biopax-type');
 
 const VALUE = 'unset';
 const DISPLAY_VALUE = 'Unset';
@@ -125,6 +126,33 @@ class InteractionType {
     let tgtName = tgt.name() || '(?)';
 
     return `${srcName} ${verbPhrase} ${tgtName} ${post}`;
+  }
+
+  validatePpts(){
+    let intn = this.interaction;
+    let pptAssocsAllowed = () => this.constructor.isAllowedForInteraction(intn);
+    let pptTypeAllowed = () => {
+      let pptType = (
+        intn.participants()
+        .map(ppt => intn.participantType(ppt))
+        .filter(type => type.value !== PARTICIPANT_TYPE.UNSIGNED.value)[0] // assume one typed ppt, others unsigned
+        || PARTICIPANT_TYPE.UNSIGNED // if no other type found, then it's unsigned overall
+      );
+
+      return this.allowedParticipantTypes().some(type => type.value === pptType.value);
+    };
+
+    return pptAssocsAllowed() && pptTypeAllowed();
+  }
+
+  makeInvalidBiopaxTemplate(){
+    let participants = this.interaction.participants();
+    let participantTemplates = participants.map( participant => participant.toBiopaxTemplate() );
+
+    return {
+      type: BIOPAX_TEMPLATE_TYPE.OTHER_INTERACTION,
+      participants: participantTemplates
+    };
   }
 
   static isAllowedForInteraction( intn ){ // eslint-disable-line no-unused-vars

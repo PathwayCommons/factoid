@@ -37,6 +37,10 @@ class TranscriptionTranslation extends InteractionType {
   }
 
   toBiopaxTemplate(){
+    if ( !this.validatePpts() ){
+      return this.makeInvalidBiopaxTemplate();
+    }
+
     //src, tgt shouldn't be null at this point (barring bug)
     let srcTemplate = this.getSource().toBiopaxTemplate();
     let tgtTemplate = this.getTarget().toBiopaxTemplate();

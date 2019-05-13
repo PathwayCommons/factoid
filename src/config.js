@@ -37,7 +37,7 @@ let defaults = {
   MAX_SEARCH_SIZE: 50,
   BIOPAX_CONVERTER_URL: 'https://biopax.baderlab.org/convert/v2/',
   PC_URL: 'https://apps.pathwaycommons.org/',
-  GROUNDING_SEARCH_URL: 'http://localhost:3001',
+  GROUNDING_SEARCH_BASE_URL: 'http://localhost:3001',
   NCBI_LINK_BASE_URL: 'https://www.ncbi.nlm.nih.gov/gene/',
 
   // Email

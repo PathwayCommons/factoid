@@ -37,6 +37,8 @@ let defaults = {
   MAX_SEARCH_SIZE: 50,
   BIOPAX_CONVERTER_URL: 'https://biopax.baderlab.org/convert/v2/',
   PC_URL: 'https://apps.pathwaycommons.org/',
+  GROUNDING_SEARCH_BASE_URL: 'http://localhost:3001',
+  NCBI_LINK_BASE_URL: 'https://www.ncbi.nlm.nih.gov/gene/',
 
   // Email
   EMAIL_ENABLED: false,
@@ -45,7 +47,9 @@ let defaults = {
   SMTP_PORT: 465,
   SMTP_HOST: 'localhost',
   SMTP_USER: 'user',
-  SMTP_PASSWORD: 'password'
+  SMTP_PASSWORD: 'password',
+
+  USE_PC_GROUNDING_SEARCH: false
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );
@@ -76,7 +80,12 @@ let intKeys = [
   'SMTP_PORT'
 ];
 
+let boolKeys = [
+  'USE_PC_GROUNDING_SEARCH', 'EMAIL_ENABLED'
+];
+
 intKeys.forEach( k => conf[k] = parseInt( conf[k] ) );
+boolKeys.forEach( k => conf[k] = JSON.parse( conf[k] ) );
 
 Object.freeze( conf );
 

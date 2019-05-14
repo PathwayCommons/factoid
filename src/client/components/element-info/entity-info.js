@@ -44,6 +44,12 @@ class EntityInfo extends DataComponent {
 
     let stage = initCache( stageCache, el, el.completed() ? STAGES.COMPLETED : ORDERED_STAGES[0] );
 
+    // handle the case of 'remotecomplete' is happened while the component is unmounted
+    if ( el.completed() && stage !== STAGES.COMPLETED ) {
+      stage = STAGES.COMPLETED;
+      stageCache.set( el, stage );
+    }
+    
     let nameNotification = initCache( nameNotificationCache, el, new Notification({ active: true }) );
 
     let assocNotification = initCache( assocNotificationCache, el, new Notification({ active: true }) );
@@ -95,6 +101,7 @@ class EntityInfo extends DataComponent {
     let s = this.data;
     let doc = p.document;
     let progression = s.progression;
+    const { STAGES } = progression;
 
     progression.goToStage( s.stage );
 
@@ -110,8 +117,14 @@ class EntityInfo extends DataComponent {
       this.remRenameAni = animateDomForEdit( input );
     };
 
+    this.onRemoteComplete = () => {
+      let checkPrevStage = false;
+      this.goToStage( STAGES.COMPLETED, checkPrevStage );
+    };
+
     s.element.on('rename', this.onRename);
     s.element.on('remoterename', this.onRemoteRename);
+    s.element.on('remotecomplete', this.onRemoteComplete);
 
     this.onToggleOrganism = () => {
       associationCache = new WeakMap(); // all entities invalidated
@@ -132,6 +145,7 @@ class EntityInfo extends DataComponent {
 
     element.removeListener('rename', this.onRename);
     element.removeListener('remoterename', this.onRemoteRename);
+    element.removeListener('remotecomplete', this.onRemoteComplete);
 
     document.removeListener('toggleorganism', this.onToggleOrganism);
 
@@ -362,7 +376,7 @@ class EntityInfo extends DataComponent {
     }
   }
 
-  goToStage( stage ){
+  goToStage( stage, checkPrevStage = true ){
     let { stage: currentStage, name, element, progression } = this.data;
     let { STAGES } = progression;
 
@@ -373,7 +387,7 @@ class EntityInfo extends DataComponent {
       this.rename( name );
     }
 
-    if( progression.canGoToStage(stage) ){
+    if( !checkPrevStage || progression.canGoToStage(stage) ){
       this.setData({ stage, stageError: null });
 
       stageCache.set( this.data.element, stage );

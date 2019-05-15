@@ -58,7 +58,7 @@ let runLayout = doc => {
   return tryPromise( run ).then( getDoc );
 };
 
-let getReachOutput = text => provider.getRawResponse( text );
+// let getReachOutput = text => provider.getRawResponse( text );
 
 let handleResponseError = response => {
   if (!response.ok) {
@@ -104,33 +104,33 @@ let sendEmail = json => {
       h('p', `Dear ${j.contributorName},`),
       h('p', [
         h('span', `Share your pathway with the world:  Publishing and getting your paper noticed is essential.  `),
-        h('a', { href: BASE_URL }, 'Mentena'),
+        h('a', { href: BASE_URL }, 'Factoid'),
         h('span', `, a project by `),
         h('a', { href: 'https://pathwaycommons.org' }, `Pathway Commons`),
         h('span', `, helps you increase the visibility of your publications by linking your research to pathways.`)
       ]),
       h('p', [
-        h('span', `Mentena will capture the pathway data in `),
+        h('span', `Factoid will capture the pathway data in `),
         h('strong', `"${j.contributorName} et el.  ${j.name}.  Submission ${j.trackingId}"`),
         h('span', ` by helping you draw and describe genes and interactions:`)
       ]),
       h('ul', [
-        h('li', `Launch Mentena for your article by clicking the link.`),
-        h('li', `Check over genes and interactions Mentena may have found in your text.`),
+        h('li', `Launch Factoid for your article by clicking the link.`),
+        h('li', `Check over genes and interactions Factoid may have found in your text.`),
         h('li', `Draw genes (circles) or interactions (lines or arrows) then add information at the prompts.`),
       ]),
       h('p', `That's it!  We'll get the pathway data to researchers who need it.`),
       h('a', {
         href: `${BASE_URL}/document/${j.id}/${j.secret}`
-      }, `Launch Mentena for ${j.contributorName} et al.`),
+      }, `Launch Factoid for ${j.contributorName} et al.`),
       h('p', [
-        h('small', `You may also start Mentena by passing ${BASE_URL}/document/${j.id}/${j.secret} into your browser.`)
+        h('small', `You may also start Factoid by passing ${BASE_URL}/document/${j.id}/${j.secret} into your browser.`)
       ])
     ]).outerHTML
   });
 };
 
-http.get('/', function( req, res ){
+http.get('/', function( req, res, next ){
   let limit = req.params.limit || 50;
 
   return (
@@ -142,13 +142,14 @@ http.get('/', function( req, res ){
         .pluck( [ 'id', 'publicUrl' ] )
         .run( conn )
         .then( cursor => cursor.toArray() )
-        .then( results => res.json( results ) );
+        .then( results => res.json( results ) )
+        .catch( next );
     })
   );
 });
 
 // get existing doc
-http.get('/:id', function( req, res ){
+http.get('/:id', function( req, res, next ){
   let id = req.params.id;
 
   ( tryPromise( loadTables )
@@ -156,11 +157,12 @@ http.get('/:id', function( req, res ){
     .then( loadDoc )
     .then( getDocJson )
     .then( json => res.json( json ) )
+    .catch( next )
   );
 });
 
 // create new doc
-http.post('/', function( req, res ){
+http.post('/', function( req, res, next ){
   let { abstract, text } = req.body;
   let meta = _.assign({}, req.body);
   let seedText = [abstract, text].filter(text => text ? true : false).join('\n\n');
@@ -202,23 +204,21 @@ http.post('/', function( req, res ){
     .catch( e => {
       logger.error(`Could not fill doc from text: ${text}`);
       logger.error('Exception thrown :', e.message);
-      res.sendStatus(500);
-
-      throw e;
+      next( e );
     } )
   );
 });
 
 // TODO remove this route as reach should never need to be queried directly
-http.post('/query-reach', function( req, res ){
-  let text = req.body.text;
+// http.post('/query-reach', function( req, res ){
+//   let text = req.body.text;
 
-  getReachOutput( text )
-  .then( reachRes => reachRes.json() )
-  .then( reachJson => res.json(reachJson) );
-});
+//   getReachOutput( text )
+//   .then( reachRes => reachRes.json() )
+//   .then( reachJson => res.json(reachJson) );
+// });
 
-http.get('/biopax/:id', function( req, res ){
+http.get('/biopax/:id', function( req, res, next ){
   let id = req.params.id;
   tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
@@ -226,10 +226,11 @@ http.get('/biopax/:id', function( req, res ){
     .then( doc => doc.toBiopaxTemplates() )
     .then( getBiopaxFromTemplates )
     .then( result => result.text() )
-    .then( owl => res.send( owl ));
+    .then( owl => res.send( owl ))
+    .catch( next );
 });
 
-http.get('/sbgn/:id', function( req, res ){
+http.get('/sbgn/:id', function( req, res, next ){
   let id = req.params.id;
   tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
@@ -237,16 +238,18 @@ http.get('/sbgn/:id', function( req, res ){
     .then( doc => doc.toBiopaxTemplates() )
     .then( getSbgnFromTemplates )
     .then( result => result.text() )
-    .then( xml => res.send( xml ));
+    .then( xml => res.send( xml ))
+    .catch( next );
 });
 
-http.get('/text/:id', function( req, res ){
+http.get('/text/:id', function( req, res, next ){
   let id = req.params.id;
   tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
     .then( doc => doc.toText() )
-    .then( txt => res.send( txt ));
+    .then( txt => res.send( txt ))
+    .catch( next );
 });
 
 module.exports = http;

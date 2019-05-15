@@ -16,7 +16,7 @@ function makeStylesheet(){
           let completed = node.data('completed');
 
           if( !completed ){
-            return '?';
+            return '';
           } else {
             return name;
           }

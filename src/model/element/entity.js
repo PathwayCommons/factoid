@@ -5,7 +5,8 @@ const { tryPromise } = require('../../util');
 const TYPE = 'entity';
 
 const DEFAULTS = Object.freeze({
-  type: TYPE
+  type: TYPE,
+  association: null
 });
 
 /**

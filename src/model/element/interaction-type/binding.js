@@ -37,6 +37,10 @@ class Binding extends InteractionType {
   }
 
   toBiopaxTemplate(){
+    if ( !this.validatePpts() ){
+      return this.makeInvalidBiopaxTemplate();
+    }
+
     let participants = this.interaction.participants();
     let participantTemplates = participants.map( participant => participant.toBiopaxTemplate() );
 

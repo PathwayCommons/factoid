@@ -76,6 +76,10 @@ class Complex extends Entity {
   removeParticipant( ele, opts ){
     return this.remove( ele, opts );
   }
+
+  json(){
+    return _.assign( {}, super.json(), _.pick( this.syncher.get(), _.keys(DEFAULTS) ) );
+  }
 }
 
 // forward common calls to the element set

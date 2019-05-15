@@ -330,7 +330,7 @@ class Editor extends DataComponent {
   }
 
   undoRemove(){
-    let { rmList, document } = this.data;
+    let { rmList } = this.data;
 
     if( rmList.els.length === 0 && rmList.ppts.length === 0 ){ return Promise.resolve(); }
 
@@ -340,7 +340,7 @@ class Editor extends DataComponent {
 
     let makeRmUnavil = () => this.setData({ undoRemoveAvailable: false });
 
-    let restorePpt = ({ el, ppt, type }) => {
+    let restorePpt = ({ el, ppt }) => {
       if ( el.isComplex() ) {
         let getUpdatedEl = oldEl => {
           let oldId = oldEl.id();

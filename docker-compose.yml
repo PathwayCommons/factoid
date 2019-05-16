@@ -1,0 +1,26 @@
+version: '3'
+services:
+  webapp:
+    image: pathwaycommons/factoid:unstable
+    depends_on:
+      - grounding
+      # - db
+    ports:
+      - "3000:3000" 
+    environment:
+      DB_HOST: "host.docker.internal"
+      # NB: DB_HOST is "localhost" (Linux host) or "host.docker.internal" (Mac host) or "db" (below)
+      GROUNDING_SEARCH_BASE_URL: "http://grounding:3000"
+      USE_PC_GROUNDING_SEARCH: "true"
+  grounding:
+    image: pathwaycommons/grounding-search:latest
+    depends_on:
+      - elastic
+    environment:
+      ELASTICSEARCH_HOST: "elastic:9200"
+  # NB: elasticsearch takes many min to get to yellow status (http://localhost:9200/_cluster/health/?level=shards)
+  elastic:
+    image: pathwaycommons/elasticsearch-grounding:MAY162019 
+#db: 
+  #image: rethinkdb:2.3.6 
+  # NB: https://github.com/PathwayCommons/factoid/issues/452

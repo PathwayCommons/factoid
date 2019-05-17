@@ -26,8 +26,7 @@ const get = opts => {
     } );
 };
 
-const searchAll = memoize( opts => query( opts, 'search' ),
-  LRUCache({ max: AGGREGATE_CACHE_SIZE }) );
+const searchAll = opts => query( opts, 'search' );
 
 const search = opts => {
   let { limit, offset, namespace, name, organismCounts } = opts;

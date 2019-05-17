@@ -1,8 +1,6 @@
-const LRUCache = require('lru-cache');
 const fetch = require('node-fetch');
 
-const { GROUNDING_SEARCH_BASE_URL, AGGREGATE_CACHE_SIZE } = require('../../../../config');
-const { memoize } = require('../../../../util');
+const { GROUNDING_SEARCH_BASE_URL } = require('../../../../config');
 const logger = require('../../../logger');
 
 const query = ( opts, endpt ) => {

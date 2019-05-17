@@ -13,15 +13,13 @@ services:
       GROUNDING_SEARCH_BASE_URL: "http://grounding:3000"
       USE_PC_GROUNDING_SEARCH: "true"
   grounding:
-    image: grounding-search-wait:latest
-    # image: pathwaycommons/grounding-search:latest
+    image: pathwaycommons/grounding-search:latest
     depends_on:
       - elastic
     environment:
       ELASTICSEARCH_HOST: "elastic:9200"
   indexer: 
-    image: grounding-search-wait:latest
-    # image: pathwaycommons/grounding-search:latest
+    image: pathwaycommons/grounding-search:latest
     depends_on:
       - elastic
     environment:

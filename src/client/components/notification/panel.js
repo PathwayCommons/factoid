@@ -1,8 +1,8 @@
-const DataComponent = require('../data-component');
-const h = require('react-hyperscript');
+import DataComponent from '../data-component';
+import h from 'react-hyperscript';
 
-const InlineNotification = require('./inline');
-const { makeClassList } = require('../../../util');
+import InlineNotification from './inline';
+import { makeClassList } from '../../../util';
 
 // WIP
 class NotificationPanel extends DataComponent {
@@ -52,5 +52,4 @@ class NotificationPanel extends DataComponent {
   }
 }
 
-module.exports = NotificationPanel;
-
+export default NotificationPanel;

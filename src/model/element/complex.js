@@ -1,8 +1,8 @@
-const Entity = require('./entity');
-const { ENTITY_TYPE } = require('./entity-type');
-const _ = require('lodash');
-const ElementSet = require('../element-set');
-const { assertFieldsDefined, tryPromise } = require('../../util');
+import Entity from './entity';
+import { ENTITY_TYPE } from './entity-type';
+import _ from 'lodash';
+import ElementSet from '../element-set';
+import { assertFieldsDefined, tryPromise } from '../../util';
 
 const TYPE = ENTITY_TYPE.COMPLEX;
 
@@ -96,4 +96,4 @@ class Complex extends Entity {
   };
 } );
 
-module.exports = Complex;
+export default Complex;

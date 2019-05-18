@@ -1,9 +1,9 @@
-const { Component } = require('react');
-const h = require('react-hyperscript');
-const Popover = require('./popover/popover');
-const Linkout = require('./document-linkout');
-const EventEmitter = require('eventemitter3');
-const Tooltip = require('./popover/tooltip');
+import { Component } from 'react';
+import h from 'react-hyperscript';
+import Popover from './popover/popover';
+import Linkout from './document-linkout';
+import EventEmitter from 'eventemitter3';
+import Tooltip from './popover/tooltip';
 
 class MenuContent extends Component {
   constructor(props){
@@ -107,4 +107,4 @@ class MainMenu extends Component {
   }
 }
 
-module.exports = MainMenu;
+export default MainMenu;

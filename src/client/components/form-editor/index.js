@@ -1,20 +1,20 @@
-const DataComponent = require('../data-component');
-const h = require('react-hyperscript');
-const io = require('socket.io-client');
-const _ = require('lodash');
-const EventEmitter = require('eventemitter3');
-const uuid = require('uuid');
-const Cytoscape = require('cytoscape');
-const logger = require('../../logger');
-const Document = require('../../../model/document');
-const { getCyLayoutOpts, tryPromise } = require('../../../util');
-const Tooltip = require('../popover/tooltip');
-const Popover = require('../popover/popover');
-const MainMenu = require('../main-menu');
-const { TaskView } = require('../tasks');
-const InteractionForm = require('./interaction-form');
-const { PARTICIPANT_TYPE } = require('../../../model/element/participant-type');
-const { INTERACTION_TYPE } = require('../../../model/element/interaction-type');
+import DataComponent from '../data-component';
+import h from 'react-hyperscript';
+import io from 'socket.io-client';
+import _ from 'lodash';
+import EventEmitter from 'eventemitter3';
+import uuid from 'uuid';
+import Cytoscape from 'cytoscape';
+import logger from '../../logger';
+import Document from '../../../model/document';
+import { getCyLayoutOpts, tryPromise } from '../../../util';
+import Tooltip from '../popover/tooltip';
+import Popover from '../popover/popover';
+import MainMenu from '../main-menu';
+import { TaskView } from '../tasks';
+import InteractionForm from './interaction-form';
+import { PARTICIPANT_TYPE } from '../../../model/element/participant-type';
+import { INTERACTION_TYPE } from '../../../model/element/interaction-type';
 
 class FormEditor extends DataComponent {
   constructor(props){
@@ -325,4 +325,4 @@ class FormEditor extends DataComponent {
   }
 }
 
-module.exports = FormEditor;
+export default FormEditor;

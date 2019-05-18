@@ -4,9 +4,9 @@
   "browserslist": "edge >=12, firefox >=40, chrome >=40, safari 9",
   "scripts": {
     "postinstall": "run-s build",
-    "start": "forever ./src/server",
-    "stop": "forever stop ./src/server",
-    "inspect": "node --inspect-brk ./src/server",
+    "start": "forever -r esm ./src/server",
+    "stop": "forever -r esm stop ./src/server",
+    "inspect": "node -r esm --inspect-brk ./src/server",
     "lint:js": "eslint ./src",
     "fix:js": "eslint ./src --fix",
     "bundle:js": "webpack",
@@ -27,7 +27,7 @@
     "lint": "run-s lint:*",
     "fix": "run-s fix:*",
     "watch": "run-p watch:*",
-    "test": "mocha",
+    "test": "mocha -r esm",
     "test:travis": "run-s ci",
     "ci": "run-s test lint"
   },

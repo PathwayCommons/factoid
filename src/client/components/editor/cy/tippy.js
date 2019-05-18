@@ -1,15 +1,15 @@
-const ReactDom = require('react-dom');
-const h = require('react-hyperscript');
-const hh = require('hyperscript');
-const ElementInfo = require('../../element-info/element-info');
-const ParticipantInfo = require('../../element-info/participant-info');
-const tippyjs = require('tippy.js');
-const _ = require('lodash');
-const { tippyDefaults } = require('../../../defs');
-const NotificationBase = require('../../notification/base');
-const Notification = require('../../notification/notification');
+import ReactDom from 'react-dom';
+import h from 'react-hyperscript';
+import hh from 'hyperscript';
+import ElementInfo from '../../element-info/element-info';
+import ParticipantInfo from '../../element-info/participant-info';
+import tippyjs from 'tippy.js';
+import _ from 'lodash';
+import { tippyDefaults } from '../../../defs';
+import NotificationBase from '../../notification/base';
+import Notification from '../../notification/notification';
 
-module.exports = function({ bus, cy, document }){
+export default function({ bus, cy, document }){
   let isSmallScreen = () => window.innerWidth <= 650;
 
   let hideAllTippies = (list = '_tippies') => {

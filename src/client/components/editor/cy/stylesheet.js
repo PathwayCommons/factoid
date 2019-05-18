@@ -1,9 +1,7 @@
-const defs = require('./defs');
-const _ = require('lodash');
+import { activeColor, defaultColor, labelColor, nodeSize } from './defs';
+import _ from 'lodash';
 
 function makeStylesheet(){
-  let { activeColor, defaultColor, labelColor, nodeSize } = defs;
-
   return [
     {
       selector: 'node',
@@ -171,4 +169,4 @@ function makeStylesheet(){
   ].filter( block => block != null );
 }
 
-module.exports = makeStylesheet;
+export default makeStylesheet;

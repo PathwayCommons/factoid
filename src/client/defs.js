@@ -1,4 +1,4 @@
-module.exports = Object.freeze({
+export const defs = Object.freeze({
   updateDelay: 1000,
   editAnimationDuration: 600,
   editAnimationEasing: 'linear',

@@ -1,11 +1,11 @@
-const _ = require('lodash');
-const defs = require('./defs');
-const parse = require('date-fns/parse');
-const isAfter = require('date-fns/is_after');
-const subSeconds = require('date-fns/sub_seconds');
+import _ from 'lodash';
+import * as defs from './defs';
+import parse from 'date-fns/parse';
+import isAfter from 'date-fns/is_after';
+import subSeconds from 'date-fns/sub_seconds';
 const date = { parse, isAfter, subSeconds };
-const onKey = require('./on-key');
-const { isInteractionNode, makeCyEles, cyUpdateParent, tryPromise } = require('../../../../util');
+import onKey from './on-key';
+import { isInteractionNode, makeCyEles, cyUpdateParent, tryPromise } from '../../../../util';
 
 function listenToDoc({ bus, cy, document, controller }){
   let complexWaitMap = new Map();
@@ -611,4 +611,4 @@ function listenToDoc({ bus, cy, document, controller }){
 }
 
 
-module.exports = listenToDoc;
+export default listenToDoc;

@@ -1,6 +1,6 @@
-const { tryPromise } = require('../../../../util');
+import { tryPromise } = from '../../../../util';
 
-module.exports = function({ cy, document, controller }){
+export default function({ cy, document, controller }){
     if( !document.editable() ){ return; }
     cy.compoundDragAndDrop();
     let lastOldParent = null;

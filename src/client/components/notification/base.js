@@ -1,6 +1,6 @@
-const DirtyComponent = require('../dirty-component');
-const h = require('react-hyperscript');
-const { makeClassList } = require('../../../util');
+import DirtyComponent from '../dirty-component';
+import h from 'react-hyperscript';
+import { makeClassList } from '../../../util';
 
 /**
  * A base component for notifications.  A concrete component should contain a NotifcationBase.
@@ -54,4 +54,4 @@ class NotificationBase extends DirtyComponent {
   }
 }
 
-module.exports = props => h(NotificationBase, Object.assign({ key: props.notification.id() }, props));
+export default props => h(NotificationBase, Object.assign({ key: props.notification.id() }, props));

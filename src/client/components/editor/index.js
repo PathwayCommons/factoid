@@ -1,27 +1,27 @@
-const DataComponent = require('../data-component');
-const ReactDom = require('react-dom');
-const h = require('react-hyperscript');
-const EventEmitter = require('eventemitter3');
-const io = require('socket.io-client');
-const _ = require('lodash');
+import DataComponent from '../data-component';
+import ReactDom from 'react-dom';
+import h from 'react-hyperscript';
+import EventEmitter from 'eventemitter3';
+import io from 'socket.io-client';
+import _ from 'lodash';
 
-const { getId, defer, makeClassList, tryPromise } = require('../../../util');
-const Document = require('../../../model/document');
-const { PARTICIPANT_TYPE } = require('../../../model/element/participant-type');
+import { getId, defer, makeClassList, tryPromise } from '../../../util';
+import Document from '../../../model/document';
+import { PARTICIPANT_TYPE } from '../../../model/element/participant-type';
 
-const Notification = require('../notification');
-const CornerNotification = require('../notification/corner');
-const Popover = require('../popover/popover');
+import Notification from '../notification';
+import CornerNotification from '../notification/corner';
+import Popover from '../popover/popover';
 
-const logger = require('../../logger');
-const debug = require('../../debug');
+import logger from '../../logger';
+import debug from '../../debug';
 
-const makeCytoscape = require('./cy');
-const defs = require('./defs');
-const EditorButtons = require('./buttons');
-const MainMenu = require('../main-menu');
-const UndoRemove = require('./undo-remove');
-const { TaskView } = require('../tasks');
+import makeCytoscape from './cy';
+import * as defs from './defs';
+import EditorButtons from './buttons';
+import MainMenu from '../main-menu';
+import UndoRemove from './undo-remove';
+import { TaskView } from '../tasks';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -456,7 +456,7 @@ class Editor extends DataComponent {
           tokens.push(`${authorList.pop()}`);
         }
         if( journalName ) tokens.push(' | ');
-      } 
+      }
       tokens.push( journalName );
       return tokens.join('');
     };
@@ -526,4 +526,4 @@ class Editor extends DataComponent {
   }
 }
 
-module.exports = Editor;
+export default Editor;

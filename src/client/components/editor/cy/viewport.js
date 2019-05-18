@@ -1,5 +1,5 @@
-let on = require('./on-key');
-let defs = require('./defs');
+import on from './on-key';
+import * as defs from './defs';
 
 function handlePan( cy ){
   let panAmount = 5;
@@ -52,7 +52,7 @@ function handleFit( cy, bus ){
   bus.on('fit', fit);
 }
 
-module.exports = function( { bus, cy } ){
+export default function( { bus, cy } ){
   handlePan( cy );
   handleZoom( cy );
   handleFit( cy, bus );

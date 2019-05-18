@@ -1,6 +1,6 @@
-const Element = require('./element');
-const _ = require('lodash');
-const { tryPromise } = require('../../util');
+import Element from './element';
+import _ from 'lodash';
+import { tryPromise } from '../../util';
 
 const TYPE = 'entity';
 
@@ -173,4 +173,4 @@ class Entity extends Element {
   }
 }
 
-module.exports = Entity;
+export default Entity;

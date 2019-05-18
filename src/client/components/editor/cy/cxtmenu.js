@@ -1,4 +1,4 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
 const matIcon = (name, cls) => `<span class="cxtmenu-command-icon"><i class="material-icons ${cls}">${name}</i></span>`;
 const customIcon = (name, cls) => `<span class="cxtmenu-command-icon"><i class="icon icon-white ${name} ${cls}"></i></span>`;
@@ -9,9 +9,9 @@ const DEFAULTS = Object.freeze({
   openMenuEvents: 'cxttapstart'
 });
 
-const { PARTICIPANT_TYPE } = require('../../../../model/element/participant-type');
+import { PARTICIPANT_TYPE } from '../../../../model/element/participant-type';
 
-module.exports = function({ cy, document, bus }){
+export default function({ cy, document, bus }){
   if( !document.editable() ){ return; }
 
   let drawUnsignedCmd = {

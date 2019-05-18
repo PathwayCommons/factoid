@@ -1,4 +1,4 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
 const Interaction = require('./interaction');
 const Binding = require('./binding');
@@ -42,4 +42,4 @@ const getIntnTypeByVal = val => {
   return INTERACTION_TYPES.find( type => type.value === val ) || INTERACTION_TYPE.GENERAL;
 };
 
-module.exports = { INTERACTION_TYPE, INTERACTION_TYPES, getIntnTypeByVal, INTERACTION_TYPE_VALS };
+export { INTERACTION_TYPE, INTERACTION_TYPES, getIntnTypeByVal, INTERACTION_TYPE_VALS };

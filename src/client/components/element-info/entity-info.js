@@ -1,21 +1,21 @@
-const DataComponent = require('../data-component');
-const h = require('react-hyperscript');
-const ReactDom = require('react-dom');
-const { focusDomElement, makeClassList, initCache, SingleValueCache, makeCancelable } = require('../../../util');
-const _ = require('lodash');
-const defs = require('../../defs');
-const Heap = require('heap');
-const Highlighter = require('../highlighter');
-const Notification = require('../notification');
-const InlineNotification = require('../notification/inline');
-const Tooltip = require('../popover/tooltip');
-const assocDisp = require('./entity-assoc-display');
-const Progression = require('./progression');
-const ProgressionStepper = require('./progression-stepper');
-const CancelablePromise = require('p-cancelable');
+import DataComponent from '../data-component';
+import h from 'react-hyperscript';
+import ReactDom from 'react-dom';
+import { focusDomElement, makeClassList, initCache, SingleValueCache, makeCancelable } from '../../../util';
+import _ from 'lodash';
+import * as defs from '../../defs';
+import Heap from 'heap';
+import Highlighter from '../highlighter';
+import Notification from '../notification';
+import InlineNotification from '../notification/inline';
+import Tooltip from '../popover/tooltip';
+import assocDisp from './entity-assoc-display';
+import Progression from './progression';
+import ProgressionStepper from './progression-stepper';
+import CancelablePromise from 'p-cancelable';
 
-const { stringDistanceMetric } = require('../../../util');
-const { animateDomForEdit } = require('../animate');
+import { stringDistanceMetric } from '../../../util';
+import { animateDomForEdit } from '../animate';
 
 const MAX_FIXED_SYNONYMS = 5;
 const MAX_SYNONYMS_SHOWN = 10;
@@ -49,7 +49,7 @@ class EntityInfo extends DataComponent {
       stage = STAGES.COMPLETED;
       stageCache.set( el, stage );
     }
-    
+
     let nameNotification = initCache( nameNotificationCache, el, new Notification({ active: true }) );
 
     let assocNotification = initCache( assocNotificationCache, el, new Notification({ active: true }) );
@@ -624,4 +624,4 @@ class EntityInfo extends DataComponent {
   }
 }
 
-module.exports = props => h(EntityInfo, Object.assign({ key: props.element.id() }, props));
+export default props => h(EntityInfo, Object.assign({ key: props.element.id() }, props));

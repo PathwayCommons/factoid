@@ -1,8 +1,8 @@
-const h = require('react-hyperscript');
-const Organism = require('../../../model/organism');
-const Highlighter = require('../highlighter');
-const Formula = require('./chemical-formula');
-const Tooltip = require('../popover/tooltip');
+import h from 'react-hyperscript';
+import Organism from '../../../model/organism';
+import Highlighter from '../highlighter';
+import Formula from './chemical-formula';
+import Tooltip from '../popover/tooltip';
 
 const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL, NCBI_LINK_BASE_URL, CHEBI_LINK_BASE_URL } = require('../../../config');
 
@@ -101,4 +101,4 @@ let modification = (mod, onEdit) => h('div.entity-info-section.entity-info-mod-s
   ])
 ]);
 
-module.exports = { protein, modification, chemical, link };
+export { protein, modification, chemical, link };

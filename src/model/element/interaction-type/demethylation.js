@@ -1,4 +1,4 @@
-const Modification = require('./modification');
+import Modification from './modification';
 
 const VALUE = 'demethylation';
 const DISPLAY_VALUE = 'Demethylation';
@@ -24,4 +24,4 @@ class Demethylation extends Modification {
   get displayValue(){ return DISPLAY_VALUE; }
 }
 
-module.exports = Demethylation;
+export default Demethylation;

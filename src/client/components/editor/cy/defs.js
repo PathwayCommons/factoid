@@ -1,6 +1,6 @@
-let clientDefs = require('../../../defs');
+import * as clientDefs from '../../../defs';
 
-module.exports = Object.freeze({
+export {
   padding: 50,
   minZoom: 0.5,
   maxZoom: 3,
@@ -21,4 +21,4 @@ module.exports = Object.freeze({
   labelColor: '#fff',
   nodeSize: 30,
   interactionNodeSize: 10
-});
+};

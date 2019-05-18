@@ -1,6 +1,6 @@
-const h = require('react-hyperscript');
+import h from 'react-hyperscript';
 
-module.exports = function({ controller }){
+export default function({ controller }){
   let avail = controller.data.undoRemoveAvailable;
 
   return h('div.editor-undo-rm' + (avail ? '' : '.editor-undo-rm-unavailable'), [

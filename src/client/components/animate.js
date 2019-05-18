@@ -1,5 +1,5 @@
-const defs = require('../defs');
-const anime = require('animejs');
+import * as defs from '../defs';
+import anime from 'animejs';
 
 const animateDomForEdit = domEle => anime({
   targets: domEle,
@@ -8,4 +8,4 @@ const animateDomForEdit = domEle => anime({
   easing: defs.editAnimationEasing
 });
 
-module.exports = { animateDomForEdit };
+export { animateDomForEdit };

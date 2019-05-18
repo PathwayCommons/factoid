@@ -14,4 +14,4 @@ const BIOPAX_CONTROL_TYPE = Object.freeze({
   ACTIVATION: 'activation'
 });
 
-module.exports = { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE };
+export { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE };

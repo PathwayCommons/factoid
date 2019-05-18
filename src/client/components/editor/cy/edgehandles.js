@@ -1,9 +1,9 @@
-const on = require('./on-key');
-const _ = require('lodash');
+import on from './on-key';
+import _ from 'lodash';
 
-const { isInteractionNode, tryPromise } = require('../../../../util');
+import { isInteractionNode, tryPromise } from '../../../../util';
 
-const { PARTICIPANT_TYPE } = require('../../../../model/element/participant-type');
+import { PARTICIPANT_TYPE } from '../../../../model/element/participant-type';
 
 const SELECT_ON_HANDLE_TAP = false;
 const DRAW_ON_HANDLE_TAP = true;
@@ -11,7 +11,7 @@ const TAP_IN_DRAW_MODE = true;
 const TAP_BG_TO_CANCEL = true;
 
 
-module.exports = function({ bus, cy, document, controller }){
+export default function({ bus, cy, document, controller }){
   if( !document.editable() ){ return; }
 
   let inDrawMode = false;

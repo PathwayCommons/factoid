@@ -1,18 +1,18 @@
-const DataComponent = require('../data-component');
-const h = require('react-hyperscript');
-const ReactDom = require('react-dom');
-const { initCache, SingleValueCache, error } = require('../../../util');
-const _ = require('lodash');
-const defs = require('../../defs');
-const { animateDomForEdit } = require('../animate');
-const uuid = require('uuid');
-const Progression = require('./progression');
-const ProgressionStepper = require('./progression-stepper');
-const EventEmitter = require('eventemitter3');
-const Notification = require('../notification/notification');
-const InlineNotification = require('../notification/inline');
-const Tooltip = require('../popover/tooltip');
-const { INTERACTION_TYPES, INTERACTION_TYPE } = require('../../../model/element/interaction-type');
+import DataComponent from '../data-component';
+import h from 'react-hyperscript';
+import ReactDom from 'react-dom';
+import { initCache, SingleValueCache, error } from '../../../util';
+import _ from 'lodash';
+import * as defs from '../../defs';
+import { animateDomForEdit } from '../animate';
+import uuid from 'uuid';
+import Progression from './progression';
+import ProgressionStepper from './progression-stepper';
+import EventEmitter from 'eventemitter3';
+import Notification from '../notification/notification';
+import InlineNotification from '../notification/inline';
+import Tooltip from '../popover/tooltip';
+import { INTERACTION_TYPES, INTERACTION_TYPE } from '../../../model/element/interaction-type';
 
 let stageCache = new WeakMap();
 let assocNotificationCache = new SingleValueCache();
@@ -303,4 +303,4 @@ class InteractionInfo extends DataComponent {
   }
 }
 
-module.exports = props => h(InteractionInfo, Object.assign({ key: props.element.id() }, props));
+export default props => h(InteractionInfo, Object.assign({ key: props.element.id() }, props));

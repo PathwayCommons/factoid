@@ -1,7 +1,7 @@
-const React = require('react');
-const h = require('react-hyperscript');
-const EntityInfo = require('./entity-info');
-const InteractionInfo = require('./interaction-info');
+import React from 'react';
+import h from 'react-hyperscript';
+import EntityInfo from './entity-info';
+import InteractionInfo from './interaction-info';
 
 class ElementInfo extends React.Component {
   constructor( props ){
@@ -29,4 +29,4 @@ class ElementInfo extends React.Component {
   }
 }
 
-module.exports = ElementInfo;
+export default ElementInfo;

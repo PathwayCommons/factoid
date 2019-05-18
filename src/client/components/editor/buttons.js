@@ -1,10 +1,10 @@
-const React = require('react');
-const h = require('react-hyperscript');
-const _ = require('lodash');
-const { tippyTopZIndex } = require('../../defs');
-const Tooltip = require('../popover/tooltip');
-const Toggle = require('../toggle');
-const { PARTICIPANT_TYPE } = require('../../../model/element/participant-type');
+import React from 'react';
+import h from 'react-hyperscript';
+import _ from 'lodash';
+import { tippyTopZIndex } from '../../defs';
+import Tooltip from '../popover/tooltip';
+import Toggle from '../toggle';
+import { PARTICIPANT_TYPE } from '../../../model/element/participant-type';
 
 class EditorButtons extends React.Component {
   render(){
@@ -57,4 +57,4 @@ class EditorButtons extends React.Component {
   }
 }
 
-module.exports = EditorButtons;
+export default EditorButtons;

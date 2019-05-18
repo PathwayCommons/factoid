@@ -1,12 +1,12 @@
-const DirtyComponent = require('./dirty-component');
-const DataComponent = require('./data-component');
-const h = require('react-hyperscript');
+import DirtyComponent from './dirty-component';
+import DataComponent from './data-component';
+import h from 'react-hyperscript';
 
-const { makeClassList } = require('../../util');
+import { makeClassList } from '../../util';
 
-const Notification = require('./notification');
-const NotificationList = require('./notification/list');
-const NotificationPanel = require('./notification/panel');
+import Notification from './notification';
+import NotificationList from './notification/list';
+import NotificationPanel from './notification/panel';
 
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
@@ -250,4 +250,4 @@ class TaskView extends DataComponent {
 }
 
 
-module.exports = { TaskListButton, TaskList, TaskView };
+export { TaskListButton, TaskList, TaskView };

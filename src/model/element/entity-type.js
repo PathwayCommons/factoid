@@ -1,4 +1,4 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
 const ENTITY_TYPE = Object.freeze({
   ENTITY: 'entity',
@@ -9,4 +9,4 @@ const ENTITY_TYPE = Object.freeze({
 
 const ENTITY_TYPES = _.flatMap( ENTITY_TYPE );
 
-module.exports = { ENTITY_TYPE, ENTITY_TYPES };
+export { ENTITY_TYPE, ENTITY_TYPES };

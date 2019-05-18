@@ -1,10 +1,10 @@
-const React = require('react');
-const h = require('react-hyperscript');
-const { Link } = require('react-router-dom');
+import React from 'react';
+import h from 'react-hyperscript';
+import { Link } from 'react-router-dom';
 
-const { tryPromise } = require('../../util');
-const example = require('./document-seeder-example');
-const MainMenu = require('./main-menu');
+import { tryPromise } from '../../util';
+import example from './document-seeder-example';
+import MainMenu from './main-menu';
 
 class DocumentSeeder extends React.Component {
   constructor( props ){
@@ -194,4 +194,4 @@ class DocumentSeeder extends React.Component {
   }
 }
 
-module.exports = DocumentSeeder;
+export default DocumentSeeder;

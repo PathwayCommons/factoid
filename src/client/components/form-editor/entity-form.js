@@ -1,9 +1,9 @@
-const DataComponent = require('../data-component');
-const _ = require('lodash');
-const h = require('react-hyperscript');
-const ElementInfo = require('../element-info/element-info');
+import DataComponent from '../data-component';
+import _ from 'lodash';
+import h from 'react-hyperscript';
+import ElementInfo from '../element-info/element-info';
 
-const { makeClassList } = require('../../../util');
+import { makeClassList } from '../../../util';
 
 const dirtyEvents = ['rename', 'complete'];
 
@@ -52,5 +52,4 @@ class EntityForm extends DataComponent {
   }
 }
 
-module.exports = EntityForm;
-
+export default EntityForm;

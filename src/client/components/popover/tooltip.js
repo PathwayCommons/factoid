@@ -1,8 +1,8 @@
-const Popover = require('./popover');
-const React = require('react');
-const _ = require('lodash');
-const { tippyDefaults } = require('../../defs');
-const h = require('react-hyperscript');
+import Popover from './popover';
+import React from 'react';
+import _ from 'lodash';
+import { tippyDefaults } from '../../defs';
+import h from 'react-hyperscript';
 
 class Tooltip extends React.Component {
   constructor( props ){

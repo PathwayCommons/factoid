@@ -1,9 +1,9 @@
-const { Component } = require('react');
-const NotificationBase = require('./base');
-const Popover = require('../popover');
-const _ = require('lodash');
-const { tippyDefaults } = require('../../defs');
-const h = require('react-hyperscript');
+import { Component } from 'react';
+import NotificationBase from './base';
+import Popover from '../popover';
+import _ from 'lodash';
+import { tippyDefaults } from '../../defs';
+import h from 'react-hyperscript';
 
 class PopoverNotification extends Component {
   constructor( props ){
@@ -76,4 +76,4 @@ class PopoverNotification extends Component {
   }
 }
 
-module.exports = PopoverNotification;
+export default PopoverNotification;

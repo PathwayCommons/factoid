@@ -1,4 +1,4 @@
-const Modification = require('./modification');
+import Modification from './modification';
 
 const VALUE = 'ubiquitination';
 const DISPLAY_VALUE = 'Ubiquitination';
@@ -24,4 +24,4 @@ class Ubiquitination extends Modification {
   get displayValue(){ return DISPLAY_VALUE; }
 }
 
-module.exports = Ubiquitination;
+export default Ubiquitination;

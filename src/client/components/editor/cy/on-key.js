@@ -1,4 +1,4 @@
-let Mousetrap = require('mousetrap');
+import Mousetrap from 'mousetrap';
 let on = Mousetrap.bind.bind( Mousetrap );
 
-module.exports = on;
+export default on;

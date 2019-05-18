@@ -1,12 +1,12 @@
-const { BrowserRouter, Route, Redirect, Switch } = require('react-router-dom');
-const h = require('react-hyperscript');
-const _ = require('lodash');
+import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
+import h from 'react-hyperscript';
+import _ from 'lodash';
 
-const PageNotFound = require('./components/page-not-found');
-const Editor = require('./components/editor');
-const FormEditor = require('./components/form-editor');
-const Home = require('./components/home');
-const DocumentSeeder = require('./components/document-seeder');
+import PageNotFound from './components/page-not-found';
+import Editor from './components/editor';
+import FormEditor from './components/form-editor';
+import Home from './components/home';
+import DocumentSeeder from './components/document-seeder';
 
 
 let routes = [
@@ -92,7 +92,7 @@ let routes = [
   return h( Route, spec );
 } );
 
-module.exports = () => (
+export default () => (
   h( BrowserRouter, [
     h( Switch, routes )
   ] )

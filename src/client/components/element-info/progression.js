@@ -1,4 +1,4 @@
-const { error } = require('../../../util');
+import { error } from '../../../util';
 
 class Progression {
   constructor({ STAGES, canGoToStage, getStage, goToStage }){
@@ -50,4 +50,4 @@ class Progression {
   }
 }
 
-module.exports = Progression;
+export default Progression;

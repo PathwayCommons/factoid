@@ -1,11 +1,11 @@
-const DirtyComponent = require('../dirty-component');
-const _ = require('lodash');
-const { tryPromise } = require('../../../util');
+import DirtyComponent from '../dirty-component';
+import _ from 'lodash';
+import { tryPromise } from '../../../util';
 const dirtyEvents = ['remoteassociate', 'remoteretype'];
-const EntityForm = require('./entity-form.js');
-const h = require('react-hyperscript');
-const { INTERACTION_TYPES, INTERACTION_TYPE } = require('../../../model/element/interaction-type');
-const { PARTICIPANT_TYPES, getPptTypeByVal } = require('../../../model/element/participant-type');
+import EntityForm from './entity-form.js';
+import h from 'react-hyperscript';
+import { INTERACTION_TYPES, INTERACTION_TYPE } from '../../../model/element/interaction-type';
+import { PARTICIPANT_TYPES, getPptTypeByVal } from '../../../model/element/participant-type';
 
 class InteractionForm extends DirtyComponent {
 
@@ -139,4 +139,4 @@ class InteractionForm extends DirtyComponent {
 
 }
 
-module.exports = InteractionForm;
+export default InteractionForm;

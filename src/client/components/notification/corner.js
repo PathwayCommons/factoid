@@ -1,7 +1,7 @@
-const DirtyComponent = require('../dirty-component');
-const h = require('react-hyperscript');
-const NotificationBase = require('./base');
-const { makeClassList } = require('../../../util');
+import DirtyComponent from '../dirty-component';
+import h from 'react-hyperscript';
+import NotificationBase from './base';
+import { makeClassList } from '../../../util';
 
 class CornerNotification extends DirtyComponent {
   constructor(props){
@@ -37,4 +37,4 @@ class CornerNotification extends DirtyComponent {
   }
 }
 
-module.exports = props => h(CornerNotification, Object.assign({ key: props.notification.id() }, props));
+export default props => h(CornerNotification, Object.assign({ key: props.notification.id() }, props));

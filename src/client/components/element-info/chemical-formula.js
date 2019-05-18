@@ -1,4 +1,4 @@
-const h = require('react-hyperscript');
+import h from 'react-hyperscript';
 
 const Formula = ({ formula }) => {
   let split = formula.match(/(\d+|[n]|[A-Z][a-z]?)/g);
@@ -15,4 +15,4 @@ const Formula = ({ formula }) => {
   return h('span.entity-info-formula', children);
 };
 
-module.exports = Formula;
+export default Formula;

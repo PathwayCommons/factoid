@@ -1,12 +1,12 @@
-const _ = require('lodash');
-const Syncher = require('../syncher');
-const EventEmitterMixin = require('../event-emitter-mixin');
-const ElementSet = require('../element-set');
-const ElementCache = require('../element-cache');
-const ElementFactory = require('../element');
-const { assertOneOfFieldsDefined, mixin, getId, makeCyEles, getCyLayoutOpts, isNonNil, tryPromise } = require('../../util');
-const Organism = require('../organism');
-const Cytoscape = require('cytoscape');
+import _ from 'lodash';
+import Syncher from '../syncher';
+import EventEmitterMixin from '../event-emitter-mixin';
+import ElementSet from '../element-set';
+import ElementCache from '../element-cache';
+import ElementFactory from '../element';
+import { assertOneOfFieldsDefined, mixin, getId, makeCyEles, getCyLayoutOpts, isNonNil, tryPromise } from '../../util';
+import Organism from '../organism';
+import Cytoscape from 'cytoscape';
 
 const DEFAULTS = Object.freeze({
   // data
@@ -478,4 +478,4 @@ mixin( Document.prototype, EventEmitterMixin.prototype );
   };
 } );
 
-module.exports = Document;
+export default Document;

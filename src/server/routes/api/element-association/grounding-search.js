@@ -1,8 +1,6 @@
-const LRUCache = require('lru-cache');
 const fetch = require('node-fetch');
 
-const { GROUNDING_SEARCH_BASE_URL, AGGREGATE_CACHE_SIZE } = require('../../../../config');
-const { memoize } = require('../../../../util');
+const { GROUNDING_SEARCH_BASE_URL } = require('../../../../config');
 const logger = require('../../../logger');
 
 const query = ( opts, endpt ) => {
@@ -26,8 +24,7 @@ const get = opts => {
     } );
 };
 
-const searchAll = memoize( opts => query( opts, 'search' ),
-  LRUCache({ max: AGGREGATE_CACHE_SIZE }) );
+const searchAll = opts => query( opts, 'search' );
 
 const search = opts => {
   let { limit, offset, namespace, name, organismCounts } = opts;

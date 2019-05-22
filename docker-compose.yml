@@ -7,9 +7,8 @@ services:
       # - db
     ports:
       - "3000:3000" 
-    environment:
+    environment: # NB: DB_HOST is "localhost" (Linux host) or "host.docker.internal" (Mac host) or "db" (below)
       DB_HOST: "host.docker.internal"
-      # NB: DB_HOST is "localhost" (Linux host) or "host.docker.internal" (Mac host) or "db" (below)
       GROUNDING_SEARCH_BASE_URL: "http://grounding:3000"
       USE_PC_GROUNDING_SEARCH: "true"
   grounding:
@@ -27,6 +26,15 @@ services:
     command: ["./wait-for-elasticsearch.sh", "elastic:9200", "npm", "run", "update"]
   elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.7.2
-#db: 
-  #image: rethinkdb:2.3.6 
-  # NB: https://github.com/PathwayCommons/factoid/issues/452
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+  # db: # NB: https://github.com/PathwayCommons/factoid/issues/452 
+  #   image: rethinkdb:2.3.6 
+  #   volumes:
+  #     - dbdata:/data
+
+volumes:
+  esdata:
+  # dbdata:
+
+

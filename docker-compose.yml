@@ -3,12 +3,12 @@ services:
   webapp:
     image: pathwaycommons/factoid:unstable
     depends_on:
+      - db
       - grounding
-      # - db
     ports:
-      - "3000:3000" 
-    environment: # NB: DB_HOST is "localhost" (Linux host) or "host.docker.internal" (Mac host) or "db" (below)
-      DB_HOST: "host.docker.internal"
+      - "3000:3000"
+    environment:
+      DB_HOST: "db"
       GROUNDING_SEARCH_BASE_URL: "http://grounding:3000"
       USE_PC_GROUNDING_SEARCH: "true"
   grounding:
@@ -17,7 +17,7 @@ services:
       - elastic
     environment:
       ELASTICSEARCH_HOST: "elastic:9200"
-  indexer: 
+  indexer:
     image: pathwaycommons/grounding-search:latest
     depends_on:
       - elastic
@@ -28,13 +28,14 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.7.2
     volumes:
       - esdata:/usr/share/elasticsearch/data
-  # db: # NB: https://github.com/PathwayCommons/factoid/issues/452 
-  #   image: rethinkdb:2.3.6 
-  #   volumes:
-  #     - dbdata:/data
+  db:
+    image: rethinkdb:2.3.6
+    volumes:
+      - dbdata:/data
 
 volumes:
+  dbdata:
   esdata:
-  # dbdata:
+
 
 

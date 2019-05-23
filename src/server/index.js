@@ -111,7 +111,8 @@ tryPromise( () => {
     ;
   };
 
-  return Promise.all( ['element', 'document'].map( setup ) );
+  const tables = ['element', 'document'];
+  return tables.reduce( ( p, name ) => p.then( () => setup( name ) ), Promise.resolve() );
 } ).then( () => {
   server.listen(port);
 } );

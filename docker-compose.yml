@@ -1,24 +1,27 @@
 version: '3'
 services:
   webapp:
-    image: pathwaycommons/factoid:unstable
+    image: pathwaycommons/factoid:${FACTOID_IMAGE_TAG:-unstable}
     depends_on:
       - db
       - grounding
     ports:
-      - "3000:3000"
+      - "${FACTOID_PORT:-3000}:3000"
     environment:
+      USE_PC_GROUNDING_SEARCH:
+      DB_USER:
+      DB_PASS:
+      DB_CERT:
       DB_HOST: "db"
       GROUNDING_SEARCH_BASE_URL: "http://grounding:3000"
-      USE_PC_GROUNDING_SEARCH: "true"
   grounding:
-    image: pathwaycommons/grounding-search:latest
+    image: pathwaycommons/grounding-search:${GROUNDING_SEARCH_IMAGE_TAG:-latest}
     depends_on:
       - elastic
     environment:
       ELASTICSEARCH_HOST: "elastic:9200"
   indexer:
-    image: pathwaycommons/grounding-search:latest
+    image: pathwaycommons/grounding-search:${GROUNDING_SEARCH_IMAGE_TAG:-latest}
     depends_on:
       - elastic
     environment:

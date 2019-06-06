@@ -36,7 +36,7 @@ class Home extends Component {
         h('div.page-content', [
           h('h2.section-title', 'For authors'),
           h('h2', 'Put your research where people can find it'),
-          h('p', 'Your paper contains text and figures crafted for readers which makes the knowledge within it difficult to access with a search engine or resuse directly. Factoid solves this problem by helping you create a digital summary of key interactions between genes. Researchers who access your interactions can easily link to your paper, making it more visible to the research community.')
+          h('p', 'Your paper contains text and figures crafted for readers which makes the knowledge within it difficult to access with a search engine or reuse directly. Factoid solves this problem by helping you create a digital summary of key interactions between genes. Researchers who access your interactions can easily link to your paper, making it more visible to the research community.')
         ])
       ]),
       h('section.home-section#why-publishers', [

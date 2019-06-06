@@ -59,7 +59,7 @@ Services:
 
 ## Running via Docker
 
-### Requirements 
+### Requirements
 
 Dockerized system has been successfully deployed on:
   - Ubuntu 16.04.5 LTS (GNU/Linux 4.4.0-145-generic x86_64)
@@ -69,18 +69,18 @@ Dockerized system has been successfully deployed on:
     - Docker version 18.09.2
     - docker-compose version 1.23.2
 
-### Docker Compose 
+### Docker Compose
 
 In the directory containing the `docker-compose.yml` file, execute:
 
 ```sh
-docker-compose run -d 
+docker-compose run -d
 ```
 
 Monitor stdout of the system:
 
 ```sh
-docker-compose logs -f -t 
+docker-compose logs -f -t
 ```
 
 Stop and remove services:
@@ -91,16 +91,16 @@ docker-compose down
 ### Notes
 
 - Environment variables:
-  - Docker Compose will draw environment variables from the shell or from an `.env` file in the same directory. The file is not neccessary, as the compose file provides defaults.  If you wish, edit the `.env` file to configure environment variables for image tags, container ports and others, which will be passed to the containers. 
-  
+  - Docker Compose will draw environment variables from the shell or from an `.env` file in the same directory. The file is not necessary, as the compose file provides defaults.  If you wish, edit the `.env` file to configure environment variables for image tags, container ports and others, which will be passed to the containers.
+
 - Indexing service:
-  - The `indexer` service will download sources files and index elasticsearch. The time required for this will vary depending on the system and ranges from tens of minutes (OSX 10.14.5 (Mojave), MacBook Pro (Retina, 15-inch, Mid 2015). 2.8 GHz Intel Core i7) up to many hours (Ubuntu 16.04.5 LTS, Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz). You can skip indexing by declaring the services you wish to start `docker-compose run -d webapp grounding db elastic`.  
+  - The `indexer` service will download sources files and index. The time required for this will vary depending on the system and ranges from tens of minutes (OSX 10.14.5 (Mojave), MacBook Pro (Retina, 15-inch, Mid 2015). 2.8 GHz Intel Core i7) up to many hours (Ubuntu 16.04.5 LTS, Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz). You can skip indexing by declaring the services you wish to start `docker-compose run -d webapp grounding db index`.
 
 - Database service:
   - Do not restart a stopped container. Rather, remove and run anew.
 
 - OS specifics:
-  - For Ubuntu 16.04.5 LTS to [play nice with elasticsearch](https://github.com/docker-library/elasticsearch/issues/111#issuecomment-268511769) needed to set `sudo sysctl -w vm.max_map_count=262144`. 
+  - For Ubuntu 16.04.5 LTS to [play nice with elasticsearch](https://github.com/docker-library/elasticsearch/issues/111#issuecomment-268511769) needed to set `sudo sysctl -w vm.max_map_count=262144`.
 
 ## Testing
 

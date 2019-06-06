@@ -17,17 +17,17 @@ services:
   grounding:
     image: pathwaycommons/grounding-search:${GROUNDING_SEARCH_IMAGE_TAG:-latest}
     depends_on:
-      - elastic
+      - index
     environment:
-      ELASTICSEARCH_HOST: "elastic:9200"
+      ELASTICSEARCH_HOST: "index:9200"
   indexer:
     image: pathwaycommons/grounding-search:${GROUNDING_SEARCH_IMAGE_TAG:-latest}
     depends_on:
-      - elastic
+      - index
     environment:
-      ELASTICSEARCH_HOST: "elastic:9200"
-    command: ["./wait-for-elasticsearch.sh", "elastic:9200", "npm", "run", "update"]
-  elastic:
+      ELASTICSEARCH_HOST: "index:9200"
+    command: ["./wait-for-elasticsearch.sh", "index:9200", "npm", "run", "update"]
+  index:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.7.2
     volumes:
       - esdata:/usr/share/elasticsearch/data

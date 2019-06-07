@@ -4,50 +4,44 @@
 #   backup_volumes
 #
 # SYNOPSIS:
-#   backup_volumes.sh [-d name] [-i name] [-o path]
+#   backup_volumes.sh -n name -p path [-o path]
 #
 # DESCRIPTION:
 #   Dump database data within Docker volumes to compressed archive. Used with Docker version 18.09.6
-#   -d name
-#     Dump the database within the specified named volume
-#   -i name 
-#     Dump the index within the specified named volume
-#   -o path 
-#     Output to specified host path; Defaults to pwd 
+#   -n name (required)
+#     The name of the volume
+#   -p path (required)
+#     Path to the file or directory inside the volume. 
+#     For RethinkSB this is "/data"; For elasticearch this is "/usr/share/elasticsearch/data"
+#   -o path (optional)
+#     Output to specified path; defaults to pwd
 
 ################################# VARS #################################
 TIMESTAMP=`date "+%Y%m%d_%H%M%S"`
 ARCHIVE_OUTPUT_DIRECTORY=$(pwd)
 
-# Rethink Database (DB)
-DB_DATA_DIRECTORY=/data
-
-# Elasticsearch Index (IN)
-IN_DATA_DIRECTORY=/usr/share/elasticsearch/data
-
 ################################# OPTS #################################
-dflag=
-iflag=
+nflag=
+pflag=
 oflag=
-while getopts 'd:i:o:' OPTION
+while getopts 'n:p:o:' OPTION
 do
   case $OPTION in
-    d)  dflag=1
-        DB_VOLUME_NAME="$OPTARG"
-        if ! docker volume ls -q | grep -wq "${DB_VOLUME_NAME}"; then
-          printf 'Option -d "%s" is not a volume\n' "${DB_VOLUME_NAME}"
+    n)  nflag=1
+        VOLUME_NAME="$OPTARG"
+        if ! docker volume ls -q | grep -wq "${VOLUME_NAME}"; then
+          printf 'Option -d "%s" is not a volume\n' "${VOLUME_NAME}"
           exit 2
         fi
-        DB_DUMP_ARCHIVE_NAME=${DB_VOLUME_NAME}_${TIMESTAMP}.tar.gz
+        DUMP_ARCHIVE_NAME=${VOLUME_NAME}_${TIMESTAMP}.tar.gz
         ;;
 
-    i)  iflag=1
-        IN_VOLUME_NAME="$OPTARG"
-        if ! docker volume ls -q | grep -wq "${IN_VOLUME_NAME}"; then
-          printf 'Option -i "%s" is not a volume\n' "${IN_VOLUME_NAME}"
+    p)  pflag=1
+        DATA_DIRECTORY="$OPTARG"
+        if [ -z "${DATA_DIRECTORY}" ]; then
+          printf 'Option -p path cannot be empty\n' 
           exit 2
         fi
-        IN_DUMP_ARCHIVE_NAME="${IN_VOLUME_NAME}"_${TIMESTAMP}.tar.gz
         ;;
         
     o)  oflag=1
@@ -58,7 +52,7 @@ do
         fi
         ;;
 
-    ?)  printf "Usage: %s [-d] [-i] [-o /path/to/output]\n" $0 >&2
+    ?)  printf "Usage: %s -n name -p path [-o path]\n" $0 >&2
         exit 2
         ;; 
 
@@ -68,17 +62,11 @@ done
 
 ################################ BACKUP #################################
 # Create gzip archives from data in volumes 
-
-# Database (DB)
-if [ "$dflag" ]; then
-  docker run --rm -v ${DB_VOLUME_NAME}:${DB_DATA_DIRECTORY} \
+if [ "$nflag" -a "$pflag" ]; then
+  docker run --rm -v ${VOLUME_NAME}:${DATA_DIRECTORY} \
     -v ${ARCHIVE_OUTPUT_DIRECTORY}:/backup ubuntu \
-    tar czvf /backup/${DB_DUMP_ARCHIVE_NAME} ${DB_DATA_DIRECTORY}
-fi
-
-# Index (IN)
-if [ "$iflag" ]; then
-  docker run --rm -v ${IN_VOLUME_NAME}:${IN_DATA_DIRECTORY} \
-    -v ${ARCHIVE_OUTPUT_DIRECTORY}:/backup ubuntu \
-    tar czvf /backup/${IN_DUMP_ARCHIVE_NAME} ${IN_DATA_DIRECTORY}
+    tar czvf /backup/${DUMP_ARCHIVE_NAME} ${DATA_DIRECTORY}
+else 
+  printf "Usage: %s -n name -p path [-o path]\n" $0 >&2
+  exit 2
 fi

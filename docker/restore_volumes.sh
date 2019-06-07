@@ -8,14 +8,14 @@
 
 ################################# VARS #################################
 # Rethink Database (DB)
-DB_VOLUME_NAME=dbdata
+DB_VOLUME_NAME=dbdata1
 DB_DATA_DIRECTORY=/data
-DB_SOURCE_ARCHIVE_PATH=/Users/jeffreywong/Documents/Archives/db_archive_20190606_205313.tar.gz
+DB_SOURCE_ARCHIVE_PATH=/Users/jeffreywong/Downloads/dbdata_20190607_144326.tar.gz
 
 # Elasticsearch Index (IN)
-IN_VOLUME_NAME=indata
+IN_VOLUME_NAME=indata1
 IN_DATA_DIRECTORY=/usr/share/elasticsearch/data
-IN_SOURCE_ARCHIVE_PATH=/Users/jeffreywong/Documents/Archives/in_archive_20190606_205313.tar.gz
+IN_SOURCE_ARCHIVE_PATH=/Users/jeffreywong/Downloads/indata_20190607_144326.tar.gz
 
 ############################### RESTORE #################################
 # Create named volumes and populate from gzip archive

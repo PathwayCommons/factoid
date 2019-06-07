@@ -7,7 +7,7 @@
 #   restore_volumes.sh -n name -p path -s path
 #
 # DESCRIPTION:
-#   Dump database data within Docker volumes to compressed archive. Used with Docker version 18.09.6
+#   Restore data within Docker volumes from compressed archive. Used with Docker version 18.09.6
 #   -n name (required)
 #     The name of the volume
 #   -p path (required)

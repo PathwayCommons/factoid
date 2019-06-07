@@ -12,7 +12,7 @@
 #     The name of the volume
 #   -p path (required)
 #     Path to the file or directory inside the volume. 
-#     For RethinkDB this is "/data"; For elasticearch this is "/usr/share/elasticsearch/data"
+#     For RethinkDB this is "/data"; For Elasticsearch this is "/usr/share/elasticsearch/data"
 #   -s path (required)
 #     Path of the source *.tar.gz file on host 
 

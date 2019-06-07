@@ -88,7 +88,7 @@ Stop and remove services:
 docker-compose down
 ```
 
-### Notes
+#### Notes
 
 - Environment variables:
   - Docker Compose will draw environment variables from the shell or from an `.env` file in the same directory. The file is not necessary, as the compose file provides defaults.  If you wish, edit the `.env` file to configure environment variables for image tags, container ports and others, which will be passed to the containers.
@@ -101,6 +101,40 @@ docker-compose down
 
 - OS specifics:
   - For Ubuntu 16.04.5 LTS to [play nice with elasticsearch](https://github.com/docker-library/elasticsearch/issues/111#issuecomment-268511769) needed to set `sudo sysctl -w vm.max_map_count=262144`.
+
+### Backup and restore volumes
+
+#### Backup
+
+To create an archive of data in volumes used by RethinkDB or Elasticsearch, use the supplied bash script `/docker/backup_volumes.sh`.
+
+Dump the RethinkDB data inside a volume named `dbdata` at a directory `/data` within the volume to an archive in a directory on the host named the `/backups`:
+
+```sh
+./backup_volumes.sh -n dbdata -p /data -o /backups
+```
+
+Dump the Elasticsearch data inside a volume named `indata` at a directory `/usr/share/elasticsearch/data` within the volume to an archive in a directory on the host named the `/backups`:
+
+```sh
+./backup_volumes.sh -n indata -p /usr/share/elasticsearch/data -o /backups
+```
+
+#### Restore
+
+To populate a volume for RethinkDB or Elasticsearch from an archive, use the supplied bash script `/docker/restore_volumes.sh`.
+
+Restore RethinkDB data to a volume `dbdata` at a directory `/data` within the volume from an archive on the host `/backups/dbbackup.tar.gz`:
+
+```sh
+./backup_volumes.sh -n dbdata -p /data -s /backups/dbbackup.tar.gz
+```
+
+Restore Elasticsearch data to a volume `indata` at a directory `/usr/share/elasticsearch/data` within the volume from an archive on the host `/backups/inbackup.tar.gz`:
+
+```sh
+./backup_volumes.sh -n indata -p /usr/share/elasticsearch/data -s /backups/inbackup.tar.gz
+```
 
 ## Testing
 

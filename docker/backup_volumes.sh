@@ -12,7 +12,7 @@
 #     The name of the volume
 #   -p path (required)
 #     Path to the file or directory inside the volume. 
-#     For RethinkSB this is "/data"; For elasticearch this is "/usr/share/elasticsearch/data"
+#     For RethinkDB this is "/data"; For elasticearch this is "/usr/share/elasticsearch/data"
 #   -o path (optional)
 #     Output to specified path; defaults to pwd
 
@@ -38,10 +38,6 @@ do
 
     p)  pflag=1
         DATA_DIRECTORY="$OPTARG"
-        if [ -z "${DATA_DIRECTORY}" ]; then
-          printf 'Option -p path cannot be empty\n' 
-          exit 2
-        fi
         ;;
         
     o)  oflag=1
@@ -64,7 +60,7 @@ done
 # Create gzip archives from data in volumes 
 if [ "$nflag" -a "$pflag" ]; then
   docker run --rm -v ${VOLUME_NAME}:${DATA_DIRECTORY} \
-    -v ${ARCHIVE_OUTPUT_DIRECTORY}:/backup ubuntu \
+    -v ${ARCHIVE_OUTPUT_DIRECTORY}:/backup ubuntu:xenial \
     tar czvf /backup/${DUMP_ARCHIVE_NAME} ${DATA_DIRECTORY}
 else 
   printf "Usage: %s -n name -p path [-o path]\n" $0 >&2

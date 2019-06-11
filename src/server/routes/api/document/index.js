@@ -12,7 +12,7 @@ const logger = require('../../../logger');
 
 const provider = require('./reach');
 
-const { BIOPAX_CONVERTER_URL, BASE_URL } = require('../../../../config');
+const { BIOPAX_CONVERTER_URL, BASE_URL, EMAIL_ENABLED, EMAIL_FROM, EMAIL_FROM_ADDR, API_KEY } = require('../../../../config');
 
 let newDoc = ({ docDb, eleDb, id, secret, meta }) => {
   return new Document( _.assign( {}, docDb, {
@@ -58,7 +58,7 @@ let runLayout = doc => {
   return tryPromise( run ).then( getDoc );
 };
 
-let getReachOutput = text => provider.getRawResponse( text );
+// let getReachOutput = text => provider.getRawResponse( text );
 
 let handleResponseError = response => {
   if (!response.ok) {
@@ -93,16 +93,15 @@ let sendEmail = json => {
   const j = json;
 
   return emailTransport.sendMail({
-    from: { name: 'Factoid', address: 'noreply@pathwaycommons.org' },
-    to: { name: j.authorName, address: j.authorEmail },
+    from: { name: EMAIL_FROM, address: EMAIL_FROM_ADDR },
+    to: { name: j.contributorName, address: j.contributorEmail },
     cc: { name: j.editorName, address: j.editorEmail },
-    replyTo: { name: 'Pathway Commons Team', address: 'pathway-commons-help@googlegroups.com ' },
     subject: `Action required: "${json.name}"`,
     html: h('div', {
       style: {
       }
     }, [
-      h('p', `Dear ${j.authorName},`),
+      h('p', `Dear ${j.contributorName},`),
       h('p', [
         h('span', `Share your pathway with the world:  Publishing and getting your paper noticed is essential.  `),
         h('a', { href: BASE_URL }, 'Factoid'),
@@ -112,7 +111,7 @@ let sendEmail = json => {
       ]),
       h('p', [
         h('span', `Factoid will capture the pathway data in `),
-        h('strong', `"${j.authorName} et el.  ${j.name}.  Submission ${j.trackingId}"`),
+        h('strong', `"${j.contributorName} et el.  ${j.name}.  Submission ${j.trackingId}"`),
         h('span', ` by helping you draw and describe genes and interactions:`)
       ]),
       h('ul', [
@@ -123,7 +122,7 @@ let sendEmail = json => {
       h('p', `That's it!  We'll get the pathway data to researchers who need it.`),
       h('a', {
         href: `${BASE_URL}/document/${j.id}/${j.secret}`
-      }, `Launch Factoid for ${j.authorName} et al.`),
+      }, `Launch Factoid for ${j.contributorName} et al.`),
       h('p', [
         h('small', `You may also start Factoid by passing ${BASE_URL}/document/${j.id}/${j.secret} into your browser.`)
       ])
@@ -131,7 +130,7 @@ let sendEmail = json => {
   });
 };
 
-http.get('/', function( req, res ){
+http.get('/', function( req, res, next ){
   let limit = req.params.limit || 50;
 
   return (
@@ -143,13 +142,14 @@ http.get('/', function( req, res ){
         .pluck( [ 'id', 'publicUrl' ] )
         .run( conn )
         .then( cursor => cursor.toArray() )
-        .then( results => res.json( results ) );
+        .then( results => res.json( results ) )
+        .catch( next );
     })
   );
 });
 
 // get existing doc
-http.get('/:id', function( req, res ){
+http.get('/:id', function( req, res, next ){
   let id = req.params.id;
 
   ( tryPromise( loadTables )
@@ -157,22 +157,26 @@ http.get('/:id', function( req, res ){
     .then( loadDoc )
     .then( getDocJson )
     .then( json => res.json( json ) )
+    .catch( next )
   );
 });
 
+const checkApiKey = (apiKey) => {
+  if( API_KEY && apiKey != API_KEY ){
+    throw new Error(`The specified API key '${apiKey}' is incorrect`);
+  }
+};
+
 // create new doc
-http.post('/', function( req, res ){
-  let { abstract, text, legends } = req.body;
+http.post('/', function( req, res, next ){
+  let { abstract, text, apiKey } = req.body;
   let meta = _.assign({}, req.body);
-
-  // make sure the year is an int
-  meta.year = parseInt(meta.year, 10) || (new Date()).getFullYear();
-
-  let seedText = [abstract, text, legends].filter(text => text ? true : false).join('\n\n');
+  let seedText = [abstract, text].filter(text => text ? true : false).join('\n\n');
 
   let secret = uuid();
 
-  ( tryPromise( loadTables )
+  ( tryPromise( () => checkApiKey(apiKey) )
+    .then( loadTables )
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret, meta }) )
     .then( doc => fillDoc( doc, seedText ) )
     .then( runLayout )
@@ -183,8 +187,10 @@ http.post('/', function( req, res ){
       return json;
     } )
     .then(json => {
-      if( !json.authorEmail ){
-        logger.info(`Author email address missing for new doc ${json.id}; not sending email`);
+      if( !EMAIL_ENABLED ) return json;
+
+      if( !json.contributorEmail ){
+        logger.info(`Contributor email address missing for new doc ${json.id}; not sending email`);
 
         return Promise.resolve(json);
       }
@@ -195,7 +201,7 @@ http.post('/', function( req, res ){
         return Promise.resolve(json);
       }
 
-      logger.info(`Sending new doc ${json.id} to ${json.authorEmail} and copying to ${json.editorEmail}`);
+      logger.info(`Sending new doc ${json.id} to ${json.contributorEmail} and copying to ${json.editorEmail}`);
 
       return sendEmail(json).then(() => json);
     })
@@ -205,23 +211,21 @@ http.post('/', function( req, res ){
     .catch( e => {
       logger.error(`Could not fill doc from text: ${text}`);
       logger.error('Exception thrown :', e.message);
-      res.sendStatus(500);
-
-      throw e;
+      next( e );
     } )
   );
 });
 
 // TODO remove this route as reach should never need to be queried directly
-http.post('/query-reach', function( req, res ){
-  let text = req.body.text;
+// http.post('/query-reach', function( req, res ){
+//   let text = req.body.text;
 
-  getReachOutput( text )
-  .then( reachRes => reachRes.json() )
-  .then( reachJson => res.json(reachJson) );
-});
+//   getReachOutput( text )
+//   .then( reachRes => reachRes.json() )
+//   .then( reachJson => res.json(reachJson) );
+// });
 
-http.get('/biopax/:id', function( req, res ){
+http.get('/biopax/:id', function( req, res, next ){
   let id = req.params.id;
   tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
@@ -229,10 +233,11 @@ http.get('/biopax/:id', function( req, res ){
     .then( doc => doc.toBiopaxTemplates() )
     .then( getBiopaxFromTemplates )
     .then( result => result.text() )
-    .then( owl => res.send( owl ));
+    .then( owl => res.send( owl ))
+    .catch( next );
 });
 
-http.get('/sbgn/:id', function( req, res ){
+http.get('/sbgn/:id', function( req, res, next ){
   let id = req.params.id;
   tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
@@ -240,16 +245,18 @@ http.get('/sbgn/:id', function( req, res ){
     .then( doc => doc.toBiopaxTemplates() )
     .then( getSbgnFromTemplates )
     .then( result => result.text() )
-    .then( xml => res.send( xml ));
+    .then( xml => res.send( xml ))
+    .catch( next );
 });
 
-http.get('/text/:id', function( req, res ){
+http.get('/text/:id', function( req, res, next ){
   let id = req.params.id;
   tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
     .then( doc => doc.toText() )
-    .then( txt => res.send( txt ));
+    .then( txt => res.send( txt ))
+    .catch( next );
 });
 
 module.exports = http;

@@ -1617,7 +1617,7 @@ describe('Syncher', function(){
         sc.create().then(function(){
           return sc2.load();
         }).then(function(){
-          let updated = new Promise( resolve => {
+          let debouncedLocalUpdates = new Promise( resolve => {
             // use debounce since error correction updates could introduce extra updates
             let onUpdate = _.debounce( resolve, 1000 ); // n.b. liberal duration, in case slow test machine etc.
 
@@ -1627,12 +1627,15 @@ describe('Syncher', function(){
             sc2.on('remoteupdate', onUpdate);
           } );
 
-          sc.pull('foo',  1);
-          sc2.pull('foo', 5);
-          sc.pull('foo',  4);
-          sc2.pull('foo', 3);
+          // promise for all data written on server-side
+          let serverUpdates = Promise.all([
+            sc.pull('foo',  1),
+            sc2.pull('foo', 5),
+            sc.pull('foo',  4),
+            sc2.pull('foo', 3)
+          ]).then(() => delay(1000)); // wait in case of error correction
 
-          return updated;
+          return Promise.all([debouncedLocalUpdates, serverUpdates]);
         }).then(function(){
           expect(  sc.get('foo') ).to.deep.equal([ 2, 6 ]);
           expect( sc2.get('foo') ).to.deep.equal([ 2, 6 ]);

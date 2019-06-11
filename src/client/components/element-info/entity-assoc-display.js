@@ -3,9 +3,8 @@ const Organism = require('../../../model/organism');
 const Highlighter = require('../highlighter');
 const Formula = require('./chemical-formula');
 const Tooltip = require('../popover/tooltip');
-const { PC_URL } = require('../../../config');
 
-const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL } = require('../../../config');
+const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL, NCBI_LINK_BASE_URL, CHEBI_LINK_BASE_URL } = require('../../../config');
 
 let protein = (m, searchTerms) => {
   return [
@@ -22,6 +21,12 @@ let protein = (m, searchTerms) => {
     h('div.entity-info-section', !m.geneNames ? [] : [
       h('span.entity-info-title', 'Gene names'),
       ...m.geneNames.map( name => h('span.entity-info-alt-name', [
+        h(Highlighter, { text: name, terms: searchTerms })
+      ]))
+    ]),
+    h('div.entity-info-section', !m.shortSynonyms ? [] : [
+      h('span.entity-info-title', 'Synonyms'),
+      ...m.shortSynonyms.map( name => h('span.entity-info-alt-name', [
         h(Highlighter, { text: name, terms: searchTerms })
       ]))
     ])
@@ -52,19 +57,24 @@ let chemical = (m, searchTerms) => {
 };
 
 let link = m => {
-  let pcQ = encodeURIComponent(m.name);
-  let pcUrl = `${PC_URL}search?q=${pcQ}`;
-  let pcName = 'Pathway Commons';
   let url, nsName;
 
-  switch( m.type ){
-    case 'protein':
+  switch( m.namespace ){
+    case 'uniprot':
       url = UNIPROT_LINK_BASE_URL + m.id;
       nsName = 'UniProt';
       break;
-    case 'chemical':
+    case 'pubchem':
       url = PUBCHEM_LINK_BASE_URL + m.id;
       nsName = 'PubChem';
+      break;
+    case 'chebi':
+      url = CHEBI_LINK_BASE_URL + m.id;
+      nsName = 'CHEBI';
+      break;
+    case 'ncbi':
+      url = NCBI_LINK_BASE_URL + m.id;
+      nsName = 'NCBI';
       break;
   }
 
@@ -75,8 +85,7 @@ let link = m => {
 
   return h('div.entity-info-section.entity-info-linkouts', [
     h('span.entity-info-title', 'More information'),
-    entry(url, nsName),
-    entry(pcUrl, pcName)
+    entry(url, nsName)
   ]);
 };
 

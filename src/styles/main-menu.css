@@ -49,10 +49,18 @@
   transition-property: filter;
   transition-timing-function: ease-out;
   transition-duration: 250ms;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 
   &:active {
     filter: brightness(50%);
   }
+}
+
+.icon-logo-beside {
+  font-size: 0.6em;
 }
 
 .main-menu-title {

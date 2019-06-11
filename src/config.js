@@ -21,6 +21,8 @@ let defaults = {
 
   BASE_URL: 'https://factoid.baderlab.org',
 
+  API_KEY: '', // if defined, restricts access to creating new docs
+
   // Services
   REACH_URL: 'http://reach.baderlab.org/api/uploadFile',
   UNIPROT_URL: 'http://www.uniprot.org/uniprot',
@@ -36,7 +38,20 @@ let defaults = {
   AGGREGATE_CACHE_SIZE: DEFAULT_CACHE_SIZE,
   MAX_SEARCH_SIZE: 50,
   BIOPAX_CONVERTER_URL: 'https://biopax.baderlab.org/convert/v2/',
-  PC_URL: 'https://apps.pathwaycommons.org/'
+  PC_URL: 'https://apps.pathwaycommons.org/',
+  GROUNDING_SEARCH_BASE_URL: 'http://grounding.baderlab.org',
+  NCBI_LINK_BASE_URL: 'https://www.ncbi.nlm.nih.gov/gene/',
+
+  // Email
+  EMAIL_ENABLED: false,
+  EMAIL_FROM: 'Factoid',
+  EMAIL_FROM_ADDR: 'support@mentana.org',
+  SMTP_PORT: 465,
+  SMTP_HOST: 'localhost',
+  SMTP_USER: 'user',
+  SMTP_PASSWORD: 'password',
+
+  USE_PC_GROUNDING_SEARCH: true
 };
 
 let envVars = _.pick( process.env, Object.keys( defaults ) );
@@ -63,10 +78,16 @@ let conf = Object.assign( {}, defaults, envVars );
 
 let intKeys = [
   'PORT', 'DB_PORT',
-  'UNIPROT_CACHE_SIZE', 'CHEBI_CACHE_SIZE', 'MAX_SEARCH_SIZE'
+  'UNIPROT_CACHE_SIZE', 'CHEBI_CACHE_SIZE', 'MAX_SEARCH_SIZE',
+  'SMTP_PORT'
+];
+
+let boolKeys = [
+  'USE_PC_GROUNDING_SEARCH', 'EMAIL_ENABLED'
 ];
 
 intKeys.forEach( k => conf[k] = parseInt( conf[k] ) );
+boolKeys.forEach( k => conf[k] = JSON.parse( conf[k] ) );
 
 Object.freeze( conf );
 

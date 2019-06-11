@@ -442,12 +442,12 @@ describe('Document', function(){
 
       return dS.create().then( () => {
         return dS.update({
-          name: 'foobar'
+          title: 'foobar'
         });
       } ).then( () => {
         return dC.load();
       } ).then( () => {
-        expect( dC.name() ).to.equal('foobar');
+        expect( dC.title() ).to.equal('foobar');
       } );
     });
 

@@ -70,7 +70,7 @@ app.use(function(req, res, next) {
 });
 
 // general error handler
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
   let status = err.status || 500;
 
   logger.error('An error occurred serving a resource');
@@ -88,7 +88,6 @@ app.use(function(err, req, res, next) {
       break;
   }
 
-  next( err );
 });
 
 
@@ -112,7 +111,8 @@ tryPromise( () => {
     ;
   };
 
-  return Promise.all( ['element', 'document'].map( setup ) );
+  const tables = ['element', 'document'];
+  return tables.reduce( ( p, name ) => p.then( () => setup( name ) ), Promise.resolve() );
 } ).then( () => {
   server.listen(port);
 } );

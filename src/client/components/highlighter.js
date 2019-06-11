@@ -61,7 +61,7 @@ class Highlighter extends Component {
             st += optNonSpSep;
           }
 
-          st += ch;
+          st += '[' + ch + ']'; // put in [] to allow for special chars like +
 
           prevChWasSep = false;
         }

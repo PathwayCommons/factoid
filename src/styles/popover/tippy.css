@@ -1,5 +1,9 @@
 /* tippy theme overrides */
 
+.tippy-popper {
+  transition-duration: 0 !important;
+  transition-property: none !important;
+}
 
 .tippy-popper .tippy-tooltip {
   padding: 0;

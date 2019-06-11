@@ -59,6 +59,7 @@ class Editor extends DataComponent {
       if( now - l.lastTime > RM_DEBOUNCE_TIME ){
         l.els = [];
         l.ppts = [];
+        l.oldIdToEl = new Map();
       }
 
       l.lastTime = now;
@@ -109,12 +110,12 @@ class Editor extends DataComponent {
     doc.on('load', () => {
       doc.interactions().forEach( listenForRmPpt );
 
-      let docs = JSON.parse(localStorage.getItem('my-factoids')) || [];
-      let docData = { id: doc.id(), secret: doc.secret(), name: doc.name() };
+      let docs = JSON.parse(localStorage.getItem('documents')) || [];
+      let docData = { id: doc.id(), secret: doc.secret(), name: doc.title() };
 
       if( _.find(docs,  docData) == null ){
         docs.push(docData);
-        localStorage.setItem('my-factoids', JSON.stringify(docs));
+        localStorage.setItem('documents', JSON.stringify(docs));
       }
     });
 
@@ -123,6 +124,15 @@ class Editor extends DataComponent {
     bus.on('drawtoggle', (toggle, type) => this.toggleDrawMode(toggle, type));
     bus.on('addelement', data => this.addElement( data ));
     bus.on('remove', docEl => this.remove( docEl ));
+    bus.on('togglehelp', () => this.toggleHelp());
+
+    let showHelp = JSON.parse(localStorage.getItem('showHelp'));
+
+    if( showHelp == null ){
+      showHelp = true;
+    }
+
+    localStorage.setItem('showHelp', false);
 
     this.data = ({
       bus: bus,
@@ -131,9 +141,11 @@ class Editor extends DataComponent {
       newElementShift: 0,
       mountDeferred: defer(),
       initted: false,
+      showHelp,
       rmList: {
         els: [],
         ppts: [],
+        oldIdToEl: new Map(),
         lastTime: 0
       }
     });
@@ -235,24 +247,33 @@ class Editor extends DataComponent {
     return this.data.drawModeType;
   }
 
-  addElement( data = {} ){
+  addElement( data = {}, isRestore = false ){
     if( !this.editable() ){ return; }
 
-    let cy = this.data.cy;
-    let pan = cy.pan();
-    let zoom = cy.zoom();
-    let getPosition = rpos => ({
-      x: ( rpos.x - pan.x ) / zoom,
-      y: ( rpos.y - pan.y ) / zoom
-    });
-    let shift = ( pos, delta ) => ({ x: pos.x + delta.x, y: pos.y + delta.y });
-    let shiftSize = defs.newElementShift;
-    let shiftI = this.data.newElementShift;
-    let delta = { x: 0, y: shiftSize * shiftI };
-    let pos = getPosition( shift( _.clone( defs.newElementPosition ), delta ) );
+    let getDefaultPos = () => {
+      if ( !_.isNil( this.data.position ) ) {
+        return null;
+      }
 
-    this.setData({ newElementShift: (shiftI + 1) % defs.newElementMaxShifts });
+      let cy = this.data.cy;
+      let pan = cy.pan();
+      let zoom = cy.zoom();
+      let getPosition = rpos => ({
+        x: ( rpos.x - pan.x ) / zoom,
+        y: ( rpos.y - pan.y ) / zoom
+      });
+      let shift = ( pos, delta ) => ({ x: pos.x + delta.x, y: pos.y + delta.y });
+      let shiftSize = defs.newElementShift;
+      let shiftI = this.data.newElementShift;
+      let delta = { x: 0, y: shiftSize * shiftI };
+      let pos = getPosition( shift( _.clone( defs.newElementPosition ), delta ) );
 
+      this.setData({ newElementShift: (shiftI + 1) % defs.newElementMaxShifts });
+
+      return pos;
+    };
+
+    let pos = getDefaultPos();
     let doc = this.data.document;
 
     let el = doc.factory().make({
@@ -263,7 +284,9 @@ class Editor extends DataComponent {
       }, data )
     });
 
-    this.lastAddedElement = el;
+    if ( !isRestore ) {
+      this.lastAddedElement = el;
+    }
 
     let synch = () => el.synch();
     let create = () => el.create();
@@ -298,7 +321,7 @@ class Editor extends DataComponent {
   }
 
   undoRemove(){
-    let { rmList, document } = this.data;
+    let { rmList } = this.data;
 
     if( rmList.els.length === 0 && rmList.ppts.length === 0 ){ return Promise.resolve(); }
 
@@ -308,16 +331,38 @@ class Editor extends DataComponent {
 
     let makeRmUnavil = () => this.setData({ undoRemoveAvailable: false });
 
-    let restoreEls = () => Promise.all( rmList.els.map( el => document.add(el) ) );
+    let restoreEl = el => {
+      let oldId = el.id();
+      let elJson = _.omit( el.json(), [ 'id', 'secret' ] );
 
-    let restorePpts = () => Promise.all( rmList.ppts.map( ({ intn, ppt, type }) => {
-      let restorePpt = () => intn.add( ppt );
-      let restoreType = () => intn.participantType( ppt, type );
+      if ( el.isInteraction() ) {
+        let relatedPpts = rmList.ppts.filter( ( { intn } ) => intn.id() == el.id() );
+        let newEntities = relatedPpts.map( ( { ppt, type } ) => {
+          let oldId = ppt.id();
+          let id = rmList.oldIdToEl.has( oldId ) ? rmList.oldIdToEl.get( oldId ).id() : oldId;
 
-      return tryPromise( restorePpt ).then( restoreType );
-    } ) );
+          return { id, group: type };
+        } );
 
-    return Promise.all([ restoreEls(), restorePpts() ]).then( makeRmUnavil );
+        elJson.entries = elJson.entries.concat( newEntities );
+      }
+
+      let isRestore = true;
+      return this.addElement( elJson, isRestore )
+        .then( newEl => rmList.oldIdToEl.set( oldId, newEl ) );
+    };
+
+    let restoreEls = els => Promise.all( els.map( restoreEl ) );
+
+    let rmEntities = rmList.els.filter( el => el.isEntity() );
+    let rmIntns = rmList.els.filter( el => el.isInteraction() );
+
+    let restoreEntities = () => restoreEls( rmEntities );
+    let restoreIntns = () => restoreEls( rmIntns );
+
+    return tryPromise( restoreEntities )
+      .then( restoreIntns )
+      .then( makeRmUnavil );
   }
 
   layout(){
@@ -354,19 +399,42 @@ class Editor extends DataComponent {
     return Promise.all([this.toggleDrawMode(false)]).delay(250);
   }
 
+  toggleHelp(bool){
+    if( bool == null ){
+      bool = !this.data.showHelp;
+    }
+
+    this.setData({ showHelp: bool });
+  }
+
   render(){
-    let { document, bus, incompleteNotification } = this.data;
+    let { document, bus, incompleteNotification, showHelp } = this.data;
     let controller = this;
     let { history } = this.props;
+
+    const formatTitle = ( authors, journalName ) => {
+      const tokens = [];
+      if( authors ){
+        const authorList = authors.split(',');
+        tokens.push( authorList.shift() );
+        if( authorList.length ){
+          authorList.length === 1 ? tokens.push(` & `) :  tokens.push(` ... `);
+          tokens.push(`${authorList.pop()}`);
+        }
+        if( journalName ) tokens.push(' | ');
+      }
+      tokens.push( journalName );
+      return tokens.join('');
+    };
+
+    const title = formatTitle( document.authors(), document.journalName() );
 
     let editorContent = this.data.initted ? [
       h('div.editor-title', [
         h('div.editor-title-content', [
-          h('div.editor-title-name', document.name() || 'Unnamed document'),
+          h('div.editor-title-name', document.title() || 'Unnamed document'),
           h('div.editor-title-info', [
-            h('span', document.authorName() ? `${document.authorName()} et al., ` : ``),
-            h('span', `${document.year()}`),
-            h('span', document.journalName() ? `, ${document.journalName()}` : ``)
+            h('span', title )
           ])
         ])
       ]),
@@ -381,7 +449,20 @@ class Editor extends DataComponent {
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
       incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
-      h('div.editor-graph#editor-graph')
+      h('div.editor-graph#editor-graph'),
+      h('div.editor-help' + (showHelp ? '.editor-help-shown' : ''), showHelp ? [
+        h('div.editor-help-background', {
+          onClick: () => this.toggleHelp()
+        }),
+        h('div.editor-help-video-embed.video-embed', [
+          h('iframe.video-embed-iframe', {
+            src: 'https://www.youtube.com/embed/Do5VaIcB4B8?rel=0',
+            frameBorder: 0,
+            allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
+            allowFullScreen: true
+            })
+        ])
+      ] : [])
     ] : [];
 
     return h('div.editor', {

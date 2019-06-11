@@ -13,7 +13,6 @@ const Notification = require('../notification/notification');
 const InlineNotification = require('../notification/inline');
 const Tooltip = require('../popover/tooltip');
 const { INTERACTION_TYPES, INTERACTION_TYPE } = require('../../../model/element/interaction-type');
-const { PARTICIPANT_TYPE } = require('../../../model/element/participant-type');
 
 let stageCache = new WeakMap();
 let assocNotificationCache = new SingleValueCache();
@@ -66,11 +65,11 @@ class InteractionInfo extends DataComponent {
 
     switch( stage ){
       case STAGES.PARTICIPANT_TYPES:
-        return true;
+        return false; // disable this phase for now, maybe delete all related code eventually
       case STAGES.ASSOCIATE:
         return true;
       case STAGES.COMPLETED:
-        return el.associated() && el.association().isComplete();
+        return el.associated();
       default:
         return false;
     }
@@ -231,34 +230,30 @@ class InteractionInfo extends DataComponent {
       }) );
     };
 
-    if( !doc.editable() ){
-      children.push( h('div.interaction-info-no-assoc', [
-        h('div.element-info-message.element-info-no-data', [
-          h('i.material-icons', 'info'),
-          h('span', ' This interaction has no data associated with it.')
-        ])
+    if( stage === STAGES.COMPLETED || !doc.editable() ){
+      let showEditIcon = doc.editable();
+      let assoc = el.association();
+      let summaryChildren = [];
+
+      summaryChildren.push( h('span.interaction-info-summary-text', assoc ? assoc.toString() : [
+        h('i.material-icons', 'info'),
+        h('span', ' This interaction has no data associated with it.')
       ]) );
+
+      if( showEditIcon ){
+        summaryChildren.push( h(Tooltip, { description: 'Edit from the beginning' }, [
+          h('button.interaction-info-edit.plain-button', {
+            onClick: () => progression.goToStage( ORDERED_STAGES[1] )
+          }, [ h('i.material-icons', 'edit') ])
+        ]) );
+      }
+
+      children.push( h('div.interaction-info-summary', summaryChildren) );
     } else if( stage === STAGES.ASSOCIATE ){
       let radioName = 'interaction-info-assoc-radioset-' + el.id();
       let radiosetChildren = [];
-      let anyPptIsUnassoc = el.participants().some( ppt => !ppt.associated() );
 
       INTERACTION_TYPES.forEach( IntnType => {
-        // skip types that don't apply to the participant set
-        // but don't block options if the ent's are unassociated/untyped
-        let pptAssocsAllowed = anyPptIsUnassoc || IntnType.isAllowedForInteraction(el);
-        let pptType = (
-          el.participants()
-          .map(ppt => el.participantType(ppt))
-          .filter(type => type.value !== PARTICIPANT_TYPE.UNSIGNED.value)[0] // assume one typed ppt, others unsigned
-          || PARTICIPANT_TYPE.UNSIGNED // if no other type found, then it's unsigned overall
-        );
-        let pptTypeAllowed = IntnType.allowedParticipantTypes().some(type => type.value === pptType.value);
-
-        if( !pptAssocsAllowed || !pptTypeAllowed ){
-          return;
-        }
-
         let radioId = 'interaction-info-assoc-radioset-item-' + uuid();
         let checked = el.associated() && el.association().value === IntnType.value;
         let indented = [
@@ -298,21 +293,6 @@ class InteractionInfo extends DataComponent {
       children.push( h('div.interaction-info-assoc-radioset', radiosetChildren) );
     } else if( stage === STAGES.PARTICIPANT_TYPES ){
       children.push( makeNotification(s.pptTypeNotification) );
-    } else if( stage === STAGES.COMPLETED ){
-      let showEditIcon = doc.editable();
-      let summaryChildren = [];
-
-      summaryChildren.push( h('span.interaction-info-summary-text', el.association().toString()) );
-
-      if( showEditIcon ){
-        summaryChildren.push( h(Tooltip, { description: 'Edit from the beginning' }, [
-          h('button.interaction-info-edit.plain-button', {
-            onClick: () => progression.goToStage( ORDERED_STAGES[0] )
-          }, [ h('i.material-icons', 'edit') ])
-        ]) );
-      }
-
-      children.push( h('div.interaction-info-summary', summaryChildren) );
     }
 
     if( doc.editable() ){

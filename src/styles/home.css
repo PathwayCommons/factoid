@@ -12,7 +12,6 @@ header.nav-bar {
   padding: 0;
   flex-direction: row;
   align-self: flex-end;
-  font-size: 1.125em;
 }
 
 .nav-bar-link {
@@ -24,15 +23,18 @@ header.nav-bar {
 }
 
 .hero {
-  background-image: linear-gradient(to bottom right, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.75) 0%, rgba(0, 0, 0, 0.25) 100%), url('./image/hero-splash-1.png');
-  background-size: cover;
+  width: 100%;
+  position: relative;
+  background-color: #ddd;
+  background-image: url('./image/curve-menten.svg');
+  background-size: 100% 100%;
   background-repeat: no-repeat;
-  background-position: bottom;
-  min-height: 48em;
+  background-position-x: 50%;
+  background-position-y: 0%;
   color: #212f3d;
   padding-top: 1em;
   padding-bottom: 2em;
+  text-align: center;
 }
 
 .hero-title {
@@ -40,16 +42,6 @@ header.nav-bar {
   font-weight: 700;
   margin-bottom: 0.5em;
   margin-top: 1.7em;
-}
-
-.hero-title-icon {
-  /* position: relative; */
-
-  /* top: 8em; */
-  height: 5em;
-  width: 100%;
-  background-image: url('./image/logo-no-slogan.svg');
-  background-repeat: no-repeat;
 }
 
 .hero-subtitle {
@@ -95,28 +87,18 @@ header.nav-bar {
 } */
 
 .how-it-works {
+  /* border: 1px solid black; */
   display: inline-block;
-  width: 50%;
-  padding-bottom: 50%;
-  background-position: 100% 50%;
-  background-image: url('./image/author-workflow.svg');
+  width: 100%;
+  padding-bottom: 70%;
+  background-position: 50% 50%;
+  background-image: url('./image/infographic-authors.svg');
   background-size: contain;
   background-repeat: no-repeat;
 }
 
 #how {
   text-align: center;
-}
-
-.how-it-works-detailed {
-  display: inline-block;
-  width: 100%;
-  padding-bottom: 70%;
-  background-position: 50% 50%;
-  background-image: url('./image/workflow-detailed.svg');
-  background-size: contain;
-  background-repeat: no-repeat;
-  margin: -5% 0; /* to account for extra padding in image */
 }
 
 .home-section {
@@ -149,12 +131,18 @@ header.nav-bar {
   }
 }
 
-.team > * {
-  color: #212f3d;
+.credits {
+  text-align: center;
 }
 
-.team h2 {
-  font-size: 2em;
+.credit {
+  display: block;
+  font-size: 0.8em;
+  line-height: 1.5;
+
+  & + * {
+    margin-left: 1em;
+  }
 }
 
 .content h2 {

@@ -1,6 +1,10 @@
-const provider = require('./aggregate');
+const { USE_PC_GROUNDING_SEARCH } = require('../../../../config');
+const aggregate = require('./aggregate');
+const groundingSearch = require('./grounding-search');
 const jsonifyResult = response => ( result => response.json( result ) );
 const http = require('express').Router();
+
+const provider = USE_PC_GROUNDING_SEARCH ? groundingSearch : aggregate;
 
 http.post('/search', function( req, res ){
   (

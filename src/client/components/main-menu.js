@@ -1,13 +1,9 @@
 const { Component } = require('react');
 const h = require('react-hyperscript');
-const _ = require('lodash');
 const Popover = require('./popover/popover');
 const Linkout = require('./document-linkout');
-const { exportDocumentToBiopax, exportDocumentToTxt, exportDocumentToSbgn } = require('../client-util');
 const EventEmitter = require('eventemitter3');
 const Tooltip = require('./popover/tooltip');
-const { Link } = require('react-router-dom');
-const MyFactoids = require('./my-factoids');
 
 class MenuContent extends Component {
   constructor(props){
@@ -38,7 +34,7 @@ class MenuContent extends Component {
   }
 
   render(){
-    const { bus, document, history, emitter, networkEditor } = this.props;
+    const { bus, document, history, emitter } = this.props;
     const { selectedLinkouts, selectedMyFactoids } = this.state;
 
     const set = (props, children) => h('div.main-menu-set', props, children);
@@ -55,17 +51,6 @@ class MenuContent extends Component {
       h('span', label)
     ]);
 
-    let editorSwitcher = ( document, networkEditor) => {
-      if( document == null ){ return null; }
-
-      let id = document.id();
-      let secret = document.secret();
-      let label = networkEditor ? 'Form Editor' : 'Network Editor';
-      let url = `/${networkEditor ? 'form' : 'document'}/${id}/${secret}`;
-
-      return item({ label, action: () => history.push(url) });
-    };
-
     let content;
 
     if( selectedLinkouts ){
@@ -73,25 +58,15 @@ class MenuContent extends Component {
         h(Linkout, { document })
       ]);
     } else if( selectedMyFactoids ){
-      content = h('div.main-menu-my-factoids', [
-        h(MyFactoids)
-      ]);
+      content = h('div.main-menu-my-factoids', 'Nope');
     } else {
       content = h('div.main-menu-list', [
-        document ? set({ key: 'util' }, [
-          item({ label: 'Help', action: () => _.debounce(() => bus.emit('togglehelp'), 300) }),
-          item({ label: 'Share', action: () => this.selectLinkouts(), actionCloses: false })
-        ]) : null,
-        document ? set({ key: 'dl' }, [
-          item({ label: 'Download BioPAX', action: () => exportDocumentToBiopax(document.id()) }),
-          item({ label: 'Download SBGN', action: () => exportDocumentToSbgn(document.id()) }),
-          item({ label: 'Download text', action: () => exportDocumentToTxt(document.id()) })
-        ]) : null,
         set({ key: 'nav' }, [
-          item({ label: 'New factoid', action: () => history.push('/new') }),
-          item({ label: 'My factoids', action: () => this.selectMyFactoids(), actionCloses: false }),
-          editorSwitcher( document, networkEditor )
-        ])
+          item({ label: 'Home', action: () => history.push('/') })
+        ]),
+        document ? set({ key: 'util' }, [
+          item({ label: 'Help', action: () => bus.emit('togglehelp') }),
+        ]) : null
       ]);
     }
 
@@ -108,7 +83,7 @@ class MainMenu extends Component {
 
   render(){
     let { emitter } = this;
-    let { bus, document, history, title, networkEditor } = this.props;
+    let { bus, document, history, networkEditor } = this.props;
 
     return h('div.main-menu', [
       h(Popover, {
@@ -121,21 +96,12 @@ class MainMenu extends Component {
         }
       }, [
         h(Tooltip, { description: 'Menu', tippy: { placement: 'bottom' } }, [
-          h('button.main-menu-button.plain-button', [
-            h('i.material-icons', 'more_vert')
+          h('div.main-menu-logo', [
+            h('i.icon.icon-logo'),
+            h('i.material-icons.icon-logo-beside', 'keyboard_arrow_down')
           ])
         ])
-      ]),
-
-      h(Tooltip, { description: 'Home', tippy: { placement: 'bottom' } }, [
-        h('div.main-menu-logo', [
-          h(Link, { to: '/' }, [
-            h('i.icon.icon-logo')
-          ])
-        ])
-      ]),
-
-      title ? h('h1.main-menu-title', title) : null
+      ])
     ]);
 
   }

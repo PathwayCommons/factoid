@@ -15,6 +15,7 @@ General:
 - `PORT` : the port on which the server runs (default `3000`)
 - `LOG_LEVEL` : minimum log level; one of `info` (default), `warn`, `error`
 - `BASE_URL` : used for email linkouts (e.g. `https://factoid.baderlab.org`)
+- `API_KEY` : used to restrict new document creation (e.g. `8365E63B-9A20-4661-AED8-EDB1296B657F`)
 
 Database:
 
@@ -59,35 +60,82 @@ Services:
 
 ## Running via Docker
 
-Build the container.  Here, `factoid` is used as the container name.
+### Requirements
 
+Dockerized system has been successfully deployed on:
+  - Ubuntu 16.04.5 LTS (GNU/Linux 4.4.0-145-generic x86_64)
+    - Docker version 18.09.6
+    - docker-compose version 1.24.0
+  - OSX 10.14.5 (Mojave)
+    - Docker version 18.09.2
+    - docker-compose version 1.23.2
+
+### Docker Compose
+
+In the directory containing the `docker-compose.yml` file, execute:
+
+```sh
+docker-compose run -d
 ```
-cd factoid
-docker build -t factoid .
+
+Monitor stdout of the system:
+
+```sh
+docker-compose logs -f -t
 ```
 
-Run the container:
-
-```
-docker run -it -p 12345:3000 -u "node" -e "NODE_ENV=production" -e "PORT=3000" --name "factoid" factoid
-```
-
-Or run with an env file that defines the environment variables:
-
-```
-docker run -it -p 12345:3000 -u "node" --env-file prod.env --name "factoid" factoid
+Stop and remove services:
+```sh
+docker-compose down
 ```
 
-Notes:
+#### Notes
 
-- The `-it` switches are necessary to make `node` respond to `ctrl+c` etc. in `docker`.
-- The `-p` switch indicates that port 3000 on the container is mapped to port 12345 on the host.  Without this switch, the server is inaccessible.
-- The `-u` switch is used so that a non-root user is used inside the container.
-- The `-e` switch is used to set environment variables.  Alternatively use `--env-file` to use a file with the environment variables.
-- References:
-  - [Dockerizing a Node.js web app](https://nodejs.org/en/docs/guides/nodejs-docker-webapp/)
-  - [Documentation of docker-node](https://github.com/nodejs/docker-node)
-  - [Docker CLI docs](https://docs.docker.com/engine/reference/commandline/cli/)
+- Environment variables:
+  - Docker Compose will draw environment variables from the shell or from an `.env` file in the same directory. The file is not necessary, as the compose file provides defaults.  If you wish, edit the `.env` file to configure environment variables for image tags, container ports and others, which will be passed to the containers.
+
+- Indexing service:
+  - The `indexer` service will download sources files and index. The time required for this will vary depending on the system and ranges from tens of minutes (OSX 10.14.5 (Mojave), MacBook Pro (Retina, 15-inch, Mid 2015). 2.8 GHz Intel Core i7) up to many hours (Ubuntu 16.04.5 LTS, Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz). You can skip indexing by declaring the services you wish to start `docker-compose run -d webapp grounding db index`.
+
+- Database service:
+  - Do not restart a stopped container. Rather, remove and run anew.
+
+- OS specifics:
+  - For Ubuntu 16.04.5 LTS to [play nice with elasticsearch](https://github.com/docker-library/elasticsearch/issues/111#issuecomment-268511769) needed to set `sudo sysctl -w vm.max_map_count=262144`.
+
+### Backup and restore volumes
+
+#### Backup
+
+To create an archive of data in volumes used by RethinkDB or Elasticsearch, use the supplied bash script `/docker/backup_volumes.sh`.
+
+Dump the RethinkDB data inside a volume named `dbdata` at a directory `/data` within the volume to an archive in a directory on the host named the `/backups`:
+
+```sh
+./backup_volumes.sh -n dbdata -p /data -o /backups
+```
+
+Dump the Elasticsearch data inside a volume named `indata` at a directory `/usr/share/elasticsearch/data` within the volume to an archive in a directory on the host named the `/backups`:
+
+```sh
+./backup_volumes.sh -n indata -p /usr/share/elasticsearch/data -o /backups
+```
+
+#### Restore
+
+To populate a volume for RethinkDB or Elasticsearch from an archive, use the supplied bash script `/docker/restore_volumes.sh`.
+
+Restore RethinkDB data to a volume `dbdata` at a directory `/data` within the volume from an archive on the host `/backups/dbbackup.tar.gz`:
+
+```sh
+./backup_volumes.sh -n dbdata -p /data -s /backups/dbbackup.tar.gz
+```
+
+Restore Elasticsearch data to a volume `indata` at a directory `/usr/share/elasticsearch/data` within the volume from an archive on the host `/backups/inbackup.tar.gz`:
+
+```sh
+./backup_volumes.sh -n indata -p /usr/share/elasticsearch/data -s /backups/inbackup.tar.gz
+```
 
 ## Testing
 

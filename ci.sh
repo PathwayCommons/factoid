@@ -4,7 +4,7 @@
 # be used with `cron` in order to set up regular builds, e.g. for every 15 minutes:
 #
 # `crontab -e`
-# 
+#
 # @reboot /home/username/rethinkdb.sh > /home/username/rethinkdb.log
 # */15 * * * * /home/username/master.sh > /home/username/master.log
 #
@@ -15,13 +15,15 @@
 # # Mandatory repo/branch conf
 # export REPO=https://github.com/PathwayCommons/factoid.git
 # export BRANCH=master
+# export JOB_NAME=factoid-master
 #
 # # Project-specific env vars
 # export PORT=3000
-# 
+#
 # ./ci.sh
 
-JOB_NAME=$BRANCH
+COMMAND=start
+
 WORKSPACE=/home/`whoami`/$JOB_NAME
 WORKSPACE_TMP=/tmp/$JOB_NAME
 
@@ -35,11 +37,11 @@ git checkout $BRANCH
 
 # build
 npm install
-npm run clean
+npm run clean || echo "No clean script found"
 
 export NODE_ENV=production
 
-npm run build
+npm run build || echo "No build script found"
 
 # stop the old screen session
 screen -X -S $JOB_NAME quit || echo "No screen session to stop"
@@ -50,8 +52,7 @@ mv $WORKSPACE /tmp/rm/$JOB_NAME || echo "No old workspace to move"
 mv $WORKSPACE_TMP $WORKSPACE
 
 # start the server in a screen session
-screen -d -m -S $JOB_NAME npm start
+screen -d -m -S $JOB_NAME npm run $COMMAND
 
 # delete the old workspace files
 rm -rf /tmp/rm/$JOB_NAME || echo "No old workspace to delete"
-

@@ -15,6 +15,7 @@ General:
 - `PORT` : the port on which the server runs (default `3000`)
 - `LOG_LEVEL` : minimum log level; one of `info` (default), `warn`, `error`
 - `BASE_URL` : used for email linkouts (e.g. `https://factoid.baderlab.org`)
+- `API_KEY` : used to restrict new document creation (e.g. `8365E63B-9A20-4661-AED8-EDB1296B657F`)
 
 Database:
 

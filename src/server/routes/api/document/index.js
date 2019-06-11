@@ -12,7 +12,7 @@ const logger = require('../../../logger');
 
 const provider = require('./reach');
 
-const { BIOPAX_CONVERTER_URL, BASE_URL, EMAIL_ENABLED, EMAIL_FROM, EMAIL_FROM_ADDR } = require('../../../../config');
+const { BIOPAX_CONVERTER_URL, BASE_URL, EMAIL_ENABLED, EMAIL_FROM, EMAIL_FROM_ADDR, API_KEY } = require('../../../../config');
 
 let newDoc = ({ docDb, eleDb, id, secret, meta }) => {
   return new Document( _.assign( {}, docDb, {
@@ -161,15 +161,22 @@ http.get('/:id', function( req, res, next ){
   );
 });
 
+const checkApiKey = (apiKey) => {
+  if( API_KEY && apiKey != API_KEY ){
+    throw new Error(`The specified API key '${apiKey}' is incorrect`);
+  }
+};
+
 // create new doc
 http.post('/', function( req, res, next ){
-  let { abstract, text } = req.body;
+  let { abstract, text, apiKey } = req.body;
   let meta = _.assign({}, req.body);
   let seedText = [abstract, text].filter(text => text ? true : false).join('\n\n');
 
   let secret = uuid();
 
-  ( tryPromise( loadTables )
+  ( tryPromise( () => checkApiKey(apiKey) )
+    .then( loadTables )
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret, meta }) )
     .then( doc => fillDoc( doc, seedText ) )
     .then( runLayout )

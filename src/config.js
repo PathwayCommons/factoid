@@ -21,6 +21,8 @@ let defaults = {
 
   BASE_URL: 'https://factoid.baderlab.org',
 
+  API_KEY: '', // if defined, restricts access to creating new docs
+
   // Services
   REACH_URL: 'http://reach.baderlab.org/api/uploadFile',
   UNIPROT_URL: 'http://www.uniprot.org/uniprot',

@@ -16,14 +16,14 @@ class DocumentSeeder extends React.Component {
   }
 
   createDoc(){
-    let { journalName, title, authors, abstract, text, trackingId, contributorName, contributorEmail, editorName, editorEmail } = this.state;
+    let { journalName, title, authors, abstract, text, trackingId, contributorName, contributorEmail, editorName, editorEmail, apiKey } = this.state;
 
     let makeRequest = () => fetch('/api/document', {
       headers: {
         'Content-Type': 'application/json'
       },
       method: 'POST',
-      body: JSON.stringify({ journalName, title, authors, abstract, text, trackingId, contributorName, contributorEmail, editorName, editorEmail })
+      body: JSON.stringify({ journalName, title, authors, abstract, text, trackingId, contributorName, contributorEmail, editorName, editorEmail, apiKey })
     });
 
     let toJson = res => res.json();
@@ -172,6 +172,13 @@ class DocumentSeeder extends React.Component {
           type: 'text',
           value: value('editorEmail'),
           onChange: onChange('editorEmail')
+        }),
+
+        h('label.document-seeder-text-label', 'API key'),
+        h('input.document-seeder-api-key', {
+          type: 'text',
+          value: value('apiKey'),
+          onChange: onChange('apiKey')
         }),
 
         h('p', [

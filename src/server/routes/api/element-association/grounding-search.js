@@ -32,7 +32,9 @@ const search = opts => {
   let queryOpts = { namespace, q: name };
   if ( organismCounts ) {
     let cmp = ( a, b ) => organismCounts[ b ] - organismCounts[ a ];
-    let organismOrdering = Object.keys( organismCounts ).sort( cmp );
+    let nonZero = taxonId => organismCounts[taxonId] !== 0;
+    let organismOrdering = Object.keys( organismCounts ).filter( nonZero ).sort( cmp );
+
     queryOpts.organismOrdering = organismOrdering;
   }
 

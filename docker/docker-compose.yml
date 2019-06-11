@@ -1,0 +1,50 @@
+version: "3.4"
+services:
+  webapp:
+    image: pathwaycommons/factoid:${FACTOID_IMAGE_TAG:-unstable}
+    container_name: webapp_container
+    depends_on:
+      - db
+      - grounding
+    ports:
+      - "${FACTOID_PORT:-3000}:3000"
+    environment:
+      USE_PC_GROUNDING_SEARCH:
+      DB_USER:
+      DB_PASS:
+      DB_CERT:
+      DB_HOST: "db"
+      GROUNDING_SEARCH_BASE_URL: "http://grounding:3000"
+  grounding:
+    image: pathwaycommons/grounding-search:${GROUNDING_SEARCH_IMAGE_TAG:-latest}
+    container_name: grounding_container
+    depends_on:
+      - index
+    environment:
+      ELASTICSEARCH_HOST: "index:9200"
+  indexer:
+    image: pathwaycommons/grounding-search:${GROUNDING_SEARCH_IMAGE_TAG:-latest}
+    container_name: indexer_container
+    depends_on:
+      - index
+    environment:
+      ELASTICSEARCH_HOST: "index:9200"
+    command: ["./wait-for-elasticsearch.sh", "index:9200", "npm", "run", "update"]
+  index:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.7.2
+    container_name: index_container
+    volumes:
+      - indata:/usr/share/elasticsearch/data
+  db:
+    image: rethinkdb:2.3.6
+    container_name: db_container
+    ports:
+      - "${DB_ADMIN_PORT:-8080}:8080"
+    volumes:
+      - dbdata:/data
+
+volumes:
+  dbdata:
+    name: dbdata
+  indata:
+    name: indata

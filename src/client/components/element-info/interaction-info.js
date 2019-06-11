@@ -243,7 +243,7 @@ class InteractionInfo extends DataComponent {
       if( showEditIcon ){
         summaryChildren.push( h(Tooltip, { description: 'Edit from the beginning' }, [
           h('button.interaction-info-edit.plain-button', {
-            onClick: () => progression.goToStage( ORDERED_STAGES[0] )
+            onClick: () => progression.goToStage( ORDERED_STAGES[1] )
           }, [ h('i.material-icons', 'edit') ])
         ]) );
       }

@@ -13,11 +13,14 @@ services:
       DB_USER:
       DB_PASS:
       DB_CERT:
+      API_KEY:
       DB_HOST: "db"
       GROUNDING_SEARCH_BASE_URL: "http://grounding:3000"
   grounding:
     image: pathwaycommons/grounding-search:${GROUNDING_SEARCH_IMAGE_TAG:-latest}
     container_name: grounding_container
+    ports:
+      - "${GROUNDING_PORT:-3011}:3000"
     depends_on:
       - index
     environment:

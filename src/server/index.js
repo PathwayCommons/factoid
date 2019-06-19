@@ -1,22 +1,23 @@
-let express = require('express');
-let path = require('path');
-let favicon = require('serve-favicon');
-let morgan = require('morgan');
-let logger = require('./logger');
-let cookieParser = require('cookie-parser');
-let bodyParser = require('body-parser');
-let http = require('http');
-let stream = require('stream');
-let fs = require('fs');
-let { regCyLayouts, tryPromise } = require('../util');
+import express from 'express';
+import path from 'path';
+import favicon from 'serve-favicon';
+import morgan from 'morgan';
+import logger from './logger';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import http from 'http';
+import stream from 'stream';
+import fs from 'fs';
+import { regCyLayouts, tryPromise } from '../util';
 
-let config = require('../config');
+import * as config from '../config';
 let app = express();
 let server = http.createServer(app);
-let io = require('socket.io')(server);
+import socketio from 'socket.io';
+let io = socketio(server);
 
-let db = require('./db');
-let Syncher = require('../model/syncher');
+import db from './db';
+import Syncher from '../model/syncher';
 
 // make sure cytoscape layouts are registered for server-side use
 regCyLayouts();
@@ -164,4 +165,4 @@ function onListening() {
   logger.debug('Listening on ' + bind);
 }
 
-module.exports = app;
+export default app;

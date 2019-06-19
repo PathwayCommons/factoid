@@ -1,9 +1,9 @@
-const LRUCache = require('lru-cache');
-const fetch = require('node-fetch');
+import LRUCache from 'lru-cache';
+import fetch from 'node-fetch';
 
-const { GROUNDING_SEARCH_BASE_URL, AGGREGATE_CACHE_SIZE } = require('../../../../config');
-const { memoize } = require('../../../../util');
-const logger = require('../../../logger');
+import { GROUNDING_SEARCH_BASE_URL, AGGREGATE_CACHE_SIZE } from '../../../../config';
+import { memoize } from '../../../../util';
+import logger from '../../../logger';
 
 const query = ( opts, endpt ) => {
   return fetch( GROUNDING_SEARCH_BASE_URL + `/${endpt}`, {
@@ -49,4 +49,4 @@ const search = opts => {
     } );
 };
 
-module.exports = { get, search };
+export { get, search };

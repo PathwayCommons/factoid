@@ -1,4 +1,4 @@
-var express = require('express');
+import express from 'express';
 var http = express.Router();
 
 // get the app ui
@@ -6,4 +6,4 @@ http.get('*', function(req, res) {
   res.render('index');
 });
 
-module.exports = http;
+export default http;

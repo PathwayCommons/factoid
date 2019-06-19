@@ -1,4 +1,4 @@
-import { tryPromise } = from '../../../../util';
+import { tryPromise } from '../../../../util';
 
 export default function({ cy, document, controller }){
     if( !document.editable() ){ return; }
@@ -81,4 +81,4 @@ export default function({ cy, document, controller }){
                 .then( endBatch )
         );
     } );
-};
+}

@@ -86,4 +86,4 @@ export default function({ cy, document, bus }){
 
     el.removeClass('cxtmenu-tgt');
   });
-};
+}

@@ -56,4 +56,4 @@ export default function( { bus, cy } ){
   handlePan( cy );
   handleZoom( cy );
   handleFit( cy, bus );
-};
+}

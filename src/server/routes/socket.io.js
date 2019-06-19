@@ -47,4 +47,4 @@ class Io {
   }
 }
 
-module.exports = Io;
+export default Io;

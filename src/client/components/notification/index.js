@@ -2,4 +2,4 @@
 // module.exports = require('./notification');
 
 // TODO: revise
-export * from './notification';
+export { default } from './notification';

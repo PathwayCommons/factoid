@@ -1,8 +1,8 @@
-const { fill, error, promisifyEmit, mixin, ensureArray, assert, jsonHash, tryPromise } = require('../util');
-const EventEmitterMixin = require('./event-emitter-mixin');
-const _ = require('lodash');
-const uuid = require('uuid');
-const EventEmitter = require('eventemitter3');
+import { fill, error, promisifyEmit, mixin, ensureArray, assert, jsonHash, tryPromise } from '../util';
+import EventEmitterMixin from './event-emitter-mixin';
+import _ from 'lodash';
+import uuid from 'uuid';
+import EventEmitter from 'eventemitter3';
 
 const OP_TYPE = Object.freeze({
   CREATE: 'CREATE',
@@ -862,4 +862,4 @@ class Syncher {
 
 mixin( Syncher.prototype, EventEmitterMixin.prototype );
 
-module.exports = Syncher;
+export default Syncher;

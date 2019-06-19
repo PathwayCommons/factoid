@@ -1,11 +1,11 @@
-const soap = require('soap');
-const _ = require('lodash');
-const { memoize, error, tryPromise } = require('../../../../util');
-const LRUCache = require('lru-cache');
-const { CHEBI_WSDL_URL, CHEBI_JAVA_PACKAGE, CHEBI_CACHE_SIZE, MAX_SEARCH_SIZE } = require('../../../../config');
+import soap from 'soap';
+import _ from 'lodash';
+import { memoize, error, tryPromise } from '../../../../util';
+import LRUCache from 'lru-cache';
+import { CHEBI_WSDL_URL, CHEBI_JAVA_PACKAGE, CHEBI_CACHE_SIZE, MAX_SEARCH_SIZE } from '../../../../config';
 const NS = 'chebi';
 const TYPE = 'chemical';
-const convert = require('./search-string-conversion');
+import convert from './search-string-conversion';
 const isNonNil = x => !_.isNil(x);
 
 const mapSynonym = syn => syn.data;
@@ -122,4 +122,4 @@ const get = opts => {
 
 const distanceFields = ['id', 'name', 'synonyms'];
 
-module.exports = { namespace: NS, search, get, distanceFields };
+export { NS as namespace, search, get, distanceFields };

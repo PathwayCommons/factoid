@@ -1,5 +1,5 @@
-const nodemailer = require('nodemailer');
-const { SMTP_PORT, SMTP_HOST, SMTP_USER, SMTP_PASSWORD } = require('../config');
+import nodemailer from 'nodemailer';
+import { SMTP_PORT, SMTP_HOST, SMTP_USER, SMTP_PASSWORD } from '../config';
 
 const transport = nodemailer.createTransport({
   port: SMTP_PORT,
@@ -10,4 +10,4 @@ const transport = nodemailer.createTransport({
   }
 });
 
-module.exports = transport;
+export default transport;

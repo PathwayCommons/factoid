@@ -23,4 +23,4 @@ function focusDomElement( el ){
   }
 }
 
-module.exports = { $, $$, makeClassList, focusDomElement };
+export { $, $$, makeClassList, focusDomElement };

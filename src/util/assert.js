@@ -1,4 +1,4 @@
-let error = require('./obj').error;
+import error from './obj';
 
 function assert( condition, message ){
   if( !condition ){
@@ -25,7 +25,7 @@ function assertOneOfFieldsDefined( obj, fields ){
   );
 }
 
-module.exports = {
+export {
   assert,
   assertDefined,
   assertFieldDefined,

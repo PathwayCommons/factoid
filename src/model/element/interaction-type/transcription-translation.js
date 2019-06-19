@@ -1,6 +1,6 @@
 import InteractionType from './interaction-type';
 import { PARTICIPANT_TYPE } from '../participant-type';
-import { ENTITY_TYPE } = from '../entity-type';
+import { ENTITY_TYPE } from '../entity-type';
 import { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } from './biopax-type';
 
 const VALUE = 'transcription-translation';

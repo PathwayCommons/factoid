@@ -1,13 +1,13 @@
-const fetch = require('node-fetch');
-const querystring = require('querystring');
-const _ = require('lodash');
-const Organism = require('../../../../model/organism');
-const LRUCache = require('lru-cache');
-const { memoize, lazySlice, tryPromise } = require('../../../../util');
-const xml = require('xml-js');
-const convert = require('./search-string-conversion');
+import fetch from 'node-fetch';
+import querystring from 'querystring';
+import _ from 'lodash';
+import Organism from '../../../../model/organism';
+import LRUCache from 'lru-cache';
+import { memoize, lazySlice, tryPromise } from '../../../../util';
+import xml from 'xml-js';
+import convert from './search-string-conversion';
 
-const { UNIPROT_CACHE_SIZE, UNIPROT_URL, MAX_SEARCH_SIZE } = require('../../../../config');
+import { UNIPROT_CACHE_SIZE, UNIPROT_URL, MAX_SEARCH_SIZE } from '../../../../config';
 const NS = 'uniprot';
 const TYPE = 'protein';
 const BASE_URL = UNIPROT_URL;
@@ -241,4 +241,4 @@ const get = opts => {
 
 const distanceFields = ['name', 'id', 'geneNames', 'proteinNames'];
 
-module.exports = { namespace: 'uniprot', search, get, distanceFields };
+export { NS as namespace, search, get, distanceFields };

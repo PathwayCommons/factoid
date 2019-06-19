@@ -1,8 +1,7 @@
 import React from 'react';
-import { Component } from React;
 import h from 'react-hyperscript';
 
-class Highlighter extends Component {
+class Highlighter extends React.Component {
   constructor( props ){
     super( props );
   }

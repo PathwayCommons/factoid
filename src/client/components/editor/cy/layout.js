@@ -33,4 +33,4 @@ export default function( { bus, cy, document } ){
 
   on('r', layout);
   bus.on('layout', layout);
-};
+}

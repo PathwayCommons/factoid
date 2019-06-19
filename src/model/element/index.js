@@ -1,1 +1,4 @@
-module.exports = require('./factory');
+// module.exports = require('./factory');
+
+// TODO: revise
+export { default } from './factory';

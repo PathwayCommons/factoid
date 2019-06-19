@@ -1,4 +1,4 @@
-const dice = require('dice-coefficient'); // sorensen dice coeff
+import dice from 'dice-coefficient'; // sorensen dice coeff
 
 function stringDistanceMetric(a, b){
   return 1 - dice(a, b);
@@ -18,4 +18,4 @@ function longestCommonPrefixLength(str1, str2){
   return i;
 }
 
-module.exports = { stringDistanceMetric, longestCommonPrefixLength };
+export { stringDistanceMetric, longestCommonPrefixLength };

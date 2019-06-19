@@ -1,11 +1,11 @@
-let _ = require('lodash');
-let Cytoscape = require('cytoscape');
-let edgehandles = require('cytoscape-edgehandles');
-let cxtmenu = require('cytoscape-cxtmenu');
-let automove = require('cytoscape-automove');
-let cose = require('cytoscape-cose-bilkent');
-let cypopper = require('cytoscape-popper');
-let compoundDnd = require('cytoscape-compound-drag-and-drop');
+import _ from 'lodash';
+import Cytoscape from 'cytoscape';
+import edgehandles from 'cytoscape-edgehandles';
+import cxtmenu from 'cytoscape-cxtmenu';
+import automove from 'cytoscape-automove';
+import cose from 'cytoscape-cose-bilkent';
+import cypopper from 'cytoscape-popper';
+import compoundDnd from 'cytoscape-compound-drag-and-drop';
 
 function regCyExts(){
   regCyLayouts();
@@ -26,7 +26,7 @@ function cyUpdateParent( cy, docEl, newParentId, oldParentId ) {
 
   let cyEl = getCyEl( docEl );
   let parent = newParentId ? newParentId : null;
-  cyEl.move( { parent } ); 
+  cyEl.move( { parent } );
 }
 
 function makeCyEles( docEls ){
@@ -95,4 +95,4 @@ function isInteractionNode( el ){
   return el.data('isInteraction') === true;
 }
 
-module.exports = { makeCyEles, regCyExts, regCyLayouts, getCyLayoutOpts, isInteractionNode, cyUpdateParent };
+export { makeCyEles, regCyExts, regCyLayouts, getCyLayoutOpts, isInteractionNode, cyUpdateParent };

@@ -6,4 +6,4 @@ const convert = str => {
   );
 };
 
-module.exports = convert;
+export default convert;

@@ -472,4 +472,4 @@ export default function({ bus, cy, document }){
 
     toggleElementInfoFor( e.target );
   });
-};
+}

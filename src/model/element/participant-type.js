@@ -1,4 +1,4 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
 const pptType = ( value, displayValue, icon, verbPhrase ) => Object.freeze({ value, displayValue, icon, verbPhrase });
 
@@ -16,4 +16,4 @@ const getPptTypeByVal = val => {
   return PARTICIPANT_TYPES.find( type => type.value === val ) || PARTICIPANT_TYPE.UNSIGNED;
 };
 
-module.exports = { PARTICIPANT_TYPE, PARTICIPANT_TYPES, getPptTypeByVal };
+export { PARTICIPANT_TYPE, PARTICIPANT_TYPES, getPptTypeByVal };

@@ -1,11 +1,11 @@
-const _ = require('lodash');
-const Syncher = require('../syncher');
-const Entity = require('./entity');
-const Element = require('./element');
-const Complex = require('./complex');
-const Interaction = require('./interaction');
-const { isEntity, isInteraction, isComplex } = require('./element-type');
-const { error, tryPromise } = require('../../util');
+import _ from 'lodash';
+import Syncher from '../syncher';
+import Entity from './entity';
+import Element from './element';
+import Complex from './complex';
+import Interaction from './interaction';
+import { isEntity, isInteraction, isComplex } from './element-type';
+import { error, tryPromise } from '../../util';
 
 /**
 A factory to
@@ -34,7 +34,7 @@ class ElementFactory {
       // since Complex is a subclass of Entity it is critical to make isComplex() check
       // earlier than isEntity() check.
       return Complex;
-    } 
+    }
     else if( isEntity(typeStr) ){
       return Entity;
     } else {
@@ -113,4 +113,4 @@ class ElementFactory {
   }
 }
 
-module.exports = ElementFactory;
+export default ElementFactory;

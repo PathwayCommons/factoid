@@ -1,15 +1,15 @@
 import _ from 'lodash';
 
-const Interaction = require('./interaction');
-const Binding = require('./binding');
-const TranscriptionTranslation = require('./transcription-translation');
-const Modification = require('./modification');
-const Phosphorylation = require('./phosphorylation');
-const Dephosphorylation = require('./dephosphorylation');
-const Methylation = require('./methylation');
-const Demethylation = require('./demethylation');
-const Ubiquitination = require('./ubiquitination');
-const Deubiquitination = require('./deubiquitination');
+import Interaction from './interaction';
+import Binding from './binding';
+import TranscriptionTranslation from './transcription-translation';
+import Modification from './modification';
+import Phosphorylation from './phosphorylation';
+import Dephosphorylation from './dephosphorylation';
+import Methylation from './methylation';
+import Demethylation from './demethylation';
+import Ubiquitination from './ubiquitination';
+import Deubiquitination from './deubiquitination';
 
 const INTERACTION_TYPE = Object.freeze({
   BINDING: Binding,

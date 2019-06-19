@@ -77,4 +77,4 @@ class Organism {
 Organism.OTHER = new Organism(-1, 'Other', 'organism-other');
 
 
-module.exports = Organism;
+export default Organism;

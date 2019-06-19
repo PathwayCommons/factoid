@@ -1,12 +1,12 @@
-let conf = require('./util/conf');
+import * as conf from './util/conf';
 
-let { expect, assert } = require('chai');
-let Syncher = require('../src/model/syncher');
-let _ = require('lodash');
-let MockSocket = require('./mock/socket');
-let TableUtil = require('./util/table');
-let io = require('./util/socket-io');
-let { when, whenAll, delay } = require('./util/when');
+import { expect, assert } from 'chai';
+import Syncher from '../src/model/syncher';
+import _ from 'lodash';
+import MockSocket from './mock/socket';
+import TableUtil from './util/table';
+import * as io from './util/socket-io';
+import { when, whenAll, delay } from './util/when';
 
 let NS = 'syncher_tests';
 

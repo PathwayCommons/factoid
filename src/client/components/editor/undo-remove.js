@@ -11,4 +11,4 @@ export default function({ controller }){
       h('span', ' Undo last delete')
     ])
   ]);
-};
+}

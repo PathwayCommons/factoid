@@ -7,8 +7,8 @@ import FormData from 'form-data';
 import Organism from '../../../../model/organism';
 import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
 import { PARTICIPANT_TYPE } from '../../../../model/element/participant-type';
-import aggregate from '../element-association/aggregate';
-import groundingSearch from '../element-association/grounding-search';
+import * as aggregate from '../element-association/aggregate';
+import * as groundingSearch from '../element-association/grounding-search';
 import { USE_PC_GROUNDING_SEARCH } from '../../../../config';
 import { pickByUniqueParticipants, pickByNumParticipants, pickTopInteractions, pickEntitiesInInteractions } from './filters';
 

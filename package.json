@@ -12,7 +12,7 @@
     "bundle:js": "webpack",
     "watch:js": "webpack --watch",
     "watch:sync-bundle": "livereload \"build, src/views\"",
-    "watch:sync-server": "nodemon src/server/index.js",
+    "watch:sync-server": "nodemon -r esm src/server/index.js",
     "lint:css": "stylelint src/**/*.css",
     "fix:css": "stylelint src/**/*.css --fix",
     "bundle:css": "postcss src/styles/index.css -o build/bundle.css",

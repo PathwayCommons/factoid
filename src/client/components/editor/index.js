@@ -262,6 +262,7 @@ class Editor extends DataComponent {
         x: ( rpos.x - pan.x ) / zoom,
         y: ( rpos.y - pan.y ) / zoom
       });
+
       let shift = ( pos, delta ) => ({ x: pos.x + delta.x, y: pos.y + delta.y });
       let shiftSize = defs.newElementShift;
       let shiftI = this.data.newElementShift;

@@ -9,6 +9,9 @@ import http from 'http';
 import stream from 'stream';
 import fs from 'fs';
 import { regCyLayouts, tryPromise } from '../util';
+import RoutesApi from './routes/api';
+import RoutesStyleDemo from './routes/style-demo';
+import RoutesIndex from './routes/index';
 
 import * as config from '../config';
 let app = express();
@@ -53,13 +56,13 @@ app.use(express.static(path.join(__dirname, '../..', 'public')));
 
 // define http routes
 
-app.use( '/api', require('./routes/api') );
+app.use( '/api', RoutesApi );
 
 if( app.get('env') === 'development' ){
-  app.use('/style-demo', require('./routes/style-demo'));
+  app.use('/style-demo', RoutesStyleDemo);
 }
 
-app.use( '/', require('./routes/index') );
+app.use( '/', RoutesIndex );
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

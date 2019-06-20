@@ -1,6 +1,6 @@
 import { USE_PC_GROUNDING_SEARCH } from '../../../../config';
-import aggregate from './aggregate';
-import groundingSearch from './grounding-search';
+import * as aggregate from './aggregate';
+import * as groundingSearch from './grounding-search';
 import Express from 'express';
 
 const jsonifyResult = response => ( result => response.json( result ) );

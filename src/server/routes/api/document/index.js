@@ -10,7 +10,7 @@ import Document from '../../../../model/document';
 import db from '../../../db';
 import logger from '../../../logger';
 
-import provider from './reach';
+import * as provider from './reach';
 
 import { BIOPAX_CONVERTER_URL, BASE_URL, EMAIL_ENABLED, EMAIL_FROM, EMAIL_FROM_ADDR } from '../../../../config';
 

@@ -1,6 +1,6 @@
 import _ from 'lodash';
-// import pubchem from './pubchem'; // TODO re-enable pubchem later...
-import uniprot from './uniprot';
+// import * as pubchem from './pubchem'; // TODO re-enable pubchem later...
+import * as uniprot from './uniprot';
 const providers = [ uniprot ];
 import { memoize, stringDistanceMetric, tryPromise } from '../../../../util';
 import LRUCache from 'lru-cache';

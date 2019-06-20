@@ -1,4 +1,4 @@
-import error from './obj';
+import { error } from './obj';
 
 function assert( condition, message ){
   if( !condition ){

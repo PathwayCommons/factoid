@@ -35,8 +35,6 @@ export const DB_USER = env('DB_USER', undefined); // username if db uses auth
 export const DB_PASS = env('DB_PASS', undefined); // password if db uses auth
 export const DB_CERT = env('DB_CERT', undefined);  // path to a certificate (cert) file if db uses ssl
 
-export const BASE_URL = env('BASE_URL', 'https://factoid.baderlab.org');
-
 // Services
 export const REACH_URL = env('REACH_URL', 'http://reach.baderlab.org/api/uploadFile');
 export const UNIPROT_URL = env('UNIPROT_URL', 'http://www.uniprot.org/uniprot');
@@ -52,7 +50,6 @@ export const PUBCHEM_CACHE_SIZE = env('PUBCHEM_CACHE_SIZE', DEFAULT_CACHE_SIZE);
 export const AGGREGATE_CACHE_SIZE = env('AGGREGATE_CACHE_SIZE', DEFAULT_CACHE_SIZE);
 export const MAX_SEARCH_SIZE = env('MAX_SEARCH_SIZE', 50);
 export const BIOPAX_CONVERTER_URL = env('BIOPAX_CONVERTER_URL', 'https://biopax.baderlab.org/convert/v2/');
-export const PC_URL = env('PC_URL', 'https://apps.pathwaycommons.org/');
 export const GROUNDING_SEARCH_BASE_URL = env('GROUNDING_SEARCH_BASE_URL', 'http://localhost:3001');
 export const NCBI_LINK_BASE_URL = env('NCBI_LINK_BASE_URL', 'https://www.ncbi.nlm.nih.gov/gene/');
 
@@ -71,6 +68,5 @@ export const USE_PC_GROUNDING_SEARCH = env('USE_PC_GROUNDING_SEARCH', false);
 // these vars are always included in the bundle because they ref `process.env.${name}` directly
 // NB DO NOT include passwords etc. here
 export const NODE_ENV = env('NODE_ENV', undefined);
-// TODO: revise
-// export const BASE_URL = env('BASE_URL', undefined);
-// export const PC_URL = env('PC_URL', undefined);
+export const PC_URL = env('PC_URL', 'https://apps.pathwaycommons.org/');
+export const BASE_URL = env('BASE_URL', 'https://factoid.baderlab.org');

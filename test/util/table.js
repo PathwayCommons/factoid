@@ -1,4 +1,4 @@
-var rdb = require('rethinkdb');
+import rdb from 'rethinkdb';
 
 const DB_NAME = 'factoid_test';
 
@@ -101,4 +101,4 @@ class TableUtil {
 
 }
 
-module.exports = TableUtil;
+export default TableUtil;

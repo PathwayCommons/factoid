@@ -2,11 +2,11 @@ const isEhNode = ele => ele.hasClass('eh-handle') || ele.hasClass('eh-ghost');
 const notIsEhNode = ele => !isEhNode( ele );
 const isEhEdge = ele => ele.hasClass('eh-preview') || ele.hasClass('eh-ghost');
 const notIsEhEdge = ele => !isEhEdge( ele );
-const { isInteractionNode } = require('../../../../util');
+import { isInteractionNode } from '../../../../util';
 
 const ALLOW_DRAGGING_INTERACTIONS = false;
 
-module.exports = function( { cy, document } ){
+export default function( { cy, document } ){
   let update = node => {
     if( isInteractionNode( node ) ){
       let intn = document.get( node.id() );
@@ -94,4 +94,4 @@ module.exports = function( { cy, document } ){
     cy.nodes().forEach( updateRules );
   });
 
-};
+}

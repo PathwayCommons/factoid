@@ -1,5 +1,6 @@
-const Element = require('./element');
-const _ = require('lodash');
+import Element from './element';
+import _ from 'lodash';
+import { tryPromise } from '../../util';
 
 const TYPE = 'entity';
 
@@ -33,12 +34,69 @@ class Entity extends Element {
         this.emit( 'unassociated', old.association );
         this.emit( 'remoteunassociated', old.association );
       }
+
+      if ( changes.parentId !== undefined ) {
+        this.emit( 'updateparent', changes.parentId, old.parentId );
+        this.emit( 'remoteupdateparent', changes.parentId, old.parentId );
+        this.emit( 'updatedparent', changes.parentId, old.parentId );
+        this.emit( 'remoteupdatedparent', changes.parentId, old.parentId );
+      }
     });
   }
 
   static type(){ return TYPE; }
 
   isEntity(){ return true; }
+
+  updateParent( newParent, oldParent, doNotAdd ) {
+    let getId = el => el != null ? el.id() : null;
+    let newParentId = getId( newParent );
+    let oldParentId = getId( oldParent );
+
+    if ( newParentId == oldParentId ) {
+      return Promise.resolve();
+    }
+
+    const removeFromOldParent = () => {
+      if ( oldParent != null ) {
+        return oldParent.remove( this );
+      }
+
+      return Promise.resolve();
+    };
+
+    const addToNewParent = () => {
+      if ( newParent != null && !doNotAdd ) {
+        return newParent.add( this );
+      }
+
+      return Promise.resolve();
+    };
+
+    const updateSyncher = () => {
+      let changes = {
+        parentId: newParentId
+      };
+
+      let updatePromise = this.syncher.update( changes ).then( () => {
+        this.emit('updatedparent', newParentId, oldParentId);
+        this.emit('localupdatedparent', newParentId, oldParentId);
+      } );
+
+      this.emit('updateparent');
+      this.emit('localupdateparent');
+
+      return updatePromise;
+    };
+
+    return tryPromise( addToNewParent )
+      .then( removeFromOldParent )
+      .then( updateSyncher );
+  }
+
+  getParentId(){
+    return this.syncher.get('parentId') || null;
+  }
 
   associate( def ){
     let changes = {
@@ -110,9 +168,9 @@ class Entity extends Element {
     let type = this.type();
     let name = this.name() || '';
     let xref = this.getBiopaxXref();
-    
+
     return { type, name, xref };
   }
 }
 
-module.exports = Entity;
+export default Entity;

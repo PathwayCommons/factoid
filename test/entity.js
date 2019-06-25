@@ -1,11 +1,11 @@
-let conf = require('./util/conf');
+import * as conf from './util/conf';
 
-let expect = require('chai').expect;
-let Syncher = require('../src/model/syncher');
-let Entity = require('../src/model/element/entity');
-let MockSocket = require('./mock/socket');
-let TableUtil = require('./util/table');
-let io = require('./util/socket-io');
+import { expect } from 'chai';
+import Syncher from '../src/model/syncher';
+import Entity from '../src/model/element/entity';
+import MockSocket from './mock/socket';
+import TableUtil from './util/table';
+import * as io from './util/socket-io';
 
 const NS = 'entity_tests';
 

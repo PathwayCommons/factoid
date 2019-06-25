@@ -1,18 +1,20 @@
-const http = require('express').Router();
-const _ = require('lodash');
-const uuid = require('uuid');
-const fetch = require('node-fetch');
-const { tryPromise } = require('../../../../util');
-const emailTransport = require('../../../email-transport');
-const h = require('hyperscript');
+import Express from 'express';
+import _ from 'lodash';
+import uuid from 'uuid';
+import fetch from 'node-fetch';
+import { tryPromise } from '../../../../util';
+import emailTransport from '../../../email-transport';
+import h from 'hyperscript';
 
-const Document = require('../../../../model/document');
-const db = require('../../../db');
-const logger = require('../../../logger');
+import Document from '../../../../model/document';
+import db from '../../../db';
+import logger from '../../../logger';
 
-const provider = require('./reach');
+import * as provider from './reach';
 
-const { BIOPAX_CONVERTER_URL, BASE_URL, EMAIL_ENABLED, EMAIL_FROM, EMAIL_FROM_ADDR, API_KEY } = require('../../../../config');
+import { BIOPAX_CONVERTER_URL, BASE_URL, EMAIL_ENABLED, EMAIL_FROM, EMAIL_FROM_ADDR, API_KEY } from '../../../../config';
+
+const http = Express.Router();
 
 let newDoc = ({ docDb, eleDb, id, secret, meta }) => {
   return new Document( _.assign( {}, docDb, {
@@ -259,4 +261,4 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
-module.exports = http;
+export default http;

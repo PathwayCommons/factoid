@@ -1,15 +1,16 @@
-let _ = require('lodash');
-let Cytoscape = require('cytoscape');
-let makeStylesheet = require('./stylesheet');
-let handleLayout = require('./layout');
-let handleViewport = require('./viewport');
-let addEdgehandles = require('./edgehandles');
-let addCxtMenu = require('./cxtmenu');
-let addTippy = require('./tippy');
-let addAutomove = require('./automove');
-let handleDoc = require('./doc');
-let debug = require('../../../debug');
-let defs = require('./defs');
+import _ from 'lodash';
+import Cytoscape from 'cytoscape';
+import makeStylesheet from './stylesheet';
+import handleLayout from './layout';
+import handleViewport from './viewport';
+import addEdgehandles from './edgehandles';
+import addCxtMenu from './cxtmenu';
+import addTippy from './tippy';
+import addAutomove from './automove';
+import addCompoundDnd from './compound-dnd';
+import handleDoc from './doc';
+import debug from '../../../debug';
+import * as defs from './defs';
 
 function makeCytoscape( opts ){
   let cy = new Cytoscape({
@@ -38,10 +39,11 @@ function makeCytoscape( opts ){
     addTippy,
     handleDoc,
     addAutomove,
-    addCxtMenu
+    addCxtMenu,
+    addCompoundDnd
   ].forEach( fn => fn( handleOpts ) );
 
   return cy;
 }
 
-module.exports = makeCytoscape;
+export default makeCytoscape;

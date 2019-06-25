@@ -1,13 +1,31 @@
-const _ = require('lodash');
-const defs = require('./defs');
-const parse = require('date-fns/parse');
-const isAfter = require('date-fns/is_after');
-const subSeconds = require('date-fns/sub_seconds');
+import _ from 'lodash';
+import * as defs from './defs';
+import parse from 'date-fns/parse';
+import isAfter from 'date-fns/is_after';
+import subSeconds from 'date-fns/sub_seconds';
 const date = { parse, isAfter, subSeconds };
-const onKey = require('./on-key');
-const { isInteractionNode, makeCyEles } = require('../../../../util');
+import onKey from './on-key';
+import { isInteractionNode, makeCyEles, cyUpdateParent, tryPromise } from '../../../../util';
 
 function listenToDoc({ bus, cy, document, controller }){
+  let complexWaitMap = new Map();
+
+  let waitComplex = (complexId, handler) => {
+    if ( !complexWaitMap.has( complexId ) ) {
+      complexWaitMap.set( complexId, [] );
+    }
+
+    complexWaitMap.get( complexId ).push( handler );
+  };
+
+  let handleComplexWaiters = complexId => {
+    if ( complexWaitMap.has( complexId ) ) {
+      let handlers = complexWaitMap.get( complexId );
+      complexWaitMap.delete( complexId );
+      handlers.forEach( handler => handler() );
+    }
+  };
+
   let getCyEl = function( docEl ){
     return cy.getElementById( docEl.id() );
   };
@@ -26,6 +44,16 @@ function listenToDoc({ bus, cy, document, controller }){
     let docEl = getDocEl( el );
 
     handler( docEl, el );
+  };
+
+  let onDocElUpdateParent = function( newParentId, oldParentId ) {
+    let handler = () => cyUpdateParent( cy, this, newParentId, oldParentId );
+    if ( newParentId == null || ( document.has( newParentId ) && cy.getElementById( newParentId ).length != 0 ) ) {
+      handler();
+    }
+    else {
+      waitComplex( newParentId, handler );
+    }
   };
 
   let applyEditAnimationAsOverlay = function( el ){
@@ -271,10 +299,13 @@ function listenToDoc({ bus, cy, document, controller }){
   };
 
   let onDocRmPpt = function( docPpt ){
-    onDoc( this, function( docIntn ){
-      onRmPpt( docPpt, docIntn );
-
-      updateIntnArity( docIntn );
+    onDoc( this, function( docEl ){
+      if ( docEl.isInteraction() || docEl.isComplex() ) {
+        onRmPpt( docPpt, docEl );
+      }
+      if ( docEl.isInteraction() ) {
+        updateIntnArity( docEl );
+      }
     } );
   };
 
@@ -296,6 +327,10 @@ function listenToDoc({ bus, cy, document, controller }){
 
   let onAddEle = function( docEl ){
     onAddEles([ docEl ]);
+
+    if ( docEl.isComplex() ) {
+      handleComplexWaiters( docEl.id() );
+    }
   };
 
   let onAddNewEle = function( docEl, el ){ // eslint-disable-line no-unused-vars
@@ -363,6 +398,10 @@ function listenToDoc({ bus, cy, document, controller }){
     let el = cy.getElementById( docEl.id() );
     let els = el.union( el.connectedEdges() );
 
+    // if a complex is being removed protect the children
+    // by putting them out of complex before the removal
+    el.children().move({ parent: null });
+
     bus.emit('removehandle', el);
     bus.emit('closetip', el);
 
@@ -390,6 +429,7 @@ function listenToDoc({ bus, cy, document, controller }){
     docEl.on('retype', onDocRetypePpt);
     docEl.on('modify', onDocModify);
     docEl.on('loadelements', onDocElLoad);
+    docEl.on('updatedparent', onDocElUpdateParent);
     el.on('drag', onCyPos);
     el.on('automove', onCyAutomove);
   };
@@ -417,23 +457,68 @@ function listenToDoc({ bus, cy, document, controller }){
     el.removeListener('automove', onCyAutomove);
   };
 
-  let onRmPpt = function( docPpt, docIntn ){
-    let cyGet = id => cy.getElementById( id );
-    let ppt = cyGet( docPpt.id() );
-    let intn = cyGet( docIntn.id() );
-    let edge = ppt.edgesWith( intn );
+  let onRmPpt = function( docPpt, docEl ){
+    let removeSelf = () => document.remove( docEl );
+    let elements = docEl.elements();
+    let size = elements.length;
 
-    if( docIntn.participants().length <= 1 ){
-      document.remove( docIntn );
+    if ( docEl.isInteraction() ) {
+      let cyGet = id => cy.getElementById( id );
+      let ppt = cyGet( docPpt.id() );
+      let intn = cyGet( docEl.id() );
+      let edge = ppt.edgesWith( intn );
+
+      if( size <= 1 ){
+        removeSelf();
+      }
+
+      animateRm( edge );
     }
+    else if ( docEl.isComplex() ) {
+      if ( size <= 1 ) {
+        let moveSingleChild = () => {
+          if ( size == 0 ) {
+            return Promise.resolve();
+          }
 
-    animateRm( edge );
+          let child = docEl.elements()[0];
+          return child.updateParent( null, docEl );
+        };
+
+        tryPromise( moveSingleChild ).then( removeSelf );
+      }
+    }
   };
 
   function removeByCyEles( eles ){
-    let rm = el => document.remove( getDocEl(el) );
+    let docEls = eles.map( getDocEl );
 
-    eles.forEach( rm );
+    let rmComplex = el => {
+      // when only one child left it will be freed and the complex
+      // will be removed automatically
+      let childrenToFree = el.elements().slice( 0, el.size() - 1 );
+      Promise.all( childrenToFree.map( ppt => ppt.updateParent( null, el ) ) );
+    };
+
+    let rmEntity = el => {
+      let currParent = document.get( el.getParentId() );
+      let freeEl = () => el.updateParent( null, currParent ).then( () => el );
+      tryPromise( freeEl ).then( rm );
+    };
+
+    let rm = el => document.remove( el );
+
+    docEls.forEach( el => {
+      if ( el.isComplex() ) {
+        rmComplex( el );
+      }
+      else if ( el.isEntity() ){
+        rmEntity( el );
+      }
+      else {
+        rm( el );
+      }
+    } );
   }
 
   function removeSelected(){
@@ -526,4 +611,4 @@ function listenToDoc({ bus, cy, document, controller }){
 }
 
 
-module.exports = listenToDoc;
+export default listenToDoc;

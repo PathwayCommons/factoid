@@ -1,4 +1,4 @@
-let { fill, assertFieldsDefined, getId, tryPromise } = require('../util');
+import { fill, assertFieldsDefined, getId, tryPromise } from '../util';
 
 let defaults = {
   secret: 'read-only',
@@ -71,4 +71,4 @@ class ElementCache {
   }
 }
 
-module.exports = ElementCache;
+export default ElementCache;

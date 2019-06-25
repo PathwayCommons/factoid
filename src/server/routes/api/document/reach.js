@@ -1,20 +1,20 @@
-const _ = require('lodash');
-const { tryPromise } = require('../../../../util');
-const uuid = require('uuid');
+import _ from 'lodash';
+import { tryPromise } from '../../../../util';
+import uuid from 'uuid';
 const toJson = res => res.json();
-const fetch = require('node-fetch');
-const FormData = require('form-data');
-const Organism = require('../../../../model/organism');
-const { INTERACTION_TYPE } = require('../../../../model/element/interaction-type/enum');
-const { PARTICIPANT_TYPE } = require('../../../../model/element/participant-type');
-const aggregate = require('../element-association/aggregate');
-const groundingSearch = require('../element-association/grounding-search');
-const { USE_PC_GROUNDING_SEARCH } = require('../../../../config');
-const { pickByUniqueParticipants, pickByNumParticipants, pickTopInteractions, pickEntitiesInInteractions } = require('./filters');
+import fetch from 'node-fetch';
+import FormData from 'form-data';
+import Organism from '../../../../model/organism';
+import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
+import { PARTICIPANT_TYPE } from '../../../../model/element/participant-type';
+import * as aggregate from '../element-association/aggregate';
+import * as groundingSearch from '../element-association/grounding-search';
+import { USE_PC_GROUNDING_SEARCH } from '../../../../config';
+import { pickByUniqueParticipants, pickByNumParticipants, pickTopInteractions, pickEntitiesInInteractions } from './filters';
 
-const logger = require('../../../logger');
+import logger from '../../../logger';
 
-const { REACH_URL } = require('../../../../config');
+import { REACH_URL } from '../../../../config';
 const MERGE_ENTS_WITH_SAME_GROUND = true;
 const ALLOW_IMPLICIT_ORG_SPEC = true;
 const ONLY_BINARY_INTERACTIONS = true;
@@ -90,322 +90,321 @@ const REACH_TO_FACTOID_MECHANISM = new Map([
   [ REACH_EVENT_TYPE.ACTIVATION, INTERACTION_TYPE.INTERACTION ]
 ]);
 
-module.exports = {
-  // TODO remove this function as reach should never need to be exposed directly
-  getRawResponse: function( text ){
-    let form = new FormData();
+// TODO remove this function as reach should never need to be exposed directly
+export const getRawResponse = text => {
+  let form = new FormData();
 
-    form.append('file', text, {
-      filename: 'myfile.txt'
-    });
+  form.append('file', text, {
+    filename: 'myfile.txt'
+  });
 
-    return fetch(REACH_URL, {
-      method: 'POST',
-      body: form
-    });
-  },
-  get: function( text ){
-    let makeRequest = () => this.getRawResponse( text );
+  return fetch(REACH_URL, {
+    method: 'POST',
+    body: form
+  });
+};
 
-    let makeDocJson = res => {
-      let elements = [];
-      let elementsReachMap = new Map();
-      let groundReachMap = new Map();
-      let organisms = [];
+export const get = text => {
+  let makeRequest = () => getRawResponse( text );
 
-      let enableOrg = org => {
-        if( organisms.some( o => o.id === org.id() ) ){
-          return; // already have it
-        } else {
-          organisms.push({ id: org.id() });
+  let makeDocJson = res => {
+    let elements = [];
+    let elementsReachMap = new Map();
+    let groundReachMap = new Map();
+    let organisms = [];
+
+    let enableOrg = org => {
+      if( organisms.some( o => o.id === org.id() ) ){
+        return; // already have it
+      } else {
+        organisms.push({ id: org.id() });
+      }
+    };
+
+    let entFrames = _.get( res, ['entities', 'frames'] ) || [];
+    let evtFrames = _.get( res, ['events', 'frames'] ) || [];
+    let senFrames = _.get( res, ['sentences', 'frames'] ) || [];
+
+    let framesMap = new Map();
+    let getFrame = id => framesMap.get( id );
+    let getReachId = frame => frame['frame-id'];
+    let addFrame = frame => framesMap.set( getReachId(frame), frame );
+    let groundIsSame = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
+    let elIsIntn = el => el.entries != null;
+    let contains = ( arr, str ) => arr.indexOf( str.toLowerCase() ) >= 0;
+
+    let getSentenceText = id => {
+      let f = getFrame( id );
+      let i1 = _.get(f, ['start-pos', 'offset']);
+      let i2 = _.get(f, ['end-pos', 'offset']);
+
+      if( i1 != null && i2 != null ){
+        return text.substr( i1, i2 );
+      }
+    };
+
+    let groundPromises = [];
+
+    let addElement = (el, frame, ground) => {
+      let foundMerge = false;
+
+      if( MERGE_ENTS_WITH_SAME_GROUND && ground != null ){
+        let prevGround, prevReachId;
+
+        groundReachMap.forEach( ( gnd, rid ) => {
+          if( gnd != null && groundIsSame( gnd, ground ) ){
+            foundMerge = true;
+            prevGround = gnd;
+            prevReachId = rid;
+          }
+        } );
+
+        if( foundMerge ){
+          el = elementsReachMap.get( prevReachId );
+          ground = prevGround;
         }
-      };
+      }
 
-      let entFrames = _.get( res, ['entities', 'frames'] ) || [];
-      let evtFrames = _.get( res, ['events', 'frames'] ) || [];
-      let senFrames = _.get( res, ['sentences', 'frames'] ) || [];
+      let reachId = getReachId( frame );
 
-      let framesMap = new Map();
-      let getFrame = id => framesMap.get( id );
-      let getReachId = frame => frame['frame-id'];
-      let addFrame = frame => framesMap.set( getReachId(frame), frame );
-      let groundIsSame = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
-      let elIsIntn = el => el.entries != null;
-      let contains = ( arr, str ) => arr.indexOf( str.toLowerCase() ) >= 0;
+      if( !foundMerge ){
+        elements.push( el );
+      }
 
-      let getSentenceText = id => {
-        let f = getFrame( id );
-        let i1 = _.get(f, ['start-pos', 'offset']);
-        let i2 = _.get(f, ['end-pos', 'offset']);
+      if( APPLY_GROUND && ground != null ){
+        let q = {
+          id: ground.id,
+          namespace: ground.namespace
+        };
 
-        if( i1 != null && i2 != null ){
-          return text.substr( i1, i2 );
-        }
-      };
-
-      let groundPromises = [];
-
-      let addElement = (el, frame, ground) => {
-        let foundMerge = false;
-
-        if( MERGE_ENTS_WITH_SAME_GROUND && ground != null ){
-          let prevGround, prevReachId;
-
-          groundReachMap.forEach( ( gnd, rid ) => {
-            if( gnd != null && groundIsSame( gnd, ground ) ){
-              foundMerge = true;
-              prevGround = gnd;
-              prevReachId = rid;
+        let applyGround = tryPromise( () => provider.get( q ) )
+          .then( assoc => {
+            if( assoc ){
+              el.association = assoc;
+              el.completed = true;
             }
           } );
 
-          if( foundMerge ){
-            el = elementsReachMap.get( prevReachId );
-            ground = prevGround;
-          }
-        }
+        groundPromises.push( applyGround );
+      }
 
-        let reachId = getReachId( frame );
-
-        if( !foundMerge ){
-          elements.push( el );
-        }
-
-        if( APPLY_GROUND && ground != null ){
-          let q = {
-            id: ground.id,
-            namespace: ground.namespace
-          };
-
-          let applyGround = tryPromise( () => provider.get( q ) )
-            .then( assoc => {
-              if( assoc ){
-                el.association = assoc;
-                el.completed = true;
-              }
-            } );
-
-          groundPromises.push( applyGround );
-        }
-
-        elementsReachMap.set( reachId, el );
-        groundReachMap.set( reachId, ground );
-      };
-
-      entFrames.forEach( addFrame );
-      evtFrames.forEach( addFrame );
-      senFrames.forEach( addFrame );
-
-      // add bio entities
-      entFrames.forEach( frame => {
-        let ent = {
-          type: 'entity',
-          id: uuid()
-        };
-
-        let supportedTypes = {
-          'protein': 'protein',
-          'gene': 'protein',
-          'gene-or-gene-product': 'protein',
-          'simple-chemical': 'chemical'
-        };
-
-        const supportedGrounds = [
-          'uniprot',
-          'pubchem',
-          'ncbi',
-          'chebi'
-        ];
-
-        let type = frame.type;
-        let typeIsSupported = supportedTypes[type] != null;
-        let ground = frame.xrefs != null ? frame.xrefs.find( ref => contains( supportedGrounds, ref.namespace ) ) : null;
-        let isGrounded = ground != null;
-
-        let org = !isGrounded ? null : Organism.fromName( ground.species );
-        let orgIsSupported = org != null && org !== Organism.OTHER;
-
-        if( REMOVE_UNGROUNDED_ENTS && !isGrounded ){
-          return; // skip this element/frame
-        }
-
-        // implicit mention of org
-        if( orgIsSupported && ALLOW_IMPLICIT_ORG_SPEC ){
-          enableOrg( org );
-        }
-
-        if( REMOVE_GROUND_FOR_OTHER_SPECIES && org != null && !orgIsSupported ){
-          ground = null;
-        }
-
-        if( typeIsSupported ){
-          ent.type = supportedTypes[type];
-        }
-
-        ent.name = frame.text;
-
-        if( typeIsSupported ){
-          addElement( ent, frame, ground );
-        }
-      } );
-
-      // add explicit organisms
-      entFrames.filter( frame => {
-        return frame.type === 'species' && frame.xrefs != null && frame.xrefs.length > 0 && frame.xrefs[0].namespace === 'taxonomy';
-      } ).forEach( frame => {
-        let xref = frame.xrefs[0];
-        let id = +xref.id;
-        let org = Organism.fromId( id );
-        let orgIsSupported = org !== Organism.OTHER;
-
-        if( orgIsSupported ){
-          enableOrg( org );
-        }
-      } );
-
-      // add interactions
-      evtFrames.forEach( frame => {
-
-        const VALID_CONTROLLED_TYPES = new Set([
-          REACH_EVENT_TYPE.PROTEIN_MODIFICATION,
-          REACH_EVENT_TYPE.TRANSLOCATION,
-          REACH_EVENT_TYPE.TRANSCRIPTION,
-          REACH_EVENT_TYPE.AMOUNT
-        ]);
-        const frameIsBindingType = frame => frame.type === REACH_EVENT_TYPE.COMPLEX_ASSEMBLY;
-        const frameIsControlType = frame => frame.type === REACH_EVENT_TYPE.REGULATION || frame.type === REACH_EVENT_TYPE.ACTIVATION;
-        const argIsControlled = arg => arg['type'] === 'controlled';
-        const argIsEntity = arg => arg['argument-type'] === 'entity';
-        const argIsEvent = arg => arg['argument-type'] === 'event';
-        const argByType = ( frame, type ) => frame.arguments.find( arg => arg.type === type  );
-        const getArgId = arg => arg.arg;
-        const entityTemplate = ( arg, type ) => ({ record: getFrame( getArgId( arg ) ), type });
-
-        const getArgEntity = arg => {
-          const type = _.get( arg, ['type'] );
-          return entityTemplate( arg, type );
-        };
-
-        // NB: In case we do not support it, return null
-        const getControlTypeArgEntity = arg => {
-          let entity = null;
-
-          if ( argIsEntity( arg ) ){
-            entity = getArgEntity( arg );
-
-          } else if( argIsEvent( arg ) && argIsControlled( arg ) ){
-            const eventArgFrame = getFrame( getArgId( arg ) );
-            const eventArgFrameType = eventArgFrame.type;
-
-            if( VALID_CONTROLLED_TYPES.has( eventArgFrameType ) ){
-              const entityArg = argByType( eventArgFrame, 'theme' );
-              entity = getArgEntity( entityArg );
-            }
-          }
-          return entity;
-        };
-
-        const getFrameEntities = frame => {
-          let entities = [];
-          const fargs = _.get( frame, ['arguments'] );
-
-          if( frameIsBindingType( frame ) ){
-            entities = fargs.map( getArgEntity );
-
-          } else if ( frameIsControlType( frame ) ){
-            entities = fargs.map( getControlTypeArgEntity );
-          } else {
-
-            entities.push( null );
-          }
-          return entities;
-        };
-
-        const targetArgTypes = new Set([ 'theme', 'controlled' ]);
-        const isTargetArgType = type => targetArgTypes.has( type );
-        const getTargetSign = signKey => {
-          let sign = PARTICIPANT_TYPE.UNSIGNED;
-
-          if ( signKey.startsWith( 'positive' ) ) {
-            sign = PARTICIPANT_TYPE.POSITIVE;
-          } else if ( signKey.startsWith( 'negative' ) ) {
-            sign = PARTICIPANT_TYPE.NEGATIVE;
-          }
-          return sign;
-        };
-
-        const entryFromEl = el => el == null ? null : ({ id: el.id });
-        const getEntryByEntity = ( entity, subtype ) => {
-          if( !entity || !elementsReachMap.has( getReachId( entity.record ) ) ) return null;
-
-          const signKey = subtype || '';
-          const el = elementsReachMap.get( getReachId( entity.record ) );
-          const entry = entryFromEl( el );
-          if( entry && isTargetArgType( entity.type ) ) entry.group = getTargetSign( signKey ).value;
-          return entry;
-        };
-
-        const getSimpleMechanism = frame => frame.type === REACH_EVENT_TYPE.PROTEIN_MODIFICATION ? frame.subtype : frame.type;
-
-        const getMechanism = frame => {
-          let reachMech;
-          if( frame.type === REACH_EVENT_TYPE.REGULATION ){
-            const controlledFrame = getFrame( getArgId( argByType( frame, 'controlled' ) ) );
-            reachMech = controlledFrame.type === REACH_EVENT_TYPE.REGULATION ? REACH_EVENT_TYPE.REGULATION : getSimpleMechanism( controlledFrame );
-
-          } else if ( frame.type === REACH_EVENT_TYPE.ACTIVATION ) {
-            reachMech = REACH_EVENT_TYPE.ACTIVATION;
-
-          } else {
-            reachMech = getSimpleMechanism( frame );
-          }
-          return REACH_TO_FACTOID_MECHANISM.get( reachMech );
-        };
-
-        const intn = {
-          id: uuid(),
-          type: 'interaction',
-          description: getSentenceText( frame.sentence )
-        };
-
-        const entityList = getFrameEntities( frame );
-        const entries =  entityList.map( entity => getEntryByEntity( entity, frame.subtype ) );
-        // NB: If there is a null participant, then skip.
-        if( entries.some( _.isNull ) ) return;
-
-        intn.entries = entries;
-        const mechanism =  getMechanism( frame );
-        intn.association = mechanism.value;
-        intn.completed = true;
-        addElement( intn, frame );
-
-      }); // END evtFrames.forEach
-
-      // Filtering - NB that order matters.
-      let entityElements = elements.filter( e => !elIsIntn( e ) );
-      let interactionElements = elements.filter( elIsIntn );
-
-      if( ONLY_UNIQUE_PARTICIPANTS ) interactionElements = pickByUniqueParticipants( interactionElements );
-      if( ONLY_BINARY_INTERACTIONS ) interactionElements = pickByNumParticipants( interactionElements );
-      if( TOP_INTERACTIONS_ONLY ) interactionElements = pickTopInteractions( interactionElements );
-      if( REMOVE_DISCONNECTED_ENTS ) entityElements = pickEntitiesInInteractions( interactionElements, entityElements );
-
-      elements = _.concat( entityElements, interactionElements );
-
-      return tryPromise( () => {
-        return Promise.all( groundPromises );
-      } ).then( () => {
-
-        if( elements.length === 0 ){
-          logger.error(` REACH service recognized 0 entities from the given text: `, text);
-        }
-        return {
-          elements,
-          organisms
-        };
-      } );
+      elementsReachMap.set( reachId, el );
+      groundReachMap.set( reachId, ground );
     };
 
-    return tryPromise( makeRequest ).then( toJson ).then( makeDocJson );
-  }
+    entFrames.forEach( addFrame );
+    evtFrames.forEach( addFrame );
+    senFrames.forEach( addFrame );
+
+    // add bio entities
+    entFrames.forEach( frame => {
+      let ent = {
+        type: 'entity',
+        id: uuid()
+      };
+
+      let supportedTypes = {
+        'protein': 'protein',
+        'gene': 'protein',
+        'gene-or-gene-product': 'protein',
+        'simple-chemical': 'chemical'
+      };
+
+      const supportedGrounds = [
+        'uniprot',
+        'pubchem',
+        'ncbi',
+        'chebi'
+      ];
+
+      let type = frame.type;
+      let typeIsSupported = supportedTypes[type] != null;
+      let ground = frame.xrefs != null ? frame.xrefs.find( ref => contains( supportedGrounds, ref.namespace ) ) : null;
+      let isGrounded = ground != null;
+
+      let org = !isGrounded ? null : Organism.fromName( ground.species );
+      let orgIsSupported = org != null && org !== Organism.OTHER;
+
+      if( REMOVE_UNGROUNDED_ENTS && !isGrounded ){
+        return; // skip this element/frame
+      }
+
+      // implicit mention of org
+      if( orgIsSupported && ALLOW_IMPLICIT_ORG_SPEC ){
+        enableOrg( org );
+      }
+
+      if( REMOVE_GROUND_FOR_OTHER_SPECIES && org != null && !orgIsSupported ){
+        ground = null;
+      }
+
+      if( typeIsSupported ){
+        ent.type = supportedTypes[type];
+      }
+
+      ent.name = frame.text;
+
+      if( typeIsSupported ){
+        addElement( ent, frame, ground );
+      }
+    } );
+
+    // add explicit organisms
+    entFrames.filter( frame => {
+      return frame.type === 'species' && frame.xrefs != null && frame.xrefs.length > 0 && frame.xrefs[0].namespace === 'taxonomy';
+    } ).forEach( frame => {
+      let xref = frame.xrefs[0];
+      let id = +xref.id;
+      let org = Organism.fromId( id );
+      let orgIsSupported = org !== Organism.OTHER;
+
+      if( orgIsSupported ){
+        enableOrg( org );
+      }
+    } );
+
+    // add interactions
+    evtFrames.forEach( frame => {
+
+      const VALID_CONTROLLED_TYPES = new Set([
+        REACH_EVENT_TYPE.PROTEIN_MODIFICATION,
+        REACH_EVENT_TYPE.TRANSLOCATION,
+        REACH_EVENT_TYPE.TRANSCRIPTION,
+        REACH_EVENT_TYPE.AMOUNT
+      ]);
+      const frameIsBindingType = frame => frame.type === REACH_EVENT_TYPE.COMPLEX_ASSEMBLY;
+      const frameIsControlType = frame => frame.type === REACH_EVENT_TYPE.REGULATION || frame.type === REACH_EVENT_TYPE.ACTIVATION;
+      const argIsControlled = arg => arg['type'] === 'controlled';
+      const argIsEntity = arg => arg['argument-type'] === 'entity';
+      const argIsEvent = arg => arg['argument-type'] === 'event';
+      const argByType = ( frame, type ) => frame.arguments.find( arg => arg.type === type  );
+      const getArgId = arg => arg.arg;
+      const entityTemplate = ( arg, type ) => ({ record: getFrame( getArgId( arg ) ), type });
+
+      const getArgEntity = arg => {
+        const type = _.get( arg, ['type'] );
+        return entityTemplate( arg, type );
+      };
+
+      // NB: In case we do not support it, return null
+      const getControlTypeArgEntity = arg => {
+        let entity = null;
+
+        if ( argIsEntity( arg ) ){
+          entity = getArgEntity( arg );
+
+        } else if( argIsEvent( arg ) && argIsControlled( arg ) ){
+          const eventArgFrame = getFrame( getArgId( arg ) );
+          const eventArgFrameType = eventArgFrame.type;
+
+          if( VALID_CONTROLLED_TYPES.has( eventArgFrameType ) ){
+            const entityArg = argByType( eventArgFrame, 'theme' );
+            entity = getArgEntity( entityArg );
+          }
+        }
+        return entity;
+      };
+
+      const getFrameEntities = frame => {
+        let entities = [];
+        const fargs = _.get( frame, ['arguments'] );
+
+        if( frameIsBindingType( frame ) ){
+          entities = fargs.map( getArgEntity );
+
+        } else if ( frameIsControlType( frame ) ){
+          entities = fargs.map( getControlTypeArgEntity );
+        } else {
+
+          entities.push( null );
+        }
+        return entities;
+      };
+
+      const targetArgTypes = new Set([ 'theme', 'controlled' ]);
+      const isTargetArgType = type => targetArgTypes.has( type );
+      const getTargetSign = signKey => {
+        let sign = PARTICIPANT_TYPE.UNSIGNED;
+
+        if ( signKey.startsWith( 'positive' ) ) {
+          sign = PARTICIPANT_TYPE.POSITIVE;
+        } else if ( signKey.startsWith( 'negative' ) ) {
+          sign = PARTICIPANT_TYPE.NEGATIVE;
+        }
+        return sign;
+      };
+
+      const entryFromEl = el => el == null ? null : ({ id: el.id });
+      const getEntryByEntity = ( entity, subtype ) => {
+        if( !entity || !elementsReachMap.has( getReachId( entity.record ) ) ) return null;
+
+        const signKey = subtype || '';
+        const el = elementsReachMap.get( getReachId( entity.record ) );
+        const entry = entryFromEl( el );
+        if( entry && isTargetArgType( entity.type ) ) entry.group = getTargetSign( signKey ).value;
+        return entry;
+      };
+
+      const getSimpleMechanism = frame => frame.type === REACH_EVENT_TYPE.PROTEIN_MODIFICATION ? frame.subtype : frame.type;
+
+      const getMechanism = frame => {
+        let reachMech;
+        if( frame.type === REACH_EVENT_TYPE.REGULATION ){
+          const controlledFrame = getFrame( getArgId( argByType( frame, 'controlled' ) ) );
+          reachMech = controlledFrame.type === REACH_EVENT_TYPE.REGULATION ? REACH_EVENT_TYPE.REGULATION : getSimpleMechanism( controlledFrame );
+
+        } else if ( frame.type === REACH_EVENT_TYPE.ACTIVATION ) {
+          reachMech = REACH_EVENT_TYPE.ACTIVATION;
+
+        } else {
+          reachMech = getSimpleMechanism( frame );
+        }
+        return REACH_TO_FACTOID_MECHANISM.get( reachMech );
+      };
+
+      const intn = {
+        id: uuid(),
+        type: 'interaction',
+        description: getSentenceText( frame.sentence )
+      };
+
+      const entityList = getFrameEntities( frame );
+      const entries =  entityList.map( entity => getEntryByEntity( entity, frame.subtype ) );
+      // NB: If there is a null participant, then skip.
+      if( entries.some( _.isNull ) ) return;
+
+      intn.entries = entries;
+      const mechanism =  getMechanism( frame );
+      intn.association = mechanism.value;
+      intn.completed = true;
+      addElement( intn, frame );
+
+    }); // END evtFrames.forEach
+
+    // Filtering - NB that order matters.
+    let entityElements = elements.filter( e => !elIsIntn( e ) );
+    let interactionElements = elements.filter( elIsIntn );
+
+    if( ONLY_UNIQUE_PARTICIPANTS ) interactionElements = pickByUniqueParticipants( interactionElements );
+    if( ONLY_BINARY_INTERACTIONS ) interactionElements = pickByNumParticipants( interactionElements );
+    if( TOP_INTERACTIONS_ONLY ) interactionElements = pickTopInteractions( interactionElements );
+    if( REMOVE_DISCONNECTED_ENTS ) entityElements = pickEntitiesInInteractions( interactionElements, entityElements );
+
+    elements = _.concat( entityElements, interactionElements );
+
+    return tryPromise( () => {
+      return Promise.all( groundPromises );
+    } ).then( () => {
+
+      if( elements.length === 0 ){
+        logger.error(` REACH service recognized 0 entities from the given text: `, text);
+      }
+      return {
+        elements,
+        organisms
+      };
+    } );
+  };
+
+  return tryPromise( makeRequest ).then( toJson ).then( makeDocJson );
 };

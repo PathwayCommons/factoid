@@ -1,19 +1,32 @@
-let _ = require('lodash');
-let Cytoscape = require('cytoscape');
-let edgehandles = require('cytoscape-edgehandles');
-let cxtmenu = require('cytoscape-cxtmenu');
-let automove = require('cytoscape-automove');
-let cose = require('cytoscape-cose-bilkent');
-let cypopper = require('cytoscape-popper');
+import _ from 'lodash';
+import Cytoscape from 'cytoscape';
+import edgehandles from 'cytoscape-edgehandles';
+import cxtmenu from 'cytoscape-cxtmenu';
+import automove from 'cytoscape-automove';
+import cose from 'cytoscape-cose-bilkent';
+import cypopper from 'cytoscape-popper';
+import compoundDnd from 'cytoscape-compound-drag-and-drop';
 
 function regCyExts(){
   regCyLayouts();
 
-  [ edgehandles, cxtmenu, automove, cypopper ].forEach( ext => Cytoscape.use( ext ) );
+  [ edgehandles, cxtmenu, automove, cypopper, compoundDnd ].forEach( ext => Cytoscape.use( ext ) );
 }
 
 function regCyLayouts(){
   [ cose ].forEach( ext => Cytoscape.use( ext ) );
+}
+
+function cyUpdateParent( cy, docEl, newParentId, oldParentId ) {
+  let getCyEl = docEl => cy.getElementById( docEl.id() );
+
+  if ( newParentId == oldParentId ) {
+    return;
+  }
+
+  let cyEl = getCyEl( docEl );
+  let parent = newParentId ? newParentId : null;
+  cyEl.move( { parent } );
 }
 
 function makeCyEles( docEls ){
@@ -37,17 +50,19 @@ function makeCyElesForEle( docEl ){
       name: docEl.name(),
       type: docEl.type(),
       isEntity: docEl.isEntity(),
-      isInteraction: docEl.isInteraction()
+      isInteraction: docEl.isInteraction(),
+      isComplex: docEl.isComplex()
     }
   };
+
+  el.data.parent = ( docEl.isEntity() && docEl.getParentId() ) || null;
 
   if( docEl.isEntity() ){
     el.position = _.clone( docEl.position() );
     el.data.associated = docEl.associated();
     el.data.completed = docEl.completed();
   }
-
-  if( docEl.isInteraction() ){
+  else if( docEl.isInteraction() ){
     let ppts = docEl.participants();
     let assoc = docEl.association();
     let src = assoc.getSource();
@@ -80,4 +95,4 @@ function isInteractionNode( el ){
   return el.data('isInteraction') === true;
 }
 
-module.exports = { makeCyEles, regCyExts, regCyLayouts, getCyLayoutOpts, isInteractionNode };
+export { makeCyEles, regCyExts, regCyLayouts, getCyLayoutOpts, isInteractionNode, cyUpdateParent };

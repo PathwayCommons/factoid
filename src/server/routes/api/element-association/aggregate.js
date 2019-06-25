@@ -1,12 +1,12 @@
-const _ = require('lodash');
-// const pubchem = require('./pubchem'); // TODO re-enable pubchem later...
-const uniprot = require('./uniprot');
+import _ from 'lodash';
+// import * as pubchem from './pubchem'; // TODO re-enable pubchem later...
+import * as uniprot from './uniprot';
 const providers = [ uniprot ];
-const { memoize, stringDistanceMetric, tryPromise } = require('../../../../util');
-const LRUCache = require('lru-cache');
-const Organism = require('../../../../model/organism');
-const { MAX_SEARCH_SIZE, AGGREGATE_CACHE_SIZE } = require('../../../../config');
-const logger = require('../../../logger');
+import { memoize, stringDistanceMetric, tryPromise } from '../../../../util';
+import LRUCache from 'lru-cache';
+import Organism from '../../../../model/organism';
+import { MAX_SEARCH_SIZE, AGGREGATE_CACHE_SIZE } from '../../../../config';
+import logger from '../../../logger';
 
 const getProviderByNs = _.memoize( ns => {
   return providers.find( p => p.namespace === ns );
@@ -118,4 +118,4 @@ const get = q => {
   } );
 };
 
-module.exports = { get, search };
+export { get, search };

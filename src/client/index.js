@@ -1,9 +1,9 @@
-let debug = require('./debug');
-let Router = require('./router');
-let ReactDom = require('react-dom');
-let h = require('react-hyperscript');
-let hh = require('hyperscript');
-let { $, regCyExts } = require('../util');
+import debug from './debug';
+import Router from './router';
+import ReactDom from 'react-dom';
+import h from 'react-hyperscript';
+import hh from 'hyperscript';
+import { $, regCyExts } from '../util';
 
 // make sure cytoscape extensions are registered for the client side
 regCyExts();

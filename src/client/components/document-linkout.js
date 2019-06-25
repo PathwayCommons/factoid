@@ -1,6 +1,6 @@
-const React = require('react');
-const h = require('react-hyperscript');
-const CopyField = require('./copy-field');
+import React from 'react';
+import h from 'react-hyperscript';
+import CopyField from './copy-field';
 
 class Address extends React.Component {
   constructor( props ){
@@ -54,4 +54,4 @@ class Linkout extends React.Component {
   }
 }
 
-module.exports = Linkout;
+export default Linkout;

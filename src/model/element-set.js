@@ -1,5 +1,5 @@
-let { fill, getId, error, assertFieldsDefined, tryPromise } = require('../util');
-let _ = require('lodash');
+import { fill, getId, error, assertFieldsDefined, tryPromise } from '../util';
+import _ from 'lodash';
 
 /**
 A class that keeps a set of populated elements
@@ -242,4 +242,4 @@ class ElementSet {
   }
 }
 
-module.exports = ElementSet;
+export default ElementSet;

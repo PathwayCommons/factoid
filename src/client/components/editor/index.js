@@ -1,27 +1,27 @@
-const DataComponent = require('../data-component');
-const ReactDom = require('react-dom');
-const h = require('react-hyperscript');
-const EventEmitter = require('eventemitter3');
-const io = require('socket.io-client');
-const _ = require('lodash');
+import DataComponent from '../data-component';
+import ReactDom from 'react-dom';
+import h from 'react-hyperscript';
+import EventEmitter from 'eventemitter3';
+import io from 'socket.io-client';
+import _ from 'lodash';
 
-const { getId, defer, makeClassList, tryPromise } = require('../../../util');
-const Document = require('../../../model/document');
-const { PARTICIPANT_TYPE } = require('../../../model/element/participant-type');
+import { getId, defer, makeClassList, tryPromise } from '../../../util';
+import Document from '../../../model/document';
+import { PARTICIPANT_TYPE } from '../../../model/element/participant-type';
 
-const Notification = require('../notification');
-const CornerNotification = require('../notification/corner');
-const Popover = require('../popover/popover');
+import Notification from '../notification';
+import CornerNotification from '../notification/corner';
+import Popover from '../popover/popover';
 
-const logger = require('../../logger');
-const debug = require('../../debug');
+import logger from '../../logger';
+import debug from '../../debug';
 
-const makeCytoscape = require('./cy');
-const defs = require('./defs');
-const EditorButtons = require('./buttons');
-const MainMenu = require('../main-menu');
-const UndoRemove = require('./undo-remove');
-const { TaskView } = require('../tasks');
+import makeCytoscape from './cy';
+import * as defs from './defs';
+import EditorButtons from './buttons';
+import MainMenu from '../main-menu';
+import UndoRemove from './undo-remove';
+import { TaskView } from '../tasks';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -77,11 +77,11 @@ class Editor extends DataComponent {
       this.setData({ undoRemoveAvailable: true });
     };
 
-    let addRmPptToList = (intn, ppt, type) => {
+    let addRmPptToList = (el, ppt, type) => {
       checkToClearRmList();
       makeRmAvailable();
 
-      this.data.rmList.ppts.push({ intn, ppt, type });
+      this.data.rmList.ppts.push({ el, ppt, type });
     };
 
     let addRmToList = el => {
@@ -91,7 +91,7 @@ class Editor extends DataComponent {
       this.data.rmList.els.push( el );
     };
 
-    let listenForRmPpt = intn => intn.on('remove', (el, type) => addRmPptToList(intn, el, type));
+    let listenForRmPpt = el => el.on('remove', (ppt, type) => addRmPptToList(el, ppt, type));
 
     doc.on('remove', el => {
       addRmToList( el );
@@ -100,7 +100,7 @@ class Editor extends DataComponent {
     });
 
     doc.on('add', el => {
-      if( el.isInteraction() ){
+      if( el.isInteraction() || el.isComplex() ){
         listenForRmPpt( el );
       }
     });
@@ -108,7 +108,7 @@ class Editor extends DataComponent {
     doc.on('submit', () => this.dirty());
 
     doc.on('load', () => {
-      doc.interactions().forEach( listenForRmPpt );
+      doc.interactions().concat( doc.complexes() ).forEach( listenForRmPpt );
 
       let docs = JSON.parse(localStorage.getItem('documents')) || [];
       let docData = { id: doc.id(), secret: doc.secret(), name: doc.title() };
@@ -262,6 +262,7 @@ class Editor extends DataComponent {
         x: ( rpos.x - pan.x ) / zoom,
         y: ( rpos.y - pan.y ) / zoom
       });
+
       let shift = ( pos, delta ) => ({ x: pos.x + delta.x, y: pos.y + delta.y });
       let shiftSize = defs.newElementShift;
       let shiftI = this.data.newElementShift;
@@ -308,6 +309,15 @@ class Editor extends DataComponent {
     }, data) );
   }
 
+  addComplex( data = {} ){
+    if( !this.editable() ){ return; }
+
+    return this.addElement( _.assign({
+      type: 'complex',
+      name: ''
+    }, data) );
+  }
+
   remove( docElOrId ){
     if( !this.editable() ){ return; }
 
@@ -331,12 +341,36 @@ class Editor extends DataComponent {
 
     let makeRmUnavil = () => this.setData({ undoRemoveAvailable: false });
 
+    let restorePpt = ({ el, ppt }) => {
+      if ( el.isComplex() ) {
+        let getUpdatedEl = oldEl => {
+          let oldId = oldEl.id();
+          if ( rmList.oldIdToEl.has( oldId ) ) {
+            return rmList.oldIdToEl.get( oldId );
+          }
+
+          return oldEl;
+        };
+
+        let updatedPpt = getUpdatedEl( ppt );
+        let newParent = getUpdatedEl( el );
+        let oldParent = null;
+        let doNotAdd = true;
+
+        return updatedPpt.updateParent(newParent, oldParent, doNotAdd);
+      }
+
+      return Promise.resolve();
+    };
+
+    let restorePpts = () => Promise.all( rmList.ppts.map( restorePpt ) );
+
     let restoreEl = el => {
       let oldId = el.id();
       let elJson = _.omit( el.json(), [ 'id', 'secret' ] );
 
-      if ( el.isInteraction() ) {
-        let relatedPpts = rmList.ppts.filter( ( { intn } ) => intn.id() == el.id() );
+      if ( el.isInteraction() || el.isComplex() ) {
+        let relatedPpts = rmList.ppts.filter( ( { el: pptEl } ) => pptEl.id() == el.id() );
         let newEntities = relatedPpts.map( ( { ppt, type } ) => {
           let oldId = ppt.id();
           let id = rmList.oldIdToEl.has( oldId ) ? rmList.oldIdToEl.get( oldId ).id() : oldId;
@@ -354,14 +388,15 @@ class Editor extends DataComponent {
 
     let restoreEls = els => Promise.all( els.map( restoreEl ) );
 
-    let rmEntities = rmList.els.filter( el => el.isEntity() );
-    let rmIntns = rmList.els.filter( el => el.isInteraction() );
+    let rmSimpleEntities = rmList.els.filter( el => el.isEntity() && !el.isComplex() );
+    let rmOther = rmList.els.filter( el => el.isInteraction() || el.isComplex() );
 
-    let restoreEntities = () => restoreEls( rmEntities );
-    let restoreIntns = () => restoreEls( rmIntns );
+    let restoreSimpleEntities = () => restoreEls( rmSimpleEntities );
+    let restoreOther = () => restoreEls( rmOther );
 
-    return tryPromise( restoreEntities )
-      .then( restoreIntns )
+    return tryPromise( restoreSimpleEntities )
+      .then( restoreOther )
+      .then( restorePpts )
       .then( makeRmUnavil );
   }
 
@@ -492,4 +527,4 @@ class Editor extends DataComponent {
   }
 }
 
-module.exports = Editor;
+export default Editor;

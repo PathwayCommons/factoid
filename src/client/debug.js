@@ -1,5 +1,5 @@
-let domReady = require('fready');
-let logger = require('./logger');
+import domReady from 'fready';
+import logger from './logger';
 
 let debug = window.dbg = {
   enabled: function( on ){
@@ -30,4 +30,4 @@ let debug = window.dbg = {
   }
 };
 
-module.exports = debug;
+export default debug;

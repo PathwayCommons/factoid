@@ -1,17 +1,17 @@
-let conf = require('./util/conf');
+import * as conf from './util/conf';
 
-let expect = require('chai').expect;
-let Syncher = require('../src/model/syncher');
-let ElementFactory = require('../src/model/element/factory');
-let Entity = require('../src/model/element/entity');
-let Interaction = require('../src/model/element/interaction');
-let { PARTICIPANT_TYPE, PARTICIPANT_TYPES } = require('../src/model/element/participant-type');
-let { INTERACTION_TYPES, INTERACTION_TYPE } = require('../src/model/element/interaction-type');
-let MockSocket = require('./mock/socket');
-let MockCache = require('./mock/cache');
-let TableUtil = require('./util/table');
-let io = require('./util/socket-io');
-let { when, whenAll } = require('./util/when');
+import { expect } from 'chai';
+import Syncher from '../src/model/syncher';
+import ElementFactory from '../src/model/element/factory';
+import Entity from '../src/model/element/entity';
+import Interaction from '../src/model/element/interaction';
+import { PARTICIPANT_TYPE, PARTICIPANT_TYPES } from '../src/model/element/participant-type';
+import { INTERACTION_TYPES, INTERACTION_TYPE } from '../src/model/element/interaction-type';
+import MockSocket from './mock/socket';
+import MockCache from './mock/cache';
+import TableUtil from './util/table';
+import * as io from './util/socket-io';
+import { when, whenAll } from './util/when';
 
 const NS = 'interaction_tests';
 const NS_ENT = 'interaction_tests';

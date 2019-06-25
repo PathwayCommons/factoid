@@ -1,9 +1,9 @@
-const React = require('react');
-const ReactDom = require('react-dom');
-const h = require('react-hyperscript');
-const uuid = require('uuid');
-const { animateDomForEdit } = require('../animate');
-const { PARTICIPANT_TYPES } = require('../../../model/element/participant-type');
+import React from 'react';
+import ReactDom from 'react-dom';
+import h from 'react-hyperscript';
+import uuid from 'uuid';
+import { animateDomForEdit } from '../animate';
+import { PARTICIPANT_TYPES } from '../../../model/element/participant-type';
 
 class ParticipantInfo extends React.Component {
   constructor( props ){
@@ -115,6 +115,6 @@ class ParticipantInfo extends React.Component {
   }
 }
 
-module.exports = props => h(ParticipantInfo, Object.assign({
+export default props => h(ParticipantInfo, Object.assign({
   key: props.interaction.id() + '-' + props.participant.id()
 }, props));

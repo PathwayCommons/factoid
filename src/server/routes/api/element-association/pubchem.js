@@ -1,11 +1,11 @@
-const fetch = require('node-fetch');
-const querystring = require('querystring');
-const _ = require('lodash');
-const { memoize, tryPromise } = require('../../../../util');
-const LRUCache = require('lru-cache');
-const convert = require('./search-string-conversion');
+import fetch from 'node-fetch';
+import querystring from 'querystring';
+import _ from 'lodash';
+import { memoize, tryPromise } from '../../../../util';
+import LRUCache from 'lru-cache';
+import convert from './search-string-conversion';
 
-const { PUBCHEM_BASE_URL, PUBCHEM_CACHE_SIZE, MAX_SEARCH_SIZE } = require('../../../../config');
+import { PUBCHEM_BASE_URL, PUBCHEM_CACHE_SIZE, MAX_SEARCH_SIZE } from '../../../../config';
 const TYPE = 'chemical';
 const NAMESPACE = 'pubchem';
 const USE_TABLE_QUERY = true; // tends to be faster
@@ -206,4 +206,4 @@ const search = opts => {
 
 const distanceFields = ['id', 'name', 'synonyms'];
 
-module.exports = { namespace: NAMESPACE, get, search, distanceFields };
+export { NAMESPACE as namespace, get, search, distanceFields };

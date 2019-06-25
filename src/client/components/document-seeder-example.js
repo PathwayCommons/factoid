@@ -88,7 +88,7 @@ const editorName = 'Max Franz';
 
 const editorEmail = 'maxkfranz@gmail.com';
 
-module.exports = {
+export {
   journalName,
   title,
   authors,

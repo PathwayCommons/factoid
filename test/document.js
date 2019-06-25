@@ -1,18 +1,18 @@
-let conf = require('./util/conf');
+import * as conf from './util/conf';
 
-let expect = require('chai').expect;
-let Syncher = require('../src/model/syncher');
-let ElementFactory = require('../src/model/element/factory');
-let Entity = require('../src/model/element/entity');
-let Interaction = require('../src/model/element/interaction');
-let Organism = require('../src/model/organism');
-let Document = require('../src/model/document');
-let MockSocket = require('./mock/socket');
-let ElementCache = require('../src/model/element-cache');
-let MockCache = require('./mock/cache');
-let TableUtil = require('./util/table');
-let io = require('./util/socket-io');
-let { whenAll } = require('./util/when');
+import { expect } from 'chai';
+import Syncher from '../src/model/syncher';
+import ElementFactory from '../src/model/element/factory';
+import Entity from '../src/model/element/entity';
+import Interaction from '../src/model/element/interaction';
+import Organism from '../src/model/organism';
+import Document from '../src/model/document';
+import MockSocket from './mock/socket';
+import ElementCache from '../src/model/element-cache';
+import MockCache from './mock/cache';
+import TableUtil from './util/table';
+import * as io from './util/socket-io';
+import { whenAll } from './util/when';
 
 const NS = 'document_tests';
 const NS_ELE = 'document_tests_elements';

@@ -1,11 +1,11 @@
-const React = require('react');
-const h = require('react-hyperscript');
-const hh = require('hyperscript');
-const tippyjs = require('tippy.js');
-const _ = require('lodash');
+import React from 'react';
+import h from 'react-hyperscript';
+import hh from 'hyperscript';
+import tippyjs from 'tippy.js';
+import _ from 'lodash';
 
-const { makeClassList, isInteractionNode } = require('../../../util');
-const defs = require('../../defs');
+import { makeClassList, isInteractionNode } from '../../../util';
+import * as defs from '../../defs';
 
 
 let TOOLTIP_CONTENT = {
@@ -139,4 +139,4 @@ class Help extends React.Component {
 }
 
 
-module.exports = Help;
+export default Help;

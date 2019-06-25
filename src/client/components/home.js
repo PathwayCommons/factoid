@@ -1,5 +1,5 @@
-const h = require('react-hyperscript');
-const { Component } = require('react');
+import h from 'react-hyperscript';
+import { Component } from 'react';
 
 class Home extends Component {
   render(){
@@ -63,4 +63,4 @@ class Home extends Component {
   }
 }
 
-module.exports = Home;
+export default Home;

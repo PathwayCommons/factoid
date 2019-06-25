@@ -1,4 +1,4 @@
-let _ = require('lodash');
+import _ from 'lodash';
 
 let defaults = {
 
@@ -35,4 +35,4 @@ class Socket {
 
 }
 
-module.exports = Socket;
+export default Socket;

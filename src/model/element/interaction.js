@@ -1,10 +1,10 @@
-const Element = require('./element');
-const _ = require('lodash');
-const ElementSet = require('../element-set');
-const { assertFieldsDefined, tryPromise } = require('../../util');
+import Element from './element';
+import _ from 'lodash';
+import ElementSet from '../element-set';
+import { assertFieldsDefined, tryPromise } from '../../util';
 
-const { INTERACTION_TYPE, getIntnTypeByVal } = require('./interaction-type/enum');
-const { PARTICIPANT_TYPE, getPptTypeByVal } = require('./participant-type');
+import { INTERACTION_TYPE, getIntnTypeByVal } from './interaction-type/enum';
+import { PARTICIPANT_TYPE, getPptTypeByVal } from './participant-type';
 
 const TYPE = 'interaction';
 
@@ -248,4 +248,4 @@ class Interaction extends Element {
   };
 } );
 
-module.exports = Interaction;
+export default Interaction;

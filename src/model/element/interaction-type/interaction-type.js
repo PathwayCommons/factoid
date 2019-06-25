@@ -1,6 +1,6 @@
-const { error } = require('../../../util');
-const { PARTICIPANT_TYPE } = require('../participant-type');
-const { BIOPAX_TEMPLATE_TYPE } = require('./biopax-type');
+import { error } from '../../../util';
+import { PARTICIPANT_TYPE } from '../participant-type';
+import { BIOPAX_TEMPLATE_TYPE } from './biopax-type';
 
 const VALUE = 'unset';
 const DISPLAY_VALUE = 'Unset';
@@ -166,4 +166,4 @@ class InteractionType {
   get displayValue(){ return DISPLAY_VALUE; }
 }
 
-module.exports = InteractionType;
+export default InteractionType;

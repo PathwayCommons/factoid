@@ -1,5 +1,5 @@
-const InteractionType = require('./interaction-type');
-const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
+import InteractionType from './interaction-type';
+import { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } from './biopax-type';
 
 const VALUE = 'interaction';
 const DISPLAY_VALUE = 'Other';
@@ -22,7 +22,7 @@ class Interaction extends InteractionType {
     if ( !this.validatePpts() ){
       return this.makeInvalidBiopaxTemplate();
     }
-    
+
     // "Other" type; see 4A-E in "Factoid binary interaction types" doc.
     let template = {
       type: BIOPAX_TEMPLATE_TYPE.OTHER_INTERACTION
@@ -51,4 +51,4 @@ class Interaction extends InteractionType {
   get displayValue(){ return DISPLAY_VALUE; }
 }
 
-module.exports = Interaction;
+export default Interaction;

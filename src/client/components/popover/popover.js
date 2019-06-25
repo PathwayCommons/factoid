@@ -1,12 +1,12 @@
-const React = require('react');
-const ReactDom = require('react-dom');
-const h = require('react-hyperscript');
-const hh = require('hyperscript');
-const tippyjs = require('tippy.js');
-const _ = require('lodash');
-const { tippyDefaults } = require('../../defs');
-const Mousetrap = require('mousetrap');
-const EventEmitter = require('eventemitter3');
+import React from 'react';
+import ReactDom from 'react-dom';
+import h from 'react-hyperscript';
+import hh from 'hyperscript';
+import tippyjs from 'tippy.js';
+import _ from 'lodash';
+import { tippyDefaults } from '../../defs';
+import Mousetrap from 'mousetrap';
+import EventEmitter from 'eventemitter3';
 
 const emitter = new EventEmitter();
 
@@ -104,4 +104,4 @@ class Popover extends React.Component {
   }
 }
 
-module.exports = Popover;
+export default Popover;

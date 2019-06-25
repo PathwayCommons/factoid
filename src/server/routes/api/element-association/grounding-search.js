@@ -1,7 +1,7 @@
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
-const { GROUNDING_SEARCH_BASE_URL } = require('../../../../config');
-const logger = require('../../../logger');
+import { GROUNDING_SEARCH_BASE_URL } from '../../../../config';
+import logger from '../../../logger';
 
 const query = ( opts, endpt ) => {
   return fetch( GROUNDING_SEARCH_BASE_URL + `/${endpt}`, {
@@ -48,4 +48,4 @@ const search = opts => {
     } );
 };
 
-module.exports = { get, search };
+export { get, search };

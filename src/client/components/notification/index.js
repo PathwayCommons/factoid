@@ -1,2 +1,2 @@
 // export the view object by default
-module.exports = require('./notification');
+export { default } from './notification';

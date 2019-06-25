@@ -1,7 +1,7 @@
-const InteractionType = require('./interaction-type');
-const { PARTICIPANT_TYPE } = require('../participant-type');
-const { ENTITY_TYPE } = require('../entity-type');
-const { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } = require('./biopax-type');
+import InteractionType from './interaction-type';
+import { PARTICIPANT_TYPE } from '../participant-type';
+import { ENTITY_TYPE } from '../entity-type';
+import { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } from './biopax-type';
 
 const VALUE = 'modification';
 const DISPLAY_VALUE = 'Post-translational modification';
@@ -76,4 +76,4 @@ class Modification extends InteractionType {
   get displayValue(){ return DISPLAY_VALUE; }
 }
 
-module.exports = Modification;
+export default Modification;

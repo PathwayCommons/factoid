@@ -18,8 +18,8 @@ let delay = duration => new Promise( resolve => setTimeout( resolve, duration ) 
 
 let whenAllN = ( emitters, evt, n = 1 ) => Promise.all( emitters.map( s => whenN(s, evt, n) ) );
 
-module.exports = {
-  when: whenN,
-  whenAll: whenAllN,
-  delay: delay
+export {
+  whenN as when,
+  whenAllN as whenAll,
+  delay
 };

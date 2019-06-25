@@ -101,4 +101,6 @@ let modification = (mod, onEdit) => h('div.entity-info-section.entity-info-mod-s
   ])
 ]);
 
-export { protein, modification, chemical, link };
+export const assocDisp = { protein, modification, chemical, link };
+
+export default assocDisp;

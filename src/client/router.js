@@ -43,24 +43,6 @@ let routes = [
     }
   },
   {
-    path: '/form/:id',
-    render: props => {
-      let { id } = props.match.params;
-      let { history } = props;
-
-      return h( FormEditor, { id, history } );
-    }
-  },
-  {
-    path: '/form/:id/:secret',
-    render: props => {
-      let { id, secret } = props.match.params;
-      let { history } = props;
-
-      return h( FormEditor, { id, secret, history } );
-    }
-  },
-  {
     path: '/document/:id',
     render: props => {
       let { id } = props.match.params;

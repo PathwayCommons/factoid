@@ -4,7 +4,6 @@ import _ from 'lodash';
 
 import PageNotFound from './components/page-not-found';
 import Editor from './components/editor';
-import FormEditor from './components/form-editor';
 import Home from './components/home';
 import DocumentSeeder from './components/document-seeder';
 

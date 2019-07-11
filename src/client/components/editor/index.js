@@ -155,13 +155,10 @@ class Editor extends DataComponent {
     tryPromise( () => doc.load() )
       .then( () => logger.info('The doc already exists and is now loaded') )
       .catch( err => {
-        logger.info('The doc does not exist or an error occurred');
-        logger.warn( err );
+        logger.error('The doc does not exist or an error occurred');
+        logger.error( err );
 
-        return ( doc.create()
-          .then( () => logger.info('The doc was created') )
-          .catch( err => logger.error('The doc could not be created', err) )
-        );
+        throw err;
       } )
       .then( () => doc.synch(true) )
       .then( () => logger.info('Document synch active') )

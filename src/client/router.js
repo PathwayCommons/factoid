@@ -4,7 +4,6 @@ import _ from 'lodash';
 
 import PageNotFound from './components/page-not-found';
 import Editor from './components/editor';
-import FormEditor from './components/form-editor';
 import Home from './components/home';
 import DocumentSeeder from './components/document-seeder';
 
@@ -40,24 +39,6 @@ let routes = [
       let { history } = props;
 
       return h( DocumentSeeder, { history, demo: true } );
-    }
-  },
-  {
-    path: '/form/:id',
-    render: props => {
-      let { id } = props.match.params;
-      let { history } = props;
-
-      return h( FormEditor, { id, history } );
-    }
-  },
-  {
-    path: '/form/:id/:secret',
-    render: props => {
-      let { id, secret } = props.match.params;
-      let { history } = props;
-
-      return h( FormEditor, { id, secret, history } );
     }
   },
   {

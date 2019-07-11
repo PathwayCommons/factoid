@@ -1,11 +1,9 @@
-import { USE_PC_GROUNDING_SEARCH } from '../../../../config';
-import * as aggregate from './aggregate';
 import * as groundingSearch from './grounding-search';
 import Express from 'express';
 
 const jsonifyResult = response => ( result => response.json( result ) );
 const http = Express.Router();
-const provider = USE_PC_GROUNDING_SEARCH ? groundingSearch : aggregate;
+const provider = groundingSearch;
 
 http.post('/search', function( req, res ){
   (

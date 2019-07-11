@@ -5,7 +5,6 @@ import ElementSet from '../element-set';
 import ElementCache from '../element-cache';
 import ElementFactory from '../element';
 import { assertOneOfFieldsDefined, mixin, getId, makeCyEles, getCyLayoutOpts, isNonNil, tryPromise } from '../../util';
-import Organism from '../organism';
 import Cytoscape from 'cytoscape';
 
 const DEFAULTS = Object.freeze({
@@ -80,10 +79,8 @@ class Document {
         let addedIds = _.difference( changes.organisms, old.organisms );
         let rmedIds = _.difference( old.organisms, changes.organisms );
         let emit = ( id, on ) => {
-          let org = Organism.fromId(id);
-
-          this.emit('toggleorganism', org, on);
-          this.emit('remotetoggleorganism', org, on);
+          this.emit('toggleorganism', id, on);
+          this.emit('remotetoggleorganism', id, on);
         };
 
         addedIds.forEach( id => emit( id, true ) );
@@ -235,13 +232,9 @@ class Document {
   // mention count for all organisms (toggle + ent mentions)
   organismCounts(){
     let cnt = new Map(); // org => mention count
-    let resetCount = org => cnt.set( org, 0 );
-    let addToCount = org => cnt.set( org, cnt.get(org) + 1 );
-    let getOrg = id => Organism.fromId( id );
+    let addToCount = org => cnt.set( org, !cnt.has(org) ? 1 : cnt.get(org) + 1 );
     let entIsAssocd = ent => ent.associated();
     let getOrgIdForEnt = ent => _.get( ent.association(), ['organism'] );
-
-    Organism.ALL.forEach( resetCount );
 
     this.toggledOrganisms().forEach( addToCount );
 
@@ -250,7 +243,6 @@ class Document {
       .filter( entIsAssocd )
       .map( getOrgIdForEnt )
       .filter( isNonNil ) // may be an entity w/o org
-      .map( getOrg )
       .forEach( addToCount )
     );
 
@@ -269,7 +261,7 @@ class Document {
 
   // mentions for one org
   organismCount( org ){
-    return this.organismCounts().get( org );
+    return this.organismCounts().get( org ) || 0;
   }
 
   // get list of all orgs (incl. explicit mentions and implicit mentions via entity assoc)
@@ -282,7 +274,7 @@ class Document {
 
   // get list of orgs w/ explicit mentions
   toggledOrganisms(){
-    return this.syncher.get('organisms').map( id => Organism.fromId(id) );
+    return this.syncher.get('organisms');
   }
 
   // toggle organism explicit mention
@@ -301,8 +293,8 @@ class Document {
       } else {
         let update = this.syncher.push('organisms', orgId);
 
-        this.emit('toggleorganism', Organism.fromId(orgId), toggleOn);
-        this.emit('localtoggleorganism', Organism.fromId(orgId), toggleOn);
+        this.emit('toggleorganism', orgId, toggleOn);
+        this.emit('localtoggleorganism', orgId, toggleOn);
 
         return update;
       }
@@ -310,8 +302,8 @@ class Document {
       if( has ){
         let update = this.syncher.pull('organisms', orgId);
 
-        this.emit('toggleorganism', Organism.fromId(orgId), toggleOn);
-        this.emit('localtoggleorganism', Organism.fromId(orgId), toggleOn);
+        this.emit('toggleorganism', orgId, toggleOn);
+        this.emit('localtoggleorganism', orgId, toggleOn);
 
         return update;
       } else {

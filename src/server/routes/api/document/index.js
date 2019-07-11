@@ -12,6 +12,8 @@ import logger from '../../../logger';
 
 import * as provider from './reach';
 
+const ENABLE_TEXTMINING = false;
+
 import { BIOPAX_CONVERTER_URL, BASE_URL, EMAIL_ENABLED, EMAIL_FROM, EMAIL_FROM_ADDR, API_KEY } from '../../../../config';
 
 const http = Express.Router();
@@ -47,9 +49,13 @@ let loadTables = () => Promise.all( tables.map( loadTable ) ).then( dbInfos => (
 let getDocJson = doc => doc.json();
 
 let fillDoc = ( doc, text ) => {
-  return provider.get( text ).then( res => {
-    return doc.fromJson( res );
-  } ).then( () => doc );
+  if( ENABLE_TEXTMINING ){
+    return provider.get( text ).then( res => {
+      return doc.fromJson( res );
+    } ).then( () => doc );
+  } else {
+    return Promise.resolve(doc);
+  }
 };
 
 // run cytoscape layout on server side so that the document looks ok on first open

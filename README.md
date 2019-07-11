@@ -30,20 +30,16 @@ Services:
 
 - `DEFAULT_CACHE_SIZE` : default max number of entries in each cache
 - `REACH_URL` : full url of the reach textmining endpoint
-- `UNIPROT_URL` : full url of uniprot query service
-- `UNIPROT_LINK_BASE_URL` : base url concatenated to id to generate a linkout
-- `UNIPROT_CACHE_SIZE` : overrides default cache size for uniprot query cache
-- `CHEBI_WSDL_URL`: url for chebi webservices
-- `CHEBI_JAVA_PACKAGE`: chebi java package namespace
-- `CHEBI_LINK_BASE_URL`: base url concatenated to id to generate a linkout
-- `CHEBI_CACHE_SIZE`: overrides default cache size of chebi query cache
-- `PUBCHEM_BASE_URL`: base webservices url for pubchem
-- `PUBCHEM_LINK_BASE_URL`: base url concatenated to id to generate a linkout
-- `PUBCHEM_CACHE_SIZE`: overrides default cache size of pubchem query cache,
-- `AGGREGATE_CACHE_SIZE`: overrides default cache size for aggregate searches across all entity types
-- `MAX_SEARCH_SIZE`: max number of entities returned for each entity lookup/search service
 - `PC_URL` : base url for pathway commons apps, to search or link
 - `BIOPAX_CONVERTER_URL` : url for the factoid to biopax/sbgn converter
+- `GROUNDING_SEARCH_BASE_URL`: url for the [grounding service](https://github.com/PathwayCommons/grounding-search)
+
+Links:
+
+- `UNIPROT_LINK_BASE_URL` : base url concatenated to id to generate a linkout
+- `CHEBI_LINK_BASE_URL`: base url concatenated to id to generate a linkout
+- `PUBCHEM_LINK_BASE_URL`: base url concatenated to id to generate a linkout
+- `NCBI_LINK_BASE_URL`: base url concatenated to id to generate a linkout
 
 ## Run targets
 

@@ -4,12 +4,9 @@ import uuid from 'uuid';
 const toJson = res => res.json();
 import fetch from 'node-fetch';
 import FormData from 'form-data';
-import Organism from '../../../../model/organism';
 import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
 import { PARTICIPANT_TYPE } from '../../../../model/element/participant-type';
-import * as aggregate from '../element-association/aggregate';
 import * as groundingSearch from '../element-association/grounding-search';
-import { USE_PC_GROUNDING_SEARCH } from '../../../../config';
 import { pickByUniqueParticipants, pickByNumParticipants, pickTopInteractions, pickEntitiesInInteractions } from './filters';
 
 import logger from '../../../logger';
@@ -24,7 +21,7 @@ const REMOVE_DISCONNECTED_ENTS = true;
 const REMOVE_UNGROUNDED_ENTS = true;
 const APPLY_GROUND = true;
 const REMOVE_GROUND_FOR_OTHER_SPECIES = false;
-const provider = USE_PC_GROUNDING_SEARCH ? groundingSearch : aggregate;
+const provider = groundingSearch;
 
 const REACH_EVENT_TYPE = Object.freeze({
   REGULATION: 'regulation',
@@ -114,7 +111,7 @@ export const get = text => {
     let organisms = [];
 
     let enableOrg = org => {
-      if( organisms.some( o => o.id === org.id() ) ){
+      if( organisms.some( id => id === org ) ){
         return; // already have it
       } else {
         organisms.push({ id: org.id() });
@@ -222,15 +219,15 @@ export const get = text => {
       let ground = frame.xrefs != null ? frame.xrefs.find( ref => contains( supportedGrounds, ref.namespace ) ) : null;
       let isGrounded = ground != null;
 
-      let org = !isGrounded ? null : Organism.fromName( ground.species );
-      let orgIsSupported = org != null && org !== Organism.OTHER;
+      let org = -1; // TODO reach should expose taxon ids
+      let orgIsSupported = false;
 
       if( REMOVE_UNGROUNDED_ENTS && !isGrounded ){
         return; // skip this element/frame
       }
 
       // implicit mention of org
-      if( orgIsSupported && ALLOW_IMPLICIT_ORG_SPEC ){
+      if( ALLOW_IMPLICIT_ORG_SPEC ){
         enableOrg( org );
       }
 
@@ -255,8 +252,8 @@ export const get = text => {
     } ).forEach( frame => {
       let xref = frame.xrefs[0];
       let id = +xref.id;
-      let org = Organism.fromId( id );
-      let orgIsSupported = org !== Organism.OTHER;
+      let org = id;
+      let orgIsSupported = false;
 
       if( orgIsSupported ){
         enableOrg( org );

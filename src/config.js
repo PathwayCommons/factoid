@@ -18,8 +18,6 @@ const env = (key, defaultVal) => {
   }
 };
 
-const DEFAULT_CACHE_SIZE = parseInt( process.env.DEFAULT_CACHE_SIZE ) || 1000;
-
 export const PORT = env('PORT', 3000);
 
 export const LOG_LEVEL = env('LOG_LEVEL', 'info');
@@ -39,22 +37,15 @@ export const DB_CERT = env('DB_CERT', undefined);  // path to a certificate (cer
 
 // Services
 export const REACH_URL = env('REACH_URL', 'http://reach.baderlab.org/api/uploadFile');
-export const UNIPROT_URL = env('UNIPROT_URL', 'http://www.uniprot.org/uniprot');
-export const UNIPROT_LINK_BASE_URL = env('UNIPROT_LINK_BASE_URL', 'http://www.uniprot.org/uniprot/');
-export const UNIPROT_CACHE_SIZE = env('UNIPROT_CACHE_SIZE', DEFAULT_CACHE_SIZE);
-export const CHEBI_WSDL_URL = env('CHEBI_WSDL_URL', 'https://www.ebi.ac.uk/webservices/chebi/2.0/webservice?wsdl');
-export const CHEBI_JAVA_PACKAGE = env('CHEBI_JAVA_PACKAGE', 'uk.ac.ebi.chebi.webapps.chebiWS.model');
-export const CHEBI_LINK_BASE_URL = env('CHEBI_LINK_BASE_URL', 'https://www.ebi.ac.uk/chebi/searchId.do?chebiId=');
-export const CHEBI_CACHE_SIZE = env('CHEBI_CACHE_SIZE', DEFAULT_CACHE_SIZE);
-export const PUBCHEM_BASE_URL = env('PUBCHEM_BASE_URL', 'https://pubchem.ncbi.nlm.nih.gov/rest/pug');
-export const PUBCHEM_LINK_BASE_URL = env('PUBCHEM_LINK_BASE_URL', 'https://pubchem.ncbi.nlm.nih.gov/compound/');
-export const PUBCHEM_CACHE_SIZE = env('PUBCHEM_CACHE_SIZE', DEFAULT_CACHE_SIZE);
-export const NCBI_LINK_BASE_URL = env('NCBI_LINK_BASE_URL', 'https://www.ncbi.nlm.nih.gov/gene/');
-export const AGGREGATE_CACHE_SIZE = env('AGGREGATE_CACHE_SIZE', DEFAULT_CACHE_SIZE);
-export const MAX_SEARCH_SIZE = env('MAX_SEARCH_SIZE', 50);
 export const BIOPAX_CONVERTER_URL = env('BIOPAX_CONVERTER_URL', 'https://biopax.baderlab.org/convert/v2/');
 export const GROUNDING_SEARCH_BASE_URL = env('GROUNDING_SEARCH_BASE_URL', 'https://grounding.baderlab.org');
-export const USE_PC_GROUNDING_SEARCH = env('USE_PC_GROUNDING_SEARCH', true);
+
+// Links
+export const UNIPROT_LINK_BASE_URL = env('UNIPROT_LINK_BASE_URL', 'http://www.uniprot.org/uniprot/');
+export const CHEBI_LINK_BASE_URL = env('CHEBI_LINK_BASE_URL', 'https://www.ebi.ac.uk/chebi/searchId.do?chebiId=');
+export const PUBCHEM_LINK_BASE_URL = env('PUBCHEM_LINK_BASE_URL', 'https://pubchem.ncbi.nlm.nih.gov/compound/');
+export const NCBI_LINK_BASE_URL = env('NCBI_LINK_BASE_URL', 'https://www.ncbi.nlm.nih.gov/gene/');
+
 
 // Email
 export const EMAIL_ENABLED = env('EMAIL_ENABLED', false);

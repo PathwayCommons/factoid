@@ -5,7 +5,6 @@ import Syncher from '../src/model/syncher';
 import ElementFactory from '../src/model/element/factory';
 import Entity from '../src/model/element/entity';
 import Interaction from '../src/model/element/interaction';
-import Organism from '../src/model/organism';
 import Document from '../src/model/document';
 import MockSocket from './mock/socket';
 import ElementCache from '../src/model/element-cache';
@@ -13,6 +12,9 @@ import MockCache from './mock/cache';
 import TableUtil from './util/table';
 import * as io from './util/socket-io';
 import { whenAll } from './util/when';
+
+const TAXON_ID_1 = 9606;
+const TAXON_ID_2 = 10090;
 
 const NS = 'document_tests';
 const NS_ELE = 'document_tests_elements';
@@ -636,16 +638,12 @@ describe('Document', function(){
     });
 
     it('associates entity on client1, resolves on client2', function(){
-      let org = Organism.HOMO_SAPIENS;
-
       let assoc = {
         name: 'p53',
         id: 43289543859,
-        organism: Organism.HOMO_SAPIENS.id(),
+        organism: TAXON_ID_1,
         type: 'protein'
       };
-
-      let mouse = Organism.MUS_MUSCULUS;
 
       let assocPromise = ent => new Promise( resolve => ent.on('associated', resolve) );
 
@@ -660,22 +658,18 @@ describe('Document', function(){
         return allAssociated;
       } ).then( () => {
         expect( entC1.association(), 'association' ).to.deep.equal( assoc );
-        expect( docC1.organismCount(org), 'human count' ).to.equal(1);
-        expect( docC1.organismCount(mouse), 'mouse count' ).to.equal(0);
+        expect( docC1.organismCount(TAXON_ID_1), 'human count' ).to.equal(1);
+        expect( docC1.organismCount(TAXON_ID_2), 'mouse count' ).to.equal(0);
       });
     });
 
     it('associates entity and toggles organism on client1, resolves on client2', function(){
-      let org = Organism.HOMO_SAPIENS;
-
       let assoc = {
         name: 'p53',
         id: 43289543859,
-        organism: Organism.HOMO_SAPIENS.id(),
+        organism: TAXON_ID_1,
         type: 'protein'
       };
-
-      let mouse = Organism.MUS_MUSCULUS;
 
       let assocPromise = ent => new Promise( resolve => ent.on('associated', resolve) );
 
@@ -691,15 +685,15 @@ describe('Document', function(){
       ]).then( () => {
         return entC1.associate( assoc );
       }).then( () => {
-        return docC1.toggleOrganism(org);
+        return docC1.toggleOrganism(TAXON_ID_1);
       } ).then( () => {
         return allAssociated;
       } ).then( () => {
         return allToggled;
       } ).then( () => {
         expect( entC1.association(), 'association' ).to.deep.equal( assoc );
-        expect( docC1.organismCount(org), 'human count' ).to.equal(2);
-        expect( docC1.organismCount(mouse), 'mouse count' ).to.equal(0);
+        expect( docC1.organismCount(TAXON_ID_1), 'human count' ).to.equal(2);
+        expect( docC1.organismCount(TAXON_ID_2), 'mouse count' ).to.equal(0);
       });
     });
   });

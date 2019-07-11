@@ -1,5 +1,4 @@
 import h from 'react-hyperscript';
-import Organism from '../../../model/organism';
 import Highlighter from '../highlighter';
 import Formula from './chemical-formula';
 import Tooltip from '../popover/tooltip';
@@ -10,7 +9,7 @@ let protein = (m, searchTerms) => {
   return [
     h('div.entity-info-section', [
       h('span.entity-info-title', 'Organism'),
-      h('span', Organism.fromId(m.organism).name())
+      h('span', m.organismName)
     ]),
     h('div.entity-info-section', !m.proteinNames ? [] : [
       h('span.entity-info-title', 'Protein names'),

@@ -18,7 +18,11 @@ export default function({ bus, cy, document, controller }){
   let pptType = PARTICIPANT_TYPE.UNSIGNED;
   let lastEdgeCreationTime = 0;
 
-  let edgeType = function( /*source, target*/ ){
+  let edgeType = function( source, target ){
+    if( source.parent().same(target) || target.parent().same(source) ){
+      return null;
+    }
+
     return 'flat';
   };
 

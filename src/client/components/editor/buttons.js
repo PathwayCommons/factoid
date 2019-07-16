@@ -51,6 +51,14 @@ class EditorButtons extends React.Component {
         PptTypeBtn(PARTICIPANT_TYPE.POSITIVE, 'Draw an activation interaction', '3'),
         PptTypeBtn(PARTICIPANT_TYPE.NEGATIVE, 'Draw an inhibition interaction', '4')
       ]);
+
+      grs.push([
+        h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Delete selected', shortcut: 'Delete' }), [
+          h('button.editor-button.plain-button', { onClick: () => controller.removeSelected()  }, [
+            h('i.material-icons', 'clear')
+          ])
+        ])
+      ]);
     }
 
     return h(`div.${className}`, grs.map( btns => h('div.editor-button-group', btns) ));

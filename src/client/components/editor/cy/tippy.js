@@ -190,6 +190,7 @@ export default function({ bus, cy, document }){
   };
 
   let hideTippy = (ele, list = '_tippies') => {
+    let isSelected = ele.selected();
     let tippies = ele.scratch(list);
     let didClose = false;
 
@@ -207,6 +208,13 @@ export default function({ bus, cy, document }){
       if( docEl && !docEl.completed() ){
         makeIncompleteNotification( ele, docEl );
       }
+    }
+
+    // keep the node or edge selected when you just close the tippy popover
+    if( didClose && isSelected ){
+      setTimeout(() => { // on next tick
+        ele.select();
+      }, 0);
     }
   };
 

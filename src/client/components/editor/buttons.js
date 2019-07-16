@@ -55,7 +55,7 @@ class EditorButtons extends React.Component {
       grs.push([
         h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Delete selected', shortcut: 'Delete' }), [
           h('button.editor-button.plain-button', { onClick: () => controller.removeSelected()  }, [
-            h('i.material-icons', 'delete')
+            h('i.material-icons', 'clear')
           ])
         ])
       ]);

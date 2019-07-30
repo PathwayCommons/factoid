@@ -253,7 +253,7 @@ class Document {
     let json = {};
 
     for( let [org, count] of this.organismCounts() ){
-      json[ org.id() ] = count;
+      json[ org ] = count;
     }
 
     return json;

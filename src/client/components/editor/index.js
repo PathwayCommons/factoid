@@ -328,7 +328,7 @@ class Editor extends DataComponent {
   }
 
   undoRemove(){
-    let { rmList } = this.data;
+    let { rmList, cy } = this.data;
 
     if( rmList.els.length === 0 && rmList.ppts.length === 0 ){ return Promise.resolve(); }
 
@@ -391,10 +391,15 @@ class Editor extends DataComponent {
     let restoreSimpleEntities = () => restoreEls( rmSimpleEntities );
     let restoreOther = () => restoreEls( rmOther );
 
-    return tryPromise( restoreSimpleEntities )
+    let startBatch = () => cy.startBatch();
+    let endBatch = () => cy.endBatch();
+
+    return tryPromise( startBatch )
+      .then( restoreSimpleEntities )
       .then( restoreOther )
       .then( restorePpts )
-      .then( makeRmUnavil );
+      .then( makeRmUnavil )
+      .then( endBatch );
   }
 
   layout(){

@@ -3,5 +3,5 @@ node_js:
   - "8"
   - "10"
 addons:
-  rethinkdb: '2.3.4'
+  rethinkdb: '2.3.6'
 script: npm run test:travis

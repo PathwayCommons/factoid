@@ -1,14 +1,7 @@
-dist: trusty
 language: node_js
 node_js:
   - "8"
-  - "stable"
+  - "10"
+addons:
+  rethinkdb: '2.3.4'
 script: npm run test:travis
-sudo: required
-before_install:
-  - sudo apt-get -qq update
-  - source /etc/lsb-release && echo "deb http://download.rethinkdb.com/apt $DISTRIB_CODENAME main" | sudo tee /etc/apt/sources.list.d/rethinkdb.list
-  - wget -qO- https://download.rethinkdb.com/apt/pubkey.gpg | sudo apt-key add -
-  - sudo apt-get update
-  - sudo apt-get install rethinkdb
-  - rethinkdb &

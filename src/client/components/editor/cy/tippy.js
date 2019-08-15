@@ -11,7 +11,9 @@ export default function({ bus, cy, document }){
   let isSmallScreen = () => window.innerWidth <= 650;
 
   let hideAllTippies = (list = '_tippies') => {
-    cy.elements().forEach( el => hideTippy(el, list) );
+    const event = null;
+
+    cy.elements().forEach( el => hideTippy(el, event, list) );
   };
 
   bus.on('closetip', function( el ){
@@ -48,7 +50,7 @@ export default function({ bus, cy, document }){
       let id = el.id();
       let ele = cy.getElementById( id );
 
-      hideTippy( ele, '_pptTippies' );
+      hideTippy( ele, null, '_pptTippies' );
     } else {
       hideAllTippies('_pptTippies');
     }
@@ -121,7 +123,9 @@ export default function({ bus, cy, document }){
     }
   };
 
-  let hideTippy = (ele, list = '_tippies') => {
+  const defaultTippyList = '_tippies';
+
+  let hideTippy = (ele, event, list = defaultTippyList) => {
     let isSelected = ele.selected();
     let tippies = ele.scratch(list);
     let didClose = false;
@@ -135,7 +139,7 @@ export default function({ bus, cy, document }){
     }
 
     // keep the node or edge selected when you just close the tippy popover
-    if( didClose && isSelected ){
+    if( didClose && isSelected && event != null && event.type === 'tap' && event.target === cy ){
       setTimeout(() => { // on next tick
         ele.select();
       }, 0);
@@ -222,7 +226,7 @@ export default function({ bus, cy, document }){
     return div;
   };
 
-  let toggleElementInfoFor = ( el, opts ) => {
+  let toggleElementInfoFor = ( el, opts = {} ) => {
     let { toggleOn, togglePpts } = _.assign( {
       toggleOn: undefined,
       togglePpts: false
@@ -230,6 +234,8 @@ export default function({ bus, cy, document }){
 
     let pan = cy.pan();
     let zoom = cy.zoom();
+
+    let event = opts.event;
 
     let modelToRenderedPt = p => {
       return {
@@ -252,9 +258,9 @@ export default function({ bus, cy, document }){
 
     if( !toggleOn ){
       if( togglePpts ){
-        hideTippy( el, '_pptTippies' );
+        hideTippy( el, event, '_pptTippies' );
       } else {
-        hideTippy( el );
+        hideTippy( el, event );
       }
     } else {
       if( !togglePpts ){
@@ -401,6 +407,6 @@ export default function({ bus, cy, document }){
       return;
     }
 
-    toggleElementInfoFor( e.target );
+    toggleElementInfoFor( e.target, { event: e } );
   });
 }

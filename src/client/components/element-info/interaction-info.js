@@ -7,10 +7,7 @@ import * as defs from '../../defs';
 import { animateDomForEdit } from '../animate';
 import uuid from 'uuid';
 import Progression from './progression';
-import ProgressionStepper from './progression-stepper';
 import EventEmitter from 'eventemitter3';
-import Notification from '../notification/notification';
-import InlineNotification from '../notification/inline';
 import Tooltip from '../popover/tooltip';
 import { INTERACTION_TYPES, INTERACTION_TYPE } from '../../../model/element/interaction-type';
 
@@ -222,14 +219,6 @@ class InteractionInfo extends DataComponent {
     let { STAGES, ORDERED_STAGES } = progression;
     let stage = progression.getStage();
 
-    let makeNotification = notification => {
-      return( h(InlineNotification, {
-        notification,
-        key: notification.id(),
-        className: 'interaction-info-notification'
-      }) );
-    };
-
     if( stage === STAGES.COMPLETED || !doc.editable() ){
       let showEditIcon = doc.editable();
       let assoc = el.association();
@@ -286,13 +275,9 @@ class InteractionInfo extends DataComponent {
         }, IntnType.displayValue) );
       } );
 
-      children.push( makeNotification(s.assocNotification) );
-
       children.push( h('label.interaction-info-assoc-radioset-label', 'Interaction type') );
 
       children.push( h('div.interaction-info-assoc-radioset', radiosetChildren) );
-    } else if( stage === STAGES.PARTICIPANT_TYPES ){
-      children.push( makeNotification(s.pptTypeNotification) );
     }
 
     return h('div.interaction-info', children);

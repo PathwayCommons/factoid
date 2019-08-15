@@ -7,13 +7,10 @@ import * as defs from '../../defs';
 import Heap from 'heap';
 import Highlighter from '../highlighter';
 import Notification from '../notification';
-import InlineNotification from '../notification/inline';
-import Tooltip from '../popover/tooltip';
 import assocDisp from './entity-assoc-display';
 import CancelablePromise from 'p-cancelable';
 
 import { stringDistanceMetric } from '../../../util';
-import { animateDomForEdit } from '../animate';
 
 const MAX_FIXED_SYNONYMS = 5;
 const MAX_SYNONYMS_SHOWN = 10;

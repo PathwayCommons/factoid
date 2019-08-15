@@ -9,8 +9,6 @@ import { getId, defer, makeClassList, tryPromise } from '../../../util';
 import Document from '../../../model/document';
 import { PARTICIPANT_TYPE } from '../../../model/element/participant-type';
 
-import Notification from '../notification';
-import CornerNotification from '../notification/corner';
 import Popover from '../popover/popover';
 
 import logger from '../../logger';
@@ -179,27 +177,6 @@ class Editor extends DataComponent {
         });
 
         logger.info('Initialised Cytoscape on mounted editor');
-      } )
-      .then( () => {
-        let anyIsInc = doc.entities().some( ent => !ent.completed() );
-
-        let ntfn = new Notification({
-          openable: true,
-          openText: 'Show me',
-          active: anyIsInc,
-          message: 'Provide more information for incomplete entities, labelled "?".'
-        });
-
-        ntfn.on('open', () => this.openFirstIncompleteEntity());
-
-        if( this.editable() ){
-          let listenForComplete = el => el.on('complete', () => ntfn.dismiss());
-
-          doc.elements().forEach(listenForComplete);
-          doc.on('add', listenForComplete);
-
-          this.setData({ incompleteNotification: ntfn });
-        }
       } )
       .then( () => {
         logger.info('The editor has initialised');
@@ -445,7 +422,7 @@ class Editor extends DataComponent {
   }
 
   render(){
-    let { document, bus, incompleteNotification, showHelp } = this.data;
+    let { document, bus, showHelp } = this.data;
     let controller = this;
     let { history } = this.props;
 
@@ -484,7 +461,6 @@ class Editor extends DataComponent {
         ])
       ]),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
-      incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
       h('div.editor-graph#editor-graph'),
       h('div.editor-help' + (showHelp ? '.editor-help-shown' : ''), showHelp ? [

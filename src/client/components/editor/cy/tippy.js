@@ -6,8 +6,6 @@ import ParticipantInfo from '../../element-info/participant-info';
 import tippyjs from 'tippy.js';
 import _ from 'lodash';
 import { tippyDefaults } from '../../../defs';
-import NotificationBase from '../../notification/base';
-import Notification from '../../notification/notification';
 
 export default function({ bus, cy, document }){
   let isSmallScreen = () => window.innerWidth <= 650;
@@ -25,8 +23,6 @@ export default function({ bus, cy, document }){
     } else {
       hideAllTippies();
     }
-
-    deactivateIncompleteNotification();
   });
 
   bus.on('destroytip', () => {
@@ -35,7 +31,6 @@ export default function({ bus, cy, document }){
 
   bus.on('opentip', function( el ){
     hideAllTippies();
-    deactivateIncompleteNotification();
 
     if( el != null ){
       toggleElementInfoFor( cy.getElementById( el.id() ) );
@@ -61,12 +56,10 @@ export default function({ bus, cy, document }){
 
   cy.on('pan zoom drag', () => {
     hideAllTippies();
-    deactivateIncompleteNotification();
   });
 
   cy.on('tap', e => {
     if( e.target === cy ){
-      deactivateIncompleteNotification();
       hideAllTippies();
     }
   });
@@ -93,8 +86,6 @@ export default function({ bus, cy, document }){
         infos.forEach( destroyTippy );
       }
     } );
-
-    destroyTippy( incompleteTippyInfo );
   };
 
   let destroyTippy = tippyInfo => {
@@ -130,65 +121,6 @@ export default function({ bus, cy, document }){
     }
   };
 
-  let incompleteNotification = new Notification({
-    openable: true,
-    openText: 'Open'
-  });
-
-  let incompleteTippyInfo = null;
-
-  incompleteNotification.on('deactivate', () => {
-    if( incompleteTippyInfo != null ){
-      destroyTippy( incompleteTippyInfo );
-
-      incompleteTippyInfo = null;
-    }
-  });
-
-  incompleteNotification.on('open', () => {
-    toggleElementInfoFor( incompleteTippyInfo.el, { toggleOn: true } );
-  });
-
-  let makeIncompleteNotification = (el, docEl) => { // eslint-disable-line no-unused-vars
-    if( !document.editable() ){ return; }
-
-    let ref = getRef( () => el.renderedBoundingBox({ includeLabels: true, includeOverlays: false }), el );
-    let content = getContentDiv( h( NotificationBase, {
-      notification: incompleteNotification,
-      className: 'incomplete-entity-notification'
-    } ) );
-
-    let type = docEl.isInteraction() ? 'interaction' : 'entity';
-
-    incompleteNotification.message(`Complete this ${type}.`);
-
-    incompleteNotification.activate();
-
-    if( incompleteTippyInfo != null ){
-      destroyTippy( incompleteTippyInfo );
-    }
-
-    let tippy = tippyjs( ref, _.assign( {}, tippyDefaults, {
-      duration: 0,
-      theme: 'dark',
-      placement: 'top',
-      hideOnClick: false,
-      html: content
-    } ) ).tooltips[0];
-
-    let tippyInfo = { tippy, content, el };
-
-    incompleteTippyInfo = tippyInfo;
-
-    tippy.show();
-  };
-
-  let deactivateIncompleteNotification = () => {
-    if( incompleteNotification != null && incompleteNotification.active() ){
-      incompleteNotification.deactivate();
-    }
-  };
-
   let hideTippy = (ele, list = '_tippies') => {
     let isSelected = ele.selected();
     let tippies = ele.scratch(list);
@@ -200,14 +132,6 @@ export default function({ bus, cy, document }){
 
         didClose = true;
       });
-    }
-
-    if( didClose && list !== '_pptTippies' ){
-      let docEl = document.get( ele.id() );
-
-      if( docEl && !docEl.completed() ){
-        makeIncompleteNotification( ele, docEl );
-      }
     }
 
     // keep the node or edge selected when you just close the tippy popover
@@ -335,7 +259,6 @@ export default function({ bus, cy, document }){
     } else {
       if( !togglePpts ){
         hideAllTippies();
-        deactivateIncompleteNotification();
 
         lastOpenTime = Date.now();
 

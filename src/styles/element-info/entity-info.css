@@ -6,6 +6,15 @@
   width: 100%;
 }
 
+.entity-info-assoc {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.entity-info-assoc-manual {
+  text-align: center;
+}
+
 .entity-info-name-clear-disabled {
   opacity: 0;
   pointer-events: none;
@@ -28,10 +37,11 @@
 
 .entity-info-matches {
   box-sizing: border-box;
-  max-height: calc(100vh - 8em);
+  max-height: 20em;
   overflow: auto;
   transition: opacity 500ms ease-out;
   opacity: 1;
+  margin-top: 1em;
 }
 
 @media (max-width: 400px) {
@@ -41,7 +51,11 @@
 }
 
 .entity-info-match-empty {
-  margin: 1em 0;
+  margin: 1em;
+  padding: 0.25em 0.5em;
+  background-color: var(--invalidColor);
+  color: #fff;
+  border-radius: 0.5em;
 }
 
 .entity-info-match-instructions {

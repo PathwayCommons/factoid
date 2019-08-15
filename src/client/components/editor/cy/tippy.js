@@ -259,7 +259,7 @@ export default function({ bus, cy, document }){
   let makeTippy = ({ el, ref, content, overrides, sublist }) => {
     let tippy = tippyjs( ref, _.assign( {}, tippyDefaults, {
       duration: 0,
-      placement: isSmallScreen() ? 'bottom' : 'right',
+      placement: 'bottom',
       hideOnClick: false,
       sticky: true,
       livePlacement: true,

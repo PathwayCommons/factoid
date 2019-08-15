@@ -295,10 +295,6 @@ class InteractionInfo extends DataComponent {
       children.push( makeNotification(s.pptTypeNotification) );
     }
 
-    if( doc.editable() ){
-      children.push( h(ProgressionStepper, { progression }) );
-    }
-
     return h('div.interaction-info', children);
   }
 }

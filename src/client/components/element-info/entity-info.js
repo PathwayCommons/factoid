@@ -124,6 +124,7 @@ class EntityInfo extends DataComponent {
     let el = s.element;
 
     el.associate( match );
+    el.complete();
 
     // this indicates to render the match immediately though the data on the server may not be updated yet
     this.setData({
@@ -136,6 +137,7 @@ class EntityInfo extends DataComponent {
     let el = s.element;
 
     el.unassociate();
+    el.uncomplete();
 
     this.setData({
       matches: [],

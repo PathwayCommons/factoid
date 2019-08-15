@@ -100,8 +100,6 @@ class EntityInfo extends DataComponent {
     el.rename( name );
 
     const associate = matches => {
-      console.log('associate on rename', matches);
-
       if( matches && matches.length > 0 ){
         this.associate(matches[0]);
       } else {
@@ -403,19 +401,11 @@ class EntityInfo extends DataComponent {
         children.push( h('div.entity-info-assoc', allAssoc( assoc )) );
       }
     } else {
-      let NameNotification = () => {
-        let notification = s.nameNotification;
-
-        return h(InlineNotification, { notification, key: notification.id(), className: 'entity-info-notification' });
-      };
-
-      // children.push( h(NameNotification) );
-
       children.push(
         h('div.entity-info-name-input-area', [
           h('input.input-round.input-joined.entity-info-name-input', {
             type: 'text',
-            placeholder: 'Entity name',
+            placeholder: 'Name of gene or chemical (e.g. p53)',
             value: s.name,
             spellCheck: false,
             onChange: evt => this.rename( evt.target.value ),
@@ -488,7 +478,7 @@ class EntityInfo extends DataComponent {
         );
       } else if( !s.loadingMatches && s.name && !s.updateDirty ){
         children.push( h('div.entity-info-match-empty', [
-        `We aren't able to disambiguate  "${s.name}".  Please try renaming "${s.name}" to a clearer, perhaps more standard name.`
+        `We couldn't find  "${s.name}".  Please try renaming "${s.name}" to a clearer, perhaps more standard name.`
         ] ) );
       }
     }

@@ -1,7 +1,7 @@
 import DataComponent from '../data-component';
 import h from 'react-hyperscript';
 import ReactDom from 'react-dom';
-import { initCache, SingleValueCache, error } from '../../../util';
+import { initCache, error } from '../../../util';
 import _ from 'lodash';
 import * as defs from '../../defs';
 import { animateDomForEdit } from '../animate';
@@ -12,8 +12,6 @@ import Tooltip from '../popover/tooltip';
 import { INTERACTION_TYPES, INTERACTION_TYPE } from '../../../model/element/interaction-type';
 
 let stageCache = new WeakMap();
-let assocNotificationCache = new SingleValueCache();
-let pptTypeNotificationCache = new SingleValueCache();
 
 class InteractionInfo extends DataComponent {
   constructor( props ){
@@ -38,17 +36,12 @@ class InteractionInfo extends DataComponent {
 
     let stage = initCache( stageCache, el, el.completed() ? STAGES.COMPLETED : initialStage );
 
-    let assocNotification = initCache( assocNotificationCache, el, new Notification({ active: true }) );
-    let pptTypeNotification = initCache( pptTypeNotificationCache, el, new Notification({ active: true }) );
-
     this.data = {
       el,
       stage,
       description: p.element.description(),
       progression,
-      bus: p.bus || new EventEmitter(),
-      assocNotification,
-      pptTypeNotification
+      bus: p.bus || new EventEmitter()
     };
   }
 
@@ -73,7 +66,7 @@ class InteractionInfo extends DataComponent {
   }
 
   goToStage( stage ){
-    let { el, progression, bus, assocNotification, pptTypeNotification, stage: currentStage } = this.data;
+    let { el, progression, bus, stage: currentStage } = this.data;
     let { STAGES } = progression;
     let getPptName = ppt => ppt.completed() ? ppt.name() : '(?)';
 
@@ -85,12 +78,10 @@ class InteractionInfo extends DataComponent {
       switch( stage ){
         case STAGES.ASSOCIATE:
           bus.emit('closepptstip', el);
-          assocNotification.message('Select the type of interaction between ' + el.participants().map(getPptName).join(' and ') + '.');
           break;
 
         case STAGES.PARTICIPANT_TYPES:
           bus.emit('openpptstip', el);
-          pptTypeNotification.message(`Activation or inhibition?`);
           break;
 
         case STAGES.COMPLETED:

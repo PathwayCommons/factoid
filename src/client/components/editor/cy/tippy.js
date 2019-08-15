@@ -296,7 +296,7 @@ export default function({ bus, cy, document }){
 
         let edgesBb = el.add(el.connectedNodes()).renderedBoundingBox();
 
-        let intnTippyAway = true; // always shift
+        let intnTippyAway = false; // disable shifting, since we're currently not using arrow editing
 
         let getIntnTippyBb = () => {
           let bb = el.isNode () ? el.renderedBoundingBox({ includeLabels: false, includeOverlays: false }) : {
@@ -343,7 +343,7 @@ export default function({ bus, cy, document }){
 
           // cause tippy to animate a distance away
           setTimeout(() => {
-            intnTippyAway = true;
+            intnTippyAway = false; // we're not currently using arrow editing
           }, 1);
         } else {
           ppts.forEach( ppt => {

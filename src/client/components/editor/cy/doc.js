@@ -588,19 +588,6 @@ function listenToDoc({ bus, cy, document, controller }){
 
   cy.on('taphold', onTapHold);
 
-  cy.on('tap', 'node, edge', _.debounce( e => {
-    let tgt = e.target;
-
-    if( tgt.isNode() && isInteractionNode(tgt) ){
-      tgt.connectedEdges().select();
-    } else if( tgt.isEdge() ){
-      let intnNode = tgt.connectedNodes( isInteractionNode );
-
-      intnNode.connectedEdges().select();
-      intnNode.select();
-    }
-  }, 10 ));
-
   cy.on('add', 'edge', e => {
     let edge = e.target;
 

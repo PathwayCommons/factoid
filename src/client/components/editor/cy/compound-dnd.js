@@ -1,6 +1,6 @@
-import { tryPromise } from '../../../../util';
+import { tryPromise, delay } from '../../../../util';
 
-export default function({ cy, document, controller }){
+export default function({ cy, document, controller, bus }){
     if( !document.editable() ){ return; }
     cy.compoundDragAndDrop();
     let lastOldParent = null;
@@ -73,12 +73,19 @@ export default function({ cy, document, controller }){
           return updateParent( docDropSibling );
         };
 
+        const openTippy = () => delay(50).then(() => {
+          if( newParent ){
+            bus.emit('opentip', docNewParent);
+          }
+        });
+
         return (
             tryPromise( startBatch )
                 .then( handleNewComplex )
                 .then( updateSelfParent )
                 .then( updateSiblingParent )
                 .then( endBatch )
+                .then( openTippy )
         );
     } );
 }

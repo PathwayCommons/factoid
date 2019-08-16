@@ -1,7 +1,6 @@
 import DataComponent from '../data-component';
 import h from 'react-hyperscript';
 import ReactDom from 'react-dom';
-import { focusDomElement, makeClassList, initCache, SingleValueCache, makeCancelable } from '../../../util';
 import _ from 'lodash';
 import * as defs from '../../defs';
 import Heap from 'heap';
@@ -9,8 +8,12 @@ import Highlighter from '../highlighter';
 import Notification from '../notification';
 import assocDisp from './entity-assoc-display';
 import CancelablePromise from 'p-cancelable';
+import { isComplex } from '../../../model/element/element-type';
 
-import { stringDistanceMetric } from '../../../util';
+import {
+  focusDomElement, makeClassList, initCache, SingleValueCache,
+  makeCancelable, stringDistanceMetric
+} from '../../../util';
 
 const MAX_FIXED_SYNONYMS = 5;
 const MAX_SYNONYMS_SHOWN = 10;
@@ -96,7 +99,7 @@ class EntityInfo extends DataComponent {
 
     el.rename( name );
 
-    const associate = matches => {
+    let associate = matches => {
       if( matches && matches.length > 0 ){
         this.associate(matches[0]);
       } else {
@@ -104,7 +107,11 @@ class EntityInfo extends DataComponent {
       }
     };
 
-    this.debouncedUpdateMatches( name, associate );
+    if( isComplex(el.type()) ){
+      associate = _.nop;
+    } else {
+      this.debouncedUpdateMatches( name, associate );
+    }
 
     this.setData({
       name: name,
@@ -400,11 +407,19 @@ class EntityInfo extends DataComponent {
         children.push( h('div.entity-info-assoc', allAssoc( assoc )) );
       }
     } else {
+      let placeholder;
+
+      if( isComplex(s.element.type()) ){
+        placeholder = 'Name of complex';
+      } else {
+        placeholder = 'Name of gene or chemical (e.g. p53)';
+      }
+
       children.push(
         h('div.entity-info-name-input-area', [
           h('input.input-round.input-joined.entity-info-name-input', {
             type: 'text',
-            placeholder: 'Name of gene or chemical (e.g. p53)',
+            placeholder,
             value: s.name,
             spellCheck: false,
             onChange: evt => this.rename( evt.target.value ),
@@ -438,6 +453,12 @@ class EntityInfo extends DataComponent {
         children.push(
           h(Loader)
         );
+      } else if( s.name && isComplex(s.element.type()) ){
+        let type = s.element.type();
+        let name = s.name;
+        let entityNames = s.element.participants().map(ppt => ppt.name());
+
+        children.push( h('div.entity-info-assoc', targetFromAssoc({ type, name, entityNames }, true )) );
       } else if( s.matches.length > 0 && s.manualAssocMode ){
         children.push( h('div.entity-info-matches', {
           className: s.replacingMatches ? 'entity-info-matches-replacing' : '',
@@ -447,8 +468,6 @@ class EntityInfo extends DataComponent {
             evt.stopPropagation();
           }
         }, [
-          // h(AssocMsg),
-
           ...s.matches.map( m => {
             return h('div.entity-info-match', [
               h('div.entity-info-match-target', {

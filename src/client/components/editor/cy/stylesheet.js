@@ -32,7 +32,10 @@ function makeStylesheet(){
       selector: 'node:parent',
       style: {
         'background-opacity': 0.5,
-        'background-color': '#FFFFFF'
+        'background-color': '#FFFFFF',
+        'text-outline-opacity': 0,
+        'color': defaultColor,
+        'text-valign': 'top'
       }
     },
     {

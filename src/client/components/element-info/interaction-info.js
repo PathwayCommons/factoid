@@ -8,7 +8,6 @@ import { animateDomForEdit } from '../animate';
 import uuid from 'uuid';
 import Progression from './progression';
 import EventEmitter from 'eventemitter3';
-import Tooltip from '../popover/tooltip';
 import { INTERACTION_TYPES, INTERACTION_TYPE } from '../../../model/element/interaction-type';
 
 let stageCache = new WeakMap();
@@ -210,20 +209,20 @@ class InteractionInfo extends DataComponent {
     let stage = progression.getStage();
 
     if( stage === STAGES.COMPLETED || !doc.editable() ){
-      let showEditIcon = doc.editable();
+      let showEditButton = doc.editable();
       let assoc = el.association();
       let summaryChildren = [];
 
-      summaryChildren.push( h('span.interaction-info-summary-text', assoc ? assoc.toString() : [
+      summaryChildren.push( h('div.interaction-info-summary-text', assoc ? assoc.toString() : [
         h('i.material-icons', 'info'),
         h('span', ' This interaction has no data associated with it.')
       ]) );
 
-      if( showEditIcon ){
-        summaryChildren.push( h(Tooltip, { description: 'Edit from the beginning' }, [
-          h('button.interaction-info-edit.plain-button', {
+      if( showEditButton ){
+        summaryChildren.push( h('div.interaction-info-edit', [
+          h('button', {
             onClick: () => progression.goToStage( ORDERED_STAGES[1] )
-          }, [ h('i.material-icons', 'edit') ])
+          }, `Select a different type than "${assoc.displayValue}"`)
         ]) );
       }
 

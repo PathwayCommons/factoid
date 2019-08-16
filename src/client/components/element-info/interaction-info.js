@@ -68,7 +68,6 @@ class InteractionInfo extends DataComponent {
   goToStage( stage ){
     let { el, progression, bus, stage: currentStage } = this.data;
     let { STAGES } = progression;
-    let getPptName = ppt => ppt.completed() ? ppt.name() : '(?)';
 
     if( this.canGoToStage(stage) ){
       this.setData({ stage, stageError: null });

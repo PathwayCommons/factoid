@@ -449,16 +449,16 @@ class EntityInfo extends DataComponent {
         ])
       );
 
-      if( s.name && (s.loadingMatches || s.updateDirty) && !s.manualAssocMode ){
-        children.push(
-          h(Loader)
-        );
-      } else if( s.name && isComplex(s.element.type()) ){
+      if( s.name && isComplex(s.element.type()) ){
         let type = s.element.type();
         let name = s.name;
         let entityNames = s.element.participants().map(ppt => ppt.name());
 
         children.push( h('div.entity-info-assoc', targetFromAssoc({ type, name, entityNames }, true )) );
+      } else if( s.name && (s.loadingMatches || s.updateDirty) && !s.manualAssocMode ){
+        children.push(
+          h(Loader)
+        );
       } else if( s.matches.length > 0 && s.manualAssocMode ){
         children.push( h('div.entity-info-matches', {
           className: s.replacingMatches ? 'entity-info-matches-replacing' : '',

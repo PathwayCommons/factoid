@@ -197,7 +197,9 @@ class TaskView extends DataComponent {
   render(){
     let { document, bus } = this.props;
     let submitted = this.props.document.submitted();
-    let incompleteEles = this.props.document.elements().filter(ele => !ele.completed());
+    let incompleteEles = this.props.document.elements().filter(ele => {
+      return !ele.completed() && !ele.isInteraction();
+    });
 
     let ntfns = document.entities().concat(document.interactions()).filter(ele => !ele.completed()).map(ele => {
       let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + (ele.completed() ? '' : '') }`;

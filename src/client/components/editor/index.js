@@ -215,10 +215,11 @@ class Editor extends DataComponent {
   toggleDrawMode( toggle, type = PARTICIPANT_TYPE.UNSIGNED ){
     if( !this.editable() ){ return; }
 
+    let alreadyInDrawMode = this.data.drawModeType != null;
     let on;
 
     if( toggle == null ){
-      if( this.data.drawModeType == null || type.value !== this.data.drawModeType.value ){
+      if( !alreadyInDrawMode || type.value !== this.data.drawModeType.value ){
         on = true; // keep on if just changing type
       } else {
         on = !this.drawMode(); // otherwise flip
@@ -228,6 +229,11 @@ class Editor extends DataComponent {
     }
 
     if( on ){
+      if( alreadyInDrawMode ){
+        // allow extension to go through the full enable-disable cycle for things like locking
+        this.data.bus.emit('drawoff');
+      }
+
       this.data.bus.emit('drawon', type );
     } else {
       this.data.bus.emit('drawoff');

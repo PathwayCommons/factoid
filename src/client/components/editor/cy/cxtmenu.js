@@ -56,17 +56,23 @@ export default function({ cy, document, bus }){
     }
   };
 
+  let cancel = {
+    content: '',
+    enabled: false,
+    fillColor: 'rgba(0, 0, 0, 0)'
+  };
+
   cy.cxtmenu( _.assign( {}, DEFAULTS, {
     selector: 'node[?isEntity]',
-    commands: [ drawUnsignedCmd, drawPositiveCmd, drawNegativeCmd, rmElCmd ]
+    commands: [ drawPositiveCmd, drawUnsignedCmd, cancel, rmElCmd, drawNegativeCmd ]
   } ) );
 
   cy.cxtmenu( _.assign( {}, DEFAULTS, {
     selector: 'edge',
-    commands: [ rmElCmd ]
+    commands: [ cancel, rmElCmd ]
   } ) );
 
-  let bgCmds = [ addEntCmd, rmSelCmd ];
+  let bgCmds = [ addEntCmd, cancel, rmSelCmd ];
 
   cy.cxtmenu( _.assign( {}, DEFAULTS, {
     selector: 'core',

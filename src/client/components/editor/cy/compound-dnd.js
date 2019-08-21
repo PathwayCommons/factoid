@@ -5,11 +5,22 @@ export default function({ cy, document, controller, bus }){
     cy.compoundDragAndDrop();
     let lastOldParent = null;
 
+    const HIDDEN_EL_CLASS = 'invisible-el';
     const getDocEl = id => id != null ? document.get(id) : null;
     const getElId = el => el == null ? null : el.id();
     const checkIfNonEmpty = el => el != null && el.length > 0;
+    const hideEl = el => el.addClass( HIDDEN_EL_CLASS );
+    const unhideEl = el => el.removeClass( HIDDEN_EL_CLASS );
     let startBatch = () => cy.startBatch();
     let endBatch = () => cy.endBatch();
+
+    cy.on( 'cdndover', ( event, dropTarget ) => {
+        unhideEl( dropTarget );
+    } );
+
+    cy.on( 'cdndout', ( event, dropTarget ) => {
+        hideEl( dropTarget );
+    } );
 
     cy.on( 'cdndgrab', ( event ) => {
         let node = event.target;

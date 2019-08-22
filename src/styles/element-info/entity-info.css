@@ -103,6 +103,23 @@
   }
 }
 
+.entity-info-match-target-selected {
+  background: #f0f0f0;
+}
+
+.entity-info-matches-instructions {
+  text-align: center;
+}
+
+.entity-info-match-current-indicator {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 0.5em;
+  color: #888;
+  font-size: var(--smallFontSize);
+}
+
 .entity-info-name {
   display: block;
   font-weight: 600;

@@ -355,7 +355,7 @@ class EntityInfo extends DataComponent {
       assoc = null;
     }
 
-    let targetFromAssoc = (m, complete) => {
+    let targetFromAssoc = (m, complete = false) => {
       let highlight = !complete;
       let searchStr = highlight ? s.name : null;
       let searchTerms = searchStr ? searchStr.split(/\s+/) : [];
@@ -460,6 +460,10 @@ class EntityInfo extends DataComponent {
           h(Loader)
         );
       } else if( s.matches.length > 0 && s.manualAssocMode ){
+        children.push( h('div.entity-info-matches-instructions', [
+          h('p', `Select a better match for "${s.name}"`)
+        ]) );
+
         children.push( h('div.entity-info-matches', {
           className: s.replacingMatches ? 'entity-info-matches-replacing' : '',
           onScroll: evt => {
@@ -469,13 +473,18 @@ class EntityInfo extends DataComponent {
           }
         }, [
           ...s.matches.map( m => {
+            const isCurrentMatch = m.namespace == assoc.namespace && m.id == assoc.id;
+
             return h('div.entity-info-match', [
               h('div.entity-info-match-target', {
+                className: makeClassList({
+                  'entity-info-match-target-selected': isCurrentMatch
+                }),
                 onClick: () => {
                   this.disableManualMatchMode();
                   this.associate( m );
                 }
-              }, targetFromAssoc( m )),
+              }, targetFromAssoc( m, isCurrentMatch ).concat( isCurrentMatch ? h('span.entity-info-match-current-indicator', 'Current match') : null )),
               assocDisp.link( m )
             ]);
           }),
@@ -490,7 +499,7 @@ class EntityInfo extends DataComponent {
             h('button.entity-info-assoc-button', {
               onClick: () => this.enableManualMatchMode()
             }, [
-              `Select a better match for "${s.name}"`
+              `This isn't the "${s.name}" that I meant`
             ])
           ])
         );

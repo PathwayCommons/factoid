@@ -165,6 +165,15 @@ function makeStylesheet(){
       style: {
         'opacity': 0
       }
+    },
+    {
+      selector: 'node.invisible-el',
+      style: {
+        'border-opacity': 0,
+        'background-opacity': 0,
+        'background-image-opacity': 0,
+        'text-opacity': 0
+      }
     }
   ].filter( block => block != null );
 }

@@ -2,7 +2,8 @@
   "ignoreFiles": [
     "./node_modules/**/*",
     "./src/styles/vendor/**/*",
-    "./build/*"
+    "./build/*",
+    "**/*.js"
   ],
   "extends": "stylelint-config-standard",
   "rules": {

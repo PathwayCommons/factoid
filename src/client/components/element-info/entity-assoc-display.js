@@ -55,6 +55,15 @@ let chemical = (m, searchTerms) => {
   ];
 };
 
+let complex = (m) => {
+  return [
+    h('div.entity-info-section', [
+      h('span.entity-info-title', 'Components'),
+      h('span', m.entityNames.join('; '))
+    ])
+  ];
+};
+
 let link = m => {
   let url, nsName;
 
@@ -100,6 +109,6 @@ let modification = (mod, onEdit) => h('div.entity-info-section.entity-info-mod-s
   ])
 ]);
 
-export const assocDisp = { protein, modification, chemical, link };
+export const assocDisp = { protein, modification, chemical, complex, link };
 
 export default assocDisp;

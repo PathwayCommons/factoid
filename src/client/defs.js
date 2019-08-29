@@ -1,4 +1,4 @@
-export const updateDelay = 1000;
+export const updateDelay = 250;
 export const editAnimationDuration = 600;
 export const editAnimationEasing = 'linear';
 export const editAnimationColor = 'rgba(255, 255, 0, 0.5)';

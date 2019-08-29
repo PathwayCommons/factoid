@@ -61,7 +61,7 @@ class TaskList extends DirtyComponent {
   render(){
     let doc = this.props.document;
     let ntfns = doc.entities().concat(doc.interactions()).filter(ele => !ele.completed()).map(ele => {
-      let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + (ele.completed() ? '' : ' (?)') }`;
+      let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + (ele.completed() ? '' : '') }`;
       let innerMsg = entMsg(ele);
 
       if( ele.isInteraction() ){
@@ -197,10 +197,12 @@ class TaskView extends DataComponent {
   render(){
     let { document, bus } = this.props;
     let submitted = this.props.document.submitted();
-    let incompleteEles = this.props.document.elements().filter(ele => !ele.completed());
+    let incompleteEles = this.props.document.elements().filter(ele => {
+      return !ele.completed() && !ele.isInteraction();
+    });
 
     let ntfns = document.entities().concat(document.interactions()).filter(ele => !ele.completed()).map(ele => {
-      let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + (ele.completed() ? '' : ' (?)') }`;
+      let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + (ele.completed() ? '' : '') }`;
       let innerMsg = entMsg(ele);
 
       if( ele.isInteraction() ){

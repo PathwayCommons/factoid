@@ -41,7 +41,7 @@ class EditorButtons extends React.Component {
       );
 
       grs.push([
-        h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Add an entity', shortcut: '1' }), [
+        h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Add a gene or chemical', shortcut: '1' }), [
           h('button.editor-button.plain-button', { onClick: () => controller.addElement().then( el => bus.emit('opentip', el) )  }, [
             h('i.material-icons', 'fiber_manual_record')
           ])

@@ -6,14 +6,14 @@ import ParticipantInfo from '../../element-info/participant-info';
 import tippyjs from 'tippy.js';
 import _ from 'lodash';
 import { tippyDefaults } from '../../../defs';
-import NotificationBase from '../../notification/base';
-import Notification from '../../notification/notification';
 
 export default function({ bus, cy, document }){
   let isSmallScreen = () => window.innerWidth <= 650;
 
   let hideAllTippies = (list = '_tippies') => {
-    cy.elements().forEach( el => hideTippy(el, list) );
+    const event = null;
+
+    cy.elements().forEach( el => hideTippy(el, event, list) );
   };
 
   bus.on('closetip', function( el ){
@@ -25,8 +25,6 @@ export default function({ bus, cy, document }){
     } else {
       hideAllTippies();
     }
-
-    deactivateIncompleteNotification();
   });
 
   bus.on('destroytip', () => {
@@ -35,7 +33,6 @@ export default function({ bus, cy, document }){
 
   bus.on('opentip', function( el ){
     hideAllTippies();
-    deactivateIncompleteNotification();
 
     if( el != null ){
       toggleElementInfoFor( cy.getElementById( el.id() ) );
@@ -53,7 +50,7 @@ export default function({ bus, cy, document }){
       let id = el.id();
       let ele = cy.getElementById( id );
 
-      hideTippy( ele, '_pptTippies' );
+      hideTippy( ele, null, '_pptTippies' );
     } else {
       hideAllTippies('_pptTippies');
     }
@@ -61,12 +58,10 @@ export default function({ bus, cy, document }){
 
   cy.on('pan zoom drag', () => {
     hideAllTippies();
-    deactivateIncompleteNotification();
   });
 
   cy.on('tap', e => {
     if( e.target === cy ){
-      deactivateIncompleteNotification();
       hideAllTippies();
     }
   });
@@ -93,8 +88,6 @@ export default function({ bus, cy, document }){
         infos.forEach( destroyTippy );
       }
     } );
-
-    destroyTippy( incompleteTippyInfo );
   };
 
   let destroyTippy = tippyInfo => {
@@ -130,66 +123,9 @@ export default function({ bus, cy, document }){
     }
   };
 
-  let incompleteNotification = new Notification({
-    openable: true,
-    openText: 'Open'
-  });
+  const defaultTippyList = '_tippies';
 
-  let incompleteTippyInfo = null;
-
-  incompleteNotification.on('deactivate', () => {
-    if( incompleteTippyInfo != null ){
-      destroyTippy( incompleteTippyInfo );
-
-      incompleteTippyInfo = null;
-    }
-  });
-
-  incompleteNotification.on('open', () => {
-    toggleElementInfoFor( incompleteTippyInfo.el, { toggleOn: true } );
-  });
-
-  let makeIncompleteNotification = (el, docEl) => { // eslint-disable-line no-unused-vars
-    if( !document.editable() ){ return; }
-
-    let ref = getRef( () => el.renderedBoundingBox({ includeLabels: true, includeOverlays: false }), el );
-    let content = getContentDiv( h( NotificationBase, {
-      notification: incompleteNotification,
-      className: 'incomplete-entity-notification'
-    } ) );
-
-    let type = docEl.isInteraction() ? 'interaction' : 'entity';
-
-    incompleteNotification.message(`Complete this ${type}.`);
-
-    incompleteNotification.activate();
-
-    if( incompleteTippyInfo != null ){
-      destroyTippy( incompleteTippyInfo );
-    }
-
-    let tippy = tippyjs( ref, _.assign( {}, tippyDefaults, {
-      duration: 0,
-      theme: 'dark',
-      placement: 'top',
-      hideOnClick: false,
-      html: content
-    } ) ).tooltips[0];
-
-    let tippyInfo = { tippy, content, el };
-
-    incompleteTippyInfo = tippyInfo;
-
-    tippy.show();
-  };
-
-  let deactivateIncompleteNotification = () => {
-    if( incompleteNotification != null && incompleteNotification.active() ){
-      incompleteNotification.deactivate();
-    }
-  };
-
-  let hideTippy = (ele, list = '_tippies') => {
+  let hideTippy = (ele, event, list = defaultTippyList) => {
     let isSelected = ele.selected();
     let tippies = ele.scratch(list);
     let didClose = false;
@@ -202,16 +138,8 @@ export default function({ bus, cy, document }){
       });
     }
 
-    if( didClose && list !== '_pptTippies' ){
-      let docEl = document.get( ele.id() );
-
-      if( docEl && !docEl.completed() ){
-        makeIncompleteNotification( ele, docEl );
-      }
-    }
-
     // keep the node or edge selected when you just close the tippy popover
-    if( didClose && isSelected ){
+    if( didClose && isSelected && event != null && event.type === 'tap' && event.target === cy ){
       setTimeout(() => { // on next tick
         ele.select();
       }, 0);
@@ -259,7 +187,7 @@ export default function({ bus, cy, document }){
   let makeTippy = ({ el, ref, content, overrides, sublist }) => {
     let tippy = tippyjs( ref, _.assign( {}, tippyDefaults, {
       duration: 0,
-      placement: isSmallScreen() ? 'bottom' : 'right',
+      placement: 'bottom',
       hideOnClick: false,
       sticky: true,
       livePlacement: true,
@@ -298,7 +226,7 @@ export default function({ bus, cy, document }){
     return div;
   };
 
-  let toggleElementInfoFor = ( el, opts ) => {
+  let toggleElementInfoFor = ( el, opts = {} ) => {
     let { toggleOn, togglePpts } = _.assign( {
       toggleOn: undefined,
       togglePpts: false
@@ -306,6 +234,8 @@ export default function({ bus, cy, document }){
 
     let pan = cy.pan();
     let zoom = cy.zoom();
+
+    let event = opts.event;
 
     let modelToRenderedPt = p => {
       return {
@@ -328,14 +258,13 @@ export default function({ bus, cy, document }){
 
     if( !toggleOn ){
       if( togglePpts ){
-        hideTippy( el, '_pptTippies' );
+        hideTippy( el, event, '_pptTippies' );
       } else {
-        hideTippy( el );
+        hideTippy( el, event );
       }
     } else {
       if( !togglePpts ){
         hideAllTippies();
-        deactivateIncompleteNotification();
 
         lastOpenTime = Date.now();
 
@@ -373,7 +302,7 @@ export default function({ bus, cy, document }){
 
         let edgesBb = el.add(el.connectedNodes()).renderedBoundingBox();
 
-        let intnTippyAway = true; // always shift
+        let intnTippyAway = false; // disable shifting, since we're currently not using arrow editing
 
         let getIntnTippyBb = () => {
           let bb = el.isNode () ? el.renderedBoundingBox({ includeLabels: false, includeOverlays: false }) : {
@@ -420,7 +349,7 @@ export default function({ bus, cy, document }){
 
           // cause tippy to animate a distance away
           setTimeout(() => {
-            intnTippyAway = true;
+            intnTippyAway = false; // we're not currently using arrow editing
           }, 1);
         } else {
           ppts.forEach( ppt => {
@@ -478,6 +407,6 @@ export default function({ bus, cy, document }){
       return;
     }
 
-    toggleElementInfoFor( e.target );
+    toggleElementInfoFor( e.target, { event: e } );
   });
 }

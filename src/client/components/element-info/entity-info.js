@@ -417,7 +417,7 @@ class EntityInfo extends DataComponent {
 
       children.push(
         h('div.entity-info-name-input-area', [
-          h('input.input-round.input-joined.entity-info-name-input', {
+          h('input.input-round.entity-info-name-input', {
             type: 'text',
             placeholder,
             value: s.name,
@@ -432,20 +432,7 @@ class EntityInfo extends DataComponent {
                   break;
               }
             }
-          }),
-
-          h('button', {
-            className: makeClassList({
-              'entity-info-name-clear': true,
-              'entity-info-name-clear-disabled': !s.name
-            }),
-            onClick: () => {
-              this.clear();
-              this.focusNameInput();
-            }
-          }, [
-            h('i.material-icons', 'close')
-          ])
+          })
         ])
       );
 

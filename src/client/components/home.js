@@ -43,8 +43,8 @@ class Home extends Component {
         h('div.page-content', [
           h('h2.section-title', 'For journals'),
           h('h2', 'Enhance your content and increase your reach'),
-          h('p', 'Factoid brings your content to the fore by making it more discoverable and interactive.  Foster deep connections with the researchers you work with by embedding article content within the interaction information they access for their day-to-day research.'),
-          h('p', 'Integrating Factoid in your manuscript workflow is simple and lightweight.')])
+          h('p', 'Biofactoid brings your content to the fore by making it more discoverable and interactive.  Foster deep connections with the researchers you work with by embedding article content within the interaction information they access for their day-to-day research.'),
+          h('p', 'Integrating Biofactoid in your manuscript workflow is simple and lightweight.')])
       ]),
       h('section.home-section#credits', [
         h('div.page-content.credits', [

@@ -95,7 +95,7 @@ class DocumentSeeder extends React.Component {
       h('div.document-seeder-content', [
         h(MainMenu, { history, title: 'Publisher portal : New paper' }),
 
-        h('p', 'Enter the information for the manuscript you wish to add using Factoid. Upon submission, an invitation will be sent to the contributing author. You will be notified upon submission.'),
+        h('p', 'Enter the information for the manuscript you wish to add using Biofactoid. Upon submission, an invitation will be sent to the contributing author. You will be notified upon submission.'),
 
         demo ? h('p.document-seeder-example-buttons', [
           h('button', {

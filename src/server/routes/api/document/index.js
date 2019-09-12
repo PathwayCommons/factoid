@@ -112,27 +112,27 @@ let sendEmail = json => {
       h('p', `Dear ${j.contributorName},`),
       h('p', [
         h('span', `Share your pathway with the world:  Publishing and getting your paper noticed is essential.  `),
-        h('a', { href: BASE_URL }, 'Factoid'),
+        h('a', { href: BASE_URL }, 'Biofactoid'),
         h('span', `, a project by `),
         h('a', { href: 'https://pathwaycommons.org' }, `Pathway Commons`),
         h('span', `, helps you increase the visibility of your publications by linking your research to pathways.`)
       ]),
       h('p', [
-        h('span', `Factoid will capture the pathway data in `),
+        h('span', `Biofactoid will capture the pathway data in `),
         h('strong', `"${j.contributorName} et el.  ${j.name}.  Submission ${j.trackingId}"`),
         h('span', ` by helping you draw and describe genes and interactions:`)
       ]),
       h('ul', [
-        h('li', `Launch Factoid for your article by clicking the link.`),
-        h('li', `Check over genes and interactions Factoid may have found in your text.`),
+        h('li', `Launch Biofactoid for your article by clicking the link.`),
+        h('li', `Check over genes and interactions Biofactoid may have found in your text.`),
         h('li', `Draw genes (circles) or interactions (lines or arrows) then add information at the prompts.`),
       ]),
       h('p', `That's it!  We'll get the pathway data to researchers who need it.`),
       h('a', {
         href: `${BASE_URL}/document/${j.id}/${j.secret}`
-      }, `Launch Factoid for ${j.contributorName} et al.`),
+      }, `Launch Biofactoid for ${j.contributorName} et al.`),
       h('p', [
-        h('small', `You may also start Factoid by passing ${BASE_URL}/document/${j.id}/${j.secret} into your browser.`)
+        h('small', `You may also start Biofactoid by passing ${BASE_URL}/document/${j.id}/${j.secret} into your browser.`)
       ])
     ]).outerHTML
   });

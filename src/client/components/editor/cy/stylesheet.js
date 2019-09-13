@@ -1,5 +1,6 @@
 import { activeColor, defaultColor, labelColor, nodeSize } from './defs';
 import _ from 'lodash';
+import { isComplex } from '../../../../model/element/element-type';
 
 function makeStylesheet(){
   return [
@@ -12,8 +13,9 @@ function makeStylesheet(){
         'label': function( node ){
           let name = node.data('name');
           let completed = node.data('completed');
+          let type = node.data('type');
 
-          if( !completed ){
+          if( !completed && !isComplex(type) ){
             return '';
           } else {
             return name;

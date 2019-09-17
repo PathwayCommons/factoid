@@ -2,7 +2,12 @@ import { tryPromise, delay } from '../../../../util';
 
 export default function({ cy, document, controller, bus }){
     if( !document.editable() ){ return; }
-    cy.compoundDragAndDrop();
+
+    cy.compoundDragAndDrop({
+      overThreshold: 0,
+      outThreshold: 0
+    });
+
     let lastOldParent = null;
 
     const HIDDEN_EL_CLASS = 'invisible-el';

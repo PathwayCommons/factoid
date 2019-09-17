@@ -24,7 +24,9 @@ export default function({ cy, document, controller, bus }){
     } );
 
     cy.on( 'cdndout', ( event, dropTarget ) => {
+      if( dropTarget.children().length === 1 ){
         hideEl( dropTarget );
+      }
     } );
 
     cy.on( 'cdndgrab', ( event ) => {

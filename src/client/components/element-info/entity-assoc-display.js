@@ -56,10 +56,12 @@ let chemical = (m, searchTerms) => {
 };
 
 let complex = (m) => {
+  let getName = name => name ? name : 'Incomplete gene or chemical';
+
   return [
     h('div.entity-info-section', [
       h('span.entity-info-title', 'Components'),
-      h('span', m.entityNames.join('; '))
+      h('span', m.entityNames.map(getName).join('; '))
     ])
   ];
 };

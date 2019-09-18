@@ -163,7 +163,8 @@ button.entity-info-edit {
 .entity-info-alt-name,
 .entity-info-formula {
   display: inline;
-
+  overflow-wrap: break-word;
+  
   &::after {
     content: '; ';
   }

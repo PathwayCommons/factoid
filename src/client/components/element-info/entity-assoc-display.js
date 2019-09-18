@@ -32,6 +32,10 @@ let protein = (m, searchTerms) => {
   ];
 };
 
+let ggp = protein;
+let dna = protein;
+let rna = protein;
+
 let chemical = (m, searchTerms) => {
   return [
     h('div.entity-info-section', [
@@ -109,6 +113,6 @@ let modification = (mod, onEdit) => h('div.entity-info-section.entity-info-mod-s
   ])
 ]);
 
-export const assocDisp = { protein, modification, chemical, complex, link };
+export const assocDisp = { ggp, dna, rna, protein, modification, chemical, complex, link };
 
 export default assocDisp;

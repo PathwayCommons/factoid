@@ -2,6 +2,9 @@ import _ from 'lodash';
 
 const ENTITY_TYPE = Object.freeze({
   ENTITY: 'entity',
+  GGP: 'ggp', // gene or gene product
+  DNA: 'dna',
+  RNA: 'rna',
   PROTEIN: 'protein',
   CHEMICAL: 'chemical',
   COMPLEX: 'complex'

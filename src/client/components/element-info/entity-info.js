@@ -8,7 +8,7 @@ import Highlighter from '../highlighter';
 import Notification from '../notification';
 import assocDisp from './entity-assoc-display';
 import CancelablePromise from 'p-cancelable';
-import { isComplex } from '../../../model/element/element-type';
+import { isComplex, isGGP, ELEMENT_TYPE } from '../../../model/element/element-type';
 
 import {
   focusDomElement, makeClassList, initCache, SingleValueCache,
@@ -355,7 +355,7 @@ class EntityInfo extends DataComponent {
       assoc = null;
     }
 
-    let targetFromAssoc = (m, complete = false) => {
+    let targetFromAssoc = (m, complete = false, showSubtype = false) => {
       let highlight = !complete;
       let searchStr = highlight ? s.name : null;
       let searchTerms = searchStr ? searchStr.split(/\s+/) : [];
@@ -383,15 +383,56 @@ class EntityInfo extends DataComponent {
         h('div.entity-info-name', nameChildren.filter( domEl => domEl != null ))
       ];
 
+      let subtype;
+
+      if( doc.editable() && complete && showSubtype && isGGP(m.type) ){
+        let radios = [];
+
+        let addType = (typeVal, displayName) => {
+          radios.push(
+            h('input', {
+              type: 'radio',
+              name: 'entity-info-subtype-radio',
+              id: `entity-info-subtype-radio-${typeVal}`,
+              value: typeVal,
+              defaultChecked: typeVal === m.type,
+              onChange: e => {
+                let newlySelectedType = e.target.value;
+                let newMatch = Object.assign({}, m, { type: newlySelectedType });
+
+                this.associate(newMatch);
+              }
+            }),
+            h('label', {
+              htmlFor: `entity-info-subtype-radio-${typeVal}`
+            }, displayName)
+          );
+        };
+
+        addType(ELEMENT_TYPE.GGP, 'Gene or gene product');
+        addType(ELEMENT_TYPE.DNA, 'DNA');
+        addType(ELEMENT_TYPE.RNA, 'RNA');
+        addType(ELEMENT_TYPE.PROTEIN, 'Protein');
+
+        let radioParent = h('div.radioset', radios);
+
+        subtype = h('div.entity-info-subtype', [
+          h('span.entity-info-title', 'Type'),
+          radioParent
+        ]);
+      } else {
+        subtype = null;
+      }
+
       let body = assocDisp[ m.type ]( m, searchTerms );
 
       let post = [];
 
-      return _.concat( pre, body, post );
+      return _.concat( pre, subtype, body, post );
     };
 
-    let allAssoc = (m, complete = false) => _.concat(
-      targetFromAssoc(m, complete),
+    let allAssoc = (m, complete = false, showSubtype = false) => _.concat(
+      targetFromAssoc(m, complete, showSubtype),
       assocDisp.link(m)
     );
 
@@ -479,7 +520,7 @@ class EntityInfo extends DataComponent {
           h(Loader, { loading: s.gettingMoreMatches })
         ] ) );
       } else if( s.name && assoc ){
-        children.push( h('div.entity-info-assoc', allAssoc( assoc, true )) );
+        children.push( h('div.entity-info-assoc', allAssoc( assoc, true, true )) );
 
         children.push(
           h('div.entity-info-assoc-manual', [

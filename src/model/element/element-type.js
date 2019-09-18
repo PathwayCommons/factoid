@@ -20,4 +20,12 @@ const isComplex = type => {
   return type == ENTITY_TYPE.COMPLEX;
 };
 
-export { ELEMENT_TYPE, ELEMENT_TYPES, isEntity, isInteraction, isComplex };
+const isGGP = type => {
+  return ( type === ENTITY_TYPE.GGP
+    || type === ENTITY_TYPE.DNA
+    || type === ENTITY_TYPE.RNA
+    || type === ENTITY_TYPE.PROTEIN
+  );
+};
+
+export { ELEMENT_TYPE, ELEMENT_TYPES, isEntity, isInteraction, isComplex, isGGP };

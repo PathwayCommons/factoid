@@ -112,6 +112,10 @@ button.button-toggle {
       border-radius: 0;
     }
 
+    &:not(:active) + label:not(:last-child) {
+      border-right-color: transparent;
+    }
+
     &:first-child + label {
       border-top-left-radius: var(--widgetBorderRadius);
       border-bottom-left-radius: var(--widgetBorderRadius);

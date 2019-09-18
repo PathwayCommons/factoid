@@ -190,3 +190,8 @@ button.entity-info-edit {
 .entity-info-linkout {
   margin-right: 0.5em;
 }
+
+.entity-info-assoc-button {
+  display: inline-block;
+  height: auto;
+}

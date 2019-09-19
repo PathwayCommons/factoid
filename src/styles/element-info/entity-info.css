@@ -163,7 +163,8 @@ button.entity-info-edit {
 .entity-info-alt-name,
 .entity-info-formula {
   display: inline;
-
+  overflow-wrap: break-word;
+  
   &::after {
     content: '; ';
   }
@@ -189,4 +190,9 @@ button.entity-info-edit {
 
 .entity-info-linkout {
   margin-right: 0.5em;
+}
+
+.entity-info-assoc-button {
+  display: inline-block;
+  height: auto;
 }

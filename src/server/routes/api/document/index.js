@@ -97,20 +97,20 @@ let getSbgnFromTemplates = templates => {
     .then(handleResponseError);
 };
 
-let email = json => {
-  return sendMail({
+let email = json => sendMail({
+    from: { name: 'Ricky', address: 'ricky@biofactoid.org' },
     to: { name: json.contributorName, address: json.contributorEmail },
     cc: { name: json.editorName, address: json.editorEmail },
     subject: `Action required: "${json.name}"`,
-    templateInfo: {
-      templateId: '1007008',
-      variables: {
+    html: '<h1>Test email</h1>',
+    template: {
+      id: '1007008',
+      vars: {
         citation: 'Doe et al. (2019). A really important pathway. J. Bio. 58',
         privateUrl: `${BASE_URL}${json.privateUrl}`
       }
     }
-  });
-};
+});
 
 http.get('/', function( req, res, next ){
   let limit = req.params.limit || 50;

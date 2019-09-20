@@ -26,8 +26,8 @@ async function getTransporter(){
       pass: SMTP_PASSWORD
     }
   };
-  
-  const defaults = {
+
+  const messageDefaults = {
     from: {
       name: EMAIL_FROM,
       address: EMAIL_FROM_ADDR
@@ -51,7 +51,7 @@ async function getTransporter(){
       };
     }
 
-    return transporter = nodemailer.createTransport( transport, defaults );
+    return transporter = nodemailer.createTransport( transport, messageDefaults );
 
   } catch( err ) { 
     logErr( err ) 
@@ -59,18 +59,17 @@ async function getTransporter(){
    
 };
 
-const sendMail = ( { to, cc, subject, html, text, templateInfo } ) => {
-  const message = { 
-    to, cc, subject, html, text
-  };
-  
-  if( templateInfo ){
-    const headers = {
-      'X-MJ-TemplateID': _.get( templateInfo, 'templateId' ),
+const sendMail = opts => {
+
+  const message = _.pick( opts, [ 'from', 'to', 'cc', 'bcc', 'subject', 'text', 'html', 'attachments' ] );
+
+  // MailJet-specific: must use a validated domain 
+  if( _.has( opts, 'template' ) ){
+    _.set( message, 'headers', {
+      'X-MJ-TemplateID': _.get( opts, ['template', 'id'] ),
       'X-MJ-TemplateLanguage': '1',
-      'X-MJ-Vars': JSON.stringify( _.get( templateInfo, 'variables' ) )
-    }
-    _.assign( message, { headers } );
+      'X-MJ-Vars': JSON.stringify( _.get( opts, ['template', 'vars'] ) )
+    });
   }
 
   return getTransporter()

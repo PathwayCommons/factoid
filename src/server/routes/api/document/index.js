@@ -3,7 +3,7 @@ import _ from 'lodash';
 import uuid from 'uuid';
 import fetch from 'node-fetch';
 import { tryPromise } from '../../../../util';
-import emailTransport from '../../../email-transport';
+import sendMail from '../../../email-transport';
 import h from 'hyperscript';
 
 import Document from '../../../../model/document';
@@ -97,44 +97,18 @@ let getSbgnFromTemplates = templates => {
     .then(handleResponseError);
 };
 
-let sendEmail = json => {
-  const j = json;
-
-  return emailTransport.sendMail({
-    from: { name: EMAIL_FROM, address: EMAIL_FROM_ADDR },
-    to: { name: j.contributorName, address: j.contributorEmail },
-    cc: { name: j.editorName, address: j.editorEmail },
+let email = json => {
+  return sendMail({
+    to: { name: json.contributorName, address: json.contributorEmail },
+    cc: { name: json.editorName, address: json.editorEmail },
     subject: `Action required: "${json.name}"`,
-    html: h('div', {
-      style: {
+    templateInfo: {
+      templateId: '1007008',
+      variables: {
+        citation: 'Doe et al. (2019). A really important pathway. J. Bio. 58',
+        privateUrl: `${BASE_URL}${json.privateUrl}`
       }
-    }, [
-      h('p', `Dear ${j.contributorName},`),
-      h('p', [
-        h('span', `Share your pathway with the world:  Publishing and getting your paper noticed is essential.  `),
-        h('a', { href: BASE_URL }, 'Biofactoid'),
-        h('span', `, a project by `),
-        h('a', { href: 'https://pathwaycommons.org' }, `Pathway Commons`),
-        h('span', `, helps you increase the visibility of your publications by linking your research to pathways.`)
-      ]),
-      h('p', [
-        h('span', `Biofactoid will capture the pathway data in `),
-        h('strong', `"${j.contributorName} et el.  ${j.name}.  Submission ${j.trackingId}"`),
-        h('span', ` by helping you draw and describe genes and interactions:`)
-      ]),
-      h('ul', [
-        h('li', `Launch Biofactoid for your article by clicking the link.`),
-        h('li', `Check over genes and interactions Biofactoid may have found in your text.`),
-        h('li', `Draw genes (circles) or interactions (lines or arrows) then add information at the prompts.`),
-      ]),
-      h('p', `That's it!  We'll get the pathway data to researchers who need it.`),
-      h('a', {
-        href: `${BASE_URL}/document/${j.id}/${j.secret}`
-      }, `Launch Biofactoid for ${j.contributorName} et al.`),
-      h('p', [
-        h('small', `You may also start Biofactoid by passing ${BASE_URL}/document/${j.id}/${j.secret} into your browser.`)
-      ])
-    ]).outerHTML
+    }
   });
 };
 
@@ -195,8 +169,6 @@ http.post('/', function( req, res, next ){
       return json;
     } )
     .then(json => {
-      if( !EMAIL_ENABLED ) return json;
-
       if( !json.contributorEmail ){
         logger.info(`Contributor email address missing for new doc ${json.id}; not sending email`);
 
@@ -211,7 +183,7 @@ http.post('/', function( req, res, next ){
 
       logger.info(`Sending new doc ${json.id} to ${json.contributorEmail} and copying to ${json.editorEmail}`);
 
-      return sendEmail(json).then(() => json);
+      return email( json ).then(() => json);
     })
     .then(json => {
       return res.json( json );

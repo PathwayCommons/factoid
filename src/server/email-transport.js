@@ -24,7 +24,7 @@ const parseTestAccount = account => ({
 });
 const createTransporter = ( transportOpts, messageOpts ) => nodemailer.createTransport( transportOpts, messageOpts );
 
-const addHeaders = ( message, opts ) => {
+const withVendorOpts = ( message, opts ) => {
   if( _.has( opts, 'mailJet' ) ){
     const mailJet = _.get( opts, 'mailJet' );
     return _.assign( {}, message, { headers: {
@@ -76,7 +76,7 @@ const email = {
 const sendMail = opts => {
 
   let message = _.pick( opts, [ 'from', 'to', 'cc', 'bcc', 'subject', 'text', 'html', 'attachments' ] );
-  message = addHeaders( message, opts );
+  message = withVendorOpts( message, opts );
   return email.sendMail( message )
     .then( logInfo )
     .catch( logErr );

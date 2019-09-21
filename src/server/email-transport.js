@@ -12,68 +12,72 @@ const logInfo = info => {
   if( !EMAIL_ENABLED ) logger.info( `Preview URL: ${nodemailer.getTestMessageUrl( info )}` );
 };
 const logErr = err => logger.error( `Error: ${err.message}` );
+const getTestAccount = () => nodemailer.createTestAccount();
+const parseTestAccount = account => ({
+  host: account.smtp.host,
+  port: account.smtp.port,
+  secure: account.smtp.secure,
+  auth: {
+    user: account.user,
+    pass: account.pass
+  } 
+});
+const createTransporter = ( transportOpts, messageOpts ) => nodemailer.createTransport( transportOpts, messageOpts );
 
-let transporter;
-async function getTransporter(){
-  
-  if( transporter ) return transporter;
-  
-  let transport = {
+const addHeaders = ( message, opts ) => {
+  if( _.has( opts, 'mailJet' ) ){
+    const mailJet = _.get( opts, 'mailJet' );
+    return _.assign( {}, message, { headers: {
+      'X-MJ-TemplateID': _.get( mailJet, ['template', 'id'] ),
+      'X-MJ-TemplateLanguage': '1',
+      'X-MJ-Vars': JSON.stringify( _.get( mailJet, ['template', 'vars'] ) )
+    }});
+  }
+};
+
+const email = {
+
+  transportDefaults: {
     port: SMTP_PORT,
     host: SMTP_HOST,
     auth: {
       user: SMTP_USER,
       pass: SMTP_PASSWORD
     }
-  };
-
-  const messageDefaults = {
+  },
+  
+  messageDefaults: {
     from: {
       name: EMAIL_FROM,
       address: EMAIL_FROM_ADDR
     }
-  };
-  
-  try {
-    // Mock out email transport with Ethereal when !EMAIL_ENABLED
-    if( !EMAIL_ENABLED ){
-      logger.info( `Mocking email transport` );
-      const account = await nodemailer.createTestAccount();
-      logger.info( `Mock email account created`);
-      transport = {
-        host: account.smtp.host,
-        port: account.smtp.port,
-        secure: account.smtp.secure,
-        auth: {
-          user: account.user,
-          pass: account.pass
-        }
-      };
+  },
+
+  getTransporter: async function(){
+    if( this.transporter ){
+      return this.transporter;
+    } else {
+      let transportOpts = _.assign( {}, this.transportDefaults );
+      let messageOpts = _.assign( {}, this.messageDefaults );
+      if( !EMAIL_ENABLED ) {
+        logger.info( `Mocking email transport` );
+        const account = await getTestAccount();
+        _.assign( transportOpts, parseTestAccount( account ) );
+      }
+      return this.transporter = createTransporter( transportOpts, messageOpts );
     }
+  },
 
-    return transporter = nodemailer.createTransport( transport, messageDefaults );
-
-  } catch( err ) { 
-    logErr( err ) 
+  sendMail: function( message ) {
+    return this.getTransporter().then( t => t.sendMail( message ) );
   }
-   
 };
 
 const sendMail = opts => {
 
-  const message = _.pick( opts, [ 'from', 'to', 'cc', 'bcc', 'subject', 'text', 'html', 'attachments' ] );
-
-  // MailJet-specific: must use a validated domain 
-  if( _.has( opts, 'template' ) ){
-    _.set( message, 'headers', {
-      'X-MJ-TemplateID': _.get( opts, ['template', 'id'] ),
-      'X-MJ-TemplateLanguage': '1',
-      'X-MJ-Vars': JSON.stringify( _.get( opts, ['template', 'vars'] ) )
-    });
-  }
-
-  return getTransporter()
-    .then( transporter => transporter.sendMail( message ) )
+  let message = _.pick( opts, [ 'from', 'to', 'cc', 'bcc', 'subject', 'text', 'html', 'attachments' ] );
+  message = addHeaders( message, opts );
+  return email.sendMail( message )
     .then( logInfo )
     .catch( logErr );
 };

@@ -2,10 +2,10 @@ import Express from 'express';
 import _ from 'lodash';
 import uuid from 'uuid';
 import fetch from 'node-fetch';
+
+import { INVITE_SIGNUP_TMPLID } from '../../../../config';
 import { tryPromise } from '../../../../util';
 import sendMail from '../../../email-transport';
-import h from 'hyperscript';
-
 import Document from '../../../../model/document';
 import db from '../../../db';
 import logger from '../../../logger';
@@ -104,9 +104,9 @@ let email = json => sendMail({
     subject: `Action required: "${json.name}"`,
     html: '<h1>Test email</h1>',
     template: {
-      id: '1007008',
+      id: INVITE_SIGNUP_TMPLID,
       vars: {
-        citation: 'Doe et al. (2019). A really important pathway. J. Bio. 58',
+        citation: `${json.authors} ${json.title}`,
         privateUrl: `${BASE_URL}${json.privateUrl}`
       }
     }

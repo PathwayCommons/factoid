@@ -103,14 +103,13 @@ let email = json => sendMail({
     cc: { name: json.editorName, address: json.editorEmail },
     subject: `Action required: "${json.name}"`,
     html: '<h1>Test email</h1>',
-    mailJet: {
-      template: {
+    template: {
+        vendor: "Mailjet",
         id: INVITE_SIGNUP_TMPLID,
         vars: {
           citation: `${json.authors} ${json.title}`,
           privateUrl: `${BASE_URL}${json.privateUrl}`
         }
-      }
     }
 });
 

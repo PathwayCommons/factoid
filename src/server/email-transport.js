@@ -27,13 +27,21 @@ const createTransporter = ( transportOpts, messageOpts ) => nodemailer.createTra
 
 const configureMessage = opts => {
   let message = _.pick( opts, MSG_FIELDS );  
-  if( _.has( opts, 'mailJet' ) ){
-    const mailJet = _.get( opts, 'mailJet' );
-    return _.assign( {}, message, { headers: {
-      'X-MJ-TemplateID': _.get( mailJet, ['template', 'id'] ),
-      'X-MJ-TemplateLanguage': '1',
-      'X-MJ-Vars': JSON.stringify( _.get( mailJet, ['template', 'vars'] ) )
-    }});
+  if( _.has( opts, [ 'template' ] ) ){
+    const vendor = _.get( opts, ['template', 'vendor'] );
+    
+    switch( vendor ) {
+      case 'Mailjet':
+        message = _.assign( {}, message, { headers: {
+          'X-MJ-TemplateID': _.get( opts, ['template', 'id'] ),
+          'X-MJ-TemplateLanguage': '1',
+          'X-MJ-Vars': JSON.stringify( _.get( ['template', 'vars'] ) )
+        }})
+        break;
+      default:
+    }
+    
+    return message;
   }
 };
 
@@ -70,15 +78,15 @@ const email = {
     }
   },
 
-  sendMail: function( message ) {
+  send: function( message ) {
     return this.getTransporter().then( t => t.sendMail( message ) );
   }
 };
 
 const sendMail = opts => {
   return Promise.resolve( opts )
-    .then(  configureMessage ) 
-    .then( msg => email.sendMail( msg ))  
+    .then( configureMessage ) 
+    .then( msg => email.send( msg ))  
     .then( logInfo )
     .catch( logErr );
 };

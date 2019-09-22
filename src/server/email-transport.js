@@ -4,8 +4,9 @@ import nodemailer from 'nodemailer';
 import { SMTP_PORT, SMTP_HOST, SMTP_USER, SMTP_PASSWORD, 
   EMAIL_FROM, EMAIL_FROM_ADDR, 
   EMAIL_ENABLED } from '../config';
-
 import logger from './logger';
+
+const MSG_FIELDS = [ 'from', 'to', 'cc', 'bcc', 'subject', 'text', 'html', 'attachments' ];
 
 const logInfo = info => {
   logger.info( `Email sent: ${info.messageId}` );
@@ -24,7 +25,8 @@ const parseTestAccount = account => ({
 });
 const createTransporter = ( transportOpts, messageOpts ) => nodemailer.createTransport( transportOpts, messageOpts );
 
-const withVendorOpts = ( message, opts ) => {
+const configureMessage = opts => {
+  let message = _.pick( opts, MSG_FIELDS );  
   if( _.has( opts, 'mailJet' ) ){
     const mailJet = _.get( opts, 'mailJet' );
     return _.assign( {}, message, { headers: {
@@ -74,10 +76,9 @@ const email = {
 };
 
 const sendMail = opts => {
-
-  let message = _.pick( opts, [ 'from', 'to', 'cc', 'bcc', 'subject', 'text', 'html', 'attachments' ] );
-  message = withVendorOpts( message, opts );
-  return email.sendMail( message )
+  return Promise.resolve( opts )
+    .then(  configureMessage ) 
+    .then( msg => email.sendMail( msg ))  
     .then( logInfo )
     .catch( logErr );
 };

@@ -17,6 +17,7 @@ import { BIOPAX_CONVERTER_URL,
   EMAIL_CONTEXT_JOURNAL,
   BASE_URL, 
   INVITE_TMPLID,
+  EMAIL_VENDOR_MAILJET,
   API_KEY } from '../../../../config';
 
 const http = Express.Router();
@@ -110,7 +111,7 @@ let email = json => {
     subject: `Action required: "${json.contributorName}"`,
     html: `<pre>${JSON.stringify(json, null, 2)}</pre>`,
     template: {
-        vendor: 'Mailjet',
+        vendor: EMAIL_VENDOR_MAILJET,
         id: INVITE_TMPLID,
         vars: {
           citation: `${json.authors} ${json.title}`,

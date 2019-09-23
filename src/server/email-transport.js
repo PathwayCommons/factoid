@@ -3,7 +3,8 @@ import nodemailer from 'nodemailer';
 
 import { SMTP_PORT, SMTP_HOST, SMTP_USER, SMTP_PASSWORD, 
   EMAIL_FROM, EMAIL_FROM_ADDR, 
-  EMAIL_ENABLED } from '../config';
+  EMAIL_ENABLED,
+  EMAIL_VENDOR_MAILJET } from '../config';
 import logger from './logger';
 
 const configMap = {
@@ -67,7 +68,7 @@ const configureMessage = opts => {
   if( _.has( opts, [ 'template' ] ) ){
     const vendor = _.get( opts, ['template', 'vendor'] );
     switch( vendor ) { 
-      case 'Mailjet':
+      case EMAIL_VENDOR_MAILJET:
         _.set( message,  'headers', {
           'X-MJ-TemplateID': _.get( opts, ['template', 'id'] ),
           'X-MJ-TemplateLanguage': '1',

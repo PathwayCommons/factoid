@@ -56,6 +56,7 @@ export const SMTP_HOST = env('SMTP_HOST', 'localhost');
 export const SMTP_USER = env('SMTP_USER', 'user');
 export const SMTP_PASSWORD = env('SMTP_PASSWORD', 'password');
 
+export const EMAIL_VENDOR_MAILJET = env('EMAIL_VENDOR_MAILJET', 'Mailjet');
 export const INVITE_TMPLID = env('INVITE_SIGNUP_TMPLID', '1005099');
 export const SUBMIT_SUCCESS_TMPLID = env('SUBMIT_SUCCESS_TMPLID', '1007008');
 export const EMAIL_CONTEXT_JOURNAL = env('EMAIL_CONTEXT_JOURNAL', 'journal');

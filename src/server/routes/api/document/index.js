@@ -14,7 +14,7 @@ import * as provider from './reach';
 
 const ENABLE_TEXTMINING = false;
 
-import { BIOPAX_CONVERTER_URL, BASE_URL, EMAIL_ENABLED, EMAIL_FROM, EMAIL_FROM_ADDR, API_KEY } from '../../../../config';
+import { BIOPAX_CONVERTER_URL, BASE_URL, API_KEY } from '../../../../config';
 
 const http = Express.Router();
 

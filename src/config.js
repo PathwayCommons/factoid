@@ -56,9 +56,10 @@ export const SMTP_HOST = env('SMTP_HOST', 'localhost');
 export const SMTP_USER = env('SMTP_USER', 'user');
 export const SMTP_PASSWORD = env('SMTP_PASSWORD', 'password');
 
-export const INVITE_JOURNAL_TMPLID = env('INVITE_JOURNAL_TMPLID', '1007008');
-export const INVITE_SIGNUP_TMPLID = env('INVITE_SIGNUP_TMPLID', '1005099');
+export const INVITE_TMPLID = env('INVITE_SIGNUP_TMPLID', '1005099');
 export const SUBMIT_SUCCESS_TMPLID = env('SUBMIT_SUCCESS_TMPLID', '1007008');
+export const EMAIL_CONTEXT_JOURNAL = env('EMAIL_CONTEXT_JOURNAL', 'journal');
+export const EMAIL_CONTEXT_SIGNUP = env('EMAIL_CONTEXT_SIGNUP', 'signup');
 
 // client vars:
 // these vars are always included in the bundle because they ref `process.env.${name}` directly

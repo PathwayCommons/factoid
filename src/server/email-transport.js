@@ -24,14 +24,14 @@ const configMap = {
     }
   },
 
-  MESSAGE_FIELDS: [ 
+  ALLOWED_MESSAGE_FIELDS: [ 
     'from', 'to', 'cc', 'bcc', 'replyTo',
     'subject', 
     'text', 'html', 
     'attachments' 
   ],
 
-  NODEMAILER_INFO_FIELDS: [ 'response','messageId', 'accepted', 'rejected', 'previewUrl' ]
+  NODEMAILER_INFO_FIELDS: [ 'response','messageId', 'accepted', 'rejected' ]
 }; 
 
 const stateMap = {
@@ -63,7 +63,7 @@ const getTestTransportOpts = account => ({
 });
 
 const configureMessage = opts => {
-  let message = _.pick( opts, configMap.MESSAGE_FIELDS );
+  let message = _.pick( opts, configMap.ALLOWED_MESSAGE_FIELDS );
   if( _.has( opts, [ 'template' ] ) ){
     const vendor = _.get( opts, ['template', 'vendor'] );
     switch( vendor ) { 
@@ -109,7 +109,7 @@ const send = message => getSend().then( s => s( message ) );
  * 
  * @param { Object } opts The message data. 
  * @param { String | Object | Array } opts.from (formatted and/or comma separated) email address(es)
- *  OR an oject with 'address' and 'name' fields OR a list of the above.
+ *  OR an oject with 'address' and 'name' fields OR a list of any above.
  * @param { Object } opts.to see opts.from
  * @param { Object } opts.cc see opts.from
  * @param { Object } opts.bcc see opts.from
@@ -118,6 +118,11 @@ const send = message => getSend().then( s => s( message ) );
  * @param { String } opts.html html version
  * @param { String } opts.text text version
  * @param { Array } opts.attachments See https://nodemailer.com/message/attachments/
+ * @param { Object } opts.template 
+ * @param { String } opts.template.vendor The name of the vendor, assuming we support it
+ * @param { String } opts.template.id The vendor template id
+ * @param { Object } opts.template.vars The variables to send to the given template
+ * 
  * @returns { Object } Information regarding the email delivery:
  *   - { String } response from server
  *   - { Array } accepted email addresses 

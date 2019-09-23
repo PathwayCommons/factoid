@@ -3,7 +3,6 @@ import _ from 'lodash';
 import uuid from 'uuid';
 import fetch from 'node-fetch';
 
-import { INVITE_SIGNUP_TMPLID } from '../../../../config';
 import { tryPromise } from '../../../../util';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
@@ -14,7 +13,11 @@ import * as provider from './reach';
 
 const ENABLE_TEXTMINING = false;
 
-import { BIOPAX_CONVERTER_URL, BASE_URL, API_KEY } from '../../../../config';
+import { BIOPAX_CONVERTER_URL, 
+  EMAIL_CONTEXT_JOURNAL,
+  BASE_URL, 
+  INVITE_TMPLID,
+  API_KEY } from '../../../../config';
 
 const http = Express.Router();
 
@@ -97,21 +100,26 @@ let getSbgnFromTemplates = templates => {
     .then(handleResponseError);
 };
 
-let email = json => sendMail({
-    from: { name: 'Biofactoid', address: 'support@biofactoid.org' },
+// NB: Only for demo purposes
+// This should be removed and send emails from admin interface when ready 
+// https://github.com/PathwayCommons/factoid/issues/524
+let email = json => {
+  return sendMail({
     to: { name: json.contributorName, address: json.contributorEmail },
     cc: { name: json.editorName, address: json.editorEmail },
-    subject: `Action required: "${json.name}"`,
+    subject: `Action required: "${json.contributorName}"`,
     html: `<pre>${JSON.stringify(json, null, 2)}</pre>`,
     template: {
-        vendor: "Mailjet",
-        id: INVITE_SIGNUP_TMPLID,
+        vendor: 'Mailjet',
+        id: INVITE_TMPLID,
         vars: {
           citation: `${json.authors} ${json.title}`,
-          privateUrl: `${BASE_URL}${json.privateUrl}`
+          privateUrl: `${BASE_URL}${json.privateUrl}`,
+          context: EMAIL_CONTEXT_JOURNAL
         }
     }
-});
+  });
+};
 
 http.get('/', function( req, res, next ){
   let limit = req.params.limit || 50;
@@ -170,6 +178,9 @@ http.post('/', function( req, res, next ){
       return json;
     } )
     .then(json => {
+      // NB: Only for demo purposes
+      // This should be removed and send emails from admin interface when ready 
+      // https://github.com/PathwayCommons/factoid/issues/524
       return email( json ).then( info => { 
         logger.info( `Email sent to ${info.accepted}` );
         return json; 

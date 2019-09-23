@@ -16,6 +16,7 @@ const configMap = {
     }
   },
 
+  // merged into every message object
   messageOpts: {
     from: {
       name: EMAIL_FROM,
@@ -24,23 +25,33 @@ const configMap = {
   },
 
   MESSAGE_FIELDS: [ 
-    'from', 'to', 'cc', 'bcc', 'subject', 'text', 'html', 'attachments' 
-  ]
+    'from', 'to', 'cc', 'bcc', 'replyTo',
+    'subject', 
+    'text', 'html', 
+    'attachments' 
+  ],
+
+  NODEMAILER_INFO_FIELDS: [ 'response','messageId', 'accepted', 'rejected', 'previewUrl' ]
 }; 
 
 const stateMap = {
-  transporter: undefined
+  send: undefined
 };
 
-const logInfo = info => {
-  logger.info( `Email sent: ${info.messageId}` );
-  if( !EMAIL_ENABLED ) logger.info( `Preview URL: ${nodemailer.getTestMessageUrl( info )}` );
+const handleResponse = res => {
+  const info = _.pick( res, configMap.NODEMAILER_INFO_FIELDS );  
+  if( !EMAIL_ENABLED ) _.set( info, 'previewUrl', nodemailer.getTestMessageUrl( res ) );
+  logger.info( `Email sent to: ${info.accepted}; ${info.previewUrl ? 'Caught by Ethereal: ' + info.previewUrl: ''}` ); 
+  return info;
 };
-const logErr = err => {
-  logger.error( `Error: ${err.message}` );
+
+const handleErr = err => {
+  logger.error( `Error encountered in email delivery: ${err.message}` );
   throw err;
 };
+
 const getTestAccount = () => nodemailer.createTestAccount();
+
 const getTestTransportOpts = account => ({
   host: account.smtp.host,
   port: account.smtp.port,
@@ -50,7 +61,6 @@ const getTestTransportOpts = account => ({
     pass: account.pass
   } 
 });
-const createTransporter = ( transportOpts, messageOpts ) => nodemailer.createTransport( transportOpts, messageOpts );
 
 const configureMessage = opts => {
   let message = _.pick( opts, configMap.MESSAGE_FIELDS );
@@ -58,11 +68,11 @@ const configureMessage = opts => {
     const vendor = _.get( opts, ['template', 'vendor'] );
     switch( vendor ) { 
       case 'Mailjet':
-        message = _.assign( {}, message, { headers: {
+        _.set( message,  'headers', {
           'X-MJ-TemplateID': _.get( opts, ['template', 'id'] ),
           'X-MJ-TemplateLanguage': '1',
-          'X-MJ-Vars': JSON.stringify( _.get( ['template', 'vars'] ) )
-        }});
+          'X-MJ-Vars': JSON.stringify( _.get( opts, ['template', 'vars'] ) )
+        });
         break;
       default:
     }
@@ -71,25 +81,56 @@ const configureMessage = opts => {
   }
 };
 
-const getTransporter = async () => {
-  if( stateMap.transporter ) return stateMap.transporter;
+const createTransporter = ( transportOpts, messageOpts ) => nodemailer.createTransport( transportOpts, messageOpts );
+const transportOk = transporter => transporter.verify().then( () => true ).catch( handleErr );
+const getSendImpl = transporter => transporter.sendMail.bind( transporter );
+
+const getSend = async () => {
+  if( stateMap.send ) return stateMap.send;
   
   if( !EMAIL_ENABLED ) {
     logger.info( `Mocking email transport` );
     const account = await getTestAccount();
     configMap.transportOpts = getTestTransportOpts( account );
   }
-  return stateMap.transporter = createTransporter( configMap.transportOpts, configMap.messageOpts );
+  const transporter = createTransporter( configMap.transportOpts, configMap.messageOpts );
+  await transportOk( transporter );
+  return stateMap.send = getSendImpl( transporter );
 };
 
-const send = message => getTransporter().then( t => t.sendMail( message ) );
+const send = message => getSend().then( s => s( message ) );
 
+/**
+ * sendMail
+ * 
+ * Email sending service. 
+ * Configuration: When 'EMAIL_ENABLED' is false, mail will sent diretly to Ethereal, where it can be previewed via URL.
+ * Third party email delivery services supported with 'templates' data  
+ * 
+ * @param { Object } opts The message data. 
+ * @param { String | Object | Array } opts.from (formatted and/or comma separated) email address(es)
+ *  OR an oject with 'address' and 'name' fields OR a list of the above.
+ * @param { Object } opts.to see opts.from
+ * @param { Object } opts.cc see opts.from
+ * @param { Object } opts.bcc see opts.from
+ * @param { Object } opts.replyTo (formatted) email address | { name:, address: }
+ * @param { String } opts.subject name, email address 
+ * @param { String } opts.html html version
+ * @param { String } opts.text text version
+ * @param { Array } opts.attachments See https://nodemailer.com/message/attachments/
+ * @returns { Object } Information regarding the email delivery:
+ *   - { String } response from server
+ *   - { Array } accepted email addresses 
+ *   - { Array } rejected email addresses 
+ *   - { String } previewUrl for caught emails, when EMAIL_ENABLED is false
+ * @throws Error
+ */
 const sendMail = opts => {
   return Promise.resolve( opts )
     .then( configureMessage ) 
     .then( send )
-    .then( logInfo )
-    .catch( logErr );
+    .then( handleResponse )
+    .catch( handleErr );
 };
 
 export default sendMail;

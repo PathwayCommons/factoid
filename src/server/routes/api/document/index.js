@@ -98,11 +98,11 @@ let getSbgnFromTemplates = templates => {
 };
 
 let email = json => sendMail({
-    from: { name: 'Ricky', address: 'ricky@biofactoid.org' },
+    from: { name: 'Biofactoid', address: 'support@biofactoid.org' },
     to: { name: json.contributorName, address: json.contributorEmail },
     cc: { name: json.editorName, address: json.editorEmail },
     subject: `Action required: "${json.name}"`,
-    html: '<h1>Test email</h1>',
+    html: `<pre>${JSON.stringify(json, null, 2)}</pre>`,
     template: {
         vendor: "Mailjet",
         id: INVITE_SIGNUP_TMPLID,
@@ -170,21 +170,10 @@ http.post('/', function( req, res, next ){
       return json;
     } )
     .then(json => {
-      if( !json.contributorEmail ){
-        logger.info(`Contributor email address missing for new doc ${json.id}; not sending email`);
-
-        return Promise.resolve(json);
-      }
-
-      if( !json.editorEmail ){
-        logger.info(`Editor email address missing for new doc ${json.id}; not sending email`);
-
-        return Promise.resolve(json);
-      }
-
-      logger.info(`Sending new doc ${json.id} to ${json.contributorEmail} and copying to ${json.editorEmail}`);
-
-      return email( json ).then(() => json);
+      return email( json ).then( info => { 
+        logger.info( `Email sent to ${info.accepted}` );
+        return json; 
+      });
     })
     .then(json => {
       return res.json( json );

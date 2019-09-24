@@ -85,13 +85,19 @@ Stop and remove services:
 docker-compose down
 ```
 
+Restarting after the app services have been stopped (index exists):
+```sh
+docker-compose up -d webapp grounding db index
+```
+
+
 #### Notes
 
 - Environment variables:
   - Docker Compose will draw environment variables from the shell or from an `.env` file in the same directory. The file is not necessary, as the compose file provides defaults.  If you wish, edit the `.env` file to configure environment variables for image tags, container ports and others, which will be passed to the containers.
 
 - Indexing service:
-  - The `indexer` service will download sources files and index. The time required for this will vary depending on the system and ranges from tens of minutes (OSX 10.14.5 (Mojave), MacBook Pro (Retina, 15-inch, Mid 2015). 2.8 GHz Intel Core i7) up to many hours (Ubuntu 16.04.5 LTS, Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz). You can skip indexing by declaring the services you wish to start `docker-compose run -d webapp grounding db index`.
+  - The `indexer` service will download sources files and index. The time required for this will vary depending on the system and ranges from tens of minutes (OSX 10.14.5 (Mojave), MacBook Pro (Retina, 15-inch, Mid 2015). 2.8 GHz Intel Core i7) up to many hours (Ubuntu 16.04.5 LTS, Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz).
 
 - Database service:
   - Do not restart a stopped container. Rather, remove and run anew.
@@ -102,6 +108,8 @@ docker-compose down
 ### Backup and restore volumes
 
 #### Backup
+
+NB: RethinkDB backups should be created using the [dump](https://rethinkdb.com/docs/backup/) command line utility.
 
 To create an archive of data in volumes used by RethinkDB or Elasticsearch, use the supplied bash script `/docker/backup_volumes.sh`.
 
@@ -124,13 +132,13 @@ To populate a volume for RethinkDB or Elasticsearch from an archive, use the sup
 Restore RethinkDB data to a volume `dbdata` at a directory `/data` within the volume from an archive on the host `/backups/dbbackup.tar.gz`:
 
 ```sh
-./backup_volumes.sh -n dbdata -p /data -s /backups/dbbackup.tar.gz
+./restore_volumes.sh -n dbdata -p /data -s /backups/dbbackup.tar.gz
 ```
 
 Restore Elasticsearch data to a volume `indata` at a directory `/usr/share/elasticsearch/data` within the volume from an archive on the host `/backups/inbackup.tar.gz`:
 
 ```sh
-./backup_volumes.sh -n indata -p /usr/share/elasticsearch/data -s /backups/inbackup.tar.gz
+./restore_volumes.sh -n indata -p /usr/share/elasticsearch/data -s /backups/inbackup.tar.gz
 ```
 
 ## Testing

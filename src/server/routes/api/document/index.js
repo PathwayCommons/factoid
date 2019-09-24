@@ -2,10 +2,9 @@ import Express from 'express';
 import _ from 'lodash';
 import uuid from 'uuid';
 import fetch from 'node-fetch';
-import { tryPromise } from '../../../../util';
-import emailTransport from '../../../email-transport';
-import h from 'hyperscript';
 
+import { tryPromise } from '../../../../util';
+import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
 import db from '../../../db';
 import logger from '../../../logger';
@@ -14,7 +13,12 @@ import * as provider from './reach';
 
 const ENABLE_TEXTMINING = false;
 
-import { BIOPAX_CONVERTER_URL, BASE_URL, EMAIL_ENABLED, EMAIL_FROM, EMAIL_FROM_ADDR, API_KEY } from '../../../../config';
+import { BIOPAX_CONVERTER_URL, 
+  EMAIL_CONTEXT_JOURNAL,
+  BASE_URL, 
+  INVITE_TMPLID,
+  EMAIL_VENDOR_MAILJET,
+  API_KEY } from '../../../../config';
 
 const http = Express.Router();
 
@@ -97,44 +101,24 @@ let getSbgnFromTemplates = templates => {
     .then(handleResponseError);
 };
 
-let sendEmail = json => {
-  const j = json;
-
-  return emailTransport.sendMail({
-    from: { name: EMAIL_FROM, address: EMAIL_FROM_ADDR },
-    to: { name: j.contributorName, address: j.contributorEmail },
-    cc: { name: j.editorName, address: j.editorEmail },
-    subject: `Action required: "${json.name}"`,
-    html: h('div', {
-      style: {
-      }
-    }, [
-      h('p', `Dear ${j.contributorName},`),
-      h('p', [
-        h('span', `Share your pathway with the world:  Publishing and getting your paper noticed is essential.  `),
-        h('a', { href: BASE_URL }, 'Biofactoid'),
-        h('span', `, a project by `),
-        h('a', { href: 'https://pathwaycommons.org' }, `Pathway Commons`),
-        h('span', `, helps you increase the visibility of your publications by linking your research to pathways.`)
-      ]),
-      h('p', [
-        h('span', `Biofactoid will capture the pathway data in `),
-        h('strong', `"${j.contributorName} et el.  ${j.name}.  Submission ${j.trackingId}"`),
-        h('span', ` by helping you draw and describe genes and interactions:`)
-      ]),
-      h('ul', [
-        h('li', `Launch Biofactoid for your article by clicking the link.`),
-        h('li', `Check over genes and interactions Biofactoid may have found in your text.`),
-        h('li', `Draw genes (circles) or interactions (lines or arrows) then add information at the prompts.`),
-      ]),
-      h('p', `That's it!  We'll get the pathway data to researchers who need it.`),
-      h('a', {
-        href: `${BASE_URL}/document/${j.id}/${j.secret}`
-      }, `Launch Biofactoid for ${j.contributorName} et al.`),
-      h('p', [
-        h('small', `You may also start Biofactoid by passing ${BASE_URL}/document/${j.id}/${j.secret} into your browser.`)
-      ])
-    ]).outerHTML
+// NB: Only for demo purposes
+// This should be removed and send emails from admin interface when ready 
+// https://github.com/PathwayCommons/factoid/issues/524
+let email = json => {
+  return sendMail({
+    to: { name: json.contributorName, address: json.contributorEmail },
+    cc: { name: json.editorName, address: json.editorEmail },
+    subject: `Action required: "${json.contributorName}"`,
+    html: `<pre>${JSON.stringify(json, null, 2)}</pre>`,
+    template: {
+        vendor: EMAIL_VENDOR_MAILJET,
+        id: INVITE_TMPLID,
+        vars: {
+          citation: `${json.authors} ${json.title}`,
+          privateUrl: `${BASE_URL}${json.privateUrl}`,
+          context: EMAIL_CONTEXT_JOURNAL
+        }
+    }
   });
 };
 
@@ -195,23 +179,13 @@ http.post('/', function( req, res, next ){
       return json;
     } )
     .then(json => {
-      if( !EMAIL_ENABLED ) return json;
-
-      if( !json.contributorEmail ){
-        logger.info(`Contributor email address missing for new doc ${json.id}; not sending email`);
-
-        return Promise.resolve(json);
-      }
-
-      if( !json.editorEmail ){
-        logger.info(`Editor email address missing for new doc ${json.id}; not sending email`);
-
-        return Promise.resolve(json);
-      }
-
-      logger.info(`Sending new doc ${json.id} to ${json.contributorEmail} and copying to ${json.editorEmail}`);
-
-      return sendEmail(json).then(() => json);
+      // NB: Only for demo purposes
+      // This should be removed and send emails from admin interface when ready 
+      // https://github.com/PathwayCommons/factoid/issues/524
+      return email( json ).then( info => { 
+        logger.info( `Email sent to ${info.accepted}` );
+        return json; 
+      });
     })
     .then(json => {
       return res.json( json );

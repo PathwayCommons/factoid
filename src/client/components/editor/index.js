@@ -130,6 +130,9 @@ class Editor extends DataComponent {
       showHelp = true;
     }
 
+    // TODO remove this line -- for testing only
+    showHelp = true;
+
     localStorage.setItem('showHelp', false);
 
     this.data = ({
@@ -469,19 +472,51 @@ class Editor extends DataComponent {
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
       h(UndoRemove, { controller, document, bus }),
       h('div.editor-graph#editor-graph'),
-      h('div.editor-help' + (showHelp ? '.editor-help-shown' : ''), showHelp ? [
-        h('div.editor-help-background', {
-          onClick: () => this.toggleHelp()
+      h('div.editor-help-background', {
+        className: makeClassList({
+          'editor-help-background-shown': showHelp
         }),
-        h('div.editor-help-video-embed.video-embed', [
-          h('iframe.video-embed-iframe', {
-            src: 'https://www.youtube.com/embed/Do5VaIcB4B8?rel=0',
-            frameBorder: 0,
-            allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
-            allowFullScreen: true
-            })
+        onClick: () => this.toggleHelp()
+      }),
+      h('div.editor-help', {
+        className: makeClassList({
+          'editor-help-shown': showHelp
+        })
+      }, [
+        h('div.editor-help-box', [
+          h('div.editor-help-close-icon', {
+            onClick: () => this.toggleHelp()
+          }, [
+            h('i.material-icons', 'close')
+          ]),
+          h('div.editor-help-title', 'Welcome'),
+          h('div.editor-scroll-box', [
+            h('div.editor-help-copy', `
+              Biofactoid assists you, the author, in creating a shareable digital summary of the biological pathway information contained in your article.
+              With one-click sharing, researchers can easily discover and read your article.
+            `),
+            h('div.editor-help-cells', [
+              h('div.editor-help-cell', [
+                h('img.editor-help-img', { src: '/image/welcome-aboard-1.svg' }),
+                h('div.editor-help-caption', `1. Add your genes and chemicals`)
+              ]),
+              h('div.editor-help-cell', [
+                h('img.editor-help-img', { src: '/image/welcome-aboard-2.svg' }),
+                h('div.editor-help-caption', `2. Connect those that interact`)
+              ]),
+              h('div.editor-help-cell', [
+                h('img.editor-help-img', { src: '/image/welcome-aboard-3.svg' }),
+                h('div.editor-help-caption', `3. Share your article's summary`)
+              ])
+            ])
+          ]),
+          h('div.editor-help-close', [
+            h('button.editor-help-close-button.active-button', {
+              onClick: () => this.toggleHelp()
+            }, `OK, let's get started`)
+          ])
         ])
-      ] : [])
+      ])
     ] : [];
 
     return h('div.editor', {

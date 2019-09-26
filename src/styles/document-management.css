@@ -1,0 +1,43 @@
+.document-management {
+  & input,
+  & textarea {
+    width: 100%;
+    margin-bottom: 1em;
+  }
+
+  & textarea {
+    min-height: 6em;
+    resize: vertical;
+  }
+}
+
+.document-management-content {
+  width: 100%;
+}
+
+.document-management-text-label {
+  font-weight: bold;
+  font-size: var(--smallFontSize);
+  cursor: default;
+}
+
+.document-management-submit {
+  margin-right: 0.5em;
+}
+
+.document-management-submit-spinner {
+  vertical-align: middle;
+}
+
+.document-management-table {
+  width: 100%;
+
+  & th,
+  & td {
+    text-align: left;
+  }
+
+  & th {
+    border-bottom: 1px solid var(--widgetBorderColor);
+  }
+}

@@ -13,9 +13,9 @@ import * as provider from './reach';
 
 const ENABLE_TEXTMINING = false;
 
-import { BIOPAX_CONVERTER_URL, 
+import { BIOPAX_CONVERTER_URL,
   EMAIL_CONTEXT_JOURNAL,
-  BASE_URL, 
+  BASE_URL,
   INVITE_TMPLID,
   EMAIL_VENDOR_MAILJET,
   API_KEY } from '../../../../config';
@@ -102,7 +102,7 @@ let getSbgnFromTemplates = templates => {
 };
 
 // NB: Only for demo purposes
-// This should be removed and send emails from admin interface when ready 
+// This should be removed and send emails from admin interface when ready
 // https://github.com/PathwayCommons/factoid/issues/524
 let email = json => {
   return sendMail({
@@ -124,19 +124,20 @@ let email = json => {
 
 http.get('/', function( req, res, next ){
   let limit = req.params.limit || 50;
+  let offset = req.params.offset || 0;
+  let apiKey = req.params.apiKey;
 
   return (
-    tryPromise( () => loadTable('document') )
+    tryPromise( () => checkApiKey(apiKey) )
+    .then( () => loadTable('document') )
     .then( t => {
       let { table, conn } = t;
-      return table
-        .limit(limit)
-        .pluck( [ 'id', 'publicUrl' ] )
-        .run( conn )
-        .then( cursor => cursor.toArray() )
-        .then( results => res.json( results ) )
-        .catch( next );
+
+      return table.skip(offset).limit(limit).run(conn);
     })
+    .then( cursor => cursor.toArray() )
+    .then( results => res.json( results ) )
+    .catch( next )
   );
 });
 
@@ -180,11 +181,11 @@ http.post('/', function( req, res, next ){
     } )
     .then(json => {
       // NB: Only for demo purposes
-      // This should be removed and send emails from admin interface when ready 
+      // This should be removed and send emails from admin interface when ready
       // https://github.com/PathwayCommons/factoid/issues/524
-      return email( json ).then( info => { 
+      return email( json ).then( info => {
         logger.info( `Email sent to ${info.accepted}` );
-        return json; 
+        return json;
       });
     })
     .then(json => {

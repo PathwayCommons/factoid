@@ -58,7 +58,7 @@ class DocumentManagement extends React.Component {
       h('div.document-management-content', [
         h('div.page-content-title', [
           h(MainMenu, { history, admin: true }),
-          h('h1', 'Add a new paper')
+          h('h1', 'Document management panel')
         ]),
 
         h('p', 'Enter the API key in order to access the panel.'),

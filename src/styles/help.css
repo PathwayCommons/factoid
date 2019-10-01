@@ -66,7 +66,7 @@
   background-size: auto 80%;
   background-position: 0 50%;
   background-repeat: no-repeat;
-  background-image: url('/image/logo-horizontal-with-text.svg');
+  background-image: url('/image/logo-horizontal-no-text.svg');
 }
 
 .editor-help-close-icon {

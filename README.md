@@ -105,40 +105,39 @@ docker-compose up -d webapp grounding db index
 - OS specifics:
   - For Ubuntu 16.04.5 LTS to [play nice with elasticsearch](https://github.com/docker-library/elasticsearch/issues/111#issuecomment-268511769) needed to set `sudo sysctl -w vm.max_map_count=262144`.
 
-### Backup and restore volumes
+### Dump and restore Rethinkdb data
 
-#### Backup
+NB: RethinkDB [dump and restore](https://rethinkdb.com/docs/backup/) command-line utility depends on the [Python driver](https://rethinkdb.com/docs/install-drivers/python/). The `docker/Dockerfile-rethinkdb` file documents these requirements.
 
-NB: RethinkDB backups should be created using the [dump](https://rethinkdb.com/docs/backup/) command line utility.
+#### Dump
 
-To create an archive of data in volumes used by RethinkDB or Elasticsearch, use the supplied bash script `/docker/backup_volumes.sh`.
+To create an archive of data in RethinkDB, use the supplied bash script `/docker/dump_rethinkdb.sh`. 
 
-Dump the RethinkDB data inside a volume named `dbdata` at a directory `/data` within the volume to an archive in a directory on the host named the `/backups`:
+- The script accepts four arguments:
+  - `-c` (required) The container name 
+  - `-e` (optional) Limit the dump to the given database and/or table; Use dot notation e.g. 'test.authors'
+  - `-n` (optional) The dump archive name; `.tar.gz` will be appended
+  - `-d` (optional) Output to the specified directory on the host; defaults to `pwd` 
+
+Example: To dump a running container `db_container` with database named `factoid` to an archive named `factoid_dump_latest` in a directory on the host named `/backups`:
 
 ```sh
-./backup_volumes.sh -n dbdata -p /data -o /backups
-```
-
-Dump the Elasticsearch data inside a volume named `indata` at a directory `/usr/share/elasticsearch/data` within the volume to an archive in a directory on the host named the `/backups`:
-
-```sh
-./backup_volumes.sh -n indata -p /usr/share/elasticsearch/data -o /backups
+./dump_rethinkdb.sh -c db_container -e factoid -n factoid_dump_latest -d /backups 
 ```
 
 #### Restore
 
-To populate a volume for RethinkDB or Elasticsearch from an archive, use the supplied bash script `/docker/restore_volumes.sh`.
+To populate RethinkDB from an archive, use the supplied bash script `/docker/restore_rethinkdb.sh`.
 
-Restore RethinkDB data to a volume `dbdata` at a directory `/data` within the volume from an archive on the host `/backups/dbbackup.tar.gz`:
+- The script accepts three arguments:
+  - `-c` (required) The container name 
+  - `-f` (required) Archive file path on host
+  - `-i` (optional) Limit the restore to the given database and/or table; Use dot notation e.g. 'test.authors'. By default, the script will overwrite any existing database/table data.
+
+Example: To restore a running container `db_container` with database named `factoid` from an archive named `/backups/factoid_dump_latest.tar.gz`:
 
 ```sh
-./restore_volumes.sh -n dbdata -p /data -s /backups/dbbackup.tar.gz
-```
-
-Restore Elasticsearch data to a volume `indata` at a directory `/usr/share/elasticsearch/data` within the volume from an archive on the host `/backups/inbackup.tar.gz`:
-
-```sh
-./restore_volumes.sh -n indata -p /usr/share/elasticsearch/data -s /backups/inbackup.tar.gz
+./restore_rethinkdb.sh -c db_container -f /backups/factoid_dump_latest.tar.gz -i factoid 
 ```
 
 ## Testing

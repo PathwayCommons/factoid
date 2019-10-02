@@ -7,5 +7,5 @@ addons:
   rethinkdb: '2.3.6'
 before_script:
   - sudo service rethinkdb start
-  - sleep 15
+  - sleep 60
 script: npm run test:travis

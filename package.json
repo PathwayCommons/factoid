@@ -27,7 +27,7 @@
     "fix": "run-s fix:*",
     "watch": "run-p watch:*",
     "test": "mocha -r esm",
-    "test:travis": "run-s test lint",
+    "test:travis": "run-s lint",
     "ci": "run-s test lint"
   },
   "dependencies": {

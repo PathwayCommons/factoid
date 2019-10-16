@@ -126,11 +126,8 @@
   margin: 0.25em 0 0.5em;
 }
 
-.entity-info-subtype {
-  font-size: var(--smallFontSize);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+.entity-info-subtype .radioset {
+  display: inline-block;
 }
 
 button.entity-info-edit {
@@ -164,7 +161,7 @@ button.entity-info-edit {
 .entity-info-formula {
   display: inline;
   overflow-wrap: break-word;
-  
+
   &::after {
     content: '; ';
   }
@@ -195,4 +192,19 @@ button.entity-info-edit {
 .entity-info-assoc-button {
   display: inline-block;
   height: auto;
+}
+
+.entity-info-organism-refinement,
+.entity-info-subtype {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.entity-info-assoc-refinement .entity-info-section {
+  margin: 0.75em 0;
+}
+
+.entity-info-organism-dropdown {
+  width: 20em;
 }

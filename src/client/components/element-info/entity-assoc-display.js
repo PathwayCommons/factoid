@@ -27,7 +27,8 @@ let protein = (m, searchTerms) => {
       h('span.entity-info-title', 'Synonyms'),
       ...m.shortSynonyms.map( name => h('span.entity-info-alt-name', [
         h(Highlighter, { text: name, terms: searchTerms })
-      ]))
+      ])),
+      m.shortSynonyms.length === 0 ? '-' : ''
     ])
   ];
 };

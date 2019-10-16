@@ -164,7 +164,7 @@ button.entity-info-edit {
 .entity-info-formula {
   display: inline;
   overflow-wrap: break-word;
-  
+
   &::after {
     content: '; ';
   }

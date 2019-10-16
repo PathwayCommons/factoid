@@ -23,7 +23,7 @@ class RequestForm extends Component {
   }
 
   reset(){
-    console.log('reset')
+    console.log('reset'); // eslint-disable-line
 
     this.setState({
       paperId: '',
@@ -50,12 +50,12 @@ class RequestForm extends Component {
   submitRequest(){
     const { paperId, authorEmail } = this.state;
 
-    console.log('submit')
+    console.log('submit'); // eslint-disable-line
 
     if( !paperId || !authorEmail ){
       this.setState({ incompleteForm: true });
     } else {
-      console.log('sending')
+      console.log('sending'); // eslint-disable-line
       this.setState({ incompleteForm: false, submitting: true });
 
       setTimeout(() => {

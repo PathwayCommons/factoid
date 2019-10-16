@@ -23,8 +23,6 @@ class RequestForm extends Component {
   }
 
   reset(){
-    console.log('reset'); // eslint-disable-line
-
     this.setState({
       paperId: '',
       authorEmail: '',
@@ -49,6 +47,8 @@ class RequestForm extends Component {
 
   submitRequest(){
     const { paperId, authorEmail } = this.state;
+
+    // TODO integrate with email service & admin panel
 
     console.log('submit'); // eslint-disable-line
 

@@ -524,10 +524,10 @@ class EntityInfo extends DataComponent {
 
         children.push(
           h('div.entity-info-assoc-manual', [
-            h('button.entity-info-assoc-button', {
+            h('button.salient-button.entity-info-assoc-button', {
               onClick: () => this.enableManualMatchMode()
             }, [
-              `This isn't the "${s.name}" that I meant`
+              `Select a better match for "${s.name}"`
             ])
           ])
         );

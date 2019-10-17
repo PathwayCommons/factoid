@@ -123,9 +123,9 @@ let email = json => {
 };
 
 http.get('/', function( req, res, next ){
-  let limit = req.params.limit || 50;
-  let offset = req.params.offset || 0;
-  let apiKey = req.params.apiKey;
+  let limit = req.query.limit || 50;
+  let offset = req.query.offset || 0;
+  let apiKey = req.query.apiKey;
 
   return (
     tryPromise( () => checkApiKey(apiKey) )

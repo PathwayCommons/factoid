@@ -3,7 +3,7 @@ import React from 'react';
 import h from 'react-hyperscript';
 import { Link } from 'react-router-dom';
 
-import { tryPromise } from '../../util';
+//import { tryPromise } from '../../util';
 import MainMenu from './main-menu';
 
 import queryString from 'query-string';
@@ -38,7 +38,7 @@ class DocumentManagement extends React.Component {
   updateDocs( apiKey = this.state.apiKey ){
     getDocs( apiKey )
       .then( res => res.json() )
-      .then( docs => new Promise( resolve => {console.log(docs);
+      .then( docs => new Promise( resolve => {
           this.setState({ 
             validApiKey: true, // no error means its good
             docs }, resolve);
@@ -103,7 +103,7 @@ class DocumentManagement extends React.Component {
         h('div.citation-components-journal', [
           h( 'span', `${doc.journalName}` )
         ])
-      ])
+      ]);
     };
 
     const docDates = doc => {

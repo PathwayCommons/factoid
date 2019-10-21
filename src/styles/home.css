@@ -1,3 +1,299 @@
 .home {
   position: relative;
 }
+
+.home-banner {
+  position: relative;
+  height: 66vh;
+  min-height: 20em;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  text-align: center;
+  box-sizing: border-box;
+  background-color: #f0f0f0;
+  background-image: url('/image/banner.jpg');
+  background-size: cover;
+  background-position: 50% 80%;
+}
+
+.home-banner-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 1;
+}
+
+.home-banner-logo {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 1em;
+  background-image: url('/image/logo-horizontal-text-only-white.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: 50% 50%;
+  width: 25em;
+  max-width: 85vw;
+  height: 8em;
+}
+
+.home-corner-logo {
+  background-image: url('/image/logo-no-circle.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4em;
+  height: 4em;
+  z-index: 1;
+  margin: 1em;
+}
+
+.home-banner-cta {
+  position: relative;
+  z-index: 2;
+  padding-bottom: 1.5em;
+}
+
+.home-banner-title,
+.home-banner-tagline {
+  pointer-events: none;
+  opacity: 0.001; /* allow the text to be scraped by search engines but show the svg */
+}
+
+.home-cta {
+  font-size: 1.25em;
+}
+
+.home-footer-cta {
+  text-align: center;
+}
+
+.home-cta-button {
+  font-size: 1.25em;
+  text-transform: uppercase;
+}
+
+.home-banner-cta .home-cta-button {
+  color: var(--brandColor);
+  border-color: var(--brandColor);
+
+  &:active {
+    color: #888;
+    border-color: #888;
+  }
+}
+
+.home-footer-cta .home-cta-button {
+  background-color: var(--brandColor);
+  border-color: var(--brandColor);
+  color: #000;
+  padding: 0.25em 3em;
+  height: auto;
+
+  &:active {
+    background-color: #888;
+    border-color: #888;
+  }
+}
+
+.home-section {
+  box-sizing: border-box;
+}
+
+.home-text-section {
+  max-width: 800px;
+  width: 100%;
+  padding: 0 1em;
+  box-sizing: border-box;
+  margin: 1em auto;
+}
+
+.home-figure-section {
+  height: 50vh;
+  min-height: 20em;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+}
+
+.home-figure {
+  background: #f0f0f0;
+  width: 100%;
+}
+
+.home-figure-summarize {
+  background-image: url('/image/summarize-bg.jpg');
+  background-size: cover;
+  background-position: 50% 65%;
+}
+
+.home-figure-share {
+  background-image: url('/image/share-bg.jpg');
+  background-size: cover;
+  background-position: 50% 70%;
+}
+
+.home-figure-discover {
+  background-image: url('/image/discover-bg.jpg');
+  background-size: cover;
+  background-position: 50% 100%;
+}
+
+.home-caption {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 50%;
+  position: absolute;
+  box-sizing: border-box;
+  padding: 1em 2em;
+  background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0) 100%);
+  color: #fff;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  height: 100%;
+
+  & h2 {
+    color: var(--brandColor);
+  }
+
+  & p {
+    width: 66%;
+    max-width: 20em;
+  }
+}
+
+.home-credits {
+  font-size: var(--smallFontSize);
+  color: var(--fadedColor);
+}
+
+.home-request-form-container {
+  padding: 0.5em;
+  box-sizing: border-box;
+  max-width: 300px;
+}
+
+.home-request-form {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.home-request-form-submitting {
+  opacity: 0.333;
+  pointer-events: none;
+}
+
+.home-request-form-description {
+  margin-bottom: 1em;
+}
+
+.home-request-form-author {
+  font-size: var(--smallFontSize);
+  margin: 0.5em 0;
+
+  & * {
+    margin-right: 0.25em;
+  }
+}
+
+.home-request-form > input {
+  display: block;
+  width: 100%;
+  margin-top: 0.5em;
+  box-sizing: border-box;
+}
+
+.home-request-form-description {
+  font-weight: bold;
+}
+
+.home-request-submit {
+  width: 100%;
+  margin-top: 1em;
+}
+
+.home-request-incomplete {
+  display: none;
+  background-color: var(--invalidColor);
+  border-radius: 0.25em;
+  color: #fff;
+  padding: 0.25em 0.5em;
+  font-size: var(--smallFontSize);
+  text-align: center;
+}
+
+.home-request-incomplete-shown {
+  display: block;
+}
+
+.home-request-spinner {
+  font-size: 2em;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -0.5em;
+  margin-top: -0.5em;
+  display: none;
+}
+
+.home-request-spinner-shown {
+  display: block;
+}
+
+.home-request-form-done-icon {
+  font-size: 2em;
+  text-align: center;
+}
+
+.home-credit-logos {
+  margin-top: 5em;
+  text-align: center;
+}
+
+.home-credit-logo {
+  background-image: url('/image/uni-logos.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  width: 30em;
+  height: 5em;
+  max-width: 80vw;
+  display: inline-block;
+  margin: 0 1em;
+}
+
+@media (max-width: 600px) {
+  .home-caption {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80%;
+    width: auto;
+    padding: 0.5em;
+    display: block;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0) 100%);
+
+    & h2,
+    & p {
+      display: inline;
+      width: auto;
+      margin: 0;
+    }
+
+    & p {
+      margin-left: 0.5em;
+    }
+  }
+
+  .home-banner {
+    border-bottom: 1px solid #000;
+  }
+}

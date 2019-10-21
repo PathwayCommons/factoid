@@ -355,7 +355,7 @@ class EntityInfo extends DataComponent {
       assoc = null;
     }
 
-    let targetFromAssoc = (m, complete = false, showSubtype = false) => {
+    let targetFromAssoc = (m, complete = false, showRefinement = false) => {
       let highlight = !complete;
       let searchStr = highlight ? s.name : null;
       let searchTerms = searchStr ? searchStr.split(/\s+/) : [];
@@ -383,9 +383,11 @@ class EntityInfo extends DataComponent {
         h('div.entity-info-name', nameChildren.filter( domEl => domEl != null ))
       ];
 
-      let subtype;
+      let refineEditableGgp = doc.editable() && complete && showRefinement && isGGP(m.type);
 
-      if( doc.editable() && complete && showSubtype && isGGP(m.type) ){
+      let subtype = null;
+
+      if( refineEditableGgp ){
         let radios = [];
 
         let addType = (typeVal, displayName) => {
@@ -416,23 +418,80 @@ class EntityInfo extends DataComponent {
 
         let radioParent = h('div.radioset', radios);
 
-        subtype = h('div.entity-info-subtype', [
+        subtype = h('div.entity-info-subtype.entity-info-section', [
           h('span.entity-info-title', 'Type'),
           radioParent
         ]);
-      } else {
-        subtype = null;
       }
 
-      let body = assocDisp[ m.type ]( m, searchTerms );
+      let organism = null;
+
+      if( refineEditableGgp ){
+        let isPerfectNameMatch = m => m.distance === 0;
+        let orgMatches = s.matches.filter(isPerfectNameMatch);
+        let orgToMatches = new Map();
+        const selectedIndex = _.findIndex(orgMatches, match => match.id === m.id && match.namespace === m.namespace);
+
+        orgMatches.forEach(om => {
+          let org = om.organism;
+          let arr;
+
+          if( orgToMatches.has(org) ){
+            arr = orgToMatches.get(org);
+          } else {
+            arr = [];
+            orgToMatches.set(org, arr);
+          }
+
+          arr.push(om);
+        });
+
+        const getSelectDisplay = (om, includeName = false) => {
+          const matches = orgToMatches.get(om.organism) || [];
+          let count = matches.length;
+
+          if( count > 1 || includeName ){
+            return `${om.organismName} (${om.name})`;
+          } else {
+            return `${om.organismName}`;
+          }
+        };
+
+        organism = h('div.entity-info-section.entity-info-organism-refinement', [
+          h('span.entity-info-title', 'Organism'),
+          h('select.entity-info-organism-dropdown', {
+            defaultValue: selectedIndex,
+            onChange: e => {
+              const val = e.target.value;
+              const index = parseInt(val);
+              const om = orgMatches[index];
+
+              if( om ){
+                this.associate(om);
+              } else {
+                this.enableManualMatchMode();
+              }
+            }
+          }, orgMatches.map((om, index) => {
+            const value = index;
+
+            return h('option', { value }, getSelectDisplay(om));
+          }).concat([
+            selectedIndex < 0 ? h('option', { value: -1 }, getSelectDisplay(m, true)) : null,
+            h('option', { value: -2 }, 'Other')
+          ]))
+        ]);
+      }
+
+      let body = assocDisp[ m.type ]( m, searchTerms, !showRefinement );
 
       let post = [];
 
-      return _.concat( pre, subtype, body, post );
+      return _.concat( pre, subtype, organism, body, post );
     };
 
-    let allAssoc = (m, complete = false, showSubtype = false) => _.concat(
-      targetFromAssoc(m, complete, showSubtype),
+    let allAssoc = (m, complete = false, showRefinement = false) => _.concat(
+      targetFromAssoc(m, complete, showRefinement),
       assocDisp.link(m)
     );
 
@@ -520,14 +579,14 @@ class EntityInfo extends DataComponent {
           h(Loader, { loading: s.gettingMoreMatches })
         ] ) );
       } else if( s.name && assoc ){
-        children.push( h('div.entity-info-assoc', allAssoc( assoc, true, true )) );
+        children.push( h('div.entity-info-assoc.entity-info-assoc-refinement', allAssoc( assoc, true, true )) );
 
         children.push(
           h('div.entity-info-assoc-manual', [
-            h('button.entity-info-assoc-button', {
+            h('button.salient-button.entity-info-assoc-button', {
               onClick: () => this.enableManualMatchMode()
             }, [
-              `This isn't the "${s.name}" that I meant`
+              `Select a better match for "${s.name}"`
             ])
           ])
         );

@@ -5,12 +5,12 @@ import Tooltip from '../popover/tooltip';
 
 const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL, NCBI_LINK_BASE_URL, CHEBI_LINK_BASE_URL } = require('../../../config');
 
-let protein = (m, searchTerms) => {
+let protein = (m, searchTerms, includeOrganism = true) => {
   return [
-    h('div.entity-info-section', [
+    includeOrganism ? h('div.entity-info-section', [
       h('span.entity-info-title', 'Organism'),
       h('span', m.organismName)
-    ]),
+    ]) : null,
     h('div.entity-info-section', !m.proteinNames ? [] : [
       h('span.entity-info-title', 'Protein names'),
       ...m.proteinNames.map( name => h('span.entity-info-alt-name', [
@@ -27,7 +27,8 @@ let protein = (m, searchTerms) => {
       h('span.entity-info-title', 'Synonyms'),
       ...m.shortSynonyms.map( name => h('span.entity-info-alt-name', [
         h(Highlighter, { text: name, terms: searchTerms })
-      ]))
+      ])),
+      m.shortSynonyms.length === 0 ? '-' : ''
     ])
   ];
 };

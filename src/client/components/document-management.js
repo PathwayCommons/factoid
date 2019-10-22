@@ -72,7 +72,7 @@ class DocumentManagement extends React.Component {
       return d.toLocaleDateString( LOCALE, _.assign( DEFAULT_DATE_OPTS, DEFAULT_TIME_OPTS ) );
     };
 
-    const header = h('div.page-content-header', [
+    const header = h('div.page-content-title', [
       h( MainMenu, { history, admin: true } ),
       h('h1', 'Document management panel')
     ]);

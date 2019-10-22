@@ -1,12 +1,13 @@
 import _ from 'lodash';
 import React from 'react';
 import h from 'react-hyperscript';
+import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 
 //import { tryPromise } from '../../util';
 import MainMenu from './main-menu';
 
-import queryString from 'query-string';
+const encodeApiKey = secret => secret ? secret: '%27%27';
 const LOCALE = 'en-US';
 const DEFAULT_DATE_OPTS = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 const DEFAULT_TIME_OPTS = { hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
@@ -21,7 +22,7 @@ const getDocs = apiKey => {
 class DocumentManagement extends React.Component {
   constructor( props ){
     super( props );
-    
+
     this.state = {
       apiKey: '',
       validApiKey: false,
@@ -32,20 +33,24 @@ class DocumentManagement extends React.Component {
 
   componentDidMount(){
     const query = queryString.parse( this.props.history.location.search );
-    if( query.apiKey ) this.updateDocs( query.apiKey ); // for convenience, put it as query param
+    if( query.apiKey ) this.updateDocs( encodeApiKey( query.apiKey ) ); // for convenience, put it as query param
   }
 
   updateDocs( apiKey = this.state.apiKey ){
-    getDocs( apiKey )
+    getDocs( encodeApiKey( apiKey ) )
       .then( res => res.json() )
       .then( docs => new Promise( resolve => {
-          this.setState({ 
+          this.setState({
             validApiKey: true, // no error means its good
+            error: null,
             docs }, resolve);
         })
       )
       .then( () => this.props.history.push(`/document?apiKey=${apiKey}`) )
-      .catch( e => this.setState( { error: e, validApiKey: false } ) );
+      .catch( e => {
+        this.setState( { error: e, validApiKey: false } );
+        return;
+      });
   }
 
   handleFormChange( apiKey ) {
@@ -67,76 +72,98 @@ class DocumentManagement extends React.Component {
       return d.toLocaleDateString( LOCALE, _.assign( DEFAULT_DATE_OPTS, DEFAULT_TIME_OPTS ) );
     };
 
-    const hasSubmitted = o => _.has( o, ['data', 'submitted'] );
-    const submitDate = doc => {
-      const isSubmitted = _.has( doc, 'submitted' );
-      if ( isSubmitted ) {
-        const submitOp = _.find( doc._ops, hasSubmitted );
-        const submitDate = formatDate( _.get( submitOp, 'timestamp' ) );
-        return h( 'li.submitted', { key: 'submitted' }, `Submitted: ${submitDate}` );
-      } 
-      return null;
-    };
-
-    const header = h('div.page-content-title', [
+    const header = h('div.page-content-header', [
       h( MainMenu, { history, admin: true } ),
       h('h1', 'Document management panel')
     ]);
 
-    const apiKeyForm = 
-    h('form.document-management-api-key-form', [ 
+    // Authorization
+    const apiKeyForm =
+    h('form', [
       h('label.document-management-text-label', 'API key'),
       h('input', {
         type: 'text',
         value: this.state.apiKey,
         onChange: e => this.handleFormChange( e.target.value )
       }),
+      this.state.error ? h('div.error', 'Unable to authorize' ): null,
       h('button', {
         onClick: e => this.handleSubmit( e )
       }, 'Submit' )
     ]);
 
-    const docCitation = doc => {
-      return  h('div.citation-components', [
-        h('div.citation-components-title', withDefault( doc, 'title' ) ),
-        h('div.citation-components-authors', withDefault( doc, 'authors' ) ),
-        h('div.citation-components-journal', [
-          h( 'span', `${doc.journalName}` )
+    // Article Information
+    const articleInfo = doc => {
+      return  [
+        h('h3', withDefault( doc, 'title' ) ),
+        h( 'span', [
+          h('p', withDefault( doc, 'authors' ) ),
+          h('p', [
+            h( 'span', `${doc.journalName}` )
+          ])
         ])
-      ]);
+      ];
     };
 
-    const docDates = doc => {
-      return h( 'ul.docDates', [
-        h( 'li', { key: '_creationTimestamp' }, `Created: ${formatDate( doc._creationTimestamp )}` ),
+    // Contributor info
+    // const contributorActions = doc => {
+    //   return [
+    //     h( 'span', {
+    //         href: ``
+    //       }, h( 'button', { disabled: true }, 'Action1' ) )
+    //   ];
+    // };
+    const contributorInfo = doc => {
+      return [
+        h( 'p', `Contributor: ${doc.contributorName} (${doc.contributorEmail})` )
+        // TODO: [Send invite], ...
+      ];
+    };
+
+    // Document Status
+    const hasSubmitted = o => _.has( o, ['data', 'submitted'] );
+    const submitDate = doc => {
+      if ( _.has( doc, 'submitted' ) ) {
+        const submitOp = _.find( doc._ops, hasSubmitted );
+        const submitDate = formatDate( _.get( submitOp, 'timestamp' ) );
+        return h( 'p.emphasize', { key: 'submitted' }, `Submitted: ${submitDate}` );
+      }
+      return null;
+    };
+
+    const documentStatus = doc => {
+      return [
+        h( 'p', { key: '_creationTimestamp' }, `Created: ${formatDate( doc._creationTimestamp )}` ),
         submitDate( doc )
-      ]);
+        // TODO: [Last updated], ...
+      ];
     };
 
-    const docLinks = doc => {
-      return h( 'div.docLinks', [
-          h( Link, { 
-            to: `/document/${doc.id}`, 
-            target: '_blank' 
-          }, h( 'button', ['View'] ) ) 
-      ]);
+    // Document -- Action
+    const documentAction = doc => {
+      return [
+        h( Link, {
+            to: `/document/${doc.id}`,
+            target: '_blank'
+          }, h( 'button', ['View'] ) )
+      ];
     };
 
-    const docList = h('ul.body.doc-list', [
-      docs.map(doc => (
-        h('li', {
-            key: doc.id
-          },[ 
-          docCitation( doc ),
-          docDates( doc ),
-          docLinks( doc )
-        ])
+    const documentList = h( 'ul', [
+      docs.map( doc =>
+        h( 'li', { key: doc.id }, [
+          h( 'div.document-management-document-section', articleInfo( doc ) ),
+          h( 'div.document-management-document-section', documentStatus( doc ) ),
+          h( 'div.document-management-document-section', contributorInfo( doc ) ),
+          h( 'div.document-management-document-section', documentAction( doc ) )
+        ]
       ))
     ]);
-    
-    let body = validApiKey ? docList: apiKeyForm;
 
-    return h('div.document-management.page-content', [ 
+
+    let body = validApiKey ? documentList: apiKeyForm;
+
+    return h('div.document-management.page-content', [
       h('div.document-management-content', [
         header,
         body

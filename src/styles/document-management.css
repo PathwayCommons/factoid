@@ -9,10 +9,25 @@
     min-height: 6em;
     resize: vertical;
   }
+
+  & .emphasize {
+    color: var(--completeColor);
+  }
+
+  & .mute {
+    color: var(--fadedColor);
+  }
 }
 
 .document-management-content {
   width: 100%;
+}
+
+form {
+  & .error {
+    color: var(--invalidColor);
+    margin: 0;
+  }
 }
 
 .document-management-text-label {
@@ -25,15 +40,10 @@
   vertical-align: middle;
 }
 
-.document-management-table {
-  width: 100%;
+.document-management-document-section {
+  margin: 0.5em 0;
 
-  & th,
-  & td {
-    text-align: left;
-  }
-
-  & th {
-    border-bottom: 1px solid var(--widgetBorderColor);
+  & * {
+    margin: 0;
   }
 }

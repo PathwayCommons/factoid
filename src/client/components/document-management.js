@@ -4,6 +4,7 @@ import h from 'react-hyperscript';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 
+// import { BASE_URL } from '../../config';
 //import { tryPromise } from '../../util';
 import MainMenu from './main-menu';
 
@@ -53,6 +54,22 @@ class DocumentManagement extends React.Component {
       });
   }
 
+  email( ) {
+    // const inviteOpts = {
+    //   subject: 'Your invitation to Biofactoid',
+    //   citation: `${doc.title}\n${doc.journalName}`,
+    //   privateUrl: `${BASE_URL}/${doc.id}/${doc.secret}`
+    // };
+
+    // const mailOpts = _.assign( {}, {
+    //   to: doc.contributorEmail
+    // });
+
+    //TODO setup api route?
+    // console.log( `email sent to ${JSON.stringify(doc.contributorEmail)}`);
+    return {};
+  }
+
   handleFormChange( apiKey ) {
     this.setState( { apiKey } );
   }
@@ -65,6 +82,8 @@ class DocumentManagement extends React.Component {
   render(){
     let { history } = this.props;
     let { docs, validApiKey } = this.state;
+
+
 
     const withDefault = ( o, k ) => _.get( o, k ) ? _.get( o, k ) : `No ${k}`;
     const formatDate = dString => {
@@ -79,18 +98,18 @@ class DocumentManagement extends React.Component {
 
     // Authorization
     const apiKeyForm =
-    h('form', [
-      h('label.document-management-text-label', 'API key'),
-      h('input', {
-        type: 'text',
-        value: this.state.apiKey,
-        onChange: e => this.handleFormChange( e.target.value )
-      }),
-      this.state.error ? h('div.error', 'Unable to authorize' ): null,
-      h('button', {
-        onClick: e => this.handleSubmit( e )
-      }, 'Submit' )
-    ]);
+      h('form', [
+        h('label.document-management-text-label', 'API key'),
+        h('input', {
+          type: 'text',
+          value: this.state.apiKey,
+          onChange: e => this.handleFormChange( e.target.value )
+        }),
+        this.state.error ? h('div.error', 'Unable to authorize' ): null,
+        h('button', {
+          onClick: e => this.handleSubmit( e )
+        }, 'Submit' )
+      ]);
 
     // Article Information
     const articleInfo = doc => {
@@ -105,18 +124,17 @@ class DocumentManagement extends React.Component {
       ];
     };
 
-    // Contributor info
-    // const contributorActions = doc => {
-    //   return [
-    //     h( 'span', {
-    //         href: ``
-    //       }, h( 'button', { disabled: true }, 'Action1' ) )
-    //   ];
-    // };
+    // Contributor
+    const contributorActions = doc => {
+      return h( 'button', {
+          onClick: () => this.email( doc )
+        }, 'Email Invite' );
+    };
+
     const contributorInfo = doc => {
       return [
-        h( 'p', `Contributor: ${doc.contributorName} (${doc.contributorEmail})` )
-        // TODO: [Send invite], ...
+        h( 'p', `Contributor: ${doc.contributorName} (${doc.contributorEmail})` ),
+        contributorActions( doc )
       ];
     };
 

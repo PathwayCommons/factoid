@@ -15,10 +15,6 @@ import * as provider from './reach';
 const ENABLE_TEXTMINING = false;
 
 import { BIOPAX_CONVERTER_URL,
-  EMAIL_CONTEXT_JOURNAL,
-  BASE_URL,
-  INVITE_TMPLID,
-  EMAIL_VENDOR_MAILJET,
   API_KEY } from '../../../../config';
 
 const http = Express.Router();
@@ -102,26 +98,17 @@ let getSbgnFromTemplates = templates => {
     .then(handleResponseError);
 };
 
-// NB: Only for demo purposes
-// This should be removed and send emails from admin interface when ready
-// https://github.com/PathwayCommons/factoid/issues/524
-let email = json => {
-  return sendMail({
-    to: { name: json.contributorName, address: json.contributorEmail },
-    cc: { name: json.editorName, address: json.editorEmail },
-    subject: `Action required: "${json.contributorName}"`,
-    html: `<pre>${JSON.stringify(json, null, 2)}</pre>`,
-    template: {
-        vendor: EMAIL_VENDOR_MAILJET,
-        id: INVITE_TMPLID,
-        vars: {
-          citation: `${json.authors} ${json.title}`,
-          privateUrl: `${BASE_URL}${json.privateUrl}`,
-          context: EMAIL_CONTEXT_JOURNAL
-        }
-    }
-  });
-};
+// Email
+http.post('/email', function( req, res, next ){
+  let { opts, apiKey } = req.body;
+
+  return (
+    tryPromise( () => checkApiKey( apiKey ) )
+    .then( () => sendMail( opts ) )
+    .then( info => res.json( info ) )
+    .catch( next )
+  );
+});
 
 http.get('/', function( req, res, next ){
   let limit = req.query.limit || 50;
@@ -180,15 +167,6 @@ http.post('/', function( req, res, next ){
 
       return json;
     } )
-    .then(json => {
-      // NB: Only for demo purposes
-      // This should be removed and send emails from admin interface when ready
-      // https://github.com/PathwayCommons/factoid/issues/524
-      return email( json ).then( info => {
-        logger.info( `Email sent to ${info.accepted}` );
-        return json;
-      });
-    })
     .then(json => {
       return res.json( json );
     })

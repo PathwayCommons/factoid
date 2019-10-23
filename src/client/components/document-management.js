@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { makeClassList } from '../../util';
 import { 
   BASE_URL,
+  PUBMED_LINK_BASE_URL,
   EMAIL_FROM,
   EMAIL_FROM_ADDR,
   EMAIL_VENDOR_MAILJET,
@@ -131,7 +132,7 @@ class DocumentManagement extends React.Component {
     let { history } = this.props;
     let { docs, validApiKey } = this.state;
 
-    const withDefault = ( o, k ) => _.get( o, k ) ? _.get( o, k ) : `No ${k}`;
+    const withDefault = ( o, k ) => _.get( o, k, '' );
     const formatDate = dString => {
       const d = new Date(dString);
       return d.toLocaleDateString( LOCALE, _.assign( DEFAULT_DATE_OPTS, DEFAULT_TIME_OPTS ) );
@@ -159,12 +160,21 @@ class DocumentManagement extends React.Component {
 
     // Article 
     const getDocumentArticle = doc => {
+      const articleUrl = `${PUBMED_LINK_BASE_URL}${doc.trackingId}`;
+      const title = _.get( doc, 'title' );
+      const authors = _.get( doc, 'authors' );
+      const journal = _.get( doc, 'journalName' );
       return  [
-        h('h3', withDefault( doc, 'title' ) ),
+        h('h3', [
+          h( 'a.plain-link', {
+            href: articleUrl,
+            target: '_blank'
+          }, title )
+        ] ),
         h( 'span', [
-          h('p', withDefault( doc, 'authors' ) ),
+          h('p', authors ),
           h('p', [
-            h( 'span', `${doc.journalName}` )
+            h( 'span', journal )
           ])
         ])
       ];
@@ -197,9 +207,10 @@ class DocumentManagement extends React.Component {
 
      // Correspondence
      const getDocumentCorrespondence = doc => {
+      const emailTo = doc.contributorEmail;
       return [
         h( 'div.document-management-horizontal-list.hide-on-submit', [  
-          h( 'div.document-management-text-label', `Correspondence (${doc.contributorEmail})`),
+          h( 'div.document-management-text-label', `Correspondence (${emailTo})`),
           h( 'ul', [
             h( 'li', [ 
               h( 'button', {
@@ -218,10 +229,12 @@ class DocumentManagement extends React.Component {
     };
     const getDocumentHeader = () => [ h( 'i.material-icons.show-on-submit', 'check_circle' ) ];
     const getDocumentFooter = doc => {
+      const created = formatDate( doc._creationTimestamp );
+      const modified = formatDate( lastModDate( doc ) );
       return [
         h( 'ul.mute', [
-          h( 'li', { key: 'created' }, `Created: ${formatDate( doc._creationTimestamp )}` ),
-          h( 'li', { key: 'modified' }, `Last Modified: ${formatDate( lastModDate( doc ) )}` )
+          h( 'li', { key: 'created' }, `Created: ${created}` ),
+          h( 'li', { key: 'modified' }, `Last Modified: ${modified}` )
         ])
       ];
     };

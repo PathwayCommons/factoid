@@ -20,7 +20,7 @@ const LOCALE = 'en-US';
 const DEFAULT_DATE_OPTS = { year: 'numeric', month: 'long', day: 'numeric' };
 const DEFAULT_TIME_OPTS = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
 
-const getDocs = apiKey => {console.log(apiKey);
+const getDocs = apiKey => {
   const url = '/api/document';
   const params = { apiKey };
   const paramsString = queryString.stringify( params );
@@ -89,7 +89,7 @@ class DocumentManagement extends React.Component {
     if( query.apiKey ) this.updateDocs( query.apiKey ); // for convenience, put it as query param
   }
 
-  updateDocs( apiKey = this.state.apiKey ){console.log(apiKey);
+  updateDocs( apiKey = this.state.apiKey ){
     getDocs( apiKey )
       .then( res => res.json() )
       .then( docs => new Promise( resolve => {
@@ -111,17 +111,17 @@ class DocumentManagement extends React.Component {
       });
   }
 
-  email( doc ) {  
-    const mailOpts = msgFactory( doc );
+  handleEmail( doc ) {  
+    const mailOpts = msgFactory( doc, context );
     sendMail( mailOpts, this.state.apiKey )
-      .then( info => console.log(info));
+      .then( info => info );// TODO should hide if invited (update with state)
   }
 
-  handleFormChange( apiKey ) {
+  handleApiKeyFormChange( apiKey ) {
     this.setState( { apiKey } );
   }
 
-  handleSubmit( event ){
+  handleApiKeySubmit( event ){
     event.preventDefault();
     this.updateDocs();
   }
@@ -148,11 +148,11 @@ class DocumentManagement extends React.Component {
         h('input', {
           type: 'text',
           value: this.state.apiKey,
-          onChange: e => this.handleFormChange( e.target.value )
+          onChange: e => this.handleApiKeyFormChange( e.target.value )
         }),
         this.state.error ? h('div.error', 'Unable to authorize' ): null,
         h('button', {
-          onClick: e => this.handleSubmit( e )
+          onClick: e => this.handleApiKeySubmit( e )
         }, 'Submit' )
       ]);
 
@@ -169,20 +169,15 @@ class DocumentManagement extends React.Component {
       ];
     };
 
-    // Contributor
-    const contributorActions = doc => {
-      return h( 'button', {
-          onClick: () => this.email( doc )
-        }, 'Email Invite' );
-    };
-
+    // Contributor    
     const correspondence = doc => {
       return [
-        h( 'div.document-management-horizontal-list', [          
+        h( 'div.document-management-horizontal-list', [  
+          h( 'div.document-management-text-label', `Correspondence (${doc.contributorEmail})`),
           h( 'ul', [
             h( 'li', [ 
               h( 'button', {
-                onClick: () => this.email( doc, context )
+                onClick: () => this.handleEmail( doc )
               }, 'Email Invite' )
             ])
           ])
@@ -195,9 +190,10 @@ class DocumentManagement extends React.Component {
     // Document -- Views
     const documentViews = doc => {
       const summaryPath = `/document/${doc.id}`;
-      const editPath = `${summaryPath}/${doc.id}`;
+      const editPath = `${summaryPath}/${doc.secret}`;
       return [
-        h( 'div.document-management-horizontal-list', [          
+        h( 'div.document-management-horizontal-list', [
+          h( 'div.document-management-text-label', ''),
           h( 'ul', [
             h( 'li', [ 
               h( Link, {
@@ -216,7 +212,7 @@ class DocumentManagement extends React.Component {
       ];
     };
 
-    // Document Footer
+    // Document Header & Footer
     const hasSubmitted = o => _.has( o, ['data', 'submitted'] );
     const submitDate = doc => {
       if ( _.has( doc, 'submitted' ) ) {
@@ -227,23 +223,31 @@ class DocumentManagement extends React.Component {
       return null;
     };
 
-    const documentFooter = doc => {
+    const documentSubmitted = doc => {
+      const isSubmitted = _.has( doc, 'submitted' );
       return [
-        h( 'ul', [
-          h( 'li.mute', { key: '_creationTimestamp' }, `Created: ${formatDate( doc._creationTimestamp )}` ),
-          submitDate( doc )
-          // TODO: [Last updated], ...
+        isSubmitted ? h( 'i.material-icons', 'check_circle' ): null
+      ];
+    };
+
+   const documentStatus = doc => {
+      const isSubmitted = _.has( doc, 'submitted' );
+      return [
+        h( 'ul.mute', [
+          h( 'li', { key: '_creationTimestamp' }, `Created: ${formatDate( doc._creationTimestamp )}` ),
+          isSubmitted ? submitDate( doc ): null
         ])
       ];
     };
 
     const documentList = h( 'ul', [
-      docs.map( ( doc, i ) =>
+      docs.map( doc =>
         h( 'li', { key: doc.id }, [
+          h( 'div.document-management-document-meta', documentSubmitted( doc ) ),
           h( 'div.document-management-document-section', articleInfo( doc ) ),
           h( 'div.document-management-document-section', documentViews( doc ) ),
           h( 'div.document-management-document-section', correspondence( doc ) ),
-          h( 'div.document-management-document-footer', documentFooter( doc ) ),
+          h( 'div.document-management-document-meta', documentStatus( doc ) ),
           h( 'hr' )
         ]
       ))

@@ -37,6 +37,15 @@
   vertical-align: middle;
 }
 
+.document-management-document-meta {
+  text-align: right;
+  font-size: 0.9em;
+
+  & li {
+    margin: 0;
+  }
+}
+
 .document-management-document-section {
   margin: 0.5em 0;
 
@@ -45,29 +54,21 @@
   }
 }
 
-.document-management-document-footer {
-  & li {
-    margin: 0;
-    font-size: 0.9em;
-    text-align: right;
-  }
-}
-
-.document-management-horizontal-list { 
+.document-management-horizontal-list {
   & ul {
     padding: 0;
     overflow: hidden;
   }
-  
+
   & li {
     float: left;
     margin: 0 1em;
   }
-  
+
   & li a {
     display: block;
     text-align: center;
     padding: 0.5em;
     text-decoration: underline;
-  }  
+  }
 }

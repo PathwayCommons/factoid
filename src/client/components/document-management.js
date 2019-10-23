@@ -4,6 +4,7 @@ import h from 'react-hyperscript';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 
+import { makeClassList } from '../../util';
 import { 
   BASE_URL,
   EMAIL_FROM,
@@ -18,7 +19,7 @@ import MainMenu from './main-menu';
 const sanitize = secret => secret === '' ? '%27%27': secret;
 const LOCALE = 'en-US';
 const DEFAULT_DATE_OPTS = { year: 'numeric', month: 'long', day: 'numeric' };
-const DEFAULT_TIME_OPTS = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
+const DEFAULT_TIME_OPTS = { hour12: false, hour: '2-digit', minute: 'numeric', second: 'numeric' };
 
 const getDocs = apiKey => {
   const url = '/api/document';
@@ -112,7 +113,7 @@ class DocumentManagement extends React.Component {
   }
 
   handleEmail( doc ) {  
-    const mailOpts = msgFactory( doc, context );
+    const mailOpts = msgFactory( doc );
     sendMail( mailOpts, this.state.apiKey )
       .then( info => info );// TODO should hide if invited (update with state)
   }
@@ -172,7 +173,7 @@ class DocumentManagement extends React.Component {
     // Contributor    
     const correspondence = doc => {
       return [
-        h( 'div.document-management-horizontal-list', [  
+        h( 'div.document-management-horizontal-list.hide-on-submit', [  
           h( 'div.document-management-text-label', `Correspondence (${doc.contributorEmail})`),
           h( 'ul', [
             h( 'li', [ 
@@ -184,8 +185,6 @@ class DocumentManagement extends React.Component {
         ])
       ];
     };
-
-    
 
     // Document -- Views
     const documentViews = doc => {
@@ -213,46 +212,36 @@ class DocumentManagement extends React.Component {
     };
 
     // Document Header & Footer
-    const hasSubmitted = o => _.has( o, ['data', 'submitted'] );
-    const submitDate = doc => {
-      if ( _.has( doc, 'submitted' ) ) {
-        const submitOp = _.find( doc._ops, hasSubmitted );
-        const submitDate = formatDate( _.get( submitOp, 'timestamp' ) );
-        return h( 'li', { key: 'submitted' }, `Submitted: ${submitDate}` );
-      }
-      return null;
+    const lastModDate = doc => {
+      const sorted = _.sortBy( doc._ops, [o => new Date( _.get( o , 'timestamp' ) )] );
+      return _.get( _.last( sorted ), 'timestamp' );
     };
-
-    const documentSubmitted = doc => {
-      const isSubmitted = _.has( doc, 'submitted' );
-      return [
-        isSubmitted ? h( 'i.material-icons', 'check_circle' ): null
-      ];
-    };
-
-   const documentStatus = doc => {
-      const isSubmitted = _.has( doc, 'submitted' );
+    const documentHeader = () => [ h( 'i.material-icons.show-on-submit', 'check_circle' ) ];
+    const documentFooter = doc => {
       return [
         h( 'ul.mute', [
-          h( 'li', { key: '_creationTimestamp' }, `Created: ${formatDate( doc._creationTimestamp )}` ),
-          isSubmitted ? submitDate( doc ): null
+          h( 'li', { key: 'created' }, `Created: ${formatDate( doc._creationTimestamp )}` ),
+          h( 'li', { key: 'modified' }, `Last Modified: ${formatDate( lastModDate( doc ) )}` )
         ])
       ];
     };
 
     const documentList = h( 'ul', [
-      docs.map( doc =>
-        h( 'li', { key: doc.id }, [
-          h( 'div.document-management-document-meta', documentSubmitted( doc ) ),
+      docs.map( doc => {
+        return h( 'li', { 
+          className: makeClassList({'is-submitted': _.has( doc, 'submitted' ) }),
+          key: doc.id 
+        }, 
+        [
+          h( 'div.document-management-document-meta', documentHeader( doc ) ),
           h( 'div.document-management-document-section', articleInfo( doc ) ),
           h( 'div.document-management-document-section', documentViews( doc ) ),
           h( 'div.document-management-document-section', correspondence( doc ) ),
-          h( 'div.document-management-document-meta', documentStatus( doc ) ),
+          h( 'div.document-management-document-meta', documentFooter( doc ) ),
           h( 'hr' )
-        ]
-      ))
+        ]);
+      })
     ]);
-
 
     let body = validApiKey ? documentList: apiKeyForm;
 

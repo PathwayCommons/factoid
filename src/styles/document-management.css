@@ -25,6 +25,24 @@
   & ul {
     list-style-type: none;
   }
+
+  & .show-on-submit {
+    display: none;
+  }
+
+  & .hide-on-submit {
+    display: initial;
+  }
+
+  & .is-submitted {
+    & .show-on-submit {
+      display: initial;
+    }
+
+    & .hide-on-submit {
+      display: none;
+    }
+  }
 }
 
 .document-management-text-label {
@@ -72,3 +90,4 @@
     text-decoration: underline;
   }
 }
+

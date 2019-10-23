@@ -157,8 +157,8 @@ class DocumentManagement extends React.Component {
         }, 'Submit' )
       ]);
 
-    // Article Information
-    const articleInfo = doc => {
+    // Article 
+    const getDocumentArticle = doc => {
       return  [
         h('h3', withDefault( doc, 'title' ) ),
         h( 'span', [
@@ -170,24 +170,8 @@ class DocumentManagement extends React.Component {
       ];
     };
 
-    // Contributor    
-    const correspondence = doc => {
-      return [
-        h( 'div.document-management-horizontal-list.hide-on-submit', [  
-          h( 'div.document-management-text-label', `Correspondence (${doc.contributorEmail})`),
-          h( 'ul', [
-            h( 'li', [ 
-              h( 'button', {
-                onClick: () => this.handleEmail( doc )
-              }, 'Email Invite' )
-            ])
-          ])
-        ])
-      ];
-    };
-
-    // Document -- Views
-    const documentViews = doc => {
+    // Network 
+    const getDocumentNetwork = doc => {
       const summaryPath = `/document/${doc.id}`;
       const editPath = `${summaryPath}/${doc.secret}`;
       return [
@@ -211,13 +195,29 @@ class DocumentManagement extends React.Component {
       ];
     };
 
+     // Correspondence
+     const getDocumentCorrespondence = doc => {
+      return [
+        h( 'div.document-management-horizontal-list.hide-on-submit', [  
+          h( 'div.document-management-text-label', `Correspondence (${doc.contributorEmail})`),
+          h( 'ul', [
+            h( 'li', [ 
+              h( 'button', {
+                onClick: () => this.handleEmail( doc )
+              }, 'Email Invite' )
+            ])
+          ])
+        ])
+      ];
+    };
+
     // Document Header & Footer
     const lastModDate = doc => {
       const sorted = _.sortBy( doc._ops, [o => new Date( _.get( o , 'timestamp' ) )] );
       return _.get( _.last( sorted ), 'timestamp' );
     };
-    const documentHeader = () => [ h( 'i.material-icons.show-on-submit', 'check_circle' ) ];
-    const documentFooter = doc => {
+    const getDocumentHeader = () => [ h( 'i.material-icons.show-on-submit', 'check_circle' ) ];
+    const getDocumentFooter = doc => {
       return [
         h( 'ul.mute', [
           h( 'li', { key: 'created' }, `Created: ${formatDate( doc._creationTimestamp )}` ),
@@ -233,11 +233,11 @@ class DocumentManagement extends React.Component {
           key: doc.id 
         }, 
         [
-          h( 'div.document-management-document-meta', documentHeader( doc ) ),
-          h( 'div.document-management-document-section', articleInfo( doc ) ),
-          h( 'div.document-management-document-section', documentViews( doc ) ),
-          h( 'div.document-management-document-section', correspondence( doc ) ),
-          h( 'div.document-management-document-meta', documentFooter( doc ) ),
+          h( 'div.document-management-document-meta', getDocumentHeader( doc ) ),
+          h( 'div.document-management-document-section', getDocumentArticle( doc ) ),
+          h( 'div.document-management-document-section', getDocumentNetwork( doc ) ),
+          h( 'div.document-management-document-section', getDocumentCorrespondence( doc ) ),
+          h( 'div.document-management-document-meta', getDocumentFooter( doc ) ),
           h( 'hr' )
         ]);
       })

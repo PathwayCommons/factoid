@@ -21,12 +21,9 @@
 
 .document-management-content {
   width: 100%;
-}
 
-form {
-  & .error {
-    color: var(--invalidColor);
-    margin: 0;
+  & ul {
+    list-style-type: none;
   }
 }
 
@@ -46,4 +43,31 @@ form {
   & * {
     margin: 0;
   }
+}
+
+.document-management-document-footer {
+  & li {
+    margin: 0;
+    font-size: 0.9em;
+    text-align: right;
+  }
+}
+
+.document-management-horizontal-list { 
+  & ul {
+    padding: 0;
+    overflow: hidden;
+  }
+  
+  & li {
+    float: left;
+    margin: 0 1em;
+  }
+  
+  & li a {
+    display: block;
+    text-align: center;
+    padding: 0.5em;
+    text-decoration: underline;
+  }  
 }

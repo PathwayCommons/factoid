@@ -113,8 +113,7 @@ class DocumentManagement extends React.Component {
       });
   }
 
-  handleEmail( doc ) {  
-    const mailOpts = msgFactory( doc );
+  handleEmail( mailOpts ) {  
     sendMail( mailOpts, this.state.apiKey )
       .then( info => info );// TODO should hide if invited (update with state)
   }
@@ -132,12 +131,45 @@ class DocumentManagement extends React.Component {
     let { history } = this.props;
     let { docs, validApiKey } = this.state;
 
-    const withDefault = ( o, k ) => _.get( o, k, '' );
-    const formatDate = dString => {
-      const d = new Date(dString);
-      return d.toLocaleDateString( LOCALE, _.assign( DEFAULT_DATE_OPTS, DEFAULT_TIME_OPTS ) );
+    const formatDate = dateString => ( new Date( dateString ) ).toLocaleDateString( LOCALE, _.assign( DEFAULT_DATE_OPTS, DEFAULT_TIME_OPTS ) );
+    const lastModDate = doc => {
+      const sorted = _.sortBy( doc._ops, [o => new Date( _.get( o , 'timestamp' ) )] );
+      return _.get( _.last( sorted ), 'timestamp' );
     };
-
+    
+    // Do all data mapping in one place
+    const dataFromDoc = doc => {
+      const data = {
+        article: {
+          title: _.get( doc, 'title' ),
+          authors: _.get( doc, 'authors' ).split(','),
+          journal: _.get( doc, 'journalName' ),
+          articleUrl: `${PUBMED_LINK_BASE_URL}${_.get( doc, 'trackingId' )}`,
+          volume: '',
+          issue: '',
+          pubDate: ''
+        },
+        network: {
+          summaryPath: `/document/${doc.id}`,
+          editablePath: `/document/${doc.id}/${doc.secret}`
+        },
+        correspondence: {
+          email: _.get( doc, 'contributorEmail' ),
+          mailOpts: msgFactory( doc ),
+          context: '',
+          invite: '', 
+          reminder: '',
+          submit: ''
+        },
+        status: {
+          created: formatDate( doc._creationTimestamp ),
+          lastModified: formatDate( lastModDate( doc ) ),
+          submitted: _.get( doc, 'submitted' )
+        }
+      };
+      return data;
+    };
+    
     const header = h('div.page-content-title', [
       h( MainMenu, { history, admin: true } ),
       h('h1', 'Document management panel')
@@ -159,11 +191,8 @@ class DocumentManagement extends React.Component {
       ]);
 
     // Article 
-    const getDocumentArticle = doc => {
-      const articleUrl = `${PUBMED_LINK_BASE_URL}${doc.trackingId}`;
-      const title = _.get( doc, 'title' );
-      const authors = _.get( doc, 'authors' );
-      const journal = _.get( doc, 'journalName' );
+    const getDocumentArticle = article => {
+      const { title, articleUrl, authors, journal } = article;
       return  [
         h('h3', [
           h( 'a.plain-link', {
@@ -181,9 +210,8 @@ class DocumentManagement extends React.Component {
     };
 
     // Network 
-    const getDocumentNetwork = doc => {
-      const summaryPath = `/document/${doc.id}`;
-      const editPath = `${summaryPath}/${doc.secret}`;
+    const getDocumentNetwork = network => {
+      const { summaryPath, editablePath } = network;
       return [
         h( 'div.document-management-horizontal-list', [
           h( 'div.document-management-text-label', ''),
@@ -196,7 +224,7 @@ class DocumentManagement extends React.Component {
             ]),
             h( 'li', [ 
               h( Link, {
-                to: editPath,
+                to: editablePath,
                 target: '_blank'
               }, 'Editable' )
             ])
@@ -206,15 +234,15 @@ class DocumentManagement extends React.Component {
     };
 
      // Correspondence
-     const getDocumentCorrespondence = doc => {
-      const emailTo = doc.contributorEmail;
+     const getDocumentCorrespondence = correspondence => {
+      const { email, mailOpts } = correspondence;
       return [
         h( 'div.document-management-horizontal-list.hide-on-submit', [  
-          h( 'div.document-management-text-label', `Correspondence (${emailTo})`),
+          h( 'div.document-management-text-label', `Correspondence (${email})`),
           h( 'ul', [
             h( 'li', [ 
               h( 'button', {
-                onClick: () => this.handleEmail( doc )
+                onClick: () => this.handleEmail( mailOpts )
               }, 'Email Invite' )
             ])
           ])
@@ -223,14 +251,9 @@ class DocumentManagement extends React.Component {
     };
 
     // Document Header & Footer
-    const lastModDate = doc => {
-      const sorted = _.sortBy( doc._ops, [o => new Date( _.get( o , 'timestamp' ) )] );
-      return _.get( _.last( sorted ), 'timestamp' );
-    };
     const getDocumentHeader = () => [ h( 'i.material-icons.show-on-submit', 'check_circle' ) ];
-    const getDocumentFooter = doc => {
-      const created = formatDate( doc._creationTimestamp );
-      const modified = formatDate( lastModDate( doc ) );
+    const getDocumentStatus = status => {
+      const { created, modified } = status;
       return [
         h( 'ul.mute', [
           h( 'li', { key: 'created' }, `Created: ${created}` ),
@@ -241,16 +264,17 @@ class DocumentManagement extends React.Component {
 
     const documentList = h( 'ul', [
       docs.map( doc => {
+        const { article, network, correspondence, status } = dataFromDoc( doc );
         return h( 'li', { 
           className: makeClassList({'is-submitted': _.has( doc, 'submitted' ) }),
           key: doc.id 
         }, 
         [
-          h( 'div.document-management-document-meta', getDocumentHeader( doc ) ),
-          h( 'div.document-management-document-section', getDocumentArticle( doc ) ),
-          h( 'div.document-management-document-section', getDocumentNetwork( doc ) ),
-          h( 'div.document-management-document-section', getDocumentCorrespondence( doc ) ),
-          h( 'div.document-management-document-meta', getDocumentFooter( doc ) ),
+          h( 'div.document-management-document-meta', getDocumentHeader() ),
+          h( 'div.document-management-document-section', getDocumentArticle( article ) ),
+          h( 'div.document-management-document-section', getDocumentNetwork( network ) ),
+          h( 'div.document-management-document-section', getDocumentCorrespondence( correspondence ) ),
+          h( 'div.document-management-document-meta', getDocumentStatus( status ) ),
           h( 'hr' )
         ]);
       })

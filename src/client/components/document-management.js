@@ -5,7 +5,7 @@ import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 
 import { makeClassList } from '../../util';
-import { 
+import {
   BASE_URL,
   PUBMED_LINK_BASE_URL,
   EMAIL_FROM,
@@ -22,17 +22,11 @@ const LOCALE = 'en-US';
 const DEFAULT_DATE_OPTS = { year: 'numeric', month: 'long', day: 'numeric' };
 const DEFAULT_TIME_OPTS = { hour12: false, hour: '2-digit', minute: 'numeric', second: 'numeric' };
 
-const getDocs = apiKey => {
-  const url = '/api/document';
-  const params = { apiKey };
-  const paramsString = queryString.stringify( params );
-  return fetch(`${url}?${paramsString}`);
-};
 
 const sendMail = ( docOpts, apiKey ) => {
   const url = '/api/document/email';
   const defaults = {
-    from: { 
+    from: {
       name: EMAIL_FROM,
       address: EMAIL_FROM_ADDR
     },
@@ -43,12 +37,12 @@ const sendMail = ( docOpts, apiKey ) => {
 
   const opts = _.merge( {}, defaults, docOpts );
   const data = { opts, apiKey };
-  
+
   return fetch( url, {
-    method: 'POST', 
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json' 
+      'Accept': 'application/json'
     },
     body: JSON.stringify( data )
   });
@@ -59,15 +53,15 @@ const msgFactory = doc => {
   const msgOpts = {
     to: {
       address: `${doc.contributorEmail}`
-    },     
+    },
     subject: 'Your invitation to Biofactoid is ready',
     template: {
-      id: INVITE_TMPLID,	
-      vars: {	
+      id: INVITE_TMPLID,
+      vars: {
         citation: `${doc.title}\n${doc.authors}\n${doc.journalName}`,
         privateUrl: `${BASE_URL}/document/${doc.id}/${doc.secret}`,
         context: EMAIL_CONTEXT_SIGNUP
-      }	
+      }
     }
   };
 
@@ -78,34 +72,42 @@ class DocumentManagement extends React.Component {
   constructor( props ){
     super( props );
 
+    const query = queryString.parse( this.props.history.location.search );
+    const apiKey =  _.get( query, 'apiKey', '' );
+
     this.state = {
-      apiKey: '',
+      apiKey,
       validApiKey: false,
       docs: [],
       error: undefined
     };
+
+    this.getDocs( apiKey )
+      .then( () => this.props.history.push(`/document?apiKey=${sanitize(apiKey)}`) )
+      .catch( () => {} ); //swallow
   }
 
-  componentDidMount(){
-    const query = queryString.parse( this.props.history.location.search );
-    if( query.apiKey ) this.updateDocs( query.apiKey ); // for convenience, put it as query param
+  getDocs( apiKey ){
+    const url = '/api/document';
+    const params = { apiKey };
+    const paramsString = queryString.stringify( params );
+    return fetch(`${url}?${paramsString}`)
+      .then( res => res.json() )
+      .then( docs => new Promise( resolve => {
+        this.setState({
+          validApiKey: true, // no error means its good
+          apiKey,
+          error: null,
+          docs }, resolve);
+      }));
   }
 
   updateDocs( apiKey = this.state.apiKey ){
-    getDocs( apiKey )
-      .then( res => res.json() )
-      .then( docs => new Promise( resolve => {
-          this.setState({
-            validApiKey: true, // no error means its good
-            apiKey,
-            error: null,
-            docs }, resolve);
-        })
-      )
+    this.getDocs( apiKey )
       .then( () => this.props.history.push(`/document?apiKey=${sanitize(apiKey)}`) )
       .catch( e => {
-        this.setState( { 
-          error: e, 
+        this.setState( {
+          error: e,
           validApiKey: false,
           apiKey: ''
          }, () => this.props.history.push(`/document`) );
@@ -113,9 +115,9 @@ class DocumentManagement extends React.Component {
       });
   }
 
-  handleEmail( mailOpts ) {  
+  handleEmail( mailOpts ) {
     sendMail( mailOpts, this.state.apiKey )
-      .then( info => info );// TODO should hide if invited (update with state)
+      .then( info => info );
   }
 
   handleApiKeyFormChange( apiKey ) {
@@ -136,8 +138,8 @@ class DocumentManagement extends React.Component {
       const sorted = _.sortBy( doc._ops, [o => new Date( _.get( o , 'timestamp' ) )] );
       return _.get( _.last( sorted ), 'timestamp' );
     };
-    
-    // Do all data mapping in one place
+
+    // TODO --- Do all data mapping in one place but should update doc with some of this stuff
     const dataFromDoc = doc => {
       const data = {
         article: {
@@ -147,29 +149,32 @@ class DocumentManagement extends React.Component {
           articleUrl: `${PUBMED_LINK_BASE_URL}${_.get( doc, 'trackingId' )}`,
           volume: '',
           issue: '',
-          pubDate: ''
+          pubDate: '' //timestamp
         },
         network: {
           summaryPath: `/document/${doc.id}`,
           editablePath: `/document/${doc.id}/${doc.secret}`
         },
         correspondence: {
-          email: _.get( doc, 'contributorEmail' ),
+          email: {
+            name: '',
+            address: _.get( doc, 'contributorEmail' )
+          },
           mailOpts: msgFactory( doc ),
-          context: '',
-          invite: '', 
-          reminder: '',
-          submit: ''
+          context: '', // config constants like 'journal', 'signup' etc.
+          invite: '', // timestamp
+          reminder: '', // timestamp
+          submit: '' // timestamp
         },
         status: {
           created: formatDate( doc._creationTimestamp ),
-          lastModified: formatDate( lastModDate( doc ) ),
-          submitted: _.get( doc, 'submitted' )
+          modified: formatDate( lastModDate( doc ) ),
+          submitted: _.get( doc, 'submitted', false )
         }
       };
-      return data;
+      return Object.freeze( data );
     };
-    
+
     const header = h('div.page-content-title', [
       h( MainMenu, { history, admin: true } ),
       h('h1', 'Document management panel')
@@ -190,7 +195,7 @@ class DocumentManagement extends React.Component {
         }, 'Submit' )
       ]);
 
-    // Article 
+    // Article
     const getDocumentArticle = article => {
       const { title, articleUrl, authors, journal } = article;
       return  [
@@ -209,20 +214,20 @@ class DocumentManagement extends React.Component {
       ];
     };
 
-    // Network 
+    // Network
     const getDocumentNetwork = network => {
       const { summaryPath, editablePath } = network;
       return [
         h( 'div.document-management-horizontal-list', [
           h( 'div.document-management-text-label', ''),
           h( 'ul', [
-            h( 'li', [ 
+            h( 'li', [
               h( Link, {
                 to: summaryPath,
                 target: '_blank',
               }, 'Summary' )
             ]),
-            h( 'li', [ 
+            h( 'li', [
               h( Link, {
                 to: editablePath,
                 target: '_blank'
@@ -234,14 +239,16 @@ class DocumentManagement extends React.Component {
     };
 
      // Correspondence
-     const getDocumentCorrespondence = correspondence => {
+     const getDocumentCorrespondence = ( correspondence, status ) => {
       const { email, mailOpts } = correspondence;
+      const { submitted } = status;
       return [
-        h( 'div.document-management-horizontal-list.hide-on-submit', [  
-          h( 'div.document-management-text-label', `Correspondence (${email})`),
+        h( 'div.document-management-horizontal-list', [
+          h( 'div.document-management-text-label', `Correspondence (${email.address})`),
           h( 'ul', [
-            h( 'li', [ 
+            h( 'li', [
               h( 'button', {
+                disabled: submitted,
                 onClick: () => this.handleEmail( mailOpts )
               }, 'Email Invite' )
             ])
@@ -251,13 +258,17 @@ class DocumentManagement extends React.Component {
     };
 
     // Document Header & Footer
-    const getDocumentHeader = () => [ h( 'i.material-icons.show-on-submit', 'check_circle' ) ];
+    const getDocumentHeader = status => [
+      h( 'i.material-icons', {
+        className: makeClassList({ 'on-submit': !status.submitted })
+      }, 'check_circle' )
+    ];
     const getDocumentStatus = status => {
       const { created, modified } = status;
       return [
         h( 'ul.mute', [
           h( 'li', { key: 'created' }, `Created: ${created}` ),
-          h( 'li', { key: 'modified' }, `Last Modified: ${modified}` )
+          h( 'li', { key: 'modified' }, `Modified: ${modified}` )
         ])
       ];
     };
@@ -265,15 +276,15 @@ class DocumentManagement extends React.Component {
     const documentList = h( 'ul', [
       docs.map( doc => {
         const { article, network, correspondence, status } = dataFromDoc( doc );
-        return h( 'li', { 
-          className: makeClassList({'is-submitted': _.has( doc, 'submitted' ) }),
-          key: doc.id 
-        }, 
+        return h( 'li', {
+          className: makeClassList( { 'is-submitted': status.submitted } ),
+          key: doc.id
+        },
         [
-          h( 'div.document-management-document-meta', getDocumentHeader() ),
+          h( 'div.document-management-document-meta', getDocumentHeader( status ) ),
           h( 'div.document-management-document-section', getDocumentArticle( article ) ),
           h( 'div.document-management-document-section', getDocumentNetwork( network ) ),
-          h( 'div.document-management-document-section', getDocumentCorrespondence( correspondence ) ),
+          h( 'div.document-management-document-section', getDocumentCorrespondence( correspondence, status ) ),
           h( 'div.document-management-document-meta', getDocumentStatus( status ) ),
           h( 'hr' )
         ]);

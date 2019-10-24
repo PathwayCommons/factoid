@@ -2,7 +2,6 @@ import Express from 'express';
 import _ from 'lodash';
 import uuid from 'uuid';
 import fetch from 'node-fetch';
-import r from 'rethinkdb';
 
 import { tryPromise } from '../../../../util';
 import sendMail from '../../../email-transport';
@@ -121,7 +120,7 @@ http.get('/', function( req, res, next ){
     .then( t => {
       let { table, conn } = t;
 
-      return table.skip(offset).limit(limit).orderBy(r.desc('_creationTimestamp')).run(conn);
+      return table.skip(offset).limit(limit).run(conn);
     })
     .then( cursor => cursor.toArray() )
     .then( results => res.json( results ) )

@@ -26,21 +26,13 @@
     list-style-type: none;
   }
 
-  & .show-on-submit {
-    display: none;
-  }
-
-  & .hide-on-submit {
-    display: initial;
+  & .on-submit {
+    visibility: hidden;
   }
 
   & .is-submitted {
-    & .show-on-submit {
-      display: initial;
-    }
-
-    & .hide-on-submit {
-      display: none;
+    .on-submit {
+      visibility: visible;
     }
   }
 }

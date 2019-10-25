@@ -3,7 +3,7 @@ import React from 'react';
 import h from 'react-hyperscript';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
-import { format, formatDistanceToNow } from 'date-fns'
+import { format, formatDistanceToNow } from 'date-fns';
 
 import { makeClassList } from '../../util';
 import {

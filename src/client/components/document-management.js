@@ -3,6 +3,7 @@ import React from 'react';
 import h from 'react-hyperscript';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
+import { format, formatDistanceToNow } from 'date-fns'
 
 import { makeClassList } from '../../util';
 import {
@@ -17,11 +18,11 @@ import {
 //import { tryPromise } from '../../util';
 import MainMenu from './main-menu';
 
-const sanitize = secret => secret === '' ? '%27%27': secret;
-const LOCALE = 'en-US';
-const DEFAULT_DATE_OPTS = { year: 'numeric', month: 'long', day: 'numeric' };
-const DEFAULT_TIME_OPTS = { hour12: false, hour: '2-digit', minute: 'numeric', second: 'numeric' };
+const DATE_FORMAT = 'MMMM-dd-yyyy';
+const getTimeSince = dateString => formatDistanceToNow( new Date( dateString ), { addSuffix: true } );
+const formatDate = dateString => format( new Date( dateString ), DATE_FORMAT );
 
+const sanitizeKey = secret => secret === '' ? '%27%27': secret;
 
 const sendMail = ( docOpts, apiKey ) => {
   const url = '/api/document/email';
@@ -68,6 +69,8 @@ const msgFactory = doc => {
   return msgOpts;
 };
 
+const sortByCreated = docs => _.orderBy( docs, [ doc => new Date( _.get( doc, '_creationTimestamp' ) ) ], ['desc'] );
+
 class DocumentManagement extends React.Component {
   constructor( props ){
     super( props );
@@ -83,7 +86,7 @@ class DocumentManagement extends React.Component {
     };
 
     this.getDocs( apiKey )
-      .then( () => this.props.history.push(`/document?apiKey=${sanitize(apiKey)}`) )
+      .then( () => this.props.history.push(`/document?apiKey=${sanitizeKey(apiKey)}`) )
       .catch( () => {} ); //swallow
   }
 
@@ -93,6 +96,7 @@ class DocumentManagement extends React.Component {
     const paramsString = queryString.stringify( params );
     return fetch(`${url}?${paramsString}`)
       .then( res => res.json() )
+      .then( sortByCreated )
       .then( docs => new Promise( resolve => {
         this.setState({
           validApiKey: true, // no error means its good
@@ -104,7 +108,7 @@ class DocumentManagement extends React.Component {
 
   updateDocs( apiKey = this.state.apiKey ){
     this.getDocs( apiKey )
-      .then( () => this.props.history.push(`/document?apiKey=${sanitize(apiKey)}`) )
+      .then( () => this.props.history.push(`/document?apiKey=${sanitizeKey(apiKey)}`) )
       .catch( e => {
         this.setState( {
           error: e,
@@ -133,7 +137,6 @@ class DocumentManagement extends React.Component {
     let { history } = this.props;
     let { docs, validApiKey } = this.state;
 
-    const formatDate = dateString => ( new Date( dateString ) ).toLocaleDateString( LOCALE, _.assign( DEFAULT_DATE_OPTS, DEFAULT_TIME_OPTS ) );
     const lastModDate = doc => {
       const sorted = _.sortBy( doc._ops, [o => new Date( _.get( o , 'timestamp' ) )] );
       return _.get( _.last( sorted ), 'timestamp' );
@@ -167,8 +170,8 @@ class DocumentManagement extends React.Component {
           submit: '' // timestamp
         },
         status: {
-          created: formatDate( doc._creationTimestamp ),
-          modified: formatDate( lastModDate( doc ) ),
+          created: doc._creationTimestamp,
+          modified: lastModDate( doc ),
           submitted: _.get( doc, 'submitted', false )
         }
       };
@@ -267,8 +270,8 @@ class DocumentManagement extends React.Component {
       const { created, modified } = status;
       return [
         h( 'ul.mute', [
-          h( 'li', { key: 'created' }, `Created: ${created}` ),
-          h( 'li', { key: 'modified' }, `Modified: ${modified}` )
+          h( 'li', { key: 'created' }, `Created: ${getTimeSince( created )} [${formatDate( created )}]` ),
+          h( 'li', { key: 'modified' }, `Modified: ${getTimeSince( modified )} [${formatDate( modified )}]` )
         ])
       ];
     };

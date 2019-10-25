@@ -1,0 +1,303 @@
+<?xml version="1.0" ?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2019//EN" "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_190101.dtd">
+<PubmedArticleSet>
+  <PubmedArticle>
+    <MedlineCitation Status="Publisher" Owner="NLM">
+      <PMID Version="1">31578521</PMID>
+      <DateRevised>
+        <Year>2019</Year>
+        <Month>10</Month>
+        <Day>03</Day>
+      </DateRevised>
+      <Article PubModel="Print-Electronic">
+        <Journal>
+          <ISSN IssnType="Electronic">1476-4687</ISSN>
+          <JournalIssue CitedMedium="Internet">
+            <PubDate>
+              <Year>2019</Year>
+              <Month>Oct</Month>
+              <Day>02</Day>
+            </PubDate>
+          </JournalIssue>
+          <Title>Nature</Title>
+          <ISOAbbreviation>Nature</ISOAbbreviation>
+        </Journal>
+        <ArticleTitle>Inducing and exploiting vulnerabilities for the treatment of liver cancer.</ArticleTitle>
+        <ELocationID EIdType="doi" ValidYN="Y">10.1038/s41586-019-1607-3</ELocationID>
+        <Abstract>
+          <AbstractText>Liver cancer remains difficult to treat, owing to a paucity of drugs that target critical dependencies
+            <sup>1,2</sup>; broad-spectrum kinase inhibitors such as sorafenib provide only a modest benefit to patients with hepatocellular carcinoma
+            <sup>3</sup>. The induction of senescence may represent a strategy for the treatment of cancer, especially when combined with a second drug that selectively eliminates senescent cancer cells (senolysis)
+            <sup>4,5</sup>. Here, using a kinome-focused genetic screen, we show that pharmacological inhibition of the DNA-replication kinase CDC7 induces senescence selectively in liver cancer cells with mutations in TP53. A follow-up chemical screen identified the antidepressant sertraline as an agent that kills hepatocellular carcinoma cells that have been rendered senescent by inhibition of CDC7. Sertraline suppressed mTOR signalling, and selective drugs that target this pathway were highly effective in causing the apoptotic cell death of hepatocellular carcinoma cells treated with a CDC7 inhibitor. The feedback reactivation of mTOR signalling after its inhibition
+            <sup>6</sup> is blocked in cells that have been treated with a CDC7 inhibitor, which leads to the sustained inhibition of mTOR and cell death. Using multiple in vivo mouse models of liver cancer, we show that treatment with combined inhibition of of CDC7 and mTOR results in a marked reduction of tumour growth. Our data indicate that exploiting an induced vulnerability could be an effective treatment for liver cancer.
+          </AbstractText>
+        </Abstract>
+        <AuthorList CompleteYN="Y">
+          <Author ValidYN="Y">
+            <LastName>Wang</LastName>
+            <ForeName>Cun</ForeName>
+            <Initials>C</Initials>
+            <AffiliationInfo>
+              <Affiliation>State Key Laboratory of Oncogenes and Related Genes, Shanghai Cancer Institute, Renji Hospital, Shanghai Jiao Tong University School of Medicine, Shanghai, China.</Affiliation>
+            </AffiliationInfo>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Molecular Carcinogenesis, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Vegna</LastName>
+            <ForeName>Serena</ForeName>
+            <Initials>S</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Tumour Biology and Immunology, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Jin</LastName>
+            <ForeName>Haojie</ForeName>
+            <Initials>H</Initials>
+            <AffiliationInfo>
+              <Affiliation>State Key Laboratory of Oncogenes and Related Genes, Shanghai Cancer Institute, Renji Hospital, Shanghai Jiao Tong University School of Medicine, Shanghai, China.</Affiliation>
+            </AffiliationInfo>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Molecular Carcinogenesis, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Benedict</LastName>
+            <ForeName>Bente</ForeName>
+            <Initials>B</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Tumour Biology and Immunology, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Lieftink</LastName>
+            <ForeName>Cor</ForeName>
+            <Initials>C</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Molecular Carcinogenesis, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Ramirez</LastName>
+            <ForeName>Christel</ForeName>
+            <Initials>C</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Tumour Biology and Immunology, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>de Oliveira</LastName>
+            <ForeName>Rodrigo Leite</ForeName>
+            <Initials>RL</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Molecular Carcinogenesis, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Morris</LastName>
+            <ForeName>Ben</ForeName>
+            <Initials>B</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Molecular Carcinogenesis, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Gadiot</LastName>
+            <ForeName>Jules</ForeName>
+            <Initials>J</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Tumour Biology and Immunology, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Wang</LastName>
+            <ForeName>Wei</ForeName>
+            <Initials>W</Initials>
+            <AffiliationInfo>
+              <Affiliation>Division of Cell Biology, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>du Chatinier</LastName>
+            <ForeName>Aimée</ForeName>
+            <Initials>A</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Molecular Carcinogenesis, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Wang</LastName>
+            <ForeName>Liqin</ForeName>
+            <Initials>L</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Molecular Carcinogenesis, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Gao</LastName>
+            <ForeName>Dongmei</ForeName>
+            <Initials>D</Initials>
+            <AffiliationInfo>
+              <Affiliation>Liver Cancer Institute, Zhongshan Hospital, Fudan University, Key Laboratory of Carcinogenesis and Cancer Invasion, Ministry of Education, Shanghai, China.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Evers</LastName>
+            <ForeName>Bastiaan</ForeName>
+            <Initials>B</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Molecular Carcinogenesis, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Jin</LastName>
+            <ForeName>Guangzhi</ForeName>
+            <Initials>G</Initials>
+            <AffiliationInfo>
+              <Affiliation>Department of Pathology, Eastern Hepatobiliary Surgery Hospital, Second Military Medical University, Shanghai, China.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Xue</LastName>
+            <ForeName>Zheng</ForeName>
+            <Initials>Z</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Molecular Carcinogenesis, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Schepers</LastName>
+            <ForeName>Arnout</ForeName>
+            <Initials>A</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Molecular Carcinogenesis, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Jochems</LastName>
+            <ForeName>Fleur</ForeName>
+            <Initials>F</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Molecular Carcinogenesis, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Sanchez</LastName>
+            <ForeName>Antonio Mulero</ForeName>
+            <Initials>AM</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Molecular Carcinogenesis, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Mainardi</LastName>
+            <ForeName>Sara</ForeName>
+            <Initials>S</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Molecular Carcinogenesis, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Te Riele</LastName>
+            <ForeName>Hein</ForeName>
+            <Initials>H</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Tumour Biology and Immunology, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Beijersbergen</LastName>
+            <ForeName>Roderick L</ForeName>
+            <Initials>RL</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Molecular Carcinogenesis, The Netherlands Cancer Institute, Amsterdam, The Netherlands.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Qin</LastName>
+            <ForeName>Wenxin</ForeName>
+            <Initials>W</Initials>
+            <AffiliationInfo>
+              <Affiliation>State Key Laboratory of Oncogenes and Related Genes, Shanghai Cancer Institute, Renji Hospital, Shanghai Jiao Tong University School of Medicine, Shanghai, China. wxqin@sjtu.edu.cn.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Akkari</LastName>
+            <ForeName>Leila</ForeName>
+            <Initials>L</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Tumour Biology and Immunology, The Netherlands Cancer Institute, Amsterdam, The Netherlands. l.akkari@nki.nl.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Bernards</LastName>
+            <ForeName>René</ForeName>
+            <Initials>R</Initials>
+            <AffiliationInfo>
+              <Affiliation>Oncode Institute, Division of Molecular Carcinogenesis, The Netherlands Cancer Institute, Amsterdam, The Netherlands. r.bernards@nki.nl.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+        </AuthorList>
+        <Language>eng</Language>
+        <PublicationTypeList>
+          <PublicationType UI="D016428">Journal Article</PublicationType>
+        </PublicationTypeList>
+        <ArticleDate DateType="Electronic">
+          <Year>2019</Year>
+          <Month>10</Month>
+          <Day>02</Day>
+        </ArticleDate>
+      </Article>
+      <MedlineJournalInfo>
+        <Country>England</Country>
+        <MedlineTA>Nature</MedlineTA>
+        <NlmUniqueID>0410462</NlmUniqueID>
+        <ISSNLinking>0028-0836</ISSNLinking>
+      </MedlineJournalInfo>
+      <CitationSubset>IM</CitationSubset>
+    </MedlineCitation>
+    <PubmedData>
+      <History>
+        <PubMedPubDate PubStatus="received">
+          <Year>2018</Year>
+          <Month>10</Month>
+          <Day>18</Day>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="accepted">
+          <Year>2019</Year>
+          <Month>08</Month>
+          <Day>21</Day>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="entrez">
+          <Year>2019</Year>
+          <Month>10</Month>
+          <Day>4</Day>
+          <Hour>6</Hour>
+          <Minute>0</Minute>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="pubmed">
+          <Year>2019</Year>
+          <Month>10</Month>
+          <Day>4</Day>
+          <Hour>6</Hour>
+          <Minute>0</Minute>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="medline">
+          <Year>2019</Year>
+          <Month>10</Month>
+          <Day>4</Day>
+          <Hour>6</Hour>
+          <Minute>0</Minute>
+        </PubMedPubDate>
+      </History>
+      <PublicationStatus>aheadofprint</PublicationStatus>
+      <ArticleIdList>
+        <ArticleId IdType="pubmed">31578521</ArticleId>
+        <ArticleId IdType="doi">10.1038/s41586-019-1607-3</ArticleId>
+        <ArticleId IdType="pii">10.1038/s41586-019-1607-3</ArticleId>
+      </ArticleIdList>
+    </PubmedData>
+  </PubmedArticle>
+</PubmedArticleSet>

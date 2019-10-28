@@ -139,6 +139,7 @@ const getChemicalList = MedlineCitation => _.get( MedlineCitation, ['ChemicalLis
 // 		    Owner (NLM | NLM-AUTO | NASA | PIP | KIE | NOTNLM | HHS) "NLM" >
 const getKeywordList = KeywordList => _.get( KeywordList, ['Keyword'] ).map( Keyword => _.get( Keyword, ['_'] ) );
 
+// <!ELEMENT	MeshHeading (DescriptorName, QualifierName*)>
 const getMeshHeading = MeshHeading => {
   // <!ELEMENT	DescriptorName (#PCDATA) >
   // <!ATTLIST	DescriptorName
@@ -148,7 +149,8 @@ const getMeshHeading = MeshHeading => {
   const DescriptorName = _.get( MeshHeading, ['DescriptorName', '0'] );
   return ({
     DescriptorName: _.get( DescriptorName, ['_'] ),
-    ID: _.get( DescriptorName, ['$', 'UI'] )
+    ID: _.get( DescriptorName, ['$', 'UI'] ),
+    isMajorTopicYN: _.get( DescriptorName, ['$', 'MajorTopicYN'] ) === 'Y' ? true : false 
   });
 };
 

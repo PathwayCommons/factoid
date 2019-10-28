@@ -206,6 +206,7 @@ describe('fetchPubmed', function(){
               if( MeshheadingList !== null ){
                 expect( MeshheadingList ).to.have.nested.property( '[0].DescriptorName' );
                 expect( MeshheadingList ).to.have.nested.property( '[0].ID' );
+                expect( MeshheadingList ).to.have.nested.property( '[0].isMajorTopicYN' );
               }
             });
 

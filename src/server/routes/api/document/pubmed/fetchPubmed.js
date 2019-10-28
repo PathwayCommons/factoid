@@ -49,7 +49,7 @@ const getNamed = ( Named ) => {
   };
 
   if ( _.has( Named, 'CollectiveName' ) ){
-    _.assign( name, 'CollectiveName', _.get( Named, ['CollectiveName', '0'] ) );
+    _.set( name, 'CollectiveName', _.get( Named, ['CollectiveName', '0'] ) );
 
   } else {
     _.set( name, 'LastName', _.get( Named, ['LastName', '0'] ) );

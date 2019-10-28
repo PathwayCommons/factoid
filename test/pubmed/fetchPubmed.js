@@ -6,10 +6,10 @@ import { expect } from 'chai';
 import { pubmedDataConverter } from '../../src/server/routes/api/document/pubmed/fetchPubmed';
 
 const TEST_PUBMED_DATA = new Map([
-  ['9417067', 'pmid_9417067.xml'], // HTML markup in AbstractText
+  ['9417067', 'pmid_9417067.xml'], 
+  ['29440426', 'pmid_29440426.xml'], 
   ['30078747', 'pmid_30078747.xml'], // InvestigatorList
-  ['30115697', 'pmid_30115697.xml'], // HTML markup in AbstractText; OCRIDs
-  ['30193098', 'pmid_30193098.xml'],
+  ['30115697', 'pmid_30115697.xml'], // HTML markup in AbstractText; ORCIDs
   ['31511694', 'pmid_31511694.xml']
 ]);
 

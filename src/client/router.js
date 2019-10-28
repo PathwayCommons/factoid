@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import h from 'react-hyperscript';
 import _ from 'lodash';
 
@@ -6,6 +6,7 @@ import PageNotFound from './components/page-not-found';
 import Editor from './components/editor';
 import Home from './components/home';
 import DocumentSeeder from './components/document-seeder';
+import DocumentManagement from './components/document-management';
 
 
 let routes = [
@@ -20,13 +21,23 @@ let routes = [
     render: () => {
       return h( Redirect, {
         to: {
-          pathname: `/new/seed`
+          pathname: `/document/new`
         }
       } );
     }
   },
   {
-    path: '/new/seed',
+    path: '/new/demo',
+    render: () => {
+      return h( Redirect, {
+        to: {
+          pathname: `/document/new/demo`
+        }
+      } );
+    }
+  },
+  {
+    path: '/document/new',
     render: props => {
       let { history } = props;
 
@@ -34,11 +45,19 @@ let routes = [
     }
   },
   {
-    path: '/new/demo',
+    path: '/document/new/demo',
     render: props => {
       let { history } = props;
 
       return h( DocumentSeeder, { history, demo: true } );
+    }
+  },
+  {
+    path: '/document',
+    render: props => {
+      let { history } = props;
+
+      return h( DocumentManagement, { history } );
     }
   },
   {

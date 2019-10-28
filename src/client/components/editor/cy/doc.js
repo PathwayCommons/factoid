@@ -1,8 +1,6 @@
 import _ from 'lodash';
 import * as defs from './defs';
-import parse from 'date-fns/parse';
-import isAfter from 'date-fns/is_after';
-import subSeconds from 'date-fns/sub_seconds';
+import { parse, isAfter, subSeconds } from 'date-fns';
 const date = { parse, isAfter, subSeconds };
 import onKey from './on-key';
 import { isInteractionNode, makeCyEles, cyUpdateParent, tryPromise } from '../../../../util';

@@ -3,7 +3,7 @@ import React from 'react';
 import h from 'react-hyperscript';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow, isThisWeek } from 'date-fns';
 
 import { makeClassList } from '../../util';
 import {
@@ -20,7 +20,11 @@ import MainMenu from './main-menu';
 
 const DATE_FORMAT = 'MMMM-dd-yyyy';
 const getTimeSince = dateString => formatDistanceToNow( new Date( dateString ), { addSuffix: true } );
-const formatDate = dateString => format( new Date( dateString ), DATE_FORMAT );
+const toDateString = dateString => format( new Date( dateString ), DATE_FORMAT );
+const toPeriodOrDate = dateString => {
+  const d = new Date( dateString );
+  return isThisWeek( d ) ? getTimeSince( d ) : toDateString( d );
+};
 
 const sanitizeKey = secret => secret === '' ? '%27%27': secret;
 
@@ -96,7 +100,6 @@ class DocumentManagement extends React.Component {
     const paramsString = queryString.stringify( params );
     return fetch(`${url}?${paramsString}`)
       .then( res => res.json() )
-      .then( sortByCreated )
       .then( docs => new Promise( resolve => {
         this.setState({
           validApiKey: true, // no error means its good
@@ -136,7 +139,7 @@ class DocumentManagement extends React.Component {
   render(){
     let { history } = this.props;
     let { docs, validApiKey } = this.state;
-
+    
     const lastModDate = doc => {
       const sorted = _.sortBy( doc._ops, [o => new Date( _.get( o , 'timestamp' ) )] );
       return _.get( _.last( sorted ), 'timestamp' );
@@ -270,14 +273,13 @@ class DocumentManagement extends React.Component {
       const { created, modified } = status;
       return [
         h( 'ul.mute', [
-          h( 'li', { key: 'created' }, `Created: ${getTimeSince( created )} [${formatDate( created )}]` ),
-          h( 'li', { key: 'modified' }, `Modified: ${getTimeSince( modified )} [${formatDate( modified )}]` )
+          h( 'li', { key: 'created' }, `Created ${toPeriodOrDate( created )}` ),
+          h( 'li', { key: 'modified' }, `Modified ${toPeriodOrDate( modified )}` )
         ])
       ];
     };
 
-    const documentList = h( 'ul', [
-      docs.map( doc => {
+    const documentList = h( 'ul', sortByCreated( docs ).map( doc => {
         const { article, network, correspondence, status } = dataFromDoc( doc );
         return h( 'li', {
           className: makeClassList( { 'is-submitted': status.submitted } ),
@@ -292,7 +294,8 @@ class DocumentManagement extends React.Component {
           h( 'hr' )
         ]);
       })
-    ]);
+    );
+    
 
     let body = validApiKey ? documentList: apiKeyForm;
 

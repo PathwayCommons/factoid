@@ -105,8 +105,27 @@ server.on('listening', onListening);
 // setup the table and live synching for each model type
 tryPromise( () => {
   let log = (...msg) => function( val ){ logger.debug( ...msg ); return val; };
+
   let access = name => db.accessTable( name );
-  let synch = (t, name) => Syncher.synch({ rethink: t.rethink, table: t.table, conn: t.conn, io: io.of( '/' + name ) });
+
+  let secretExists = secret => {
+    return (
+      access('secret')
+      .then( ({ table, conn }) => table.get(secret).run(conn) )
+      .catch(() => {
+        throw new Error(`The secret '${secret}' does not exist.  Ensure that an API_KEY-holding user has created the document, which will create the secret automatically.`);
+      })
+    );
+  };
+
+  let synch = (t, name) => Syncher.synch({
+    rethink: t.rethink,
+    table: t.table,
+    conn: t.conn,
+    io: io.of( '/' + name ),
+    secretExists
+  });
+
   let setup = name => {
     return access( name )
       .then( log('Accessed table "%s"', name) )

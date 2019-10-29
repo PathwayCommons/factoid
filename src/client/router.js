@@ -7,6 +7,8 @@ import Editor from './components/editor';
 import Home from './components/home';
 import DocumentSeeder from './components/document-seeder';
 
+import { DEMO_ID, DEMO_SECRET } from '../config';
+
 
 let routes = [
   {
@@ -34,11 +36,13 @@ let routes = [
     }
   },
   {
-    path: '/new/demo',
+    path: '/demo',
     render: props => {
+      let id = DEMO_ID;
+      let secret = DEMO_SECRET;
       let { history } = props;
 
-      return h( DocumentSeeder, { history, demo: true } );
+      return h( Editor, { id, secret, history } );
     }
   },
   {

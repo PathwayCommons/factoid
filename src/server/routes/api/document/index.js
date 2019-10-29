@@ -13,12 +13,14 @@ import * as provider from './reach';
 
 const ENABLE_TEXTMINING = false;
 
-import { BIOPAX_CONVERTER_URL, 
+import { BIOPAX_CONVERTER_URL,
   EMAIL_CONTEXT_JOURNAL,
-  BASE_URL, 
+  BASE_URL,
   INVITE_TMPLID,
   EMAIL_VENDOR_MAILJET,
-  API_KEY } from '../../../../config';
+  API_KEY,
+  DEMO_ID,
+  DEMO_SECRET } from '../../../../config';
 
 const http = Express.Router();
 
@@ -33,6 +35,13 @@ let loadDoc = ({ docDb, eleDb, id }) => {
   let doc = newDoc({ docDb, eleDb, id });
 
   return doc.load().then( () => doc );
+};
+
+let createSecret = ({ secret }) => {
+  return (
+    tryPromise( () => loadTable('secret') )
+    .then(({ table, conn }) => table.insert({ id: secret }).run(conn))
+  );
 };
 
 let createDoc = ({ docDb, eleDb, secret, meta }) => {
@@ -102,7 +111,7 @@ let getSbgnFromTemplates = templates => {
 };
 
 // NB: Only for demo purposes
-// This should be removed and send emails from admin interface when ready 
+// This should be removed and send emails from admin interface when ready
 // https://github.com/PathwayCommons/factoid/issues/524
 let email = json => {
   return sendMail({
@@ -128,10 +137,11 @@ http.get('/', function( req, res, next ){
   return (
     tryPromise( () => loadTable('document') )
     .then( t => {
-      let { table, conn } = t;
+      let { table, conn, rethink: r } = t;
       return table
         .limit(limit)
-        .pluck( [ 'id', 'publicUrl' ] )
+        .filter(r.row('secret').ne(DEMO_SECRET))
+        .pluck(['id'])
         .run( conn )
         .then( cursor => cursor.toArray() )
         .then( results => res.json( results ) )
@@ -159,6 +169,37 @@ const checkApiKey = (apiKey) => {
   }
 };
 
+// create the demo doc
+http.post('/demo', function(req, res, next){
+  let meta = _.assign({}, req.body, { id: DEMO_ID });
+  let secret = DEMO_SECRET;
+
+  ( tryPromise(() => createSecret({ secret }))
+    .then(loadTables)
+    .then(({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret, meta }))
+    .then(getDocJson)
+    .then(json => res.json(json))
+    .catch(err => next(err))
+  );
+});
+
+// delete the demo doc
+http.delete('/demo', function(req, res, next){
+  let { apiKey } = req.body;
+  let secret = DEMO_SECRET;
+
+  let clearDemoRows = table => table.filter({ secret }).delete();
+
+  ( tryPromise(() => checkApiKey(apiKey))
+    .then(loadTables)
+    .then(({ docTable, eleTable }) => (
+      Promise.all([docTable, eleTable].map(clearDemoRows))
+    ))
+    .then(() => res.sendStatus(200))
+    .catch(err => next(err))
+  );
+});
+
 // create new doc
 http.post('/', function( req, res, next ){
   let { abstract, text, apiKey } = req.body;
@@ -168,6 +209,7 @@ http.post('/', function( req, res, next ){
   let secret = uuid();
 
   ( tryPromise( () => checkApiKey(apiKey) )
+    .then( () => createSecret({ secret }) )
     .then( loadTables )
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret, meta }) )
     .then( doc => fillDoc( doc, seedText ) )
@@ -180,11 +222,11 @@ http.post('/', function( req, res, next ){
     } )
     .then(json => {
       // NB: Only for demo purposes
-      // This should be removed and send emails from admin interface when ready 
+      // This should be removed and send emails from admin interface when ready
       // https://github.com/PathwayCommons/factoid/issues/524
-      return email( json ).then( info => { 
+      return email( json ).then( info => {
         logger.info( `Email sent to ${info.accepted}` );
-        return json; 
+        return json;
       });
     })
     .then(json => {
@@ -197,15 +239,6 @@ http.post('/', function( req, res, next ){
     } )
   );
 });
-
-// TODO remove this route as reach should never need to be queried directly
-// http.post('/query-reach', function( req, res ){
-//   let text = req.body.text;
-
-//   getReachOutput( text )
-//   .then( reachRes => reachRes.json() )
-//   .then( reachJson => res.json(reachJson) );
-// });
 
 http.get('/biopax/:id', function( req, res, next ){
   let id = req.params.id;

@@ -16,6 +16,7 @@
 @import "./notification.css";
 @import "./element-info";
 @import "./document-seeder.css";
+@import "./document-management.css";
 @import "./form-editor";
 @import "./document-renamer.css";
 @import "./tasks.css";

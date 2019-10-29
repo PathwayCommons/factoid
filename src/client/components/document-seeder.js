@@ -93,7 +93,10 @@ class DocumentSeeder extends React.Component {
 
     return h('div.document-seeder.page-content', [
       h('div.document-seeder-content', [
-        h(MainMenu, { history, title: 'Publisher portal : New paper' }),
+        h('div.page-content-title', [
+          h(MainMenu, { history, admin: true }),
+          h('h1', 'Add a new document')
+        ]),
 
         h('p', 'Enter the information for the manuscript you wish to add using Biofactoid. Upon submission, an invitation will be sent to the contributing author. You will be notified upon submission.'),
 
@@ -106,6 +109,13 @@ class DocumentSeeder extends React.Component {
             onClick: () => this.fillQuickExample()
           }, 'Use a quick example')
         ]) : null,
+
+        h('label.document-seeder-text-label', 'API key'),
+        h('input.document-seeder-api-key', {
+          type: 'text',
+          value: value('apiKey'),
+          onChange: onChange('apiKey')
+        }),
 
         h('label.document-seeder-text-label', 'Jounal name'),
         h('input.document-seeder-journal-name', {
@@ -172,13 +182,6 @@ class DocumentSeeder extends React.Component {
           type: 'text',
           value: value('editorEmail'),
           onChange: onChange('editorEmail')
-        }),
-
-        h('label.document-seeder-text-label', 'API key'),
-        h('input.document-seeder-api-key', {
-          type: 'text',
-          value: value('apiKey'),
-          onChange: onChange('apiKey')
         }),
 
         h('p', [

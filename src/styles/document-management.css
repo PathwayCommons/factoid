@@ -1,0 +1,85 @@
+.document-management {
+  & input,
+  & textarea {
+    width: 100%;
+    margin-bottom: 1em;
+  }
+
+  & textarea {
+    min-height: 6em;
+    resize: vertical;
+  }
+
+  & .emphasize {
+    color: var(--completeColor);
+  }
+
+  & .mute {
+    color: var(--fadedColor);
+  }
+}
+
+.document-management-content {
+  width: 100%;
+
+  & ul {
+    list-style-type: none;
+  }
+
+  & .on-submit {
+    visibility: hidden;
+  }
+
+  & .is-submitted {
+    .on-submit {
+      visibility: visible;
+    }
+  }
+}
+
+.document-management-text-label {
+  font-weight: bold;
+  font-size: var(--smallFontSize);
+  cursor: default;
+}
+
+.document-management-submit-spinner {
+  vertical-align: middle;
+}
+
+.document-management-document-meta {
+  text-align: right;
+  font-size: 0.9em;
+
+  & li {
+    margin: 0;
+  }
+}
+
+.document-management-document-section {
+  margin: 0.5em 0;
+
+  & * {
+    margin: 0;
+  }
+}
+
+.document-management-horizontal-list {
+  & ul {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  & li {
+    float: left;
+    margin: 0 1em;
+  }
+
+  & li a {
+    display: block;
+    text-align: center;
+    padding: 0.5em;
+    text-decoration: underline;
+  }
+}
+

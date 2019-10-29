@@ -5,7 +5,6 @@ import _ from 'lodash';
 import PageNotFound from './components/page-not-found';
 import Editor from './components/editor';
 import Home from './components/home';
-import DocumentSeeder from './components/document-seeder';
 import DocumentManagement from './components/document-management';
 
 import { DEMO_ID, DEMO_SECRET } from '../config';

@@ -1,35 +1,51 @@
 import _ from 'lodash';
-// import queryString from 'query-string';
+import queryString from 'query-string';
+import fetch from 'node-fetch';
 
-// import { NCBI_EUTILS_BASE_URL } from '../../../../../config';
+import { NCBI_EUTILS_BASE_URL } from '../../../../../config';
 
-// const EUTILS_SEARCH_URL = NCBI_EUTILS_BASE_URL + 'esearch.fcgi';
-// const DEFAULT_ESEARCH_PARAMS = {
-//   term: undefined,
-//   db: 'pubmed',
-//   rettype: 'uilist'
-//   retmode: 'json',
-//   retmax: 10,
-//   usehistory: 'y',
-//   field: undefined
-// };
+const EUTILS_SEARCH_URL = NCBI_EUTILS_BASE_URL + 'esearch.fcgi';
+const DEFAULT_ESEARCH_PARAMS = {
+  term: undefined,
+  db: 'pubmed',
+  rettype: 'uilist',
+  retmode: 'json',
+  retmax: 10,
+  usehistory: 'y',
+  field: undefined
+};
 
 const pubmedDataConverter = json => {
 
   const esearchresult =  _.get( json, ['esearchresult'] );
 
-  const data = {
+  return {
     searchHits: _.get( esearchresult, ['idlist'], [] ),
     count: _.parseInt( _.get( esearchresult, ['count'], '0' ) ),
     query_key: _.get( esearchresult, ['querykey'], null ),
     webenv: _.get( esearchresult, ['webenv'], null )
   };
-
-  return data;
 };
 
-const eSearchPubmed = term => term;
+const eSearchPubmed = term => {
+  const params = _.assign( {}, DEFAULT_ESEARCH_PARAMS, { term } );
+  const url = EUTILS_SEARCH_URL + '?' + queryString.stringify( params );
+  return fetch( url )
+    .then( response => response.json() )
+    .then( pubmedDataConverter );
+};
 
+/**
+ * searchPubmed
+ * Query the PubMed database for matching UIDs.
+ * 
+ * @param { String } q The query term
+ * @returns { Object } result The search results from PubMed
+ * @returns { Array } result.searchHits A list of PMIDs
+ * @returns { Number } result.count The number of searchHits containing PMIDs 
+ * @returns { String } result.query_key See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
+ * @returns { String } result.webenv See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
+ */
 const searchPubmed = q => eSearchPubmed( q );
 
 export { searchPubmed, pubmedDataConverter };

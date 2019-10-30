@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { expect } from 'chai';
 
-import { pubmedDataConverter } from '../../src/server/routes/api/document/pubmed/searchPubmed';
+import { searchPubmed, pubmedDataConverter } from '../../src/server/routes/api/document/pubmed/searchPubmed';
 import searchPubmedData from './searchPubmedData';
 
 const TEST_PUBMED_DATA = new Map( _.entries( searchPubmedData ) );
@@ -140,6 +140,18 @@ describe('searchPubmed', function(){
     }); // nonunique term
 
   }); // pubmedDataConverter
+
+  // describe('searchPubmed', function(){
+  //   let pubmedInfo;
+  //   before( async () => {
+  //     pubmedInfo = await searchPubmed( 'GDF15 expression.' );
+  //   });
+
+  //   it( 'should return live data', async ()=> {
+  //     expect( pubmedInfo ).to.exist;
+  //     console.log( JSON.stringify(pubmedInfo,null,2) );
+  //   });
+  // });
 
 }); // searchPubmed
 

@@ -45,7 +45,7 @@ export default {
     }
   },
 
-  "unique_result": {
+  "unique_term": {
     "header": {
       "type": "esearch",
       "version": "0.3"
@@ -74,7 +74,7 @@ export default {
     }
   },
 
-  "nonunique_result": {
+  "nonunique_term": {
     "header": {
       "type": "esearch",
       "version": "0.3"
@@ -95,17 +95,7 @@ export default {
         "31659107",
         "31658995",
         "31658727",
-        "31658318",
-        "31657880",
-        "31657556",
-        "31657162",
-        "31657074",
-        "31656929",
-        "31656277",
-        "31656084",
-        "31656006",
-        "31655998",
-        "31655030"
+        "31658318"
       ],
       "translationset": [
       ],

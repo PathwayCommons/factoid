@@ -1,0 +1,174 @@
+<?xml version="1.0" ?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2019//EN" "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_190101.dtd">
+<PubmedArticleSet>
+  <PubmedArticle>
+    <MedlineCitation Status="MEDLINE" Owner="NLM">
+      <PMID Version="1">9417067</PMID>
+      <DateCompleted>
+        <Year>1998</Year>
+        <Month>02</Month>
+        <Day>03</Day>
+      </DateCompleted>
+      <DateRevised>
+        <Year>2019</Year>
+        <Month>05</Month>
+        <Day>08</Day>
+      </DateRevised>
+      <Article PubModel="Print">
+        <Journal>
+          <ISSN IssnType="Print">0021-9258</ISSN>
+          <JournalIssue CitedMedium="Print">
+            <Volume>273</Volume>
+            <Issue>1</Issue>
+            <PubDate>
+              <Year>1998</Year>
+              <Month>Jan</Month>
+              <Day>02</Day>
+            </PubDate>
+          </JournalIssue>
+          <Title>The Journal of biological chemistry</Title>
+          <ISOAbbreviation>J. Biol. Chem.</ISOAbbreviation>
+        </Journal>
+        <ArticleTitle>Identification of novel phosphorylation sites in hormone-sensitive lipase that are phosphorylated in response to isoproterenol and govern activation properties in vitro.</ArticleTitle>
+        <Pagination>
+          <MedlinePgn>215-21</MedlinePgn>
+        </Pagination>
+        <Abstract>
+          <AbstractText>Hormone-sensitive lipase (HSL) is the rate-limiting enzyme in lipolysis. Stimulation of rat adipocytes with isoproterenol results in phosphorylation of HSL and a 50-fold increase in the rate of lipolysis. In this study, we used site-directed mutagenesis and two-dimensional phosphopeptide mapping to show that phosphorylation sites other than the previously identified Ser-563 are phosphorylated in HSL in response to isoproterenol stimulation of 32P-labeled rat adipocytes. Phosphorylation of HSL in adipocytes in response to isoproterenol and in vitro phosphorylation of HSL containing Ser --&gt; Ala mutations in residues 563 and 565 (S563A, S565A) with protein kinase A (PKA), followed by tryptic phosphopeptide mapping resulted in two tryptic phosphopeptides. These tryptic phosphopeptides co-migrated with the phosphopeptides released by the same treatment of F654HPRRSSQGVLHMPLYSSPIVK675 phosphorylated with PKA. Analysis of the phosphorylation site mutants, S659A, S660A, and S659A,S660A disclosed that mutagenesis of both Ser-659 and Ser-660 was necessary to abolish the activation of HSL toward a triolein substrate after phosphorylation with PKA. Mutation of Ser-563 to alanine did not cause significant change of activation compared with wild-type HSL. Hence, our results demonstrate that in addition to the previously identified Ser-563, two other PKA phosphorylation sites, Ser-659 and Ser-660, are present in HSL and, furthermore, that Ser-659 and Ser-660 are the major activity controlling sites in vitro.</AbstractText>
+        </Abstract>
+        <AuthorList CompleteYN="Y">
+          <Author ValidYN="Y">
+            <LastName>Anthonsen</LastName>
+            <ForeName>M W</ForeName>
+            <Initials>MW</Initials>
+            <AffiliationInfo>
+              <Affiliation>Department of Cell and Molecular Biology, Section for Molecular Signaling, Lund University, S-221 00 Lund, Sweden.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Rönnstrand</LastName>
+            <ForeName>L</ForeName>
+            <Initials>L</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Wernstedt</LastName>
+            <ForeName>C</ForeName>
+            <Initials>C</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Degerman</LastName>
+            <ForeName>E</ForeName>
+            <Initials>E</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Holm</LastName>
+            <ForeName>C</ForeName>
+            <Initials>C</Initials>
+          </Author>
+        </AuthorList>
+        <Language>eng</Language>
+        <PublicationTypeList>
+          <PublicationType UI="D016428">Journal Article</PublicationType>
+          <PublicationType UI="D013485">Research Support, Non-U.S. Gov't</PublicationType>
+        </PublicationTypeList>
+      </Article>
+      <MedlineJournalInfo>
+        <Country>United States</Country>
+        <MedlineTA>J Biol Chem</MedlineTA>
+        <NlmUniqueID>2985121R</NlmUniqueID>
+        <ISSNLinking>0021-9258</ISSNLinking>
+      </MedlineJournalInfo>
+      <ChemicalList>
+        <Chemical>
+          <RegistryNumber>EC 3.1.1.13</RegistryNumber>
+          <NameOfSubstance UI="D002787">Sterol Esterase</NameOfSubstance>
+        </Chemical>
+        <Chemical>
+          <RegistryNumber>L628TT009W</RegistryNumber>
+          <NameOfSubstance UI="D007545">Isoproterenol</NameOfSubstance>
+        </Chemical>
+      </ChemicalList>
+      <CitationSubset>IM</CitationSubset>
+      <MeshHeadingList>
+        <MeshHeading>
+          <DescriptorName UI="D017667" MajorTopicYN="N">Adipocytes</DescriptorName>
+          <QualifierName UI="Q000187" MajorTopicYN="N">drug effects</QualifierName>
+          <QualifierName UI="Q000201" MajorTopicYN="N">enzymology</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D000595" MajorTopicYN="N">Amino Acid Sequence</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D000818" MajorTopicYN="N">Animals</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D019556" MajorTopicYN="N">COS Cells</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D002478" MajorTopicYN="N">Cells, Cultured</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D015180" MajorTopicYN="N">Electrophoresis, Gel, Two-Dimensional</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D004789" MajorTopicYN="N">Enzyme Activation</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D007545" MajorTopicYN="N">Isoproterenol</DescriptorName>
+          <QualifierName UI="Q000494" MajorTopicYN="Y">pharmacology</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D008969" MajorTopicYN="N">Molecular Sequence Data</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D016297" MajorTopicYN="N">Mutagenesis, Site-Directed</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D010449" MajorTopicYN="N">Peptide Mapping</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D010766" MajorTopicYN="N">Phosphorylation</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D051381" MajorTopicYN="N">Rats</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D017207" MajorTopicYN="N">Rats, Sprague-Dawley</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D002787" MajorTopicYN="N">Sterol Esterase</DescriptorName>
+          <QualifierName UI="Q000235" MajorTopicYN="N">genetics</QualifierName>
+          <QualifierName UI="Q000378" MajorTopicYN="Y">metabolism</QualifierName>
+        </MeshHeading>
+      </MeshHeadingList>
+    </MedlineCitation>
+    <PubmedData>
+      <History>
+        <PubMedPubDate PubStatus="pubmed">
+          <Year>1998</Year>
+          <Month>2</Month>
+          <Day>7</Day>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="medline">
+          <Year>1998</Year>
+          <Month>2</Month>
+          <Day>7</Day>
+          <Hour>0</Hour>
+          <Minute>1</Minute>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="entrez">
+          <Year>1998</Year>
+          <Month>2</Month>
+          <Day>7</Day>
+          <Hour>0</Hour>
+          <Minute>0</Minute>
+        </PubMedPubDate>
+      </History>
+      <PublicationStatus>ppublish</PublicationStatus>
+      <ArticleIdList>
+        <ArticleId IdType="pubmed">9417067</ArticleId>
+        <ArticleId IdType="doi">10.1074/jbc.273.1.215</ArticleId>
+      </ArticleIdList>
+    </PubmedData>
+  </PubmedArticle>
+</PubmedArticleSet>

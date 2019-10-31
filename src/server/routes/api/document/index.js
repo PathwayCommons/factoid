@@ -128,15 +128,13 @@ http.get('/', function( req, res, next ){
     .then( () => loadTable('document') )
     .then( t => {
       let { table, conn, rethink: r } = t;
-      return table
+      return (table
         .skip(offset)
         .limit(limit)
         .filter(r.row('secret').ne(DEMO_SECRET))
         .pluck(['id'])
         .run( conn )
-        .then( cursor => cursor.toArray() )
-        .then( results => res.json( results ) )
-        .catch( next );
+      );
     })
     .then( cursor => cursor.toArray() )
     .then( results => res.json( results ) )

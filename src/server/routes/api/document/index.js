@@ -1,3 +1,5 @@
+// TODO swagger comment & docs
+
 import Express from 'express';
 import _ from 'lodash';
 import uuid from 'uuid';
@@ -118,25 +120,76 @@ http.post('/email', function( req, res, next ){
   );
 });
 
+// get all docs
+// - offset: pagination offset
+// - limit: pagination size limit
+// - apiKey: to authorise doc creation
+// - submitted: only get submitted docs if true, only get unsubmitted docs if false, no submission filtering on unspecified
+// - ids: only get the docs for the specified comma-separated list of ids (disables pagination)
 http.get('/', function( req, res, next ){
-  let limit = req.query.limit || 50;
-  let offset = req.query.offset || 0;
-  let apiKey = req.query.apiKey;
+  let { limit, offset, apiKey, submitted } = Object.assign({
+    limit: 50,
+    offset: 0
+  }, req.query);
+
+  // cast to bool
+  submitted = submitted == 'true' ? true : (submitted == 'false' ? false : null);
+
+  let ids = req.query.ids ? req.query.ids.split(/\s*,\s*/) : null;
+
+  let tables;
 
   return (
     tryPromise( () => checkApiKey(apiKey) )
-    .then( () => loadTable('document') )
-    .then( t => {
+    .then( loadTables )
+    .then( tbls => {
+      tables = tbls;
+
+      return tables;
+    } )
+    .then( tables => {
+      let t = tables.docDb;
       let { table, conn, rethink: r } = t;
-      return (table
-        .skip(offset)
-        .limit(limit)
+      let q = table;
+
+      if( ids ){ // doc id must be in specified id list
+        let exprs = ids.map(id => r.row('id').eq(id));
+        let joinedExpr = exprs[0];
+
+        for( let i = 1; i < exprs.length; i++ ){
+          joinedExpr = joinedExpr.or(exprs[i]);
+        }
+
+        q = q.filter( joinedExpr );
+      } else {
+        q = q.skip(offset).limit(limit);
+      }
+
+      if( submitted != null ){
+        if( submitted ){
+          q = q.filter( r.row('submitted').eq(true) );
+        } else {
+          q = q.filter( r.row('submitted').eq(false) );
+        }
+      }
+
+      q = ( q
         .filter(r.row('secret').ne(DEMO_SECRET))
         .pluck(['id'])
-        .run( conn )
       );
+
+      return q.run(conn);
     })
     .then( cursor => cursor.toArray() )
+    .then( res => { // map ids to full doc json
+      const ids = res.map(obj => obj.id);
+
+      return Promise.all(ids.map(id => {
+        let docOpts = _.assign( {}, tables, { id } );
+
+        return loadDoc(docOpts).then(getDocJson);
+      }));
+    } )
     .then( results => res.json( results ) )
     .catch( next )
   );

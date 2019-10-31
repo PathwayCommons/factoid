@@ -2,7 +2,7 @@ import _ from 'lodash';
 import queryString from 'query-string';
 import fetch from 'node-fetch';
 
-import { NCBI_EUTILS_BASE_URL } from '../../../../../config';
+import { NCBI_EUTILS_BASE_URL, NCBI_EUTILS_API_KEY } from '../../../../../config';
 
 const EUTILS_SEARCH_URL = NCBI_EUTILS_BASE_URL + 'esearch.fcgi';
 const DEFAULT_ESEARCH_PARAMS = {
@@ -12,7 +12,8 @@ const DEFAULT_ESEARCH_PARAMS = {
   retmode: 'json',
   retmax: 10,
   usehistory: 'y',
-  field: undefined
+  field: undefined,
+  api_key: NCBI_EUTILS_API_KEY
 };
 
 const pubmedDataConverter = json => {
@@ -38,11 +39,11 @@ const eSearchPubmed = term => {
 /**
  * searchPubmed
  * Query the PubMed database for matching UIDs.
- * 
+ *
  * @param { String } q The query term
  * @returns { Object } result The search results from PubMed
  * @returns { Array } result.searchHits A list of PMIDs
- * @returns { Number } result.count The number of searchHits containing PMIDs 
+ * @returns { Number } result.count The number of searchHits containing PMIDs
  * @returns { String } result.query_key See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
  * @returns { String } result.webenv See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
  */

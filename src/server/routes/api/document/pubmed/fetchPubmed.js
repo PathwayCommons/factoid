@@ -1,5 +1,18 @@
 import _ from 'lodash';
 import xml2js from 'xml2js';
+import queryString from 'query-string';
+import fetch from 'node-fetch';
+
+import { NCBI_EUTILS_BASE_URL, NCBI_EUTILS_API_KEY } from '../../../../../config';
+
+const EUTILS_FETCH_URL = NCBI_EUTILS_BASE_URL + 'efetch.fcgi';
+const DEFAULT_EFETCH_PARAMS = {
+  db: 'pubmed',
+  retmode: 'xml',
+  retmax: 10,
+  retstart: 0,
+  api_key: NCBI_EUTILS_API_KEY
+};
 
 const re_email = /(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/g;
 const notNull = o => !_.isNull(o) ;
@@ -262,6 +275,40 @@ const pubmedDataConverter = async xml => {
   const rawJSON = await xml2js.parseStringPromise( xml );
   return processPubmedResponse( rawJSON );
 };
-const fetchPubmed = () => {};
+
+const isInteger = token => /^[0-9]+$/.test( token );
+const toText = res => res.text();
+const eFetchPubmed = ( { uids, query_key, webenv } )=> {
+  let params;
+  if( !_.isEmpty( uids ) ){
+    // Check that uid are string versions of numbers. '2349c87' will be interpreted by Pubmed as '2439'. 
+    if ( !uids.every( isInteger ) ) throw new Error( 'UIDs should be numerical' );
+    params = _.assign( {}, DEFAULT_EFETCH_PARAMS, { id: uids.join(',') } );
+    
+  } else if( query_key && webenv ){
+    params = _.assign( {}, DEFAULT_EFETCH_PARAMS, { query_key, webenv } );
+
+  } else {
+    throw new Error( 'eFetchPubmed requires either uids or history parameters.' );
+  }
+  
+  const url = EUTILS_FETCH_URL + '?' + queryString.stringify( params );
+  return fetch( url )
+    .then( toText )
+    .then( pubmedDataConverter );
+};
+
+/**
+ * fetchPubmed
+ * Fetch records from the PubMed database given matching UIDs. 
+ * Either a list of uids or, alternatively, a ( query_key, webenv ) pair resulting from a
+ * pubmed search (i.e. searchPubmed function) can be used as parameters. 
+ *
+ * @param { Object } uids The list of uids. 
+ * @param { String } query_key See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
+ * @param { String } webenv See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
+ * @returns { Object } result The fetch result from PubMed. See pubmedDataConverter.
+ */
+const fetchPubmed = ( { uids, query_key, webenv } ) => eFetchPubmed( { uids, query_key, webenv } );
 
 export { fetchPubmed, pubmedDataConverter };

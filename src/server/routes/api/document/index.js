@@ -233,12 +233,12 @@ http.delete('/demo', function(req, res, next){
   let { apiKey } = req.body;
   let secret = DEMO_SECRET;
 
-  let clearDemoRows = table => table.filter({ secret }).delete();
+  let clearDemoRows = db => db.table.filter({ secret }).delete().run(db.conn);
 
   ( tryPromise(() => checkApiKey(apiKey))
     .then(loadTables)
-    .then(({ docTable, eleTable }) => (
-      Promise.all([docTable, eleTable].map(clearDemoRows))
+    .then(({ docDb, eleDb }) => (
+      Promise.all([docDb, eleDb].map(clearDemoRows))
     ))
     .then(() => res.sendStatus(200))
     .catch(err => next(err))

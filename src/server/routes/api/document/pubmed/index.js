@@ -1,3 +1,4 @@
-import fetchPubmed from './fetchPubmed';
+import { fetchPubmed } from './fetchPubmed';
+import { searchPubmed } from './searchPubmed';
 
-module.exports = { fetchPubmed };
+module.exports = { fetchPubmed, searchPubmed };

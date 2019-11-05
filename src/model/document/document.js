@@ -13,6 +13,7 @@ const DEFAULTS = Object.freeze({
   organisms: [], // list of ids
 
   // metadata
+  submitted: false,
   journalName: '',
   title: '',
   authors: '',
@@ -408,6 +409,7 @@ class Document {
       elements: this.elements().map( toJson ),
       publicUrl: this.publicUrl(),
       privateUrl: this.privateUrl(),
+      submitted: this.submitted()
     }, _.pick(this.syncher.get(), METADATA_FIELDS));
   }
 
@@ -444,10 +446,11 @@ class Document {
     let addOrganism = id => this.toggleOrganism( id, true );
     let addOrganisms = () => Promise.all( orgIds.map( addOrganism ) );
 
-    let updateMetadata = () => this.syncher.update( _.pick(json, METADATA_FIELDS) );
+    let metaEtcFields = ['submitted'].concat(METADATA_FIELDS);
+    let updateMetadataEtc = () => this.syncher.update( _.pick(json, metaEtcFields) );
 
     return Promise.all([
-      updateMetadata(),
+      updateMetadataEtc(),
       handleEls(),
       addOrganisms()
     ]);

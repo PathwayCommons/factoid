@@ -5,8 +5,9 @@ import _ from 'lodash';
 import PageNotFound from './components/page-not-found';
 import Editor from './components/editor';
 import Home from './components/home';
-import DocumentSeeder from './components/document-seeder';
 import DocumentManagement from './components/document-management';
+
+import { DEMO_ID, DEMO_SECRET } from '../config';
 
 
 let routes = [
@@ -17,39 +18,19 @@ let routes = [
     }
   },
   {
-    path: '/new',
-    render: () => {
-      return h( Redirect, {
-        to: {
-          pathname: `/document/new`
-        }
-      } );
-    }
-  },
-  {
-    path: '/new/demo',
-    render: () => {
-      return h( Redirect, {
-        to: {
-          pathname: `/document/new/demo`
-        }
-      } );
-    }
-  },
-  {
-    path: '/document/new',
+    path: '/demo',
     render: props => {
+      let id = DEMO_ID;
+      let secret = DEMO_SECRET;
       let { history } = props;
 
-      return h( DocumentSeeder, { history } );
+      return h( Editor, { id, secret, history } );
     }
   },
   {
-    path: '/document/new/demo',
-    render: props => {
-      let { history } = props;
-
-      return h( DocumentSeeder, { history, demo: true } );
+    path: '/admin',
+    render: () => {
+      return h( Redirect, { to: '/document' } );
     }
   },
   {

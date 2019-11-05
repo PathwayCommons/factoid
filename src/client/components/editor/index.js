@@ -5,6 +5,8 @@ import EventEmitter from 'eventemitter3';
 import io from 'socket.io-client';
 import _ from 'lodash';
 
+import { DEMO_ID, DEMO_SECRET, DEMO_JOURNAL_NAME, DEMO_AUTHOR, DEMO_TITLE } from '../../../config';
+
 import { getId, defer, makeClassList, tryPromise } from '../../../util';
 import Document from '../../../model/document';
 import { PARTICIPANT_TYPE } from '../../../model/element/participant-type';
@@ -156,10 +158,29 @@ class Editor extends DataComponent {
     tryPromise( () => doc.load() )
       .then( () => logger.info('The doc already exists and is now loaded') )
       .catch( err => {
-        logger.error('The doc does not exist or an error occurred');
-        logger.error( err );
+        if( id === DEMO_ID && secret === DEMO_SECRET ){
+          logger.info(`Creating demo document with ID ${id}`);
 
-        throw err;
+          let createDemoDoc = () => fetch('/api/document/demo', {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+              journalName: DEMO_JOURNAL_NAME,
+              title: DEMO_TITLE,
+              authors: DEMO_AUTHOR
+            })
+          });
+          let reloadDoc = () => doc.load();
+
+          return createDemoDoc().then(reloadDoc);
+        } else {
+          logger.error('The doc does not exist or an error occurred');
+          logger.error( err );
+
+          throw err;
+        }
       } )
       .then( () => doc.synch(true) )
       .then( () => logger.info('Document synch active') )

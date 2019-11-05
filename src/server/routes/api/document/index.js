@@ -1,3 +1,5 @@
+// TODO swagger comment & docs
+
 import Express from 'express';
 import _ from 'lodash';
 import uuid from 'uuid';
@@ -14,7 +16,9 @@ import * as provider from './reach';
 const ENABLE_TEXTMINING = false;
 
 import { BIOPAX_CONVERTER_URL,
-  API_KEY } from '../../../../config';
+  API_KEY,
+  DEMO_ID,
+  DEMO_SECRET } from '../../../../config';
 
 const http = Express.Router();
 
@@ -29,6 +33,13 @@ let loadDoc = ({ docDb, eleDb, id }) => {
   let doc = newDoc({ docDb, eleDb, id });
 
   return doc.load().then( () => doc );
+};
+
+let createSecret = ({ secret }) => {
+  return (
+    tryPromise( () => loadTable('secret') )
+    .then(({ table, conn }) => table.insert({ id: secret }).run(conn))
+  );
 };
 
 let createDoc = ({ docDb, eleDb, secret, meta }) => {
@@ -109,20 +120,76 @@ http.post('/email', function( req, res, next ){
   );
 });
 
+// get all docs
+// - offset: pagination offset
+// - limit: pagination size limit
+// - apiKey: to authorise doc creation
+// - submitted: only get submitted docs if true, only get unsubmitted docs if false, no submission filtering on unspecified
+// - ids: only get the docs for the specified comma-separated list of ids (disables pagination)
 http.get('/', function( req, res, next ){
-  let limit = req.query.limit || 50;
-  let offset = req.query.offset || 0;
-  let apiKey = req.query.apiKey;
+  let { limit, offset, apiKey, submitted } = Object.assign({
+    limit: 50,
+    offset: 0
+  }, req.query);
+
+  // cast to bool
+  submitted = submitted == 'true' ? true : (submitted == 'false' ? false : null);
+
+  let ids = req.query.ids ? req.query.ids.split(/\s*,\s*/) : null;
+
+  let tables;
 
   return (
     tryPromise( () => checkApiKey(apiKey) )
-    .then( () => loadTable('document') )
-    .then( t => {
-      let { table, conn } = t;
+    .then( loadTables )
+    .then( tbls => {
+      tables = tbls;
 
-      return table.skip(offset).limit(limit).run(conn);
+      return tables;
+    } )
+    .then( tables => {
+      let t = tables.docDb;
+      let { table, conn, rethink: r } = t;
+      let q = table;
+
+      if( ids ){ // doc id must be in specified id list
+        let exprs = ids.map(id => r.row('id').eq(id));
+        let joinedExpr = exprs[0];
+
+        for( let i = 1; i < exprs.length; i++ ){
+          joinedExpr = joinedExpr.or(exprs[i]);
+        }
+
+        q = q.filter( joinedExpr );
+      } else {
+        q = q.skip(offset).limit(limit);
+      }
+
+      if( submitted != null ){
+        if( submitted ){
+          q = q.filter( r.row('submitted').eq(true) );
+        } else {
+          q = q.filter( r.row('submitted').eq(false) );
+        }
+      }
+
+      q = ( q
+        .filter(r.row('secret').ne(DEMO_SECRET))
+        .pluck(['id'])
+      );
+
+      return q.run(conn);
     })
     .then( cursor => cursor.toArray() )
+    .then( res => { // map ids to full doc json
+      const ids = res.map(obj => obj.id);
+
+      return Promise.all(ids.map(id => {
+        let docOpts = _.assign( {}, tables, { id } );
+
+        return loadDoc(docOpts).then(getDocJson);
+      }));
+    } )
     .then( results => res.json( results ) )
     .catch( next )
   );
@@ -147,6 +214,37 @@ const checkApiKey = (apiKey) => {
   }
 };
 
+// create the demo doc
+http.post('/demo', function(req, res, next){
+  let meta = _.assign({}, req.body, { id: DEMO_ID });
+  let secret = DEMO_SECRET;
+
+  ( tryPromise(() => createSecret({ secret }))
+    .then(loadTables)
+    .then(({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret, meta }))
+    .then(getDocJson)
+    .then(json => res.json(json))
+    .catch(err => next(err))
+  );
+});
+
+// delete the demo doc
+http.delete('/demo', function(req, res, next){
+  let { apiKey } = req.body;
+  let secret = DEMO_SECRET;
+
+  let clearDemoRows = db => db.table.filter({ secret }).delete().run(db.conn);
+
+  ( tryPromise(() => checkApiKey(apiKey))
+    .then(loadTables)
+    .then(({ docDb, eleDb }) => (
+      Promise.all([docDb, eleDb].map(clearDemoRows))
+    ))
+    .then(() => res.sendStatus(200))
+    .catch(err => next(err))
+  );
+});
+
 // create new doc
 http.post('/', function( req, res, next ){
   let { abstract, text, apiKey } = req.body;
@@ -156,6 +254,7 @@ http.post('/', function( req, res, next ){
   let secret = uuid();
 
   ( tryPromise( () => checkApiKey(apiKey) )
+    .then( () => createSecret({ secret }) )
     .then( loadTables )
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret, meta }) )
     .then( doc => fillDoc( doc, seedText ) )
@@ -176,15 +275,6 @@ http.post('/', function( req, res, next ){
     } )
   );
 });
-
-// TODO remove this route as reach should never need to be queried directly
-// http.post('/query-reach', function( req, res ){
-//   let text = req.body.text;
-
-//   getReachOutput( text )
-//   .then( reachRes => reachRes.json() )
-//   .then( reachJson => res.json(reachJson) );
-// });
 
 http.get('/biopax/:id', function( req, res, next ){
   let id = req.params.id;

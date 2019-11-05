@@ -220,15 +220,18 @@ class Syncher {
   }
 
   static synch( opts ){
-    let { io, rethink, table, conn } = opts;
+    let { io, rethink, table, conn, secretExists } = opts;
     let syncher = data => new Syncher({ rethink, table, conn, data });
     let jsonErr = err => _.pick( err, ['message', 'stack'] );
+
+    secretExists = secretExists || (() => Promise.resolve());
 
     // set up server side sockets
     io.on('connection', ( socket ) => {
       socket
         .on('create', ( data, send ) => {
-          syncher( data ).create()
+          secretExists(data.secret)
+            .then( () => syncher( data ).create() )
             .then( () => send() )
             .catch( err => send( jsonErr(err) ) )
           ;

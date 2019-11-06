@@ -405,7 +405,7 @@ class Document {
       secret: this.secret(),
       title: this.title(),
       summary: this.toText(),
-      organisms: this.organisms().map( toJson ),
+      organisms: this.organisms(),
       elements: this.elements().map( toJson ),
       publicUrl: this.publicUrl(),
       privateUrl: this.privateUrl(),

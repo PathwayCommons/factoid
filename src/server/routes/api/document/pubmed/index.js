@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { URL } from 'url';
 import { fetchPubmed } from './fetchPubmed';
 import demoPubmedArticle from './demoPubmedArticle';
-//import { searchPubmed } from './searchPubmed';
+import { searchPubmed } from './searchPubmed';
 
 import {
   PUBMED_LINK_BASE_URL
@@ -10,28 +10,40 @@ import {
 
 const digitsRegex = /^[0-9]+$/;
 
-const findPubmedId = paperId => {
+const findPubmedId = async paperId => {
 
   let id;
   if( !_.isString( paperId ) ) throw new TypeError( 'Unrecognized paperId' );
   const isUidLike = digitsRegex.test( paperId );
   const isPubMedUrlLike = paperId.startsWith( PUBMED_LINK_BASE_URL );
-
+  
   if( isUidLike ){
     id = paperId;
-
+    
   } else if( isPubMedUrlLike ){
     const pubmedUrl = new URL( PUBMED_LINK_BASE_URL );
-    const providedUrl = new URL( paperId );
-
-    const isSameHost = providedUrl.hostname === pubmedUrl.hostname;
-    const pathUidMatchResult = providedUrl.pathname.match( /^\/pubmed\/(?<uid>\d+)$/ );
-    const hasPathMatch = !_.isNull( pathUidMatchResult );
-
-    if( isSameHost && hasPathMatch ){
+    const paperIdUrl = new URL( paperId );
+    const isSameHost = paperIdUrl.hostname === pubmedUrl.hostname;
+    
+    const pathUidMatchResult = paperIdUrl.pathname.match( /^\/pubmed\/(?<uid>\d+)$/ );
+    const paperIdUrlSearchTerm = paperIdUrl.searchParams.get('term');
+    
+    if( isSameHost && !_.isNull( pathUidMatchResult ) ){
       const { groups: { uid } } = pathUidMatchResult;
       id = uid;
+      
+    } else if( isSameHost && paperIdUrlSearchTerm ) {
+      const { searchHits, count } = await searchPubmed( paperIdUrlSearchTerm );
+      if( count === 1 ){ 
+        id = _.first( searchHits );
+      } else {
+        throw new TypeError( 'Unrecognized paperId' );
+      }
+      
+    } else {
+      throw new TypeError( 'Unrecognized paperId' );
     }
+    
   } else {
     throw new TypeError( 'Unrecognized paperId' );
   }
@@ -54,7 +66,7 @@ const findPubmedId = paperId => {
  */
 const getPubmedArticle = async paperId => { 
   if( paperId === 'demo' ) return demoPubmedArticle;
-  const candidateId = findPubmedId( paperId );
+  const candidateId = await findPubmedId( paperId );
   const { PubmedArticleSet } = await fetchPubmed({
     uids: [ candidateId ]
   });

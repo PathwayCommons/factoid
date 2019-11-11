@@ -25,12 +25,11 @@ const findPubmedId = async paperId => {
     const paperIdUrl = new URL( paperId );
     const isSameHost = paperIdUrl.hostname === pubmedUrl.hostname;
     
-    const pathUidMatchResult = paperIdUrl.pathname.match( /^\/pubmed\/(?<uid>\d+)$/ );
+    const pathUidMatchResult = paperIdUrl.pathname.match( /^\/pubmed\/(\d+)$/ );
     const paperIdUrlSearchTerm = paperIdUrl.searchParams.get('term');
     
     if( isSameHost && !_.isNull( pathUidMatchResult ) ){
-      const { groups: { uid } } = pathUidMatchResult;
-      id = uid;
+      id = pathUidMatchResult[1];
       
     } else if( isSameHost && paperIdUrlSearchTerm ) {
       const { searchHits, count } = await searchPubmed( paperIdUrlSearchTerm );

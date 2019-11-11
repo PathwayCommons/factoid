@@ -90,6 +90,7 @@ describe('fetchPubmed', function(){
                 expect( Journal ).to.have.property( 'Issue' );
                 expect( Journal ).to.have.property( 'PubDate' );
                 expect( Journal ).to.have.property( 'ISSN' );
+                expect( Journal ).to.have.property( 'ISOAbbreviation' );
               });
             });
 

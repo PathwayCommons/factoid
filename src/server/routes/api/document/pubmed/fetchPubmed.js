@@ -105,7 +105,7 @@ const getJournal = Article => {
   const Journal = _.get( Article, ['Journal', '0'] );
   const Title = _.get( Journal, ['Title', '0'], null );
   const ISSN = _.get( Journal, ['ISSN', '0', '_' ], null );
-
+  const ISOAbbreviation = _.get( Journal, ['ISOAbbreviation', '0'], null );
   //<!ELEMENT	JournalIssue (Volume?, Issue?, PubDate) >
   const JournalIssue = _.get( Journal, ['JournalIssue', '0'] );
   const Volume = _.get( JournalIssue, ['Volume', '0'], null );
@@ -117,7 +117,8 @@ const getJournal = Article => {
     Volume,
     Issue,
     PubDate,
-    ISSN
+    ISSN,
+    ISOAbbreviation
   };
 };
 

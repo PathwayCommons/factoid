@@ -6,7 +6,7 @@ const isNonNil = x => x != null;
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const path = require('path');
 
-const envVars = ['NODE_ENV', 'PC_URL', 'BASE_URL'];
+const envVars = require('./src/client-env-vars.json');
 
 // dependencies that we need to babelify ourselves
 const unbabelifiedDependencies = [
@@ -43,7 +43,17 @@ let conf = {
   plugins: [
     isProfile ? new BundleAnalyzerPlugin() : null,
 
-    new webpack.EnvironmentPlugin(envVars),
+    new webpack.DefinePlugin({
+      'process.env': (() => {
+        const obj = {};
+
+        envVars.forEach(key => {
+          obj[key] = JSON.stringify(process.env[key]);
+        });
+
+        return obj;
+      })()
+    }),
 
     new webpack.optimize.CommonsChunkPlugin({
       name: 'deps',

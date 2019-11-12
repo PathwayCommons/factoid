@@ -1,7 +1,12 @@
 import _ from 'lodash';
 import { isClient } from './util';
+import clientVars from './client-env-vars.json';
 
 const env = (key, defaultVal) => {
+  if( isClient() && clientVars.indexOf(key) < 0 ){
+    return (`Can not use env var '${key}' on client because it is not defined in 'client-env-vars.json'`);
+  }
+
   if( process.env[key] != null ){
     let val =  process.env[key];
 
@@ -17,6 +22,10 @@ const env = (key, defaultVal) => {
     return defaultVal;
   }
 };
+
+export const NODE_ENV = env('NODE_ENV', undefined);
+
+export const BASE_URL = env('BASE_URL', 'https://biofactoid.org');
 
 export const PORT = env('PORT', 3000);
 
@@ -36,9 +45,12 @@ export const DB_PASS = env('DB_PASS', undefined); // password if db uses auth
 export const DB_CERT = env('DB_CERT', undefined);  // path to a certificate (cert) file if db uses ssl
 
 // Services
+export const PC_URL = env('PC_URL', 'https://apps.pathwaycommons.org/');
 export const REACH_URL = env('REACH_URL', 'http://reach.baderlab.org/api/uploadFile');
 export const BIOPAX_CONVERTER_URL = env('BIOPAX_CONVERTER_URL', 'https://biopax.baderlab.org/convert/v2/');
 export const GROUNDING_SEARCH_BASE_URL = env('GROUNDING_SEARCH_BASE_URL', 'https://grounding.baderlab.org');
+export const NCBI_EUTILS_BASE_URL = env('NCBI_EUTILS_BASE_URL', 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/');
+export const NCBI_EUTILS_API_KEY = env('NCBI_EUTILS_API_KEY', 'b99e10ebe0f90d815a7a99f18403aab08008');
 
 // Links
 export const UNIPROT_LINK_BASE_URL = env('UNIPROT_LINK_BASE_URL', 'http://www.uniprot.org/uniprot/');
@@ -46,8 +58,6 @@ export const CHEBI_LINK_BASE_URL = env('CHEBI_LINK_BASE_URL', 'https://www.ebi.a
 export const PUBCHEM_LINK_BASE_URL = env('PUBCHEM_LINK_BASE_URL', 'https://pubchem.ncbi.nlm.nih.gov/compound/');
 export const NCBI_LINK_BASE_URL = env('NCBI_LINK_BASE_URL', 'https://www.ncbi.nlm.nih.gov/gene/');
 export const PUBMED_LINK_BASE_URL = env('PUBMED_LINK_BASE_URL', 'https://www.ncbi.nlm.nih.gov/pubmed/');
-export const NCBI_EUTILS_BASE_URL = env('NCBI_EUTILS_BASE_URL', 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/');
-export const NCBI_EUTILS_API_KEY = env('NCBI_EUTILS_API_KEY', 'b99e10ebe0f90d815a7a99f18403aab08008');
 
 // Email
 export const EMAIL_ENABLED = env('EMAIL_ENABLED', false);
@@ -64,14 +74,21 @@ export const SUBMIT_SUCCESS_TMPLID = env('SUBMIT_SUCCESS_TMPLID', '988309');
 export const EMAIL_CONTEXT_JOURNAL = env('EMAIL_CONTEXT_JOURNAL', 'journal');
 export const EMAIL_CONTEXT_SIGNUP = env('EMAIL_CONTEXT_SIGNUP', 'signup');
 
-// client vars:
-// these vars are always included in the bundle because they ref `process.env.${name}` directly
-// NB DO NOT include passwords etc. here
-export const NODE_ENV = env('NODE_ENV', undefined);
-export const PC_URL = env('PC_URL', 'https://apps.pathwaycommons.org/');
-export const BASE_URL = env('BASE_URL', 'https://factoid.baderlab.org');
+// Sharing
+export const DOCUMENT_IMAGE_WIDTH = env('DOCUMENT_IMAGE_WIDTH', 2400);
+export const DOCUMENT_IMAGE_HEIGHT = env('DOCUMENT_IMAGE_HEIGHT', 1200);
+export const TWITTER_CONSUMER_KEY = env('TWITTER_CONSUMER_KEY', 'SPECIFY_IN_YOUR_ENV');
+export const TWITTER_CONSUMER_SECRET = env('TWITTER_CONSUMER_SECRET', 'SPECIFY_IN_YOUR_ENV');
+export const TWITTER_ACCESS_TOKEN_KEY = env('TWITTER_ACCESS_TOKEN_KEY', 'SPECIFY_IN_YOUR_ENV');
+export const TWITTER_ACCESS_TOKEN_SECRET = env('TWITTER_ACCESS_TOKEN_SECRET', 'SPECIFY_IN_YOUR_ENV');
+export const TWITTER_ACCOUNT_NAME = env('TWITTER_ACCOUNT_NAME', 'biofactoid');
+export const MAX_TWEET_LENGTH = env('MAX_TWEET_LENGTH', 150);
+
+// Demo
 export const DEMO_ID = env('DEMO_ID', 'demo');
 export const DEMO_SECRET = env('DEMO_SECRET', 'demo');
 export const DEMO_JOURNAL_NAME = env('DEMO_JOURNAL_NAME', 'Journal of Example');
 export const DEMO_AUTHOR = env('DEMO_AUTHOR', 'John Doe');
 export const DEMO_TITLE = env('DEMO_TITLE', 'Lorem ipsum dolor sit amet');
+export const DEMO_CAN_BE_SHARED = env('DEMO_CAN_BE_SHARED', false);
+export const DEMO_CAN_BE_SHARED_MULTIPLE_TIMES = env('DEMO_CAN_BE_SHARED_MULTIPLE_TIMES', false);

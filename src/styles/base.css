@@ -90,6 +90,27 @@ button.button-toggle {
   }
 }
 
+.super-salient-button {
+  background: var(--activeColor);
+  border: 0;
+  color: #fff;
+  transition-property: background-color;
+  border-radius: 999px;
+  font-weight: bold;
+  height: 2.5em;
+  padding: 0 1em;
+
+  &:active {
+    color: #fff;
+    background-color: #3672a8;
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    color: #888;
+  }
+}
+
 .radioset {
   display: flex;
 

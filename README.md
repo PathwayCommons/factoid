@@ -33,6 +33,8 @@ Services:
 - `PC_URL` : base url for pathway commons apps, to search or link
 - `BIOPAX_CONVERTER_URL` : url for the factoid to biopax/sbgn converter
 - `GROUNDING_SEARCH_BASE_URL`: url for the [grounding service](https://github.com/PathwayCommons/grounding-search)
+- `NCBI_EUTILS_BASE_URL` : TODO
+- `NCBI_EUTILS_API_KEY` : TODO
 
 Links:
 
@@ -40,6 +42,43 @@ Links:
 - `CHEBI_LINK_BASE_URL`: base url concatenated to id to generate a linkout
 - `PUBCHEM_LINK_BASE_URL`: base url concatenated to id to generate a linkout
 - `NCBI_LINK_BASE_URL`: base url concatenated to id to generate a linkout
+
+Demo:
+
+- `DEMO_ID` : the demo document id (default `demo`)
+- `DEMO_SECRET` : the demo document secret (default `demo`)
+- `DEMO_JOURNAL_NAME` : the journal name for the demo doc
+- `DEMO_AUTHOR` : the author display name for the demo doc
+- `DEMO_TITLE` : the title of the demo doc's article
+- `DEMO_CAN_BE_SHARED` : whether the demo can be shared (default `false`)
+- `DEMO_CAN_BE_SHARED_MULTIPLE_TIMES` : whether the demo can be shared multiple times (normal docs can be shared only once; default `false`)
+
+Sharing:
+
+- `DOCUMENT_IMAGE_WIDTH` : tweet card image width
+- `DOCUMENT_IMAGE_HEIGHT` : tweet card image height
+- `TWITTER_ACCOUNT_NAME` : twitter account visible on card
+- `TWITTER_CONSUMER_KEY` : twitter api key
+- `TWITTER_CONSUMER_SECRET` : twitter api secret
+- `TWITTER_ACCESS_TOKEN_KEY` : twitter app key
+- `TWITTER_ACCESS_TOKEN_SECRET` : twitter app secret
+- `MAX_TWEET_LENGTH` : max characters a user can type as a share caption
+
+Email:
+
+- TODO
+
+The following environment variables should always be set in production instances:
+
+- `NODE_ENV` : set to `production`
+- `BASE_URL` : the production url
+- `API_KEY` : set to a uuid that you keep secret (used in management panel)
+- `TWITTER_ACCOUNT_NAME` : twitter account visible on card
+- `TWITTER_CONSUMER_KEY` : twitter api key
+- `TWITTER_CONSUMER_SECRET` : twitter api secret
+- `TWITTER_ACCESS_TOKEN_KEY` : twitter app key
+- `TWITTER_ACCESS_TOKEN_SECRET` : twitter app secret
+- TODO...
 
 ## Run targets
 
@@ -111,18 +150,18 @@ NB: RethinkDB [dump and restore](https://rethinkdb.com/docs/backup/) command-lin
 
 #### Dump
 
-To create an archive of data in RethinkDB, use the supplied bash script `/docker/dump_rethinkdb.sh`. 
+To create an archive of data in RethinkDB, use the supplied bash script `/docker/dump_rethinkdb.sh`.
 
 - The script accepts four arguments:
-  - `-c` (required) The container name 
+  - `-c` (required) The container name
   - `-e` (optional) Limit the dump to the given database and/or table; Use dot notation e.g. 'test.authors'
   - `-n` (optional) The dump archive name; `.tar.gz` will be appended
-  - `-d` (optional) Output to the specified directory on the host; defaults to `pwd` 
+  - `-d` (optional) Output to the specified directory on the host; defaults to `pwd`
 
 Example: To dump a running container `db_container` with database named `factoid` to an archive named `factoid_dump_latest` in a directory on the host named `/backups`:
 
 ```sh
-./dump_rethinkdb.sh -c db_container -e factoid -n factoid_dump_latest -d /backups 
+./dump_rethinkdb.sh -c db_container -e factoid -n factoid_dump_latest -d /backups
 ```
 
 #### Restore
@@ -130,14 +169,14 @@ Example: To dump a running container `db_container` with database named `factoid
 To populate RethinkDB from an archive, use the supplied bash script `/docker/restore_rethinkdb.sh`.
 
 - The script accepts three arguments:
-  - `-c` (required) The container name 
+  - `-c` (required) The container name
   - `-f` (required) Archive file path on host
   - `-i` (optional) Limit the restore to the given database and/or table; Use dot notation e.g. 'test.authors'. By default, the script will overwrite any existing database/table data.
 
 Example: To restore a running container `db_container` with database named `factoid` from an archive named `/backups/factoid_dump_latest.tar.gz`:
 
 ```sh
-./restore_rethinkdb.sh -c db_container -f /backups/factoid_dump_latest.tar.gz -i factoid 
+./restore_rethinkdb.sh -c db_container -f /backups/factoid_dump_latest.tar.gz -i factoid
 ```
 
 ## Testing

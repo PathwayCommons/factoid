@@ -220,7 +220,7 @@
   margin-top: 1em;
 }
 
-.home-request-incomplete {
+.home-request-error {
   display: none;
   background-color: var(--invalidColor);
   border-radius: 0.25em;
@@ -230,7 +230,7 @@
   text-align: center;
 }
 
-.home-request-incomplete-shown {
+.home-request-error-message-shown {
   display: block;
 }
 

@@ -1,8 +1,21 @@
+import _ from 'lodash';
 import h from 'react-hyperscript';
 import { Component } from 'react';
 import Popover from './popover/popover';
 import { makeClassList } from '../../util';
 import EventEmitter from 'eventemitter3';
+
+import { EMAIL_CONTEXT_SIGNUP } from '../../config';
+
+const checkStatus = response => {
+  if ( response.status >= 200 && response.status < 300 ) {
+    return response;
+  } else {
+    var error = new Error( response.statusText );
+    error.response = response;
+    throw error;
+  }
+};
 
 class RequestForm extends Component {
   constructor(props){
@@ -12,11 +25,18 @@ class RequestForm extends Component {
 
     this.state = {
       paperId: '',
-      authorEmail: '',
+      authorEmail: {
+        emailAddress: '',
+        isEmailValid: false
+      },
       isCorrespondingAuthor: true,
-      incompleteForm: false,
       submitting: false,
-      done: false
+      done: false,
+      errors: {
+        incompleteForm: false,
+        email: false,
+        network: false
+      }
     };
 
     this.onCloseCTA = () => this.reset();
@@ -25,11 +45,18 @@ class RequestForm extends Component {
   reset(){
     this.setState({
       paperId: '',
-      authorEmail: '',
+      authorEmail: {
+        emailAddress: '',
+        isEmailValid: false 
+      },
       isCorrespondingAuthor: true,
-      incompleteForm: false,
       submitting: false,
-      done: false
+      done: false,
+      errors: {
+        incompleteForm: false,
+        email: false,
+        network: false
+      }
     });
   }
 
@@ -46,21 +73,37 @@ class RequestForm extends Component {
   }
 
   submitRequest(){
-    const { paperId, authorEmail } = this.state;
+    const { paperId, authorEmail, isCorrespondingAuthor } = this.state;
+    const { emailAddress, isEmailValid } = authorEmail;
+        
+    if( !paperId || !emailAddress ){
+      this.setState({ errors: { incompleteForm: true } });
 
-    // TODO integrate with email service & admin panel
-
-    console.log('submit'); // eslint-disable-line
-
-    if( !paperId || !authorEmail ){
-      this.setState({ incompleteForm: true });
+    } else if( !isEmailValid ){
+      this.setState({ errors: { incompleteForm: false, email: true } });
+  
     } else {
-      console.log('sending'); // eslint-disable-line
-      this.setState({ incompleteForm: false, submitting: true });
+      const url = 'api/document';
+      const data = _.assign( {}, { 
+        paperId, 
+        authorEmail: emailAddress, 
+        isCorrespondingAuthor,
+        context: EMAIL_CONTEXT_SIGNUP
+      });
+      const fetchOpts = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify( data )
+      };
 
-      setTimeout(() => {
-        this.setState({ submitting: false, done: true });
-      }, 1000);
+      this.setState({ submitting: true, errors: { incompleteForm: false, email: false, network: false } });
+      fetch( url, fetchOpts )
+        .then( checkStatus )
+        .then( () => new Promise( resolve => this.setState({ done: true }, resolve ) ) )
+        .catch( () => new Promise( resolve => this.setState({ errors: { network: true } }, resolve ) ) )
+        .finally( () => new Promise( resolve => this.setState({ submitting: false }, resolve ) ) );
     }
   }
 
@@ -89,10 +132,15 @@ class RequestForm extends Component {
           value: this.state.paperId
         }),
         h('input', {
-          type: 'text',
+          type: 'email',
           placeholder: 'Email address',
-          onChange: e => this.updateForm({ authorEmail: e.target.value }),
-          value: this.state.authorEmail
+          onChange: e => this.updateForm({ 
+            authorEmail: { 
+              emailAddress: e.target.value, 
+              isEmailValid: e.target.validity.valid 
+            } 
+          }),
+          value: this.state.authorEmail.value
         }),
         h('div.home-request-form-author', [
           h('span', 'Are you the corresponding author for the article?'),
@@ -113,9 +161,15 @@ class RequestForm extends Component {
           }),
           h('label', { htmlFor: 'coreauthfalse' }, 'No')
         ]),
-        h('div.home-request-incomplete', {
-          className: makeClassList({ 'home-request-incomplete-shown': this.state.incompleteForm })
+        h('div.home-request-error', {
+          className: makeClassList({ 'home-request-error-message-shown': this.state.errors.incompleteForm })
         }, 'Fill out everything above, then try again.'),
+        h('div.home-request-error', {
+          className: makeClassList({ 'home-request-error-message-shown': !this.state.errors.paperId && this.state.errors.email })
+        }, 'Please enter a valid email'),
+        h('div.home-request-error', {
+          className: makeClassList({ 'home-request-error-message-shown': this.state.errors.network })
+        }, 'Please try again later'),
         h('button.salient-button.home-request-submit', {
           onClick: () => this.submitRequest()
         }, 'Request an invitation')

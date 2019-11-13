@@ -66,10 +66,10 @@ const getPubmedCitation = PubmedArticle => {
   const title = _.get( Article, ['ArticleTitle'] ); //required
   const AuthorList = _.get( Article, ['AuthorList'] ); //optional
 
-  const author = getAuthorString( AuthorList ); 
+  const authors = getAuthorString( AuthorList ); 
   const reference = getReferenceString( Journal );
 
-  return { author, title, reference };
+  return { authors, title, reference };
 };
 
 export { getPubmedCitation }; 

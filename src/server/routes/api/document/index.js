@@ -13,10 +13,7 @@ import Document from '../../../../model/document';
 import db from '../../../db';
 import logger from '../../../logger';
 import { makeCyEles } from '../../../../util';
-
-import * as provider from './reach';
-
-const ENABLE_TEXTMINING = false;
+import { getPubmedArticle } from './pubmed';
 
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
@@ -45,10 +42,10 @@ const twitterClient = new Twitter({
   access_token_secret: TWITTER_ACCESS_TOKEN_SECRET,
 });
 
-let newDoc = ({ docDb, eleDb, id, secret, meta }) => {
+let newDoc = ({ docDb, eleDb, id, secret, provided }) => {
   return new Document( _.assign( {}, docDb, {
     factoryOptions: eleDb,
-    data: _.assign( {}, { id, secret }, meta )
+    data: _.assign( {}, { id, secret, provided } )
   } ) );
 };
 
@@ -65,8 +62,8 @@ let createSecret = ({ secret }) => {
   );
 };
 
-let createDoc = ({ docDb, eleDb, secret, meta }) => {
-  let doc = newDoc({ docDb, eleDb, secret, meta });
+let createDoc = ({ docDb, eleDb, id, secret, provided }) => {
+  let doc = newDoc({ docDb, eleDb, id, secret, provided });
 
   return doc.create().then( () => doc );
 };
@@ -82,22 +79,30 @@ let loadTables = () => Promise.all( tables.map( loadTable ) ).then( dbInfos => (
 
 let getDocJson = doc => doc.json();
 
-let fillDoc = ( doc, text ) => {
-  if( ENABLE_TEXTMINING ){
-    return provider.get( text ).then( res => {
-      return doc.fromJson( res );
-    } ).then( () => doc );
-  } else {
-    return Promise.resolve(doc);
+const re_email = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const fillDocCorrespondence = async ( doc, authorEmail, isCorrespondingAuthor, context ) => {
+  try {
+    if( !re_email.test( authorEmail ) ) throw new TypeError( 'Could not detect an email' );
+    doc.correspondence( { authorEmail, isCorrespondingAuthor, context } );
+  } catch ( error ){
+    doc.issues({ authorEmail: `${error.message}` });
   }
 };
 
-// run cytoscape layout on server side so that the document looks ok on first open
-let runLayout = doc => {
-  let run = () => doc.applyLayout();
-  let getDoc = () => doc;
+const fillDocArticle = async ( doc, paperId ) => {
+  try {
+    const pubmedRecord = await getPubmedArticle( paperId );
+    doc.article( pubmedRecord );
+  } catch ( error ){
+    doc.issues({ paperId: `${error.message}` });
+  }
+};
 
-  return tryPromise( run ).then( getDoc );
+let fillDoc = async ( doc, provided ) => {
+  const { paperId, authorEmail, isCorrespondingAuthor, context } = provided;
+  fillDocCorrespondence( doc, authorEmail, isCorrespondingAuthor, context );
+  await fillDocArticle( doc, paperId );
+  return doc;
 };
 
 // let getReachOutput = text => provider.getRawResponse( text );
@@ -329,20 +334,6 @@ const checkApiKey = (apiKey) => {
   }
 };
 
-// create the demo doc
-http.post('/demo', function(req, res, next){
-  let meta = _.assign({}, req.body, { id: DEMO_ID });
-  let secret = DEMO_SECRET;
-
-  ( tryPromise(() => createSecret({ secret }))
-    .then(loadTables)
-    .then(({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret, meta }))
-    .then(getDocJson)
-    .then(json => res.json(json))
-    .catch(err => next(err))
-  );
-});
-
 // delete the demo doc
 http.delete('/demo', function(req, res, next){
   let { apiKey } = req.body;
@@ -362,32 +353,19 @@ http.delete('/demo', function(req, res, next){
 
 // create new doc
 http.post('/', function( req, res, next ){
-  let { abstract, text, apiKey } = req.body;
-  let meta = _.assign({}, req.body);
-  let seedText = [abstract, text].filter(text => text ? true : false).join('\n\n');
+  const provided = _.assign( {}, req.body );
+  const { paperId } = provided;
+  const id = paperId === DEMO_ID ? DEMO_ID: undefined;
+  const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
 
-  let secret = uuid();
-
-  ( tryPromise( () => checkApiKey(apiKey) )
-    .then( () => createSecret({ secret }) )
+  ( tryPromise( () => createSecret({ secret }) )
     .then( loadTables )
-    .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret, meta }) )
-    .then( doc => fillDoc( doc, seedText ) )
-    .then( runLayout )
+    .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided }) )
+    .catch( e => { logger.error(`Error creating doc: ${e.message}`); next( e ); })
+    .then( doc => { res.status( 201 ); return doc; })
+    .then( doc => fillDoc( doc, provided ) )
     .then( getDocJson )
-    .then( json => {
-      logger.info(`Created new doc ${json.id}`);
-
-      return json;
-    } )
-    .then(json => {
-      return res.json( json );
-    })
-    .catch( e => {
-      logger.error(`Could not fill doc from text: ${text}`);
-      logger.error('Exception thrown :', e.message);
-      next( e );
-    } )
+    .then( json => res.json( json ) )
   );
 });
 

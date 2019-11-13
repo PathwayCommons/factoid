@@ -444,12 +444,12 @@ describe('Document', function(){
 
       return dS.create().then( () => {
         return dS.update({
-          title: 'foobar'
+          article: { title: 'foobar' }
         });
       } ).then( () => {
         return dC.load();
       } ).then( () => {
-        expect( dC.title() ).to.equal('foobar');
+        expect( dC.article() ).to.deep.equal({ title: 'foobar' });
       } );
     });
 

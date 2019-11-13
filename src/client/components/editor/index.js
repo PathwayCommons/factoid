@@ -161,7 +161,7 @@ class Editor extends DataComponent {
         if( id === DEMO_ID && secret === DEMO_SECRET ){
           logger.info(`Creating demo document with ID ${id}`);
 
-          let createDemoDoc = () => fetch('/api/document/demo', {
+          let createDemoDoc = () => fetch('/api/document', {
             method: 'POST',
             headers: {
               'content-type': 'application/json'

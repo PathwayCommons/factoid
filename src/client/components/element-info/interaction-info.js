@@ -220,7 +220,7 @@ class InteractionInfo extends DataComponent {
 
       if( showEditButton ){
         summaryChildren.push( h('div.interaction-info-edit', [
-          h('button', {
+          h('button.salient-button', {
             onClick: () => progression.goToStage( ORDERED_STAGES[1] )
           }, `Select a different type than "${assoc.displayValue}"`)
         ]) );

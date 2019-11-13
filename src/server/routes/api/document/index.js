@@ -4,23 +4,46 @@ import Express from 'express';
 import _ from 'lodash';
 import uuid from 'uuid';
 import fetch from 'node-fetch';
+import cytosnap from 'cytosnap';
+import Twitter from 'twitter';
 
-import { tryPromise } from '../../../../util';
+import { tryPromise, makeStaticStylesheet } from '../../../../util';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
 import db from '../../../db';
 import logger from '../../../logger';
+import { makeCyEles } from '../../../../util';
 
 import * as provider from './reach';
 
 const ENABLE_TEXTMINING = false;
 
-import { BIOPAX_CONVERTER_URL,
+import { BASE_URL,
+  BIOPAX_CONVERTER_URL,
   API_KEY,
   DEMO_ID,
-  DEMO_SECRET } from '../../../../config';
+  DEMO_SECRET,
+  DOCUMENT_IMAGE_WIDTH,
+  DOCUMENT_IMAGE_HEIGHT,
+  TWITTER_CONSUMER_KEY,
+  TWITTER_CONSUMER_SECRET,
+  TWITTER_ACCESS_TOKEN_KEY,
+  TWITTER_ACCESS_TOKEN_SECRET,
+  DEMO_CAN_BE_SHARED } from '../../../../config';
 
 const http = Express.Router();
+
+const snap = cytosnap();
+const snapStartPromise = snap.start();
+
+const startCytosnap = () => snapStartPromise;
+
+const twitterClient = new Twitter({
+  consumer_key: TWITTER_CONSUMER_KEY,
+  consumer_secret: TWITTER_CONSUMER_SECRET,
+  access_token_key: TWITTER_ACCESS_TOKEN_KEY,
+  access_token_secret: TWITTER_ACCESS_TOKEN_SECRET,
+});
 
 let newDoc = ({ docDb, eleDb, id, secret, meta }) => {
   return new Document( _.assign( {}, docDb, {
@@ -195,14 +218,106 @@ http.get('/', function( req, res, next ){
   );
 });
 
-// get existing doc
-http.get('/:id', function( req, res, next ){
-  let id = req.params.id;
-
-  ( tryPromise( loadTables )
+/**
+ * Get the JSON for the specified document, with the same format and caveats
+ * as the GET /api/document/:id route.
+ * @param {*} id The public document ID (UUID).
+ */
+const getDocumentJson = id => {
+  return ( tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
     .then( getDocJson )
+  );
+};
+
+// get doc figure as png image
+http.get('/(:id).png', function( req, res, next ){
+  const id = req.params.id;
+  const cyStylesheet = makeStaticStylesheet();
+  const imageWidth = DOCUMENT_IMAGE_WIDTH;
+  const imageHeight = DOCUMENT_IMAGE_HEIGHT;
+
+  res.setHeader('content-type', 'image/png');
+
+  const getDoc = id => {
+    return ( tryPromise( loadTables )
+      .then( json => _.assign( {}, json, { id } ) )
+      .then( loadDoc )
+    );
+  };
+
+  const getElesJson = doc => {
+    return makeCyEles(doc.elements());
+  };
+
+  const getPngImage = elesJson => {
+    return ( startCytosnap()
+      .then(() => snap.shot({
+        elements: elesJson,
+        style: cyStylesheet,
+        layout: {
+          name: 'preset',
+          fit: true,
+          padding: 5
+        },
+        format: 'png',
+        resolvesTo: 'stream',
+        background: '#fff',
+        width: imageWidth,
+        height: imageHeight
+      }))
+    );
+  };
+
+  ( tryPromise(() => getDoc(id))
+    .then(getElesJson)
+    .then(getPngImage)
+    .then(stream => stream.pipe(res))
+    .catch( next )
+  );
+});
+
+// tweet a document as a card with a caption (text)
+http.post('/:id/tweet', function( req, res, next ){
+  const id = req.params.id;
+  const { text, secret } = _.assign({ text: '', secret: 'read-only-no-secret-specified' }, req.body);
+  const url = `${BASE_URL}/document/${id}`;
+  const status = `${text} ${url}`;
+  let db;
+
+  ( tryPromise(() => loadTable('document'))
+    .then(docDb => {
+      db = docDb;
+
+      return db;
+    })
+    .then(({ table, conn }) => table.get(id).run(conn))
+    .then(doc => {
+      const docSecret = doc.secret;
+
+      if( !DEMO_CAN_BE_SHARED && id === DEMO_ID ){
+        throw new Error(`Tweeting the demo document is forbidden`);
+      }
+
+      if( docSecret !== secret ){
+        throw new Error(`Can not tweet since the provided secret is incorrect`);
+      }
+    })
+    .then(() => twitterClient.post('statuses/update', { status }))
+    .then(tweet => {
+      return db.table.get(id).update({ tweet }).run(db.conn).then(() => tweet);
+    })
+    .then(json => res.json(json))
+    .catch(next)
+  );
+});
+
+// get existing doc as json
+http.get('/:id', function( req, res, next ){
+  let id = req.params.id;
+
+  ( tryPromise( () => getDocumentJson(id) )
     .then( json => res.json( json ) )
     .catch( next )
   );
@@ -311,3 +426,4 @@ http.get('/text/:id', function( req, res, next ){
 });
 
 export default http;
+export { getDocumentJson }; // allow access so page rendering can get the same data as the rest api

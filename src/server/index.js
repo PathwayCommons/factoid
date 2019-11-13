@@ -12,15 +12,14 @@ import { regCyLayouts, tryPromise } from '../util';
 import RoutesApi from './routes/api';
 import RoutesStyleDemo from './routes/style-demo';
 import RoutesIndex from './routes/index';
-
 import * as config from '../config';
-let app = express();
-let server = http.createServer(app);
 import socketio from 'socket.io';
-let io = socketio(server);
-
 import db from './db';
 import Syncher from '../model/syncher';
+
+let app = express();
+let server = http.createServer(app);
+let io = socketio(server);
 
 // make sure cytoscape layouts are registered for server-side use
 regCyLayouts();
@@ -37,7 +36,7 @@ app.engine('html', function (filePath, options, callback){
   });
 });
 
-app.set('view engine', 'html');
+app.set('view engine', 'ejs');
 
 app.use(favicon(path.join(__dirname, '../..', 'public', 'image', 'logo.png')));
 app.use(morgan('dev', {

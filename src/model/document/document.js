@@ -127,6 +127,18 @@ class Document {
     }
   }
 
+  tweetMetadata(){
+    return this.syncher.get('tweet');
+  }
+
+  hasTweet(){
+    return this.tweetMetadata() != null;
+  }
+
+  setTweetMetadata(tweet){
+    this.syncher.update('tweet', tweet);
+  }
+
   cache(){
     return this.elementSet.cache;
   }
@@ -216,6 +228,10 @@ class Document {
 
   text(newText){
     return this.rwMeta('text', newText);
+  }
+
+  reference(){
+    return 'TODO reference -- needs metadata rework';
   }
 
   entities(){
@@ -409,7 +425,8 @@ class Document {
       elements: this.elements().map( toJson ),
       publicUrl: this.publicUrl(),
       privateUrl: this.privateUrl(),
-      submitted: this.submitted()
+      submitted: this.submitted(),
+      reference: this.reference()
     }, _.pick(this.syncher.get(), METADATA_FIELDS));
   }
 

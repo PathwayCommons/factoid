@@ -21,7 +21,7 @@ import * as defs from './defs';
 import EditorButtons from './buttons';
 import MainMenu from '../main-menu';
 import UndoRemove from './undo-remove';
-import { TaskView } from '../tasks';
+import { ShareView } from '../share';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -452,7 +452,7 @@ class Editor extends DataComponent {
   }
 
   render(){
-    let { document, bus, showHelp } = this.data;
+    let { document, bus, showHelp, cy } = this.data;
     let controller = this;
     let { history } = this.props;
 
@@ -485,9 +485,13 @@ class Editor extends DataComponent {
       h('div.editor-main-menu', [
         h(MainMenu, { bus, document, history, networkEditor: true })
       ]),
-      h('div.editor-submit', [
-        h(Popover, { tippy: { html: h(TaskView, { document, bus } ) } }, [
-          document.submitted() ? h('button.editor-submit-button', 'Submitted') : h('button.editor-submit-button.salient-button', 'Submit')
+      h('div.editor-share', {
+
+      }, [
+        h(Popover, { tippy: { html: h(ShareView, { cy, document, bus } ) } }, [
+          h('button.editor-share-button.super-salient-button', {
+            onClick: () => bus.emit('toggleshare')
+          }, 'Share')
         ])
       ]),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),

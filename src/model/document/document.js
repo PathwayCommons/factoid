@@ -185,10 +185,6 @@ class Document {
     return getPubmedCitation( this.article() );
   }
 
-  reference(){
-    return 'TODO reference -- needs metadata rework';
-  }
-
   entities(){
     return this.elements().filter( el => el.isEntity() );
   }
@@ -379,7 +375,7 @@ class Document {
       publicUrl: this.publicUrl(),
       privateUrl: this.privateUrl(),
       submitted: this.submitted(),
-      reference: this.reference()
+      citation: this.citation()
     }, _.pick(this.syncher.get(), METADATA_FIELDS));
   }
 

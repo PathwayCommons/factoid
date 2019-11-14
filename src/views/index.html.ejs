@@ -7,13 +7,13 @@
     <meta name="description" content="Biofactoid is an app that captures the content of biological papers." />
     <meta name="keywords" content="mentena, app, bio, biology, paper, academic, academia, publish, peer, review, data" />
 
-    <% if(typeof document !== typeof undefined){ %>
+    <% if(typeof document !== typeof undefined && typeof TWITTER_ACCOUNT_NAME !== typeof undefined && typeof BASE_URL !== typeof undefined){ %>
       <meta name="twitter:card" content="summary_large_image">
-      <meta name="twitter:site" content="@<%= twitterAccount %>">
-      <meta name="twitter:creator" content="@<%= twitterAccount %>">
+      <meta name="twitter:site" content="@<%= TWITTER_ACCOUNT_NAME %>">
+      <meta name="twitter:creator" content="@<%= TWITTER_ACCOUNT_NAME %>">
       <meta name="twitter:title" content="<%= document.title %>">
       <meta name="twitter:description" content="<%= document.reference %>">
-      <meta name="twitter:image" content="https://biofactoid.org/api/document/<%= document.id %>.png">
+      <meta name="twitter:image" content="<%= BASE_URL %>/api/document/<%= document.id %>.png">
     <% } %>
 
     <link type="text/css" rel="stylesheet" href="/deps.css" />

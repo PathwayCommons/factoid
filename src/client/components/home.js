@@ -156,24 +156,24 @@ class Home extends Component {
         ])
       ]),
       h('div.home-section.home-figure-section', [
-        h('div.home-figure.home-figure-summarize'),
+        h('div.home-figure.home-figure-1'),
         h('div.home-caption', [
           h('h2', 'Summarize'),
-          h('p', `Create a cloud-computable summary of your subcellular biology article with the easy-to-use Biofactoid app.  It takes only a few minutes, and it allows you to clearly and concisely summarize the heart of your article.`)
+          h('p', `By using Biofactoid for just a few minutes, you can clearly summarize the interactions in your subcellular biology article.`)
         ])
       ]),
       h('div.home-section.home-figure-section', [
-        h('div.home-figure.home-figure-share'),
+        h('div.home-figure.home-figure-2'),
         h('div.home-caption', [
           h('h2', 'Share'),
-          h('p', `Share a compelling visual abstract that researchers can grasp at a glance.  Things like attributions and cross-references are all automatically handled for you.  Best of all, you and your colleagues can share your article's summary with just one click.`)
+          h('p', `Share a compelling visual abstract that other researchers can grasp at a glance.`)
         ])
       ]),
       h('div.home-section.home-figure-section', [
-        h('div.home-figure.home-figure-discover'),
+        h('div.home-figure.home-figure-3'),
         h('div.home-caption', [
           h('h2', 'Discover'),
-          h('p', `Find relevant articles and others in the community with shared interests.  Each article on Biofactoid is automatically semantically represented, indexed, and cross-referenced.  Biofactoid will allow researchers like you to explore subcellular research freely and seamlessly.`)
+          h('p', `Easily sift through the deluge of newly-published articles to find hidden gems.  Biofactoid connects you to research and researchers that are relevant to you.`)
         ])
       ]),
       h('div.home-section.home-text-section', [
@@ -188,9 +188,9 @@ class Home extends Component {
             'Biofactoid is freely brought to you in collaboration with ',
             h('a.plain-link', { href: 'https://baderlab.org' }, 'Bader Lab at the University of Toronto'),
             ', ',
-            h('a.plain-link', { href: 'https://sanderlab.org' }, 'Sander Lab at Harvard'),
+            h('a.plain-link', { href: 'http://sanderlab.org' }, 'Sander Lab at Harvard'),
             ', and the ',
-            h('a.plain-link', { href: 'https://sanderlab.org' }, 'Pathway and Omics Lab at the University of Oregon'),
+            h('a.plain-link', { href: 'https://www.ohsu.edu/people/emek-demir/AFE06DC89ED9AAF1634F77D11CCA24C3' }, 'Pathway and Omics Lab at the University of Oregon'),
             '.  ',
             ''
           ])

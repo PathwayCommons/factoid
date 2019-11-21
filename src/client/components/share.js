@@ -87,7 +87,6 @@ class ShareView extends DataComponent {
     const { document } = this.props;
     const { submitting, submitted } = this.data;
     const hasSavedTweet = document.hasTweet();
-    const tweet = this.data.tweet || document.tweetMetadata();
     const isAlwaysTweetableDemo = document.id() === DEMO_ID && DEMO_CAN_BE_SHARED && DEMO_CAN_BE_SHARED_MULTIPLE_TIMES;
 
     if( !submitted && (!hasSavedTweet || isAlwaysTweetableDemo) ){

@@ -70,24 +70,34 @@ class MainMenu extends Component {
     let { emitter } = this;
     let { bus, document, history, admin } = this.props;
 
-    return h('div.main-menu', [
-      h(Popover, {
-        hide: hideNow => emitter.on('close', hideNow),
-        tippy: {
-          onHide: () => emitter.emit('hide'),
-          onShow: () => emitter.emit('show'),
-          placement: 'bottom',
-          html: h(MenuContent, { bus, document, history, emitter, admin })
-        }
-      }, [
-        h(Tooltip, { description: 'Menu', tippy: { placement: 'bottom' } }, [
-          h('div.main-menu-logo', [
-            h('i.icon.icon-logo'),
-            h('i.material-icons.icon-logo-beside', 'keyboard_arrow_down')
+    if( document.editable() ){
+      return h('div.main-menu', [
+        h(Popover, {
+          hide: hideNow => emitter.on('close', hideNow),
+          tippy: {
+            onHide: () => emitter.emit('hide'),
+            onShow: () => emitter.emit('show'),
+            placement: 'bottom',
+            html: h(MenuContent, { bus, document, history, emitter, admin })
+          }
+        }, [
+          h(Tooltip, { description: 'Menu', tippy: { placement: 'bottom' } }, [
+            h('div.main-menu-logo', [
+              h('i.icon.icon-logo'),
+              h('i.material-icons.icon-logo-beside', 'keyboard_arrow_down')
+            ])
           ])
         ])
-      ])
-    ]);
+      ]);
+    } else {
+      return h('div.main-menu', [
+        h('div.main-menu-logo', {
+          onClick: () => history.push('/')
+        }, [
+          h('i.icon.icon-logo')
+        ])
+      ]);
+    }
 
   }
 }

@@ -40,9 +40,23 @@
   color: #000;
 }
 
-.share-view-header .icon-twitter {
+.share-view-header .icon-t {
   font-size: 3.125em;
   opacity: 0.66;
+}
+
+.editor-tweet-button {
+  height: 2.5em;
+  padding: 0;
+  width: 2.5em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.editor-tweet-button .icon {
+  font-size: 1.66em;
 }
 
 .share-view-footer {

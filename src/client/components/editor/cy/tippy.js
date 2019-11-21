@@ -6,6 +6,7 @@ import ParticipantInfo from '../../element-info/participant-info';
 import tippyjs from 'tippy.js';
 import _ from 'lodash';
 import { tippyDefaults } from '../../../defs';
+import { emitter as popoverEmitter } from '../../popover/popover';
 
 export default function({ bus, cy, document }){
   let isSmallScreen = () => window.innerWidth <= 650;
@@ -15,6 +16,8 @@ export default function({ bus, cy, document }){
 
     cy.elements().forEach( el => hideTippy(el, event, list) );
   };
+
+  let hideAllPopovers = () => popoverEmitter.emit('hide');
 
   bus.on('closetip', function( el ){
     if( el != null ){
@@ -63,6 +66,7 @@ export default function({ bus, cy, document }){
   cy.on('tap', e => {
     if( e.target === cy ){
       hideAllTippies();
+      hideAllPopovers();
     }
   });
 

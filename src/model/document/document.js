@@ -6,6 +6,7 @@ import ElementCache from '../element-cache';
 import ElementFactory from '../element';
 import { assertOneOfFieldsDefined, mixin, getId, makeCyEles, getCyLayoutOpts, isNonNil, tryPromise } from '../../util';
 import Cytoscape from 'cytoscape';
+import { TWITTER_ACCOUNT_NAME } from '../../config';
 
 const DEFAULTS = Object.freeze({
   // data
@@ -137,6 +138,14 @@ class Document {
 
   setTweetMetadata(tweet){
     this.syncher.update('tweet', tweet);
+  }
+
+  tweetUrl(){
+    if( !this.hasTweet() ){ return null; }
+
+    const tweet = this.tweetMetadata();
+
+    return `https://twitter.com/${TWITTER_ACCOUNT_NAME}/status/${tweet.id_str}`;
   }
 
   cache(){

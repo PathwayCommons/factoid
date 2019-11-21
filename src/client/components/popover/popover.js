@@ -10,7 +10,9 @@ import EventEmitter from 'eventemitter3';
 
 const emitter = new EventEmitter();
 
-Mousetrap.bind('escape', () => emitter.emit('esc'));
+Mousetrap.bind('escape', () => {
+  emitter.emit('hide');
+});
 
 class Popover extends React.Component {
   constructor( props ){
@@ -62,7 +64,7 @@ class Popover extends React.Component {
     this.hideTippy = () => tippy.hide();
     this.destroyTippy = () => tippy.destroy();
 
-    emitter.on('esc', this.hideTippy);
+    emitter.on('hide', this.hideTippy);
 
     // the tippy hide on click doesn't work with react
     if( rawTippyOptions.hideOnClick ){
@@ -93,7 +95,7 @@ class Popover extends React.Component {
       document.body.removeEventListener('click', this.onBodyClick);
     }
 
-    emitter.removeListener('esc', this.hideTippy);
+    emitter.removeListener('hide', this.hideTippy);
 
     ReactDom.unmountComponentAtNode( this.content );
 
@@ -106,3 +108,4 @@ class Popover extends React.Component {
 }
 
 export default Popover;
+export { emitter };

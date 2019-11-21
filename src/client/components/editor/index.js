@@ -4,6 +4,7 @@ import h from 'react-hyperscript';
 import EventEmitter from 'eventemitter3';
 import io from 'socket.io-client';
 import _ from 'lodash';
+import Mousetrap from 'mousetrap';
 
 import { DEMO_ID, DEMO_SECRET, DEMO_JOURNAL_NAME, DEMO_AUTHOR, DEMO_TITLE } from '../../../config';
 
@@ -25,6 +26,12 @@ import { ShareView } from '../share';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
+
+const keyEmitter = new EventEmitter();
+
+Mousetrap.bind('escape', () => {
+  keyEmitter.emit('escape');
+});
 
 class Editor extends DataComponent {
   constructor( props ){
@@ -132,10 +139,16 @@ class Editor extends DataComponent {
       showHelp = true;
     }
 
-    // TODO remove this line -- for testing only
+    // help is always shown for now
     showHelp = true;
 
-    localStorage.setItem('showHelp', false);
+    this.hideHelp = () => {
+      if( this.data.showHelp ){
+        this.toggleHelp();
+      }
+    };
+
+    localStorage.setItem('showHelp', showHelp);
 
     this.data = ({
       bus: bus,
@@ -185,7 +198,7 @@ class Editor extends DataComponent {
       .then( () => doc.synch(true) )
       .then( () => logger.info('Document synch active') )
       .then( () => {
-        this.setData({ initted: true });
+        this.setData({ initted: true, showHelp: this.data.document.editable() });
 
         logger.info('The editor is initialising');
       } )
@@ -483,16 +496,24 @@ class Editor extends DataComponent {
         ])
       ]),
       h('div.editor-main-menu', [
-        h(MainMenu, { bus, document, history, networkEditor: true })
+        h(MainMenu, { bus, document, history })
       ]),
       h('div.editor-share', {
 
       }, [
-        h(Popover, { tippy: { html: h(ShareView, { cy, document, bus } ) } }, [
-          h('button.editor-share-button.super-salient-button', {
-            onClick: () => bus.emit('toggleshare')
-          }, 'Share')
-        ])
+        document.editable() ? (
+          h(Popover, { tippy: { html: h(ShareView, { cy, document, bus } ) } }, [
+            h('button.editor-share-button.super-salient-button', {
+              onClick: () => bus.emit('toggleshare')
+            }, 'Share')
+          ])
+        ) : (
+          !document.hasTweet() ? null : h('a', { href: document.tweetUrl() }, [
+            h('button.editor-tweet-button.super-salient-button', [
+              h('i.icon.icon-t-white')
+            ])
+          ])
+        )
       ]),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
       h(UndoRemove, { controller, document, bus }),
@@ -553,6 +574,8 @@ class Editor extends DataComponent {
 
   componentDidMount(){
     this.data.mountDeferred.resolve();
+
+    keyEmitter.on('escape', this.hideHelp);
   }
 
   componentWillUnmount(){
@@ -568,6 +591,8 @@ class Editor extends DataComponent {
     document.removeAllListeners();
     bus.removeAllListeners();
     clearTimeout( this.rmAvailTimeout );
+
+    keyEmitter.removeListener('escape', this.hideHelp);
   }
 }
 

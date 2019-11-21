@@ -9,8 +9,12 @@
     background-image: url('./image/logo.svg');
   }
 
-  &.icon-twitter {
+  &.icon-t {
     background-image: url('./image/icon-twitter.svg');
+  }
+
+  &.icon-t-white {
+    background-image: url('./image/icon-twitter-white.svg');
   }
 
   &.icon-arrow-positive {

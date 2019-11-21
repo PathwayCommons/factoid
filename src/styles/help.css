@@ -50,6 +50,7 @@
   width: 100vw;
   width: calc(100vw - 2em);
   max-width: 800px;
+  max-height: 100%;
   border: 1px solid var(--widgetBorderColor);
   background: #fff;
   border-radius: 0.25em;
@@ -57,6 +58,8 @@
   box-shadow: 0 4px 20px 4px rgba(0, 20, 60, 0.2), 0 4px 80px -8px rgba(0, 20, 60, 0.3);
   pointer-events: all;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .editor-help-title {
@@ -95,8 +98,7 @@
 
 .editor-scroll-box {
   overflow: auto;
-  max-height: 70vh;
-  max-height: calc(100vh - 10em);
+  flex-grow: 1;
 }
 
 .editor-help-cell {

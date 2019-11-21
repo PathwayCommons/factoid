@@ -4,9 +4,7 @@ import makeStylesheet from './stylesheet';
 import handleLayout from './layout';
 import handleViewport from './viewport';
 import addEdgehandles from './edgehandles';
-import addCxtMenu from './cxtmenu';
 import addTippy from './tippy';
-import addAutomove from './automove';
 import addCompoundDnd from './compound-dnd';
 import handleDoc from './doc';
 import debug from '../../../debug';
@@ -38,8 +36,6 @@ function makeCytoscape( opts ){
     addEdgehandles,
     addTippy,
     handleDoc,
-    addAutomove,
-    addCxtMenu,
     addCompoundDnd
   ].forEach( fn => fn( handleOpts ) );
 

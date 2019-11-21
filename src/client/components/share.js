@@ -94,7 +94,7 @@ class ShareView extends DataComponent {
       return h('div.share-view.share-view-form', [
         h('div.share-view-header', [
           h('div.share-view-header-icon-area', [
-            h('i.icon.icon-twitter')
+            h('i.icon.icon-t')
           ]),
           h('div.share-view-header-text', [
             h('h3', `Share to Twitter`),
@@ -127,7 +127,7 @@ class ShareView extends DataComponent {
         h('p', [
           h('a', {
             target: '_blank',
-            href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}/status/${tweet.id_str}`
+            href: document.tweetUrl()
           }, [
             h('button.share-view-button.super-salient-button', 'Open in Twitter')
           ])

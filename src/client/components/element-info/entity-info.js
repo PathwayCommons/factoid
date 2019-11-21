@@ -504,7 +504,7 @@ class EntityInfo extends DataComponent {
           ])
         ]) );
       } else {
-        children.push( h('div.entity-info-assoc', allAssoc( assoc )) );
+        children.push( h('div.entity-info-assoc', allAssoc( assoc, true, false )) );
       }
     } else {
       let placeholder;

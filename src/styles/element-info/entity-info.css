@@ -6,13 +6,13 @@
   width: 100%;
 }
 
-.entity-info-assoc {
-  margin-top: 1em;
+.entity-info-name-input-area {
   margin-bottom: 1em;
 }
 
 .entity-info-assoc-manual {
   text-align: center;
+  margin-top: 1em;
 }
 
 .entity-info-name-clear-disabled {

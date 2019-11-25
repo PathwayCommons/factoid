@@ -5,6 +5,7 @@ import _ from 'lodash';
 import uuid from 'uuid';
 import fetch from 'node-fetch';
 import cytosnap from 'cytosnap';
+import emailRegex from 'email-regex';
 import Twitter from 'twitter';
 
 import { tryPromise, makeStaticStylesheet } from '../../../../util';
@@ -79,10 +80,9 @@ let loadTables = () => Promise.all( tables.map( loadTable ) ).then( dbInfos => (
 
 let getDocJson = doc => doc.json();
 
-const re_email = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const fillDocCorrespondence = async ( doc, authorEmail, isCorrespondingAuthor, context ) => {
   try {
-    if( !re_email.test( authorEmail ) ) throw new TypeError( 'Could not detect an email' );
+    if( !emailRegex({exact: true}).test( authorEmail ) ) throw new TypeError( 'Could not detect an email' );
     doc.correspondence( { authorEmail, isCorrespondingAuthor, context } );
   } catch ( error ){
     doc.issues({ authorEmail: `${error.message}` });

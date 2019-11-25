@@ -6,11 +6,8 @@ import ElementCache from '../element-cache';
 import ElementFactory from '../element';
 import { assertOneOfFieldsDefined, mixin, getId, makeCyEles, getCyLayoutOpts, isNonNil, tryPromise } from '../../util';
 import Cytoscape from 'cytoscape';
-<<<<<<< HEAD
 import { TWITTER_ACCOUNT_NAME } from '../../config';
-=======
 import { getPubmedCitation } from '../../util/pubmed'; 
->>>>>>> Pubmed integration backend changes.
 
 const DEFAULTS = Object.freeze({
   // data

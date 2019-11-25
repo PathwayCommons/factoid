@@ -335,10 +335,10 @@ const checkApiKey = (apiKey) => {
 };
 
 // delete the demo doc
-http.delete('/demo', function(req, res, next){
+http.delete('/:secret', function(req, res, next){
+  let secret = req.params.secret;
   let { apiKey } = req.body;
-  let secret = DEMO_SECRET;
-
+  
   let clearDemoRows = db => db.table.filter({ secret }).delete().run(db.conn);
 
   ( tryPromise(() => checkApiKey(apiKey))

@@ -6,7 +6,7 @@ import io from 'socket.io-client';
 import _ from 'lodash';
 import Mousetrap from 'mousetrap';
 
-import { DEMO_ID, DEMO_SECRET, DEMO_JOURNAL_NAME, DEMO_AUTHOR, DEMO_TITLE } from '../../../config';
+import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL, EMAIL_CONTEXT_SIGNUP } from '../../../config';
 
 import { getId, defer, makeClassList, tryPromise } from '../../../util';
 import Document from '../../../model/document';
@@ -118,7 +118,7 @@ class Editor extends DataComponent {
       doc.interactions().concat( doc.complexes() ).forEach( listenForRmPpt );
 
       let docs = JSON.parse(localStorage.getItem('documents')) || [];
-      let docData = { id: doc.id(), secret: doc.secret(), name: doc.title() };
+      let docData = { id: doc.id(), secret: doc.secret(), name: doc.citation().title };
 
       if( _.find(docs,  docData) == null ){
         docs.push(docData);
@@ -174,15 +174,16 @@ class Editor extends DataComponent {
         if( id === DEMO_ID && secret === DEMO_SECRET ){
           logger.info(`Creating demo document with ID ${id}`);
 
-          let createDemoDoc = () => fetch('/api/document/demo', {
+          let createDemoDoc = () => fetch('/api/document', {
             method: 'POST',
             headers: {
               'content-type': 'application/json'
             },
             body: JSON.stringify({
-              journalName: DEMO_JOURNAL_NAME,
-              title: DEMO_TITLE,
-              authors: DEMO_AUTHOR
+              paperId: DEMO_ID,
+              authorEmail: DEMO_AUTHOR_EMAIL,
+              isCorrespondingAuthor: true,
+              context: EMAIL_CONTEXT_SIGNUP
             })
           });
           let reloadDoc = () => doc.load();
@@ -469,29 +470,15 @@ class Editor extends DataComponent {
     let controller = this;
     let { history } = this.props;
 
-    const formatTitle = ( authors, journalName ) => {
-      const tokens = [];
-      if( authors ){
-        const authorList = authors.split(',');
-        tokens.push( authorList.shift() );
-        if( authorList.length ){
-          authorList.length === 1 ? tokens.push(` & `) :  tokens.push(` ... `);
-          tokens.push(`${authorList.pop()}`);
-        }
-        if( journalName ) tokens.push(' | ');
-      }
-      tokens.push( journalName );
-      return tokens.join('');
-    };
-
-    const title = formatTitle( document.authors(), document.journalName() );
+    const { authors, title = 'Unnamed document', reference } = document.citation();
 
     let editorContent = this.data.initted ? [
       h('div.editor-title', [
         h('div.editor-title-content', [
-          h('div.editor-title-name', document.title() || 'Unnamed document'),
+          h('div.editor-title-name', title ),
           h('div.editor-title-info', [
-            h('span', title )
+            h('div', authors ),
+            h('div', reference )
           ])
         ])
       ]),

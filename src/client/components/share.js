@@ -88,6 +88,7 @@ class ShareView extends DataComponent {
     const { submitting, submitted } = this.data;
     const hasSavedTweet = document.hasTweet();
     const isAlwaysTweetableDemo = document.id() === DEMO_ID && DEMO_CAN_BE_SHARED && DEMO_CAN_BE_SHARED_MULTIPLE_TIMES;
+    const {  title = 'Unnamed document', reference } = document.citation();
 
     if( !submitted && (!hasSavedTweet || isAlwaysTweetableDemo) ){
       return h('div.share-view.share-view-form', [
@@ -110,8 +111,8 @@ class ShareView extends DataComponent {
             placeholder: `Type your ${MAX_TWEET_LENGTH}-character caption here`
           }),
           h('div.share-view-image'),
-          h('div.share-view-title', document.title()),
-          h('div.share-view-description', document.reference())
+          h('div.share-view-title', title ),
+          h('div.share-view-description', reference )
         ]),
         h('div.share-view-footer', [
           h('button.share-view-button.share-view-submit.super-salient-button', {

@@ -87,8 +87,6 @@ export const MAX_TWEET_LENGTH = env('MAX_TWEET_LENGTH', 150);
 // Demo
 export const DEMO_ID = env('DEMO_ID', 'demo');
 export const DEMO_SECRET = env('DEMO_SECRET', 'demo');
-export const DEMO_JOURNAL_NAME = env('DEMO_JOURNAL_NAME', 'Journal of Example');
-export const DEMO_AUTHOR = env('DEMO_AUTHOR', 'John Doe');
-export const DEMO_TITLE = env('DEMO_TITLE', 'Lorem ipsum dolor sit amet');
+export const DEMO_AUTHOR_EMAIL = env('DEMO_AUTHOR_EMAIL', 'author@example.com');
 export const DEMO_CAN_BE_SHARED = env('DEMO_CAN_BE_SHARED', false);
 export const DEMO_CAN_BE_SHARED_MULTIPLE_TIMES = env('DEMO_CAN_BE_SHARED_MULTIPLE_TIMES', false);

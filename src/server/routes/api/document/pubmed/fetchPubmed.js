@@ -2,6 +2,7 @@ import _ from 'lodash';
 import xml2js from 'xml2js';
 import queryString from 'query-string';
 import fetch from 'node-fetch';
+import emailRegex from 'email-regex';
 
 import { NCBI_EUTILS_BASE_URL, NCBI_EUTILS_API_KEY } from '../../../../../config';
 
@@ -14,7 +15,6 @@ const DEFAULT_EFETCH_PARAMS = {
   api_key: NCBI_EUTILS_API_KEY
 };
 
-const re_email = /(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/g;
 const notNull = o => !_.isNull(o) ;
 
 const getTextField = param => {
@@ -30,8 +30,8 @@ const getTextField = param => {
 //<!ELEMENT	AbstractText   (%text; | mml:math | DispFormula)* >
 const getAbstract = Article => _.get( Article, ['Abstract', '0', 'AbstractText'] ).map( getTextField  );
 
-const hasEmail = token => token.search( re_email ) > -1;
-const getEmail = token => hasEmail(token) ? token.match( re_email ): null;
+const hasEmail = token => emailRegex().test( token );
+const getEmail = token => hasEmail( token ) ? token.match( emailRegex() ): null;
 const getAffiliation = AffiliationInfo => {
   const Affiliation = _.get( AffiliationInfo, ['Affiliation', '0'] );
   const email = getEmail( Affiliation );

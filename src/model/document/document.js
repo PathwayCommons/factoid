@@ -7,6 +7,7 @@ import ElementFactory from '../element';
 import { assertOneOfFieldsDefined, mixin, getId, makeCyEles, getCyLayoutOpts, isNonNil, tryPromise } from '../../util';
 import Cytoscape from 'cytoscape';
 import { TWITTER_ACCOUNT_NAME } from '../../config';
+import { getPubmedCitation } from '../../util/pubmed'; 
 
 const DEFAULTS = Object.freeze({
   // data
@@ -14,20 +15,10 @@ const DEFAULTS = Object.freeze({
   organisms: [], // list of ids
 
   // metadata
-  submitted: false,
-  journalName: '',
-  title: '',
-  authors: '',
-  abstract: '',
-  text: '',
-  trackingId: '',
-  contributorName: '',
-  contributorEmail: '',
-  editorName: '',
-  editorEmail: ''
+  submitted: false
 });
 
-const METADATA_FIELDS = ['journalName', 'title', 'authors', 'abstract', 'text', 'trackingId', 'contributorName', 'contributorEmail', 'editorName', 'editorEmail'];
+const METADATA_FIELDS = ['provided', 'issues', 'article', 'correspondence'];
 
 /**
 A document that contains a set of biological elements (i.e. entities and interactions).
@@ -170,23 +161,6 @@ class Document {
     } );
   }
 
-  rename( newName ){
-    let updatePromise = this.syncher.update( 'title', newName );
-
-    this.emit( 'rename', newName );
-    this.emit( 'localrename', newName );
-
-    return updatePromise;
-  }
-
-  title( newName ){
-    if( newName != null ){
-      return this.rename( newName );
-    } else {
-      return this.syncher.get('title');
-    }
-  }
-
   // helper for get/set of simple paper metadata
   rwMeta(field, newVal){
     if( newVal != null ){
@@ -203,44 +177,21 @@ class Document {
     }
   }
 
-  journalName(newName){
-    return this.rwMeta('journalName', newName);
+  article(newVal){
+    return this.rwMeta('article', newVal);
   }
 
-  authors(newNames){
-    return this.rwMeta('authors', newNames);
+  issues(newVal){
+    const issues = this.rwMeta('issues');
+    return newVal ? this.rwMeta('issues', _.merge( issues, newVal )): issues;
   }
 
-  contributorName(newName){
-    return this.rwMeta('contributorName', newName);
+  correspondence(newVal){
+    return this.rwMeta('correspondence', newVal);
   }
 
-  contributorEmail(newEmail){
-    return this.rwMeta('contributorEmail', newEmail);
-  }
-
-  editorName(newName){
-    return this.rwMeta('editorName', newName);
-  }
-
-  editorEmail(newEmail){
-    return this.rwMeta('editorEmail', newEmail);
-  }
-
-  trackingId(newId){
-    return this.rwMeta('trackingId', newId);
-  }
-
-  abstract(newAbstract){
-    return this.rwMeta('abstract', newAbstract);
-  }
-
-  text(newText){
-    return this.rwMeta('text', newText);
-  }
-
-  reference(){
-    return 'TODO reference -- needs metadata rework';
+  citation(){
+    return getPubmedCitation( this.article() );
   }
 
   entities(){
@@ -428,14 +379,12 @@ class Document {
     return _.assign({
       id: this.id(),
       secret: this.secret(),
-      title: this.title(),
-      summary: this.toText(),
       organisms: this.organisms(),
       elements: this.elements().map( toJson ),
       publicUrl: this.publicUrl(),
       privateUrl: this.privateUrl(),
       submitted: this.submitted(),
-      reference: this.reference()
+      citation: this.citation()
     }, _.pick(this.syncher.get(), METADATA_FIELDS));
   }
 

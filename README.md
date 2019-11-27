@@ -57,6 +57,7 @@ Sharing:
 
 - `DOCUMENT_IMAGE_WIDTH` : tweet card image width
 - `DOCUMENT_IMAGE_HEIGHT` : tweet card image height
+- `DOCUMENT_IMAGE_PADDING` : padding around tweet card image (prevents twitter cropping issues)
 - `TWITTER_ACCOUNT_NAME` : twitter account visible on card
 - `TWITTER_CONSUMER_KEY` : twitter api key
 - `TWITTER_CONSUMER_SECRET` : twitter api secret

@@ -27,7 +27,8 @@ import { BASE_URL,
   TWITTER_CONSUMER_SECRET,
   TWITTER_ACCESS_TOKEN_KEY,
   TWITTER_ACCESS_TOKEN_SECRET,
-  DEMO_CAN_BE_SHARED } from '../../../../config';
+  DEMO_CAN_BE_SHARED,
+  DOCUMENT_IMAGE_PADDING } from '../../../../config';
 
 const http = Express.Router();
 
@@ -247,6 +248,7 @@ http.get('/(:id).png', function( req, res, next ){
   const cyStylesheet = makeStaticStylesheet();
   const imageWidth = DOCUMENT_IMAGE_WIDTH;
   const imageHeight = DOCUMENT_IMAGE_HEIGHT;
+  const imagePadding = DOCUMENT_IMAGE_PADDING;
 
   res.setHeader('content-type', 'image/png');
 
@@ -269,7 +271,7 @@ http.get('/(:id).png', function( req, res, next ){
         layout: {
           name: 'preset',
           fit: true,
-          padding: 5
+          padding: imagePadding
         },
         format: 'png',
         resolvesTo: 'stream',

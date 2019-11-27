@@ -34,7 +34,7 @@ const http = Express.Router();
 
 const snap = cytosnap({
   puppeteer: {
-    args: ['--disable-dev-shm-usage', '--no-sandbox', '--disable-setuid-sandbox', '--no-zygote']
+    args: ['--headless', '--disable-dev-shm-usage', '--no-sandbox', '--disable-setuid-sandbox', '--no-zygote']
   }
 });
 

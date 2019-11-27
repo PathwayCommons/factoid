@@ -31,7 +31,12 @@ import { BASE_URL,
 
 const http = Express.Router();
 
-const snap = cytosnap();
+const snap = cytosnap({
+  puppeteer: {
+    args: ['--disable-dev-shm-usage', '--no-sandbox', '--disable-setuid-sandbox', '--no-zygote']
+  }
+});
+
 const snapStartPromise = snap.start();
 
 const startCytosnap = () => snapStartPromise;

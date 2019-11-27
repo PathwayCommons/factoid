@@ -3,7 +3,6 @@
   "private": true,
   "browserslist": "edge >=12, firefox >=40, chrome >=40, safari 9",
   "scripts": {
-    "postinstall": "run-s build",
     "start": "node -r esm ./src/server",
     "inspect": "node -r esm --inspect-brk ./src/server",
     "lint:js": "eslint ./src",

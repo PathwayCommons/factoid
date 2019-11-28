@@ -106,11 +106,20 @@ class Editor extends DataComponent {
       el.removeAllListeners(); // just to make sure that we don't have dangling listeners causing issues
     });
 
+    const updateLastEditDate = _.debounce(() => {
+      doc.updateLastEditedDate();
+    }, 1000);
+
     doc.on('add', el => {
       if( el.isInteraction() || el.isComplex() ){
         listenForRmPpt( el );
       }
+
+      el.on('localupdate', updateLastEditDate);
     });
+
+    doc.on('localadd', updateLastEditDate);
+    doc.on('localremove', updateLastEditDate);
 
     doc.on('submit', () => this.dirty());
 

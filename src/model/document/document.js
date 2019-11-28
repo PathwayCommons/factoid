@@ -7,7 +7,8 @@ import ElementFactory from '../element';
 import { assertOneOfFieldsDefined, mixin, getId, makeCyEles, getCyLayoutOpts, isNonNil, tryPromise } from '../../util';
 import Cytoscape from 'cytoscape';
 import { TWITTER_ACCOUNT_NAME } from '../../config';
-import { getPubmedCitation } from '../../util/pubmed'; 
+import { getPubmedCitation } from '../../util/pubmed';
+import { formatISO, parseISO } from 'date-fns';
 
 const DEFAULTS = Object.freeze({
   // data
@@ -18,7 +19,7 @@ const DEFAULTS = Object.freeze({
   submitted: false
 });
 
-const METADATA_FIELDS = ['provided', 'issues', 'article', 'correspondence'];
+const METADATA_FIELDS = ['provided', 'issues', 'article', 'correspondence', 'lastEditedDate'];
 
 /**
 A document that contains a set of biological elements (i.e. entities and interactions).
@@ -192,6 +193,18 @@ class Document {
 
   citation(){
     return getPubmedCitation( this.article() );
+  }
+
+  lastEditedDate(){
+    const dateVal = this.rwMeta('lastEditedDate');
+
+    return parseISO(dateVal);
+  }
+
+  updateLastEditedDate(){
+    const dateVal = formatISO(new Date());
+
+    return this.rwMeta('lastEditedDate', dateVal);
   }
 
   entities(){
@@ -384,7 +397,8 @@ class Document {
       publicUrl: this.publicUrl(),
       privateUrl: this.privateUrl(),
       submitted: this.submitted(),
-      citation: this.citation()
+      citation: this.citation(),
+      lastEditedDate: this.lastEditedDate()
     }, _.pick(this.syncher.get(), METADATA_FIELDS));
   }
 

@@ -1,7 +1,5 @@
 import _ from 'lodash';
 import * as defs from './defs';
-import { parse, isAfter, subSeconds } from 'date-fns';
-const date = { parse, isAfter, subSeconds };
 import onKey from './on-key';
 import { isInteractionNode, makeCyEles, cyUpdateParent, tryPromise } from '../../../../util';
 
@@ -339,31 +337,6 @@ function listenToDoc({ bus, cy, document, controller }){
     onDoc( this, (/*docEl*/) => {
       // not needed for binary interactions
     } );
-  };
-
-  let animateAdd = function( docEl, el ){ // eslint-disable-line no-unused-vars
-    let timestamp = docEl.creationTimestamp();
-    let whenCreated = timestamp == null ? null : date.parse( timestamp );
-    let cutoff = date.subSeconds( Date.now(), 5 );
-    let isNew = whenCreated != null && date.isAfter( whenCreated, cutoff );
-
-    if( isNew ){
-      if( docEl.isInteraction() && el.isNode() ){
-        el.style({ 'opacity': 0 });
-
-        Promise.delay( defs.addRmAnimationDuration ).then( () => {
-          el.removeStyle('opacity');
-        } );
-      } else {
-        el.style({ 'opacity': 0 }).animation({
-          style: { 'opacity': 1 },
-          duration: defs.addRmAnimationDuration,
-          easing: defs.addRmAnimationEasing
-        }).play().promise().then( () => {
-          el.removeStyle('opacity');
-        } );
-      }
-    }
   };
 
   let animateRm = function( el ){

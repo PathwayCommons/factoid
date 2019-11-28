@@ -16,10 +16,12 @@ const DEFAULTS = Object.freeze({
   organisms: [], // list of ids
 
   // metadata
-  submitted: false
+  submitted: false,
+  approved: false,
+  createdDate: formatISO(new Date())
 });
 
-const METADATA_FIELDS = ['provided', 'issues', 'article', 'correspondence', 'lastEditedDate'];
+const METADATA_FIELDS = ['provided', 'issues', 'article', 'correspondence', 'lastEditedDate', 'createdDate'];
 
 /**
 A document that contains a set of biological elements (i.e. entities and interactions).
@@ -195,6 +197,12 @@ class Document {
     return getPubmedCitation( this.article() );
   }
 
+  createdDate(){
+    const dateVal = this.rwMeta('createdDate');
+
+    return parseISO(dateVal);
+  }
+  
   lastEditedDate(){
     const dateVal = this.rwMeta('lastEditedDate');
 

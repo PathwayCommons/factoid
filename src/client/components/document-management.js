@@ -16,7 +16,7 @@ import {
   EMAIL_CONTEXT_SIGNUP
 } from '../../config' ;
 //import { tryPromise } from '../../util';
-import MainMenu from './main-menu';
+// import MainMenu from './main-menu';
 
 const DATE_FORMAT = 'MMMM-dd-yyyy';
 const getTimeSince = dateString => formatDistanceToNow( new Date( dateString ), { addSuffix: true } );
@@ -137,52 +137,11 @@ class DocumentManagement extends React.Component {
   }
 
   render(){
-    let { history } = this.props;
+    // let { history } = this.props;
     let { docs, validApiKey } = this.state;
     
-    const lastModDate = doc => {
-      const sorted = _.sortBy( doc._ops, [o => new Date( _.get( o , 'timestamp' ) )] );
-      return _.get( _.last( sorted ), 'timestamp' );
-    };
-
-    // TODO --- Do all data mapping in one place but should update doc with some of this stuff
-    const dataFromDoc = doc => {
-      const data = {
-        article: {
-          title: _.get( doc, 'title' ),
-          authors: _.get( doc, 'authors' ).split(','),
-          journal: _.get( doc, 'journalName' ),
-          articleUrl: `${PUBMED_LINK_BASE_URL}${_.get( doc, 'trackingId' )}`,
-          volume: '',
-          issue: '',
-          pubDate: '' //timestamp
-        },
-        network: {
-          summaryPath: `/document/${doc.id}`,
-          editablePath: `/document/${doc.id}/${doc.secret}`
-        },
-        correspondence: {
-          email: {
-            name: '',
-            address: _.get( doc, 'contributorEmail' )
-          },
-          mailOpts: msgFactory( doc ),
-          context: '', // config constants like 'journal', 'signup' etc.
-          invite: '', // timestamp
-          reminder: '', // timestamp
-          submit: '' // timestamp
-        },
-        status: {
-          created: doc._creationTimestamp,
-          modified: lastModDate( doc ),
-          submitted: _.get( doc, 'submitted', false )
-        }
-      };
-      return Object.freeze( data );
-    };
-
     const header = h('div.page-content-title', [
-      h( MainMenu, { history, admin: true } ),
+      // h( MainMenu, { history, admin: true } ),
       h('h1', 'Document management panel')
     ]);
 
@@ -201,96 +160,96 @@ class DocumentManagement extends React.Component {
         }, 'Submit' )
       ]);
 
-    // Article
-    const getDocumentArticle = article => {
-      const { title, articleUrl, authors, journal } = article;
-      return  [
-        h('h3', [
-          h( 'a.plain-link', {
-            href: articleUrl,
-            target: '_blank'
-          }, title )
-        ] ),
-        h( 'span', [
-          h('p', authors ),
-          h('p', [
-            h( 'span', journal )
-          ])
-        ])
-      ];
-    };
+    // // Article
+    // const getDocumentArticle = article => {
+    //   const { title, articleUrl, authors, journal } = article;
+    //   return  [
+    //     h('h3', [
+    //       h( 'a.plain-link', {
+    //         href: articleUrl,
+    //         target: '_blank'
+    //       }, title )
+    //     ] ),
+    //     h( 'span', [
+    //       h('p', authors ),
+    //       h('p', [
+    //         h( 'span', journal )
+    //       ])
+    //     ])
+    //   ];
+    // };
 
-    // Network
-    const getDocumentNetwork = network => {
-      const { summaryPath, editablePath } = network;
-      return [
-        h( 'div.document-management-horizontal-list', [
-          h( 'div.document-management-text-label', ''),
-          h( 'ul', [
-            h( 'li', [
-              h( Link, {
-                to: summaryPath,
-                target: '_blank',
-              }, 'Summary' )
-            ]),
-            h( 'li', [
-              h( Link, {
-                to: editablePath,
-                target: '_blank'
-              }, 'Editable' )
-            ])
-          ])
-        ])
-      ];
-    };
+    // // Network
+    // const getDocumentNetwork = network => {
+    //   const { summaryPath, editablePath } = network;
+    //   return [
+    //     h( 'div.document-management-horizontal-list', [
+    //       h( 'div.document-management-text-label', ''),
+    //       h( 'ul', [
+    //         h( 'li', [
+    //           h( Link, {
+    //             to: summaryPath,
+    //             target: '_blank',
+    //           }, 'Summary' )
+    //         ]),
+    //         h( 'li', [
+    //           h( Link, {
+    //             to: editablePath,
+    //             target: '_blank'
+    //           }, 'Editable' )
+    //         ])
+    //       ])
+    //     ])
+    //   ];
+    // };
 
-     // Correspondence
-     const getDocumentCorrespondence = ( correspondence, status ) => {
-      const { email, mailOpts } = correspondence;
-      const { submitted } = status;
-      return [
-        h( 'div.document-management-horizontal-list', [
-          h( 'div.document-management-text-label', `Correspondence (${email.address})`),
-          h( 'ul', [
-            h( 'li', [
-              h( 'button', {
-                disabled: submitted,
-                onClick: () => this.handleEmail( mailOpts )
-              }, 'Email Invite' )
-            ])
-          ])
-        ])
-      ];
-    };
+    //  // Correspondence
+    //  const getDocumentCorrespondence = ( correspondence, status ) => {
+    //   const { email, mailOpts } = correspondence;
+    //   const { submitted } = status;
+    //   return [
+    //     h( 'div.document-management-horizontal-list', [
+    //       h( 'div.document-management-text-label', `Correspondence (${email.address})`),
+    //       h( 'ul', [
+    //         h( 'li', [
+    //           h( 'button', {
+    //             disabled: submitted,
+    //             onClick: () => this.handleEmail( mailOpts )
+    //           }, 'Email Invite' )
+    //         ])
+    //       ])
+    //     ])
+    //   ];
+    // };
 
-    // Document Header & Footer
-    const getDocumentHeader = status => [
-      h( 'i.material-icons', {
-        className: makeClassList({ 'on-submit': !status.submitted })
-      }, 'check_circle' )
-    ];
-    const getDocumentStatus = status => {
-      const { created, modified } = status;
-      return [
-        h( 'ul.mute', [
-          h( 'li', { key: 'created' }, `Created ${toPeriodOrDate( created )}` ),
-          h( 'li', { key: 'modified' }, `Modified ${toPeriodOrDate( modified )}` )
-        ])
-      ];
-    };
+    // // Document Header & Footer
+    // const getDocumentHeader = status => [
+    //   h( 'i.material-icons', {
+    //     className: makeClassList({ 'on-submit': !status.submitted })
+    //   }, 'check_circle' )
+    // ];
+    // const getDocumentStatus = status => {
+    //   const { created, modified } = status;
+    //   return [
+    //     h( 'ul.mute', [
+    //       h( 'li', { key: 'created' }, `Created ${toPeriodOrDate( created )}` ),
+    //       h( 'li', { key: 'modified' }, `Modified ${toPeriodOrDate( modified )}` )
+    //     ])
+    //   ];
+    // };
 
     const documentList = h( 'ul', sortByCreated( docs ).map( doc => {
-        const { article, network, correspondence, status } = dataFromDoc( doc );
+        // const { article, network, correspondence, status } = doc;
         return h( 'li', {
           className: makeClassList( { 'is-submitted': status.submitted } ),
           key: doc.id
         },
         [
-          h( 'div.document-management-document-meta', getDocumentHeader( status ) ),
-          h( 'div.document-management-document-section', getDocumentArticle( article ) ),
-          h( 'div.document-management-document-section', getDocumentNetwork( network ) ),
-          h( 'div.document-management-document-section', getDocumentCorrespondence( correspondence, status ) ),
-          h( 'div.document-management-document-meta', getDocumentStatus( status ) ),
+          // h( 'div.document-management-document-meta', getDocumentHeader( status ) ),
+          // h( 'div.document-management-document-section', getDocumentArticle( article ) ),
+          // h( 'div.document-management-document-section', getDocumentNetwork( network ) ),
+          // h( 'div.document-management-document-section', getDocumentCorrespondence( correspondence, status ) ),
+          // h( 'div.document-management-document-meta', getDocumentStatus( status ) ),
           h( 'hr' )
         ]);
       })

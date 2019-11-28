@@ -56,8 +56,8 @@ let newDoc = ({ docDb, eleDb, id, secret, provided }) => {
   } ) );
 };
 
-let loadDoc = ({ docDb, eleDb, id }) => {
-  let doc = newDoc({ docDb, eleDb, id });
+let loadDoc = ({ docDb, eleDb, id, secret }) => {
+  let doc = newDoc({ docDb, eleDb, id, secret });
 
   return doc.load().then( () => doc );
 };
@@ -209,17 +209,16 @@ http.get('/', function( req, res, next ){
 
       q = ( q
         .filter(r.row('secret').ne(DEMO_SECRET))
-        .pluck(['id'])
+        .pluck(['id', 'secret'])
       );
 
       return q.run(conn);
     })
     .then( cursor => cursor.toArray() )
     .then( res => { // map ids to full doc json
-      const ids = res.map(obj => obj.id);
-
-      return Promise.all(ids.map(id => {
-        let docOpts = _.assign( {}, tables, { id } );
+      return Promise.all(res.map(docDbJson => {
+        let { id, secret } = docDbJson;
+        let docOpts = _.assign( {}, tables, { id, secret } );
 
         return loadDoc(docOpts).then(getDocJson);
       }));
@@ -345,7 +344,7 @@ const checkApiKey = (apiKey) => {
 http.delete('/:secret', function(req, res, next){
   let secret = req.params.secret;
   let { apiKey } = req.body;
-  
+
   let clearDemoRows = db => db.table.filter({ secret }).delete().run(db.conn);
 
   ( tryPromise(() => checkApiKey(apiKey))

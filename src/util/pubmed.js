@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { PUBMED_LINK_BASE_URL } from '../config';
 
 const NUM_AUTHORS_SHOWING = 4;
 const getName = author => {
@@ -68,8 +69,11 @@ const getPubmedCitation = PubmedArticle => {
 
   const authors = getAuthorString( AuthorList ); 
   const reference = getReferenceString( Journal );
+  const abstract = _.get( Article, 'Abstract' );
+  const { id } = _.find( _.get( PubmedArticle, ['PubmedData', 'ArticleIdList'] ), o => o.IdType === 'pubmed' );
+  const url = PUBMED_LINK_BASE_URL + id;
 
-  return { authors, title, reference };
+  return { authors, title, reference, abstract, url };
 };
 
 export { getPubmedCitation }; 

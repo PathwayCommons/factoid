@@ -2,21 +2,20 @@ import _ from 'lodash';
 import React from 'react';
 import h from 'react-hyperscript';
 import queryString from 'query-string';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
+import io from 'socket.io-client';
 import { format, formatDistanceToNow, isThisWeek } from 'date-fns';
 
-import { makeClassList } from '../../util';
+import Document from '../../model/document';
+import { makeClassList, tryPromise } from '../../util';
 import {
   BASE_URL,
-  PUBMED_LINK_BASE_URL,
   EMAIL_FROM,
   EMAIL_FROM_ADDR,
   EMAIL_VENDOR_MAILJET,
   INVITE_TMPLID,
   EMAIL_CONTEXT_SIGNUP
 } from '../../config' ;
-//import { tryPromise } from '../../util';
-// import MainMenu from './main-menu';
 
 const DATE_FORMAT = 'MMMM-dd-yyyy';
 const getTimeSince = dateString => formatDistanceToNow( new Date( dateString ), { addSuffix: true } );
@@ -73,12 +72,42 @@ const msgFactory = doc => {
   return msgOpts;
 };
 
-const sortByCreated = docs => _.orderBy( docs, [ doc => new Date( _.get( doc, '_creationTimestamp' ) ) ], ['desc'] );
+const orderByCreatedDate = docs => _.orderBy( docs, [ doc => new Date( _.get( doc, ['status', 'createdDate'] ) ) ], ['desc'] );
+
+const toDocs = ( docJSON, docSocket, eleSocket ) => {
+  
+  const docPromises = docJSON.map( data => {
+    const { id, secret } = data;
+    const doc = new Document({
+      socket: docSocket,
+      factoryOptions: { socket: eleSocket },
+      data: { id, secret }
+    });
+
+    doc.on( 'load', () => console.log( 'loaded' ) );
+    
+    return tryPromise( () => doc.load() )
+      .then( () => doc.synch( true ) )
+      .then( () => doc );
+  });
+
+  return Promise.all( docPromises );
+};
 
 class DocumentManagement extends React.Component {
   constructor( props ){
     super( props );
 
+    // Live Sync
+    let docSocket = io.connect('/document');
+    this.docSocket = docSocket;
+    let eleSocket = io.connect('/element');
+    this.eleSocket = eleSocket;
+    let logSocketErr = (err) => logger.error('An error occurred during clientside socket communication', err);
+    docSocket.on('error', logSocketErr);
+    eleSocket.on('error', logSocketErr);
+    
+    // API Key
     const query = queryString.parse( this.props.history.location.search );
     const apiKey =  _.get( query, 'apiKey', '' );
 
@@ -98,9 +127,12 @@ class DocumentManagement extends React.Component {
     const url = '/api/document';
     const params = { apiKey };
     const paramsString = queryString.stringify( params );
+
     return fetch(`${url}?${paramsString}`)
       .then( res => res.json() )
+      .then( docJSON => toDocs( docJSON, this.docSocket, this.elSocket ) )
       .then( docs => new Promise( resolve => {
+        console.log( docs );
         this.setState({
           validApiKey: true, // no error means its good
           apiKey,
@@ -137,11 +169,9 @@ class DocumentManagement extends React.Component {
   }
 
   render(){
-    // let { history } = this.props;
     let { docs, validApiKey } = this.state;
     
     const header = h('div.page-content-title', [
-      // h( MainMenu, { history, admin: true } ),
       h('h1', 'Document management panel')
     ]);
 
@@ -160,24 +190,19 @@ class DocumentManagement extends React.Component {
         }, 'Submit' )
       ]);
 
-    // // Article
-    // const getDocumentArticle = article => {
-    //   const { title, articleUrl, authors, journal } = article;
-    //   return  [
-    //     h('h3', [
-    //       h( 'a.plain-link', {
-    //         href: articleUrl,
-    //         target: '_blank'
-    //       }, title )
-    //     ] ),
-    //     h( 'span', [
-    //       h('p', authors ),
-    //       h('p', [
-    //         h( 'span', journal )
-    //       ])
-    //     ])
-    //   ];
-    // };
+    // Article
+    const getDocumentArticle = doc => {
+      const { authors, title, reference, url } = doc.citation();
+      return  [
+        h('h3', [
+          h( 'a.plain-link', {
+            href: url,
+            target: '_blank'
+          }, title )
+        ] ),
+        h('p', `${authors}. ${reference}` )
+      ];
+    };
 
     // // Network
     // const getDocumentNetwork = network => {
@@ -222,34 +247,35 @@ class DocumentManagement extends React.Component {
     //   ];
     // };
 
-    // // Document Header & Footer
-    // const getDocumentHeader = status => [
-    //   h( 'i.material-icons', {
-    //     className: makeClassList({ 'on-submit': !status.submitted })
-    //   }, 'check_circle' )
-    // ];
-    // const getDocumentStatus = status => {
-    //   const { created, modified } = status;
-    //   return [
-    //     h( 'ul.mute', [
-    //       h( 'li', { key: 'created' }, `Created ${toPeriodOrDate( created )}` ),
-    //       h( 'li', { key: 'modified' }, `Modified ${toPeriodOrDate( modified )}` )
-    //     ])
-    //   ];
-    // };
+    // Document Header & Footer
+    const getDocumentHeader = status => [
+      h( 'i.material-icons', {
+        className: makeClassList({ 'on-submit': !status.submitted })
+      }, 'check_circle' )
+    ];
+    const getDocumentStatus = doc => {
+      const { createdDate, lastEditedDate } = doc.status();
+      console.log( new Date( createdDate ) );
+      console.log(lastEditedDate);
+      return [
+        h( 'ul.mute', [
+          h( 'li', { key: 'created' }, `Created ${createdDate}` ),
+          h( 'li', { key: 'modified' }, `Modified ${lastEditedDate}` )
+        ])
+      ];
+    };
 
-    const documentList = h( 'ul', sortByCreated( docs ).map( doc => {
-        // const { article, network, correspondence, status } = doc;
+    const documentList = h( 'ul', orderByCreatedDate( docs ).map( ( doc, i ) => {
         return h( 'li', {
           className: makeClassList( { 'is-submitted': status.submitted } ),
-          key: doc.id
+          key: i
         },
         [
           // h( 'div.document-management-document-meta', getDocumentHeader( status ) ),
-          // h( 'div.document-management-document-section', getDocumentArticle( article ) ),
+          h( 'div.document-management-document-section', getDocumentArticle( doc ) ),
           // h( 'div.document-management-document-section', getDocumentNetwork( network ) ),
           // h( 'div.document-management-document-section', getDocumentCorrespondence( correspondence, status ) ),
-          // h( 'div.document-management-document-meta', getDocumentStatus( status ) ),
+          h( 'div.document-management-document-meta', getDocumentStatus( doc ) ),
           h( 'hr' )
         ]);
       })

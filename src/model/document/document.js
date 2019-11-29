@@ -21,7 +21,7 @@ const DEFAULTS = Object.freeze({
   createdDate: formatISO(new Date())
 });
 
-const METADATA_FIELDS = ['provided', 'issues', 'article', 'correspondence', 'lastEditedDate', 'createdDate'];
+const METADATA_FIELDS = ['provided', 'article', 'correspondence'];
 
 /**
 A document that contains a set of biological elements (i.e. entities and interactions).
@@ -382,6 +382,18 @@ class Document {
     return tryPromise( runLayout ).then( savePositions );
   }
 
+  approve(){
+    let p = this.syncher.update({ approved: true });
+
+    this.emit('approve');
+
+    return p;
+  }
+
+  approved(){
+    return this.syncher.get('approved') ? true : false;
+  }
+
   submit(){
     let p = this.syncher.update({ submitted: true });
 
@@ -394,6 +406,15 @@ class Document {
     return this.syncher.get('submitted') ? true : false;
   }
 
+  status(){
+    return {
+      createdDate: this.createdDate(),
+      lastEditedDate: this.lastEditedDate(),
+      approved: this.approved(),
+      submitted: this.submitted()
+    };
+  }
+
   json(){
     let toJson = obj => obj.json();
 
@@ -404,9 +425,9 @@ class Document {
       elements: this.elements().map( toJson ),
       publicUrl: this.publicUrl(),
       privateUrl: this.privateUrl(),
-      submitted: this.submitted(),
+      status: this.status(),
       citation: this.citation(),
-      lastEditedDate: this.lastEditedDate()
+      issues: this.issues()
     }, _.pick(this.syncher.get(), METADATA_FIELDS));
   }
 
@@ -443,7 +464,7 @@ class Document {
     let addOrganism = id => this.toggleOrganism( id, true );
     let addOrganisms = () => Promise.all( orgIds.map( addOrganism ) );
 
-    let metaEtcFields = ['submitted'].concat(METADATA_FIELDS);
+    let metaEtcFields = ['submitted', 'approved', 'createdDate'].concat(METADATA_FIELDS);
     let updateMetadataEtc = () => this.syncher.update( _.pick(json, metaEtcFields) );
 
     return Promise.all([

@@ -50,6 +50,11 @@ const getReferenceString = Journal => {
   return _.compact( [ journalName, journalVolume, pubDateYear ] ).join(' ');
 };
 
+const getPubmedUrl = PubmedArticle => {
+  const id = _.get( _.find( _.get( PubmedArticle, ['PubmedData', 'ArticleIdList'], [] ), o => o.IdType === 'pubmed' ), 'id' );
+  return PUBMED_LINK_BASE_URL + id;
+};
+
 /**
  * getPubmedCitation
  * 
@@ -70,9 +75,8 @@ const getPubmedCitation = PubmedArticle => {
   const authors = getAuthorString( AuthorList ); 
   const reference = getReferenceString( Journal );
   const abstract = _.get( Article, 'Abstract' );
-  const { id } = _.find( _.get( PubmedArticle, ['PubmedData', 'ArticleIdList'] ), o => o.IdType === 'pubmed' );
-  const url = PUBMED_LINK_BASE_URL + id;
-
+  const url = getPubmedUrl( PubmedArticle );
+  
   return { authors, title, reference, abstract, url };
 };
 

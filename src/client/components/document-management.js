@@ -1,11 +1,12 @@
 import _ from 'lodash';
-import React from 'react';
 import h from 'react-hyperscript';
 import queryString from 'query-string';
-// import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import io from 'socket.io-client';
-import { format, formatDistanceToNow, isThisWeek } from 'date-fns';
+import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
 
+import logger from '../logger';
+import DirtyComponent from './dirty-component';
 import Document from '../../model/document';
 import { makeClassList, tryPromise } from '../../util';
 import {
@@ -21,8 +22,9 @@ const DATE_FORMAT = 'MMMM-dd-yyyy';
 const getTimeSince = dateString => formatDistanceToNow( new Date( dateString ), { addSuffix: true } );
 const toDateString = dateString => format( new Date( dateString ), DATE_FORMAT );
 const toPeriodOrDate = dateString => {
+  if( _.isUndefined( dateString ) ) return 'never';
   const d = new Date( dateString );
-  return isThisWeek( d ) ? getTimeSince( d ) : toDateString( d );
+  return isThisMonth( d ) ? getTimeSince( d ) : toDateString( d );
 };
 
 const sanitizeKey = secret => secret === '' ? '%27%27': secret;
@@ -72,7 +74,7 @@ const msgFactory = doc => {
   return msgOpts;
 };
 
-const orderByCreatedDate = docs => _.orderBy( docs, [ doc => new Date( _.get( doc, ['status', 'createdDate'] ) ) ], ['desc'] );
+const orderByCreatedDate = docs => _.orderBy( docs, [ doc => doc.createdDate() ], ['desc'] );
 
 const toDocs = ( docJSON, docSocket, eleSocket ) => {
   
@@ -84,7 +86,8 @@ const toDocs = ( docJSON, docSocket, eleSocket ) => {
       data: { id, secret }
     });
 
-    doc.on( 'load', () => console.log( 'loaded' ) );
+    // doc.on( 'load', () => logger.info( 'load' ) );
+    // doc.on( 'synched', () => logger.info( 'synched' ) );
     
     return tryPromise( () => doc.load() )
       .then( () => doc.synch( true ) )
@@ -94,7 +97,7 @@ const toDocs = ( docJSON, docSocket, eleSocket ) => {
   return Promise.all( docPromises );
 };
 
-class DocumentManagement extends React.Component {
+class DocumentManagement extends DirtyComponent {
   constructor( props ){
     super( props );
 
@@ -130,9 +133,8 @@ class DocumentManagement extends React.Component {
 
     return fetch(`${url}?${paramsString}`)
       .then( res => res.json() )
-      .then( docJSON => toDocs( docJSON, this.docSocket, this.elSocket ) )
+      .then( docJSON => toDocs( docJSON, this.docSocket, this.eleSocket ) )
       .then( docs => new Promise( resolve => {
-        console.log( docs );
         this.setState({
           validApiKey: true, // no error means its good
           apiKey,
@@ -194,73 +196,72 @@ class DocumentManagement extends React.Component {
     const getDocumentArticle = doc => {
       const { authors, title, reference, url } = doc.citation();
       return  [
-        h('h3', [
-          h( 'a.plain-link', {
-            href: url,
-            target: '_blank'
-          }, title )
-        ] ),
-        h('p', `${authors}. ${reference}` )
-      ];
+        h( 'div.document-management-document-section.column', [
+          h( 'strong', [
+            h( 'a.plain-link.section-item-emphasize', {
+              href: url,
+              target: '_blank'
+            }, title )
+          ]),
+          h('small.mute', `${authors}. ${reference}` )
+        ])
+      ] 
     };
 
-    // // Network
-    // const getDocumentNetwork = network => {
-    //   const { summaryPath, editablePath } = network;
-    //   return [
-    //     h( 'div.document-management-horizontal-list', [
-    //       h( 'div.document-management-text-label', ''),
-    //       h( 'ul', [
-    //         h( 'li', [
-    //           h( Link, {
-    //             to: summaryPath,
-    //             target: '_blank',
-    //           }, 'Summary' )
-    //         ]),
-    //         h( 'li', [
-    //           h( Link, {
-    //             to: editablePath,
-    //             target: '_blank'
-    //           }, 'Editable' )
-    //         ])
-    //       ])
-    //     ])
-    //   ];
-    // };
+    // Network
+    const getDocumentNetwork = doc => {
+      return h( 'div.document-management-document-section', [
+          h( 'div.document-management-document-section-label', 'Document:'),
+          h( 'div.document-management-document-section-items', [
+            h( Link, {
+              className: 'plain-link',
+              to: doc.publicUrl(),
+              target: '_blank',
+            }, 'Summary' ),
+            h( Link, {
+              className: 'plain-link',
+              to: doc.privateUrl(),
+              target: '_blank'
+            }, 'Editable' )
+          ])
+        ]);
+    };
 
-    //  // Correspondence
-    //  const getDocumentCorrespondence = ( correspondence, status ) => {
-    //   const { email, mailOpts } = correspondence;
-    //   const { submitted } = status;
-    //   return [
-    //     h( 'div.document-management-horizontal-list', [
-    //       h( 'div.document-management-text-label', `Correspondence (${email.address})`),
-    //       h( 'ul', [
-    //         h( 'li', [
-    //           h( 'button', {
-    //             disabled: submitted,
-    //             onClick: () => this.handleEmail( mailOpts )
-    //           }, 'Email Invite' )
-    //         ])
-    //       ])
-    //     ])
-    //   ];
-    // };
+     // Correspondence
+     const getDocumentCorrespondence = doc => {
+      const { authorEmail, isCorrespondingAuthor } = doc.correspondence();
+      return h( 'div.document-management-document-section', [
+        h( 'div.document-management-document-section-label', 'Correspondence:' ),
+        h( 'div.document-management-document-section-items', [
+          h( 'div', `${authorEmail}` )
+        ])
+      ]);
+        
+        //   h( 'div.document-management-document-section-label', [
+        //     h( 'p', 'Correspondence:' ),
+        //     h( 'p', `${authorEmail}` )
+        //   ]),
+        //   h( 'button', {
+        //     disabled: !doc.approved(),
+        //     // onClick: () => this.handleEmail( mailOpts )
+        //   }, 'Email Invite' )
+        // ])
+      // ];
+    };
 
     // Document Header & Footer
-    const getDocumentHeader = status => [
-      h( 'i.material-icons', {
-        className: makeClassList({ 'on-submit': !status.submitted })
-      }, 'check_circle' )
-    ];
+    const getDocumentHeader = doc => 
+      h( 'div.document-management-document-section.meta', [
+        h( 'i.material-icons', {
+          className: makeClassList({ 'on-submit': !doc.submitted() })
+        }, 'check_circle' )  
+      ]);
+
     const getDocumentStatus = doc => {
-      const { createdDate, lastEditedDate } = doc.status();
-      console.log( new Date( createdDate ) );
-      console.log(lastEditedDate);
       return [
-        h( 'ul.mute', [
-          h( 'li', { key: 'created' }, `Created ${createdDate}` ),
-          h( 'li', { key: 'modified' }, `Modified ${lastEditedDate}` )
+        h( 'div.document-management-document-section.column.meta', [
+          h( 'div.mute', { key: 'created' }, `Created ${toPeriodOrDate( doc.createdDate() )}` ),
+          h( 'div.mute', { key: 'modified' }, `Modified ${toPeriodOrDate( doc.lastEditedDate() )}` )
         ])
       ];
     };
@@ -271,11 +272,11 @@ class DocumentManagement extends React.Component {
           key: i
         },
         [
-          // h( 'div.document-management-document-meta', getDocumentHeader( status ) ),
-          h( 'div.document-management-document-section', getDocumentArticle( doc ) ),
-          // h( 'div.document-management-document-section', getDocumentNetwork( network ) ),
-          // h( 'div.document-management-document-section', getDocumentCorrespondence( correspondence, status ) ),
-          h( 'div.document-management-document-meta', getDocumentStatus( doc ) ),
+          getDocumentHeader( doc ),
+          getDocumentArticle( doc ),
+          getDocumentNetwork( doc ),
+          getDocumentCorrespondence( doc ),
+          getDocumentStatus( doc ),
           h( 'hr' )
         ]);
       })

@@ -8,7 +8,6 @@ import { assertOneOfFieldsDefined, mixin, getId, makeCyEles, getCyLayoutOpts, is
 import Cytoscape from 'cytoscape';
 import { TWITTER_ACCOUNT_NAME } from '../../config';
 import { getPubmedCitation } from '../../util/pubmed';
-import { formatISO, parseISO } from 'date-fns';
 
 const DEFAULTS = Object.freeze({
   // data
@@ -17,11 +16,10 @@ const DEFAULTS = Object.freeze({
 
   // metadata
   submitted: false,
-  approved: false,
-  createdDate: formatISO(new Date())
+  approved: false
 });
 
-const METADATA_FIELDS = ['provided', 'article', 'correspondence'];
+const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'approved', 'submitted' ];
 
 /**
 A document that contains a set of biological elements (i.e. entities and interactions).
@@ -88,6 +86,8 @@ class Document {
         this.emit('remotesubmit');
       }
     });
+
+    this.syncher.on( 'create', () => this.rwMeta( 'createdDate', new Date() ) );
   }
 
   filled(){
@@ -198,21 +198,15 @@ class Document {
   }
 
   createdDate(){
-    const dateVal = this.rwMeta('createdDate');
-
-    return parseISO(dateVal);
+    return this.rwMeta('createdDate');
   }
   
   lastEditedDate(){
-    const dateVal = this.rwMeta('lastEditedDate');
-
-    return parseISO(dateVal);
+    return this.rwMeta('lastEditedDate');
   }
 
   updateLastEditedDate(){
-    const dateVal = formatISO(new Date());
-
-    return this.rwMeta('lastEditedDate', dateVal);
+    return this.rwMeta('lastEditedDate', new Date());
   }
 
   entities(){
@@ -406,14 +400,14 @@ class Document {
     return this.syncher.get('submitted') ? true : false;
   }
 
-  status(){
-    return {
-      createdDate: this.createdDate(),
-      lastEditedDate: this.lastEditedDate(),
-      approved: this.approved(),
-      submitted: this.submitted()
-    };
-  }
+  // status(){
+  //   return {
+  //     createdDate: this.createdDate(),
+  //     lastEditedDate: this.lastEditedDate(),
+  //     approved: this.approved(),
+  //     submitted: this.submitted()
+  //   };
+  // }
 
   json(){
     let toJson = obj => obj.json();
@@ -424,10 +418,7 @@ class Document {
       organisms: this.organisms(),
       elements: this.elements().map( toJson ),
       publicUrl: this.publicUrl(),
-      privateUrl: this.privateUrl(),
-      status: this.status(),
-      citation: this.citation(),
-      issues: this.issues()
+      privateUrl: this.privateUrl()
     }, _.pick(this.syncher.get(), METADATA_FIELDS));
   }
 

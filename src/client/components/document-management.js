@@ -55,18 +55,20 @@ const sendMail = ( docOpts, apiKey ) => {
 };
 
 const msgFactory = doc => {
+  const { authorEmail, context } = doc.correspondence();
+  const { title, authors, reference } = doc.citation();
 
   const msgOpts = {
     to: {
-      address: `${doc.contributorEmail}`
+      address: `${authorEmail}`
     },
     subject: 'Your invitation to Biofactoid is ready',
     template: {
       id: INVITE_TMPLID,
       vars: {
-        citation: `${doc.title}\n${doc.authors}\n${doc.journalName}`,
-        privateUrl: `${BASE_URL}/document/${doc.id}/${doc.secret}`,
-        context: EMAIL_CONTEXT_SIGNUP
+        citation: `${title} ${authors}. ${reference}.`,
+        privateUrl: `${BASE_URL}/${doc.privateUrl()}`,
+        context
       }
     }
   };
@@ -195,8 +197,7 @@ class DocumentManagement extends DirtyComponent {
     // Article
     const getDocumentArticle = doc => {
       const { authors, title, reference, url } = doc.citation();
-      return  [
-        h( 'div.document-management-document-section.column', [
+      return  h( 'div.document-management-document-section.column', [
           h( 'strong', [
             h( 'a.plain-link.section-item-emphasize', {
               href: url,
@@ -205,13 +206,12 @@ class DocumentManagement extends DirtyComponent {
           ]),
           h('small.mute', `${authors}. ${reference}` )
         ])
-      ] 
     };
 
     // Network
     const getDocumentNetwork = doc => {
       return h( 'div.document-management-document-section', [
-          h( 'div.document-management-document-section-label', 'Document:'),
+          h( 'div.document-management-document-section-label', 'Document:' ),
           h( 'div.document-management-document-section-items', [
             h( Link, {
               className: 'plain-link',
@@ -229,46 +229,63 @@ class DocumentManagement extends DirtyComponent {
 
      // Correspondence
      const getDocumentCorrespondence = doc => {
-      const { authorEmail, isCorrespondingAuthor } = doc.correspondence();
+      let content = null;
+
+      if( _.has( doc.issues(), 'authorEmail' ) ){ 
+        const { authorEmail } = doc.issues();
+        logger.info( authorEmail );
+        content = h( 'div.document-management-document-section-items', [
+          h( 'div', [
+            h( 'i.material-icons', 'error' ),
+            h( 'span', ` ${authorEmail}` )
+          ])
+        ]);
+
+      } else {
+        const { authorEmail, isCorrespondingAuthor } = doc.correspondence();
+        const mailOpts = msgFactory( doc );
+        content = h( 'div.document-management-document-section-items', [
+          h( 'div', [
+            h( 'span', ` ${authorEmail}` ),
+            isCorrespondingAuthor ? h( 'span', ' (corresponding)' ): null
+          ]),
+          h( 'button', {
+            disabled: doc.approved(),
+            onClick: () => this.handleEmail( mailOpts )
+          }, 'Email Invite' )
+        ])
+      }
+
       return h( 'div.document-management-document-section', [
         h( 'div.document-management-document-section-label', 'Correspondence:' ),
-        h( 'div.document-management-document-section-items', [
-          h( 'div', `${authorEmail}` )
-        ])
+        content
       ]);
-        
-        //   h( 'div.document-management-document-section-label', [
-        //     h( 'p', 'Correspondence:' ),
-        //     h( 'p', `${authorEmail}` )
-        //   ]),
-        //   h( 'button', {
-        //     disabled: !doc.approved(),
-        //     // onClick: () => this.handleEmail( mailOpts )
-        //   }, 'Email Invite' )
-        // ])
-      // ];
     };
 
     // Document Header & Footer
     const getDocumentHeader = doc => 
       h( 'div.document-management-document-section.meta', [
-        h( 'i.material-icons', {
-          className: makeClassList({ 'on-submit': !doc.submitted() })
-        }, 'check_circle' )  
+        h( 'div.document-management-document-section-items', [
+          h( 'i.material-icons', {
+            className: makeClassList({ 'hide-when': !doc.submitted() })
+          }, 'check_circle' ),
+          h( 'i.material-icons', {
+            className: makeClassList({ 'hide-when': !doc.approved() })
+          }, 'thumb_up' )
+        ])
       ]);
 
     const getDocumentStatus = doc => {
-      return [
-        h( 'div.document-management-document-section.column.meta', [
-          h( 'div.mute', { key: 'created' }, `Created ${toPeriodOrDate( doc.createdDate() )}` ),
-          h( 'div.mute', { key: 'modified' }, `Modified ${toPeriodOrDate( doc.lastEditedDate() )}` )
+      return h( 'div.document-management-document-section.column.meta', [
+          h( 'div.document-management-document-section-items', [
+            h( 'div.mute', { key: 'created' }, `Created ${toPeriodOrDate( doc.createdDate() )}` ),
+            h( 'div.mute', { key: 'modified' }, `Modified ${toPeriodOrDate( doc.lastEditedDate() )}` )
+          ])
         ])
-      ];
     };
 
     const documentList = h( 'ul', orderByCreatedDate( docs ).map( ( doc, i ) => {
         return h( 'li', {
-          className: makeClassList( { 'is-submitted': status.submitted } ),
           key: i
         },
         [

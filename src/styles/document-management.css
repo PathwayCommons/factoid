@@ -26,14 +26,8 @@
     list-style-type: none;
   }
 
-  & .on-submit {
+  & .hide-when {
     visibility: hidden;
-  }
-
-  & .is-submitted {
-    .on-submit {
-      visibility: visible;
-    }
   }
 
   & hr {
@@ -49,6 +43,7 @@
 
 .document-management-document-section {
   display: flex; 
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: flex-start;
 }
@@ -64,14 +59,21 @@
 }
 
 .document-management-document-section-label{
+  width: 15%;
   font-size: var(--smallFontSize);
   margin: 0.5em;
   color: var(--fadedColor);
 }
 
 .document-management-document-section-items {
-  & * {
+  display: flex; 
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-start;
+
+  /* & * {
     margin: 0 0.5em;
-  }
+  } */
 }
 

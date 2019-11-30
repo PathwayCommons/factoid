@@ -17,6 +17,14 @@
   & .mute {
     color: var(--fadedColor);
   }
+
+  & .invalid {
+    color: var(--invalidColor);
+  }
+
+  & .complete {
+    color: var(--completeColor);
+  }
 }
 
 .document-management-content {
@@ -46,6 +54,7 @@
   flex-wrap: nowrap;
   align-items: flex-start;
   justify-content: flex-start;
+  margin: 0.4rem 0;
 
   & > * {
     max-width: 80%;
@@ -55,7 +64,7 @@
 .document-management-document-section.meta {
   justify-content: flex-end;
   align-items: flex-end;
-  font-size: 0.9em;
+  /* font-size: 0.9em; */
 }
 
 .document-management-document-section-label{

@@ -193,6 +193,23 @@ class DocumentManagement extends DirtyComponent {
         }, 'Submit' )
       ]);
 
+    // Document Header & Footer
+    const getDocumentHeader = doc => {
+      let content = null;
+
+      if ( doc.issues() ){
+        content = h( 'i.material-icons.issue.invalid', 'warning' );
+      } else if ( doc.approved() && !doc.submitted() ) {
+        content = h( 'i.material-icons.mute', 'thumb_up' );
+      } else if ( doc.submitted() ) {
+        content = h( 'i.material-icons.complete', 'check_circle' );
+      }
+      
+      return h( 'div.document-management-document-section.meta', [
+        h( 'div.document-management-document-section-items.row', [ content ] ) 
+      ]);
+    }; 
+    
     // Article
     const getDocumentArticle = doc => {
       let content = null;
@@ -252,7 +269,6 @@ class DocumentManagement extends DirtyComponent {
 
       if( _.has( doc.issues(), 'authorEmail' ) ){ 
         const { authorEmail } = doc.issues();
-        logger.info( authorEmail );
         content = h( 'div.document-management-document-section-items', [
           h( 'div', [
             h( 'i.material-icons', 'error_outline' ),
@@ -269,7 +285,7 @@ class DocumentManagement extends DirtyComponent {
             isCorrespondingAuthor ? h( 'span', ' (corresponding)' ): null
           ]),
           h( 'button', {
-            disabled: doc.approved(),
+            disabled: !doc.approved() || doc.issues(),
             onClick: () => this.handleEmail( mailOpts )
           }, 'Email Invite' )
         ]);
@@ -283,24 +299,11 @@ class DocumentManagement extends DirtyComponent {
       ]);
     };
 
-    // Document Header & Footer
-    const getDocumentHeader = doc => 
-      h( 'div.document-management-document-section.meta', [
-        h( 'div.document-management-document-section-items', [
-          h( 'i.material-icons', {
-            className: makeClassList({ 'hide-when': !doc.submitted() })
-          }, 'check_circle' ),
-          h( 'i.material-icons', {
-            className: makeClassList({ 'hide-when': !doc.approved() })
-          }, 'thumb_up' )
-        ])
-      ]);
-
     const getDocumentStatus = doc => {
       return h( 'div.document-management-document-section.column.meta', [
           h( 'div.document-management-document-section-items', [
-            h( 'div.mute', { key: 'created' }, `Created ${toPeriodOrDate( doc.createdDate() )}` ),
-            h( 'div.mute', { key: 'modified' }, `Modified ${toPeriodOrDate( doc.lastEditedDate() )}` )
+            h( 'small.mute', { key: 'created' }, `Created ${toPeriodOrDate( doc.createdDate() )}` ),
+            h( 'small.mute', { key: 'modified' }, `Modified ${toPeriodOrDate( doc.lastEditedDate() )}` )
           ])
         ]);
     };

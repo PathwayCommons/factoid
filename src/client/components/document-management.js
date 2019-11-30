@@ -27,6 +27,7 @@ const toPeriodOrDate = dateString => {
 };
 
 const sanitizeKey = secret => secret === '' ? '%27%27': secret;
+const toJSON = res => res.json(); 
 
 const sendMail = ( docOpts, apiKey ) => {
   const url = '/api/document/email';
@@ -50,7 +51,8 @@ const sendMail = ( docOpts, apiKey ) => {
       'Accept': 'application/json'
     },
     body: JSON.stringify( data )
-  });
+  })
+  .then( toJSON );
 };
 
 const msgFactory = doc => {
@@ -76,6 +78,7 @@ const msgFactory = doc => {
 };
 
 const orderByCreatedDate = docs => _.orderBy( docs, [ doc => doc.createdDate() ], ['desc'] );
+const orderByDate = os => _.orderBy( os, [ o => o.date ], ['desc'] );
 
 const toDocs = ( docJSON, docSocket, eleSocket ) => {
   
@@ -157,9 +160,19 @@ class DocumentManagement extends DirtyComponent {
       });
   }
 
-  handleEmail( mailOpts ) {
-    sendMail( mailOpts, this.state.apiKey )
-      .then( info => info );
+  handleEmail( mailOpts, doc ) {
+    const data = doc.correspondence();
+    return sendMail( mailOpts, this.state.apiKey )
+      .then( info => {
+        _.set( info, 'date', new Date() );
+        if( _.has( data, 'invite' ) ){
+          data.invite.push( info );
+        } else {
+          _.set( data, 'invite', [ info ] ); 
+        }
+        doc.correspondence( data );
+      })
+      .then( () => this.dirty() );
   }
 
   handleApiKeyFormChange( apiKey ) {
@@ -286,17 +299,27 @@ class DocumentManagement extends DirtyComponent {
         ]);
 
       } else {
-        const { authorEmail, isCorrespondingAuthor } = doc.correspondence();
+        const { authorEmail, isCorrespondingAuthor, invite } = doc.correspondence();
+        const numInvites = invite ? `(${_.size( invite )})`: '';
+        const lastInviteDate = numInvites ? _.get( _.first( orderByDate( invite ) ), 'date' ) : undefined;
+
+        //Somthing weird here. Note updating from backend? reload? synch?
+        console.log( doc.citation().title );
+        console.log( lastInviteDate );
         const mailOpts = msgFactory( doc );
         content = h( 'div.document-management-document-section-items', [
           h( 'div', [
             h( 'span', ` ${authorEmail}` ),
             isCorrespondingAuthor ? h( 'span', ' (corresponding)' ): null
           ]),
-          h( 'button', {
+          h( 'div', {
             className: makeClassList({ 'hide-when': !doc.approved() }),
-            onClick: () => this.handleEmail( mailOpts )
-          }, 'Email Invite' )
+          }, [
+            h( 'button', {
+              onClick: () => this.handleEmail( mailOpts, doc )
+            }, `Invite ${numInvites}` ),
+            h( 'small.mute', ` ${toPeriodOrDate( lastInviteDate )}` )
+          ])
         ]);
       }
 

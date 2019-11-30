@@ -88,7 +88,7 @@ let getDocJson = doc => doc.json();
 
 const fillDocCorrespondence = async ( doc, authorEmail, isCorrespondingAuthor, context ) => {
   try {
-    if( !emailRegex({exact: true}).test( authorEmail ) ) throw new TypeError( 'Could not detect an email' );
+    if( !emailRegex({exact: true}).test( authorEmail ) ) throw new TypeError( `Could not detect an email for \'${authorEmail}\'` );
     doc.correspondence( { authorEmail, isCorrespondingAuthor, context } );
   } catch ( error ){
     doc.issues({ authorEmail: `${error.message}` });

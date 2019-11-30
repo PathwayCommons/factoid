@@ -204,7 +204,7 @@ class DocumentManagement extends DirtyComponent {
       } else if ( doc.submitted() ) {
         content = h( 'i.material-icons.complete', 'check_circle' );
       }
-      
+
       return h( 'div.document-management-document-section.meta', [
         h( 'div.document-management-document-section-items.row', [ content ] ) 
       ]);
@@ -285,7 +285,7 @@ class DocumentManagement extends DirtyComponent {
             isCorrespondingAuthor ? h( 'span', ' (corresponding)' ): null
           ]),
           h( 'button', {
-            disabled: !doc.approved() || doc.issues(),
+            className: makeClassList({ 'hide-when': !doc.approved() }),
             onClick: () => this.handleEmail( mailOpts )
           }, 'Email Invite' )
         ]);

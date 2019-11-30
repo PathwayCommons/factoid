@@ -180,6 +180,10 @@ class Document {
     }
   }
 
+  provided(){
+    return this.rwMeta('provided');
+  }
+
   article(newVal){
     return this.rwMeta('article', newVal);
   }

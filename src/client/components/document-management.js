@@ -171,6 +171,11 @@ class DocumentManagement extends DirtyComponent {
     this.updateDocs();
   }
 
+  handleApproveRequest( doc ){
+    return tryPromise( () => doc.approve() )
+      .then( () => this.dirty() );
+  }
+
   render(){
     let { docs, validApiKey } = this.state;
     
@@ -203,6 +208,10 @@ class DocumentManagement extends DirtyComponent {
         content = h( 'i.material-icons.mute', 'thumb_up' );
       } else if ( doc.submitted() ) {
         content = h( 'i.material-icons.complete', 'check_circle' );
+      } else {
+        content = h('button', {
+          onClick: e => this.handleApproveRequest( doc )
+        }, 'Approve' )
       }
 
       return h( 'div.document-management-document-section.meta', [

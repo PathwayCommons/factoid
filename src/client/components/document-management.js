@@ -14,8 +14,7 @@ import {
   EMAIL_FROM,
   EMAIL_FROM_ADDR,
   EMAIL_VENDOR_MAILJET,
-  INVITE_TMPLID,
-  EMAIL_CONTEXT_SIGNUP
+  INVITE_TMPLID
 } from '../../config' ;
 
 const DATE_FORMAT = 'MMMM-dd-yyyy';
@@ -196,23 +195,43 @@ class DocumentManagement extends DirtyComponent {
 
     // Article
     const getDocumentArticle = doc => {
-      const { authors, title, reference, url } = doc.citation();
-      return  h( 'div.document-management-document-section.column', [
-          h( 'strong', [
-            h( 'a.plain-link.section-item-emphasize', {
-              href: url,
-              target: '_blank'
-            }, title )
-          ]),
-          h('small.mute', `${authors}. ${reference}` )
-        ])
+      let content = null;
+      
+      if( _.has( doc.issues(), 'paperId' ) ){ 
+        const { paperId } = doc.issues();
+        content = h( 'div.document-management-document-section-items', [
+          h( 'div', [
+            h( 'i.material-icons', 'error_outline' ),
+            h( 'span', ` ${paperId}` )
+          ])
+        ]);
+
+      } else {
+        const { authors, title, reference, url } = doc.citation();
+        content =  h( 'div.document-management-document-section-items', [
+            h( 'strong', [
+              h( 'a.plain-link.section-item-emphasize', {
+                href: url,
+                target: '_blank'
+              }, title )
+            ]),
+            h('small.mute', `${authors}. ${reference}` )
+          ]);
+      }
+
+      return h( 'div.document-management-document-section', [
+        h( 'div.document-management-document-section-label', {
+          className: makeClassList({ 'issue': _.has( doc.issues(), 'paperId' ) })
+        }, 'Article:' ),
+        content
+      ]);
     };
 
     // Network
     const getDocumentNetwork = doc => {
       return h( 'div.document-management-document-section', [
           h( 'div.document-management-document-section-label', 'Document:' ),
-          h( 'div.document-management-document-section-items', [
+          h( 'div.document-management-document-section-items.row', [
             h( Link, {
               className: 'plain-link',
               to: doc.publicUrl(),
@@ -236,7 +255,7 @@ class DocumentManagement extends DirtyComponent {
         logger.info( authorEmail );
         content = h( 'div.document-management-document-section-items', [
           h( 'div', [
-            h( 'i.material-icons', 'error' ),
+            h( 'i.material-icons', 'error_outline' ),
             h( 'span', ` ${authorEmail}` )
           ])
         ]);
@@ -253,11 +272,13 @@ class DocumentManagement extends DirtyComponent {
             disabled: doc.approved(),
             onClick: () => this.handleEmail( mailOpts )
           }, 'Email Invite' )
-        ])
+        ]);
       }
 
       return h( 'div.document-management-document-section', [
-        h( 'div.document-management-document-section-label', 'Correspondence:' ),
+        h( 'div.document-management-document-section-label', {
+          className: makeClassList({ 'issue': _.has( doc.issues(), 'authorEmail' ) })
+        }, 'Correspondence:' ),
         content
       ]);
     };
@@ -281,7 +302,7 @@ class DocumentManagement extends DirtyComponent {
             h( 'div.mute', { key: 'created' }, `Created ${toPeriodOrDate( doc.createdDate() )}` ),
             h( 'div.mute', { key: 'modified' }, `Modified ${toPeriodOrDate( doc.lastEditedDate() )}` )
           ])
-        ])
+        ]);
     };
 
     const documentList = h( 'ul', orderByCreatedDate( docs ).map( ( doc, i ) => {

@@ -90,9 +90,6 @@ const toDocs = ( docJSON, docSocket, eleSocket ) => {
       data: { id, secret }
     });
 
-    // doc.on( 'load', () => logger.info( 'load' ) );
-    // doc.on( 'synched', () => logger.info( 'synched' ) );
-    
     return tryPromise( () => doc.load() )
       .then( () => doc.synch( true ) )
       .then( () => doc );
@@ -100,6 +97,8 @@ const toDocs = ( docJSON, docSocket, eleSocket ) => {
 
   return Promise.all( docPromises );
 };
+
+const setDirty = controller => controller.dirty();
 
 class DocumentManagement extends DirtyComponent {
   constructor( props ){
@@ -134,10 +133,15 @@ class DocumentManagement extends DirtyComponent {
     const url = '/api/document';
     const params = { apiKey };
     const paramsString = queryString.stringify( params );
+    const that = this;
 
     return fetch(`${url}?${paramsString}`)
       .then( res => res.json() )
       .then( docJSON => toDocs( docJSON, this.docSocket, this.eleSocket ) )
+      .then( docs => { 
+        docs.forEach( doc => doc.on( 'update', () => this.dirty()) );
+        return docs; 
+      })
       .then( docs => new Promise( resolve => {
         this.setState({
           validApiKey: true, // no error means its good
@@ -171,8 +175,7 @@ class DocumentManagement extends DirtyComponent {
           _.set( data, 'invite', [ info ] ); 
         }
         doc.correspondence( data );
-      })
-      .then( () => this.dirty() );
+      });
   }
 
   handleApiKeyFormChange( apiKey ) {
@@ -185,8 +188,7 @@ class DocumentManagement extends DirtyComponent {
   }
 
   handleApproveRequest( doc ){
-    return tryPromise( () => doc.approve() )
-      .then( () => this.dirty() );
+    doc.approve();
   }
 
   render(){
@@ -300,12 +302,10 @@ class DocumentManagement extends DirtyComponent {
 
       } else {
         const { authorEmail, isCorrespondingAuthor, invite } = doc.correspondence();
-        const numInvites = invite ? `(${_.size( invite )})`: '';
-        const lastInviteDate = numInvites ? _.get( _.first( orderByDate( invite ) ), 'date' ) : undefined;
+        const numInvites = invite ? `${_.size( invite )}`: '';
+        const lastInviteDate = numInvites ? _.get( _.last( invite ), 'date' ) : undefined;
 
         //Somthing weird here. Note updating from backend? reload? synch?
-        console.log( doc.citation().title );
-        console.log( lastInviteDate );
         const mailOpts = msgFactory( doc );
         content = h( 'div.document-management-document-section-items', [
           h( 'div', [
@@ -317,8 +317,8 @@ class DocumentManagement extends DirtyComponent {
           }, [
             h( 'button', {
               onClick: () => this.handleEmail( mailOpts, doc )
-            }, `Invite ${numInvites}` ),
-            h( 'small.mute', ` ${toPeriodOrDate( lastInviteDate )}` )
+            }, `Invite` ),
+            h( 'small.mute', ` Sent: ${numInvites} | ${toPeriodOrDate(lastInviteDate)}` )
           ])
         ]);
       }
@@ -341,7 +341,9 @@ class DocumentManagement extends DirtyComponent {
     };
 
     const documentList = h( 'ul', orderByCreatedDate( docs ).map( ( doc, i ) => {
-        return h( 'li', {
+
+
+      return h( 'li', {
           key: i
         },
         [

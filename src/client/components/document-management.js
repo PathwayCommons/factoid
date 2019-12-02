@@ -14,16 +14,22 @@ import {
   EMAIL_FROM,
   EMAIL_FROM_ADDR,
   EMAIL_VENDOR_MAILJET,
-  INVITE_TMPLID
+  INVITE_TMPLID,
+  PUBMED_LINK_BASE_URL,
+  DOI_LINK_BASE_URL
 } from '../../config' ;
 
 const DATE_FORMAT = 'MMMM-dd-yyyy';
 const getTimeSince = dateString => formatDistanceToNow( new Date( dateString ), { addSuffix: true } );
 const toDateString = dateString => format( new Date( dateString ), DATE_FORMAT );
 const toPeriodOrDate = dateString => {
-  if( _.isUndefined( dateString ) ) return 'never';
-  const d = new Date( dateString );
-  return isThisMonth( d ) ? getTimeSince( d ) : toDateString( d );
+  try {
+    if ( !dateString ) return;
+    const d = new Date( dateString );
+    return isThisMonth( d ) ? getTimeSince( d ) : toDateString( d );
+  } catch( e ){
+    logger.error( `Error parsing date: ${e}`);
+  }
 };
 
 const sanitizeKey = secret => secret === '' ? '%27%27': secret;
@@ -78,7 +84,6 @@ const msgFactory = doc => {
 };
 
 const orderByCreatedDate = docs => _.orderBy( docs, [ doc => doc.createdDate() ], ['desc'] );
-const orderByDate = os => _.orderBy( os, [ o => o.date ], ['desc'] );
 
 const toDocs = ( docJSON, docSocket, eleSocket ) => {
   
@@ -97,8 +102,6 @@ const toDocs = ( docJSON, docSocket, eleSocket ) => {
 
   return Promise.all( docPromises );
 };
-
-const setDirty = controller => controller.dirty();
 
 class DocumentManagement extends DirtyComponent {
   constructor( props ){
@@ -133,8 +136,7 @@ class DocumentManagement extends DirtyComponent {
     const url = '/api/document';
     const params = { apiKey };
     const paramsString = queryString.stringify( params );
-    const that = this;
-
+    
     return fetch(`${url}?${paramsString}`)
       .then( res => res.json() )
       .then( docJSON => toDocs( docJSON, this.docSocket, this.eleSocket ) )
@@ -169,11 +171,7 @@ class DocumentManagement extends DirtyComponent {
     return sendMail( mailOpts, this.state.apiKey )
       .then( info => {
         _.set( info, 'date', new Date() );
-        if( _.has( data, 'invite' ) ){
-          data.invite.push( info );
-        } else {
-          _.set( data, 'invite', [ info ] ); 
-        }
+        data.invite.push( info );
         doc.correspondence( data );
       });
   }
@@ -189,6 +187,13 @@ class DocumentManagement extends DirtyComponent {
 
   handleApproveRequest( doc ){
     doc.approve();
+  }
+
+  componentWillUnmount(){
+    const { docs } = this.state;
+
+    docs.elements().forEach( el => el.removeAllListeners() );
+    docs.removeAllListeners();
   }
 
   render(){
@@ -225,8 +230,8 @@ class DocumentManagement extends DirtyComponent {
         content = h( 'i.material-icons.complete', 'check_circle' );
       } else {
         content = h('button', {
-          onClick: e => this.handleApproveRequest( doc )
-        }, 'Approve' )
+          onClick: () => this.handleApproveRequest( doc )
+        }, 'Approve' );
       }
 
       return h( 'div.document-management-document-section.meta', [
@@ -248,15 +253,23 @@ class DocumentManagement extends DirtyComponent {
         ]);
 
       } else {
-        const { authors, title, reference, url } = doc.citation();
+        const { authors, contacts, title, reference, pmid, doi } = doc.citation();
+        const contactList = contacts.map( contact => `${contact.name} (${contact.email})` ).join(', ');
         content =  h( 'div.document-management-document-section-items', [
             h( 'strong', [
               h( 'a.plain-link.section-item-emphasize', {
-                href: url,
+                href: PUBMED_LINK_BASE_URL + pmid,
                 target: '_blank'
               }, title )
             ]),
-            h('small.mute', `${authors}. ${reference}` )
+            h('small.mute', `${authors}. ${reference}` ),
+            h( 'small.mute', [
+              h( 'a.plain-link', {
+                href: DOI_LINK_BASE_URL + doi,
+                target: '_blank'
+              }, `DOI: ${doi}` )
+            ]),
+            h('small.mute', contactList)
           ]);
       }
 
@@ -288,6 +301,23 @@ class DocumentManagement extends DirtyComponent {
     };
 
      // Correspondence
+     const getContact = doc => {
+      const { authorEmail } = doc.correspondence();
+      const { contacts } = doc.citation();
+      return _.find( contacts, contact => _.indexOf( _.get( contact, 'email' ), authorEmail ) > -1 );
+     };
+
+     const getAuthorEmail = doc => {
+      const { authorEmail, isCorrespondingAuthor } = doc.correspondence();
+      let contact = getContact( doc );
+      const element = [ h( 'span', ` ${authorEmail}` ) ];
+      if( contact && isCorrespondingAuthor ){ 
+        element.push( h( 'span', ` <${contact.name}>` ) );
+        element.push( h( 'i.material-icons', 'email' ) );
+      }
+      return element;
+     };
+
      const getDocumentCorrespondence = doc => {
       let content = null;
 
@@ -301,24 +331,21 @@ class DocumentManagement extends DirtyComponent {
         ]);
 
       } else {
-        const { authorEmail, isCorrespondingAuthor, invite } = doc.correspondence();
-        const numInvites = invite ? `${_.size( invite )}`: '';
-        const lastInviteDate = numInvites ? _.get( _.last( invite ), 'date' ) : undefined;
-
+        const { invite } = doc.correspondence();
+        const numInvites = _.size( invite );
+        const lastInviteDate = toPeriodOrDate( _.get( _.last( invite ), 'date' ) );
+        
         //Somthing weird here. Note updating from backend? reload? synch?
         const mailOpts = msgFactory( doc );
         content = h( 'div.document-management-document-section-items', [
-          h( 'div', [
-            h( 'span', ` ${authorEmail}` ),
-            isCorrespondingAuthor ? h( 'span', ' (corresponding)' ): null
-          ]),
+          h( 'div', getAuthorEmail( doc ) ),
           h( 'div', {
             className: makeClassList({ 'hide-when': !doc.approved() }),
           }, [
             h( 'button', {
               onClick: () => this.handleEmail( mailOpts, doc )
             }, `Invite` ),
-            h( 'small.mute', ` Sent: ${numInvites} | ${toPeriodOrDate(lastInviteDate)}` )
+            numInvites ? h( 'small.mute', ` ${numInvites} | ${lastInviteDate}` ) : null
           ])
         ]);
       }
@@ -332,10 +359,12 @@ class DocumentManagement extends DirtyComponent {
     };
 
     const getDocumentStatus = doc => {
+      const created = toPeriodOrDate( doc.createdDate() );
+      const modified = toPeriodOrDate( doc.lastEditedDate() );
       return h( 'div.document-management-document-section.column.meta', [
           h( 'div.document-management-document-section-items', [
-            h( 'small.mute', { key: 'created' }, `Created ${toPeriodOrDate( doc.createdDate() )}` ),
-            h( 'small.mute', { key: 'modified' }, `Modified ${toPeriodOrDate( doc.lastEditedDate() )}` )
+            h( 'small.mute', { key: 'created' }, created ),
+            h( 'small.mute', { key: 'modified' }, modified ? `Modified ${modified}`: 'Unmodified' )
           ])
         ]);
     };

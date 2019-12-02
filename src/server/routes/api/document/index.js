@@ -86,10 +86,16 @@ let loadTables = () => Promise.all( tables.map( loadTable ) ).then( dbInfos => (
 
 let getDocJson = doc => doc.json();
 
+const DEFAULT_CORRESPONDENCE = {
+  invite: [],
+  reminder: [],
+  followUp: []
+};
+
 const fillDocCorrespondence = async ( doc, authorEmail, isCorrespondingAuthor, context ) => {
   try {
-    if( !emailRegex({exact: true}).test( authorEmail ) ) throw new TypeError( `Could not detect an email for \'${authorEmail}\'` );
-    doc.correspondence( { authorEmail, isCorrespondingAuthor, context } );
+    if( !emailRegex({exact: true}).test( authorEmail ) ) throw new TypeError( `Could not detect an email for '${authorEmail}'` ); 
+    doc.correspondence( _.defaults( { authorEmail, isCorrespondingAuthor, context }, DEFAULT_CORRESPONDENCE ) );
   } catch ( error ){
     doc.issues({ authorEmail: `${error.message}` });
   }

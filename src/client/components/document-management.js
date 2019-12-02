@@ -124,7 +124,8 @@ class DocumentManagement extends DirtyComponent {
       apiKey,
       validApiKey: false,
       docs: [],
-      error: undefined
+      error: undefined,
+      emailing: false
     };
 
     this.getDocs( apiKey )
@@ -168,12 +169,19 @@ class DocumentManagement extends DirtyComponent {
 
   handleEmail( mailOpts, doc ) {
     const data = doc.correspondence();
-    return sendMail( mailOpts, this.state.apiKey )
-      .then( info => {
-        _.set( info, 'date', new Date() );
-        data.invite.push( info );
-        doc.correspondence( data );
-      });
+    
+    tryPromise( () => new Promise( resolve => { 
+      this.setState({ emailing: true }, resolve );
+    }))
+    .then( () => sendMail( mailOpts, this.state.apiKey ) )
+    .then( info => {
+      _.set( info, 'date', new Date() );
+      data.invite.push( info );
+      doc.correspondence( data );
+    })
+    .finally( () => new Promise( resolve => { 
+      this.setState({ emailing: false }, resolve );
+    }));
   }
 
   handleApiKeyFormChange( apiKey ) {
@@ -254,7 +262,7 @@ class DocumentManagement extends DirtyComponent {
 
       } else {
         const { authors, contacts, title, reference, pmid, doi } = doc.citation();
-        const contactList = contacts.map( contact => `${contact.name} (${contact.email})` ).join(', ');
+        const contactList = contacts.map( contact => `${contact.email} <${contact.name}>` ).join(', ');
         content =  h( 'div.document-management-document-section-items', [
             h( 'strong', [
               h( 'a.plain-link.section-item-emphasize', {
@@ -345,7 +353,10 @@ class DocumentManagement extends DirtyComponent {
             h( 'button', {
               onClick: () => this.handleEmail( mailOpts, doc )
             }, `Invite` ),
-            numInvites ? h( 'small.mute', ` ${numInvites} | ${lastInviteDate}` ) : null
+            this.state.emailing ? h('small.mute', [
+              h('span', ' Sending mail '),
+              h('i.icon.icon-spinner.document-seeder-submit-spinner')
+            ]) : numInvites ? h( 'small.mute', ` ${numInvites} | ${lastInviteDate}` ) : null
           ])
         ]);
       }
@@ -363,7 +374,7 @@ class DocumentManagement extends DirtyComponent {
       const modified = toPeriodOrDate( doc.lastEditedDate() );
       return h( 'div.document-management-document-section.column.meta', [
           h( 'div.document-management-document-section-items', [
-            h( 'small.mute', { key: 'created' }, created ),
+            h( 'small.mute', { key: 'created' }, `Created ${created}` ),
             h( 'small.mute', { key: 'modified' }, modified ? `Modified ${modified}`: 'Unmodified' )
           ])
         ]);

@@ -33,7 +33,7 @@ const toPeriodOrDate = dateString => {
 };
 
 const sanitizeKey = secret => secret === '' ? '%27%27': secret;
-const toJSON = res => res.json(); 
+const toJSON = res => res.json();
 
 const sendMail = ( docOpts, apiKey ) => {
   const url = '/api/document/email';
@@ -86,7 +86,7 @@ const msgFactory = doc => {
 const orderByCreatedDate = docs => _.orderBy( docs, [ doc => doc.createdDate() ], ['desc'] );
 
 const toDocs = ( docJSON, docSocket, eleSocket ) => {
-  
+
   const docPromises = docJSON.map( data => {
     const { id, secret } = data;
     const doc = new Document({
@@ -115,7 +115,7 @@ class DocumentManagement extends DirtyComponent {
     let logSocketErr = (err) => logger.error('An error occurred during clientside socket communication', err);
     docSocket.on('error', logSocketErr);
     eleSocket.on('error', logSocketErr);
-    
+
     // API Key
     const query = queryString.parse( this.props.history.location.search );
     const apiKey =  _.get( query, 'apiKey', '' );
@@ -137,13 +137,13 @@ class DocumentManagement extends DirtyComponent {
     const url = '/api/document';
     const params = { apiKey };
     const paramsString = queryString.stringify( params );
-    
+
     return fetch(`${url}?${paramsString}`)
       .then( res => res.json() )
       .then( docJSON => toDocs( docJSON, this.docSocket, this.eleSocket ) )
-      .then( docs => { 
+      .then( docs => {
         docs.forEach( doc => doc.on( 'update', () => this.dirty()) );
-        return docs; 
+        return docs;
       })
       .then( docs => new Promise( resolve => {
         this.setState({
@@ -169,8 +169,8 @@ class DocumentManagement extends DirtyComponent {
 
   handleEmail( mailOpts, doc ) {
     const data = doc.correspondence();
-    
-    tryPromise( () => new Promise( resolve => { 
+
+    tryPromise( () => new Promise( resolve => {
       this.setState({ emailing: true }, resolve );
     }))
     .then( () => sendMail( mailOpts, this.state.apiKey ) )
@@ -179,7 +179,7 @@ class DocumentManagement extends DirtyComponent {
       data.invite.push( info );
       doc.correspondence( data );
     })
-    .finally( () => new Promise( resolve => { 
+    .finally( () => new Promise( resolve => {
       this.setState({ emailing: false }, resolve );
     }));
   }
@@ -206,7 +206,7 @@ class DocumentManagement extends DirtyComponent {
 
   render(){
     let { docs, validApiKey } = this.state;
-    
+
     const header = h('div.page-content-title', [
       h('h1', 'Document management panel')
     ]);
@@ -228,30 +228,30 @@ class DocumentManagement extends DirtyComponent {
 
     // Document Header & Footer
     const getDocumentHeader = doc => {
-      let content = null;
-
-      if ( doc.issues() ){
-        content = h( 'i.material-icons.issue.invalid', 'warning' );
-      } else if ( doc.approved() && !doc.submitted() ) {
-        content = h( 'i.material-icons.mute', 'thumb_up' );
-      } else if ( doc.submitted() ) {
-        content = h( 'i.material-icons.complete', 'check_circle' );
-      } else {
-        content = h('button', {
-          onClick: () => this.handleApproveRequest( doc )
-        }, 'Approve' );
-      }
-
       return h( 'div.document-management-document-section.meta', [
-        h( 'div.document-management-document-section-items.row', [ content ] ) 
+        h( 'div.document-management-document-section-items.row', [
+          h( 'i.material-icons.by-status.invalid', {
+            className: makeClassList({ 'show': doc.issues() })
+          }, 'warning' ),
+          h( 'i.material-icons.by-status.mute', {
+            className: makeClassList({ 'show': doc.approved() && !doc.submitted() })
+          }, 'thumb_up' ),
+          h( 'i.material-icons.by-status.complete', {
+            className: makeClassList({ 'show': doc.approved() && doc.submitted() })
+          }, 'check_circle' ),
+          h('button.by-status', {
+            className: makeClassList({ 'show': !doc.issues() && !doc.approved() }),
+            onClick: () => this.handleApproveRequest( doc )
+          }, 'Approve' )
+        ])
       ]);
-    }; 
-    
+    };
+
     // Article
     const getDocumentArticle = doc => {
       let content = null;
-      
-      if( _.has( doc.issues(), 'paperId' ) ){ 
+
+      if( _.has( doc.issues(), 'paperId' ) ){
         const { paperId } = doc.issues();
         content = h( 'div.document-management-document-section-items', [
           h( 'div', [
@@ -319,7 +319,7 @@ class DocumentManagement extends DirtyComponent {
       const { authorEmail, isCorrespondingAuthor } = doc.correspondence();
       let contact = getContact( doc );
       const element = [ h( 'span', ` ${authorEmail}` ) ];
-      if( contact && isCorrespondingAuthor ){ 
+      if( contact && isCorrespondingAuthor ){
         element.push( h( 'span', ` <${contact.name}>` ) );
         element.push( h( 'i.material-icons', 'email' ) );
       }
@@ -329,7 +329,7 @@ class DocumentManagement extends DirtyComponent {
      const getDocumentCorrespondence = doc => {
       let content = null;
 
-      if( _.has( doc.issues(), 'authorEmail' ) ){ 
+      if( _.has( doc.issues(), 'authorEmail' ) ){
         const { authorEmail } = doc.issues();
         content = h( 'div.document-management-document-section-items', [
           h( 'div', [
@@ -342,7 +342,7 @@ class DocumentManagement extends DirtyComponent {
         const { invite } = doc.correspondence();
         const numInvites = _.size( invite );
         const lastInviteDate = toPeriodOrDate( _.get( _.last( invite ), 'date' ) );
-        
+
         //Somthing weird here. Note updating from backend? reload? synch?
         const mailOpts = msgFactory( doc );
         content = h( 'div.document-management-document-section-items', [
@@ -380,11 +380,9 @@ class DocumentManagement extends DirtyComponent {
         ]);
     };
 
-    const documentList = h( 'ul', orderByCreatedDate( docs ).map( ( doc, i ) => {
-
-
+    const documentList = h( 'ul', orderByCreatedDate( docs ).map( doc => {
       return h( 'li', {
-          key: i
+          key: doc.id()
         },
         [
           getDocumentHeader( doc ),
@@ -396,7 +394,7 @@ class DocumentManagement extends DirtyComponent {
         ]);
       })
     );
-    
+
 
     let body = validApiKey ? documentList: apiKeyForm;
 

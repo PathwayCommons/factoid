@@ -15,10 +15,18 @@ import {
   EMAIL_FROM_ADDR,
   EMAIL_VENDOR_MAILJET,
   INVITE_TMPLID,
+  SUBMIT_SUCCESS_TMPLID,
   PUBMED_LINK_BASE_URL,
   DOI_LINK_BASE_URL
 } from '../../config' ;
 
+// Mail
+const INVITE_EMAIL_LABEL = 'Invite';
+const FOLLOWUP_EMAIL_LABEL = 'Follow-up';
+const INVITE_EMAIL_SUBJECT = 'Your invitation to Biofactoid is ready';
+const FOLLOWUP_EMAIL_SUBJECT = 'Thank you for using';
+
+// Date formatting
 const DATE_FORMAT = 'MMMM-dd-yyyy';
 const getTimeSince = dateString => formatDistanceToNow( new Date( dateString ), { addSuffix: true } );
 const toDateString = dateString => format( new Date( dateString ), DATE_FORMAT );
@@ -61,26 +69,43 @@ const sendMail = ( docOpts, apiKey ) => {
   .then( toJSON );
 };
 
-const msgFactory = doc => {
+const msgFactory = ( label, doc ) => {
   const { authorEmail, context } = doc.correspondence();
   const { title, authors, reference } = doc.citation();
-
-  const msgOpts = {
+  
+  const DEFAULTS = {
     to: {
       address: `${authorEmail}`
     },
-    subject: 'Your invitation to Biofactoid is ready',
     template: {
-      id: INVITE_TMPLID,
       vars: {
-        citation: `${title} ${authors}. ${reference}.`,
-        privateUrl: `${BASE_URL}/${doc.privateUrl()}`,
-        context
+        citation: `${title} ${authors}. ${reference}.`
       }
     }
   };
-
-  return msgOpts;
+  
+  const data = {};
+  switch( label ) {
+    case INVITE_EMAIL_LABEL:
+      _.set( data, 'subject', INVITE_EMAIL_SUBJECT );
+      _.set( data, ['template', 'id'], INVITE_TMPLID );
+      _.set( data, ['template', 'vars'], {
+        privateUrl: `${BASE_URL}/${doc.privateUrl()}`,
+        context  
+      });
+      break;
+    case FOLLOWUP_EMAIL_LABEL:
+      _.set( data, 'subject', FOLLOWUP_EMAIL_SUBJECT );
+      _.set( data, ['template', 'id'], SUBMIT_SUCCESS_TMPLID );
+      _.set( data, ['template', 'vars'], {
+        publicUrl: `${BASE_URL}/${doc.publicUrl()}`
+      });
+      break;
+    default:
+  } 
+  
+  const mailOpts = _.defaultsDeep( data, DEFAULTS );
+  return mailOpts;
 };
 
 const orderByCreatedDate = docs => _.orderBy( docs, [ doc => doc.createdDate() ], ['desc'] );
@@ -132,7 +157,7 @@ class DocumentManagement extends DirtyComponent {
       .then( () => this.props.history.push(`/document?apiKey=${sanitizeKey(apiKey)}`) )
       .catch( () => {} ); //swallow
   }
-
+ 
   getDocs( apiKey ){
     const url = '/api/document';
     const params = { apiKey };
@@ -167,7 +192,10 @@ class DocumentManagement extends DirtyComponent {
       });
   }
 
-  handleEmail( mailOpts, doc ) {
+  handleEmail( e, doc ) {
+    const label = e.target.textContent;
+    const mailOpts = msgFactory( label, doc );
+
     const data = doc.correspondence();
 
     tryPromise( () => new Promise( resolve => {
@@ -339,24 +367,37 @@ class DocumentManagement extends DirtyComponent {
         ]);
 
       } else {
-        const { invite } = doc.correspondence();
+        const { invite, followUp } = doc.correspondence();
         const numInvites = _.size( invite );
         const lastInviteDate = toPeriodOrDate( _.get( _.last( invite ), 'date' ) );
+        const numFollowUps = _.size( followUp );
+        const lastFollowUpDate = toPeriodOrDate( _.get( _.last( followUp ), 'date' ) );
 
-        //Somthing weird here. Note updating from backend? reload? synch?
-        const mailOpts = msgFactory( doc );
         content = h( 'div.document-management-document-section-items', [
           h( 'div', getAuthorEmail( doc ) ),
-          h( 'div', {
-            className: makeClassList({ 'hide-when': !doc.approved() }),
-          }, [
+          h( 'div.by-status', {
+              className: makeClassList({ 'show': doc.approved() })
+            }, [
             h( 'button', {
-              onClick: () => this.handleEmail( mailOpts, doc )
-            }, `Invite` ),
+              onClick: e => this.handleEmail( e, doc ),
+              disabled: this.state.emailing
+            }, INVITE_EMAIL_LABEL ),
             this.state.emailing ? h('small.mute', [
               h('span', ' Sending mail '),
               h('i.icon.icon-spinner.document-seeder-submit-spinner')
-            ]) : numInvites ? h( 'small.mute', ` ${numInvites} | ${lastInviteDate}` ) : null
+            ]) : numInvites ? h( 'small.mute', ` ${numInvites} | ${lastInviteDate}` ) : null  
+          ]),
+          h( 'div.by-status', {
+              className: makeClassList({ 'show': doc.approved() })
+            }, [
+            h( 'button', {
+              onClick: e => this.handleEmail( e, doc ),
+              disabled: this.state.emailing
+            }, FOLLOWUP_EMAIL_LABEL ),
+            this.state.emailing ? h('small.mute', [
+              h('span', ' Sending mail '),
+              h('i.icon.icon-spinner.document-seeder-submit-spinner')
+            ]) : numFollowUps ? h( 'small.mute', ` ${numFollowUps} | ${lastFollowUpDate}` ) : null  
           ])
         ]);
       }

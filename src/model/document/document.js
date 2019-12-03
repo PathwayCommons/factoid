@@ -404,15 +404,6 @@ class Document {
     return this.syncher.get('submitted') ? true : false;
   }
 
-  // status(){
-  //   return {
-  //     createdDate: this.createdDate(),
-  //     lastEditedDate: this.lastEditedDate(),
-  //     approved: this.approved(),
-  //     submitted: this.submitted()
-  //   };
-  // }
-
   json(){
     let toJson = obj => obj.json();
 

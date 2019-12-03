@@ -354,10 +354,8 @@ class DocumentManagement extends DirtyComponent {
       const { authorEmail, isCorrespondingAuthor } = doc.correspondence();
       let contact = getContact( doc );
       const element = [ h( 'span', ` ${authorEmail}` ) ];
-      if( contact && isCorrespondingAuthor ){
-        element.push( h( 'span', ` <${contact.name}>` ) );
-        element.push( h( 'i.material-icons', 'mail_outline' ) );
-      }
+      if( contact ) element.push( h( 'span', ` <${contact.name}>` ) );
+      if( isCorrespondingAuthor ) element.push( h( 'i.material-icons', 'mail_outline' ) );
       return element;
     };
 
@@ -410,9 +408,11 @@ class DocumentManagement extends DirtyComponent {
     const getDocumentStatus = doc => {
       const created = toPeriodOrDate( doc.createdDate() );
       const modified = toPeriodOrDate( doc.lastEditedDate() );
+      const context = doc.correspondence() ? _.get( doc.correspondence(), 'context' ) : null;
+      const source = context ? `via ${context}` : '';
       return h( 'div.document-management-document-section.column.meta', [
           h( 'div.document-management-document-section-items', [
-            h( 'small.mute', { key: 'created' }, `Created ${created}` ),
+            h( 'small.mute', { key: 'created' }, `Created ${created} ${source}` ),
             h( 'small.mute', { key: 'modified' }, modified ? `Modified ${modified}`: 'Unmodified' )
           ])
         ]);

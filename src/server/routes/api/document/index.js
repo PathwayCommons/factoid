@@ -28,7 +28,9 @@ import { BASE_URL,
   TWITTER_ACCESS_TOKEN_KEY,
   TWITTER_ACCESS_TOKEN_SECRET,
   DEMO_CAN_BE_SHARED,
-  DOCUMENT_IMAGE_PADDING } from '../../../../config';
+  DOCUMENT_IMAGE_PADDING,
+  EMAIL_CONTEXT_SIGNUP
+ } from '../../../../config';
 
 const http = Express.Router();
 
@@ -87,14 +89,13 @@ let loadTables = () => Promise.all( tables.map( loadTable ) ).then( dbInfos => (
 let getDocJson = doc => doc.json();
 
 const DEFAULT_CORRESPONDENCE = {
-  invite: [],
-  reminder: [],
-  followUp: []
+  emails: [],
+  context: EMAIL_CONTEXT_SIGNUP
 };
 
 const fillDocCorrespondence = async ( doc, authorEmail, isCorrespondingAuthor, context ) => {
   try {
-    if( !emailRegex({exact: true}).test( authorEmail ) ) throw new TypeError( `Could not detect an email for '${authorEmail}'` ); 
+    if( !emailRegex({exact: true}).test( authorEmail ) ) throw new TypeError( `Could not detect an email for '${authorEmail}'` );
     doc.correspondence( _.defaults( { authorEmail, isCorrespondingAuthor, context }, DEFAULT_CORRESPONDENCE ) );
   } catch ( error ){
     doc.issues({ authorEmail: `${error.message}` });

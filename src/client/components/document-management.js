@@ -22,7 +22,9 @@ import {
 
 // Mail
 const INVITE_EMAIL_LABEL = 'Invite';
+const CORRESPONDENCE_INVITE_TYPE = 'invite';
 const FOLLOWUP_EMAIL_LABEL = 'Follow-Up';
+const CORRESPONDENCE_FOLLOWUP_TYPE = 'followUp';
 const INVITE_EMAIL_SUBJECT = 'Your invitation to Biofactoid is ready';
 const FOLLOWUP_EMAIL_SUBJECT = 'Thank you for sharing your research with Biofactoid';
 
@@ -69,10 +71,10 @@ const sendMail = ( docOpts, apiKey ) => {
   .then( toJSON );
 };
 
-const msgFactory = ( label, doc ) => {
+const msgFactory = ( correspondenceType, doc ) => {
   const { authorEmail, context } = doc.correspondence();
   const { title, authors, reference } = doc.citation();
-  
+
   const DEFAULTS = {
     to: {
       address: `${authorEmail}`
@@ -83,18 +85,18 @@ const msgFactory = ( label, doc ) => {
       }
     }
   };
-  
+
   const data = {};
-  switch( label ) {
-    case INVITE_EMAIL_LABEL:
+  switch( correspondenceType ) {
+    case CORRESPONDENCE_INVITE_TYPE:
       _.set( data, 'subject', INVITE_EMAIL_SUBJECT );
       _.set( data, ['template', 'id'], INVITE_TMPLID );
       _.set( data, ['template', 'vars'], {
         privateUrl: `${BASE_URL}/${doc.privateUrl()}`,
-        context  
+        context
       });
       break;
-    case FOLLOWUP_EMAIL_LABEL:
+    case CORRESPONDENCE_FOLLOWUP_TYPE:
       _.set( data, 'subject', FOLLOWUP_EMAIL_SUBJECT );
       _.set( data, ['template', 'id'], SUBMIT_SUCCESS_TMPLID );
       _.set( data, ['template', 'vars'], {
@@ -104,8 +106,8 @@ const msgFactory = ( label, doc ) => {
       });
       break;
     default:
-  } 
-  
+  }
+
   const mailOpts = _.defaultsDeep( data, DEFAULTS );
   return mailOpts;
 };
@@ -159,7 +161,7 @@ class DocumentManagement extends DirtyComponent {
       .then( () => this.props.history.push(`/document?apiKey=${sanitizeKey(apiKey)}`) )
       .catch( () => {} ); //swallow
   }
- 
+
   getDocs( apiKey ){
     const url = '/api/document';
     const params = { apiKey };
@@ -195,19 +197,22 @@ class DocumentManagement extends DirtyComponent {
   }
 
   handleEmail( e, doc ) {
-    const label = e.target.textContent;
-    const mailOpts = msgFactory( label, doc );
+    const correspondenceType = e.target.value;
+    const mailOpts = msgFactory( correspondenceType, doc );
 
-    const data = doc.correspondence();
+    const correspondence = doc.correspondence();
 
     tryPromise( () => new Promise( resolve => {
       this.setState({ emailing: true }, resolve );
     }))
     .then( () => sendMail( mailOpts, this.state.apiKey ) )
     .then( info => {
-      _.set( info, 'date', new Date() );
-      data.invite.push( info );
-      doc.correspondence( data );
+      const update = _.assign( {}, info, {
+        date: new Date(),
+        type: correspondenceType
+      });
+      correspondence.emails.push( update );
+      doc.correspondence( correspondence );
     })
     .finally( () => new Promise( resolve => {
       this.setState({ emailing: false }, resolve );
@@ -338,27 +343,45 @@ class DocumentManagement extends DirtyComponent {
         ]);
     };
 
-     // Correspondence
-     const getContact = doc => {
+    // Correspondence
+    const getContact = doc => {
       const { authorEmail } = doc.correspondence();
       const { contacts } = doc.citation();
       return _.find( contacts, contact => _.indexOf( _.get( contact, 'email' ), authorEmail ) > -1 );
-     };
+    };
 
-     const getAuthorEmail = doc => {
+    const getAuthorEmail = doc => {
       const { authorEmail, isCorrespondingAuthor } = doc.correspondence();
       let contact = getContact( doc );
       const element = [ h( 'span', ` ${authorEmail}` ) ];
       if( contact && isCorrespondingAuthor ){
         element.push( h( 'span', ` <${contact.name}>` ) );
-        element.push( h( 'i.material-icons', 'email' ) );
+        element.push( h( 'i.material-icons', 'mail_outline' ) );
       }
       return element;
-     };
+    };
+
+    const emailButton = ( doc, type, label ) => {
+      const { emails } = doc.correspondence();
+      const infos = _.filter( emails, { 'type': type } );
+      const last = toPeriodOrDate( _.get( _.last( infos ), 'date' ) );
+      return h( 'div.by-status', {
+          className: makeClassList({ 'show': doc.approved() })
+        }, [
+        h( 'button.document-management-document-section-button', {
+          value: type,
+          onClick: e => this.handleEmail( e, doc ),
+          disabled: this.state.emailing
+        }, label ),
+        this.state.emailing ? h('small.mute', [
+          h('span', ' Sending mail '),
+          h('i.icon.icon-spinner.document-seeder-submit-spinner')
+        ]) : _.size( infos ) ? h( 'small.mute', ` ${_.size( infos )} | ${last}` ) : null
+      ]);
+    };
 
      const getDocumentCorrespondence = doc => {
       let content = null;
-
       if( _.has( doc.issues(), 'authorEmail' ) ){
         const { authorEmail } = doc.issues();
         content = h( 'div.document-management-document-section-items', [
@@ -367,40 +390,12 @@ class DocumentManagement extends DirtyComponent {
             h( 'span', ` ${authorEmail}` )
           ])
         ]);
-
       } else {
-        const { invite, followUp } = doc.correspondence();
-        const numInvites = _.size( invite );
-        const lastInviteDate = toPeriodOrDate( _.get( _.last( invite ), 'date' ) );
-        const numFollowUps = _.size( followUp );
-        const lastFollowUpDate = toPeriodOrDate( _.get( _.last( followUp ), 'date' ) );
 
         content = h( 'div.document-management-document-section-items', [
           h( 'div', getAuthorEmail( doc ) ),
-          h( 'div.by-status', {
-              className: makeClassList({ 'show': doc.approved() })
-            }, [
-            h( 'button.document-management-document-section-button', {
-              onClick: e => this.handleEmail( e, doc ),
-              disabled: this.state.emailing
-            }, INVITE_EMAIL_LABEL ),
-            this.state.emailing ? h('small.mute', [
-              h('span', ' Sending mail '),
-              h('i.icon.icon-spinner.document-seeder-submit-spinner')
-            ]) : numInvites ? h( 'small.mute', ` ${numInvites} | ${lastInviteDate}` ) : null  
-          ]),
-          h( 'div.by-status', {
-              className: makeClassList({ 'show': doc.approved() })
-            }, [
-            h( 'button.document-management-document-section-button', {
-              onClick: e => this.handleEmail( e, doc ),
-              disabled: this.state.emailing
-            }, FOLLOWUP_EMAIL_LABEL ),
-            this.state.emailing ? h('small.mute', [
-              h('span', ' Sending mail '),
-              h('i.icon.icon-spinner.document-seeder-submit-spinner')
-            ]) : numFollowUps ? h( 'small.mute', ` ${numFollowUps} | ${lastFollowUpDate}` ) : null  
-          ])
+          emailButton( doc, CORRESPONDENCE_INVITE_TYPE, INVITE_EMAIL_LABEL ),
+          emailButton( doc, CORRESPONDENCE_FOLLOWUP_TYPE, FOLLOWUP_EMAIL_LABEL )
         ]);
       }
 

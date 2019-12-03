@@ -102,7 +102,7 @@ const msgFactory = ( correspondenceType, doc ) => {
       _.set( data, ['template', 'vars'], {
         publicUrl: `${BASE_URL}/${doc.publicUrl()}`,
         hasTweet: `${doc.hasTweet()}`,
-        tweetUrl: `${BASE_URL}/${doc.publicUrl()}`
+        tweetUrl: doc.tweeUrl()
       });
       break;
     default:

@@ -90,13 +90,20 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+
+  & button {
+    margin: 0.1em;
+    min-width: 6em;
+  }
 }
 
-.document-management-document-section-items.row {
-  flex-direction: row;
+.document-management-document-section-items {
+  &.row {
+    flex-direction: row;
 
-  & > * {
-    margin-right: 1em;
+    & > * {
+      margin-right: 1em;
+    }
   }
 }
 

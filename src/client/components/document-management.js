@@ -22,9 +22,9 @@ import {
 
 // Mail
 const INVITE_EMAIL_LABEL = 'Invite';
-const FOLLOWUP_EMAIL_LABEL = 'Follow-up';
+const FOLLOWUP_EMAIL_LABEL = 'Follow-Up';
 const INVITE_EMAIL_SUBJECT = 'Your invitation to Biofactoid is ready';
-const FOLLOWUP_EMAIL_SUBJECT = 'Thank you for using';
+const FOLLOWUP_EMAIL_SUBJECT = 'Thank you for sharing your research with Biofactoid';
 
 // Date formatting
 const DATE_FORMAT = 'MMMM-dd-yyyy';
@@ -98,7 +98,9 @@ const msgFactory = ( label, doc ) => {
       _.set( data, 'subject', FOLLOWUP_EMAIL_SUBJECT );
       _.set( data, ['template', 'id'], SUBMIT_SUCCESS_TMPLID );
       _.set( data, ['template', 'vars'], {
-        publicUrl: `${BASE_URL}/${doc.publicUrl()}`
+        publicUrl: `${BASE_URL}/${doc.publicUrl()}`,
+        hasTweet: `${doc.hasTweet()}`,
+        tweetUrl: `${BASE_URL}/${doc.publicUrl()}`
       });
       break;
     default:
@@ -378,7 +380,7 @@ class DocumentManagement extends DirtyComponent {
           h( 'div.by-status', {
               className: makeClassList({ 'show': doc.approved() })
             }, [
-            h( 'button', {
+            h( 'button.document-management-document-section-button', {
               onClick: e => this.handleEmail( e, doc ),
               disabled: this.state.emailing
             }, INVITE_EMAIL_LABEL ),
@@ -390,7 +392,7 @@ class DocumentManagement extends DirtyComponent {
           h( 'div.by-status', {
               className: makeClassList({ 'show': doc.approved() })
             }, [
-            h( 'button', {
+            h( 'button.document-management-document-section-button', {
               onClick: e => this.handleEmail( e, doc ),
               disabled: this.state.emailing
             }, FOLLOWUP_EMAIL_LABEL ),

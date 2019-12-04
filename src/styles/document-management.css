@@ -64,14 +64,14 @@
   justify-content: flex-start;
   margin: 0.4rem 0;
 
+  &.meta {
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+
   & > * {
     max-width: 80%;
   }
-}
-
-.document-management-document-section.meta {
-  justify-content: flex-end;
-  align-items: flex-end;
 }
 
 .document-management-document-section-label {
@@ -94,6 +94,10 @@
   & button {
     margin: 0.1em;
     min-width: 6em;
+  }
+
+  & .radioset {
+    margin-bottom: 0.2em;
   }
 
   & .row > * {

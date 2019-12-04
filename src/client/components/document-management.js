@@ -244,38 +244,6 @@ class DocumentManagement extends DirtyComponent {
         ]);
     };
 
-    // Status
-    const getDocumentStatus = doc => {
-      let radios = [];
-      let DOCUMENT_STATUS_FIELDS = doc.statusFields();
-      let addType = (typeVal, displayName) => {
-        radios.push(
-          h('input', {
-            type: 'radio',
-            name: `document-status-${doc.id()}`,
-            id: `document-status-radio-${doc.id()}-${typeVal}`,
-            value: typeVal,
-            defaultChecked: _.get( DOCUMENT_STATUS_FIELDS, typeVal ) === doc.status(),
-            onChange: e => {
-              let newlySelectedStatus = _.get( DOCUMENT_STATUS_FIELDS, e.target.value );
-              doc.status( newlySelectedStatus );
-            }
-          }),
-          h('label', {
-            htmlFor: `document-status-radio-${doc.id()}-${typeVal}`
-          }, displayName)
-        );
-      };
-
-      _.toPairs( DOCUMENT_STATUS_FIELDS ).forEach( ([ field, status ]) => addType( field, _.capitalize( status ) ) );
-
-      return h( 'div.document-management-document-section.meta', [
-        h( 'div.document-management-document-section-items', [
-          h( 'small.radioset', radios )
-        ])
-      ]);
-    };
-
     // Correspondence
     const getContact = doc => {
       const { authorEmail } = doc.correspondence();
@@ -329,16 +297,44 @@ class DocumentManagement extends DirtyComponent {
       ]);
     };
 
+    // Status
+    const getDocumentStatus = doc => {
+      let radios = [];
+      let DOCUMENT_STATUS_FIELDS = doc.statusFields();
+      let addType = (typeVal, displayName) => {
+        radios.push(
+          h('input', {
+            type: 'radio',
+            name: `document-status-${doc.id()}`,
+            id: `document-status-radio-${doc.id()}-${typeVal}`,
+            value: typeVal,
+            defaultChecked: _.get( DOCUMENT_STATUS_FIELDS, typeVal ) === doc.status(),
+            onChange: e => {
+              let newlySelectedStatus = _.get( DOCUMENT_STATUS_FIELDS, e.target.value );
+              doc.status( newlySelectedStatus );
+            }
+          }),
+          h('label', {
+            htmlFor: `document-status-radio-${doc.id()}-${typeVal}`
+          }, displayName)
+        );
+      };
+
+      _.toPairs( DOCUMENT_STATUS_FIELDS ).forEach( ([ field, status ]) => addType( field, _.capitalize( status ) ) );
+      return h( 'div.radioset', radios );
+    };
+
     // Stats
     const getDocumentStats = doc => {
       const created = toPeriodOrDate( doc.createdDate() );
-      const modified = toPeriodOrDate( doc.lastEditedDate() );
+      const edited = toPeriodOrDate( doc.lastEditedDate() );
       const context = doc.correspondence() ? _.get( doc.correspondence(), 'context' ) : null;
       const source = context ? `via ${context}` : '';
       return h( 'div.document-management-document-section.column.meta', [
-          h( 'div.document-management-document-section-items', [
-            h( 'small.mute', { key: 'created' }, `Created ${created} ${source}` ),
-            h( 'small.mute', { key: 'modified' }, modified ? `Modified ${modified}`: 'Unmodified' )
+          h( 'small.document-management-document-section-items', [
+            getDocumentStatus( doc ),
+            h( 'div.mute', { key: 'created' }, `Created ${created} ${source}` ),
+            h( 'div.mute', { key: 'edited' }, edited ? `Edited ${edited}`: 'Not edited' )
           ])
         ]);
     };
@@ -352,7 +348,6 @@ class DocumentManagement extends DirtyComponent {
           getDocumentArticle( doc ),
           getDocumentNetwork( doc ),
           getDocumentCorrespondence( doc ),
-          getDocumentStatus( doc ),
           getDocumentStats( doc ),
           h( 'hr' )
         ]);

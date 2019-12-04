@@ -13,13 +13,10 @@ const DEFAULTS = Object.freeze({
   // data
   entries: [], // used by elementSet
   organisms: [], // list of ids
-
-  // metadata
-  submitted: false,
-  approved: false
 });
 
-const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'approved', 'submitted' ];
+const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'status' ];
+const DOCUMENT_STATUSES = new Set([ 'requested', 'approved', 'submitted', 'trashed' ]);
 
 /**
 A document that contains a set of biological elements (i.e. entities and interactions).
@@ -204,7 +201,7 @@ class Document {
   createdDate(){
     return this.rwMeta('createdDate');
   }
-  
+
   lastEditedDate(){
     return this.rwMeta('lastEditedDate');
   }
@@ -380,29 +377,25 @@ class Document {
     return tryPromise( runLayout ).then( savePositions );
   }
 
-  approve(){
-    let p = this.syncher.update({ approved: true });
+  status( field ){
+    if( field && DOCUMENT_STATUSES.has( field ) ){
+      let p = this.syncher.update({ 'status': field });
+      this.emit( 'field' );
+      return p;
 
-    this.emit('approve');
-
-    return p;
+    } else if( !field ){
+      return this.syncher.get( 'status' );
+    }
   }
 
-  approved(){
-    return this.syncher.get('approved') ? true : false;
-  }
-
-  submit(){
-    let p = this.syncher.update({ submitted: true });
-
-    this.emit('submit');
-
-    return p;
-  }
-
-  submitted(){
-    return this.syncher.get('submitted') ? true : false;
-  }
+  request(){ this.status( 'requested' ); }
+  requested(){ return this.status() === 'requested' ? true : false; }
+  approve(){ this.status( 'approved'); }
+  approved(){ return this.status() === 'approved' ? true : false; }
+  submit(){ this.status( 'submitted' ); }
+  submitted(){ return this.status() === 'submitted' ? true : false; }
+  trash(){ this.status( 'trashed' ); }
+  trashed(){ return this.status() === 'trashed' ? true : false; }
 
   json(){
     let toJson = obj => obj.json();

@@ -269,15 +269,15 @@ class DocumentManagement extends DirtyComponent {
             className: makeClassList({ 'show': doc.issues() })
           }, 'warning' ),
           h( 'i.material-icons.by-status.mute', {
-            className: makeClassList({ 'show': doc.approved() && !doc.submitted() })
+            className: makeClassList({ 'show': doc.approved() })
           }, 'thumb_up' ),
           h( 'i.material-icons.by-status.complete', {
-            className: makeClassList({ 'show': doc.approved() && doc.submitted() })
+            className: makeClassList({ 'show': doc.submitted() })
           }, 'check_circle' ),
-          h('button.by-status', {
-            className: makeClassList({ 'show': !doc.issues() && !doc.approved() }),
-            onClick: () => this.handleApproveRequest( doc )
-          }, 'Approve' )
+          h( 'i.material-icons.by-status.mute', {
+            className: makeClassList({ 'show': doc.trashed() })
+          }, 'delete' ),
+
         ])
       ]);
     };
@@ -353,19 +353,17 @@ class DocumentManagement extends DirtyComponent {
     const getAuthorEmail = doc => {
       const { authorEmail, isCorrespondingAuthor } = doc.correspondence();
       let contact = getContact( doc );
-      const element = [ h( 'span', ` ${authorEmail}` ) ];
-      if( contact ) element.push( h( 'span', ` <${contact.name}>` ) );
+      const element = [ h( 'span', `${authorEmail} ` ) ];
+      if( contact ) element.push( h( 'span', ` <${contact.name}> ` ) );
       if( isCorrespondingAuthor ) element.push( h( 'i.material-icons', 'mail_outline' ) );
       return element;
     };
 
-    const emailButton = ( doc, type, label ) => {
+    const emailButton = ( doc, type, label, className ) => {
       const { emails } = doc.correspondence();
       const infos = _.filter( emails, { 'type': type } );
       const last = toPeriodOrDate( _.get( _.last( infos ), 'date' ) );
-      return h( 'div.by-status', {
-          className: makeClassList({ 'show': doc.approved() })
-        }, [
+      return h( 'div.by-status', { key: type, className }, [
         h( 'button.document-management-document-section-button', {
           value: type,
           onClick: e => this.handleEmail( e, doc ),
@@ -392,8 +390,8 @@ class DocumentManagement extends DirtyComponent {
 
         content = h( 'div.document-management-document-section-items', [
           h( 'div', getAuthorEmail( doc ) ),
-          emailButton( doc, CORRESPONDENCE_INVITE_TYPE, INVITE_EMAIL_LABEL ),
-          emailButton( doc, CORRESPONDENCE_FOLLOWUP_TYPE, FOLLOWUP_EMAIL_LABEL )
+          emailButton( doc, CORRESPONDENCE_INVITE_TYPE, INVITE_EMAIL_LABEL, makeClassList({ 'show': doc.approved() }) ),
+          emailButton( doc, CORRESPONDENCE_FOLLOWUP_TYPE, FOLLOWUP_EMAIL_LABEL, makeClassList({ 'show': doc.submitted() }) )
         ]);
       }
 

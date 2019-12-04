@@ -5,28 +5,17 @@ import { Link } from 'react-router-dom';
 import io from 'socket.io-client';
 import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
 
+import EmailButtton from './document-email-button-component';
 import logger from '../logger';
 import DirtyComponent from './dirty-component';
 import Document from '../../model/document';
 import { makeClassList, tryPromise } from '../../util';
 import {
-  BASE_URL,
-  EMAIL_FROM,
-  EMAIL_FROM_ADDR,
-  EMAIL_VENDOR_MAILJET,
-  INVITE_TMPLID,
-  SUBMIT_SUCCESS_TMPLID,
   PUBMED_LINK_BASE_URL,
-  DOI_LINK_BASE_URL
+  DOI_LINK_BASE_URL,
+  CORRESPONDENCE_INVITE_TYPE,
+  CORRESPONDENCE_FOLLOWUP_TYPE
 } from '../../config' ;
-
-// Mail
-const INVITE_EMAIL_LABEL = 'Invite';
-const CORRESPONDENCE_INVITE_TYPE = 'invite';
-const FOLLOWUP_EMAIL_LABEL = 'Follow-Up';
-const CORRESPONDENCE_FOLLOWUP_TYPE = 'followUp';
-const INVITE_EMAIL_SUBJECT = 'Your invitation to Biofactoid is ready';
-const FOLLOWUP_EMAIL_SUBJECT = 'Thank you for sharing your research with Biofactoid';
 
 // Date formatting
 const DATE_FORMAT = 'MMMM-dd-yyyy';
@@ -43,75 +32,6 @@ const toPeriodOrDate = dateString => {
 };
 
 const sanitizeKey = secret => secret === '' ? '%27%27': secret;
-const toJSON = res => res.json();
-
-const sendMail = ( docOpts, apiKey ) => {
-  const url = '/api/document/email';
-  const defaults = {
-    from: {
-      name: EMAIL_FROM,
-      address: EMAIL_FROM_ADDR
-    },
-    template: {
-      vendor: EMAIL_VENDOR_MAILJET
-    }
-  };
-
-  const opts = _.merge( {}, defaults, docOpts );
-  const data = { opts, apiKey };
-
-  return fetch( url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify( data )
-  })
-  .then( toJSON );
-};
-
-const msgFactory = ( correspondenceType, doc ) => {
-  const { authorEmail, context } = doc.correspondence();
-  const { title, authors, reference } = doc.citation();
-
-  const DEFAULTS = {
-    to: {
-      address: `${authorEmail}`
-    },
-    template: {
-      vars: {
-        citation: `${title} ${authors}. ${reference}.`
-      }
-    }
-  };
-
-  const data = {};
-  switch( correspondenceType ) {
-    case CORRESPONDENCE_INVITE_TYPE:
-      _.set( data, 'subject', INVITE_EMAIL_SUBJECT );
-      _.set( data, ['template', 'id'], INVITE_TMPLID );
-      _.set( data, ['template', 'vars'], {
-        privateUrl: `${BASE_URL}/${doc.privateUrl()}`,
-        context
-      });
-      break;
-    case CORRESPONDENCE_FOLLOWUP_TYPE:
-      _.set( data, 'subject', FOLLOWUP_EMAIL_SUBJECT );
-      _.set( data, ['template', 'id'], SUBMIT_SUCCESS_TMPLID );
-      _.set( data, ['template', 'vars'], {
-        publicUrl: `${BASE_URL}/${doc.publicUrl()}`,
-        hasTweet: `${doc.hasTweet()}`,
-        tweetUrl: doc.tweetUrl()
-      });
-      break;
-    default:
-  }
-
-  const mailOpts = _.defaultsDeep( data, DEFAULTS );
-  return mailOpts;
-};
-
 const orderByCreatedDate = docs => _.orderBy( docs, [ doc => doc.createdDate() ], ['desc'] );
 
 const toDocs = ( docJSON, docSocket, eleSocket ) => {
@@ -153,8 +73,7 @@ class DocumentManagement extends DirtyComponent {
       apiKey,
       validApiKey: false,
       docs: [],
-      error: undefined,
-      emailing: false
+      error: undefined
     };
 
     this.getDocs( apiKey )
@@ -171,7 +90,7 @@ class DocumentManagement extends DirtyComponent {
       .then( res => res.json() )
       .then( docJSON => toDocs( docJSON, this.docSocket, this.eleSocket ) )
       .then( docs => {
-        docs.forEach( doc => doc.on( 'update', () => this.dirty()) );
+        docs.forEach( doc => doc.on( 'update', () => this.dirty() ) );
         return docs;
       })
       .then( docs => new Promise( resolve => {
@@ -196,28 +115,7 @@ class DocumentManagement extends DirtyComponent {
       });
   }
 
-  handleEmail( e, doc ) {
-    const correspondenceType = e.target.value;
-    const mailOpts = msgFactory( correspondenceType, doc );
 
-    const correspondence = doc.correspondence();
-
-    tryPromise( () => new Promise( resolve => {
-      this.setState({ emailing: true }, resolve );
-    }))
-    .then( () => sendMail( mailOpts, this.state.apiKey ) )
-    .then( info => {
-      const update = _.assign( {}, info, {
-        date: new Date(),
-        type: correspondenceType
-      });
-      correspondence.emails.push( update );
-      doc.correspondence( correspondence );
-    })
-    .finally( () => new Promise( resolve => {
-      this.setState({ emailing: false }, resolve );
-    }));
-  }
 
   handleApiKeyFormChange( apiKey ) {
     this.setState( { apiKey } );
@@ -264,20 +162,21 @@ class DocumentManagement extends DirtyComponent {
     // Document Header & Footer
     const getDocumentHeader = doc => {
       return h( 'div.document-management-document-section.meta', [
-        h( 'div.document-management-document-section-items.row', [
-          h( 'i.material-icons.by-status.invalid', {
-            className: makeClassList({ 'show': doc.issues() })
-          }, 'warning' ),
-          h( 'i.material-icons.by-status.mute', {
-            className: makeClassList({ 'show': doc.approved() })
-          }, 'thumb_up' ),
-          h( 'i.material-icons.by-status.complete', {
-            className: makeClassList({ 'show': doc.submitted() })
-          }, 'check_circle' ),
-          h( 'i.material-icons.by-status.mute', {
-            className: makeClassList({ 'show': doc.trashed() })
-          }, 'delete' ),
-
+        h( 'div.document-management-document-section-items', [
+          h( 'div', [
+            h( 'i.material-icons.by-status.invalid', {
+              className: makeClassList({ 'show': doc.issues() })
+            }, 'warning' ),
+            h( 'i.material-icons.by-status.mute', {
+              className: makeClassList({ 'show': doc.approved() })
+            }, 'thumb_up' ),
+            h( 'i.material-icons.by-status.complete', {
+              className: makeClassList({ 'show': doc.submitted() })
+            }, 'check_circle' ),
+            h( 'i.material-icons.by-status.mute', {
+              className: makeClassList({ 'show': doc.trashed() })
+            }, 'delete' )
+          ])
         ])
       ]);
     };
@@ -328,19 +227,53 @@ class DocumentManagement extends DirtyComponent {
     const getDocumentNetwork = doc => {
       return h( 'div.document-management-document-section', [
           h( 'div.document-management-document-section-label', 'Document:' ),
-          h( 'div.document-management-document-section-items.row', [
-            h( Link, {
-              className: 'plain-link',
-              to: doc.publicUrl(),
-              target: '_blank',
-            }, 'Summary' ),
-            h( Link, {
-              className: 'plain-link',
-              to: doc.privateUrl(),
-              target: '_blank'
-            }, 'Editable' )
+          h( 'div.document-management-document-section-items', [
+            h( 'div.row', [
+              h( Link, {
+                className: 'plain-link',
+                to: doc.publicUrl(),
+                target: '_blank',
+              }, 'Summary' ),
+              h( Link, {
+                className: 'plain-link',
+                to: doc.privateUrl(),
+                target: '_blank'
+              }, 'Editable' ),
+            ])
           ])
         ]);
+    };
+
+    // Status
+    const getDocumentStatus = doc => {
+      let radios = [];
+      let DOCUMENT_STATUS_FIELDS = doc.statusFields();
+      let addType = (typeVal, displayName) => {
+        radios.push(
+          h('input', {
+            type: 'radio',
+            name: `document-status-${doc.id()}`,
+            id: `document-status-radio-${doc.id()}-${typeVal}`,
+            value: typeVal,
+            defaultChecked: _.get( DOCUMENT_STATUS_FIELDS, typeVal ) === doc.status(),
+            onChange: e => {
+              let newlySelectedStatus = _.get( DOCUMENT_STATUS_FIELDS, e.target.value );
+              doc.status( newlySelectedStatus );
+            }
+          }),
+          h('label', {
+            htmlFor: `document-status-radio-${doc.id()}-${typeVal}`
+          }, displayName)
+        );
+      };
+
+      _.toPairs( DOCUMENT_STATUS_FIELDS ).forEach( ([ field, status ]) => addType( field, _.capitalize( status ) ) );
+
+      return h( 'div.document-management-document-section.meta', [
+        h( 'div.document-management-document-section-items', [
+          h( 'small.radioset', radios )
+        ])
+      ]);
     };
 
     // Correspondence
@@ -359,24 +292,7 @@ class DocumentManagement extends DirtyComponent {
       return element;
     };
 
-    const emailButton = ( doc, type, label, className ) => {
-      const { emails } = doc.correspondence();
-      const infos = _.filter( emails, { 'type': type } );
-      const last = toPeriodOrDate( _.get( _.last( infos ), 'date' ) );
-      return h( 'div.by-status', { key: type, className }, [
-        h( 'button.document-management-document-section-button', {
-          value: type,
-          onClick: e => this.handleEmail( e, doc ),
-          disabled: this.state.emailing
-        }, label ),
-        this.state.emailing ? h('small.mute', [
-          h('span', ' Sending mail '),
-          h('i.icon.icon-spinner.document-seeder-submit-spinner')
-        ]) : _.size( infos ) ? h( 'small.mute', ` ${_.size( infos )} | ${last}` ) : null
-      ]);
-    };
-
-     const getDocumentCorrespondence = doc => {
+    const getDocumentCorrespondence = doc => {
       let content = null;
       if( _.has( doc.issues(), 'authorEmail' ) ){
         const { authorEmail } = doc.issues();
@@ -390,8 +306,18 @@ class DocumentManagement extends DirtyComponent {
 
         content = h( 'div.document-management-document-section-items', [
           h( 'div', getAuthorEmail( doc ) ),
-          emailButton( doc, CORRESPONDENCE_INVITE_TYPE, INVITE_EMAIL_LABEL, makeClassList({ 'show': doc.approved() }) ),
-          emailButton( doc, CORRESPONDENCE_FOLLOWUP_TYPE, FOLLOWUP_EMAIL_LABEL, makeClassList({ 'show': doc.submitted() }) )
+          h( EmailButtton, {
+            doc,
+            type: CORRESPONDENCE_INVITE_TYPE,
+            label: _.capitalize( CORRESPONDENCE_INVITE_TYPE ),
+            disableWhen: doc.requested() || doc.trashed() || doc.submitted()
+          }),
+          h( EmailButtton, {
+            doc,
+            type: CORRESPONDENCE_FOLLOWUP_TYPE,
+            label: _.upperFirst( CORRESPONDENCE_FOLLOWUP_TYPE.replace(/([A-Z])/g, (match, letter) => '-' + letter) ),
+            disableWhen: doc.requested() || doc.trashed() || !doc.submitted()
+          })
         ]);
       }
 
@@ -403,7 +329,8 @@ class DocumentManagement extends DirtyComponent {
       ]);
     };
 
-    const getDocumentStatus = doc => {
+    // Stats
+    const getDocumentStats = doc => {
       const created = toPeriodOrDate( doc.createdDate() );
       const modified = toPeriodOrDate( doc.lastEditedDate() );
       const context = doc.correspondence() ? _.get( doc.correspondence(), 'context' ) : null;
@@ -426,6 +353,7 @@ class DocumentManagement extends DirtyComponent {
           getDocumentNetwork( doc ),
           getDocumentCorrespondence( doc ),
           getDocumentStatus( doc ),
+          getDocumentStats( doc ),
           h( 'hr' )
         ]);
       })

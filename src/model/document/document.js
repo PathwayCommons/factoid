@@ -16,7 +16,12 @@ const DEFAULTS = Object.freeze({
 });
 
 const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'status' ];
-const DOCUMENT_STATUSES = new Set([ 'requested', 'approved', 'submitted', 'trashed' ]);
+const DOCUMENT_STATUS_FIELDS = Object.freeze({
+  REQUESTED: 'requested',
+  APPROVED: 'approved',
+  SUBMITTED: 'submitted',
+  TRASHED: 'trashed'
+});
 
 /**
 A document that contains a set of biological elements (i.e. entities and interactions).
@@ -378,9 +383,9 @@ class Document {
   }
 
   status( field ){
-    if( field && DOCUMENT_STATUSES.has( field ) ){
+    if( field && _.includes( _.values( DOCUMENT_STATUS_FIELDS ), field ) ){
       let p = this.syncher.update({ 'status': field });
-      this.emit( 'field' );
+      this.emit( 'status', field );
       return p;
 
     } else if( !field ){
@@ -388,14 +393,15 @@ class Document {
     }
   }
 
-  request(){ this.status( 'requested' ); }
-  requested(){ return this.status() === 'requested' ? true : false; }
-  approve(){ this.status( 'approved'); }
-  approved(){ return this.status() === 'approved' ? true : false; }
-  submit(){ this.status( 'submitted' ); }
-  submitted(){ return this.status() === 'submitted' ? true : false; }
-  trash(){ this.status( 'trashed' ); }
-  trashed(){ return this.status() === 'trashed' ? true : false; }
+  statusFields(){ return DOCUMENT_STATUS_FIELDS; }
+  request(){ this.status( DOCUMENT_STATUS_FIELDS.REQUESTED ); }
+  requested(){ return this.status() === DOCUMENT_STATUS_FIELDS.REQUESTED ? true : false; }
+  approve(){ this.status( DOCUMENT_STATUS_FIELDS.APPROVED ); }
+  approved(){ return this.status() === DOCUMENT_STATUS_FIELDS.APPROVED ? true : false; }
+  submit(){ this.status( DOCUMENT_STATUS_FIELDS.SUBMITTED ); }
+  submitted(){ return this.status() === DOCUMENT_STATUS_FIELDS.SUBMITTED ? true : false; }
+  trash(){ this.status( DOCUMENT_STATUS_FIELDS.TRASHED ); }
+  trashed(){ return this.status() === DOCUMENT_STATUS_FIELDS.TRASHED ? true : false; }
 
   json(){
     let toJson = obj => obj.json();

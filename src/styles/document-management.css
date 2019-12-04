@@ -48,7 +48,7 @@
     display: none;
 
     &.show {
-      display: block;
+      display: initial;
     }
   }
 }
@@ -95,15 +95,8 @@
     margin: 0.1em;
     min-width: 6em;
   }
-}
 
-.document-management-document-section-items {
-  &.row {
-    flex-direction: row;
-
-    & > * {
-      margin-right: 1em;
-    }
+  & .row > * {
+    margin-right: 1em;
   }
 }
-

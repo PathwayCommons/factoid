@@ -8,18 +8,21 @@ import { assertOneOfFieldsDefined, mixin, getId, makeCyEles, getCyLayoutOpts, is
 import Cytoscape from 'cytoscape';
 import { TWITTER_ACCOUNT_NAME } from '../../config';
 import { getPubmedCitation } from '../../util/pubmed';
-import { formatISO, parseISO } from 'date-fns';
+import { isServer } from '../../util/';
 
 const DEFAULTS = Object.freeze({
   // data
   entries: [], // used by elementSet
   organisms: [], // list of ids
-
-  // metadata
-  submitted: false
 });
 
-const METADATA_FIELDS = ['provided', 'issues', 'article', 'correspondence', 'lastEditedDate'];
+const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'status' ];
+const DOCUMENT_STATUS_FIELDS = Object.freeze({
+  REQUESTED: 'requested',
+  APPROVED: 'approved',
+  SUBMITTED: 'submitted',
+  TRASHED: 'trashed'
+});
 
 /**
 A document that contains a set of biological elements (i.e. entities and interactions).
@@ -86,6 +89,8 @@ class Document {
         this.emit('remotesubmit');
       }
     });
+
+    if( isServer ) this.syncher.on( 'create', () => this.rwMeta( 'createdDate', new Date() ) );
   }
 
   filled(){
@@ -178,6 +183,10 @@ class Document {
     }
   }
 
+  provided(){
+    return this.rwMeta('provided');
+  }
+
   article(newVal){
     return this.rwMeta('article', newVal);
   }
@@ -195,16 +204,16 @@ class Document {
     return getPubmedCitation( this.article() );
   }
 
-  lastEditedDate(){
-    const dateVal = this.rwMeta('lastEditedDate');
+  createdDate(){
+    return this.rwMeta('createdDate');
+  }
 
-    return parseISO(dateVal);
+  lastEditedDate(){
+    return this.rwMeta('lastEditedDate');
   }
 
   updateLastEditedDate(){
-    const dateVal = formatISO(new Date());
-
-    return this.rwMeta('lastEditedDate', dateVal);
+    return this.rwMeta('lastEditedDate', new Date());
   }
 
   entities(){
@@ -374,17 +383,26 @@ class Document {
     return tryPromise( runLayout ).then( savePositions );
   }
 
-  submit(){
-    let p = this.syncher.update({ submitted: true });
+  status( field ){
+    if( field && _.includes( _.values( DOCUMENT_STATUS_FIELDS ), field ) ){
+      let p = this.syncher.update({ 'status': field });
+      this.emit( 'status', field );
+      return p;
 
-    this.emit('submit');
-
-    return p;
+    } else if( !field ){
+      return this.syncher.get( 'status' );
+    }
   }
 
-  submitted(){
-    return this.syncher.get('submitted') ? true : false;
-  }
+  statusFields(){ return DOCUMENT_STATUS_FIELDS; }
+  request(){ return this.status( DOCUMENT_STATUS_FIELDS.REQUESTED ); }
+  requested(){ return this.status() === DOCUMENT_STATUS_FIELDS.REQUESTED ? true : false; }
+  approve(){ return this.status( DOCUMENT_STATUS_FIELDS.APPROVED ); }
+  approved(){ return this.status() === DOCUMENT_STATUS_FIELDS.APPROVED ? true : false; }
+  submit(){ return this.status( DOCUMENT_STATUS_FIELDS.SUBMITTED ); }
+  submitted(){ return this.status() === DOCUMENT_STATUS_FIELDS.SUBMITTED ? true : false; }
+  trash(){ return this.status( DOCUMENT_STATUS_FIELDS.TRASHED ); }
+  trashed(){ return this.status() === DOCUMENT_STATUS_FIELDS.TRASHED ? true : false; }
 
   json(){
     let toJson = obj => obj.json();
@@ -396,9 +414,7 @@ class Document {
       elements: this.elements().map( toJson ),
       publicUrl: this.publicUrl(),
       privateUrl: this.privateUrl(),
-      submitted: this.submitted(),
-      citation: this.citation(),
-      lastEditedDate: this.lastEditedDate()
+      citation: this.citation()
     }, _.pick(this.syncher.get(), METADATA_FIELDS));
   }
 
@@ -434,9 +450,7 @@ class Document {
     let orgIds = json.organisms || [];
     let addOrganism = id => this.toggleOrganism( id, true );
     let addOrganisms = () => Promise.all( orgIds.map( addOrganism ) );
-
-    let metaEtcFields = ['submitted'].concat(METADATA_FIELDS);
-    let updateMetadataEtc = () => this.syncher.update( _.pick(json, metaEtcFields) );
+    let updateMetadataEtc = () => this.syncher.update( _.pick(json, METADATA_FIELDS) );
 
     return Promise.all([
       updateMetadataEtc(),

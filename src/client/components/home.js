@@ -85,7 +85,7 @@ class RequestForm extends Component {
     } else {
       const url = 'api/document';
       const data = _.assign( {}, { 
-        paperId, 
+        paperId: _.trim( paperId ), 
         authorEmail: emailAddress, 
         isCorrespondingAuthor,
         context: EMAIL_CONTEXT_SIGNUP

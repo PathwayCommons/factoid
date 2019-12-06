@@ -58,6 +58,7 @@ export const CHEBI_LINK_BASE_URL = env('CHEBI_LINK_BASE_URL', 'https://www.ebi.a
 export const PUBCHEM_LINK_BASE_URL = env('PUBCHEM_LINK_BASE_URL', 'https://pubchem.ncbi.nlm.nih.gov/compound/');
 export const NCBI_LINK_BASE_URL = env('NCBI_LINK_BASE_URL', 'https://www.ncbi.nlm.nih.gov/gene/');
 export const PUBMED_LINK_BASE_URL = env('PUBMED_LINK_BASE_URL', 'https://www.ncbi.nlm.nih.gov/pubmed/');
+export const DOI_LINK_BASE_URL = env('DOI_LINK_BASE_URL', 'https://www.doi.org/');
 
 // Email
 export const EMAIL_ENABLED = env('EMAIL_ENABLED', false);
@@ -69,10 +70,13 @@ export const SMTP_USER = env('SMTP_USER', 'user');
 export const SMTP_PASSWORD = env('SMTP_PASSWORD', 'password');
 
 export const EMAIL_VENDOR_MAILJET = env('EMAIL_VENDOR_MAILJET', 'Mailjet');
-export const INVITE_TMPLID = env('INVITE_SIGNUP_TMPLID', '1005099');
+export const INVITE_TMPLID = env('INVITE_TMPLID', '1005099');
 export const SUBMIT_SUCCESS_TMPLID = env('SUBMIT_SUCCESS_TMPLID', '988309');
 export const EMAIL_CONTEXT_JOURNAL = env('EMAIL_CONTEXT_JOURNAL', 'journal');
 export const EMAIL_CONTEXT_SIGNUP = env('EMAIL_CONTEXT_SIGNUP', 'signup');
+export const CORRESPONDENCE_INVITE_TYPE = env('CORRESPONDENCE_INVITE_TYPE', 'invite');
+export const CORRESPONDENCE_FOLLOWUP_TYPE = env('CORRESPONDENCE_FOLLOWUP_TYPE', 'followUp');
+
 
 // Sharing
 export const DOCUMENT_IMAGE_WIDTH = env('DOCUMENT_IMAGE_WIDTH', 2400);

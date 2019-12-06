@@ -5,7 +5,8 @@ import demoPubmedArticle from './demoPubmedArticle';
 import { searchPubmed } from './searchPubmed';
 
 import {
-  PUBMED_LINK_BASE_URL
+  PUBMED_LINK_BASE_URL,
+  DEMO_ID
 } from '../../../../../config';
 
 const digitsRegex = /^[0-9]+$/;
@@ -13,7 +14,8 @@ const digitsRegex = /^[0-9]+$/;
 const findPubmedId = async paperId => {
 
   let id;
-  if( !_.isString( paperId ) ) throw new TypeError( 'Unrecognized paperId' );
+  const errMessage = `Unrecognized paperId '${paperId}'`;
+  if( !_.isString( paperId ) ) throw new TypeError( errMessage );
   const isUidLike = digitsRegex.test( paperId );
   const isPubMedUrlLike = paperId.startsWith( PUBMED_LINK_BASE_URL );
   
@@ -36,15 +38,15 @@ const findPubmedId = async paperId => {
       if( count === 1 ){ 
         id = _.first( searchHits );
       } else {
-        throw new TypeError( 'Unrecognized paperId' );
+        throw new TypeError( errMessage );
       }
       
     } else {
-      throw new TypeError( 'Unrecognized paperId' );
+      throw new TypeError( errMessage );
     }
     
   } else {
-    throw new TypeError( 'Unrecognized paperId' );
+    throw new TypeError( errMessage );
   }
 
   return id;
@@ -64,7 +66,7 @@ const findPubmedId = async paperId => {
  * @throws {TypeError} When paperId falls outside of the above cases
  */
 const getPubmedArticle = async paperId => { 
-  if( paperId === 'demo' ) return demoPubmedArticle;
+  if( paperId === DEMO_ID ) return demoPubmedArticle;
   const candidateId = await findPubmedId( paperId );
   const { PubmedArticleSet } = await fetchPubmed({
     uids: [ candidateId ]
@@ -73,7 +75,7 @@ const getPubmedArticle = async paperId => {
   if( !_.isEmpty( PubmedArticleSet ) ){
     return _.head( PubmedArticleSet );
   } else {
-    throw new Error( `No PubMed record for ${paperId}` );
+    throw new Error( `No PubMed record for '${paperId}'` );
   }
 };
 

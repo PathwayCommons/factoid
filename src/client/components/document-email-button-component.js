@@ -121,7 +121,7 @@ class DocumentEmailButtonComponent extends DirtyComponent {
     tryPromise( () => new Promise( resolve => {
       this.setState({ sending: true }, resolve );
     }))
-    .then( () => sendMail( mailOpts, this.state.apiKey ) )
+    .then( () => sendMail( mailOpts, this.props.apiKey ) )
     .then( info => {
       const update = _.assign( {}, info, { type });
       correspondence.emails.push( update );

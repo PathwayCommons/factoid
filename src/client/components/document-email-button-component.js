@@ -83,7 +83,7 @@ const msgFactory = ( correspondenceType, doc ) => {
       _.set( data, 'subject', INVITE_EMAIL_SUBJECT );
       _.set( data, ['template', 'id'], INVITE_TMPLID );
       _.set( data, ['template', 'vars'], {
-        privateUrl: `${BASE_URL}/${doc.privateUrl()}`,
+        privateUrl: `${BASE_URL}${doc.privateUrl()}`,
         context
       });
       break;
@@ -91,7 +91,7 @@ const msgFactory = ( correspondenceType, doc ) => {
       _.set( data, 'subject', FOLLOWUP_EMAIL_SUBJECT );
       _.set( data, ['template', 'id'], SUBMIT_SUCCESS_TMPLID );
       _.set( data, ['template', 'vars'], {
-        publicUrl: `${BASE_URL}/${doc.publicUrl()}`,
+        publicUrl: `${BASE_URL}${doc.publicUrl()}`,
         hasTweet: `${doc.hasTweet()}`,
         tweetUrl: doc.tweetUrl()
       });
@@ -113,8 +113,8 @@ class DocumentEmailButtonComponent extends DirtyComponent {
   }
 
   handleEmail( e, doc ) {
-    const correspondenceType = e.target.value;
-    const mailOpts = msgFactory( correspondenceType, doc );
+    const type = e.target.value;
+    const mailOpts = msgFactory( type, doc );
 
     const correspondence = doc.correspondence();
 
@@ -123,10 +123,7 @@ class DocumentEmailButtonComponent extends DirtyComponent {
     }))
     .then( () => sendMail( mailOpts, this.state.apiKey ) )
     .then( info => {
-      const update = _.assign( {}, info, {
-        date: new Date(),
-        type: correspondenceType
-      });
+      const update = _.assign( {}, info, { type });
       correspondence.emails.push( update );
       doc.correspondence( correspondence );
     })

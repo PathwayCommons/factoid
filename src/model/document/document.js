@@ -8,6 +8,7 @@ import { assertOneOfFieldsDefined, mixin, getId, makeCyEles, getCyLayoutOpts, is
 import Cytoscape from 'cytoscape';
 import { TWITTER_ACCOUNT_NAME } from '../../config';
 import { getPubmedCitation } from '../../util/pubmed';
+import { isServer } from '../../util/';
 
 const DEFAULTS = Object.freeze({
   // data
@@ -89,7 +90,7 @@ class Document {
       }
     });
 
-    this.syncher.on( 'create', () => this.rwMeta( 'createdDate', new Date() ) );
+    if( isServer ) this.syncher.on( 'create', () => this.rwMeta( 'createdDate', new Date() ) );
   }
 
   filled(){
@@ -394,13 +395,13 @@ class Document {
   }
 
   statusFields(){ return DOCUMENT_STATUS_FIELDS; }
-  request(){ this.status( DOCUMENT_STATUS_FIELDS.REQUESTED ); }
+  request(){ return this.status( DOCUMENT_STATUS_FIELDS.REQUESTED ); }
   requested(){ return this.status() === DOCUMENT_STATUS_FIELDS.REQUESTED ? true : false; }
-  approve(){ this.status( DOCUMENT_STATUS_FIELDS.APPROVED ); }
+  approve(){ return this.status( DOCUMENT_STATUS_FIELDS.APPROVED ); }
   approved(){ return this.status() === DOCUMENT_STATUS_FIELDS.APPROVED ? true : false; }
-  submit(){ this.status( DOCUMENT_STATUS_FIELDS.SUBMITTED ); }
+  submit(){ return this.status( DOCUMENT_STATUS_FIELDS.SUBMITTED ); }
   submitted(){ return this.status() === DOCUMENT_STATUS_FIELDS.SUBMITTED ? true : false; }
-  trash(){ this.status( DOCUMENT_STATUS_FIELDS.TRASHED ); }
+  trash(){ return this.status( DOCUMENT_STATUS_FIELDS.TRASHED ); }
   trashed(){ return this.status() === DOCUMENT_STATUS_FIELDS.TRASHED ? true : false; }
 
   json(){
@@ -412,7 +413,8 @@ class Document {
       organisms: this.organisms(),
       elements: this.elements().map( toJson ),
       publicUrl: this.publicUrl(),
-      privateUrl: this.privateUrl()
+      privateUrl: this.privateUrl(),
+      citation: this.citation()
     }, _.pick(this.syncher.get(), METADATA_FIELDS));
   }
 
@@ -448,9 +450,7 @@ class Document {
     let orgIds = json.organisms || [];
     let addOrganism = id => this.toggleOrganism( id, true );
     let addOrganisms = () => Promise.all( orgIds.map( addOrganism ) );
-
-    let metaEtcFields = ['submitted', 'approved', 'createdDate'].concat(METADATA_FIELDS);
-    let updateMetadataEtc = () => this.syncher.update( _.pick(json, metaEtcFields) );
+    let updateMetadataEtc = () => this.syncher.update( _.pick(json, METADATA_FIELDS) );
 
     return Promise.all([
       updateMetadataEtc(),

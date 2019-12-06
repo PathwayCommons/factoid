@@ -375,7 +375,7 @@ http.post('/', function( req, res, next ){
     .then( loadTables )
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided }) )
     .catch( e => { logger.error(`Error creating doc: ${e.message}`); next( e ); })
-    .then( doc => { res.status( 201 ); doc.request(); return doc; })
+    .then( doc => doc.request().then( () => doc ) )
     .then( doc => fillDoc( doc, provided ) )
     .then( getDocJson )
     .then( json => res.json( json ) )

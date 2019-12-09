@@ -153,7 +153,7 @@ docker-compose up -d webapp grounding db index
 #### Notes
 
 - Environment variables:
-  - Docker Compose will draw environment variables from the shell or from an `.env` file in the same directory. Please see private [remote](https://github.com/BaderLab/sysadmin/tree/master/websites) for production-level file.
+  - Docker Compose will draw environment variables from the shell or from an `.env` file in the same directory. Please see private [remote](https://github.com/BaderLab/sysadmin/blob/master/websites/factoid.md) for production-level file settings.
 
 - Indexing service:
   - The `indexer` service will download sources files and index. The time required for this will vary depending on the system and ranges from tens of minutes (OSX 10.14.5 (Mojave), MacBook Pro (Retina, 15-inch, Mid 2015). 2.8 GHz Intel Core i7) up to many hours (Ubuntu 16.04.5 LTS, Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz).

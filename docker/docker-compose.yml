@@ -1,7 +1,8 @@
 version: "3.4"
 services:
   webapp:
-    image: pathwaycommons/factoid:${FACTOID_IMAGE_TAG:-unstable}
+    image: factoid-local:unstable
+    # image: pathwaycommons/factoid:${FACTOID_IMAGE_TAG:-unstable}
     container_name: webapp_container
     depends_on:
       - db
@@ -9,13 +10,19 @@ services:
     ports:
       - "${FACTOID_PORT:-3000}:3000"
     environment:
-      USE_PC_GROUNDING_SEARCH:
-      DB_USER:
-      DB_PASS:
-      DB_CERT:
-      API_KEY:
-      DB_HOST: "db"
       GROUNDING_SEARCH_BASE_URL: "http://grounding:3000"
+      DB_HOST: "db"
+      API_KEY:
+      EMAIL_ENABLED:
+      SMTP_HOST:
+      SMTP_USER:
+      SMTP_PASSWORD:
+      TWITTER_CONSUMER_KEY:
+      TWITTER_CONSUMER_SECRET:
+      TWITTER_ACCESS_TOKEN_KEY:
+      TWITTER_ACCESS_TOKEN_SECRET:
+      TWITTER_ACCOUNT_NAME:
+      NCBI_EUTILS_API_KEY:
   grounding:
     image: pathwaycommons/grounding-search:${GROUNDING_SEARCH_IMAGE_TAG:-latest}
     container_name: grounding_container

@@ -1,8 +1,7 @@
 version: "3.4"
 services:
   webapp:
-    image: factoid-local:unstable
-    # image: pathwaycommons/factoid:${FACTOID_IMAGE_TAG:-unstable}
+    image: pathwaycommons/factoid:${FACTOID_IMAGE_TAG:-unstable}
     container_name: webapp_container
     depends_on:
       - db

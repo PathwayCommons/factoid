@@ -2,7 +2,7 @@
 
 ## Required software
 
-- [Node.js](https://nodejs.org/en/) >=6.3.0
+- [Node.js](https://nodejs.org/en/) >=10
 - [RethinkDB](http://rethinkdb.com/) ^2.3.0
 
 ## Configuration

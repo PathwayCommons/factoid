@@ -20,7 +20,10 @@ http.get('/document/:id', getDocumentPage);
 
 // get the app ui
 http.get('*', function(req, res) {
-  res.render('index.html.ejs');
+  res.render('index.html.ejs', {
+    TWITTER_ACCOUNT_NAME,
+    BASE_URL
+  });
 });
 
 export default http;

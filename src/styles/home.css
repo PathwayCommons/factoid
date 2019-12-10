@@ -279,8 +279,77 @@
   margin: 0 1em;
 }
 
+.home-example-doc-section-wrapper {
+  background: center 1em / 90% auto no-repeat url('/image/mol-cell-logo.svg'), linear-gradient(0deg, #fff, #005886);
+  padding-top: 3em;
+}
+
+.home-example-doc-section-title {
+  text-align: center;
+}
+
+.home-example-doc-section {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-bottom: 2em;
+  position: relative;
+}
+
+.home-example-doc {
+  width: 50%;
+  box-sizing: border-box;
+  margin: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 0.25em;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.home-example-doc-figure {
+  width: 100%;
+  padding-bottom: 50%;
+  background-size: contain;
+  border-radius: 0.25em;
+}
+
+.home-example-doc-1 .home-example-doc-figure {
+  background-image: url('/image/example-doc-1.png');
+}
+
+.home-example-doc-2 .home-example-doc-figure {
+  background-image: url('/image/example-doc-2.png');
+}
+
+.home-example-doc-caption {
+  font-size: var(--smallFontSize);
+  text-align: left;
+  border-top: 1px solid #ccc;
+  padding: 0.5em;
+}
+
+.home-example-doc-title {
+  font-weight: bold;
+  margin-bottom: 0.25em;
+}
+
+.home-example-doc-descr {
+  color: #888;
+}
+
 @media (min-height: 1000px) {
   .home-caption {
     font-size: 1.5em;
+  }
+}
+
+@media (max-width: 400px) {
+  .home-example-doc-section {
+    flex-direction: column;
+  }
+
+  .home-example-doc {
+    width: 100%;
+    margin: 0.5em 0;
   }
 }

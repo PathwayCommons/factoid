@@ -47,7 +47,7 @@ class RequestForm extends Component {
       paperId: '',
       authorEmail: {
         emailAddress: '',
-        isEmailValid: false 
+        isEmailValid: false
       },
       isCorrespondingAuthor: true,
       submitting: false,
@@ -75,18 +75,18 @@ class RequestForm extends Component {
   submitRequest(){
     const { paperId, authorEmail, isCorrespondingAuthor } = this.state;
     const { emailAddress, isEmailValid } = authorEmail;
-        
+
     if( !paperId || !emailAddress ){
       this.setState({ errors: { incompleteForm: true } });
 
     } else if( !isEmailValid ){
       this.setState({ errors: { incompleteForm: false, email: true } });
-  
+
     } else {
       const url = 'api/document';
-      const data = _.assign( {}, { 
-        paperId: _.trim( paperId ), 
-        authorEmail: emailAddress, 
+      const data = _.assign( {}, {
+        paperId: _.trim( paperId ),
+        authorEmail: emailAddress,
         isCorrespondingAuthor,
         context: EMAIL_CONTEXT_SIGNUP
       });
@@ -134,11 +134,11 @@ class RequestForm extends Component {
         h('input', {
           type: 'email',
           placeholder: 'Email address',
-          onChange: e => this.updateForm({ 
-            authorEmail: { 
-              emailAddress: e.target.value, 
-              isEmailValid: e.target.validity.valid 
-            } 
+          onChange: e => this.updateForm({
+            authorEmail: {
+              emailAddress: e.target.value,
+              isEmailValid: e.target.validity.valid
+            }
           }),
           value: this.state.authorEmail.value
         }),
@@ -228,6 +228,29 @@ class Home extends Component {
         h('div.home-caption', [
           h('h2', 'Discover'),
           h('p', `Easily sift through the deluge of newly-published articles to find hidden gems.  Biofactoid connects you to research and researchers that are relevant to you.`)
+        ])
+      ]),
+      h('div.home-example-doc-section-wrapper', [
+        h('div.home-section.home-text-section.home-example-doc-section', [
+
+          h('div.home-example-doc.home-example-doc-1', [
+            h('a', { href: 'https://biofactoid.org/document/7826fd5b-d5af-4f4c-9645-de5264907272' }, [
+              h('div.home-example-doc-figure'),
+              h('div.home-example-doc-caption', [
+                h('div.home-example-doc-title', 'Ritchie et al. (2019). SLC19A1 Is an Importer of the Immunotransmitter cGAMP. Mol. Cell 74.'),
+                h('div.home-example-doc-descr', `2'3'-cyclic-GMP-AMP (cGAMP) is an immunotransmitter produced and secreted by cancer cells that is uptaken by host cells to elicit an antitumoral immune response. Using a CRISPR screen, Ritchie et al. identify SLC19A1 as the first importer of cGAMP and other cyclic dinucleotides (CDNs).`)
+              ])
+            ])
+          ]),
+          h('div.home-example-doc.home-example-doc-2', [
+            h('a', { href: 'https://biofactoid.org/document/7826fd5b-d5af-4f4c-9645-de5264907272' }, [
+              h('div.home-example-doc-figure'),
+              h('div.home-example-doc-caption', [
+                h('div.home-example-doc-title', 'Gruber et al. (2019). HAT1 Coordinates Histone Production and Acetylation via H4 Promoter Binding. Mol. Cell 75.'),
+                h('div.home-example-doc-descr', `Nascent histone H4 is acetylated by cytoplasmic histone acetyltransferase 1 (HAT1) and then de-acetylated after chromatin insertion, releasing free acetate. Gruber et al. discover that HAT1 also binds an acetate-sensitive promoter element in histone H4 genes. Therefore, histone production and acetylation are linked by HAT1 to drive cell division via acetyl-Co-A regeneration.`)
+              ])
+            ])
+          ])
         ])
       ]),
       h('div.home-section.home-text-section', [

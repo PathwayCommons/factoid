@@ -243,7 +243,7 @@ class Home extends Component {
             ])
           ]),
           h('div.home-example-doc.home-example-doc-2', [
-            h('a', { href: 'https://biofactoid.org/document/7826fd5b-d5af-4f4c-9645-de5264907272' }, [
+            h('a', { href: 'https://biofactoid.org/document/8325ea13-4f53-46f1-a27b-c8c32ae17fa6' }, [
               h('div.home-example-doc-figure'),
               h('div.home-example-doc-caption', [
                 h('div.home-example-doc-title', 'Gruber et al. (2019). HAT1 Coordinates Histone Production and Acetylation via H4 Promoter Binding. Mol. Cell 75.'),

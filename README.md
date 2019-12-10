@@ -33,8 +33,8 @@ Services:
 - `PC_URL` : base url for pathway commons apps, to search or link
 - `BIOPAX_CONVERTER_URL` : url for the factoid to biopax/sbgn converter
 - `GROUNDING_SEARCH_BASE_URL`: url for the [grounding service](https://github.com/PathwayCommons/grounding-search)
-- `NCBI_EUTILS_BASE_URL` : TODO
-- `NCBI_EUTILS_API_KEY` : TODO
+- `NCBI_EUTILS_BASE_URL` : url for the NCBI E-utilities
+- `NCBI_EUTILS_API_KEY` : API key for the NCBI E-utilities
 
 Links:
 
@@ -42,6 +42,8 @@ Links:
 - `CHEBI_LINK_BASE_URL`: base url concatenated to id to generate a linkout
 - `PUBCHEM_LINK_BASE_URL`: base url concatenated to id to generate a linkout
 - `NCBI_LINK_BASE_URL`: base url concatenated to id to generate a linkout
+- `PUBMED_LINK_BASE_URL`: base url concatenated to unique id to generate linkout
+- `DOI_LINK_BASE_URL`: base url concatenated to doi to generate linkout
 
 Demo:
 
@@ -67,7 +69,20 @@ Sharing:
 
 Email:
 
-- TODO
+- `EMAIL_ENABLED`: boolean to enable third-party mail service (default `false`)
+- `EMAIL_FROM`: name to send emails from (default `Biofactoid`)
+- `EMAIL_FROM_ADDR`: address to send emails from (default `support@biofactoid.org`)
+- `SMTP_PORT`: mail transport port (default `587`)
+- `SMTP_HOST`: mail transport host (default `localhost`)
+- `SMTP_USER`: mail transport auth user
+- `SMTP_PASSWORD`: mail transport auth password
+- `EMAIL_VENDOR_MAILJET`: name of Mailjet vendor
+- `INVITE_TMPLID`: vendor email template id for an invitation
+- `SUBMIT_SUCCESS_TMPLID`: vendor email template id for a follow-up
+- `EMAIL_CONTEXT_JOURNAL`: email context variable to indicate entry via journal
+- `EMAIL_CONTEXT_SIGNUP`: email context variable to indicate entry via homepage
+- `CORRESPONDENCE_INVITE_TYPE`:  name to indicate invite email
+- `CORRESPONDENCE_FOLLOWUP_TYPE`: name to indicate follow-up email
 
 The following environment variables should always be set in production instances:
 
@@ -79,7 +94,11 @@ The following environment variables should always be set in production instances
 - `TWITTER_CONSUMER_SECRET` : twitter api secret
 - `TWITTER_ACCESS_TOKEN_KEY` : twitter app key
 - `TWITTER_ACCESS_TOKEN_SECRET` : twitter app secret
-- TODO...
+- `NCBI_EUTILS_API_KEY`: the API key for pathwaycommons account
+- `EMAIL_ENABLED`: `true` for Mailjet support
+- `SMTP_HOST`: Mailjet host name
+- `SMTP_USER`: Mailjet account credentials
+- `SMTP_PASSWORD`: Mailjet password credentials
 
 ## Run targets
 
@@ -102,9 +121,9 @@ Dockerized system has been successfully deployed on:
   - Ubuntu 16.04.5 LTS (GNU/Linux 4.4.0-145-generic x86_64)
     - Docker version 18.09.6
     - docker-compose version 1.24.0
-  - OSX 10.14.5 (Mojave)
-    - Docker version 18.09.2
-    - docker-compose version 1.23.2
+  - OSX 10.15.1 (Catalina)
+    - Docker version 19.03.5
+    - docker-compose version 1.24.1
 
 ### Docker Compose
 
@@ -134,7 +153,7 @@ docker-compose up -d webapp grounding db index
 #### Notes
 
 - Environment variables:
-  - Docker Compose will draw environment variables from the shell or from an `.env` file in the same directory. The file is not necessary, as the compose file provides defaults.  If you wish, edit the `.env` file to configure environment variables for image tags, container ports and others, which will be passed to the containers.
+  - Docker Compose will draw environment variables from the shell or from an `.env` file in the same directory. Please see private [remote](https://github.com/BaderLab/sysadmin/blob/master/websites/factoid.md) for production-level file settings.
 
 - Indexing service:
   - The `indexer` service will download sources files and index. The time required for this will vary depending on the system and ranges from tens of minutes (OSX 10.14.5 (Mojave), MacBook Pro (Retina, 15-inch, Mid 2015). 2.8 GHz Intel Core i7) up to many hours (Ubuntu 16.04.5 LTS, Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz).

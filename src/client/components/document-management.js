@@ -159,6 +159,28 @@ class DocumentManagement extends DirtyComponent {
         }, 'Submit' )
       ]);
 
+    // const hideMenu = h('select.entity-info-organism-dropdown', {
+    //   defaultValue: selectedIndex,
+    //   onChange: e => {
+    //     const val = e.target.value;
+    //     const index = parseInt(val);
+    //     const om = orgMatches[index];
+
+    //     if( om ){
+    //       this.associate(om);
+    //     } else {
+    //       this.enableManualMatchMode();
+    //     }
+    //   }
+    // }, orgMatches.map((om, index) => {
+    //   const value = index;
+
+    //   return h('option', { value }, getSelectDisplay(om));
+    // }).concat([
+    //   selectedIndex < 0 ? h('option', { value: -1 }, getSelectDisplay(m, true)) : null,
+    //   h('option', { value: -2 }, 'Other')
+    // ]));
+
     // Document Header & Footer
     const getDocumentHeader = doc => {
       return h( 'div.document-management-document-section.meta', [

@@ -302,7 +302,7 @@ class DocumentManagement extends DirtyComponent {
     // Status
     const getDocumentStatus = doc => {
       let radios = [];
-      let DOCUMENT_STATUS_FIELDS = doc.statusFields();
+      let DOCUMENT_STATUS_FIELDS = Document.statusFields();
       let addType = (typeVal, displayName) => {
         radios.push(
           h('input', {

@@ -165,18 +165,17 @@ http.post('/email', function( req, res, next ){
 // - offset: pagination offset
 // - limit: pagination size limit
 // - apiKey: to authorise doc creation
-// - submitted: only get submitted docs if true, only get unsubmitted docs if false, no submission filtering on unspecified
+// - status: only get docs based on Document.statusFields(); no submission filtering on unspecified
 // - ids: only get the docs for the specified comma-separated list of ids (disables pagination)
 http.get('/', function( req, res, next ){
-  let { limit, offset, apiKey, submitted } = Object.assign({
+  let { limit, offset, apiKey, status } = Object.assign({
     limit: 50,
     offset: 0
   }, req.query);
 
-  // cast to bool
-  submitted = submitted == 'true' ? true : (submitted == 'false' ? false : null);
-
   let ids = req.query.ids ? req.query.ids.split(/\s*,\s*/) : null;
+  const DOCUMENT_STATUS_FIELDS = Document.statusFields();
+  status = _.get( DOCUMENT_STATUS_FIELDS, status, null );
 
   let tables;
 
@@ -206,12 +205,8 @@ http.get('/', function( req, res, next ){
         q = q.skip(offset).limit(limit);
       }
 
-      if( submitted != null ){
-        if( submitted ){
-          q = q.filter( r.row('submitted').eq(true) );
-        } else {
-          q = q.filter( r.row('submitted').eq(false) );
-        }
+      if( status != null ){
+        q = q.filter( r.row('status').eq(status) );
       }
 
       q = ( q

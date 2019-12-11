@@ -394,7 +394,7 @@ class Document {
     }
   }
 
-  statusFields(){ return DOCUMENT_STATUS_FIELDS; }
+  static statusFields(){ return DOCUMENT_STATUS_FIELDS; }
   request(){ return this.status( DOCUMENT_STATUS_FIELDS.REQUESTED ); }
   requested(){ return this.status() === DOCUMENT_STATUS_FIELDS.REQUESTED ? true : false; }
   approve(){ return this.status( DOCUMENT_STATUS_FIELDS.APPROVED ); }

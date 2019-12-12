@@ -294,14 +294,14 @@ class DocumentManagement extends DirtyComponent {
             doc,
             type: CORRESPONDENCE_INVITE_TYPE,
             label: _.capitalize( CORRESPONDENCE_INVITE_TYPE ),
-            disableWhen: doc.requested(),
+            disableWhen: doc.requested() || doc.trashed(),
             apiKey: this.state.apiKey
           }),
           h( EmailButtton, {
             doc,
             type: CORRESPONDENCE_FOLLOWUP_TYPE,
             label: _.upperFirst( CORRESPONDENCE_FOLLOWUP_TYPE.replace(/([A-Z])/g, (match, letter) => '-' + letter) ),
-            disableWhen: doc.requested(),
+            disableWhen: doc.requested() || doc.trashed(),
             apiKey: this.state.apiKey
           })
         ]);

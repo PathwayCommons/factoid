@@ -177,7 +177,10 @@ http.get('/', function( req, res, next ){
 
   let ids = req.query.ids ? req.query.ids.split(/\s*,\s*/) : null;
 
-  const status = req.query.status ? req.query.status.split(/\s*,\s*/) : null;
+  let status;
+  if( _.has( req.query, 'status' ) ){
+    status = _.compact( req.query.status.split(/\s*,\s*/) );
+  }
 
   let tables;
 
@@ -207,12 +210,12 @@ http.get('/', function( req, res, next ){
         q = q.skip(offset).limit(limit);
       }
 
-      if( status != null ){
+      if( status ){
         const values =  _.intersection( _.values( DOCUMENT_STATUS_FIELDS ), status );
-        let byStatus = r;
+        let byStatus = { foo: true };
         values.forEach( ( value, index ) => {
           if( index == 0 ){
-            byStatus = byStatus.row('status').default('unset').eq( value );
+            byStatus = r.row('status').default('unset').eq( value );
           } else {
             byStatus = byStatus.or( r.row('status').default('unset').eq( value ) );
           }

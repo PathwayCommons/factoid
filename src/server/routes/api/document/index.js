@@ -32,6 +32,8 @@ import { BASE_URL,
   EMAIL_CONTEXT_SIGNUP
  } from '../../../../config';
 
+ const DOCUMENT_STATUS_FIELDS = Document.statusFields();
+
 const http = Express.Router();
 
 const snap = cytosnap({
@@ -165,18 +167,17 @@ http.post('/email', function( req, res, next ){
 // - offset: pagination offset
 // - limit: pagination size limit
 // - apiKey: to authorise doc creation
-// - omit: exclude docs bearing the specified Document status fields
+// - status: include docs bearing valid Document 'status'
 // - ids: only get the docs for the specified comma-separated list of ids (disables pagination)
 http.get('/', function( req, res, next ){
-  let { limit, offset, apiKey, omit } = Object.assign({
+  let { limit, offset, apiKey } = Object.assign({
     limit: 50,
     offset: 0
   }, req.query);
 
   let ids = req.query.ids ? req.query.ids.split(/\s*,\s*/) : null;
 
-  const DOCUMENT_STATUS_FIELDS = Document.statusFields();
-  omit = _.get( DOCUMENT_STATUS_FIELDS, omit, null );
+  const status = req.query.status ? req.query.status.split(/\s*,\s*/) : null;
 
   let tables;
 
@@ -206,8 +207,18 @@ http.get('/', function( req, res, next ){
         q = q.skip(offset).limit(limit);
       }
 
-      if( omit != null ){
-        q = q.filter( r.row('status').ne(omit) );
+      if( status != null ){
+        const values =  _.compact( _.at( DOCUMENT_STATUS_FIELDS, status ) );
+        let byStatus = r;
+        values.forEach( ( value, index ) => {
+          if( index == 0 ){
+            byStatus = byStatus.row('status').default('unset').eq( value );
+          } else {
+            byStatus = byStatus.or( r.row('status').default('unset').eq( value ) );
+          }
+        });
+
+        q = q.filter( byStatus );
       }
 
       q = ( q

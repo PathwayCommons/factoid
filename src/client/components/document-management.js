@@ -367,7 +367,7 @@ class DocumentManagement extends DirtyComponent {
             name: `document-status-filter`,
             id: `document-status-filter-checkbox-${statusVal}`,
             value: statusVal,
-            defaultChecked: _.includes( DEFAULT_STATUS_FIELDS, statusVal ),
+            defaultChecked: _.includes( this.state.status, statusVal ),
             onChange: e => this.handleStatusChange(e)
           }),
           h('label', {

@@ -208,7 +208,7 @@ http.get('/', function( req, res, next ){
       }
 
       if( status != null ){
-        const values =  _.compact( _.at( DOCUMENT_STATUS_FIELDS, status ) );
+        const values =  _.intersection( _.values( DOCUMENT_STATUS_FIELDS ), status );
         let byStatus = r;
         values.forEach( ( value, index ) => {
           if( index == 0 ){

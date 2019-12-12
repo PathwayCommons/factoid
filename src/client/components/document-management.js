@@ -84,13 +84,13 @@ class DocumentManagement extends DirtyComponent {
       .catch( () => {} ); //swallow
   }
 
-  getUrlParams( opts ){
-    const { apiKey, status } = _.defaultsDeep( {}, opts, _.pick( this.state, ['apiKey', 'status'] ) );
+  getUrlParams(){
+    const { apiKey, status } = this.state;
     return queryString.stringify( { apiKey, status: status.join(',') } );
   }
 
-  updateUrlParams( opts ){
-    const urlParams = this.getUrlParams( opts );
+  updateUrlParams(){
+    const urlParams = this.getUrlParams();
     this.props.history.push(`/document?${urlParams}`);
   }
 

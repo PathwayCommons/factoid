@@ -77,12 +77,14 @@ Email:
 - `SMTP_USER`: mail transport auth user
 - `SMTP_PASSWORD`: mail transport auth password
 - `EMAIL_VENDOR_MAILJET`: name of Mailjet vendor
-- `INVITE_TMPLID`: vendor email template id for an invitation
-- `SUBMIT_SUCCESS_TMPLID`: vendor email template id for a follow-up
+- `MAILJET_TMPLID_INVITE`: vendor email template id for an invitation
+- `MAILJET_TMPLID_FOLLOWUP`: vendor email template id for a follow-up
 - `EMAIL_CONTEXT_JOURNAL`: email context variable to indicate entry via journal
 - `EMAIL_CONTEXT_SIGNUP`: email context variable to indicate entry via homepage
-- `CORRESPONDENCE_INVITE_TYPE`:  name to indicate invite email
-- `CORRESPONDENCE_FOLLOWUP_TYPE`: name to indicate follow-up email
+- `EMAIL_TYPE_INVITE`:  name to indicate invite email
+- `EMAIL_TYPE_FOLLOWUP`: name to indicate follow-up email
+- `EMAIL_SUBJECT_INVITE`: subject text for invitation email
+- `EMAIL_SUBJECT_FOLLOWUP`: subject text for follow-up email
 
 The following environment variables should always be set in production instances:
 

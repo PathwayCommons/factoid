@@ -70,12 +70,14 @@ export const SMTP_USER = env('SMTP_USER', 'user');
 export const SMTP_PASSWORD = env('SMTP_PASSWORD', 'password');
 
 export const EMAIL_VENDOR_MAILJET = env('EMAIL_VENDOR_MAILJET', 'Mailjet');
-export const INVITE_TMPLID = env('INVITE_TMPLID', '1005099');
-export const SUBMIT_SUCCESS_TMPLID = env('SUBMIT_SUCCESS_TMPLID', '988309');
+export const MAILJET_TMPLID_INVITE = env('MAILJET_TMPLID_INVITE', '1005099');
+export const MAILJET_TMPLID_FOLLOWUP = env('MAILJET_TMPLID_FOLLOWUP', '988309');
 export const EMAIL_CONTEXT_JOURNAL = env('EMAIL_CONTEXT_JOURNAL', 'journal');
 export const EMAIL_CONTEXT_SIGNUP = env('EMAIL_CONTEXT_SIGNUP', 'signup');
-export const CORRESPONDENCE_INVITE_TYPE = env('CORRESPONDENCE_INVITE_TYPE', 'invite');
-export const CORRESPONDENCE_FOLLOWUP_TYPE = env('CORRESPONDENCE_FOLLOWUP_TYPE', 'followUp');
+export const EMAIL_TYPE_INVITE = env('EMAIL_TYPE_INVITE', 'invite');
+export const EMAIL_TYPE_FOLLOWUP = env('EMAIL_TYPE_FOLLOWUP', 'followUp');
+export const EMAIL_SUBJECT_INVITE = env('EMAIL_SUBJECT_INVITE', 'Your invitation to Biofactoid is ready');
+export const EMAIL_SUBJECT_FOLLOWUP = env('EMAIL_SUBJECT_FOLLOWUP', 'Thank you for sharing your research with Biofactoid');
 
 
 // Sharing

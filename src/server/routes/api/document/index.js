@@ -32,6 +32,8 @@ import { BASE_URL,
   EMAIL_CONTEXT_SIGNUP
  } from '../../../../config';
 
+ const DOCUMENT_STATUS_FIELDS = Document.statusFields();
+
 const http = Express.Router();
 
 const snap = cytosnap({
@@ -165,18 +167,20 @@ http.post('/email', function( req, res, next ){
 // - offset: pagination offset
 // - limit: pagination size limit
 // - apiKey: to authorise doc creation
-// - submitted: only get submitted docs if true, only get unsubmitted docs if false, no submission filtering on unspecified
+// - status: include docs bearing valid Document 'status'
 // - ids: only get the docs for the specified comma-separated list of ids (disables pagination)
 http.get('/', function( req, res, next ){
-  let { limit, offset, apiKey, submitted } = Object.assign({
+  let { limit, offset, apiKey } = Object.assign({
     limit: 50,
     offset: 0
   }, req.query);
 
-  // cast to bool
-  submitted = submitted == 'true' ? true : (submitted == 'false' ? false : null);
-
   let ids = req.query.ids ? req.query.ids.split(/\s*,\s*/) : null;
+
+  let status;
+  if( _.has( req.query, 'status' ) ){
+    status = _.compact( req.query.status.split(/\s*,\s*/) );
+  }
 
   let tables;
 
@@ -206,12 +210,18 @@ http.get('/', function( req, res, next ){
         q = q.skip(offset).limit(limit);
       }
 
-      if( submitted != null ){
-        if( submitted ){
-          q = q.filter( r.row('submitted').eq(true) );
-        } else {
-          q = q.filter( r.row('submitted').eq(false) );
-        }
+      if( status ){
+        const values =  _.intersection( _.values( DOCUMENT_STATUS_FIELDS ), status );
+        let byStatus = { foo: true };
+        values.forEach( ( value, index ) => {
+          if( index == 0 ){
+            byStatus = r.row('status').default('unset').eq( value );
+          } else {
+            byStatus = byStatus.or( r.row('status').default('unset').eq( value ) );
+          }
+        });
+
+        q = q.filter( byStatus );
       }
 
       q = ( q

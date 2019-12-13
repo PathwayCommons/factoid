@@ -17,6 +17,9 @@ import {
   CORRESPONDENCE_FOLLOWUP_TYPE
 } from '../../config' ;
 
+const DOCUMENT_STATUS_FIELDS = Document.statusFields();
+const DEFAULT_STATUS_FIELDS = _.pull( _.values( DOCUMENT_STATUS_FIELDS ), DOCUMENT_STATUS_FIELDS.TRASHED );
+
 // Date formatting
 const DATE_FORMAT = 'MMMM-dd-yyyy';
 const getTimeSince = dateString => formatDistanceToNow( new Date( dateString ), { addSuffix: true } );
@@ -31,7 +34,6 @@ const toPeriodOrDate = dateString => {
   }
 };
 
-const sanitizeKey = secret => secret === '' ? '%27%27': secret;
 const orderByCreatedDate = docs => _.orderBy( docs, [ doc => doc.createdDate() ], ['desc'] );
 
 const toDocs = ( docJSON, docSocket, eleSocket ) => {
@@ -68,25 +70,35 @@ class DocumentManagement extends DirtyComponent {
     // API Key
     const query = queryString.parse( this.props.history.location.search );
     const apiKey =  _.get( query, 'apiKey', '' );
+    const status =  _.get( query, 'status' ) ? _.get( query, 'status' ).split(/\s*,\s*/) : DEFAULT_STATUS_FIELDS;
 
     this.state = {
       apiKey,
       validApiKey: false,
       docs: [],
-      error: undefined
+      error: undefined,
+      status
     };
 
     this.getDocs( apiKey )
-      .then( () => this.props.history.push(`/document?apiKey=${sanitizeKey(apiKey)}`) )
       .catch( () => {} ); //swallow
   }
 
-  getDocs( apiKey ){
-    const url = '/api/document';
-    const params = { apiKey };
-    const paramsString = queryString.stringify( params );
+  getUrlParams(){
+    const { apiKey, status } = this.state;
+    return queryString.stringify( { apiKey, status: status.join(',') } );
+  }
 
-    return fetch(`${url}?${paramsString}`)
+  updateUrlParams(){
+    const urlParams = this.getUrlParams();
+    this.props.history.push(`/document?${urlParams}`);
+  }
+
+  getDocs(){
+    const url = '/api/document';
+    const params = this.getUrlParams();
+
+    return fetch(`${url}?${params}`)
       .then( res => res.json() )
       .then( docJSON => toDocs( docJSON, this.docSocket, this.eleSocket ) )
       .then( docs => {
@@ -96,15 +108,14 @@ class DocumentManagement extends DirtyComponent {
       .then( docs => new Promise( resolve => {
         this.setState({
           validApiKey: true, // no error means its good
-          apiKey,
           error: null,
           docs }, resolve);
-      }));
+      }))
+      .then( () => this.updateUrlParams() );
   }
 
-  updateDocs( apiKey = this.state.apiKey ){
-    this.getDocs( apiKey )
-      .then( () => this.props.history.push(`/document?apiKey=${sanitizeKey(apiKey)}`) )
+  updateDocs(){
+    this.getDocs()
       .catch( e => {
         this.setState( {
           error: e,
@@ -114,8 +125,6 @@ class DocumentManagement extends DirtyComponent {
         return;
       });
   }
-
-
 
   handleApiKeyFormChange( apiKey ) {
     this.setState( { apiKey } );
@@ -128,6 +137,13 @@ class DocumentManagement extends DirtyComponent {
 
   handleApproveRequest( doc ){
     doc.approve();
+  }
+
+  handleStatusChange( e ){
+    const { value, checked } = e.target;
+    const status = this.state.status.slice();
+    checked ? status.push( value ) : _.pull( status, value );
+    this.setState({ status }, () => this.updateDocs() );
   }
 
   componentWillUnmount(){
@@ -278,14 +294,14 @@ class DocumentManagement extends DirtyComponent {
             doc,
             type: CORRESPONDENCE_INVITE_TYPE,
             label: _.capitalize( CORRESPONDENCE_INVITE_TYPE ),
-            disableWhen: doc.requested() || doc.trashed() || doc.submitted(),
+            disableWhen: doc.requested() || doc.trashed(),
             apiKey: this.state.apiKey
           }),
           h( EmailButtton, {
             doc,
             type: CORRESPONDENCE_FOLLOWUP_TYPE,
             label: _.upperFirst( CORRESPONDENCE_FOLLOWUP_TYPE.replace(/([A-Z])/g, (match, letter) => '-' + letter) ),
-            disableWhen: doc.requested() || doc.trashed() || !doc.submitted(),
+            disableWhen: doc.requested() || doc.trashed(),
             apiKey: this.state.apiKey
           })
         ]);
@@ -302,7 +318,6 @@ class DocumentManagement extends DirtyComponent {
     // Status
     const getDocumentStatus = doc => {
       let radios = [];
-      let DOCUMENT_STATUS_FIELDS = doc.statusFields();
       let addType = (typeVal, displayName) => {
         radios.push(
           h('input', {
@@ -341,6 +356,35 @@ class DocumentManagement extends DirtyComponent {
         ]);
     };
 
+
+    const getDocStatusFilter = () => {
+      let checkboxes = [];
+      let DOCUMENT_STATUS_FIELDS = Document.statusFields();
+      let addCheckbox = ( statusVal, displayName ) => {
+        checkboxes.push(
+          h('input', {
+            type: 'checkbox',
+            name: `document-status-filter`,
+            id: `document-status-filter-checkbox-${statusVal}`,
+            value: statusVal,
+            defaultChecked: _.includes( this.state.status, statusVal ),
+            onChange: e => this.handleStatusChange(e)
+          }),
+          h('label', {
+            htmlFor: `document-status-filter-checkbox-${statusVal}`
+          }, displayName)
+        );
+      };
+
+      _.values( DOCUMENT_STATUS_FIELDS ).forEach( status => addCheckbox( status, _.capitalize( status ) ) );
+      return h( 'small.mute.checkboxSet', checkboxes );
+    };
+
+
+    const documentMenu = h('div.document-management-document-control-menu', [
+      getDocStatusFilter()
+    ]);
+
     const documentList = h( 'ul', orderByCreatedDate( docs ).map( doc => {
       return h( 'li', {
           key: doc.id()
@@ -356,8 +400,13 @@ class DocumentManagement extends DirtyComponent {
       })
     );
 
+    const documentContainer = h( 'div.document-management-document-container', [
+      documentMenu,
+      documentList
+    ]);
 
-    let body = validApiKey ? documentList: apiKeyForm;
+
+    let body = validApiKey ? documentContainer: apiKeyForm;
 
     return h('div.document-management.page-content', [
       h('div.document-management-content', [

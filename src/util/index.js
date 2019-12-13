@@ -7,3 +7,4 @@ export * from './cy';
 export * from './memoize';
 export * from './strings';
 export * from './cache';
+export * from './email';

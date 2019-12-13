@@ -13,8 +13,8 @@ import { makeClassList, tryPromise } from '../../util';
 import {
   PUBMED_LINK_BASE_URL,
   DOI_LINK_BASE_URL,
-  CORRESPONDENCE_INVITE_TYPE,
-  CORRESPONDENCE_FOLLOWUP_TYPE
+  EMAIL_TYPE_INVITE,
+  EMAIL_TYPE_FOLLOWUP
 } from '../../config' ;
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -292,15 +292,15 @@ class DocumentManagement extends DirtyComponent {
           h( 'div', getAuthorEmail( doc ) ),
           h( EmailButtton, {
             doc,
-            type: CORRESPONDENCE_INVITE_TYPE,
-            label: _.capitalize( CORRESPONDENCE_INVITE_TYPE ),
+            emailType: EMAIL_TYPE_INVITE,
+            label: _.capitalize( EMAIL_TYPE_INVITE ),
             disableWhen: doc.requested() || doc.trashed(),
             apiKey: this.state.apiKey
           }),
           h( EmailButtton, {
             doc,
-            type: CORRESPONDENCE_FOLLOWUP_TYPE,
-            label: _.upperFirst( CORRESPONDENCE_FOLLOWUP_TYPE.replace(/([A-Z])/g, (match, letter) => '-' + letter) ),
+            emailType: EMAIL_TYPE_FOLLOWUP,
+            label: _.upperFirst( EMAIL_TYPE_FOLLOWUP.replace(/([A-Z])/g, (match, letter) => '-' + letter) ),
             disableWhen: doc.requested() || doc.trashed(),
             apiKey: this.state.apiKey
           })

@@ -20,10 +20,15 @@ const msgFactory = ( emailType, doc ) => {
   const { title, authors, reference } = doc.citation();
 
   const DEFAULTS = {
+    from: {
+      name: EMAIL_FROM,
+      address: EMAIL_FROM_ADDR
+    },
     to: {
       address: `${authorEmail}`
     },
     template: {
+      vendor: EMAIL_VENDOR_MAILJET,
       vars: {
         citation: `${title} ${authors}. ${reference}.`
       }
@@ -81,32 +86,23 @@ const handleResponse = ( response, doc, emailType ) => {
 };
 
 const sendMail = ( emailType, doc, apiKey ) => {
-  const mailOpts = msgFactory( emailType, doc );
   const url = '/api/document/email';
-  const defaults = {
-    from: {
-      name: EMAIL_FROM,
-      address: EMAIL_FROM_ADDR
-    },
-    template: {
-      vendor: EMAIL_VENDOR_MAILJET
-    }
-  };
+  const getDocKeys = doc => Promise.all([ doc.id(), doc.secret() ]);
 
-  const opts = _.merge( {}, defaults, mailOpts );
-  const data = { opts, apiKey };
-
-  return fetch( url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify( data )
-  })
-  .then( response => handleResponse( response, doc, emailType ) )
-  .then( toJSON )
-  .then( info => updateCorrespondence( doc, info, emailType ) );
+  return getDocKeys( doc )
+    .then( ( [id, secret ] ) => fetch( url,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify( { apiKey, emailType, id, secret } )
+      })
+    )
+    .then( response => handleResponse( response, doc, emailType ) )
+    .then( toJSON )
+    .then( info => updateCorrespondence( doc, info, emailType ) );
 };
 
-export { sendMail };
+export { sendMail, msgFactory };

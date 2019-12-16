@@ -9,6 +9,7 @@ services:
     ports:
       - "${FACTOID_PORT:-3000}:3000"
     environment:
+      BASE_URL:
       GROUNDING_SEARCH_BASE_URL: "http://grounding:3000"
       DB_HOST: "db"
       API_KEY:

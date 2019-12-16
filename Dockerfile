@@ -2,9 +2,12 @@
 FROM node:10.15.3
 
 # Allow user configuration of variable at build-time using --build-arg flag
+# See src/client-env-vars.json
 ARG NODE_ENV
+ARG BASE_URL
 
-# Initialize NODE_ENV and override with build-time flag, if set
+# Initialize environment and override with build-time flag, if set
+RUN test -n "$BASE_URL"
 ENV NODE_ENV ${NODE_ENV:-production}
 
 # Create an unprivileged user w/ home directory

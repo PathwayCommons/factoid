@@ -13,7 +13,7 @@ import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
 import db from '../../../db';
 import logger from '../../../logger';
-import { makeCyEles } from '../../../../util';
+import { makeCyEles, msgFactory } from '../../../../util';
 import { getPubmedArticle } from './pubmed';
 
 import { BASE_URL,
@@ -153,11 +153,14 @@ let getSbgnFromTemplates = templates => {
 
 // Email
 http.post('/email', function( req, res, next ){
-  let { opts, apiKey } = req.body;
-
+  let { apiKey, emailType, id, secret } = req.body;
+  // msgFactory = ( emailType, doc )
   return (
     tryPromise( () => checkApiKey( apiKey ) )
-    .then( () => sendMail( opts ) )
+    .then( loadTables )
+    .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
+    .then( doc =>  msgFactory( emailType, doc ) )
+    .then( mailOpts => sendMail( mailOpts ) )
     .then( info => res.json( info ) )
     .catch( next )
   );

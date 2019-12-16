@@ -89,7 +89,7 @@ const sendMail = ( emailType, doc, apiKey ) => {
   const url = '/api/document/email';
   const getDocKeys = doc => Promise.all([ doc.id(), doc.secret() ]);
 
-  getDocKeys( doc )
+  return getDocKeys( doc )
     .then( ( [id, secret ] ) => fetch( url,
       {
         method: 'POST',

@@ -45,11 +45,11 @@ const getAffiliationInfo = Author => {
 };
 
 const getIdentifier = Author => {
-  return _.get( Author, 'Identifier' ).map( i => 
+  return _.get( Author, 'Identifier' ).map( i =>
     ({
       id: _.get( i, '_' ),
       Source: _.get( i, ['$', 'Source'] )
-    }) 
+    })
   );
 };
 
@@ -66,11 +66,11 @@ const getNamed = ( Named ) => {
 
   } else {
     _.set( name, 'LastName', _.get( Named, ['LastName', '0'] ) );
-    
+
     if ( _.has( Named, ['ForeName'] ) ) {
       _.set( name, 'ForeName', _.get( Named, ['ForeName', '0'] ) );
-    } 
-    
+    }
+
     if( _.has( Named, ['Initials'] ) ){
       _.set( name, 'Initials', _.get( Named, ['Initials', '0'] ) );
     }
@@ -164,7 +164,7 @@ const getMeshHeading = MeshHeading => {
   return ({
     DescriptorName: _.get( DescriptorName, ['_'] ),
     ID: _.get( DescriptorName, ['$', 'UI'] ),
-    isMajorTopicYN: _.get( DescriptorName, ['$', 'MajorTopicYN'] ) === 'Y' ? true : false 
+    isMajorTopicYN: _.get( DescriptorName, ['$', 'MajorTopicYN'] ) === 'Y' ? true : false
   });
 };
 
@@ -277,22 +277,20 @@ const pubmedDataConverter = async xml => {
   return processPubmedResponse( rawJSON );
 };
 
-const isInteger = token => /^[0-9]+$/.test( token );
 const toText = res => res.text();
 const eFetchPubmed = ( { uids, query_key, webenv } )=> {
   let params;
   if( !_.isEmpty( uids ) ){
-    // Check that uid are string versions of numbers. '2349c87' will be interpreted by Pubmed as '2439'. 
-    if ( !uids.every( isInteger ) ) throw new Error( 'UIDs should be numerical' );
+    // Check that uid are string versions of numbers. '2349c87' will be interpreted by Pubmed as '2439'.
     params = _.assign( {}, DEFAULT_EFETCH_PARAMS, { id: uids.join(',') } );
-    
+
   } else if( query_key && webenv ){
     params = _.assign( {}, DEFAULT_EFETCH_PARAMS, { query_key, webenv } );
 
   } else {
     throw new Error( 'eFetchPubmed requires either uids or history parameters.' );
   }
-  
+
   const url = EUTILS_FETCH_URL + '?' + queryString.stringify( params );
   return fetch( url )
     .then( toText )
@@ -301,11 +299,11 @@ const eFetchPubmed = ( { uids, query_key, webenv } )=> {
 
 /**
  * fetchPubmed
- * Fetch records from the PubMed database given matching UIDs. 
+ * Fetch records from the PubMed database given matching UIDs.
  * Either a list of uids or, alternatively, a ( query_key, webenv ) pair resulting from a
- * pubmed search (i.e. searchPubmed function) can be used as parameters. 
+ * pubmed search (i.e. searchPubmed function) can be used as parameters.
  *
- * @param { Object } uids The list of uids. 
+ * @param { Object } uids The list of uids.
  * @param { String } query_key See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
  * @param { String } webenv See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
  * @returns { Object } result The fetch result from PubMed. See pubmedDataConverter.

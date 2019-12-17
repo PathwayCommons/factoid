@@ -115,8 +115,8 @@ const fillDocArticle = async ( doc, paperId ) => {
   }
 };
 
-let fillDoc = async ( doc, provided ) => {
-  const { paperId, authorEmail, isCorrespondingAuthor, context } = provided;
+let fillDoc = async doc => {
+  const { paperId, authorEmail, isCorrespondingAuthor, context } = doc.provided();
   await fillDocCorrespondence( doc, authorEmail, isCorrespondingAuthor, context );
   await fillDocArticle( doc, paperId );
   return doc;
@@ -391,9 +391,10 @@ http.post('/', function( req, res, next ){
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided }) )
     .catch( e => { logger.error(`Error creating doc: ${e.message}`); next( e ); })
     .then( doc => doc.request().then( () => doc ) )
-    .then( doc => fillDoc( doc, provided ) )
+    .then( fillDoc )
     .then( getDocJson )
     .then( json => res.json( json ) )
+    .catch( next )
   );
 });
 
@@ -404,7 +405,7 @@ http.patch('/', function( req, res, next ){
     tryPromise( () => checkApiKey( apiKey ) )
     .then( loadTables )
     .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
-    .then( doc => fillDoc( doc, doc.provided() ) )
+    .then( fillDoc )
     .then( getDocJson )
     .then( json => res.json( json ) )
     .catch( next )

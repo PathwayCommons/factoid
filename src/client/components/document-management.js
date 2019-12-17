@@ -54,6 +54,9 @@ const toDocs = ( docJSON, docSocket, eleSocket ) => {
   return Promise.all( docPromises );
 };
 
+const hasIssues = doc => _.values( doc.issues() ).some( i => !_.isNull( i ) );
+const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
+
 class DocumentManagement extends DirtyComponent {
   constructor( props ){
     super( props );
@@ -181,7 +184,7 @@ class DocumentManagement extends DirtyComponent {
         h( 'div.document-management-document-section-items', [
           h( 'div', [
             h( 'i.material-icons.by-status.invalid', {
-              className: makeClassList({ 'show': doc.issues() })
+              className: makeClassList({ 'show': hasIssues( doc ) })
             }, 'warning' ),
             h( 'i.material-icons.by-status.mute', {
               className: makeClassList({ 'show': doc.approved() })
@@ -201,7 +204,7 @@ class DocumentManagement extends DirtyComponent {
     const getDocumentArticle = doc => {
       let content = null;
 
-      if( _.has( doc.issues(), 'paperId' ) ){
+      if( hasIssue( doc, 'paperId' ) ){
         const { paperId } = doc.issues();
         content = h( 'div.document-management-document-section-items', [
           h( 'div', [
@@ -233,7 +236,7 @@ class DocumentManagement extends DirtyComponent {
 
       return h( 'div.document-management-document-section', [
         h( 'div.document-management-document-section-label', {
-          className: makeClassList({ 'issue': _.has( doc.issues(), 'paperId' ) })
+          className: makeClassList({ 'issue': hasIssue( doc, 'paperId' ) })
         }, 'Article:' ),
         content
       ]);
@@ -278,7 +281,7 @@ class DocumentManagement extends DirtyComponent {
 
     const getDocumentCorrespondence = doc => {
       let content = null;
-      if( _.has( doc.issues(), 'authorEmail' ) ){
+      if( hasIssue( doc, 'authorEmail' ) ){
         const { authorEmail } = doc.issues();
         content = h( 'div.document-management-document-section-items', [
           h( 'div', [
@@ -309,7 +312,7 @@ class DocumentManagement extends DirtyComponent {
 
       return h( 'div.document-management-document-section', [
         h( 'div.document-management-document-section-label', {
-          className: makeClassList({ 'issue': _.has( doc.issues(), 'authorEmail' ) })
+          className: makeClassList({ 'issue': hasIssue( doc, 'authorEmail' ) })
         }, 'Correspondence:' ),
         content
       ]);

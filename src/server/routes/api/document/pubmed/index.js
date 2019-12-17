@@ -9,7 +9,7 @@ import {
   DEMO_ID
 } from '../../../../../config';
 
-const digitsRegex = /^[0-9\.]+$/;
+const digitsRegex = /^[0-9.]+$/;
 
 const findPubmedId = async paperId => {
 

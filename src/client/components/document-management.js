@@ -5,7 +5,9 @@ import { Link } from 'react-router-dom';
 import io from 'socket.io-client';
 import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
 
-import EmailButtton from './document-email-button-component';
+import {
+  DocumentEmailButtonComponent,
+  DocumentRefreshButtonComponent } from './document-button-components';
 import logger from '../logger';
 import DirtyComponent from './dirty-component';
 import Document from '../../model/document';
@@ -149,10 +151,6 @@ class DocumentManagement extends DirtyComponent {
     this.setState({ status }, () => this.updateDocs() );
   }
 
-  handleRefresh( e ){
-    console.log(`Refreshed ${e.target.value}`);
-  }
-
   componentWillUnmount(){
     const { docs } = this.state;
 
@@ -161,7 +159,7 @@ class DocumentManagement extends DirtyComponent {
   }
 
   render(){
-    let { docs, validApiKey } = this.state;
+    let { docs, apiKey, validApiKey } = this.state;
 
     const header = h('div.page-content-title', [
       h('h1', 'Document management panel')
@@ -173,7 +171,7 @@ class DocumentManagement extends DirtyComponent {
         h('label.document-management-text-label', 'API key'),
         h('input', {
           type: 'text',
-          value: this.state.apiKey,
+          value: apiKey,
           onChange: e => this.handleApiKeyFormChange( e.target.value )
         }),
         this.state.error ? h('div.error', 'Unable to authorize' ): null,
@@ -262,9 +260,13 @@ class DocumentManagement extends DirtyComponent {
                 to: doc.privateUrl(),
                 target: '_blank'
               }, 'Editable' ),
-              h('button.plain-button', {
-                onClick: e => this.handleRefresh( e )
-              }, [ h( 'i.material-icons', 'refresh' ) ] )
+              h( DocumentRefreshButtonComponent, {
+                disableWhen: doc.trashed(),
+                buttonKey: 'bloat',
+                params: { id: doc.id(), secret: doc.secret(), apiKey },
+                value: 'refresh',
+                label: h( 'span', [ 'Refresh ', h( 'i.material-icons', 'refresh' ) ] )
+              })
             ])
           ])
         ]);
@@ -300,19 +302,19 @@ class DocumentManagement extends DirtyComponent {
       } else {
         content = h( 'div.document-management-document-section-items', [
           h( 'div', getAuthorEmail( doc ) ),
-          h( EmailButtton, {
-            doc,
-            emailType: EMAIL_TYPE_INVITE,
+          h( DocumentEmailButtonComponent, {
+            params: { doc, apiKey },
+            buttonKey: EMAIL_TYPE_INVITE,
+            value: EMAIL_TYPE_INVITE,
             label: _.capitalize( EMAIL_TYPE_INVITE ),
-            disableWhen: doc.requested() || doc.trashed(),
-            apiKey: this.state.apiKey
+            disableWhen: doc.requested() || doc.trashed()
           }),
-          h( EmailButtton, {
-            doc,
-            emailType: EMAIL_TYPE_FOLLOWUP,
+          h( DocumentEmailButtonComponent, {
+            params: { doc, apiKey },
+            buttonKey: EMAIL_TYPE_FOLLOWUP,
+            value: EMAIL_TYPE_FOLLOWUP,
             label: _.upperFirst( EMAIL_TYPE_FOLLOWUP.replace(/([A-Z])/g, (match, letter) => '-' + letter) ),
-            disableWhen: doc.requested() || doc.trashed(),
-            apiKey: this.state.apiKey
+            disableWhen: doc.requested() || doc.trashed()
           })
         ]);
       }

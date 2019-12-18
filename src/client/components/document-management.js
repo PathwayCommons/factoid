@@ -149,6 +149,10 @@ class DocumentManagement extends DirtyComponent {
     this.setState({ status }, () => this.updateDocs() );
   }
 
+  handleRefresh( e ){
+    console.log(`Refreshed ${e.target.value}`);
+  }
+
   componentWillUnmount(){
     const { docs } = this.state;
 
@@ -242,8 +246,8 @@ class DocumentManagement extends DirtyComponent {
       ]);
     };
 
-    // Network
-    const getDocumentNetwork = doc => {
+    // Document
+    const getDocumentInfo = doc => {
       return h( 'div.document-management-document-section', [
           h( 'div.document-management-document-section-label', 'Document:' ),
           h( 'div.document-management-document-section-items', [
@@ -258,6 +262,9 @@ class DocumentManagement extends DirtyComponent {
                 to: doc.privateUrl(),
                 target: '_blank'
               }, 'Editable' ),
+              h('button.plain-button', {
+                onClick: e => this.handleRefresh( e )
+              }, [ h( 'i.material-icons', 'refresh' ) ] )
             ])
           ])
         ]);
@@ -275,7 +282,7 @@ class DocumentManagement extends DirtyComponent {
       let contact = getContact( doc );
       const element = [ h( 'span', `${authorEmail} ` ) ];
       if( contact ) element.push( h( 'span', ` <${contact.name}> ` ) );
-      if( isCorrespondingAuthor ) element.push( h( 'i.material-icons', 'mail_outline' ) );
+      if( isCorrespondingAuthor ) element.push( h( 'small', '(Corresponding)' ) );
       return element;
     };
 
@@ -289,8 +296,8 @@ class DocumentManagement extends DirtyComponent {
             h( 'span', ` ${authorEmail}` )
           ])
         ]);
-      } else {
 
+      } else {
         content = h( 'div.document-management-document-section-items', [
           h( 'div', getAuthorEmail( doc ) ),
           h( EmailButtton, {
@@ -395,7 +402,7 @@ class DocumentManagement extends DirtyComponent {
         [
           getDocumentHeader( doc ),
           getDocumentArticle( doc ),
-          getDocumentNetwork( doc ),
+          getDocumentInfo( doc ),
           getDocumentCorrespondence( doc ),
           getDocumentStats( doc ),
           h( 'hr' )

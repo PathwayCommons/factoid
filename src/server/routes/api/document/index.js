@@ -98,7 +98,9 @@ const DEFAULT_CORRESPONDENCE = {
 const fillDocCorrespondence = async ( doc, authorEmail, isCorrespondingAuthor, context ) => {
   try {
     if( !emailRegex({exact: true}).test( authorEmail ) ) throw new TypeError( `Could not detect an email for '${authorEmail}'` );
-    await doc.correspondence( _.defaults( { authorEmail, isCorrespondingAuthor, context }, DEFAULT_CORRESPONDENCE ) );
+    const { emails } = doc.correspondence();
+    const data = _.defaults( { authorEmail, isCorrespondingAuthor, context, emails }, DEFAULT_CORRESPONDENCE );
+    await doc.correspondence( data );
     await doc.issues({ authorEmail: null });
   } catch ( error ){
     await doc.issues({ authorEmail: `${error.message}` });

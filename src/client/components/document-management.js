@@ -318,6 +318,7 @@ class DocumentManagement extends DirtyComponent {
           h( 'div', getAuthorEmail( doc ) ),
           h( DocumentEmailButtonComponent, {
             params: { doc, apiKey },
+            workingMessage: 'Sending...',
             buttonKey: EMAIL_TYPE_INVITE,
             value: EMAIL_TYPE_INVITE,
             label: _.capitalize( EMAIL_TYPE_INVITE ),
@@ -325,6 +326,7 @@ class DocumentManagement extends DirtyComponent {
           }),
           h( DocumentEmailButtonComponent, {
             params: { doc, apiKey },
+            workingMessage: 'Sending...',
             buttonKey: EMAIL_TYPE_FOLLOWUP,
             value: EMAIL_TYPE_FOLLOWUP,
             label: _.upperFirst( EMAIL_TYPE_FOLLOWUP.replace(/([A-Z])/g, (match, letter) => '-' + letter) ),

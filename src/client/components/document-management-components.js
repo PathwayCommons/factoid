@@ -3,10 +3,10 @@ import h from 'react-hyperscript';
 import React from 'react';
 import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
 
-import { sendMail } from '../../util';
+import {
+  tryPromise, sendMail, makeClassList } from '../../util';
 import logger from '../logger';
 import DirtyComponent from './dirty-component';
-import { tryPromise } from '../../util';
 
 class SendingComponent extends React.Component {
   render() {
@@ -117,8 +117,100 @@ class DocumentRefreshButtonComponent extends DocumentButtonComponent {
   }
 }
 
+class TextEditableComponent extends React.Component {
+
+  constructor( props ) {
+    super();
+    this.ESCAPE_KEY = 27;
+    this.ENTER_KEY = 13;
+    this.state = {
+      editText: props.initial,
+      editing: false
+    };
+  }
+
+  handleEdit () {
+    return () => this.setState({
+      editing: !this.state.editing
+    });
+  }
+
+  handleChange ( e ) {
+    this.setState({ editText: e.target.value });
+  }
+
+  handleSubmit () {
+    new Promise( resolve => {
+      this.setState({
+        editing: false
+      }, resolve );
+    })
+    .then( () => {
+      const { doc } = this.props;
+      const paperId = this.state.editText.trim();
+      return doc.provided({ paperId })
+       .then( () => doc );
+    })
+    .then( doc => {
+      const params = {
+        id: doc.id(),
+        secret: doc.secret(),
+        apiKey: this.props.apiKey
+      };
+      const url = '/api/document';
+      return fetch( url, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify( params )
+      });
+    });
+  }
+
+  handleKeyDown ( e ) {
+    const { keyCode } = e;
+    if ( keyCode  === this.ESCAPE_KEY ) {
+
+      this.setState({
+        editText: this.props.initial,
+        editing: false
+      });
+    } else if ( keyCode === this.ENTER_KEY ) {
+      this.handleSubmit( e );
+    }
+  }
+
+  render() {
+    const { doc } = this.props;
+
+    return h('div.document-management-text-editable', [
+      h('input', {
+        className: makeClassList({
+          'hide-by-default': true,
+          'show': this.state.editing
+        }),
+        value: this.state.editText,
+        onChange: e => this.handleChange( e ),
+        onBlur: e => this.handleSubmit( e ),
+        onKeyDown: e => this.handleKeyDown( e ),
+        id: `document-management-text-editable-${doc.id()}`,
+      }),
+      h('label', {
+        htmlFor: `document-status-radio-${doc.id()}`,
+        className: makeClassList({
+          'hide-by-default': true,
+          'show': !this.state.editing
+        }),
+        onDoubleClick: this.handleEdit()
+      }, this.state.editText )
+    ]);
+  }
+}
+
 
 export {
   DocumentEmailButtonComponent,
-  DocumentRefreshButtonComponent
+  DocumentRefreshButtonComponent,
+  TextEditableComponent
 };

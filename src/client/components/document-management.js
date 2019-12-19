@@ -7,7 +7,8 @@ import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
 
 import {
   DocumentEmailButtonComponent,
-  DocumentRefreshButtonComponent } from './document-button-components';
+  DocumentRefreshButtonComponent,
+  TextEditableComponent } from './document-management-components';
 import logger from '../logger';
 import DirtyComponent from './dirty-component';
 import Document from '../../model/document';
@@ -185,16 +186,16 @@ class DocumentManagement extends DirtyComponent {
       return h( 'div.document-management-document-section.meta', [
         h( 'div.document-management-document-section-items', [
           h( 'div', [
-            h( 'i.material-icons.by-status.invalid', {
+            h( 'i.material-icons.hide-by-default.invalid', {
               className: makeClassList({ 'show': hasIssues( doc ) })
             }, 'warning' ),
-            h( 'i.material-icons.by-status.mute', {
+            h( 'i.material-icons.hide-by-default.mute', {
               className: makeClassList({ 'show': doc.approved() })
             }, 'thumb_up' ),
-            h( 'i.material-icons.by-status.complete', {
+            h( 'i.material-icons.hide-by-default.complete', {
               className: makeClassList({ 'show': doc.submitted() })
             }, 'check_circle' ),
-            h( 'i.material-icons.by-status.mute', {
+            h( 'i.material-icons.hide-by-default.mute', {
               className: makeClassList({ 'show': doc.trashed() })
             }, 'delete' )
           ]),
@@ -206,13 +207,17 @@ class DocumentManagement extends DirtyComponent {
     // Article
     const getDocumentArticle = doc => {
       let content = null;
+      const { paperId: initial } = doc.provided();
+      let labelContent = labelContent = h( TextEditableComponent, {
+        doc, initial, apiKey
+      });
 
       if( hasIssue( doc, 'paperId' ) ){
-        const { paperId } = doc.issues();
+        const { paperId: paperIdIssue } = doc.issues();
         content = h( 'div.document-management-document-section-items', [
           h( 'div', [
             h( 'i.material-icons', 'error_outline' ),
-            h( 'span', ` ${paperId}` )
+            h( 'span', ` ${paperIdIssue}` )
           ])
         ]);
 
@@ -240,7 +245,10 @@ class DocumentManagement extends DirtyComponent {
       return h( 'div.document-management-document-section', [
         h( 'div.document-management-document-section-label', {
           className: makeClassList({ 'issue': hasIssue( doc, 'paperId' ) })
-        }, 'Article:' ),
+        }, [
+          h( 'div.document-management-document-section-label-text', 'Article:'),
+          h( 'div.document-management-document-section-label-content', [ labelContent ])
+        ]),
         content
       ]);
     };
@@ -249,7 +257,7 @@ class DocumentManagement extends DirtyComponent {
     const getDocumentInfo = doc => {
       return h( 'div.document-management-document-section', [
           h( 'div.document-management-document-section-label', [
-            h( 'div.document-management-document-section-label-text', ['Document:']),
+            h( 'div.document-management-document-section-label-text', 'Document:'),
             h( 'div.document-management-document-section-label-content', [
               h( DocumentRefreshButtonComponent, {
                 disableWhen: doc.trashed(),

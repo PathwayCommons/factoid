@@ -183,8 +183,9 @@ class Document {
     }
   }
 
-  provided(){
-    return this.rwMeta('provided');
+  provided(newVal){
+    const provided = this.rwMeta('provided');
+    return newVal ? this.rwMeta('provided', _.merge( provided, newVal )): provided;
   }
 
   article(newVal){

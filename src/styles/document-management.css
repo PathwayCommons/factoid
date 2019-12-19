@@ -100,7 +100,21 @@
     margin-bottom: 0.2em;
   }
 
+  & .row {
+    display: flex;
+    align-items: center;
+  }
+
   & .row > * {
+    margin-right: 1em;
+  }
+}
+
+.document-management-document-section-items-row {
+  display: flex;
+  align-items: center;
+
+  & > * {
     margin-right: 1em;
   }
 }

@@ -197,7 +197,8 @@ class DocumentManagement extends DirtyComponent {
             h( 'i.material-icons.by-status.mute', {
               className: makeClassList({ 'show': doc.trashed() })
             }, 'delete' )
-          ])
+          ]),
+
         ])
       ]);
     };
@@ -247,9 +248,20 @@ class DocumentManagement extends DirtyComponent {
     // Document
     const getDocumentInfo = doc => {
       return h( 'div.document-management-document-section', [
-          h( 'div.document-management-document-section-label', 'Document:' ),
+          h( 'div.document-management-document-section-label', [
+            h( 'div.document-management-document-section-label-text', ['Document:']),
+            h( 'div.document-management-document-section-label-content', [
+              h( DocumentRefreshButtonComponent, {
+                disableWhen: doc.trashed(),
+                buttonKey: 'bloat',
+                params: { id: doc.id(), secret: doc.secret(), apiKey },
+                value: 'refresh',
+                label: h( 'div', [ 'Refresh', h( 'i.material-icons', 'refresh' ) ] )
+              })
+            ])
+          ]),
           h( 'div.document-management-document-section-items', [
-            h( 'div.row', [
+            h( 'div.document-management-document-section-items-row', [
               h( Link, {
                 className: 'plain-link',
                 to: doc.publicUrl(),
@@ -259,14 +271,7 @@ class DocumentManagement extends DirtyComponent {
                 className: 'plain-link',
                 to: doc.privateUrl(),
                 target: '_blank'
-              }, 'Editable' ),
-              h( DocumentRefreshButtonComponent, {
-                disableWhen: doc.trashed(),
-                buttonKey: 'bloat',
-                params: { id: doc.id(), secret: doc.secret(), apiKey },
-                value: 'refresh',
-                label: h( 'span', [ 'Refresh ', h( 'i.material-icons', 'refresh' ) ] )
-              })
+              }, 'Editable' )
             ])
           ])
         ]);

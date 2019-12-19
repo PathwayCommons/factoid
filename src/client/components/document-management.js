@@ -206,25 +206,25 @@ class DocumentManagement extends DirtyComponent {
 
     // Article
     const getDocumentArticle = doc => {
-      let content = null;
-      const { paperId: initial } = doc.provided();
-      let labelContent = labelContent = h( TextEditableComponent, {
-        doc, initial, apiKey
-      });
+      let items = null;
+      // const { paperId: initial } = doc.provided();
+      // let labelContent = labelContent = h( TextEditableComponent, {
+      //   doc, initial, apiKey
+      // });
 
       if( hasIssue( doc, 'paperId' ) ){
         const { paperId: paperIdIssue } = doc.issues();
-        content = h( 'div.document-management-document-section-items', [
+        items = [
           h( 'div', [
             h( 'i.material-icons', 'error_outline' ),
             h( 'span', ` ${paperIdIssue}` )
           ])
-        ]);
+        ];
 
       } else {
         const { authors, contacts, title, reference, pmid, doi } = doc.citation();
         const contactList = contacts.map( contact => `${contact.email} <${contact.name}>` ).join(', ');
-        content =  h( 'div.document-management-document-section-items', [
+        items =  [
             h( 'strong', [
               h( 'a.plain-link.section-item-emphasize', {
                 href: PUBMED_LINK_BASE_URL + pmid,
@@ -239,17 +239,16 @@ class DocumentManagement extends DirtyComponent {
               }, `DOI: ${doi}` )
             ]),
             h('small.mute', contactList)
-          ]);
+          ];
       }
 
       return h( 'div.document-management-document-section', [
         h( 'div.document-management-document-section-label', {
           className: makeClassList({ 'issue': hasIssue( doc, 'paperId' ) })
         }, [
-          h( 'div.document-management-document-section-label-text', 'Article:'),
-          h( 'div.document-management-document-section-label-content', [ labelContent ])
+          h( 'div.document-management-document-section-label-text', 'Article:')
         ]),
-        content
+        h( 'div.document-management-document-section-items', items )
       ]);
     };
 
@@ -260,11 +259,13 @@ class DocumentManagement extends DirtyComponent {
             h( 'div.document-management-document-section-label-text', 'Document:'),
             h( 'div.document-management-document-section-label-content', [
               h( DocumentRefreshButtonComponent, {
+                workingMessage: 'Refreshing',
                 disableWhen: doc.trashed(),
-                buttonKey: 'bloat',
+                buttonKey: doc.id(),
                 params: { id: doc.id(), secret: doc.secret(), apiKey },
                 value: 'refresh',
-                label: h( 'div', [ 'Refresh', h( 'i.material-icons', 'refresh' ) ] )
+                title: 'Refresh',
+                label: h( 'i.material-icons', 'refresh' )
               })
             ])
           ]),

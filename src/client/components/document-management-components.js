@@ -9,9 +9,13 @@ import logger from '../logger';
 import DirtyComponent from './dirty-component';
 
 class SendingComponent extends React.Component {
+  constructor( props ){
+    super( props );
+  }
+
   render() {
     return h('small.mute', [
-      h('span', ' Working... '),
+      h('span', ` ${this.props.workingMessage}` || ' Working...'),
       h('i.icon.icon-spinner.document-seeder-submit-spinner')
     ]);
   }
@@ -45,14 +49,15 @@ class DocumentButtonComponent extends DirtyComponent {
   }
 
   render(){
-    let { label, disableWhen, params, buttonKey: key, value, className } = this.props;
+    let { label, disableWhen, params, buttonKey: key, value, className, title, workingMessage } = this.props;
     return h( 'span', { key, className }, [
       h( 'button', {
+        title,
         value,
         onClick: e => this.handleClick( params, e.target.value ),
         disabled: this.state.sending || disableWhen
       }, [ label ]),
-      this.state.sending ? h( SendingComponent ): this.onDoneWork( params, value )
+      this.state.sending ? h( SendingComponent, { workingMessage }): this.onDoneWork( params, value )
     ]);
   }
 }
@@ -168,14 +173,17 @@ class TextEditableComponent extends React.Component {
     });
   }
 
+  reset() {
+    this.setState({
+      editText: this.props.initial,
+      editing: false
+    });
+  }
+
   handleKeyDown ( e ) {
     const { keyCode } = e;
     if ( keyCode  === this.ESCAPE_KEY ) {
-
-      this.setState({
-        editText: this.props.initial,
-        editing: false
-      });
+      this.reset();
     } else if ( keyCode === this.ENTER_KEY ) {
       this.handleSubmit( e );
     }
@@ -192,7 +200,7 @@ class TextEditableComponent extends React.Component {
         }),
         value: this.state.editText,
         onChange: e => this.handleChange( e ),
-        onBlur: e => this.handleSubmit( e ),
+        onBlur: e => this.reset( e ),
         onKeyDown: e => this.handleKeyDown( e ),
         id: `document-management-text-editable-${doc.id()}`,
       }),

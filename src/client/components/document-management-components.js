@@ -138,99 +138,128 @@ class DocumentRefreshButtonComponent extends DocumentButtonComponent {
   }
 }
 
-// class TextEditableComponent extends React.Component {
+class TextEditableComponent extends React.Component {
 
-//   constructor( props ) {
-//     super();
-//     this.ESCAPE_KEY = 27;
-//     this.ENTER_KEY = 13;
-//     this.state = {
-//       editText: props.initial,
-//       editing: false
-//     };
-//   }
+  constructor( props ) {
+    super();
+    this.ESCAPE_KEY = 27;
+    this.ENTER_KEY = 13;
+    this.state = {
+      editText: props.value,
+      editing: false,
+      sending: false
+    };
+  }
 
-//   handleEdit () {
-//     return () => this.setState({
-//       editing: !this.state.editing
-//     });
-//   }
+  handleEdit () {
+    return () => this.setState({
+      editing: !this.state.editing
+    });
+  }
 
-//   handleChange ( e ) {
-//     this.setState({ editText: e.target.value });
-//   }
+  handleChange ( e ) {
+    this.setState({ editText: e.target.value });
+  }
 
-//   handleSubmit () {
-//     new Promise( resolve => {
-//       this.setState({
-//         editing: false
-//       }, resolve );
-//     })
-//     .then( () => {
-//       const { doc } = this.props;
-//       const paperId = this.state.editText.trim();
-//       return doc.provided({ paperId })
-//        .then( () => doc );
-//     })
-//     .then( doc => {
-//       const params = {
-//         id: doc.id(),
-//         secret: doc.secret(),
-//         apiKey: this.props.apiKey
-//       };
-//       const url = '/api/document';
-//       return fetch( url, {
-//         method: 'PATCH',
-//         headers: {
-//           'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify( params )
-//       });
-//     });
-//   }
+  handleSubmit () {
+    new Promise( resolve => {
+      this.setState({
+        sending: true,
+        editing: false
+      }, resolve );
+    })
+    .then( () => {
+      const { doc } = this.props;
+      return doc.provided({
+        [this.props.fieldName]: this.state.editText.trim()
+      })
+       .then( () => doc );
+    })
+    .then( doc => {
+      const params = {
+        id: doc.id(),
+        secret: doc.secret(),
+        apiKey: this.props.apiKey
+      };
+      const url = '/api/document';
+      return fetch( url, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify( params )
+      });
+    })
+    .finally( () => {
+      new Promise( resolve => {
+        this.setState({
+          sending: false
+        }, resolve );
+      });
+    });
+  }
 
-//   reset() {
-//     this.setState({
-//       editText: this.props.initial,
-//       editing: false
-//     });
-//   }
+  reset() {
+    this.setState({
+      editText: this.props.value,
+      editing: false
+    });
+  }
 
-//   handleKeyDown ( e ) {
-//     const { keyCode } = e;
-//     if ( keyCode  === this.ESCAPE_KEY ) {
-//       this.reset();
-//     } else if ( keyCode === this.ENTER_KEY ) {
-//       this.handleSubmit( e );
-//     }
-//   }
+  focusInput( c ) {
+    if ( c ) c.focus();
+  }
 
-//   render() {
-//     const { doc } = this.props;
+  handleKeyDown ( e ) {
+    const { keyCode } = e;
+    if ( keyCode  === this.ESCAPE_KEY ) {
+      this.reset();
+    } else if ( keyCode === this.ENTER_KEY ) {
+      this.handleSubmit( e );
+    }
+  }
 
-//     return h('div.document-management-text-editable', [
-//       h('input', {
-//         className: makeClassList({
-//           'hide-by-default': true,
-//           'show': this.state.editing
-//         }),
-//         value: this.state.editText,
-//         onChange: e => this.handleChange( e ),
-//         onBlur: e => this.reset( e ),
-//         onKeyDown: e => this.handleKeyDown( e ),
-//         id: `document-management-text-editable-${doc.id()}`,
-//       }),
-//       h('label', {
-//         htmlFor: `document-status-radio-${doc.id()}`,
-//         className: makeClassList({
-//           'hide-by-default': true,
-//           'show': !this.state.editing
-//         }),
-//         onDoubleClick: this.handleEdit()
-//       }, this.state.editText )
-//     ]);
-//   }
-// }
+  handleFocus ( e ) {
+    e.target.select();
+  }
+
+  render() {
+    const { doc, label } = this.props;
+
+    const editContent = h('div.document-management-text-editable', [
+      h('input', {
+        className: makeClassList({
+          'hide-by-default': true,
+          'show': this.state.editing
+        }),
+        autoFocus: true,
+        ref: c => this.focusInput( c ),
+        value: this.state.editText,
+        onChange: e => this.handleChange( e ),
+        onFocus: e => this.handleFocus( e ),
+        onBlur: e => this.reset( e ),
+        onKeyDown: e => this.handleKeyDown( e ),
+        id: `document-management-text-editable-${doc.id()}`,
+      }),
+      h('label', {
+        htmlFor: `document-management-text-editable-${doc.id()}`,
+        className: makeClassList({
+          'hide-by-default': true,
+          'show': !this.state.editing
+        })
+      }, [
+        label,
+        h( 'i.material-icons', {
+          onClick: this.handleEdit()
+        }, 'edit' ),
+      ])
+    ]);
+
+    return this.state.sending ? h( SendingComponent, {
+      workingMessage: `Updating ${this.props.fieldName}`
+    }): editContent;
+  }
+}
 
 class DocumentManagementDocumentComponent extends React.Component {
   constructor( props ){
@@ -280,16 +309,22 @@ class DocumentManagementDocumentComponent extends React.Component {
       let items = null;
       if( hasIssue( doc, 'paperId' ) ){
         const { paperId: paperIdIssue } = doc.issues();
+        const paperId = _.get( doc.provided(), 'paperId' );
         items = [
-          h( 'div', [
-            h( 'i.material-icons', 'error_outline' ),
-            h( 'span', ` ${paperIdIssue}` )
-          ])
+          h( TextEditableComponent, {
+            doc,
+            fieldName: 'paperId',
+            value: paperId,
+            label: h( 'span', `${paperIdIssue} ` ),
+            apiKey
+          })
         ];
 
       } else {
         const { authors, contacts, title, reference, pmid, doi } = doc.citation();
         const contactList = contacts.map( contact => `${contact.email} <${contact.name}>` ).join(', ');
+        const { paperId } = doc.provided();
+
         items =  [
             h( 'strong', [
               h( 'a.plain-link.section-item-emphasize', {
@@ -304,7 +339,13 @@ class DocumentManagementDocumentComponent extends React.Component {
                 target: '_blank'
               }, `DOI: ${doi}` )
             ]),
-            h('small.mute', contactList)
+            h('small.mute', contactList),
+            h( TextEditableComponent, {
+              doc,
+              value: paperId,
+              label: h('small.mute', `${paperId} `),
+              apiKey
+            })
           ];
       }
 
@@ -351,26 +392,36 @@ class DocumentManagementDocumentComponent extends React.Component {
     const getAuthorEmail = doc => {
       const { authorEmail, isCorrespondingAuthor } = doc.correspondence();
       let contact = getContact( doc );
-      const element = [ h( 'span', `${authorEmail} ` ) ];
+      const element = [`${authorEmail} `];
       if( contact ) element.push( h( 'span', ` <${contact.name}> ` ) );
-      if( isCorrespondingAuthor ) element.push( h( 'small', '(Corresponding)' ) );
-      return element;
+      if( isCorrespondingAuthor ) element.push( h( 'small', '(Corresponding) ' ) );
+      return h( TextEditableComponent, {
+          doc,
+          fieldName: 'authorEmail',
+          value: authorEmail,
+          label: h( 'span', element ),
+          apiKey
+        });
     };
 
     const getDocumentCorrespondence = doc => {
       let content = null;
       if( hasIssue( doc, 'authorEmail' ) ){
-        const { authorEmail } = doc.issues();
+        const { authorEmail: authorEmailIssue } = doc.issues();
+        const authorEmail = _.get( doc.provided(), 'authorEmail' );
         content = h( 'div.document-management-document-section-items', [
-          h( 'div', [
-            h( 'i.material-icons', 'error_outline' ),
-            h( 'span', ` ${authorEmail}` )
-          ])
+          h( TextEditableComponent, {
+            doc,
+            fieldName: 'authorEmail',
+            value: authorEmail,
+            label: h( 'span', `${authorEmailIssue} `),
+            apiKey
+          })
         ]);
 
       } else {
         content = h( 'div.document-management-document-section-items', [
-          h( 'div', getAuthorEmail( doc ) ),
+          getAuthorEmail( doc ),
           h( DocumentEmailButtonComponent, {
             params: { doc, apiKey },
             workingMessage: 'Sending...',

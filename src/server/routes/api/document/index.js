@@ -98,24 +98,28 @@ const DEFAULT_CORRESPONDENCE = {
 const fillDocCorrespondence = async ( doc, authorEmail, isCorrespondingAuthor, context ) => {
   try {
     if( !emailRegex({exact: true}).test( authorEmail ) ) throw new TypeError( `Could not detect an email for '${authorEmail}'` );
-    doc.correspondence( _.defaults( { authorEmail, isCorrespondingAuthor, context }, DEFAULT_CORRESPONDENCE ) );
+    const emails = _.get( doc.correspondence(), 'emails' );
+    const data = _.defaults( { authorEmail, isCorrespondingAuthor, context, emails }, DEFAULT_CORRESPONDENCE );
+    await doc.correspondence( data );
+    await doc.issues({ authorEmail: null });
   } catch ( error ){
-    doc.issues({ authorEmail: `${error.message}` });
+    await doc.issues({ authorEmail: `${error.message}` });
   }
 };
 
 const fillDocArticle = async ( doc, paperId ) => {
   try {
     const pubmedRecord = await getPubmedArticle( paperId );
-    doc.article( pubmedRecord );
+    await doc.article( pubmedRecord );
+    await doc.issues({ paperId: null });
   } catch ( error ){
-    doc.issues({ paperId: `${error.message}` });
+    await doc.issues({ paperId: `${error.message}` });
   }
 };
 
-let fillDoc = async ( doc, provided ) => {
-  const { paperId, authorEmail, isCorrespondingAuthor, context } = provided;
-  fillDocCorrespondence( doc, authorEmail, isCorrespondingAuthor, context );
+let fillDoc = async doc => {
+  const { paperId, authorEmail, isCorrespondingAuthor, context } = doc.provided();
+  await fillDocCorrespondence( doc, authorEmail, isCorrespondingAuthor, context );
   await fillDocArticle( doc, paperId );
   return doc;
 };
@@ -389,9 +393,24 @@ http.post('/', function( req, res, next ){
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided }) )
     .catch( e => { logger.error(`Error creating doc: ${e.message}`); next( e ); })
     .then( doc => doc.request().then( () => doc ) )
-    .then( doc => fillDoc( doc, provided ) )
+    .then( fillDoc )
     .then( getDocJson )
     .then( json => res.json( json ) )
+    .catch( next )
+  );
+});
+
+// apply fillDoc to existing
+http.patch('/', function( req, res, next ){
+  let { apiKey, id, secret } = req.body;
+  return (
+    tryPromise( () => checkApiKey( apiKey ) )
+    .then( loadTables )
+    .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
+    .then( fillDoc )
+    .then( getDocJson )
+    .then( json => res.json( json ) )
+    .catch( next )
   );
 });
 

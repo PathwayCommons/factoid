@@ -146,7 +146,8 @@ class TextEditableComponent extends React.Component {
     this.ENTER_KEY = 13;
     this.state = {
       editText: props.value,
-      editing: false
+      editing: false,
+      sending: false
     };
   }
 
@@ -163,13 +164,15 @@ class TextEditableComponent extends React.Component {
   handleSubmit () {
     new Promise( resolve => {
       this.setState({
+        sending: true,
         editing: false
       }, resolve );
     })
     .then( () => {
       const { doc } = this.props;
-      const paperId = this.state.editText.trim();
-      return doc.provided({ paperId })
+      return doc.provided({
+        [this.props.fieldName]: this.state.editText.trim()
+      })
        .then( () => doc );
     })
     .then( doc => {
@@ -185,6 +188,13 @@ class TextEditableComponent extends React.Component {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify( params )
+      });
+    })
+    .finally( () => {
+      new Promise( resolve => {
+        this.setState({
+          sending: false
+        }, resolve );
       });
     });
   }
@@ -208,7 +218,7 @@ class TextEditableComponent extends React.Component {
   render() {
     const { doc, label } = this.props;
 
-    return h('div.document-management-text-editable', [
+    const editContent = h('div.document-management-text-editable', [
       h('input', {
         className: makeClassList({
           'hide-by-default': true,
@@ -225,8 +235,7 @@ class TextEditableComponent extends React.Component {
         className: makeClassList({
           'hide-by-default': true,
           'show': !this.state.editing
-        }),
-        onDoubleClick: this.handleEdit()
+        })
       }, [
         label,
         h( 'i.material-icons', {
@@ -234,6 +243,10 @@ class TextEditableComponent extends React.Component {
         }, 'edit' ),
       ])
     ]);
+
+    return this.state.sending ? h( SendingComponent, {
+      workingMessage: `Updating ${this.props.fieldName}`
+    }): editContent;
   }
 }
 
@@ -289,6 +302,7 @@ class DocumentManagementDocumentComponent extends React.Component {
         items = [
           h( TextEditableComponent, {
             doc,
+            fieldName: 'paperId',
             value: paperId,
             label: h( 'span', `${paperIdIssue} ` ),
             apiKey
@@ -367,26 +381,36 @@ class DocumentManagementDocumentComponent extends React.Component {
     const getAuthorEmail = doc => {
       const { authorEmail, isCorrespondingAuthor } = doc.correspondence();
       let contact = getContact( doc );
-      const element = [ h( 'span', `${authorEmail} ` ) ];
+      const element = [`${authorEmail} `];
       if( contact ) element.push( h( 'span', ` <${contact.name}> ` ) );
-      if( isCorrespondingAuthor ) element.push( h( 'small', '(Corresponding)' ) );
-      return element;
+      if( isCorrespondingAuthor ) element.push( h( 'small', '(Corresponding) ' ) );
+      return h( TextEditableComponent, {
+          doc,
+          fieldName: 'authorEmail',
+          value: authorEmail,
+          label: h( 'span', element ),
+          apiKey
+        });
     };
 
     const getDocumentCorrespondence = doc => {
       let content = null;
       if( hasIssue( doc, 'authorEmail' ) ){
-        const { authorEmail } = doc.issues();
+        const { authorEmail: authorEmailIssue } = doc.issues();
+        const authorEmail = _.get( doc.provided(), 'authorEmail' );
         content = h( 'div.document-management-document-section-items', [
-          h( 'div', [
-            h( 'i.material-icons', 'error_outline' ),
-            h( 'span', ` ${authorEmail}` )
-          ])
+          h( TextEditableComponent, {
+            doc,
+            fieldName: 'authorEmail',
+            value: authorEmail,
+            label: h( 'span', `${authorEmailIssue} `),
+            apiKey
+          })
         ]);
 
       } else {
         content = h( 'div.document-management-document-section-items', [
-          h( 'div', getAuthorEmail( doc ) ),
+          getAuthorEmail( doc ),
           h( DocumentEmailButtonComponent, {
             params: { doc, apiKey },
             workingMessage: 'Sending...',

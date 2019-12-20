@@ -138,99 +138,99 @@ class DocumentRefreshButtonComponent extends DocumentButtonComponent {
   }
 }
 
-class TextEditableComponent extends React.Component {
+// class TextEditableComponent extends React.Component {
 
-  constructor( props ) {
-    super();
-    this.ESCAPE_KEY = 27;
-    this.ENTER_KEY = 13;
-    this.state = {
-      editText: props.initial,
-      editing: false
-    };
-  }
+//   constructor( props ) {
+//     super();
+//     this.ESCAPE_KEY = 27;
+//     this.ENTER_KEY = 13;
+//     this.state = {
+//       editText: props.initial,
+//       editing: false
+//     };
+//   }
 
-  handleEdit () {
-    return () => this.setState({
-      editing: !this.state.editing
-    });
-  }
+//   handleEdit () {
+//     return () => this.setState({
+//       editing: !this.state.editing
+//     });
+//   }
 
-  handleChange ( e ) {
-    this.setState({ editText: e.target.value });
-  }
+//   handleChange ( e ) {
+//     this.setState({ editText: e.target.value });
+//   }
 
-  handleSubmit () {
-    new Promise( resolve => {
-      this.setState({
-        editing: false
-      }, resolve );
-    })
-    .then( () => {
-      const { doc } = this.props;
-      const paperId = this.state.editText.trim();
-      return doc.provided({ paperId })
-       .then( () => doc );
-    })
-    .then( doc => {
-      const params = {
-        id: doc.id(),
-        secret: doc.secret(),
-        apiKey: this.props.apiKey
-      };
-      const url = '/api/document';
-      return fetch( url, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify( params )
-      });
-    });
-  }
+//   handleSubmit () {
+//     new Promise( resolve => {
+//       this.setState({
+//         editing: false
+//       }, resolve );
+//     })
+//     .then( () => {
+//       const { doc } = this.props;
+//       const paperId = this.state.editText.trim();
+//       return doc.provided({ paperId })
+//        .then( () => doc );
+//     })
+//     .then( doc => {
+//       const params = {
+//         id: doc.id(),
+//         secret: doc.secret(),
+//         apiKey: this.props.apiKey
+//       };
+//       const url = '/api/document';
+//       return fetch( url, {
+//         method: 'PATCH',
+//         headers: {
+//           'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify( params )
+//       });
+//     });
+//   }
 
-  reset() {
-    this.setState({
-      editText: this.props.initial,
-      editing: false
-    });
-  }
+//   reset() {
+//     this.setState({
+//       editText: this.props.initial,
+//       editing: false
+//     });
+//   }
 
-  handleKeyDown ( e ) {
-    const { keyCode } = e;
-    if ( keyCode  === this.ESCAPE_KEY ) {
-      this.reset();
-    } else if ( keyCode === this.ENTER_KEY ) {
-      this.handleSubmit( e );
-    }
-  }
+//   handleKeyDown ( e ) {
+//     const { keyCode } = e;
+//     if ( keyCode  === this.ESCAPE_KEY ) {
+//       this.reset();
+//     } else if ( keyCode === this.ENTER_KEY ) {
+//       this.handleSubmit( e );
+//     }
+//   }
 
-  render() {
-    const { doc } = this.props;
+//   render() {
+//     const { doc } = this.props;
 
-    return h('div.document-management-text-editable', [
-      h('input', {
-        className: makeClassList({
-          'hide-by-default': true,
-          'show': this.state.editing
-        }),
-        value: this.state.editText,
-        onChange: e => this.handleChange( e ),
-        onBlur: e => this.reset( e ),
-        onKeyDown: e => this.handleKeyDown( e ),
-        id: `document-management-text-editable-${doc.id()}`,
-      }),
-      h('label', {
-        htmlFor: `document-status-radio-${doc.id()}`,
-        className: makeClassList({
-          'hide-by-default': true,
-          'show': !this.state.editing
-        }),
-        onDoubleClick: this.handleEdit()
-      }, this.state.editText )
-    ]);
-  }
-}
+//     return h('div.document-management-text-editable', [
+//       h('input', {
+//         className: makeClassList({
+//           'hide-by-default': true,
+//           'show': this.state.editing
+//         }),
+//         value: this.state.editText,
+//         onChange: e => this.handleChange( e ),
+//         onBlur: e => this.reset( e ),
+//         onKeyDown: e => this.handleKeyDown( e ),
+//         id: `document-management-text-editable-${doc.id()}`,
+//       }),
+//       h('label', {
+//         htmlFor: `document-status-radio-${doc.id()}`,
+//         className: makeClassList({
+//           'hide-by-default': true,
+//           'show': !this.state.editing
+//         }),
+//         onDoubleClick: this.handleEdit()
+//       }, this.state.editText )
+//     ]);
+//   }
+// }
 
 class DocumentManagementDocumentComponent extends React.Component {
   constructor( props ){
@@ -239,6 +239,18 @@ class DocumentManagementDocumentComponent extends React.Component {
 
   render(){
     let { doc, apiKey } = this.props;
+
+    const getRefreshDocDataButton = doc => {
+      return h( DocumentRefreshButtonComponent, {
+          workingMessage: ' Please wait',
+          disableWhen: doc.trashed(),
+          buttonKey: doc.id(),
+          params: { id: doc.id(), secret: doc.secret(), apiKey },
+          value: 'refresh',
+          title: 'Refresh document data',
+          label: h( 'i.material-icons', 'refresh' )
+        });
+    };
 
     // Document Header & Footer
     const getDocumentHeader = doc => {
@@ -266,11 +278,6 @@ class DocumentManagementDocumentComponent extends React.Component {
     // Article
     const getDocumentArticle = doc => {
       let items = null;
-      // const { paperId: initial } = doc.provided();
-      // let labelContent = labelContent = h( TextEditableComponent, {
-      //   doc, initial, apiKey
-      // });
-
       if( hasIssue( doc, 'paperId' ) ){
         const { paperId: paperIdIssue } = doc.issues();
         items = [
@@ -315,18 +322,7 @@ class DocumentManagementDocumentComponent extends React.Component {
     const getDocumentInfo = doc => {
       return h( 'div.document-management-document-section', [
           h( 'div.document-management-document-section-label', [
-            h( 'div.document-management-document-section-label-text', 'Document:'),
-            h( 'div.document-management-document-section-label-content', [
-              h( DocumentRefreshButtonComponent, {
-                workingMessage: 'Refreshing',
-                disableWhen: doc.trashed(),
-                buttonKey: doc.id(),
-                params: { id: doc.id(), secret: doc.secret(), apiKey },
-                value: 'refresh',
-                title: 'Refresh document data',
-                label: h( 'i.material-icons', 'refresh' )
-              })
-            ])
+            h( 'div.document-management-document-section-label-text', 'Document:')
           ]),
           h( 'div.document-management-document-section-items', [
             h( 'div.document-management-document-section-items-row', [
@@ -402,7 +398,7 @@ class DocumentManagementDocumentComponent extends React.Component {
       ]);
     };
 
-    // Status
+    // Editing
     const getDocumentStatus = doc => {
       let radios = [];
       let addType = (typeVal, displayName) => {
@@ -434,9 +430,10 @@ class DocumentManagementDocumentComponent extends React.Component {
       const edited = toPeriodOrDate( doc.lastEditedDate() );
       const context = doc.correspondence() ? _.get( doc.correspondence(), 'context' ) : null;
       const source = context ? `via ${context}` : '';
-      return h( 'div.document-management-document-section.column.meta', [
-          h( 'small.document-management-document-section-items', [
+      return h( 'div.document-management-document-section.meta', [
+          h( 'small.document-management-document-section-items.pull-right', [
             getDocumentStatus( doc ),
+            getRefreshDocDataButton( doc ),
             h( 'div.mute', { key: 'created' }, `Created ${created} ${source}` ),
             h( 'div.mute', { key: 'edited' }, edited ? `Edited ${edited}`: 'Not edited' )
           ])

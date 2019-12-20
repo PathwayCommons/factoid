@@ -64,6 +64,10 @@
   &.meta {
     justify-content: flex-end;
     align-items: flex-end;
+
+    & > * {
+      max-width: 100%;
+    }
   }
 
   & > * {
@@ -88,6 +92,10 @@
   align-items: flex-start;
   justify-content: flex-start;
 
+  &.pull-right {
+    align-items: flex-end;
+  }
+
   & button {
     margin: 0.1em;
     min-width: 6em;
@@ -96,22 +104,18 @@
   & .radioset {
     margin-bottom: 0.2em;
   }
-
-  & .row {
-    display: flex;
-    align-items: center;
-  }
-
-  & .row > * {
-    margin-right: 1em;
-  }
 }
 
 .document-management-document-section-items-row {
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
+  width: 100%;
 
   & > * {
+    margin-top: 0;
+    margin-bottom: 0;
     margin-right: 1em;
   }
 }

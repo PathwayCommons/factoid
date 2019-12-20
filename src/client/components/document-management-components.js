@@ -138,99 +138,104 @@ class DocumentRefreshButtonComponent extends DocumentButtonComponent {
   }
 }
 
-// class TextEditableComponent extends React.Component {
+class TextEditableComponent extends React.Component {
 
-//   constructor( props ) {
-//     super();
-//     this.ESCAPE_KEY = 27;
-//     this.ENTER_KEY = 13;
-//     this.state = {
-//       editText: props.initial,
-//       editing: false
-//     };
-//   }
+  constructor( props ) {
+    super();
+    this.ESCAPE_KEY = 27;
+    this.ENTER_KEY = 13;
+    this.state = {
+      editText: props.value,
+      editing: false
+    };
+  }
 
-//   handleEdit () {
-//     return () => this.setState({
-//       editing: !this.state.editing
-//     });
-//   }
+  handleEdit () {
+    return () => this.setState({
+      editing: !this.state.editing
+    });
+  }
 
-//   handleChange ( e ) {
-//     this.setState({ editText: e.target.value });
-//   }
+  handleChange ( e ) {
+    this.setState({ editText: e.target.value });
+  }
 
-//   handleSubmit () {
-//     new Promise( resolve => {
-//       this.setState({
-//         editing: false
-//       }, resolve );
-//     })
-//     .then( () => {
-//       const { doc } = this.props;
-//       const paperId = this.state.editText.trim();
-//       return doc.provided({ paperId })
-//        .then( () => doc );
-//     })
-//     .then( doc => {
-//       const params = {
-//         id: doc.id(),
-//         secret: doc.secret(),
-//         apiKey: this.props.apiKey
-//       };
-//       const url = '/api/document';
-//       return fetch( url, {
-//         method: 'PATCH',
-//         headers: {
-//           'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify( params )
-//       });
-//     });
-//   }
+  handleSubmit () {
+    new Promise( resolve => {
+      this.setState({
+        editing: false
+      }, resolve );
+    })
+    .then( () => {
+      const { doc } = this.props;
+      const paperId = this.state.editText.trim();
+      return doc.provided({ paperId })
+       .then( () => doc );
+    })
+    .then( doc => {
+      const params = {
+        id: doc.id(),
+        secret: doc.secret(),
+        apiKey: this.props.apiKey
+      };
+      const url = '/api/document';
+      return fetch( url, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify( params )
+      });
+    });
+  }
 
-//   reset() {
-//     this.setState({
-//       editText: this.props.initial,
-//       editing: false
-//     });
-//   }
+  reset() {
+    this.setState({
+      editText: this.props.value,
+      editing: false
+    });
+  }
 
-//   handleKeyDown ( e ) {
-//     const { keyCode } = e;
-//     if ( keyCode  === this.ESCAPE_KEY ) {
-//       this.reset();
-//     } else if ( keyCode === this.ENTER_KEY ) {
-//       this.handleSubmit( e );
-//     }
-//   }
+  handleKeyDown ( e ) {
+    const { keyCode } = e;
+    if ( keyCode  === this.ESCAPE_KEY ) {
+      this.reset();
+    } else if ( keyCode === this.ENTER_KEY ) {
+      this.handleSubmit( e );
+    }
+  }
 
-//   render() {
-//     const { doc } = this.props;
+  render() {
+    const { doc, label } = this.props;
 
-//     return h('div.document-management-text-editable', [
-//       h('input', {
-//         className: makeClassList({
-//           'hide-by-default': true,
-//           'show': this.state.editing
-//         }),
-//         value: this.state.editText,
-//         onChange: e => this.handleChange( e ),
-//         onBlur: e => this.reset( e ),
-//         onKeyDown: e => this.handleKeyDown( e ),
-//         id: `document-management-text-editable-${doc.id()}`,
-//       }),
-//       h('label', {
-//         htmlFor: `document-status-radio-${doc.id()}`,
-//         className: makeClassList({
-//           'hide-by-default': true,
-//           'show': !this.state.editing
-//         }),
-//         onDoubleClick: this.handleEdit()
-//       }, this.state.editText )
-//     ]);
-//   }
-// }
+    return h('div.document-management-text-editable', [
+      h('input', {
+        className: makeClassList({
+          'hide-by-default': true,
+          'show': this.state.editing
+        }),
+        value: this.state.editText,
+        onChange: e => this.handleChange( e ),
+        onBlur: e => this.reset( e ),
+        onKeyDown: e => this.handleKeyDown( e ),
+        id: `document-management-text-editable-${doc.id()}`,
+      }),
+      h('label', {
+        htmlFor: `document-management-text-editable-${doc.id()}`,
+        className: makeClassList({
+          'hide-by-default': true,
+          'show': !this.state.editing
+        }),
+        onDoubleClick: this.handleEdit()
+      }, [
+        label,
+        h( 'i.material-icons', {
+          onClick: this.handleEdit()
+        }, 'edit' ),
+      ])
+    ]);
+  }
+}
 
 class DocumentManagementDocumentComponent extends React.Component {
   constructor( props ){
@@ -280,16 +285,21 @@ class DocumentManagementDocumentComponent extends React.Component {
       let items = null;
       if( hasIssue( doc, 'paperId' ) ){
         const { paperId: paperIdIssue } = doc.issues();
+        const paperId = _.get( doc.provided(), 'paperId' );
         items = [
-          h( 'div', [
-            h( 'i.material-icons', 'error_outline' ),
-            h( 'span', ` ${paperIdIssue}` )
-          ])
+          h( TextEditableComponent, {
+            doc,
+            value: paperId,
+            label: h( 'span', `${paperIdIssue} ` ),
+            apiKey
+          })
         ];
 
       } else {
         const { authors, contacts, title, reference, pmid, doi } = doc.citation();
         const contactList = contacts.map( contact => `${contact.email} <${contact.name}>` ).join(', ');
+        const { paperId } = doc.provided();
+
         items =  [
             h( 'strong', [
               h( 'a.plain-link.section-item-emphasize', {
@@ -304,7 +314,13 @@ class DocumentManagementDocumentComponent extends React.Component {
                 target: '_blank'
               }, `DOI: ${doi}` )
             ]),
-            h('small.mute', contactList)
+            h('small.mute', contactList),
+            h( TextEditableComponent, {
+              doc,
+              value: paperId,
+              label: h('small.mute', `${paperId} `),
+              apiKey
+            })
           ];
       }
 

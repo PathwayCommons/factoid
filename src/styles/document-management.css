@@ -109,13 +109,21 @@
 .document-management-document-section-items-row {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  width: 100%;
 
   & > * {
     margin-top: 0;
     margin-bottom: 0;
     margin-right: 1em;
+  }
+}
+
+.document-management-text-editable {
+  width: 100%;
+  min-width: 25em;
+
+  & input {
+    margin-bottom: 0;
   }
 }

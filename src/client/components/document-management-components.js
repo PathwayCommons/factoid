@@ -342,6 +342,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             h('small.mute', contactList),
             h( TextEditableComponent, {
               doc,
+              fieldName: 'paperId',
               value: paperId,
               label: h('small.mute', `${paperId} `),
               apiKey

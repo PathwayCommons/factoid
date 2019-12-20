@@ -206,6 +206,10 @@ class TextEditableComponent extends React.Component {
     });
   }
 
+  componentDidUpdate() {
+    this._input.focus();
+  }
+
   handleKeyDown ( e ) {
     const { keyCode } = e;
     if ( keyCode  === this.ESCAPE_KEY ) {
@@ -213,6 +217,10 @@ class TextEditableComponent extends React.Component {
     } else if ( keyCode === this.ENTER_KEY ) {
       this.handleSubmit( e );
     }
+  }
+
+  handleFocus ( e ) {
+    e.target.select();
   }
 
   render() {
@@ -224,8 +232,11 @@ class TextEditableComponent extends React.Component {
           'hide-by-default': true,
           'show': this.state.editing
         }),
+        autofocus: true,
+        ref: c => this._input = c,
         value: this.state.editText,
         onChange: e => this.handleChange( e ),
+        onFocus: e => this.handleFocus( e ),
         onBlur: e => this.reset( e ),
         onKeyDown: e => this.handleKeyDown( e ),
         id: `document-management-text-editable-${doc.id()}`,

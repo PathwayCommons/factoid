@@ -206,8 +206,8 @@ class TextEditableComponent extends React.Component {
     });
   }
 
-  componentDidUpdate() {
-    this._input.focus();
+  focusInput( c ) {
+    if ( c ) c.focus();
   }
 
   handleKeyDown ( e ) {
@@ -232,8 +232,8 @@ class TextEditableComponent extends React.Component {
           'hide-by-default': true,
           'show': this.state.editing
         }),
-        autofocus: true,
-        ref: c => this._input = c,
+        autoFocus: true,
+        ref: c => this.focusInput( c ),
         value: this.state.editText,
         onChange: e => this.handleChange( e ),
         onFocus: e => this.handleFocus( e ),

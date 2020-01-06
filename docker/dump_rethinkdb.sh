@@ -4,10 +4,10 @@
 #   dump_rethinkdb
 #
 # SYNOPSIS:
-#   dump_rethinkdb.sh -c container -e export -n name -d directory 
+#   dump_rethinkdb.sh -c container -e export -n name -d directory
 #
 # DESCRIPTION:
-#   Dump data within Rethinkdb Docker container to archive. 
+#   Dump data within Rethinkdb Docker container to archive.
 #   Assume
 #    - host and client port of the node to connect to is 'localhost:28015'
 #    - no password
@@ -16,7 +16,7 @@
 #   Used with Docker version 18.09.6
 #
 #   -c container (required)
-#     The container name 
+#     The container name
 #   -e export (optional)
 #     Limit the dump to the given database and/or table; Use dot notation e.g. 'test.authors'
 #   -n name (optional)
@@ -48,7 +48,7 @@ do
     e)  eval=1
         DB_TABLE="$OPTARG"
         ;;
-        
+
     n)  nval=1
         DUMP_ARCHIVE_NAME="$OPTARG".tar.gz
         ;;
@@ -63,7 +63,7 @@ do
 
     ?)  printf "Usage: %s -c container [-e export] [-n name] [-d directory]\n" $0 >&2
         exit 2
-        ;; 
+        ;;
 
   esac
 done
@@ -73,10 +73,10 @@ done
 if [ "$cval" ]; then
   DUMP_CMD="rethinkdb dump -f ${DUMP_ARCHIVE_NAME}"
   if [ "$eval" ]; then DUMP_CMD+=" -e ${DB_TABLE}"; fi
-  docker exec -it ${CONTAINER_NAME} /bin/bash -c "${DUMP_CMD}"
+  docker exec ${CONTAINER_NAME} /bin/bash -c "${DUMP_CMD}"
   docker cp ${CONTAINER_NAME}:${RETHINKDB_DATA_DIRECTORY}/${DUMP_ARCHIVE_NAME} ${ARCHIVE_OUTPUT_DIRECTORY}
-  docker exec -it ${CONTAINER_NAME} /bin/bash -c "rm ${RETHINKDB_DATA_DIRECTORY}/${DUMP_ARCHIVE_NAME}"  
-else 
+  docker exec ${CONTAINER_NAME} /bin/bash -c "rm ${RETHINKDB_DATA_DIRECTORY}/${DUMP_ARCHIVE_NAME}"
+else
   printf "Usage: %s -c container [-e export] [-n name] [-d directory]\n" $0 >&2
   exit 2
 fi

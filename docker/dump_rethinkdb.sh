@@ -73,6 +73,7 @@ done
 if [ "$cval" ]; then
   DUMP_CMD="rethinkdb dump -f ${DUMP_ARCHIVE_NAME}"
   if [ "$eval" ]; then DUMP_CMD+=" -e ${DB_TABLE}"; fi
+  ##TODO - should cd to where archive dump will occur, typically WORKDIR. Add as option?
   docker exec ${CONTAINER_NAME} /bin/bash -c "${DUMP_CMD}"
   docker cp ${CONTAINER_NAME}:${RETHINKDB_DATA_DIRECTORY}/${DUMP_ARCHIVE_NAME} ${ARCHIVE_OUTPUT_DIRECTORY}
   docker exec ${CONTAINER_NAME} /bin/bash -c "rm ${RETHINKDB_DATA_DIRECTORY}/${DUMP_ARCHIVE_NAME}"

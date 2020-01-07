@@ -11,12 +11,12 @@
 #   Assume
 #    - host and client port of the node to connect to is 'localhost:28015'
 #    - no password
-#    - overwrite any exists database/table
-#    - Working directory of container is '/data'
 #   Used with Docker version 18.09.6
 #
 #   -c container (required)
 #     The container name
+#   -w workdir (optional)
+#     The working directory in container where archive resides, defaults to '/data'
 #   -e export (optional)
 #     Limit the dump to the given database and/or table; Use dot notation e.g. 'test.authors'
 #   -n name (optional)
@@ -27,14 +27,15 @@
 ################################# VARS #################################
 TIMESTAMP=`date "+%Y%m%d_%H%M%S"`
 ARCHIVE_OUTPUT_DIRECTORY=$(pwd)
-RETHINKDB_DATA_DIRECTORY='/data'
+RETHINKDB_WORK_DIRECTORY='/data'
 DUMP_ARCHIVE_NAME=rethinkdb_dump_${TIMESTAMP}.tar.gz
 ################################# OPTS #################################
 cval=
+wval=
 eval=
 nval=
 dval=
-while getopts 'c:e:n:d:' OPTION
+while getopts 'c:w:e:n:d:' OPTION
 do
   case $OPTION in
     c)  cval=1
@@ -43,6 +44,10 @@ do
           printf 'Option -n "%s" is not a container\n' "${CONTAINER_NAME}"
           exit 2
         fi
+        ;;
+
+    w)  wval=1
+        RETHINKDB_WORK_DIRECTORY="$OPTARG"
         ;;
 
     e)  eval=1
@@ -74,9 +79,9 @@ if [ "$cval" ]; then
   DUMP_CMD="rethinkdb dump -f ${DUMP_ARCHIVE_NAME}"
   if [ "$eval" ]; then DUMP_CMD+=" -e ${DB_TABLE}"; fi
   docker exec ${CONTAINER_NAME} /bin/bash -c "${DUMP_CMD}"
-  docker cp ${CONTAINER_NAME}:${RETHINKDB_DATA_DIRECTORY}/${DUMP_ARCHIVE_NAME} ${ARCHIVE_OUTPUT_DIRECTORY}
-  docker exec ${CONTAINER_NAME} /bin/bash -c "rm ${RETHINKDB_DATA_DIRECTORY}/${DUMP_ARCHIVE_NAME}"
+  docker cp ${CONTAINER_NAME}:${RETHINKDB_WORK_DIRECTORY}/${DUMP_ARCHIVE_NAME} ${ARCHIVE_OUTPUT_DIRECTORY}
+  docker exec ${CONTAINER_NAME} /bin/bash -c "rm ${RETHINKDB_WORK_DIRECTORY}/${DUMP_ARCHIVE_NAME}"
 else
-  printf "Usage: %s -c container [-e export] [-n name] [-d directory]\n" $0 >&2
+  printf "Usage: %s -c container [-w workdir] [-e export] [-n name] [-d directory]\n" $0 >&2
   exit 2
 fi

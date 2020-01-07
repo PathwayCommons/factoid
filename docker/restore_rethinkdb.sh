@@ -4,10 +4,10 @@
 #   restore_rethinkdb
 #
 # SYNOPSIS:
-#   restore_rethinkdb.sh -c container -f file -i import 
+#   restore_rethinkdb.sh -c container -f file -i import
 #
 # DESCRIPTION:
-#   Restore data within Rethinkdb Docker container from archive. 
+#   Restore data within Rethinkdb Docker container from archive.
 #   Assume
 #    - host and client port of the node to connect to is 'localhost:28015'
 #    - no password
@@ -16,7 +16,7 @@
 #   Used with Docker version 18.09.6
 #
 #   -c container (required)
-#     The container name 
+#     The container name
 #   -f file (required)
 #     Input archive file path on host
 #   -i import (optional)
@@ -51,24 +51,24 @@ do
     i)  ival=1
         DB_TABLE="$OPTARG"
         ;;
-        
+
     ?)  printf "Usage: %s -c container -f file -i import\n" $0 >&2
         exit 2
-        ;; 
+        ;;
 
   esac
 done
 
 
 ################################ RESTORE #################################
-# Restore from gzip archive 
+# Restore from gzip archive
 if [ "$cval" -a "$fval" ]; then
   RESTORE_CMD="rethinkdb restore ${CONTAINER_ARCHIVE_PATH} --force"
   if [ "$ival" ]; then RESTORE_CMD+=" -i ${DB_TABLE}"; fi
   docker cp ${ARCHIVE_INPUT_PATH} ${CONTAINER_NAME}:${RETHINKDB_DATA_DIRECTORY}
-  docker exec -it ${CONTAINER_NAME} /bin/bash -c "${RESTORE_CMD}"
-  docker exec -it ${CONTAINER_NAME} /bin/bash -c "rm -rf ${CONTAINER_ARCHIVE_PATH}"
-else 
+  docker exec ${CONTAINER_NAME} /bin/bash -c "${RESTORE_CMD}"
+  docker exec ${CONTAINER_NAME} /bin/bash -c "rm -rf ${CONTAINER_ARCHIVE_PATH}"
+else
   printf "Usage: %s -c container -f file -i import\n" $0 >&2
   exit 2
 fi

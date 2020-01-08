@@ -400,13 +400,19 @@ http.post('/', function( req, res, next ){
   );
 });
 
-// apply fillDoc to existing
+// Update document fields provided and re-apply fillDoc
 http.patch('/', function( req, res, next ){
-  let { apiKey, id, secret } = req.body;
+  const { apiKey, id, secret } = req.body;
+  const updateDocFields = doc => {
+    const updates = _.omit( req.body, [ 'apiKey', 'id', 'secret' ] );
+    const updatePromises = _.toPairs( updates ).map( ([ field, value ]) => doc[field]( value ).then( () => doc ) );
+    return Promise.all( updatePromises ).then( () => doc );
+  };
   return (
     tryPromise( () => checkApiKey( apiKey ) )
     .then( loadTables )
     .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
+    .then( updateDocFields )
     .then( fillDoc )
     .then( getDocJson )
     .then( json => res.json( json ) )

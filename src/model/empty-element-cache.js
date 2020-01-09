@@ -1,4 +1,4 @@
-let ElementCache = require('./element-cache');
+import ElementCache from './element-cache';
 
 class EmptyElementCache extends ElementCache {
   constructor( opts ){
@@ -18,4 +18,4 @@ class EmptyElementCache extends ElementCache {
   remove(){}
 }
 
-module.exports = EmptyElementCache;
+export default EmptyElementCache;

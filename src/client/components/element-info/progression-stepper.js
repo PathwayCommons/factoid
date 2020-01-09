@@ -1,8 +1,8 @@
-const Tooltip = require('../popover/tooltip');
-const h = require('react-hyperscript');
-const { makeClassList } = require('../../../util');
+import Tooltip from '../popover/tooltip';
+import h from 'react-hyperscript';
+import { makeClassList } from '../../../util';
 
-module.exports = ({ progression }) => {
+export default ({ progression }) => {
   let { STAGES } = progression;
   let stage = progression.getStage();
   let isCompleted = stage === STAGES.COMPLETED;

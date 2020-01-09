@@ -1,5 +1,5 @@
-let EventEmitter = require('eventemitter3');
-let _ = require('lodash');
+import EventEmitter from 'eventemitter3';
+import _ from 'lodash';
 let m;
 
 /**
@@ -63,4 +63,4 @@ _.extend( m, {
   unforward: m.removeForward
 } );
 
-module.exports = EventEmitterMixin;
+export default EventEmitterMixin;

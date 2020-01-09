@@ -1,0 +1,587 @@
+<?xml version="1.0" ?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2019//EN" "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_190101.dtd">
+<PubmedArticleSet>
+  <PubmedArticle>
+    <MedlineCitation Status="In-Process" Owner="NLM">
+      <PMID Version="1">30115697</PMID>
+      <DateRevised>
+        <Year>2019</Year>
+        <Month>09</Month>
+        <Day>14</Day>
+      </DateRevised>
+      <Article PubModel="Print-Electronic">
+        <Journal>
+          <ISSN IssnType="Electronic">1538-7445</ISSN>
+          <JournalIssue CitedMedium="Internet">
+            <Volume>78</Volume>
+            <Issue>19</Issue>
+            <PubDate>
+              <Year>2018</Year>
+              <Month>10</Month>
+              <Day>01</Day>
+            </PubDate>
+          </JournalIssue>
+          <Title>Cancer research</Title>
+          <ISOAbbreviation>Cancer Res.</ISOAbbreviation>
+        </Journal>
+        <ArticleTitle>Tailoring Chemotherapy for the African-Centric S47 Variant of TP53.</ArticleTitle>
+        <Pagination>
+          <MedlinePgn>5694-5705</MedlinePgn>
+        </Pagination>
+        <ELocationID EIdType="doi" ValidYN="Y">10.1158/0008-5472.CAN-18-1327</ELocationID>
+        <Abstract>
+          <AbstractText>The tumor suppressor 
+            <i>TP53</i> is the most frequently mutated gene in human cancer and serves to restrict tumor initiation and progression. Single-nucleotide polymorphisms (SNP) in 
+            <i>TP53</i> and 
+            <i>p53</i> pathway genes can have a marked impact on p53 tumor suppressor function, and some have been associated with increased cancer risk and impaired response to therapy. Approximately 6% of Africans and 1% of African Americans express a p53 allele with a serine instead of proline at position 47 (Pro47Ser). This SNP impairs p53-mediated apoptosis in response to radiation and genotoxic agents and is associated with increased cancer risk in humans and in a mouse model. In this study, we compared the ability of wild-type (WT) and S47 p53 to suppress tumor development and respond to therapy. Our goal was to find therapeutic compounds that are more, not less, efficacious in S47 tumors. We identified the superior efficacy of two agents, cisplatin and BET inhibitors, on S47 tumors compared with WT. Cisplatin caused dramatic decreases in the progression of S47 tumors by activating the p53/PIN1 axis to drive the mitochondrial cell death program. These findings serve as important proof of principle that chemotherapy can be tailored to p53 genotype.
+            <b>Significance:</b> A rare African-derived radioresistant p53 SNP provides proof of principle that chemotherapy can be tailored to TP53 genotype. 
+            <i>Cancer Res; 78(19); 5694-705. ©2018 AACR</i>.
+          </AbstractText>
+          <CopyrightInformation>©2018 American Association for Cancer Research.</CopyrightInformation>
+        </Abstract>
+        <AuthorList CompleteYN="Y">
+          <Author ValidYN="Y">
+            <LastName>Barnoud</LastName>
+            <ForeName>Thibaut</ForeName>
+            <Initials>T</Initials>
+            <AffiliationInfo>
+              <Affiliation>Program in Molecular and Cellular Oncogenesis, The Wistar Institute, Philadelphia, Pennsylvania.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Budina-Kolomets</LastName>
+            <ForeName>Anna</ForeName>
+            <Initials>A</Initials>
+            <AffiliationInfo>
+              <Affiliation>Program in Molecular and Cellular Oncogenesis, The Wistar Institute, Philadelphia, Pennsylvania.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Basu</LastName>
+            <ForeName>Subhasree</ForeName>
+            <Initials>S</Initials>
+            <AffiliationInfo>
+              <Affiliation>Program in Molecular and Cellular Oncogenesis, The Wistar Institute, Philadelphia, Pennsylvania.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Leu</LastName>
+            <ForeName>Julia I-Ju</ForeName>
+            <Initials>JI</Initials>
+            <AffiliationInfo>
+              <Affiliation>Department of Genetics, The Perelman School of Medicine at the University of Pennsylvania, Philadelphia, Pennsylvania.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Good</LastName>
+            <ForeName>Madeline</ForeName>
+            <Initials>M</Initials>
+            <AffiliationInfo>
+              <Affiliation>Program in Molecular and Cellular Oncogenesis, The Wistar Institute, Philadelphia, Pennsylvania.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Kung</LastName>
+            <ForeName>Che-Pei</ForeName>
+            <Initials>CP</Initials>
+            <Identifier Source="ORCID">0000-0002-1150-4998</Identifier>
+            <AffiliationInfo>
+              <Affiliation>ICCE Institute and Department of Internal Medicine, Division of Molecular Oncology, Siteman Cancer Center, Washington University School of Medicine, St Louis, Missouri.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Liu</LastName>
+            <ForeName>Jingjing</ForeName>
+            <Initials>J</Initials>
+            <Identifier Source="ORCID">0000-0001-9964-580X</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Program in Molecular and Cellular Oncogenesis, The Wistar Institute, Philadelphia, Pennsylvania.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Liu</LastName>
+            <ForeName>Qin</ForeName>
+            <Initials>Q</Initials>
+            <Identifier Source="ORCID">0000-0001-9964-580X</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Program in Molecular and Cellular Oncogenesis, The Wistar Institute, Philadelphia, Pennsylvania.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Villanueva</LastName>
+            <ForeName>Jessie</ForeName>
+            <Initials>J</Initials>
+            <Identifier Source="ORCID">0000-0001-5701-2609</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Program in Molecular and Cellular Oncogenesis, The Wistar Institute, Philadelphia, Pennsylvania.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Zhang</LastName>
+            <ForeName>Rugang</ForeName>
+            <Initials>R</Initials>
+            <AffiliationInfo>
+              <Affiliation>Gene Expression and Regulation Program, The Wistar Institute, Philadelphia, Pennsylvania.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>George</LastName>
+            <ForeName>Donna L</ForeName>
+            <Initials>DL</Initials>
+            <AffiliationInfo>
+              <Affiliation>Department of Genetics, The Perelman School of Medicine at the University of Pennsylvania, Philadelphia, Pennsylvania.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Murphy</LastName>
+            <ForeName>Maureen E</ForeName>
+            <Initials>ME</Initials>
+            <AffiliationInfo>
+              <Affiliation>Program in Molecular and Cellular Oncogenesis, The Wistar Institute, Philadelphia, Pennsylvania. mmurphy@wistar.org.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+        </AuthorList>
+        <Language>eng</Language>
+        <GrantList CompleteYN="Y">
+          <Grant>
+            <GrantID>R01 CA215733</GrantID>
+            <Acronym>CA</Acronym>
+            <Agency>NCI NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>TL1 TR002344</GrantID>
+            <Acronym>TR</Acronym>
+            <Agency>NCATS NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>P30 DK050306</GrantID>
+            <Acronym>DK</Acronym>
+            <Agency>NIDDK NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>P30 CA010815</GrantID>
+            <Acronym>CA</Acronym>
+            <Agency>NCI NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>P01 CA114046</GrantID>
+            <Acronym>CA</Acronym>
+            <Agency>NCI NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>F32 CA220972</GrantID>
+            <Acronym>CA</Acronym>
+            <Agency>NCI NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>K01 CA175269</GrantID>
+            <Acronym>CA</Acronym>
+            <Agency>NCI NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>P01 CA098101</GrantID>
+            <Acronym>CA</Acronym>
+            <Agency>NCI NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>R01 CA102184</GrantID>
+            <Acronym>CA</Acronym>
+            <Agency>NCI NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>R01 CA201430</GrantID>
+            <Acronym>CA</Acronym>
+            <Agency>NCI NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>P01 DK049210</GrantID>
+            <Acronym>DK</Acronym>
+            <Agency>NIDDK NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>S10 OD023658</GrantID>
+            <Acronym>OD</Acronym>
+            <Agency>NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>R01 CA139319</GrantID>
+            <Acronym>CA</Acronym>
+            <Agency>NCI NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+        </GrantList>
+        <PublicationTypeList>
+          <PublicationType UI="D016428">Journal Article</PublicationType>
+          <PublicationType UI="D052061">Research Support, N.I.H., Extramural</PublicationType>
+        </PublicationTypeList>
+        <ArticleDate DateType="Electronic">
+          <Year>2018</Year>
+          <Month>08</Month>
+          <Day>16</Day>
+        </ArticleDate>
+      </Article>
+      <MedlineJournalInfo>
+        <Country>United States</Country>
+        <MedlineTA>Cancer Res</MedlineTA>
+        <NlmUniqueID>2984705R</NlmUniqueID>
+        <ISSNLinking>0008-5472</ISSNLinking>
+      </MedlineJournalInfo>
+      <CitationSubset>IM</CitationSubset>
+    </MedlineCitation>
+    <PubmedData>
+      <History>
+        <PubMedPubDate PubStatus="received">
+          <Year>2018</Year>
+          <Month>04</Month>
+          <Day>30</Day>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="revised">
+          <Year>2018</Year>
+          <Month>07</Month>
+          <Day>11</Day>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="accepted">
+          <Year>2018</Year>
+          <Month>08</Month>
+          <Day>07</Day>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="pmc-release">
+          <Year>2019</Year>
+          <Month>10</Month>
+          <Day>01</Day>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="pubmed">
+          <Year>2018</Year>
+          <Month>8</Month>
+          <Day>18</Day>
+          <Hour>6</Hour>
+          <Minute>0</Minute>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="medline">
+          <Year>2018</Year>
+          <Month>8</Month>
+          <Day>18</Day>
+          <Hour>6</Hour>
+          <Minute>0</Minute>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="entrez">
+          <Year>2018</Year>
+          <Month>8</Month>
+          <Day>18</Day>
+          <Hour>6</Hour>
+          <Minute>0</Minute>
+        </PubMedPubDate>
+      </History>
+      <PublicationStatus>ppublish</PublicationStatus>
+      <ArticleIdList>
+        <ArticleId IdType="pubmed">30115697</ArticleId>
+        <ArticleId IdType="pii">0008-5472.CAN-18-1327</ArticleId>
+        <ArticleId IdType="doi">10.1158/0008-5472.CAN-18-1327</ArticleId>
+        <ArticleId IdType="pmc">PMC6168343</ArticleId>
+        <ArticleId IdType="mid">NIHMS1503907</ArticleId>
+      </ArticleIdList>
+      <ReferenceList>
+        <Reference>
+          <Citation>Science. 1994 Nov 4;266(5186):807-10</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">7973635</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Nat Rev Cancer. 2009 Feb;9(2):95-107</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">19165225</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>J Biol Chem. 2005 Jun 24;280(25):24245-51</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">15851479</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Clin Cancer Res. 1999 Sep;5(9):2588-95</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">10499637</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>NPJ Breast Cancer. 2017 Feb 27;3:5</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">28649645</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Br J Haematol. 1976 Aug;33(4):517-26</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">1009024</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Lancet Haematol. 2016 Apr;3(4):e196-204</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">27063978</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Cell Death Differ. 2005 Feb;12(2):197-200</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">15550936</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Mol Cell Biol. 2011 Mar;31(6):1201-13</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">21245379</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Biochim Biophys Acta. 2009 May;1787(5):414-20</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">19007744</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Oncogene. 2007 Feb 26;26(9):1306-16</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">17322916</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Nat Cell Biol. 2004 May;6(5):443-50</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">15077116</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Cell. 2009 May 1;137(3):413-31</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">19410540</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Nat Genet. 2003 Mar;33(3):357-65</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">12567188</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Apoptosis. 2007 Sep;12(9):1733-42</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">17505786</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Nat Protoc. 2006;1(5):2315-9</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">17406473</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Genes Dev. 2013 Aug 15;27(16):1739-51</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">23934659</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Oncogene. 2007 Apr 2;26(15):2157-65</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">17401424</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Cell. 2017 Oct 5;171(2):273-285</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">28985560</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Science. 1991 Jul 5;253(5015):49-53</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">1905840</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Science. 2004 Feb 13;303(5660):1010-4</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">14963330</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Nature. 2010 Dec 23;468(7327):1067-73</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">20871596</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Cell. 2011 Sep 16;146(6):904-17</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">21889194</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Genes Dev. 2007 Dec 1;21(23):3095-109</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">18056423</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Mol Cell. 2003 Mar;11(3):577-90</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">12667443</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Front Oncol. 2014 Jun 16;4:148</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">24982848</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Cold Spring Harb Protoc. 2016 Apr 01;2016(4):pdb.prot087379</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">27037069</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Cell Cycle. 2016 Oct;15(19):2557-2560</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">27484708</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Oncogene. 2004 Apr 22;23(19):3328-37</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">15077186</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Lancet Haematol. 2016 Apr;3(4):e186-95</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">27063977</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Metallomics. 2009;1(4):280-91</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">20046924</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Genes Dev. 2018 Feb 1;32(3-4):230-243</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">29463573</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Cell Death Differ. 2018 Jan;25(1):190-203</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">28937686</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>FEBS Lett. 2016 Apr;590(7):924-34</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">26780878</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Proc Natl Acad Sci U S A. 2011 Oct 4;108(40):16669-74</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">21949397</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Nat Chem Biol. 2010 Mar;6(3):209-217</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">20118940</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Trends Cell Biol. 2010 Jan;20(1):14-24</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">19879762</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Biochim Biophys Acta. 2002 Oct 2;1603(1):31-46</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">12242109</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Genes Dev. 2016 Apr 15;30(8):918-30</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">27034505</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Mol Cell. 2015 Aug 20;59(4):677-84</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">26236013</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Cell Death Differ. 2013 Feb;20(2):198-208</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">22935610</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>J Biol Chem. 2008 Jul 25;283(30):21294-304</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">18524770</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Oncotarget. 2015 Mar 20;6(8):5501-16</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">25849938</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Nat Rev Cancer. 2009 Oct;9(10):691-700</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">19759539</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Cell Mol Life Sci. 1999 Jan;55(1):28-37</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">10065149</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Curr Opin Cell Biol. 2005 Dec;17(6):631-6</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">16226451</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Cold Spring Harb Perspect Biol. 2009 Nov;1(5):a001883</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">20066118</ArticleId>
+          </ArticleIdList>
+        </Reference>
+        <Reference>
+          <Citation>Front Endocrinol (Lausanne). 2018 Apr 11;9:124</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">29695998</ArticleId>
+          </ArticleIdList>
+        </Reference>
+      </ReferenceList>
+    </PubmedData>
+  </PubmedArticle>
+</PubmedArticleSet>

@@ -1,34 +1,80 @@
-const http = require('express').Router();
-const _ = require('lodash');
-const uuid = require('uuid');
-const fetch = require('node-fetch');
-const { tryPromise } = require('../../../../util');
-const emailTransport = require('../../../email-transport');
-const h = require('hyperscript');
+// TODO swagger comment & docs
 
-const Document = require('../../../../model/document');
-const db = require('../../../db');
-const logger = require('../../../logger');
+import Express from 'express';
+import _ from 'lodash';
+import uuid from 'uuid';
+import fetch from 'node-fetch';
+import cytosnap from 'cytosnap';
+import emailRegex from 'email-regex';
+import Twitter from 'twitter';
 
-const provider = require('./reach');
+import { tryPromise, makeStaticStylesheet } from '../../../../util';
+import sendMail from '../../../email-transport';
+import Document from '../../../../model/document';
+import db from '../../../db';
+import logger from '../../../logger';
+import { makeCyEles, msgFactory } from '../../../../util';
+import { getPubmedArticle } from './pubmed';
 
-const { BIOPAX_CONVERTER_URL, BASE_URL, EMAIL_ENABLED, EMAIL_FROM, EMAIL_FROM_ADDR, API_KEY } = require('../../../../config');
+import { BASE_URL,
+  BIOPAX_CONVERTER_URL,
+  API_KEY,
+  DEMO_ID,
+  DEMO_SECRET,
+  DOCUMENT_IMAGE_WIDTH,
+  DOCUMENT_IMAGE_HEIGHT,
+  TWITTER_CONSUMER_KEY,
+  TWITTER_CONSUMER_SECRET,
+  TWITTER_ACCESS_TOKEN_KEY,
+  TWITTER_ACCESS_TOKEN_SECRET,
+  DEMO_CAN_BE_SHARED,
+  DOCUMENT_IMAGE_PADDING,
+  EMAIL_CONTEXT_SIGNUP
+ } from '../../../../config';
 
-let newDoc = ({ docDb, eleDb, id, secret, meta }) => {
+ const DOCUMENT_STATUS_FIELDS = Document.statusFields();
+
+const http = Express.Router();
+
+const snap = cytosnap({
+  puppeteer: {
+    args: ['--headless', '--disable-dev-shm-usage', '--no-sandbox', '--disable-setuid-sandbox', '--no-zygote']
+  }
+});
+
+const snapStartPromise = snap.start();
+
+const startCytosnap = () => snapStartPromise;
+
+const twitterClient = new Twitter({
+  consumer_key: TWITTER_CONSUMER_KEY,
+  consumer_secret: TWITTER_CONSUMER_SECRET,
+  access_token_key: TWITTER_ACCESS_TOKEN_KEY,
+  access_token_secret: TWITTER_ACCESS_TOKEN_SECRET,
+});
+
+let newDoc = ({ docDb, eleDb, id, secret, provided }) => {
   return new Document( _.assign( {}, docDb, {
     factoryOptions: eleDb,
-    data: _.assign( {}, { id, secret }, meta )
+    data: _.assign( {}, { id, secret, provided } )
   } ) );
 };
 
-let loadDoc = ({ docDb, eleDb, id }) => {
-  let doc = newDoc({ docDb, eleDb, id });
+let loadDoc = ({ docDb, eleDb, id, secret }) => {
+  let doc = newDoc({ docDb, eleDb, id, secret });
 
   return doc.load().then( () => doc );
 };
 
-let createDoc = ({ docDb, eleDb, secret, meta }) => {
-  let doc = newDoc({ docDb, eleDb, secret, meta });
+let createSecret = ({ secret }) => {
+  return (
+    tryPromise( () => loadTable('secret') )
+    .then(({ table, conn }) => table.insert({ id: secret }).run(conn))
+  );
+};
+
+let createDoc = ({ docDb, eleDb, id, secret, provided }) => {
+  let doc = newDoc({ docDb, eleDb, id, secret, provided });
 
   return doc.create().then( () => doc );
 };
@@ -44,18 +90,38 @@ let loadTables = () => Promise.all( tables.map( loadTable ) ).then( dbInfos => (
 
 let getDocJson = doc => doc.json();
 
-let fillDoc = ( doc, text ) => {
-  return provider.get( text ).then( res => {
-    return doc.fromJson( res );
-  } ).then( () => doc );
+const DEFAULT_CORRESPONDENCE = {
+  emails: [],
+  context: EMAIL_CONTEXT_SIGNUP
 };
 
-// run cytoscape layout on server side so that the document looks ok on first open
-let runLayout = doc => {
-  let run = () => doc.applyLayout();
-  let getDoc = () => doc;
+const fillDocCorrespondence = async ( doc, authorEmail, isCorrespondingAuthor, context ) => {
+  try {
+    if( !emailRegex({exact: true}).test( authorEmail ) ) throw new TypeError( `Could not detect an email for '${authorEmail}'` );
+    const emails = _.get( doc.correspondence(), 'emails' );
+    const data = _.defaults( { authorEmail, isCorrespondingAuthor, context, emails }, DEFAULT_CORRESPONDENCE );
+    await doc.correspondence( data );
+    await doc.issues({ authorEmail: null });
+  } catch ( error ){
+    await doc.issues({ authorEmail: `${error.message}` });
+  }
+};
 
-  return tryPromise( run ).then( getDoc );
+const fillDocArticle = async ( doc, paperId ) => {
+  try {
+    const pubmedRecord = await getPubmedArticle( paperId );
+    await doc.article( pubmedRecord );
+    await doc.issues({ paperId: null });
+  } catch ( error ){
+    await doc.issues({ paperId: `${error.message}` });
+  }
+};
+
+let fillDoc = async doc => {
+  const { paperId, authorEmail, isCorrespondingAuthor, context } = doc.provided();
+  await fillDocCorrespondence( doc, authorEmail, isCorrespondingAuthor, context );
+  await fillDocArticle( doc, paperId );
+  return doc;
 };
 
 // let getReachOutput = text => provider.getRawResponse( text );
@@ -89,73 +155,204 @@ let getSbgnFromTemplates = templates => {
     .then(handleResponseError);
 };
 
-let sendEmail = json => {
-  const j = json;
-
-  return emailTransport.sendMail({
-    from: { name: EMAIL_FROM, address: EMAIL_FROM_ADDR },
-    to: { name: j.contributorName, address: j.contributorEmail },
-    cc: { name: j.editorName, address: j.editorEmail },
-    subject: `Action required: "${json.name}"`,
-    html: h('div', {
-      style: {
-      }
-    }, [
-      h('p', `Dear ${j.contributorName},`),
-      h('p', [
-        h('span', `Share your pathway with the world:  Publishing and getting your paper noticed is essential.  `),
-        h('a', { href: BASE_URL }, 'Factoid'),
-        h('span', `, a project by `),
-        h('a', { href: 'https://pathwaycommons.org' }, `Pathway Commons`),
-        h('span', `, helps you increase the visibility of your publications by linking your research to pathways.`)
-      ]),
-      h('p', [
-        h('span', `Factoid will capture the pathway data in `),
-        h('strong', `"${j.contributorName} et el.  ${j.name}.  Submission ${j.trackingId}"`),
-        h('span', ` by helping you draw and describe genes and interactions:`)
-      ]),
-      h('ul', [
-        h('li', `Launch Factoid for your article by clicking the link.`),
-        h('li', `Check over genes and interactions Factoid may have found in your text.`),
-        h('li', `Draw genes (circles) or interactions (lines or arrows) then add information at the prompts.`),
-      ]),
-      h('p', `That's it!  We'll get the pathway data to researchers who need it.`),
-      h('a', {
-        href: `${BASE_URL}/document/${j.id}/${j.secret}`
-      }, `Launch Factoid for ${j.contributorName} et al.`),
-      h('p', [
-        h('small', `You may also start Factoid by passing ${BASE_URL}/document/${j.id}/${j.secret} into your browser.`)
-      ])
-    ]).outerHTML
-  });
-};
-
-http.get('/', function( req, res, next ){
-  let limit = req.params.limit || 50;
-
+// Email
+http.post('/email', function( req, res, next ){
+  let { apiKey, emailType, id, secret } = req.body;
+  // msgFactory = ( emailType, doc )
   return (
-    tryPromise( () => loadTable('document') )
-    .then( t => {
-      let { table, conn } = t;
-      return table
-        .limit(limit)
-        .pluck( [ 'id', 'publicUrl' ] )
-        .run( conn )
-        .then( cursor => cursor.toArray() )
-        .then( results => res.json( results ) )
-        .catch( next );
-    })
+    tryPromise( () => checkApiKey( apiKey ) )
+    .then( loadTables )
+    .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
+    .then( doc =>  msgFactory( emailType, doc ) )
+    .then( mailOpts => sendMail( mailOpts ) )
+    .then( info => res.json( info ) )
+    .catch( next )
   );
 });
 
-// get existing doc
-http.get('/:id', function( req, res, next ){
-  let id = req.params.id;
+// get all docs
+// - offset: pagination offset
+// - limit: pagination size limit
+// - apiKey: to authorise doc creation
+// - status: include docs bearing valid Document 'status'
+// - ids: only get the docs for the specified comma-separated list of ids (disables pagination)
+http.get('/', function( req, res, next ){
+  let { limit, offset, apiKey } = Object.assign({
+    limit: 50,
+    offset: 0
+  }, req.query);
 
-  ( tryPromise( loadTables )
+  let ids = req.query.ids ? req.query.ids.split(/\s*,\s*/) : null;
+
+  let status;
+  if( _.has( req.query, 'status' ) ){
+    status = _.compact( req.query.status.split(/\s*,\s*/) );
+  }
+
+  let tables;
+
+  return (
+    tryPromise( () => checkApiKey(apiKey) )
+    .then( loadTables )
+    .then( tbls => {
+      tables = tbls;
+
+      return tables;
+    } )
+    .then( tables => {
+      let t = tables.docDb;
+      let { table, conn, rethink: r } = t;
+      let q = table;
+
+      if( ids ){ // doc id must be in specified id list
+        let exprs = ids.map(id => r.row('id').eq(id));
+        let joinedExpr = exprs[0];
+
+        for( let i = 1; i < exprs.length; i++ ){
+          joinedExpr = joinedExpr.or(exprs[i]);
+        }
+
+        q = q.filter( joinedExpr );
+      } else {
+        q = q.skip(offset).limit(limit);
+      }
+
+      if( status ){
+        const values =  _.intersection( _.values( DOCUMENT_STATUS_FIELDS ), status );
+        let byStatus = { foo: true };
+        values.forEach( ( value, index ) => {
+          if( index == 0 ){
+            byStatus = r.row('status').default('unset').eq( value );
+          } else {
+            byStatus = byStatus.or( r.row('status').default('unset').eq( value ) );
+          }
+        });
+
+        q = q.filter( byStatus );
+      }
+
+      q = ( q
+        .filter(r.row('secret').ne(DEMO_SECRET))
+        .pluck(['id', 'secret'])
+      );
+
+      return q.run(conn);
+    })
+    .then( cursor => cursor.toArray() )
+    .then( res => { // map ids to full doc json
+      return Promise.all(res.map(docDbJson => {
+        let { id, secret } = docDbJson;
+        let docOpts = _.assign( {}, tables, { id, secret } );
+
+        return loadDoc(docOpts).then(getDocJson);
+      }));
+    } )
+    .then( results => res.json( results ) )
+    .catch( next )
+  );
+});
+
+/**
+ * Get the JSON for the specified document, with the same format and caveats
+ * as the GET /api/document/:id route.
+ * @param {*} id The public document ID (UUID).
+ */
+const getDocumentJson = id => {
+  return ( tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
     .then( getDocJson )
+  );
+};
+
+// get doc figure as png image
+http.get('/(:id).png', function( req, res, next ){
+  const id = req.params.id;
+  const cyStylesheet = makeStaticStylesheet();
+  const imageWidth = DOCUMENT_IMAGE_WIDTH;
+  const imageHeight = DOCUMENT_IMAGE_HEIGHT;
+  const imagePadding = DOCUMENT_IMAGE_PADDING;
+
+  res.setHeader('content-type', 'image/png');
+
+  const getDoc = id => {
+    return ( tryPromise( loadTables )
+      .then( json => _.assign( {}, json, { id } ) )
+      .then( loadDoc )
+    );
+  };
+
+  const getElesJson = doc => {
+    return makeCyEles(doc.elements());
+  };
+
+  const getPngImage = elesJson => {
+    return ( startCytosnap()
+      .then(() => snap.shot({
+        elements: elesJson,
+        style: cyStylesheet,
+        layout: {
+          name: 'preset',
+          fit: true,
+          padding: imagePadding
+        },
+        format: 'png',
+        resolvesTo: 'stream',
+        background: '#fff',
+        width: imageWidth,
+        height: imageHeight
+      }))
+    );
+  };
+
+  ( tryPromise(() => getDoc(id))
+    .then(getElesJson)
+    .then(getPngImage)
+    .then(stream => stream.pipe(res))
+    .catch( next )
+  );
+});
+
+// tweet a document as a card with a caption (text)
+http.post('/:id/tweet', function( req, res, next ){
+  const id = req.params.id;
+  const { text, secret } = _.assign({ text: '', secret: 'read-only-no-secret-specified' }, req.body);
+  const url = `${BASE_URL}/document/${id}`;
+  const status = `${text} ${url}`;
+  let db;
+
+  ( tryPromise(() => loadTable('document'))
+    .then(docDb => {
+      db = docDb;
+
+      return db;
+    })
+    .then(({ table, conn }) => table.get(id).run(conn))
+    .then(doc => {
+      const docSecret = doc.secret;
+
+      if( !DEMO_CAN_BE_SHARED && id === DEMO_ID ){
+        throw new Error(`Tweeting the demo document is forbidden`);
+      }
+
+      if( docSecret !== secret ){
+        throw new Error(`Can not tweet since the provided secret is incorrect`);
+      }
+    })
+    .then(() => twitterClient.post('statuses/update', { status }))
+    .then(tweet => {
+      return db.table.get(id).update({ tweet }).run(db.conn).then(() => tweet);
+    })
+    .then(json => res.json(json))
+    .catch(next)
+  );
+});
+
+// get existing doc as json
+http.get('/:id', function( req, res, next ){
+  let id = req.params.id;
+
+  ( tryPromise( () => getDocumentJson(id) )
     .then( json => res.json( json ) )
     .catch( next )
   );
@@ -167,63 +364,61 @@ const checkApiKey = (apiKey) => {
   }
 };
 
-// create new doc
-http.post('/', function( req, res, next ){
-  let { abstract, text, apiKey } = req.body;
-  let meta = _.assign({}, req.body);
-  let seedText = [abstract, text].filter(text => text ? true : false).join('\n\n');
+// delete the demo doc
+http.delete('/:secret', function(req, res, next){
+  let secret = req.params.secret;
+  let { apiKey } = req.body;
 
-  let secret = uuid();
+  let clearDemoRows = db => db.table.filter({ secret }).delete().run(db.conn);
 
-  ( tryPromise( () => checkApiKey(apiKey) )
-    .then( loadTables )
-    .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, secret, meta }) )
-    .then( doc => fillDoc( doc, seedText ) )
-    .then( runLayout )
-    .then( getDocJson )
-    .then( json => {
-      logger.info(`Created new doc ${json.id}`);
-
-      return json;
-    } )
-    .then(json => {
-      if( !EMAIL_ENABLED ) return json;
-
-      if( !json.contributorEmail ){
-        logger.info(`Contributor email address missing for new doc ${json.id}; not sending email`);
-
-        return Promise.resolve(json);
-      }
-
-      if( !json.editorEmail ){
-        logger.info(`Editor email address missing for new doc ${json.id}; not sending email`);
-
-        return Promise.resolve(json);
-      }
-
-      logger.info(`Sending new doc ${json.id} to ${json.contributorEmail} and copying to ${json.editorEmail}`);
-
-      return sendEmail(json).then(() => json);
-    })
-    .then(json => {
-      return res.json( json );
-    })
-    .catch( e => {
-      logger.error(`Could not fill doc from text: ${text}`);
-      logger.error('Exception thrown :', e.message);
-      next( e );
-    } )
+  ( tryPromise(() => checkApiKey(apiKey))
+    .then(loadTables)
+    .then(({ docDb, eleDb }) => (
+      Promise.all([docDb, eleDb].map(clearDemoRows))
+    ))
+    .then(() => res.sendStatus(200))
+    .catch(err => next(err))
   );
 });
 
-// TODO remove this route as reach should never need to be queried directly
-// http.post('/query-reach', function( req, res ){
-//   let text = req.body.text;
+// create new doc
+http.post('/', function( req, res, next ){
+  const provided = _.assign( {}, req.body );
+  const { paperId } = provided;
+  const id = paperId === DEMO_ID ? DEMO_ID: undefined;
+  const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
 
-//   getReachOutput( text )
-//   .then( reachRes => reachRes.json() )
-//   .then( reachJson => res.json(reachJson) );
-// });
+  ( tryPromise( () => createSecret({ secret }) )
+    .then( loadTables )
+    .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided }) )
+    .catch( e => { logger.error(`Error creating doc: ${e.message}`); next( e ); })
+    .then( doc => doc.request().then( () => doc ) )
+    .then( fillDoc )
+    .then( getDocJson )
+    .then( json => res.json( json ) )
+    .catch( next )
+  );
+});
+
+// Update document fields provided and re-apply fillDoc
+http.patch('/', function( req, res, next ){
+  const { apiKey, id, secret } = req.body;
+  const updateDocFields = doc => {
+    const updates = _.omit( req.body, [ 'apiKey', 'id', 'secret' ] );
+    const updatePromises = _.toPairs( updates ).map( ([ field, value ]) => doc[field]( value ).then( () => doc ) );
+    return Promise.all( updatePromises ).then( () => doc );
+  };
+  return (
+    tryPromise( () => checkApiKey( apiKey ) )
+    .then( loadTables )
+    .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
+    .then( updateDocFields )
+    .then( fillDoc )
+    .then( getDocJson )
+    .then( json => res.json( json ) )
+    .catch( next )
+  );
+});
 
 http.get('/biopax/:id', function( req, res, next ){
   let id = req.params.id;
@@ -259,4 +454,5 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
-module.exports = http;
+export default http;
+export { getDocumentJson }; // allow access so page rendering can get the same data as the rest api

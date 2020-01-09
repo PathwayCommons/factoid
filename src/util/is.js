@@ -9,4 +9,4 @@ function isServer(){
   return !isClient();
 }
 
-module.exports = { isClient, isServer };
+export { isClient, isServer };

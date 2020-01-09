@@ -1,6 +1,6 @@
-const _ = require('lodash');
-const { INTERACTION_TYPE_VALS: INTERACTION_TYPE } = require('./interaction-type/enum');
-const { ENTITY_TYPE, ENTITY_TYPES } = require('./entity-type');
+import _ from 'lodash';
+import { INTERACTION_TYPE_VALS as INTERACTION_TYPE } from './interaction-type/enum';
+import { ENTITY_TYPE, ENTITY_TYPES } from './entity-type';
 
 const INTERACTION_TYPES = _.flatMap( INTERACTION_TYPE );
 
@@ -16,4 +16,16 @@ const isInteraction = type => {
   return INTERACTION_TYPES.indexOf(type) >= 0;
 };
 
-module.exports = { ELEMENT_TYPE, ELEMENT_TYPES, isEntity, isInteraction };
+const isComplex = type => {
+  return type == ENTITY_TYPE.COMPLEX;
+};
+
+const isGGP = type => {
+  return ( type === ENTITY_TYPE.GGP
+    || type === ENTITY_TYPE.DNA
+    || type === ENTITY_TYPE.RNA
+    || type === ENTITY_TYPE.PROTEIN
+  );
+};
+
+export { ELEMENT_TYPE, ELEMENT_TYPES, isEntity, isInteraction, isComplex, isGGP };

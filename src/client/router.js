@@ -1,12 +1,13 @@
-const { BrowserRouter, Route, Redirect, Switch } = require('react-router-dom');
-const h = require('react-hyperscript');
-const _ = require('lodash');
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import h from 'react-hyperscript';
+import _ from 'lodash';
 
-const PageNotFound = require('./components/page-not-found');
-const Editor = require('./components/editor');
-const FormEditor = require('./components/form-editor');
-const Home = require('./components/home');
-const DocumentSeeder = require('./components/document-seeder');
+import PageNotFound from './components/page-not-found';
+import Editor from './components/editor';
+import Home from './components/home';
+import DocumentManagement from './components/document-management';
+
+import { DEMO_ID, DEMO_SECRET } from '../config';
 
 
 let routes = [
@@ -17,47 +18,27 @@ let routes = [
     }
   },
   {
-    path: '/new',
+    path: '/demo',
+    render: props => {
+      let id = DEMO_ID;
+      let secret = DEMO_SECRET;
+      let { history } = props;
+
+      return h( Editor, { id, secret, history } );
+    }
+  },
+  {
+    path: '/admin',
     render: () => {
-      return h( Redirect, {
-        to: {
-          pathname: `/new/seed`
-        }
-      } );
+      return h( Redirect, { to: '/document' } );
     }
   },
   {
-    path: '/new/seed',
+    path: '/document',
     render: props => {
       let { history } = props;
 
-      return h( DocumentSeeder, { history } );
-    }
-  },
-  {
-    path: '/new/demo',
-    render: props => {
-      let { history } = props;
-
-      return h( DocumentSeeder, { history, demo: true } );
-    }
-  },
-  {
-    path: '/form/:id',
-    render: props => {
-      let { id } = props.match.params;
-      let { history } = props;
-
-      return h( FormEditor, { id, history } );
-    }
-  },
-  {
-    path: '/form/:id/:secret',
-    render: props => {
-      let { id, secret } = props.match.params;
-      let { history } = props;
-
-      return h( FormEditor, { id, secret, history } );
+      return h( DocumentManagement, { history } );
     }
   },
   {
@@ -92,7 +73,7 @@ let routes = [
   return h( Route, spec );
 } );
 
-module.exports = () => (
+export default () => (
   h( BrowserRouter, [
     h( Switch, routes )
   ] )

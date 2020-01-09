@@ -1,5 +1,5 @@
-let ElementCache = require('../../src/model/element-cache');
-let _ = require('lodash');
+import ElementCache from '../../src/model/element-cache';
+import _ from 'lodash';
 
 let factoryErr = function(){
   throw new Error('Missing factory for cache');
@@ -53,4 +53,4 @@ class MockCache extends ElementCache {
   remove( ele ){ return this.source.remove(ele); }
 }
 
-module.exports = MockCache;
+export default MockCache;

@@ -1,6 +1,10 @@
-let http = require('express').Router();
+import Express from 'express';
+import ElementAssociation from './element-association';
+import Document from './document';
 
-http.use('/element-association', require('./element-association'));
-http.use('/document', require('./document'));
+let http = Express.Router();
 
-module.exports = http;
+http.use('/element-association', ElementAssociation);
+http.use('/document', Document);
+
+export default http;

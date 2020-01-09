@@ -9,13 +9,20 @@ services:
     ports:
       - "${FACTOID_PORT:-3000}:3000"
     environment:
-      USE_PC_GROUNDING_SEARCH:
-      DB_USER:
-      DB_PASS:
-      DB_CERT:
-      API_KEY:
-      DB_HOST: "db"
+      BASE_URL:
       GROUNDING_SEARCH_BASE_URL: "http://grounding:3000"
+      DB_HOST: "db"
+      API_KEY:
+      EMAIL_ENABLED:
+      SMTP_HOST:
+      SMTP_USER:
+      SMTP_PASSWORD:
+      TWITTER_CONSUMER_KEY:
+      TWITTER_CONSUMER_SECRET:
+      TWITTER_ACCESS_TOKEN_KEY:
+      TWITTER_ACCESS_TOKEN_SECRET:
+      TWITTER_ACCOUNT_NAME:
+      NCBI_EUTILS_API_KEY:
   grounding:
     image: pathwaycommons/grounding-search:${GROUNDING_SEARCH_IMAGE_TAG:-latest}
     container_name: grounding_container
@@ -39,7 +46,7 @@ services:
     volumes:
       - indata:/usr/share/elasticsearch/data
   db:
-    image: rethinkdb:2.3.6
+    image: pathwaycommons/rethinkdb-docker:${RETHINKDB_IMAGE_TAG:-latest}
     container_name: db_container
     ports:
       - "${DB_ADMIN_PORT:-8080}:8080"

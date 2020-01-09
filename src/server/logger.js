@@ -1,5 +1,5 @@
-let winston = require('winston');
-let config = require('../config');
+import winston from 'winston';
+import * as config from '../config';
 
 let logger = new (winston.Logger)({
   transports: [
@@ -12,4 +12,4 @@ let logger = new (winston.Logger)({
 
 logger.cli();
 
-module.exports = logger;
+export default logger;

@@ -1,22 +1,16 @@
-const DataComponent = require('../data-component');
-const h = require('react-hyperscript');
-const ReactDom = require('react-dom');
-const { initCache, SingleValueCache, error } = require('../../../util');
-const _ = require('lodash');
-const defs = require('../../defs');
-const { animateDomForEdit } = require('../animate');
-const uuid = require('uuid');
-const Progression = require('./progression');
-const ProgressionStepper = require('./progression-stepper');
-const EventEmitter = require('eventemitter3');
-const Notification = require('../notification/notification');
-const InlineNotification = require('../notification/inline');
-const Tooltip = require('../popover/tooltip');
-const { INTERACTION_TYPES, INTERACTION_TYPE } = require('../../../model/element/interaction-type');
+import DataComponent from '../data-component';
+import h from 'react-hyperscript';
+import ReactDom from 'react-dom';
+import { initCache, error } from '../../../util';
+import _ from 'lodash';
+import * as defs from '../../defs';
+import { animateDomForEdit } from '../animate';
+import uuid from 'uuid';
+import Progression from './progression';
+import EventEmitter from 'eventemitter3';
+import { INTERACTION_TYPES, INTERACTION_TYPE } from '../../../model/element/interaction-type';
 
 let stageCache = new WeakMap();
-let assocNotificationCache = new SingleValueCache();
-let pptTypeNotificationCache = new SingleValueCache();
 
 class InteractionInfo extends DataComponent {
   constructor( props ){
@@ -41,17 +35,12 @@ class InteractionInfo extends DataComponent {
 
     let stage = initCache( stageCache, el, el.completed() ? STAGES.COMPLETED : initialStage );
 
-    let assocNotification = initCache( assocNotificationCache, el, new Notification({ active: true }) );
-    let pptTypeNotification = initCache( pptTypeNotificationCache, el, new Notification({ active: true }) );
-
     this.data = {
       el,
       stage,
       description: p.element.description(),
       progression,
-      bus: p.bus || new EventEmitter(),
-      assocNotification,
-      pptTypeNotification
+      bus: p.bus || new EventEmitter()
     };
   }
 
@@ -76,9 +65,8 @@ class InteractionInfo extends DataComponent {
   }
 
   goToStage( stage ){
-    let { el, progression, bus, assocNotification, pptTypeNotification, stage: currentStage } = this.data;
+    let { el, progression, bus, stage: currentStage } = this.data;
     let { STAGES } = progression;
-    let getPptName = ppt => ppt.completed() ? ppt.name() : '(?)';
 
     if( this.canGoToStage(stage) ){
       this.setData({ stage, stageError: null });
@@ -88,12 +76,10 @@ class InteractionInfo extends DataComponent {
       switch( stage ){
         case STAGES.ASSOCIATE:
           bus.emit('closepptstip', el);
-          assocNotification.message('Select the type of interaction between ' + el.participants().map(getPptName).join(' and ') + '.');
           break;
 
         case STAGES.PARTICIPANT_TYPES:
           bus.emit('openpptstip', el);
-          pptTypeNotification.message(`Activation or inhibition?`);
           break;
 
         case STAGES.COMPLETED:
@@ -222,29 +208,21 @@ class InteractionInfo extends DataComponent {
     let { STAGES, ORDERED_STAGES } = progression;
     let stage = progression.getStage();
 
-    let makeNotification = notification => {
-      return( h(InlineNotification, {
-        notification,
-        key: notification.id(),
-        className: 'interaction-info-notification'
-      }) );
-    };
-
     if( stage === STAGES.COMPLETED || !doc.editable() ){
-      let showEditIcon = doc.editable();
+      let showEditButton = doc.editable();
       let assoc = el.association();
       let summaryChildren = [];
 
-      summaryChildren.push( h('span.interaction-info-summary-text', assoc ? assoc.toString() : [
+      summaryChildren.push( h('div.interaction-info-summary-text', assoc ? assoc.toString() : [
         h('i.material-icons', 'info'),
         h('span', ' This interaction has no data associated with it.')
       ]) );
 
-      if( showEditIcon ){
-        summaryChildren.push( h(Tooltip, { description: 'Edit from the beginning' }, [
-          h('button.interaction-info-edit.plain-button', {
+      if( showEditButton ){
+        summaryChildren.push( h('div.interaction-info-edit', [
+          h('button.salient-button', {
             onClick: () => progression.goToStage( ORDERED_STAGES[1] )
-          }, [ h('i.material-icons', 'edit') ])
+          }, `Select a different type than "${assoc.displayValue}"`)
         ]) );
       }
 
@@ -286,21 +264,13 @@ class InteractionInfo extends DataComponent {
         }, IntnType.displayValue) );
       } );
 
-      children.push( makeNotification(s.assocNotification) );
-
       children.push( h('label.interaction-info-assoc-radioset-label', 'Interaction type') );
 
       children.push( h('div.interaction-info-assoc-radioset', radiosetChildren) );
-    } else if( stage === STAGES.PARTICIPANT_TYPES ){
-      children.push( makeNotification(s.pptTypeNotification) );
-    }
-
-    if( doc.editable() ){
-      children.push( h(ProgressionStepper, { progression }) );
     }
 
     return h('div.interaction-info', children);
   }
 }
 
-module.exports = props => h(InteractionInfo, Object.assign({ key: props.element.id() }, props));
+export default props => h(InteractionInfo, Object.assign({ key: props.element.id() }, props));

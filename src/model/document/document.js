@@ -1,32 +1,28 @@
-const _ = require('lodash');
-const Syncher = require('../syncher');
-const EventEmitterMixin = require('../event-emitter-mixin');
-const ElementSet = require('../element-set');
-const ElementCache = require('../element-cache');
-const ElementFactory = require('../element');
-const { assertOneOfFieldsDefined, mixin, getId, makeCyEles, getCyLayoutOpts, isNonNil, tryPromise } = require('../../util');
-const Organism = require('../organism');
-const Cytoscape = require('cytoscape');
+import _ from 'lodash';
+import Syncher from '../syncher';
+import EventEmitterMixin from '../event-emitter-mixin';
+import ElementSet from '../element-set';
+import ElementCache from '../element-cache';
+import ElementFactory from '../element';
+import { assertOneOfFieldsDefined, mixin, getId, makeCyEles, getCyLayoutOpts, isNonNil, tryPromise } from '../../util';
+import Cytoscape from 'cytoscape';
+import { TWITTER_ACCOUNT_NAME } from '../../config';
+import { getPubmedCitation } from '../../util/pubmed';
+import { isServer } from '../../util/';
 
 const DEFAULTS = Object.freeze({
   // data
   entries: [], // used by elementSet
   organisms: [], // list of ids
-
-  // metadata
-  journalName: '',
-  title: '',
-  authors: '',
-  abstract: '',
-  text: '',
-  trackingId: '',
-  contributorName: '',
-  contributorEmail: '',
-  editorName: '',
-  editorEmail: ''
 });
 
-const METADATA_FIELDS = ['journalName', 'title', 'authors', 'abstract', 'text', 'trackingId', 'contributorName', 'contributorEmail', 'editorName', 'editorEmail'];
+const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'status' ];
+const DOCUMENT_STATUS_FIELDS = Object.freeze({
+  REQUESTED: 'requested',
+  APPROVED: 'approved',
+  SUBMITTED: 'submitted',
+  TRASHED: 'trashed'
+});
 
 /**
 A document that contains a set of biological elements (i.e. entities and interactions).
@@ -80,10 +76,8 @@ class Document {
         let addedIds = _.difference( changes.organisms, old.organisms );
         let rmedIds = _.difference( old.organisms, changes.organisms );
         let emit = ( id, on ) => {
-          let org = Organism.fromId(id);
-
-          this.emit('toggleorganism', org, on);
-          this.emit('remotetoggleorganism', org, on);
+          this.emit('toggleorganism', id, on);
+          this.emit('remotetoggleorganism', id, on);
         };
 
         addedIds.forEach( id => emit( id, true ) );
@@ -95,6 +89,8 @@ class Document {
         this.emit('remotesubmit');
       }
     });
+
+    if( isServer ) this.syncher.on( 'create', () => this.rwMeta( 'createdDate', new Date() ) );
   }
 
   filled(){
@@ -129,6 +125,26 @@ class Document {
     }
   }
 
+  tweetMetadata(){
+    return this.syncher.get('tweet');
+  }
+
+  hasTweet(){
+    return this.tweetMetadata() != null;
+  }
+
+  setTweetMetadata(tweet){
+    this.syncher.update('tweet', tweet);
+  }
+
+  tweetUrl(){
+    if( !this.hasTweet() ){ return null; }
+
+    const tweet = this.tweetMetadata();
+
+    return `https://twitter.com/${TWITTER_ACCOUNT_NAME}/status/${tweet.id_str}`;
+  }
+
   cache(){
     return this.elementSet.cache;
   }
@@ -151,23 +167,6 @@ class Document {
     } );
   }
 
-  rename( newName ){
-    let updatePromise = this.syncher.update( 'title', newName );
-
-    this.emit( 'rename', newName );
-    this.emit( 'localrename', newName );
-
-    return updatePromise;
-  }
-
-  title( newName ){
-    if( newName != null ){
-      return this.rename( newName );
-    } else {
-      return this.syncher.get('title');
-    }
-  }
-
   // helper for get/set of simple paper metadata
   rwMeta(field, newVal){
     if( newVal != null ){
@@ -184,40 +183,38 @@ class Document {
     }
   }
 
-  journalName(newName){
-    return this.rwMeta('journalName', newName);
+  provided(newVal){
+    const provided = this.rwMeta('provided');
+    return newVal ? this.rwMeta('provided', _.merge( provided, newVal )): provided;
   }
 
-  authors(newNames){
-    return this.rwMeta('authors', newNames);
+  article(newVal){
+    return this.rwMeta('article', newVal);
   }
 
-  contributorName(newName){
-    return this.rwMeta('contributorName', newName);
+  issues(newVal){
+    const issues = this.rwMeta('issues');
+    return newVal ? this.rwMeta('issues', _.merge( issues, newVal )): issues;
   }
 
-  contributorEmail(newEmail){
-    return this.rwMeta('contributorEmail', newEmail);
+  correspondence(newVal){
+    return this.rwMeta('correspondence', newVal);
   }
 
-  editorName(newName){
-    return this.rwMeta('editorName', newName);
+  citation(){
+    return getPubmedCitation( this.article() );
   }
 
-  editorEmail(newEmail){
-    return this.rwMeta('editorEmail', newEmail);
+  createdDate(){
+    return this.rwMeta('createdDate');
   }
 
-  trackingId(newId){
-    return this.rwMeta('trackingId', newId);
+  lastEditedDate(){
+    return this.rwMeta('lastEditedDate');
   }
 
-  abstract(newAbstract){
-    return this.rwMeta('abstract', newAbstract);
-  }
-
-  text(newText){
-    return this.rwMeta('text', newText);
+  updateLastEditedDate(){
+    return this.rwMeta('lastEditedDate', new Date());
   }
 
   entities(){
@@ -228,16 +225,16 @@ class Document {
     return this.elements().filter( el => el.isInteraction() );
   }
 
+  complexes(){
+    return this.elements().filter( el => el.isComplex() );
+  }
+
   // mention count for all organisms (toggle + ent mentions)
   organismCounts(){
     let cnt = new Map(); // org => mention count
-    let resetCount = org => cnt.set( org, 0 );
-    let addToCount = org => cnt.set( org, cnt.get(org) + 1 );
-    let getOrg = id => Organism.fromId( id );
+    let addToCount = org => cnt.set( org, !cnt.has(org) ? 1 : cnt.get(org) + 1 );
     let entIsAssocd = ent => ent.associated();
     let getOrgIdForEnt = ent => _.get( ent.association(), ['organism'] );
-
-    Organism.ALL.forEach( resetCount );
 
     this.toggledOrganisms().forEach( addToCount );
 
@@ -246,7 +243,6 @@ class Document {
       .filter( entIsAssocd )
       .map( getOrgIdForEnt )
       .filter( isNonNil ) // may be an entity w/o org
-      .map( getOrg )
       .forEach( addToCount )
     );
 
@@ -257,7 +253,7 @@ class Document {
     let json = {};
 
     for( let [org, count] of this.organismCounts() ){
-      json[ org.id() ] = count;
+      json[ org ] = count;
     }
 
     return json;
@@ -265,7 +261,7 @@ class Document {
 
   // mentions for one org
   organismCount( org ){
-    return this.organismCounts().get( org );
+    return this.organismCounts().get( org ) || 0;
   }
 
   // get list of all orgs (incl. explicit mentions and implicit mentions via entity assoc)
@@ -278,7 +274,7 @@ class Document {
 
   // get list of orgs w/ explicit mentions
   toggledOrganisms(){
-    return this.syncher.get('organisms').map( id => Organism.fromId(id) );
+    return this.syncher.get('organisms');
   }
 
   // toggle organism explicit mention
@@ -297,8 +293,8 @@ class Document {
       } else {
         let update = this.syncher.push('organisms', orgId);
 
-        this.emit('toggleorganism', Organism.fromId(orgId), toggleOn);
-        this.emit('localtoggleorganism', Organism.fromId(orgId), toggleOn);
+        this.emit('toggleorganism', orgId, toggleOn);
+        this.emit('localtoggleorganism', orgId, toggleOn);
 
         return update;
       }
@@ -306,8 +302,8 @@ class Document {
       if( has ){
         let update = this.syncher.pull('organisms', orgId);
 
-        this.emit('toggleorganism', Organism.fromId(orgId), toggleOn);
-        this.emit('localtoggleorganism', Organism.fromId(orgId), toggleOn);
+        this.emit('toggleorganism', orgId, toggleOn);
+        this.emit('localtoggleorganism', orgId, toggleOn);
 
         return update;
       } else {
@@ -388,17 +384,26 @@ class Document {
     return tryPromise( runLayout ).then( savePositions );
   }
 
-  submit(){
-    let p = this.syncher.update({ submitted: true });
+  status( field ){
+    if( field && _.includes( _.values( DOCUMENT_STATUS_FIELDS ), field ) ){
+      let p = this.syncher.update({ 'status': field });
+      this.emit( 'status', field );
+      return p;
 
-    this.emit('submit');
-
-    return p;
+    } else if( !field ){
+      return this.syncher.get( 'status' );
+    }
   }
 
-  submitted(){
-    return this.syncher.get('submitted') ? true : false;
-  }
+  static statusFields(){ return DOCUMENT_STATUS_FIELDS; }
+  request(){ return this.status( DOCUMENT_STATUS_FIELDS.REQUESTED ); }
+  requested(){ return this.status() === DOCUMENT_STATUS_FIELDS.REQUESTED ? true : false; }
+  approve(){ return this.status( DOCUMENT_STATUS_FIELDS.APPROVED ); }
+  approved(){ return this.status() === DOCUMENT_STATUS_FIELDS.APPROVED ? true : false; }
+  submit(){ return this.status( DOCUMENT_STATUS_FIELDS.SUBMITTED ); }
+  submitted(){ return this.status() === DOCUMENT_STATUS_FIELDS.SUBMITTED ? true : false; }
+  trash(){ return this.status( DOCUMENT_STATUS_FIELDS.TRASHED ); }
+  trashed(){ return this.status() === DOCUMENT_STATUS_FIELDS.TRASHED ? true : false; }
 
   json(){
     let toJson = obj => obj.json();
@@ -406,12 +411,11 @@ class Document {
     return _.assign({
       id: this.id(),
       secret: this.secret(),
-      title: this.title(),
-      summary: this.toText(),
-      organisms: this.organisms().map( toJson ),
+      organisms: this.organisms(),
       elements: this.elements().map( toJson ),
       publicUrl: this.publicUrl(),
       privateUrl: this.privateUrl(),
+      citation: this.citation()
     }, _.pick(this.syncher.get(), METADATA_FIELDS));
   }
 
@@ -447,11 +451,10 @@ class Document {
     let orgIds = json.organisms || [];
     let addOrganism = id => this.toggleOrganism( id, true );
     let addOrganisms = () => Promise.all( orgIds.map( addOrganism ) );
-
-    let updateMetadata = () => this.syncher.update( _.pick(json, METADATA_FIELDS) );
+    let updateMetadataEtc = () => this.syncher.update( _.pick(json, METADATA_FIELDS) );
 
     return Promise.all([
-      updateMetadata(),
+      updateMetadataEtc(),
       handleEls(),
       addOrganisms()
     ]);
@@ -474,4 +477,4 @@ mixin( Document.prototype, EventEmitterMixin.prototype );
   };
 } );
 
-module.exports = Document;
+export default Document;

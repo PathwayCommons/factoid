@@ -1,5 +1,5 @@
-const DirtyComponent = require('./dirty-component');
-const _ = require('lodash');
+import DirtyComponent from './dirty-component';
+import _ from 'lodash';
 
 class DataComponent extends DirtyComponent {
   constructor(props){
@@ -21,4 +21,4 @@ class DataComponent extends DirtyComponent {
   }
 }
 
-module.exports = DataComponent;
+export default DataComponent;

@@ -1,6 +1,6 @@
-let r = require('rethinkdb');
-let fs = require('fs');
-let config = require('../config');
+import r from 'rethinkdb';
+import fs from 'fs';
+import * as config from '../config';
 
 let db = {
   connect: function(){
@@ -89,4 +89,4 @@ let db = {
   }
 };
 
-module.exports = db;
+export default db;

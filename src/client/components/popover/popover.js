@@ -1,16 +1,18 @@
-const React = require('react');
-const ReactDom = require('react-dom');
-const h = require('react-hyperscript');
-const hh = require('hyperscript');
-const tippyjs = require('tippy.js');
-const _ = require('lodash');
-const { tippyDefaults } = require('../../defs');
-const Mousetrap = require('mousetrap');
-const EventEmitter = require('eventemitter3');
+import React from 'react';
+import ReactDom from 'react-dom';
+import h from 'react-hyperscript';
+import hh from 'hyperscript';
+import tippyjs from 'tippy.js';
+import _ from 'lodash';
+import { tippyDefaults } from '../../defs';
+import Mousetrap from 'mousetrap';
+import EventEmitter from 'eventemitter3';
 
 const emitter = new EventEmitter();
 
-Mousetrap.bind('escape', () => emitter.emit('esc'));
+Mousetrap.bind('escape', () => {
+  emitter.emit('hide');
+});
 
 class Popover extends React.Component {
   constructor( props ){
@@ -45,7 +47,8 @@ class Popover extends React.Component {
 
     let tippyOptions = _.assign( {}, rawTippyOptions, {
       html: content,
-      hideOnClick: false
+      hideOnClick: false,
+      duration: [0, 0]
     } );
 
     this.renderTipContent();
@@ -61,7 +64,7 @@ class Popover extends React.Component {
     this.hideTippy = () => tippy.hide();
     this.destroyTippy = () => tippy.destroy();
 
-    emitter.on('esc', this.hideTippy);
+    emitter.on('hide', this.hideTippy);
 
     // the tippy hide on click doesn't work with react
     if( rawTippyOptions.hideOnClick ){
@@ -92,7 +95,7 @@ class Popover extends React.Component {
       document.body.removeEventListener('click', this.onBodyClick);
     }
 
-    emitter.removeListener('esc', this.hideTippy);
+    emitter.removeListener('hide', this.hideTippy);
 
     ReactDom.unmountComponentAtNode( this.content );
 
@@ -104,4 +107,5 @@ class Popover extends React.Component {
   }
 }
 
-module.exports = Popover;
+export default Popover;
+export { emitter };

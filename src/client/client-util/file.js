@@ -1,6 +1,6 @@
-const FileSaver = require('file-saver');
-const _ = require('lodash');
-const { tryPromise } = require('../../util');
+import FileSaver from 'file-saver';
+import _ from 'lodash';
+import { tryPromise } from '../../util';
 
 function exportContentToFile(content, fileName, ext){
   // if filename does not end with the extension append extension to the file name
@@ -54,4 +54,4 @@ function exportDocumentToTxt(docId, fileName){
           .then( content => exportContentToFile(content, fileName, '.txt') );
 }
 
-module.exports = { exportContentToFile, exportDocumentToBiopax, exportDocumentToTxt, exportDocumentToSbgn };
+export { exportContentToFile, exportDocumentToBiopax, exportDocumentToTxt, exportDocumentToSbgn };

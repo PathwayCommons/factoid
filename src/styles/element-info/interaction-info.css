@@ -50,7 +50,12 @@ textarea.interaction-info-description {
   font-weight: bold;
 }
 
-button.interaction-info-edit {
-  margin-left: 0.25em;
-  vertical-align: baseline;
+.interaction-info-edit {
+  text-align: center;
+  margin-top: 1em;
+
+  & button {
+    display: inline-block;
+    height: auto;
+  }
 }

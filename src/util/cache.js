@@ -16,4 +16,4 @@ class SingleValueCache {
   set(k, v){ this.value = v; }
 }
 
-module.exports = { initCache, SingleValueCache };
+export { initCache, SingleValueCache };

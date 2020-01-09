@@ -1,4 +1,4 @@
-const { jsonHash } = require('./obj');
+import { jsonHash } from './obj';
 
 const getStringifiedKey = function(){
   return jsonHash( Array.from(arguments) );
@@ -28,4 +28,4 @@ const memoize = ( fn, cache, getKey = getStringifiedKey ) => {
   };
 };
 
-module.exports = { memoize };
+export { memoize };

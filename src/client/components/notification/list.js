@@ -1,8 +1,8 @@
-const _ = require('lodash');
-const uuid = require('uuid');
+import _ from 'lodash';
+import uuid from 'uuid';
 
-const EventEmitterMixin = require('../../../model/event-emitter-mixin');
-const { mixin } = require('../../../util');
+import EventEmitterMixin from '../../../model/event-emitter-mixin';
+import { mixin } from '../../../util';
 
 class NotificationList {
   constructor( notifications = [], opts ){
@@ -67,4 +67,4 @@ NotificationList.prototype[ Symbol.iterator ] = NotificationList.prototype.value
 
 mixin( NotificationList.prototype, EventEmitterMixin.prototype );
 
-module.exports = NotificationList;
+export default NotificationList;

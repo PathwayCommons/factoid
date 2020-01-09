@@ -1,4 +1,4 @@
-const Modification = require('./modification');
+import Modification from './modification';
 
 const VALUE = 'phosphorylation';
 const DISPLAY_VALUE = 'Phosphorylation';
@@ -24,4 +24,4 @@ class Phosphorylation extends Modification {
   get displayValue(){ return DISPLAY_VALUE; }
 }
 
-module.exports = Phosphorylation;
+export default Phosphorylation;

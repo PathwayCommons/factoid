@@ -1,10 +1,8 @@
-let Promise = require('bluebird');
+import Promise from 'bluebird';
 
 Promise.config({
   warnings: true,
   longStackTraces: true
 });
 
-module.exports = {
-  defaultTimeout: 5000
-};
+export const defaultTimeout = 5000;

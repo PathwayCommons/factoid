@@ -1,5 +1,5 @@
-const { error } = require('./obj');
-const CancelablePromise = require('p-cancelable');
+import { error } from './obj';
+import CancelablePromise from 'p-cancelable';
 
 const slice = ( arr, i, j ) => Array.prototype.slice.call( arr, i, j );
 
@@ -66,4 +66,4 @@ function makeCancelable( p ){
   } );
 }
 
-module.exports = { passthrough, promisifyEmit, promiseOn, delay, delayPassthrough, defer, tryPromise, makeCancelable };
+export { passthrough, promisifyEmit, promiseOn, delay, delayPassthrough, defer, tryPromise, makeCancelable };

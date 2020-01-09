@@ -1,7 +1,7 @@
-const { mixin } = require('../../util');
-const _ = require('lodash');
-const Syncher = require('../syncher');
-const EventEmitterMixin = require('../event-emitter-mixin');
+import { mixin } from '../../util';
+import _ from 'lodash';
+import Syncher from '../syncher';
+import EventEmitterMixin from '../event-emitter-mixin';
 
 const TYPE = 'element';
 
@@ -78,6 +78,10 @@ class Element {
   }
 
   isInteraction(){
+    return false;
+  }
+
+  isComplex(){
     return false;
   }
 
@@ -215,4 +219,4 @@ mixin( Element.prototype, EventEmitterMixin.prototype );
   };
 } );
 
-module.exports = Element;
+export default Element;

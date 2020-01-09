@@ -1,7 +1,7 @@
-const fetch = require('node-fetch');
-const querystring = require('querystring');
-const _ = require('lodash');
-const { tryPromise } = require('../../../../util');
+import fetch from 'node-fetch';
+import querystring from 'querystring';
+import _ from 'lodash';
+import { tryPromise } from '../../../../util';
 
 const BASE_URL = 'http://www.pathwaycommons.org/pc2';
 const LIMIT = 10;
@@ -48,12 +48,10 @@ const request = ( endpt, query ) => {
   );
 };
 
-module.exports = {
-  search( opts ){
-    return tryPromise( () => request( 'search', searchQuery(opts) ) ).then( searchPostprocess );
-  },
+export const search = opts => {
+  return tryPromise( () => request( 'search', searchQuery(opts) ) ).then( searchPostprocess );
+};
 
-  get( opts ){
-    return tryPromise( () => request( 'get', getQuery(opts) ) ).then( getPostprocess );
-  }
+export const get = opts => {
+  return tryPromise( () => request( 'get', getQuery(opts) ) ).then( getPostprocess );
 };

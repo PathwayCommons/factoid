@@ -1,10 +1,9 @@
-const { USE_PC_GROUNDING_SEARCH } = require('../../../../config');
-const aggregate = require('./aggregate');
-const groundingSearch = require('./grounding-search');
-const jsonifyResult = response => ( result => response.json( result ) );
-const http = require('express').Router();
+import * as groundingSearch from './grounding-search';
+import Express from 'express';
 
-const provider = USE_PC_GROUNDING_SEARCH ? groundingSearch : aggregate;
+const jsonifyResult = response => ( result => response.json( result ) );
+const http = Express.Router();
+const provider = groundingSearch;
 
 http.post('/search', function( req, res ){
   (
@@ -22,4 +21,4 @@ http.post('/get', function( req, res ){
   );
 });
 
-module.exports = http;
+export default http;

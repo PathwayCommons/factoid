@@ -1,10 +1,10 @@
-const React = require('react');
-const h = require('react-hyperscript');
-const { Link } = require('react-router-dom');
+import React from 'react';
+import h from 'react-hyperscript';
+import { Link } from 'react-router-dom';
 
-const { tryPromise } = require('../../util');
-const example = require('./document-seeder-example');
-const MainMenu = require('./main-menu');
+import { tryPromise } from '../../util';
+import example from './document-seeder-example';
+import MainMenu from './main-menu';
 
 class DocumentSeeder extends React.Component {
   constructor( props ){
@@ -93,9 +93,12 @@ class DocumentSeeder extends React.Component {
 
     return h('div.document-seeder.page-content', [
       h('div.document-seeder-content', [
-        h(MainMenu, { history, title: 'Publisher portal : New paper' }),
+        h('div.page-content-title', [
+          h(MainMenu, { history, admin: true }),
+          h('h1', 'Add a new document')
+        ]),
 
-        h('p', 'Enter the information for the manuscript you wish to add using Factoid. Upon submission, an invitation will be sent to the contributing author. You will be notified upon submission.'),
+        h('p', 'Enter the information for the manuscript you wish to add using Biofactoid. Upon submission, an invitation will be sent to the contributing author. You will be notified upon submission.'),
 
         demo ? h('p.document-seeder-example-buttons', [
           h('button', {
@@ -106,6 +109,13 @@ class DocumentSeeder extends React.Component {
             onClick: () => this.fillQuickExample()
           }, 'Use a quick example')
         ]) : null,
+
+        h('label.document-seeder-text-label', 'API key'),
+        h('input.document-seeder-api-key', {
+          type: 'text',
+          value: value('apiKey'),
+          onChange: onChange('apiKey')
+        }),
 
         h('label.document-seeder-text-label', 'Jounal name'),
         h('input.document-seeder-journal-name', {
@@ -174,13 +184,6 @@ class DocumentSeeder extends React.Component {
           onChange: onChange('editorEmail')
         }),
 
-        h('label.document-seeder-text-label', 'API key'),
-        h('input.document-seeder-api-key', {
-          type: 'text',
-          value: value('apiKey'),
-          onChange: onChange('apiKey')
-        }),
-
         h('p', [
           h('button.document-seeder-submit.salient-button', {
             onClick: () => this.submit()
@@ -201,4 +204,4 @@ class DocumentSeeder extends React.Component {
   }
 }
 
-module.exports = DocumentSeeder;
+export default DocumentSeeder;

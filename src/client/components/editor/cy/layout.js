@@ -1,13 +1,13 @@
-let on = require('./on-key');
-let defs = require('./defs');
-let _ = require('lodash');
-let { isInteractionNode, getCyLayoutOpts } = require('../../../../util');
+import on from './on-key';
+import * as defs from './defs';
+import _ from 'lodash';
+import { isInteractionNode, getCyLayoutOpts } from '../../../../util';
 
 let isInteraction = isInteractionNode;
 
 let isNotInteraction = n => !isInteraction( n );
 
-module.exports = function( { bus, cy, document } ){
+export default function( { bus, cy, document } ){
   let lastLayout;
 
   let layout = () => {
@@ -33,4 +33,4 @@ module.exports = function( { bus, cy, document } ){
 
   on('r', layout);
   bus.on('layout', layout);
-};
+}

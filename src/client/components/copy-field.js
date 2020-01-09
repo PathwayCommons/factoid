@@ -1,8 +1,8 @@
-const { Component } = require('react');
-const h = require('react-hyperscript');
-const Tooltip = require('./popover/tooltip');
-const ReactDom = require('react-dom');
-const Clipboard = require('clipboard');
+import { Component } from 'react';
+import h from 'react-hyperscript';
+import Tooltip from './popover/tooltip';
+import ReactDom from 'react-dom';
+import Clipboard from 'clipboard';
 
 class CopyField extends Component {
   constructor( props ){
@@ -57,4 +57,4 @@ class CopyField extends Component {
   }
 }
 
-module.exports = CopyField;
+export default CopyField;

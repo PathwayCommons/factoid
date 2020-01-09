@@ -2,7 +2,7 @@
 
 ## Required software
 
-- [Node.js](https://nodejs.org/en/) >=6.3.0
+- [Node.js](https://nodejs.org/en/) >=10
 - [RethinkDB](http://rethinkdb.com/) ^2.3.0
 
 ## Configuration
@@ -30,20 +30,77 @@ Services:
 
 - `DEFAULT_CACHE_SIZE` : default max number of entries in each cache
 - `REACH_URL` : full url of the reach textmining endpoint
-- `UNIPROT_URL` : full url of uniprot query service
-- `UNIPROT_LINK_BASE_URL` : base url concatenated to id to generate a linkout
-- `UNIPROT_CACHE_SIZE` : overrides default cache size for uniprot query cache
-- `CHEBI_WSDL_URL`: url for chebi webservices
-- `CHEBI_JAVA_PACKAGE`: chebi java package namespace
-- `CHEBI_LINK_BASE_URL`: base url concatenated to id to generate a linkout
-- `CHEBI_CACHE_SIZE`: overrides default cache size of chebi query cache
-- `PUBCHEM_BASE_URL`: base webservices url for pubchem
-- `PUBCHEM_LINK_BASE_URL`: base url concatenated to id to generate a linkout
-- `PUBCHEM_CACHE_SIZE`: overrides default cache size of pubchem query cache,
-- `AGGREGATE_CACHE_SIZE`: overrides default cache size for aggregate searches across all entity types
-- `MAX_SEARCH_SIZE`: max number of entities returned for each entity lookup/search service
 - `PC_URL` : base url for pathway commons apps, to search or link
 - `BIOPAX_CONVERTER_URL` : url for the factoid to biopax/sbgn converter
+- `GROUNDING_SEARCH_BASE_URL`: url for the [grounding service](https://github.com/PathwayCommons/grounding-search)
+- `NCBI_EUTILS_BASE_URL` : url for the NCBI E-utilities
+- `NCBI_EUTILS_API_KEY` : API key for the NCBI E-utilities
+
+Links:
+
+- `UNIPROT_LINK_BASE_URL` : base url concatenated to id to generate a linkout
+- `CHEBI_LINK_BASE_URL`: base url concatenated to id to generate a linkout
+- `PUBCHEM_LINK_BASE_URL`: base url concatenated to id to generate a linkout
+- `NCBI_LINK_BASE_URL`: base url concatenated to id to generate a linkout
+- `PUBMED_LINK_BASE_URL`: base url concatenated to unique id to generate linkout
+- `DOI_LINK_BASE_URL`: base url concatenated to doi to generate linkout
+
+Demo:
+
+- `DEMO_ID` : the demo document id (default `demo`)
+- `DEMO_SECRET` : the demo document secret (default `demo`)
+- `DEMO_JOURNAL_NAME` : the journal name for the demo doc
+- `DEMO_AUTHOR` : the author display name for the demo doc
+- `DEMO_TITLE` : the title of the demo doc's article
+- `DEMO_CAN_BE_SHARED` : whether the demo can be shared (default `false`)
+- `DEMO_CAN_BE_SHARED_MULTIPLE_TIMES` : whether the demo can be shared multiple times (normal docs can be shared only once; default `false`)
+
+Sharing:
+
+- `DOCUMENT_IMAGE_WIDTH` : tweet card image width
+- `DOCUMENT_IMAGE_HEIGHT` : tweet card image height
+- `DOCUMENT_IMAGE_PADDING` : padding around tweet card image (prevents twitter cropping issues)
+- `TWITTER_ACCOUNT_NAME` : twitter account visible on card
+- `TWITTER_CONSUMER_KEY` : twitter api key
+- `TWITTER_CONSUMER_SECRET` : twitter api secret
+- `TWITTER_ACCESS_TOKEN_KEY` : twitter app key
+- `TWITTER_ACCESS_TOKEN_SECRET` : twitter app secret
+- `MAX_TWEET_LENGTH` : max characters a user can type as a share caption
+
+Email:
+
+- `EMAIL_ENABLED`: boolean to enable third-party mail service (default `false`)
+- `EMAIL_FROM`: name to send emails from (default `Biofactoid`)
+- `EMAIL_FROM_ADDR`: address to send emails from (default `support@biofactoid.org`)
+- `SMTP_PORT`: mail transport port (default `587`)
+- `SMTP_HOST`: mail transport host (default `localhost`)
+- `SMTP_USER`: mail transport auth user
+- `SMTP_PASSWORD`: mail transport auth password
+- `EMAIL_VENDOR_MAILJET`: name of Mailjet vendor
+- `MAILJET_TMPLID_INVITE`: vendor email template id for an invitation
+- `MAILJET_TMPLID_FOLLOWUP`: vendor email template id for a follow-up
+- `EMAIL_CONTEXT_JOURNAL`: email context variable to indicate entry via journal
+- `EMAIL_CONTEXT_SIGNUP`: email context variable to indicate entry via homepage
+- `EMAIL_TYPE_INVITE`:  name to indicate invite email
+- `EMAIL_TYPE_FOLLOWUP`: name to indicate follow-up email
+- `EMAIL_SUBJECT_INVITE`: subject text for invitation email
+- `EMAIL_SUBJECT_FOLLOWUP`: subject text for follow-up email
+
+The following environment variables should always be set in production instances:
+
+- `NODE_ENV` : set to `production`
+- `BASE_URL` : the production url
+- `API_KEY` : set to a uuid that you keep secret (used in management panel)
+- `TWITTER_ACCOUNT_NAME` : twitter account visible on card
+- `TWITTER_CONSUMER_KEY` : twitter api key
+- `TWITTER_CONSUMER_SECRET` : twitter api secret
+- `TWITTER_ACCESS_TOKEN_KEY` : twitter app key
+- `TWITTER_ACCESS_TOKEN_SECRET` : twitter app secret
+- `NCBI_EUTILS_API_KEY`: the API key for pathwaycommons account
+- `EMAIL_ENABLED`: `true` for Mailjet support
+- `SMTP_HOST`: Mailjet host name
+- `SMTP_USER`: Mailjet account credentials
+- `SMTP_PASSWORD`: Mailjet password credentials
 
 ## Run targets
 
@@ -66,9 +123,9 @@ Dockerized system has been successfully deployed on:
   - Ubuntu 16.04.5 LTS (GNU/Linux 4.4.0-145-generic x86_64)
     - Docker version 18.09.6
     - docker-compose version 1.24.0
-  - OSX 10.14.5 (Mojave)
-    - Docker version 18.09.2
-    - docker-compose version 1.23.2
+  - OSX 10.15.1 (Catalina)
+    - Docker version 19.03.5
+    - docker-compose version 1.24.1
 
 ### Docker Compose
 
@@ -89,13 +146,19 @@ Stop and remove services:
 docker-compose down
 ```
 
+Restarting after the app services have been stopped (index exists):
+```sh
+docker-compose up -d webapp grounding db index
+```
+
+
 #### Notes
 
 - Environment variables:
-  - Docker Compose will draw environment variables from the shell or from an `.env` file in the same directory. The file is not necessary, as the compose file provides defaults.  If you wish, edit the `.env` file to configure environment variables for image tags, container ports and others, which will be passed to the containers.
+  - Docker Compose will draw environment variables from the shell or from an `.env` file in the same directory. Please see private [remote](https://github.com/BaderLab/sysadmin/blob/master/websites/factoid.md) for production-level file settings.
 
 - Indexing service:
-  - The `indexer` service will download sources files and index. The time required for this will vary depending on the system and ranges from tens of minutes (OSX 10.14.5 (Mojave), MacBook Pro (Retina, 15-inch, Mid 2015). 2.8 GHz Intel Core i7) up to many hours (Ubuntu 16.04.5 LTS, Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz). You can skip indexing by declaring the services you wish to start `docker-compose run -d webapp grounding db index`.
+  - The `indexer` service will download sources files and index. The time required for this will vary depending on the system and ranges from tens of minutes (OSX 10.14.5 (Mojave), MacBook Pro (Retina, 15-inch, Mid 2015). 2.8 GHz Intel Core i7) up to many hours (Ubuntu 16.04.5 LTS, Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz).
 
 - Database service:
   - Do not restart a stopped container. Rather, remove and run anew.
@@ -103,38 +166,39 @@ docker-compose down
 - OS specifics:
   - For Ubuntu 16.04.5 LTS to [play nice with elasticsearch](https://github.com/docker-library/elasticsearch/issues/111#issuecomment-268511769) needed to set `sudo sysctl -w vm.max_map_count=262144`.
 
-### Backup and restore volumes
+### Dump and restore Rethinkdb data
 
-#### Backup
+NB: RethinkDB [dump and restore](https://rethinkdb.com/docs/backup/) command-line utility depends on the [Python driver](https://rethinkdb.com/docs/install-drivers/python/). The `docker/Dockerfile-rethinkdb` file documents these requirements.
 
-To create an archive of data in volumes used by RethinkDB or Elasticsearch, use the supplied bash script `/docker/backup_volumes.sh`.
+#### Dump
 
-Dump the RethinkDB data inside a volume named `dbdata` at a directory `/data` within the volume to an archive in a directory on the host named the `/backups`:
+To create an archive of data in RethinkDB, use the supplied bash script `/docker/dump_rethinkdb.sh`.
+
+- The script accepts four arguments:
+  - `-c` (required) The container name
+  - `-e` (optional) Limit the dump to the given database and/or table; Use dot notation e.g. 'test.authors'
+  - `-n` (optional) The dump archive name; `.tar.gz` will be appended
+  - `-d` (optional) Output to the specified directory on the host; defaults to `pwd`
+
+Example: To dump a running container `db_container` with database named `factoid` to an archive named `factoid_dump_latest` in a directory on the host named `/backups`:
 
 ```sh
-./backup_volumes.sh -n dbdata -p /data -o /backups
-```
-
-Dump the Elasticsearch data inside a volume named `indata` at a directory `/usr/share/elasticsearch/data` within the volume to an archive in a directory on the host named the `/backups`:
-
-```sh
-./backup_volumes.sh -n indata -p /usr/share/elasticsearch/data -o /backups
+./dump_rethinkdb.sh -c db_container -e factoid -n factoid_dump_latest -d /backups
 ```
 
 #### Restore
 
-To populate a volume for RethinkDB or Elasticsearch from an archive, use the supplied bash script `/docker/restore_volumes.sh`.
+To populate RethinkDB from an archive, use the supplied bash script `/docker/restore_rethinkdb.sh`.
 
-Restore RethinkDB data to a volume `dbdata` at a directory `/data` within the volume from an archive on the host `/backups/dbbackup.tar.gz`:
+- The script accepts three arguments:
+  - `-c` (required) The container name
+  - `-f` (required) Archive file path on host
+  - `-i` (optional) Limit the restore to the given database and/or table; Use dot notation e.g. 'test.authors'. By default, the script will overwrite any existing database/table data.
+
+Example: To restore a running container `db_container` with database named `factoid` from an archive named `/backups/factoid_dump_latest.tar.gz`:
 
 ```sh
-./backup_volumes.sh -n dbdata -p /data -s /backups/dbbackup.tar.gz
-```
-
-Restore Elasticsearch data to a volume `indata` at a directory `/usr/share/elasticsearch/data` within the volume from an archive on the host `/backups/inbackup.tar.gz`:
-
-```sh
-./backup_volumes.sh -n indata -p /usr/share/elasticsearch/data -s /backups/inbackup.tar.gz
+./restore_rethinkdb.sh -c db_container -f /backups/factoid_dump_latest.tar.gz -i factoid
 ```
 
 ## Testing

@@ -1,5 +1,5 @@
-const { Component } = require('react');
-const h = require('react-hyperscript');
+import { Component } from 'react';
+import h from 'react-hyperscript';
 
 class PageNotFound extends Component {
   constructor(props){
@@ -11,4 +11,4 @@ class PageNotFound extends Component {
   }
 }
 
-module.exports = PageNotFound;
+export default PageNotFound;

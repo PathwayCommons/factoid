@@ -1,7 +1,7 @@
-const InteractionType = require('./interaction-type');
-const { PARTICIPANT_TYPE } = require('../participant-type');
-const { ENTITY_TYPE } = require('../entity-type');
-const { BIOPAX_TEMPLATE_TYPE } = require('./biopax-type');
+import InteractionType from './interaction-type';
+import { PARTICIPANT_TYPE } from '../participant-type';
+import { ENTITY_TYPE } from '../entity-type';
+import { BIOPAX_TEMPLATE_TYPE } from './biopax-type';
 
 const VALUE = 'binding';
 const DISPLAY_VALUE = 'Binding';
@@ -61,4 +61,4 @@ class Binding extends InteractionType {
   get displayValue(){ return DISPLAY_VALUE; }
 }
 
-module.exports = Binding;
+export default Binding;

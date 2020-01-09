@@ -1,30 +1,37 @@
-const DataComponent = require('../data-component');
-const ReactDom = require('react-dom');
-const h = require('react-hyperscript');
-const EventEmitter = require('eventemitter3');
-const io = require('socket.io-client');
-const _ = require('lodash');
+import DataComponent from '../data-component';
+import ReactDom from 'react-dom';
+import h from 'react-hyperscript';
+import EventEmitter from 'eventemitter3';
+import io from 'socket.io-client';
+import _ from 'lodash';
+import Mousetrap from 'mousetrap';
 
-const { getId, defer, makeClassList, tryPromise } = require('../../../util');
-const Document = require('../../../model/document');
-const { PARTICIPANT_TYPE } = require('../../../model/element/participant-type');
+import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL, EMAIL_CONTEXT_SIGNUP } from '../../../config';
 
-const Notification = require('../notification');
-const CornerNotification = require('../notification/corner');
-const Popover = require('../popover/popover');
+import { getId, defer, makeClassList, tryPromise } from '../../../util';
+import Document from '../../../model/document';
+import { PARTICIPANT_TYPE } from '../../../model/element/participant-type';
 
-const logger = require('../../logger');
-const debug = require('../../debug');
+import Popover from '../popover/popover';
 
-const makeCytoscape = require('./cy');
-const defs = require('./defs');
-const EditorButtons = require('./buttons');
-const MainMenu = require('../main-menu');
-const UndoRemove = require('./undo-remove');
-const { TaskView } = require('../tasks');
+import logger from '../../logger';
+import debug from '../../debug';
+
+import makeCytoscape from './cy';
+import * as defs from './defs';
+import EditorButtons from './buttons';
+import MainMenu from '../main-menu';
+import UndoRemove from './undo-remove';
+import { ShareView } from '../share';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
+
+const keyEmitter = new EventEmitter();
+
+Mousetrap.bind('escape', () => {
+  keyEmitter.emit('escape');
+});
 
 class Editor extends DataComponent {
   constructor( props ){
@@ -77,11 +84,11 @@ class Editor extends DataComponent {
       this.setData({ undoRemoveAvailable: true });
     };
 
-    let addRmPptToList = (intn, ppt, type) => {
+    let addRmPptToList = (el, ppt, type) => {
       checkToClearRmList();
       makeRmAvailable();
 
-      this.data.rmList.ppts.push({ intn, ppt, type });
+      this.data.rmList.ppts.push({ el, ppt, type });
     };
 
     let addRmToList = el => {
@@ -91,7 +98,7 @@ class Editor extends DataComponent {
       this.data.rmList.els.push( el );
     };
 
-    let listenForRmPpt = intn => intn.on('remove', (el, type) => addRmPptToList(intn, el, type));
+    let listenForRmPpt = el => el.on('remove', (ppt, type) => addRmPptToList(el, ppt, type));
 
     doc.on('remove', el => {
       addRmToList( el );
@@ -99,19 +106,28 @@ class Editor extends DataComponent {
       el.removeAllListeners(); // just to make sure that we don't have dangling listeners causing issues
     });
 
+    const updateLastEditDate = _.debounce(() => {
+      doc.updateLastEditedDate();
+    }, 1000);
+
     doc.on('add', el => {
-      if( el.isInteraction() ){
+      if( el.isInteraction() || el.isComplex() ){
         listenForRmPpt( el );
       }
+
+      el.on('localupdate', updateLastEditDate);
     });
+
+    doc.on('localadd', updateLastEditDate);
+    doc.on('localremove', updateLastEditDate);
 
     doc.on('submit', () => this.dirty());
 
     doc.on('load', () => {
-      doc.interactions().forEach( listenForRmPpt );
+      doc.interactions().concat( doc.complexes() ).forEach( listenForRmPpt );
 
       let docs = JSON.parse(localStorage.getItem('documents')) || [];
-      let docData = { id: doc.id(), secret: doc.secret(), name: doc.title() };
+      let docData = { id: doc.id(), secret: doc.secret(), name: doc.citation().title };
 
       if( _.find(docs,  docData) == null ){
         docs.push(docData);
@@ -132,7 +148,16 @@ class Editor extends DataComponent {
       showHelp = true;
     }
 
-    localStorage.setItem('showHelp', false);
+    // help is always shown for now
+    showHelp = true;
+
+    this.hideHelp = () => {
+      if( this.data.showHelp ){
+        this.toggleHelp();
+      }
+    };
+
+    localStorage.setItem('showHelp', showHelp);
 
     this.data = ({
       bus: bus,
@@ -155,18 +180,35 @@ class Editor extends DataComponent {
     tryPromise( () => doc.load() )
       .then( () => logger.info('The doc already exists and is now loaded') )
       .catch( err => {
-        logger.info('The doc does not exist or an error occurred');
-        logger.warn( err );
+        if( id === DEMO_ID && secret === DEMO_SECRET ){
+          logger.info(`Creating demo document with ID ${id}`);
 
-        return ( doc.create()
-          .then( () => logger.info('The doc was created') )
-          .catch( err => logger.error('The doc could not be created', err) )
-        );
+          let createDemoDoc = () => fetch('/api/document', {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+              paperId: DEMO_ID,
+              authorEmail: DEMO_AUTHOR_EMAIL,
+              isCorrespondingAuthor: true,
+              context: EMAIL_CONTEXT_SIGNUP
+            })
+          });
+          let reloadDoc = () => doc.load();
+
+          return createDemoDoc().then(reloadDoc);
+        } else {
+          logger.error('The doc does not exist or an error occurred');
+          logger.error( err );
+
+          throw err;
+        }
       } )
       .then( () => doc.synch(true) )
       .then( () => logger.info('Document synch active') )
       .then( () => {
-        this.setData({ initted: true });
+        this.setData({ initted: true, showHelp: this.data.document.editable() });
 
         logger.info('The editor is initialising');
       } )
@@ -184,27 +226,6 @@ class Editor extends DataComponent {
         logger.info('Initialised Cytoscape on mounted editor');
       } )
       .then( () => {
-        let anyIsInc = doc.entities().some( ent => !ent.completed() );
-
-        let ntfn = new Notification({
-          openable: true,
-          openText: 'Show me',
-          active: anyIsInc,
-          message: 'Provide more information for incomplete entities, labelled "?".'
-        });
-
-        ntfn.on('open', () => this.openFirstIncompleteEntity());
-
-        if( this.editable() ){
-          let listenForComplete = el => el.on('complete', () => ntfn.dismiss());
-
-          doc.elements().forEach(listenForComplete);
-          doc.on('add', listenForComplete);
-
-          this.setData({ incompleteNotification: ntfn });
-        }
-      } )
-      .then( () => {
         logger.info('The editor has initialised');
       } )
       .catch( (err) => logger.error('An error occurred livening the doc', err) )
@@ -218,10 +239,11 @@ class Editor extends DataComponent {
   toggleDrawMode( toggle, type = PARTICIPANT_TYPE.UNSIGNED ){
     if( !this.editable() ){ return; }
 
+    let alreadyInDrawMode = this.data.drawModeType != null;
     let on;
 
     if( toggle == null ){
-      if( this.data.drawModeType == null || type.value !== this.data.drawModeType.value ){
+      if( !alreadyInDrawMode || type.value !== this.data.drawModeType.value ){
         on = true; // keep on if just changing type
       } else {
         on = !this.drawMode(); // otherwise flip
@@ -231,6 +253,11 @@ class Editor extends DataComponent {
     }
 
     if( on ){
+      if( alreadyInDrawMode ){
+        // allow extension to go through the full enable-disable cycle for things like locking
+        this.data.bus.emit('drawoff');
+      }
+
       this.data.bus.emit('drawon', type );
     } else {
       this.data.bus.emit('drawoff');
@@ -262,6 +289,7 @@ class Editor extends DataComponent {
         x: ( rpos.x - pan.x ) / zoom,
         y: ( rpos.y - pan.y ) / zoom
       });
+
       let shift = ( pos, delta ) => ({ x: pos.x + delta.x, y: pos.y + delta.y });
       let shiftSize = defs.newElementShift;
       let shiftI = this.data.newElementShift;
@@ -308,6 +336,15 @@ class Editor extends DataComponent {
     }, data) );
   }
 
+  addComplex( data = {} ){
+    if( !this.editable() ){ return; }
+
+    return this.addElement( _.assign({
+      type: 'complex',
+      name: ''
+    }, data) );
+  }
+
   remove( docElOrId ){
     if( !this.editable() ){ return; }
 
@@ -321,7 +358,7 @@ class Editor extends DataComponent {
   }
 
   undoRemove(){
-    let { rmList } = this.data;
+    let { rmList, cy } = this.data;
 
     if( rmList.els.length === 0 && rmList.ppts.length === 0 ){ return Promise.resolve(); }
 
@@ -331,12 +368,36 @@ class Editor extends DataComponent {
 
     let makeRmUnavil = () => this.setData({ undoRemoveAvailable: false });
 
+    let restorePpt = ({ el, ppt }) => {
+      if ( el.isComplex() ) {
+        let getUpdatedEl = oldEl => {
+          let oldId = oldEl.id();
+          if ( rmList.oldIdToEl.has( oldId ) ) {
+            return rmList.oldIdToEl.get( oldId );
+          }
+
+          return oldEl;
+        };
+
+        let updatedPpt = getUpdatedEl( ppt );
+        let newParent = getUpdatedEl( el );
+        let oldParent = null;
+        let doNotAdd = true;
+
+        return updatedPpt.updateParent(newParent, oldParent, doNotAdd);
+      }
+
+      return Promise.resolve();
+    };
+
+    let restorePpts = () => Promise.all( rmList.ppts.map( restorePpt ) );
+
     let restoreEl = el => {
       let oldId = el.id();
       let elJson = _.omit( el.json(), [ 'id', 'secret' ] );
 
-      if ( el.isInteraction() ) {
-        let relatedPpts = rmList.ppts.filter( ( { intn } ) => intn.id() == el.id() );
+      if ( el.isInteraction() || el.isComplex() ) {
+        let relatedPpts = rmList.ppts.filter( ( { el: pptEl } ) => pptEl.id() == el.id() );
         let newEntities = relatedPpts.map( ( { ppt, type } ) => {
           let oldId = ppt.id();
           let id = rmList.oldIdToEl.has( oldId ) ? rmList.oldIdToEl.get( oldId ).id() : oldId;
@@ -354,15 +415,21 @@ class Editor extends DataComponent {
 
     let restoreEls = els => Promise.all( els.map( restoreEl ) );
 
-    let rmEntities = rmList.els.filter( el => el.isEntity() );
-    let rmIntns = rmList.els.filter( el => el.isInteraction() );
+    let rmSimpleEntities = rmList.els.filter( el => el.isEntity() && !el.isComplex() );
+    let rmOther = rmList.els.filter( el => el.isInteraction() || el.isComplex() );
 
-    let restoreEntities = () => restoreEls( rmEntities );
-    let restoreIntns = () => restoreEls( rmIntns );
+    let restoreSimpleEntities = () => restoreEls( rmSimpleEntities );
+    let restoreOther = () => restoreEls( rmOther );
 
-    return tryPromise( restoreEntities )
-      .then( restoreIntns )
-      .then( makeRmUnavil );
+    let startBatch = () => cy.startBatch();
+    let endBatch = () => cy.endBatch();
+
+    return tryPromise( startBatch )
+      .then( restoreSimpleEntities )
+      .then( restoreOther )
+      .then( restorePpts )
+      .then( makeRmUnavil )
+      .then( endBatch );
   }
 
   layout(){
@@ -408,61 +475,90 @@ class Editor extends DataComponent {
   }
 
   render(){
-    let { document, bus, incompleteNotification, showHelp } = this.data;
+    let { document, bus, showHelp, cy } = this.data;
     let controller = this;
     let { history } = this.props;
 
-    const formatTitle = ( authors, journalName ) => {
-      const tokens = [];
-      if( authors ){
-        const authorList = authors.split(',');
-        tokens.push( authorList.shift() );
-        if( authorList.length ){
-          authorList.length === 1 ? tokens.push(` & `) :  tokens.push(` ... `);
-          tokens.push(`${authorList.pop()}`);
-        }
-        if( journalName ) tokens.push(' | ');
-      }
-      tokens.push( journalName );
-      return tokens.join('');
-    };
-
-    const title = formatTitle( document.authors(), document.journalName() );
+    const { authors, title = 'Unnamed document', reference } = document.citation();
 
     let editorContent = this.data.initted ? [
       h('div.editor-title', [
         h('div.editor-title-content', [
-          h('div.editor-title-name', document.title() || 'Unnamed document'),
+          h('div.editor-title-name', title ),
           h('div.editor-title-info', [
-            h('span', title )
+            h('div', authors ),
+            h('div', reference )
           ])
         ])
       ]),
       h('div.editor-main-menu', [
-        h(MainMenu, { bus, document, history, networkEditor: true })
+        h(MainMenu, { bus, document, history })
       ]),
-      h('div.editor-submit', [
-        h(Popover, { tippy: { html: h(TaskView, { document, bus } ) } }, [
-          document.submitted() ? h('button.editor-submit-button', 'Submitted') : h('button.editor-submit-button.salient-button', 'Submit')
-        ])
+      h('div.editor-share', {
+
+      }, [
+        document.editable() ? (
+          h(Popover, { tippy: { html: h(ShareView, { cy, document, bus } ) } }, [
+            h('button.editor-share-button.super-salient-button', {
+              onClick: () => bus.emit('toggleshare')
+            }, 'Share')
+          ])
+        ) : (
+          !document.hasTweet() ? null : h('a', { href: document.tweetUrl() }, [
+            h('button.editor-tweet-button.super-salient-button', [
+              h('i.icon.icon-t-white')
+            ])
+          ])
+        )
       ]),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
-      incompleteNotification ? h(CornerNotification, { notification: incompleteNotification }) : h('span'),
       h(UndoRemove, { controller, document, bus }),
       h('div.editor-graph#editor-graph'),
-      h('div.editor-help' + (showHelp ? '.editor-help-shown' : ''), showHelp ? [
-        h('div.editor-help-background', {
-          onClick: () => this.toggleHelp()
+      h('div.editor-help-background', {
+        className: makeClassList({
+          'editor-help-background-shown': showHelp
         }),
-        h('div.editor-help-video-embed.video-embed', [
-          h('iframe.video-embed-iframe', {
-            src: 'https://www.youtube.com/embed/Do5VaIcB4B8?rel=0',
-            frameBorder: 0,
-            allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
-            allowFullScreen: true
-            })
+        onClick: () => this.toggleHelp()
+      }),
+      h('div.editor-help', {
+        className: makeClassList({
+          'editor-help-shown': showHelp
+        })
+      }, [
+        h('div.editor-help-box', [
+          h('div.editor-help-close-icon', {
+            onClick: () => this.toggleHelp()
+          }, [
+            h('i.material-icons', 'close')
+          ]),
+          h('div.editor-help-title', 'Welcome'),
+          h('div.editor-scroll-box', [
+            h('div.editor-help-copy', `
+              Biofactoid assists you, the author, in creating a shareable digital summary of the biological pathway information contained in your article.
+              With one-click sharing, researchers can easily discover and read your article.
+            `),
+            h('div.editor-help-cells', [
+              h('div.editor-help-cell', [
+                h('img.editor-help-img', { src: '/image/welcome-aboard-1.svg' }),
+                h('div.editor-help-caption', `1. Add your genes and chemicals`)
+              ]),
+              h('div.editor-help-cell', [
+                h('img.editor-help-img', { src: '/image/welcome-aboard-2.svg' }),
+                h('div.editor-help-caption', `2. Connect those that interact`)
+              ]),
+              h('div.editor-help-cell', [
+                h('img.editor-help-img', { src: '/image/welcome-aboard-3.svg' }),
+                h('div.editor-help-caption', `3. Share your article's summary`)
+              ])
+            ])
+          ]),
+          h('div.editor-help-close', [
+            h('button.editor-help-close-button.active-button', {
+              onClick: () => this.toggleHelp()
+            }, `OK, let's get started`)
+          ])
         ])
-      ] : [])
+      ])
     ] : [];
 
     return h('div.editor', {
@@ -474,6 +570,8 @@ class Editor extends DataComponent {
 
   componentDidMount(){
     this.data.mountDeferred.resolve();
+
+    keyEmitter.on('escape', this.hideHelp);
   }
 
   componentWillUnmount(){
@@ -489,7 +587,9 @@ class Editor extends DataComponent {
     document.removeAllListeners();
     bus.removeAllListeners();
     clearTimeout( this.rmAvailTimeout );
+
+    keyEmitter.removeListener('escape', this.hideHelp);
   }
 }
 
-module.exports = Editor;
+export default Editor;

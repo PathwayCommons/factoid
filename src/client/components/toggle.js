@@ -1,5 +1,5 @@
-let React = require('react');
-let h = require('react-hyperscript');
+import React from 'react';
+import h from 'react-hyperscript';
 
 class Toggle extends React.Component {
   constructor( props ){
@@ -30,4 +30,4 @@ class Toggle extends React.Component {
   }
 }
 
-module.exports = Toggle;
+export default Toggle;

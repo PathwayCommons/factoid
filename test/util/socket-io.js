@@ -1,5 +1,5 @@
 let serverIo;
-let clientIo = require('socket.io-client');
+import clientIo from 'socket.io-client';
 let clientSockets = [];
 
 let client = (function( ns ){
@@ -31,4 +31,4 @@ let start = function(){
   return serverIo;
 };
 
-module.exports = { client, server, start, stop };
+export { client, server, start, stop };

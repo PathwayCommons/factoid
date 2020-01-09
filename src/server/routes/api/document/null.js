@@ -1,8 +1,6 @@
-module.exports = {
-  get: function(){
-    return Promise.resolve({
-      elements: [],
-      organisms: []
-    });
-  }
+export const get = function(){
+  return Promise.resolve({
+    elements: [],
+    organisms: []
+  });
 };

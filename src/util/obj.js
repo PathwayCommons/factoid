@@ -1,5 +1,5 @@
-let _ = require('lodash');
-let sha512 = require('hash.js/lib/hash/sha/512');
+import _ from 'lodash';
+import sha512 from 'hash.js/lib/hash/sha/512';
 
 function firstDefined( value, defaultValue /* ... */ ){ // eslint-disable-line no-unused-vars
   let arg;
@@ -133,4 +133,4 @@ function isNonNil(v){
   return !_.isNil(v);
 }
 
-module.exports = { firstDefined, fill, error, getId, ensureArray, lazySlice, mixin, jsonHash, isNonNil };
+export { firstDefined, fill, error, getId, ensureArray, lazySlice, mixin, jsonHash, isNonNil };

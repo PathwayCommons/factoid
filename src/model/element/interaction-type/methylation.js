@@ -1,4 +1,4 @@
-const Modification = require('./modification');
+import Modification from './modification';
 
 const VALUE = 'methylation';
 const DISPLAY_VALUE = 'Methylation';
@@ -24,4 +24,4 @@ class Methylation extends Modification {
   get displayValue(){ return DISPLAY_VALUE; }
 }
 
-module.exports = Methylation;
+export default Methylation;

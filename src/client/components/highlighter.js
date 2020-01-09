@@ -1,8 +1,7 @@
-const React = require('react');
-const { Component } = React;
-const h = require('react-hyperscript');
+import React from 'react';
+import h from 'react-hyperscript';
 
-class Highlighter extends Component {
+class Highlighter extends React.Component {
   constructor( props ){
     super( props );
   }
@@ -135,4 +134,4 @@ class Highlighter extends Component {
   }
 }
 
-module.exports = Highlighter;
+export default Highlighter;

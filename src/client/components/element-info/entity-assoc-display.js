@@ -1,17 +1,16 @@
-const h = require('react-hyperscript');
-const Organism = require('../../../model/organism');
-const Highlighter = require('../highlighter');
-const Formula = require('./chemical-formula');
-const Tooltip = require('../popover/tooltip');
+import h from 'react-hyperscript';
+import Highlighter from '../highlighter';
+import Formula from './chemical-formula';
+import Tooltip from '../popover/tooltip';
 
 const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL, NCBI_LINK_BASE_URL, CHEBI_LINK_BASE_URL } = require('../../../config');
 
-let protein = (m, searchTerms) => {
+let protein = (m, searchTerms, includeOrganism = true) => {
   return [
-    h('div.entity-info-section', [
+    includeOrganism ? h('div.entity-info-section', [
       h('span.entity-info-title', 'Organism'),
-      h('span', Organism.fromId(m.organism).name())
-    ]),
+      h('span', m.organismName)
+    ]) : null,
     h('div.entity-info-section', !m.proteinNames ? [] : [
       h('span.entity-info-title', 'Protein names'),
       ...m.proteinNames.map( name => h('span.entity-info-alt-name', [
@@ -28,10 +27,15 @@ let protein = (m, searchTerms) => {
       h('span.entity-info-title', 'Synonyms'),
       ...m.shortSynonyms.map( name => h('span.entity-info-alt-name', [
         h(Highlighter, { text: name, terms: searchTerms })
-      ]))
+      ])),
+      m.shortSynonyms.length === 0 ? '-' : ''
     ])
   ];
 };
+
+let ggp = protein;
+let dna = protein;
+let rna = protein;
 
 let chemical = (m, searchTerms) => {
   return [
@@ -52,6 +56,17 @@ let chemical = (m, searchTerms) => {
       ...m.shortSynonyms.map( name => h('span.entity-info-alt-name', [
         h(Highlighter, { text: name, terms: searchTerms })
       ]))
+    ])
+  ];
+};
+
+let complex = (m) => {
+  let getName = name => name ? name : 'Incomplete gene or chemical';
+
+  return [
+    h('div.entity-info-section', [
+      h('span.entity-info-title', 'Components'),
+      h('span', m.entityNames.map(getName).join('; '))
     ])
   ];
 };
@@ -101,4 +116,6 @@ let modification = (mod, onEdit) => h('div.entity-info-section.entity-info-mod-s
   ])
 ]);
 
-module.exports = { protein, modification, chemical, link };
+export const assocDisp = { ggp, dna, rna, protein, modification, chemical, complex, link };
+
+export default assocDisp;

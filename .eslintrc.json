@@ -8,9 +8,11 @@
     },
     "extends": "eslint:recommended",
     "parserOptions": {
+        "sourceType": "module",
         "ecmaFeatures": {
             "jsx": true
-        }
+        },
+        "ecmaVersion": 8
     },
     "plugins": [
 

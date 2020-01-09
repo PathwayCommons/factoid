@@ -1,4 +1,4 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
 const DEFAULT_MIN_INTERACTION_MENTIONS = 3;
 const DEFAULT_MAX_INTERACTIONS = 5;
@@ -36,12 +36,12 @@ const collapseBySignGroup = interactionsForParticipants => {
 
    _.entries( interactionsForParticipants ).forEach( typeGroupingPair => {
     const type = typeGroupingPair[ 0 ];
-    const signGroups = typeGroupingPair[ 1 ]; 
-    const intIds = getLongestList( signGroups );    
+    const signGroups = typeGroupingPair[ 1 ];
+    const intIds = getLongestList( signGroups );
     typeCountsMap.set( type, intIds );
   });
 
-   return typeCountsMap;  
+   return typeCountsMap;
 };
 
  const collapseByType = byType => {
@@ -62,9 +62,9 @@ const collapseBySignGroup = interactionsForParticipants => {
 const getTopIdsPerParticipants = interactionsPerParticipants => {
   const topIdsPerParticipants = [];
   for ( const interactionsForParticipants of interactionsPerParticipants.values() ) {
-    const byType = collapseBySignGroup( interactionsForParticipants ); 
-    const idList = collapseByType( byType );   
-    topIdsPerParticipants.push( idList );   
+    const byType = collapseBySignGroup( interactionsForParticipants );
+    const idList = collapseByType( byType );
+    topIdsPerParticipants.push( idList );
   }
 
   return topIdsPerParticipants;
@@ -85,10 +85,10 @@ const pickTopInteractionElements = ( interactionElements, topIdsPerParticipants,
  * @param { Number }  maxInteractions  The maximum number of interactions to return
  * @param { Number }  minMentions  The minimum number of times an interaction must have been detected to be considered
  */
-const pickTopInteractions = ( interactionElements, maxInteractions = DEFAULT_MAX_INTERACTIONS, minMentions = DEFAULT_MIN_INTERACTION_MENTIONS) => {    
+const pickTopInteractions = ( interactionElements, maxInteractions = DEFAULT_MAX_INTERACTIONS, minMentions = DEFAULT_MIN_INTERACTION_MENTIONS) => {
     const interactionsPerParticipants = getInteractionsPerParticipants( interactionElements );
-    const topIdsPerParticipants = getTopIdsPerParticipants( interactionsPerParticipants ); 
-    const topInteractions = pickTopInteractionElements( interactionElements, topIdsPerParticipants, maxInteractions, minMentions );  
+    const topIdsPerParticipants = getTopIdsPerParticipants( interactionsPerParticipants );
+    const topInteractions = pickTopInteractionElements( interactionElements, topIdsPerParticipants, maxInteractions, minMentions );
     return topInteractions;
 };
 
@@ -101,7 +101,7 @@ const pickByUniqueParticipants = interactionElements =>  interactionElements.fil
 
 /**
  * pickByNumParticipants
- * Interaction elements where 'entries' has length numParticipants 
+ * Interaction elements where 'entries' has length numParticipants
  * @param { Array } interactionElements List of elements typed 'interaction'
  * @param { Array } numParticipants The number of participants
  */
@@ -119,9 +119,9 @@ const pickEntitiesInInteractions = ( interactionElements, entityElements ) => {
     return entityElements.filter( el => participantIds.has( el.id ) );
 };
 
-module.exports = { 
-    pickByUniqueParticipants, 
-    pickByNumParticipants, 
+export {
+    pickByUniqueParticipants,
+    pickByNumParticipants,
     pickTopInteractions,
     pickEntitiesInInteractions
-}; 
+};

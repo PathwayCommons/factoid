@@ -1,4 +1,4 @@
-let config = require('../config');
+import { LOG_LEVEL } from '../config';
 
 const LEVELS = Object.freeze({
   info: 0,
@@ -103,4 +103,4 @@ Object.keys( LEVELS ).forEach( lvl => {
   };
 });
 
-module.exports = new Logger({ minLevel: config.LOG_LEVEL, maxEntries: 10 });
+export default new Logger({ minLevel: LOG_LEVEL, maxEntries: 10 });

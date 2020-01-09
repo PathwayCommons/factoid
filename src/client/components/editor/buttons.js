@@ -1,10 +1,10 @@
-const React = require('react');
-const h = require('react-hyperscript');
-const _ = require('lodash');
-const { tippyTopZIndex } = require('../../defs');
-const Tooltip = require('../popover/tooltip');
-const Toggle = require('../toggle');
-const { PARTICIPANT_TYPE } = require('../../../model/element/participant-type');
+import React from 'react';
+import h from 'react-hyperscript';
+import _ from 'lodash';
+import { tippyTopZIndex } from '../../defs';
+import Tooltip from '../popover/tooltip';
+import Toggle from '../toggle';
+import { PARTICIPANT_TYPE } from '../../../model/element/participant-type';
 
 class EditorButtons extends React.Component {
   render(){
@@ -41,7 +41,7 @@ class EditorButtons extends React.Component {
       );
 
       grs.push([
-        h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Add an entity', shortcut: '1' }), [
+        h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Add a gene or chemical', shortcut: '1' }), [
           h('button.editor-button.plain-button', { onClick: () => controller.addElement().then( el => bus.emit('opentip', el) )  }, [
             h('i.material-icons', 'fiber_manual_record')
           ])
@@ -51,10 +51,18 @@ class EditorButtons extends React.Component {
         PptTypeBtn(PARTICIPANT_TYPE.POSITIVE, 'Draw an activation interaction', '3'),
         PptTypeBtn(PARTICIPANT_TYPE.NEGATIVE, 'Draw an inhibition interaction', '4')
       ]);
+
+      grs.push([
+        h(Tooltip, _.assign({}, baseTooltipProps, { description: 'Delete selected', shortcut: 'Delete' }), [
+          h('button.editor-button.plain-button', { onClick: () => controller.removeSelected()  }, [
+            h('i.material-icons', 'clear')
+          ])
+        ])
+      ]);
     }
 
     return h(`div.${className}`, grs.map( btns => h('div.editor-button-group', btns) ));
   }
 }
 
-module.exports = EditorButtons;
+export default EditorButtons;

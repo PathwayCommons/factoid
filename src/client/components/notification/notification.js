@@ -1,6 +1,6 @@
-const EventEmitterMixin = require('../../../model/event-emitter-mixin');
-const { mixin, error } = require('../../../util');
-const uuid = require('uuid');
+import EventEmitterMixin from '../../../model/event-emitter-mixin';
+import { mixin, error } from '../../../util';
+import uuid from 'uuid';
 
 const defaults = {
   title: '',
@@ -90,4 +90,4 @@ class Notification {
 
 mixin( Notification.prototype, EventEmitterMixin.prototype );
 
-module.exports = Notification;
+export default Notification;

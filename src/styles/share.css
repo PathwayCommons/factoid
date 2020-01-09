@@ -1,0 +1,122 @@
+.share-view {
+  min-width: 300px;
+  max-width: calc(100vw - 1.5em);
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.share-view-result {
+  min-width: auto;
+  max-width: auto;
+  width: auto;
+}
+
+.share-view-header {
+  margin: 0.5em;
+  border-radius: 1em;
+  font-size: 0.85em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+  width: calc(100% - 1em);
+}
+
+.share-view-header-icon-area {
+  margin: 0.25em;
+}
+
+.share-view-header-text {
+  margin: 0.25em 0.33em;
+  line-height: 1.2;
+  color: #666;
+}
+
+.share-view-header h3 {
+  margin: 0;
+  font-size: 1.25em;
+  color: #000;
+}
+
+.share-view-header .icon-t {
+  font-size: 3.125em;
+  opacity: 0.66;
+}
+
+.editor-tweet-button {
+  height: 2.5em;
+  padding: 0;
+  width: 2.5em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.editor-tweet-button .icon {
+  font-size: 1.66em;
+}
+
+.share-view-footer {
+  box-sizing: border-box;
+  margin: 0.5em;
+  text-align: center;
+  width: calc(100% - 1em);
+  position: relative;
+}
+
+.share-view-preview {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #aaa;
+  border-radius: 0.5em;
+  margin: 0.5em;
+  position: relative;
+  width: calc(100% - 1em);
+  box-sizing: border-box;
+  font-size: 0.9em;
+  background: #fff;
+}
+
+.share-view-text {
+  margin: 0.25em 0.25em 0.5em;
+  background-color: transparent;
+  border-color: transparent;
+  resize: none;
+  line-height: 1.5;
+
+  &:active {
+    border-color: transparent;
+  }
+}
+
+.share-view-image {
+  width: 100%;
+  padding-bottom: 50%;
+  background-position: 50% 50%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  border-bottom: 1px solid #aaa;
+}
+
+.share-view-title {
+  padding-top: 0.5em;
+  padding-right: 0.25em;
+  padding-left: 0.25em;
+}
+
+.share-view-description {
+  padding: 0.25em;
+  color: #888;
+}
+
+.share-view-result p {
+  margin: 0.5em 0.25em;
+}
+
+.share-view-button {
+  box-sizing: border-box;
+  width: 100%;
+}

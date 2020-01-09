@@ -1,4 +1,4 @@
-let React = require('react');
+import React from 'react';
 
 class DirtyComponent extends React.Component {
   constructor( props ){
@@ -18,4 +18,4 @@ class DirtyComponent extends React.Component {
   }
 }
 
-module.exports = DirtyComponent;
+export default DirtyComponent;

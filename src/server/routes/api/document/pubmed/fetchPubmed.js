@@ -292,9 +292,15 @@ const eFetchPubmed = ( { uids, query_key, webenv } )=> {
   }
 
   const url = EUTILS_FETCH_URL + '?' + queryString.stringify( params );
-  return fetch( url )
-    .then( toText )
-    .then( pubmedDataConverter );
+  const userAgent = `${process.env.npm_package_name}/${process.env.npm_package_version}`;
+  return fetch( url, {
+    method: 'GET',
+    headers: {
+      'User-Agent': userAgent
+    }
+  })
+  .then( toText )
+  .then( pubmedDataConverter );
 };
 
 /**

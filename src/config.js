@@ -78,7 +78,7 @@ export const EMAIL_TYPE_INVITE = env('EMAIL_TYPE_INVITE', 'invite');
 export const EMAIL_TYPE_FOLLOWUP = env('EMAIL_TYPE_FOLLOWUP', 'followUp');
 export const EMAIL_SUBJECT_INVITE = env('EMAIL_SUBJECT_INVITE', 'Your invitation to Biofactoid is ready');
 export const EMAIL_SUBJECT_FOLLOWUP = env('EMAIL_SUBJECT_FOLLOWUP', 'Thank you for sharing your research with Biofactoid');
-
+export const EMAIL_ADDRESS_INFO = env('EMAIL_ADDRESS_INFO', 'info@biofactoid.org');
 
 // Sharing
 export const DOCUMENT_IMAGE_WIDTH = env('DOCUMENT_IMAGE_WIDTH', 2400);

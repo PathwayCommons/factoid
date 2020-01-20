@@ -84,7 +84,7 @@ app.use(function(err, req, res) {
 
   switch( status ){
     case 404:
-      res.render('404');
+      res.render('404', { EMAIL_ADDRESS_INFO: config.EMAIL_ADDRESS_INFO });
       break;
     default:
       res.render('error');

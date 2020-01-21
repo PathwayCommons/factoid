@@ -23,12 +23,14 @@ const getTextField = param => {
     text = param;
   } else if ( _.isObject( param ) ) {
     text = _.get( param, '_' );
+    const Label = _.get( param, ['$', 'Label'] );
+    if (Label ) text = `${Label}: ${text}`;
   }
   return text;
 };
 
 //<!ELEMENT	AbstractText   (%text; | mml:math | DispFormula)* >
-const getAbstract = Article => _.get( Article, ['Abstract', '0', 'AbstractText'] ).map( getTextField  );
+const getAbstract = Article => _.get( Article, ['Abstract', '0', 'AbstractText'] ).map( getTextField ).join(' ');
 
 const hasEmail = token => emailRegex().test( token );
 const getEmail = token => hasEmail( token ) ? token.match( emailRegex() ): null;
@@ -145,7 +147,11 @@ const getArticle = MedlineCitation => {
 };
 
 // RegistryNumber https://www.nlm.nih.gov/bsd/mms/medlineelements.html#rn
-const getChemical = Chemical => ({ RegistryNumber: _.get( Chemical, ['RegistryNumber', '0'] ), NameOfSubstance: _.get( Chemical, ['NameOfSubstance', '0', '_'] ) });
+const getChemical = Chemical => ({
+  RegistryNumber: _.get( Chemical, ['RegistryNumber', '0'] ),
+  NameOfSubstance: _.get( Chemical, ['NameOfSubstance', '0', '_'] ),
+  UI: _.get( Chemical, ['NameOfSubstance', '0', '$', 'UI'] )
+});
 const getChemicalList = MedlineCitation => _.get( MedlineCitation, ['ChemicalList', '0', 'Chemical'] ).map( getChemical );
 
 // <!ELEMENT	KeywordList (Keyword+) >

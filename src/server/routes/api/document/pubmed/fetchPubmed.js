@@ -23,12 +23,14 @@ const getTextField = param => {
     text = param;
   } else if ( _.isObject( param ) ) {
     text = _.get( param, '_' );
+    const Label = _.get( param, ['$', 'Label'] );
+    if (Label ) text = `${Label}: ${text}`;
   }
   return text;
 };
 
 //<!ELEMENT	AbstractText   (%text; | mml:math | DispFormula)* >
-const getAbstract = Article => _.get( Article, ['Abstract', '0', 'AbstractText'] ).map( getTextField  );
+const getAbstract = Article => _.get( Article, ['Abstract', '0', 'AbstractText'] ).map( getTextField ).join(' ');
 
 const hasEmail = token => emailRegex().test( token );
 const getEmail = token => hasEmail( token ) ? token.match( emailRegex() ): null;

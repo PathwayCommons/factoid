@@ -171,15 +171,24 @@ describe('fetchPubmed', function(){
               expect( MedlineCitation ).to.have.nested.property( 'ChemicalList' );
             });
 
-            it('Should consist of multiple items or null', () => {
+            it('Should consist of one item or null', () => {
               expect( ChemicalList === null || Array.isArray( ChemicalList ) ).to.be.true;
             });
 
-            it('Should have item with top-level attributes', () => {
-              if ( ChemicalList !== null ){
-                expect( ChemicalList[0] ).to.have.property( 'RegistryNumber' );
-                expect( ChemicalList[0] ).to.have.property( 'NameOfSubstance' );
-              }
+            describe( 'Chemical', () => {
+
+              let Chemical;
+              before( () => {
+                Chemical = _.head( ChemicalList );
+              });
+
+              it('Should have optional item with top-level attributes', () => {
+                if( Chemical ){
+                  expect( Chemical ).to.have.property( 'RegistryNumber' );
+                  expect( Chemical ).to.have.property( 'NameOfSubstance' );
+                  expect( Chemical ).to.have.property( 'UI' );
+                }
+              });
             });
 
           });//ChemicalList

@@ -147,7 +147,11 @@ const getArticle = MedlineCitation => {
 };
 
 // RegistryNumber https://www.nlm.nih.gov/bsd/mms/medlineelements.html#rn
-const getChemical = Chemical => ({ RegistryNumber: _.get( Chemical, ['RegistryNumber', '0'] ), NameOfSubstance: _.get( Chemical, ['NameOfSubstance', '0', '_'] ) });
+const getChemical = Chemical => ({
+  RegistryNumber: _.get( Chemical, ['RegistryNumber', '0'] ),
+  NameOfSubstance: _.get( Chemical, ['NameOfSubstance', '0', '_'] ),
+  UI: _.get( Chemical, ['NameOfSubstance', '0', '$', 'UI'] )
+});
 const getChemicalList = MedlineCitation => _.get( MedlineCitation, ['ChemicalList', '0', 'Chemical'] ).map( getChemical );
 
 // <!ELEMENT	KeywordList (Keyword+) >

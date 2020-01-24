@@ -14,39 +14,47 @@ const digitsRegex = /^[0-9.]+$/;
 const findPubmedId = async paperId => {
 
   let id;
-  const errMessage = `Unrecognized paperId '${paperId}'`;
   if( !_.isString( paperId ) ) throw new TypeError( errMessage );
-  const isUidLike = digitsRegex.test( paperId );
-  const isPubMedUrlLike = paperId.startsWith( PUBMED_LINK_BASE_URL );
-
-  if( isUidLike ){
-    id = paperId;
-
-  } else if( isPubMedUrlLike ){
-    const pubmedUrl = new URL( PUBMED_LINK_BASE_URL );
-    const paperIdUrl = new URL( paperId );
-    const isSameHost = paperIdUrl.hostname === pubmedUrl.hostname;
-
-    const pathUidMatchResult = paperIdUrl.pathname.match( /^\/pubmed\/([0-9.]+)$/ );
-    const paperIdUrlSearchTerm = paperIdUrl.searchParams.get('term');
-
-    if( isSameHost && !_.isNull( pathUidMatchResult ) ){
-      id = pathUidMatchResult[1];
-
-    } else if( isSameHost && paperIdUrlSearchTerm ) {
-      const { searchHits, count } = await searchPubmed( paperIdUrlSearchTerm );
-      if( count === 1 ){
-        id = _.first( searchHits );
-      } else {
-        throw new TypeError( errMessage );
-      }
-
+  const errMessage = `Unrecognized paperId '${paperId}'`;
+  const getUniqueIdOrThrow = async query => {
+    const { searchHits, count } = await searchPubmed( query );
+    if( count === 1 ){
+      return _.first( searchHits );
     } else {
       throw new TypeError( errMessage );
     }
+  };
+  const isUidLike = digitsRegex.test( paperId );
+
+  if( isUidLike ){
+    // Case: a bunch of digits, periods
+    id = paperId;
 
   } else {
-    throw new TypeError( errMessage );
+    const isPubMedUrlLike = paperId.startsWith( PUBMED_LINK_BASE_URL );
+
+    if( isPubMedUrlLike ) {
+      // Case: URL, look for path or exact search term
+      const pubmedUrl = new URL( PUBMED_LINK_BASE_URL );
+      const paperIdUrl = new URL( paperId );
+      const isSameHost = paperIdUrl.hostname === pubmedUrl.hostname;
+      const pathUidMatchResult = paperIdUrl.pathname.match( /^\/pubmed\/([0-9.]+)$/ );
+
+      if( isSameHost && !_.isNull( pathUidMatchResult ) ){
+        id = pathUidMatchResult[1];
+
+      } else {
+        const paperIdUrlSearchTerm = paperIdUrl.searchParams.get('term');
+
+        if( isSameHost && paperIdUrlSearchTerm ) {
+          id = getUniqueIdOrThrow( paperIdUrlSearchTerm );
+        }
+      }
+
+    } else {
+      //Last bucket - do a search (title, doi, ...)
+      id = getUniqueIdOrThrow( paperId );
+    }
   }
 
   return id;

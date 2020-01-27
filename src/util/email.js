@@ -62,6 +62,14 @@ const msgFactory = ( emailType, doc ) => {
 };
 
 const toJSON = res => res.json();
+/**
+ * updateCorrespondence
+ *
+ * Helper method to update the document mode object correspondence state
+ * @param {*} doc the model object
+ * @param {*} info the response from email transport
+ * @param {*} emailType one of the recognized types to configure email template
+ */
 const updateCorrespondence = ( doc, info, emailType ) => {
   return tryPromise( () => doc.correspondence( ) )
     .then( correspondence => {
@@ -72,19 +80,28 @@ const updateCorrespondence = ( doc, info, emailType ) => {
     .then( update => doc.correspondence( update ) );
 };
 
-const handleResponse = ( response, doc, emailType ) => {
+const handleMailResponse = ( response, doc, emailType ) => {
   const { statusText, ok, status } = response;
   if ( !ok ) {
     const info = _.assign( {}, response, {
       error: { statusText, status },
       date: new Date()
     });
-    updateCorrespondence( doc, info, emailType );
-    throw Error( response.statusText );
+    return updateCorrespondence( doc, info, emailType )
+      .then( () => { throw Error( response.statusText ); } );
   }
   return response;
 };
 
+/**
+ * sendMail
+ *
+ * Client-side helper to send email and update doc state
+ *
+ * @param {String} emailType one of the recognized types to configure email template
+ * @param {object} doc the model object
+ * @param {string} apiKey to validate against protected routes
+ */
 const sendMail = ( emailType, doc, apiKey ) => {
   const url = '/api/document/email';
   const getDocKeys = doc => Promise.all([ doc.id(), doc.secret() ]);
@@ -100,9 +117,9 @@ const sendMail = ( emailType, doc, apiKey ) => {
         body: JSON.stringify( { apiKey, emailType, id, secret } )
       })
     )
-    .then( response => handleResponse( response, doc, emailType ) )
+    .then( response => handleMailResponse( response, doc, emailType ) )
     .then( toJSON )
     .then( info => updateCorrespondence( doc, info, emailType ) );
 };
 
-export { sendMail, msgFactory };
+export { sendMail, msgFactory, updateCorrespondence };

@@ -13,7 +13,7 @@ import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
 import db from '../../../db';
 import logger from '../../../logger';
-import { makeCyEles, msgFactory } from '../../../../util';
+import { makeCyEles, msgFactory, updateCorrespondence } from '../../../../util';
 import { getPubmedArticle } from './pubmed';
 
 import { BASE_URL,
@@ -30,7 +30,8 @@ import { BASE_URL,
   DEMO_CAN_BE_SHARED,
   DOCUMENT_IMAGE_PADDING,
   EMAIL_CONTEXT_SIGNUP,
-  EMAIL_CONTEXT_JOURNAL
+  EMAIL_CONTEXT_JOURNAL,
+  EMAIL_TYPE_INVITE
  } from '../../../../config';
 
  const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -127,8 +128,19 @@ const fillDoc = async doc => {
   return doc;
 };
 
-const sendNotification = async doc => {
+const composeAndSendMail = async ( emailType, id, secret ) => {
+  const { docDb, eleDb } = await loadTables();
+  const doc =  await loadDoc ({ docDb, eleDb, id, secret });
+  const mailOpts =  await msgFactory( emailType, doc );
+  const info =  await sendMail( mailOpts );
+  await updateCorrespondence( doc, info, emailType );
   return doc;
+};
+
+const sendNotification = async doc => {
+  const id = doc.id();
+  const secret = doc.secret();
+  return await composeAndSendMail( EMAIL_TYPE_INVITE, id, secret );
 };
 
 let handleResponseError = response => {
@@ -163,13 +175,9 @@ let getSbgnFromTemplates = templates => {
 // Email
 http.post('/email', function( req, res, next ){
   let { apiKey, emailType, id, secret } = req.body;
-  // msgFactory = ( emailType, doc )
   return (
     tryPromise( () => checkApiKey( apiKey ) )
-    .then( loadTables )
-    .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
-    .then( doc =>  msgFactory( emailType, doc ) )
-    .then( mailOpts => sendMail( mailOpts ) )
+    .then( () => composeAndSendMail( emailType, id, secret ) )
     .then( info => res.json( info ) )
     .catch( next )
   );
@@ -369,7 +377,7 @@ const checkApiKey = (apiKey) => {
   }
 };
 
-const handleContext = async provided => {
+const checkRequestContext = async provided => {
   const { apiKey, context } = provided;
   switch ( context ) {
     case EMAIL_CONTEXT_JOURNAL:
@@ -409,7 +417,7 @@ http.post('/', function( req, res, next ){
   const handleCreateError = e => { logger.error(`Error creating doc: ${e.message}`); next( e ); };
   const setRequestStatus = doc => doc.request().then( () => doc );
 
-  ( tryPromise( () => handleContext( provided ) )
+  ( tryPromise( () => checkRequestContext( provided ) )
     .then( () => createSecret({ secret }) )
     .then( loadTables )
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided }) )

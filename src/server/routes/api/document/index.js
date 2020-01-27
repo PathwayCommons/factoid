@@ -29,7 +29,8 @@ import { BASE_URL,
   TWITTER_ACCESS_TOKEN_SECRET,
   DEMO_CAN_BE_SHARED,
   DOCUMENT_IMAGE_PADDING,
-  EMAIL_CONTEXT_SIGNUP
+  EMAIL_CONTEXT_SIGNUP,
+  EMAIL_CONTEXT_JOURNAL
  } from '../../../../config';
 
  const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -95,12 +96,13 @@ const DEFAULT_CORRESPONDENCE = {
   context: EMAIL_CONTEXT_SIGNUP
 };
 
-const fillDocCorrespondence = async ( doc, authorEmail, isCorrespondingAuthor, context ) => {
+const fillDocCorrespondence = async ( doc, authorEmail, context ) => {
   try {
     if( !emailRegex({exact: true}).test( authorEmail ) ) throw new TypeError( `Could not detect an email for '${authorEmail}'` );
     const emails = _.get( doc.correspondence(), 'emails' );
-    const data = _.defaults( { authorEmail, isCorrespondingAuthor, context, emails }, DEFAULT_CORRESPONDENCE );
+    const data = _.defaults( { authorEmail, context, emails }, DEFAULT_CORRESPONDENCE );
     await doc.correspondence( data );
+    // TODO - is this user verified?
     await doc.issues({ authorEmail: null });
   } catch ( error ){
     await doc.issues({ authorEmail: `${error.message}` });
@@ -111,20 +113,23 @@ const fillDocArticle = async ( doc, paperId ) => {
   try {
     const pubmedRecord = await getPubmedArticle( paperId );
     await doc.article( pubmedRecord );
+    // TODO - is this a unique request?
     await doc.issues({ paperId: null });
   } catch ( error ){
     await doc.issues({ paperId: `${error.message}` });
   }
 };
 
-let fillDoc = async doc => {
-  const { paperId, authorEmail, isCorrespondingAuthor, context } = doc.provided();
-  await fillDocCorrespondence( doc, authorEmail, isCorrespondingAuthor, context );
+const fillDoc = async doc => {
+  const { paperId, authorEmail, context } = doc.provided();
+  await fillDocCorrespondence( doc, authorEmail, context );
   await fillDocArticle( doc, paperId );
   return doc;
 };
 
-// let getReachOutput = text => provider.getRawResponse( text );
+const sendNotification = async doc => {
+  return doc;
+};
 
 let handleResponseError = response => {
   if (!response.ok) {
@@ -364,6 +369,19 @@ const checkApiKey = (apiKey) => {
   }
 };
 
+const handleContext = async provided => {
+  const { apiKey, context } = provided;
+  switch ( context ) {
+    case EMAIL_CONTEXT_JOURNAL:
+      checkApiKey( apiKey );
+      break;
+    case EMAIL_CONTEXT_SIGNUP:
+      break;
+    default:
+      throw new TypeError(`The specified context '${context}' is not recognized`);
+  }
+};
+
 // delete the demo doc
 http.delete('/:secret', function(req, res, next){
   let secret = req.params.secret;
@@ -388,12 +406,17 @@ http.post('/', function( req, res, next ){
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
 
-  ( tryPromise( () => createSecret({ secret }) )
+  const handleCreateError = e => { logger.error(`Error creating doc: ${e.message}`); next( e ); };
+  const setRequestStatus = doc => doc.request().then( () => doc );
+
+  ( tryPromise( () => handleContext( provided ) )
+    .then( () => createSecret({ secret }) )
     .then( loadTables )
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided }) )
-    .catch( e => { logger.error(`Error creating doc: ${e.message}`); next( e ); })
-    .then( doc => doc.request().then( () => doc ) )
+    .catch( handleCreateError )
+    .then( setRequestStatus )
     .then( fillDoc )
+    .then( sendNotification )
     .then( getDocJson )
     .then( json => res.json( json ) )
     .catch( next )

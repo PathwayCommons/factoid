@@ -414,20 +414,16 @@ http.post('/', function( req, res, next ){
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
 
-  const handleCreateError = e => { logger.error(`Error creating doc: ${e.message}`); next( e ); };
   const setRequestStatus = doc => doc.request().then( () => doc );
 
   ( tryPromise( () => checkRequestContext( provided ) )
+    .then( () => res.end( 'ok' ) )
     .then( () => createSecret({ secret }) )
     .then( loadTables )
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided }) )
-    .catch( handleCreateError )
     .then( setRequestStatus )
     .then( fillDoc )
     .then( sendNotification )
-    .then( getDocJson )
-    .then( json => res.json( json ) )
-    .catch( next )
   );
 });
 

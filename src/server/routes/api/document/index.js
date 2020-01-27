@@ -418,6 +418,7 @@ http.post('/', function( req, res, next ){
 
   ( tryPromise( () => checkRequestContext( provided ) )
     .then( () => res.end( 'ok' ) )
+    .catch( next )
     .then( () => createSecret({ secret }) )
     .then( loadTables )
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided }) )

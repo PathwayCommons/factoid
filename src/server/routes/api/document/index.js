@@ -155,13 +155,17 @@ const sendInviteNotification = async doc => {
   const id = doc.id();
   const secret = doc.secret();
   const { context } = doc.provided();
-  const doNotify = context && context !== EMAIL_CONTEXT_JOURNAL; // network error
+  const doNotify = context && context === EMAIL_CONTEXT_JOURNAL;
   const issueExists = hasIssues( doc );
 
-  if( doNotify ){
-    if( issueExists ) emailType = EMAIL_TYPE_REQUEST_ISSUE;
+  if( issueExists ){
+    emailType = EMAIL_TYPE_REQUEST_ISSUE;
+    if( doNotify ) await configureAndSendMail( emailType, id, secret );
+
+  } else {
     await configureAndSendMail( emailType, id, secret );
   }
+
   return doc;
 };
 

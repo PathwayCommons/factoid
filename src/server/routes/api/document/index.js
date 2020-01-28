@@ -129,18 +129,26 @@ const fillDoc = async doc => {
 };
 
 const composeAndSendMail = async ( emailType, id, secret ) => {
+  let info;
   const { docDb, eleDb } = await loadTables();
   const doc =  await loadDoc ({ docDb, eleDb, id, secret });
-  const mailOpts =  await msgFactory( emailType, doc );
-  const info =  await sendMail( mailOpts );
-  await updateCorrespondence( doc, info, emailType );
-  return doc;
+
+  try {
+    const mailOpts =  await msgFactory( emailType, doc );
+    info =  await sendMail( mailOpts );
+
+  } catch ( error ) {
+    info = _.assign( {}, error, { date: new Date() });
+
+  } finally {
+    await updateCorrespondence( doc, info, emailType );
+  }
 };
 
 const sendNotification = async doc => {
   const id = doc.id();
   const secret = doc.secret();
-  return await composeAndSendMail( EMAIL_TYPE_INVITE, id, secret );
+  await composeAndSendMail( EMAIL_TYPE_INVITE, id, secret );
 };
 
 let handleResponseError = response => {
@@ -178,7 +186,7 @@ http.post('/email', function( req, res, next ){
   return (
     tryPromise( () => checkApiKey( apiKey ) )
     .then( () => composeAndSendMail( emailType, id, secret ) )
-    .then( info => res.json( info ) )
+    .then( () => res.end( 'ok' ) )
     .catch( next )
   );
 });

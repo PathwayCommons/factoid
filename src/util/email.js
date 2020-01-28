@@ -61,7 +61,6 @@ const msgFactory = ( emailType, doc ) => {
   return mailOpts;
 };
 
-const toJSON = res => res.json();
 /**
  * updateCorrespondence
  *
@@ -80,46 +79,4 @@ const updateCorrespondence = ( doc, info, emailType ) => {
     .then( update => doc.correspondence( update ) );
 };
 
-const handleMailResponse = ( response, doc, emailType ) => {
-  const { statusText, ok, status } = response;
-  if ( !ok ) {
-    const info = _.assign( {}, response, {
-      error: { statusText, status },
-      date: new Date()
-    });
-    return updateCorrespondence( doc, info, emailType )
-      .then( () => { throw Error( response.statusText ); } );
-  }
-  return response;
-};
-
-/**
- * sendMail
- *
- * Client-side helper to send email and update doc state
- *
- * @param {String} emailType one of the recognized types to configure email template
- * @param {object} doc the model object
- * @param {string} apiKey to validate against protected routes
- */
-const sendMail = ( emailType, doc, apiKey ) => {
-  const url = '/api/document/email';
-  const getDocKeys = doc => Promise.all([ doc.id(), doc.secret() ]);
-
-  return getDocKeys( doc )
-    .then( ( [id, secret ] ) => fetch( url,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify( { apiKey, emailType, id, secret } )
-      })
-    )
-    .then( response => handleMailResponse( response, doc, emailType ) )
-    .then( toJSON )
-    .then( info => updateCorrespondence( doc, info, emailType ) );
-};
-
-export { sendMail, msgFactory, updateCorrespondence };
+export { msgFactory, updateCorrespondence };

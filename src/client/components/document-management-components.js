@@ -138,7 +138,7 @@ class DocumentEmailButtonComponent extends DocumentButtonComponent {
       return h( 'small.mute', [
         h('span', ` ${_.size( infos )}`),
         h('span', ` | ${last}`),
-        error ? h('span.invalid', ` | ${error.statusText}`): null
+        error ? h('span.invalid', ` | ${error.code}`): null
       ]);
     } else {
       return null;

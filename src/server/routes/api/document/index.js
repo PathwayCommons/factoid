@@ -138,7 +138,9 @@ const composeAndSendMail = async ( emailType, id, secret ) => {
     info =  await sendMail( mailOpts );
 
   } catch ( error ) {
-    info = _.assign( {}, error, { date: new Date() });
+    logger.error( `Error sending email: ${error.message}`);
+    info = _.assign( {}, { error, date: new Date() });
+    throw error;
 
   } finally {
     await updateCorrespondence( doc, info, emailType );

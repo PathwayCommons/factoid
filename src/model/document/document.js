@@ -14,9 +14,10 @@ const DEFAULTS = Object.freeze({
   // data
   entries: [], // used by elementSet
   organisms: [], // list of ids
+  verified: false
 });
 
-const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'status' ];
+const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'status', 'verified' ];
 const DOCUMENT_STATUS_FIELDS = Object.freeze({
   REQUESTED: 'requested',
   APPROVED: 'approved',
@@ -404,6 +405,10 @@ class Document {
   submitted(){ return this.status() === DOCUMENT_STATUS_FIELDS.SUBMITTED ? true : false; }
   trash(){ return this.status( DOCUMENT_STATUS_FIELDS.TRASHED ); }
   trashed(){ return this.status() === DOCUMENT_STATUS_FIELDS.TRASHED ? true : false; }
+
+  verified(newVal){
+    return this.rwMeta('verified', newVal);
+  }
 
   json(){
     let toJson = obj => obj.json();

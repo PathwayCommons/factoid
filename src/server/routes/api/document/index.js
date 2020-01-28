@@ -31,7 +31,8 @@ import { BASE_URL,
   DOCUMENT_IMAGE_PADDING,
   EMAIL_CONTEXT_SIGNUP,
   EMAIL_CONTEXT_JOURNAL,
-  EMAIL_TYPE_INVITE
+  EMAIL_TYPE_INVITE,
+  EMAIL_TYPE_REQUEST_ISSUE
  } from '../../../../config';
 
  const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -128,7 +129,7 @@ const fillDoc = async doc => {
   return doc;
 };
 
-const composeAndSendMail = async ( emailType, id, secret ) => {
+const configureAndSendMail = async ( emailType, id, secret ) => {
   let info;
   const { docDb, eleDb } = await loadTables();
   const doc =  await loadDoc ({ docDb, eleDb, id, secret });
@@ -147,10 +148,21 @@ const composeAndSendMail = async ( emailType, id, secret ) => {
   }
 };
 
-const sendNotification = async doc => {
+const hasIssues = doc => _.values( doc.issues() ).some( i => !_.isNull( i ) );
+// const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
+const sendInviteNotification = async doc => {
+  let emailType = EMAIL_TYPE_INVITE;
   const id = doc.id();
   const secret = doc.secret();
-  await composeAndSendMail( EMAIL_TYPE_INVITE, id, secret );
+  const { context } = doc.provided();
+  const doNotify = context && context !== EMAIL_CONTEXT_JOURNAL; // network error
+  const issueExists = hasIssues( doc );
+
+  if( doNotify ){
+    if( issueExists ) emailType = EMAIL_TYPE_REQUEST_ISSUE;
+    await configureAndSendMail( emailType, id, secret );
+  }
+  return doc;
 };
 
 let handleResponseError = response => {
@@ -187,8 +199,8 @@ http.post('/email', function( req, res, next ){
   let { apiKey, emailType, id, secret } = req.body;
   return (
     tryPromise( () => checkApiKey( apiKey ) )
-    .then( () => composeAndSendMail( emailType, id, secret ) )
-    .then( () => res.end( 'ok' ) )
+    .then( () => configureAndSendMail( emailType, id, secret ) )
+    .then( () => res.end() )
     .catch( next )
   );
 });
@@ -427,14 +439,14 @@ http.post('/', function( req, res, next ){
   const setRequestStatus = doc => doc.request().then( () => doc );
 
   ( tryPromise( () => checkRequestContext( provided ) )
-    .then( () => res.end( 'ok' ) )
+    .then( () => res.end() )
     .catch( next )
     .then( () => createSecret({ secret }) )
     .then( loadTables )
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided }) )
     .then( setRequestStatus )
     .then( fillDoc )
-    .then( sendNotification )
+    .then( sendInviteNotification )
   );
 });
 

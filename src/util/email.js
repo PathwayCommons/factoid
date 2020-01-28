@@ -17,7 +17,10 @@ import {
 
 const msgFactory = ( emailType, doc ) => {
   const { authorEmail, context } = doc.correspondence();
-  const { title, authors, reference } = doc.citation();
+  const {
+    title = 'Untitled',
+    reference = ''
+  } = doc.citation();
 
   const DEFAULTS = {
     from: {
@@ -30,7 +33,7 @@ const msgFactory = ( emailType, doc ) => {
     template: {
       vendor: EMAIL_VENDOR_MAILJET,
       vars: {
-        citation: `${title} ${authors}. ${reference}.`
+        citation: `${title} ${reference}`
       }
     }
   };

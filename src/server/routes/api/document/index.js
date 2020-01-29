@@ -444,7 +444,10 @@ http.post('/', function( req, res, next ){
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
 
-  const setRequestStatus = doc => doc.request().then( () => doc );
+  const setRequestStatus = doc => tryPromise( () => doc.request() ).then( () => doc );
+  const setApprovedStatus = doc => tryPromise( () => hasIssues( doc ) )
+    .then( issueExists => !issueExists ? doc.approve() : null )
+    .then( () => doc );
 
   checkRequestContext( provided )
     .then( () => res.end() )
@@ -453,6 +456,7 @@ http.post('/', function( req, res, next ){
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided }) )
     .then( setRequestStatus )
     .then( fillDoc )
+    .then( setApprovedStatus )
     .then( sendInviteNotification )
     .catch( next );
 });

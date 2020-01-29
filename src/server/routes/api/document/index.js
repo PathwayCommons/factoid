@@ -446,16 +446,15 @@ http.post('/', function( req, res, next ){
 
   const setRequestStatus = doc => doc.request().then( () => doc );
 
-  ( tryPromise( () => checkRequestContext( provided ) )
+  checkRequestContext( provided )
     .then( () => res.end() )
-    .catch( next )
     .then( () => createSecret({ secret }) )
     .then( loadTables )
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided }) )
     .then( setRequestStatus )
     .then( fillDoc )
     .then( sendInviteNotification )
-  );
+    .catch( next );
 });
 
 // Update document fields provided and re-apply fillDoc

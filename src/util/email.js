@@ -20,7 +20,6 @@ import {
 
 const msgFactory = ( emailType, doc ) => {
   const { authorEmail, context } = doc.correspondence();
-  const provided = doc.provided();
 
   const {
     title = 'Untitled',
@@ -39,7 +38,6 @@ const msgFactory = ( emailType, doc ) => {
       vendor: EMAIL_VENDOR_MAILJET,
       vars: {
         baseUrl: BASE_URL,
-        provided,
         citation: `${title} ${reference}`
       }
     }

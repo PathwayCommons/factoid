@@ -340,7 +340,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             doc,
             fieldName: 'paperId',
             value: paperId,
-            label: h( 'span', `${paperIdIssue} ` ),
+            label: h( 'span', `${paperIdIssue.message}` ),
             apiKey
           })
         ];
@@ -440,7 +440,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             doc,
             fieldName: 'authorEmail',
             value: authorEmail,
-            label: h( 'span', `${authorEmailIssue} `),
+            label: h( 'span', `${authorEmailIssue.message} `),
             apiKey
           })
         ]);

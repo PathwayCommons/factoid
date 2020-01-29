@@ -14,7 +14,7 @@ import Document from '../../../../model/document';
 import db from '../../../db';
 import logger from '../../../logger';
 import { makeCyEles, msgFactory, updateCorrespondence } from '../../../../util';
-import { getPubmedArticle } from './pubmed';
+import { getPubmedArticle, ArticleIDError } from './pubmed';
 
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
@@ -107,7 +107,7 @@ const fillDocCorrespondence = async ( doc, authorEmail, context ) => {
     // TODO - is this user verified?
     await doc.issues({ authorEmail: null });
   } catch ( error ){
-    await doc.issues({ authorEmail: `${error.message}` });
+    await doc.issues({ authorEmail: { error, message: error.message } });
   }
 };
 
@@ -118,7 +118,7 @@ const fillDocArticle = async ( doc, paperId ) => {
     // TODO - is this a unique request?
     await doc.issues({ paperId: null });
   } catch ( error ){
-    await doc.issues({ paperId: `${error.message}` });
+    await doc.issues({ paperId: { error, message: error.message } });
   }
 };
 
@@ -149,14 +149,18 @@ const configureAndSendMail = async ( emailType, id, secret ) => {
 };
 
 const hasIssues = doc => _.values( doc.issues() ).some( i => !_.isNull( i ) );
-// const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
+const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
 const sendInviteNotification = async doc => {
   let emailType = EMAIL_TYPE_INVITE;
   const id = doc.id();
   const secret = doc.secret();
-  const { context } = doc.provided();
-  const doNotify = context && context === EMAIL_CONTEXT_JOURNAL;
   const issueExists = hasIssues( doc );
+
+  const hasPaperIdIssue = hasIssue( doc, 'paperId' );
+  const hasPaperIdError = hasPaperIdIssue && _.get( doc.issues(), ['paperId', 'error'] ) instanceof ArticleIDError;
+  const { context } = doc.provided();
+  const isSignup = ( context && context === EMAIL_CONTEXT_SIGNUP );
+  const doNotify = isSignup && hasPaperIdError;
 
   if( issueExists ){
     emailType = EMAIL_TYPE_REQUEST_ISSUE;

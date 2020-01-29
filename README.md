@@ -79,12 +79,15 @@ Email:
 - `EMAIL_VENDOR_MAILJET`: name of Mailjet vendor
 - `MAILJET_TMPLID_INVITE`: vendor email template id for an invitation
 - `MAILJET_TMPLID_FOLLOWUP`: vendor email template id for a follow-up
+- `MAILJET_TMPLID_REQUEST_ISSUE`: vendor email template id for a request error notification
 - `EMAIL_CONTEXT_JOURNAL`: email context variable to indicate entry via journal
 - `EMAIL_CONTEXT_SIGNUP`: email context variable to indicate entry via homepage
 - `EMAIL_TYPE_INVITE`:  name to indicate invite email
 - `EMAIL_TYPE_FOLLOWUP`: name to indicate follow-up email
+- `EMAIL_TYPE_REQUEST_ISSUE`: name to indicate request error email
 - `EMAIL_SUBJECT_INVITE`: subject text for invitation email
 - `EMAIL_SUBJECT_FOLLOWUP`: subject text for follow-up email
+- `EMAIL_SUBJECT_REQUEST_ISSUE`: subject text for request error email
 
 The following environment variables should always be set in production instances:
 

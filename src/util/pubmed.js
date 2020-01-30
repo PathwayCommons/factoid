@@ -13,7 +13,7 @@ const getName = author => {
   } else {
     name = collectiveName;
   }
-  return name; 
+  return name;
 };
 
 const getEmail = author => {
@@ -38,7 +38,7 @@ const getAuthorString = AuthorList => {
   const leadingAuthors = _.take( AuthorList, NUM_AUTHORS_SHOWING - 1 );
   const lastAuthor =  _.last( AuthorList );
   const authorList = leadingAuthors.concat( lastAuthor );
-  
+
   const authorStringList = _.uniq( authorList.map( getName ) );
   if( leadingAuthors.length && leadingAuthors.length < AuthorList.length - 1  ) authorStringList.splice( NUM_AUTHORS_SHOWING - 1, 0, '...' );
   return authorStringList.join(', ');
@@ -56,10 +56,10 @@ const getAuthors = AuthorList => {
 };
 
 const getJournalNameString = Journal => {
-  const hasJournalISOAbbreviation = !_.isNull( _.get( Journal, ['ISOAbbreviation'] ) ); //optional 
-  const hasJournalTitle = !_.isNull( _.get( Journal, ['Title'] ) ); //optional 
+  const hasJournalISOAbbreviation = !_.isNil( _.get( Journal, ['ISOAbbreviation'] ) ); //optional
+  const hasJournalTitle = !_.isNil( _.get( Journal, ['Title'] ) ); //optional
   let name = '';
-  if( hasJournalISOAbbreviation ){ 
+  if( hasJournalISOAbbreviation ){
     name = `${_.get( Journal, ['ISOAbbreviation'] )}.`;
   } else if( hasJournalTitle ) {
     name = `${_.get( Journal, ['Title'] )}.`;
@@ -69,9 +69,9 @@ const getJournalNameString = Journal => {
 };
 
 const getReferenceString = Journal => {
-  const journalName = getJournalNameString( Journal ); 
-  const journalVolume = !_.isNull( _.get( Journal, ['Volume'] ) ) ? _.get( Journal, ['Volume'] ): ''; //optional 
-  const pubDateYear = !_.isNull( _.get( Journal, ['PubDate', 'Year'] ) ) ? `(${_.get( Journal, ['PubDate', 'Year'] )})`: ''; //optional 
+  const journalName = getJournalNameString( Journal );
+  const journalVolume = !_.isNil( _.get( Journal, ['Volume'] ) ) ? _.get( Journal, ['Volume'] ): ''; //optional
+  const pubDateYear = !_.isNil( _.get( Journal, ['PubDate', 'Year'] ) ) ? `(${_.get( Journal, ['PubDate', 'Year'] )})`: ''; //optional
   return _.compact( [ journalName, journalVolume, pubDateYear ] ).join(' ');
 };
 
@@ -79,15 +79,15 @@ const getArticleId = ( PubmedArticle, IdType ) => _.get( _.find( _.get( PubmedAr
 
 /**
  * getPubmedCitation
- * 
+ *
  * Retrieve a nicely formatted set of citation items from a PubmedArticle
  *  -- authors, title, and reference
  * @param {Object} PubmedArticle Returned from fetchPubmed PubmedArticleSet
- * @return {Object} result 
- * @return {String} result.authors The CollectiveName or 'LastName et al.' 
- * @return {String} result.contacts 
- * @return {String} result.title 
- * @return {String} result.reference (<ISOAbbreviation> | <Title>) <Year>; <Volume> 
+ * @return {Object} result
+ * @return {String} result.authors The CollectiveName or 'LastName et al.'
+ * @return {String} result.contacts
+ * @return {String} result.title
+ * @return {String} result.reference (<ISOAbbreviation> | <Title>) <Year>; <Volume>
  * @return {String} result.pmid
  * @return {String} result.doi
  */
@@ -97,13 +97,13 @@ const getPubmedCitation = PubmedArticle => {
   const title = _.get( Article, ['ArticleTitle'] ); //required
   const AuthorList = _.get( Article, ['AuthorList'] ); //optional
 
-  const { authors, contacts } = getAuthors( AuthorList ); 
+  const { authors, contacts } = getAuthors( AuthorList );
   const reference = getReferenceString( Journal );
   const abstract = _.get( Article, 'Abstract' );
   const pmid = getArticleId( PubmedArticle, 'pubmed' );
   const doi = getArticleId( PubmedArticle, 'doi' );
-  
+
   return { authors, contacts, title, reference, abstract, pmid, doi };
 };
 
-export { getPubmedCitation }; 
+export { getPubmedCitation };

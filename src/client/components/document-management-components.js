@@ -7,7 +7,6 @@ import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
 import Document from '../../model/document';
 import {
   tryPromise,
-  sendMail,
   makeClassList
 } from '../../util';
 import logger from '../logger';
@@ -23,6 +22,32 @@ const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
 const hasIssues = doc => _.values( doc.issues() ).some( i => !_.isNull( i ) );
 const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
+
+/**
+ * sendMail
+ *
+ * Client-side helper to send email and update doc state
+ *
+ * @param {String} emailType one of the recognized types to configure email template
+ * @param {object} doc the model object
+ * @param {string} apiKey to validate against protected routes
+ */
+const sendMail = ( emailType, doc, apiKey ) => {
+  const url = '/api/document/email';
+  const getDocKeys = doc => Promise.all([ doc.id(), doc.secret() ]);
+
+  return getDocKeys( doc )
+    .then( ( [id, secret ] ) => fetch( url,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify( { apiKey, emailType, id, secret } )
+      })
+    );
+};
 
 class SendingComponent extends React.Component {
   constructor( props ){
@@ -113,7 +138,7 @@ class DocumentEmailButtonComponent extends DocumentButtonComponent {
       return h( 'small.mute', [
         h('span', ` ${_.size( infos )}`),
         h('span', ` | ${last}`),
-        error ? h('span.invalid', ` | ${error.statusText}`): null
+        error ? h('span.invalid', ` | ${error.code}`): null
       ]);
     } else {
       return null;
@@ -315,7 +340,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             doc,
             fieldName: 'paperId',
             value: paperId,
-            label: h( 'span', `${paperIdIssue} ` ),
+            label: h( 'span', `${paperIdIssue.message}` ),
             apiKey
           })
         ];
@@ -416,7 +441,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             doc,
             fieldName: 'authorEmail',
             value: authorEmail,
-            label: h( 'span', `${authorEmailIssue} `),
+            label: h( 'span', `${authorEmailIssue.message} `),
             apiKey
           })
         ]);

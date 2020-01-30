@@ -284,6 +284,13 @@ const pubmedDataConverter = async xml => {
 };
 
 const toText = res => res.text();
+const checkResponseStatus = response => {
+  const { statusText, ok, status } = response;
+  if ( !ok ) {
+    throw Error( `Error in PubMed EFETCH: ${status} -- ${statusText}` );
+  }
+  return response;
+};
 const eFetchPubmed = ( { uids, query_key, webenv } )=> {
   let params;
   if( !_.isEmpty( uids ) ){
@@ -305,6 +312,7 @@ const eFetchPubmed = ( { uids, query_key, webenv } )=> {
       'User-Agent': userAgent
     }
   })
+  .then( checkResponseStatus )
   .then( toText )
   .then( pubmedDataConverter );
 };

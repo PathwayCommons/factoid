@@ -28,6 +28,13 @@ const pubmedDataConverter = json => {
   };
 };
 
+const checkResponseStatus = response => {
+  const { statusText, ok, status } = response;
+  if ( !ok ) {
+    throw Error( `Error in PubMed ESEARCH: ${status} -- ${statusText}` );
+  }
+  return response;
+};
 const eSearchPubmed = term => {
   const params = _.assign( {}, DEFAULT_ESEARCH_PARAMS, { term } );
   const url = EUTILS_SEARCH_URL + '?' + queryString.stringify( params );
@@ -38,6 +45,7 @@ const eSearchPubmed = term => {
       'User-Agent': userAgent
     }
   })
+  .then( checkResponseStatus )
   .then( response => response.json() )
   .then( pubmedDataConverter );
 };

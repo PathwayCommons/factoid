@@ -11,17 +11,24 @@ import {
 
 const digitsRegex = /^[0-9.]+$/;
 
+class ArticleIDError extends Error {
+  constructor(...params) {
+    super(...params);
+    this.name = 'ArticleIDError';
+  }
+}
+
 const findPubmedId = async paperId => {
 
   let id;
-  if( !_.isString( paperId ) ) throw new TypeError( errMessage );
   const errMessage = `Unrecognized paperId '${paperId}'`;
+  if( !_.isString( paperId ) ) throw new TypeError( errMessage );
   const getUniqueIdOrThrow = async query => {
     const { searchHits, count } = await searchPubmed( query );
     if( count === 1 ){
       return _.first( searchHits );
     } else {
-      throw new TypeError( errMessage );
+      throw new ArticleIDError( errMessage );
     }
   };
   const isUidLike = digitsRegex.test( paperId );
@@ -83,8 +90,8 @@ const getPubmedArticle = async paperId => {
   if( !_.isEmpty( PubmedArticleSet ) ){
     return _.head( PubmedArticleSet );
   } else {
-    throw new Error( `No PubMed record for '${paperId}'` );
+    throw new ArticleIDError( `No PubMed record for '${paperId}'` );
   }
 };
 
-export { getPubmedArticle };
+export { getPubmedArticle, ArticleIDError };

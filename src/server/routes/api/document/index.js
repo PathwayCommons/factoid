@@ -104,7 +104,6 @@ const fillDocCorrespondence = async ( doc, authorEmail, context ) => {
     const emails = _.get( doc.correspondence(), 'emails' );
     const data = _.defaults( { authorEmail, context, emails }, DEFAULT_CORRESPONDENCE );
     await doc.correspondence( data );
-    // TODO - is this user verified?
     await doc.issues({ authorEmail: null });
   } catch ( error ){
     await doc.issues({ authorEmail: { error, message: error.message } });

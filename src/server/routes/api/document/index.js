@@ -447,11 +447,22 @@ http.post('/', function( req, res, next ){
   const setApprovedStatus = doc => tryPromise( () => hasIssues( doc ) )
     .then( issueExists => !issueExists ? doc.approve() : null )
     .then( () => doc );
-  const verify = doc => {
-    const { authorEmail } = doc.correspondence();
-    const { contacts } = doc.citation();
-    const hasEmail = _.some( contacts, contact => _.includes( _.get( contact, 'email' ), authorEmail ) );
-    return tryPromise( () => doc.verified( hasEmail ) ).then( () => doc );
+  const verify = async doc => {
+    let doVerify = false;
+    const { context } = doc.provided();
+
+    if( context && context === EMAIL_CONTEXT_JOURNAL ){
+      doVerify = true;
+
+    } else {
+      const { authorEmail } = doc.correspondence();
+      const { contacts } = doc.citation();
+      const hasEmail = _.some( contacts, contact => _.includes( _.get( contact, 'email' ), authorEmail ) );
+      if( hasEmail ) doVerify = true;
+    }
+
+    if( doVerify ) await doc.verified( true );
+    return doc;
   };
 
   checkRequestContext( provided )

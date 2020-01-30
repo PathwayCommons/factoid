@@ -448,6 +448,12 @@ http.post('/', function( req, res, next ){
   const setApprovedStatus = doc => tryPromise( () => hasIssues( doc ) )
     .then( issueExists => !issueExists ? doc.approve() : null )
     .then( () => doc );
+  const verify = doc => {
+    const { authorEmail } = doc.correspondence();
+    const { contacts } = doc.citation();
+    const hasEmail = _.some( contacts, contact => _.includes( _.get( contact, 'email' ), authorEmail ) );
+    return tryPromise( () => doc.verified( hasEmail ) ).then( () => doc );
+  };
 
   checkRequestContext( provided )
     .then( () => res.end() )
@@ -457,6 +463,7 @@ http.post('/', function( req, res, next ){
     .then( setRequestStatus )
     .then( fillDoc )
     .then( setApprovedStatus )
+    .then( verify )
     .then( sendInviteNotification )
     .catch( next );
 });

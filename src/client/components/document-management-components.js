@@ -409,18 +409,10 @@ class DocumentManagementDocumentComponent extends React.Component {
     };
 
     // Correspondence
-    const getContact = doc => {
-      const { authorEmail } = doc.correspondence();
-      const { contacts } = doc.citation();
-      return _.find( contacts, contact => _.indexOf( _.get( contact, 'email' ), authorEmail ) > -1 );
-    };
-
     const getAuthorEmail = doc => {
       const { authorEmail } = doc.correspondence();
       const isVerified = doc.verified();
-      let contact = getContact( doc );
       const element = [`${authorEmail} `];
-      if( contact ) element.push( h( 'span', ` <${contact.name}> ` ) );
       if( isVerified ) element.push( h( 'i.material-icons', 'verified_user' ) );
       return h( TextEditableComponent, {
           doc,

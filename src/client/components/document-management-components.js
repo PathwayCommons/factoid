@@ -249,9 +249,13 @@ class TextEditableComponent extends React.Component {
   }
 
   render() {
-    const { doc, label } = this.props;
+    const { doc, label, fullWidth } = this.props;
 
-    const editContent = h('div.document-management-text-editable', [
+    const editContent = h('div.document-management-text-editable', {
+      className: makeClassList({
+        'full-width': fullWidth
+      })
+    }, [
       h('input', {
         className: makeClassList({
           'hide-by-default': true,
@@ -337,6 +341,7 @@ class DocumentManagementDocumentComponent extends React.Component {
         const paperId = _.get( doc.provided(), 'paperId' );
         items = [
           h( TextEditableComponent, {
+            className: 'full-width',
             doc,
             fieldName: 'paperId',
             value: paperId,
@@ -366,6 +371,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             ]),
             h('small.mute', contactList),
             h( TextEditableComponent, {
+              fullWidth: true,
               doc,
               fieldName: 'paperId',
               value: paperId,
@@ -418,7 +424,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             name: `document-verified-${doc.id()}`,
             id: `document-verified-radio-${doc.id()}-${displayName}`,
             value: typeVal,
-            defaultChecked: typeVal === doc.verified(),
+            checked: typeVal === doc.verified(),
             onChange: () => doc.verified( typeVal )
           }),
           h('label', {
@@ -460,8 +466,10 @@ class DocumentManagementDocumentComponent extends React.Component {
 
       } else {
         content = h( 'div.document-management-document-section-items', [
-          getAuthorEmail( doc ),
-          getVerified( doc ),
+          h( 'div.document-management-document-section-items-row', [
+            getAuthorEmail( doc ),
+            getVerified( doc )
+          ]),
           h( DocumentEmailButtonComponent, {
             params: { doc, apiKey },
             workingMessage: 'Sending...',
@@ -499,7 +507,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             name: `document-status-${doc.id()}`,
             id: `document-status-radio-${doc.id()}-${typeVal}`,
             value: typeVal,
-            defaultChecked: _.get( DOCUMENT_STATUS_FIELDS, typeVal ) === doc.status(),
+            checked: _.get( DOCUMENT_STATUS_FIELDS, typeVal ) === doc.status(),
             onChange: e => {
               let newlySelectedStatus = _.get( DOCUMENT_STATUS_FIELDS, e.target.value );
               doc.status( newlySelectedStatus );

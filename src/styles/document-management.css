@@ -120,8 +120,10 @@
 }
 
 .document-management-text-editable {
-  width: 100%;
-  min-width: 25em;
+  &.full-width {
+    width: 100%;
+    min-width: 25em;
+  }
 
   & input {
     margin-bottom: 0;

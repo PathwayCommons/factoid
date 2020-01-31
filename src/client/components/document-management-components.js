@@ -418,8 +418,8 @@ class DocumentManagementDocumentComponent extends React.Component {
             name: `document-verified-${doc.id()}`,
             id: `document-verified-radio-${doc.id()}-${displayName}`,
             value: typeVal,
-            defaultChecked: typeVal === `${doc.verified()}`,
-            onChange: e => doc.verified( e.target.value )
+            defaultChecked: typeVal === doc.verified(),
+            onChange: () => doc.verified( typeVal )
           }),
           h('label', {
             htmlFor: `document-verified-radio-${doc.id()}-${displayName}`
@@ -427,7 +427,7 @@ class DocumentManagementDocumentComponent extends React.Component {
         );
       };
 
-      [ [ 'false', 'unverified' ], [ 'true', 'verified' ] ].forEach( ([ field, name ]) => addType( field, _.capitalize( name ) ) );
+      [ [ false, 'unverified' ], [ true, 'verified' ] ].forEach( ([ field, name ]) => addType( field, _.capitalize( name ) ) );
       return h( 'small.radioset', radios );
     };
 

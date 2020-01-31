@@ -436,18 +436,10 @@ http.delete('/:secret', function(req, res, next){
   );
 });
 
-// create new doc
-http.post('/', function( req, res, next ){
-  const provided = _.assign( {}, req.body );
-  const { paperId } = provided;
-  const id = paperId === DEMO_ID ? DEMO_ID: undefined;
-  const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
+// Attempt to verify; Idempotent
+const tryVerify = async doc => {
 
-  const setRequestStatus = doc => tryPromise( () => doc.request() ).then( () => doc );
-  const setApprovedStatus = doc => tryPromise( () => hasIssues( doc ) )
-    .then( issueExists => !issueExists ? doc.approve() : null )
-    .then( () => doc );
-  const verify = async doc => {
+  if( !doc.verified() ){
     let doVerify = false;
     const { context } = doc.provided();
 
@@ -460,10 +452,24 @@ http.post('/', function( req, res, next ){
       const hasEmail = _.some( contacts, contact => _.includes( _.get( contact, 'email' ), authorEmail ) );
       if( hasEmail ) doVerify = true;
     }
-
     if( doVerify ) await doc.verified( true );
-    return doc;
-  };
+  }
+
+  return doc;
+};
+
+// create new doc
+http.post('/', function( req, res, next ){
+  const provided = _.assign( {}, req.body );
+  const { paperId } = provided;
+  const id = paperId === DEMO_ID ? DEMO_ID: undefined;
+  const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
+
+  const setRequestStatus = doc => tryPromise( () => doc.request() ).then( () => doc );
+  const setApprovedStatus = doc => tryPromise( () => hasIssues( doc ) )
+    .then( issueExists => !issueExists ? doc.approve() : null )
+    .then( () => doc );
+
 
   checkRequestContext( provided )
     .then( () => res.end() )
@@ -473,7 +479,7 @@ http.post('/', function( req, res, next ){
     .then( setRequestStatus )
     .then( fillDoc )
     .then( setApprovedStatus )
-    .then( verify )
+    .then( tryVerify )
     .then( sendInviteNotification )
     .catch( next );
 });
@@ -492,6 +498,7 @@ http.patch('/', function( req, res, next ){
     .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
     .then( updateDocFields )
     .then( fillDoc )
+    .then( tryVerify )
     .then( getDocJson )
     .then( json => res.json( json ) )
     .catch( next )

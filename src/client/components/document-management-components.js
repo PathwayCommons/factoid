@@ -409,18 +409,38 @@ class DocumentManagementDocumentComponent extends React.Component {
     };
 
     // Correspondence
+    const getVerified = doc => {
+      let radios = [];
+      let addType = (typeVal, displayName) => {
+        radios.push(
+          h('input', {
+            type: 'radio',
+            name: `document-verified-${doc.id()}`,
+            id: `document-verified-radio-${doc.id()}-${displayName}`,
+            value: typeVal,
+            defaultChecked: typeVal === `${doc.verified()}`,
+            onChange: e => doc.verified( e.target.value )
+          }),
+          h('label', {
+            htmlFor: `document-verified-radio-${doc.id()}-${displayName}`
+          }, displayName)
+        );
+      };
+
+      [ [ 'false', 'unverified' ], [ 'true', 'verified' ] ].forEach( ([ field, name ]) => addType( field, _.capitalize( name ) ) );
+      return h( 'small.radioset', radios );
+    };
+
     const getAuthorEmail = doc => {
       const { authorEmail } = doc.correspondence();
-      const isVerified = doc.verified();
       const element = [`${authorEmail} `];
-      if( isVerified ) element.push( h( 'i.material-icons', 'verified_user' ) );
       return h( TextEditableComponent, {
           doc,
           fieldName: 'authorEmail',
           value: authorEmail,
           label: h( 'span', element ),
           apiKey
-        });
+      });
     };
 
     const getDocumentCorrespondence = doc => {
@@ -441,6 +461,7 @@ class DocumentManagementDocumentComponent extends React.Component {
       } else {
         content = h( 'div.document-management-document-section-items', [
           getAuthorEmail( doc ),
+          getVerified( doc ),
           h( DocumentEmailButtonComponent, {
             params: { doc, apiKey },
             workingMessage: 'Sending...',

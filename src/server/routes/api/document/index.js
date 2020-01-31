@@ -104,7 +104,6 @@ const fillDocCorrespondence = async ( doc, authorEmail, context ) => {
     const emails = _.get( doc.correspondence(), 'emails' );
     const data = _.defaults( { authorEmail, context, emails }, DEFAULT_CORRESPONDENCE );
     await doc.correspondence( data );
-    // TODO - is this user verified?
     await doc.issues({ authorEmail: null });
   } catch ( error ){
     await doc.issues({ authorEmail: { error, message: error.message } });
@@ -437,6 +436,28 @@ http.delete('/:secret', function(req, res, next){
   );
 });
 
+// Attempt to verify; Idempotent
+const tryVerify = async doc => {
+
+  if( !doc.verified() ){
+    let doVerify = false;
+    const { context } = doc.provided();
+
+    if( context && context === EMAIL_CONTEXT_JOURNAL ){
+      doVerify = true;
+
+    } else {
+      const { authorEmail } = doc.correspondence();
+      const { contacts } = doc.citation();
+      const hasEmail = _.some( contacts, contact => _.includes( _.get( contact, 'email' ), authorEmail ) );
+      if( hasEmail ) doVerify = true;
+    }
+    if( doVerify ) await doc.verified( true );
+  }
+
+  return doc;
+};
+
 // create new doc
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
@@ -449,6 +470,7 @@ http.post('/', function( req, res, next ){
     .then( issueExists => !issueExists ? doc.approve() : null )
     .then( () => doc );
 
+
   checkRequestContext( provided )
     .then( () => res.end() )
     .then( () => createSecret({ secret }) )
@@ -457,6 +479,7 @@ http.post('/', function( req, res, next ){
     .then( setRequestStatus )
     .then( fillDoc )
     .then( setApprovedStatus )
+    .then( tryVerify )
     .then( sendInviteNotification )
     .catch( next );
 });
@@ -475,6 +498,7 @@ http.patch('/', function( req, res, next ){
     .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
     .then( updateDocFields )
     .then( fillDoc )
+    .then( tryVerify )
     .then( getDocJson )
     .then( json => res.json( json ) )
     .catch( next )

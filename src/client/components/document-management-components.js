@@ -249,9 +249,13 @@ class TextEditableComponent extends React.Component {
   }
 
   render() {
-    const { doc, label } = this.props;
+    const { doc, label, fullWidth } = this.props;
 
-    const editContent = h('div.document-management-text-editable', [
+    const editContent = h('div.document-management-text-editable', {
+      className: makeClassList({
+        'full-width': fullWidth
+      })
+    }, [
       h('input', {
         className: makeClassList({
           'hide-by-default': true,
@@ -337,6 +341,7 @@ class DocumentManagementDocumentComponent extends React.Component {
         const paperId = _.get( doc.provided(), 'paperId' );
         items = [
           h( TextEditableComponent, {
+            className: 'full-width',
             doc,
             fieldName: 'paperId',
             value: paperId,
@@ -366,6 +371,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             ]),
             h('small.mute', contactList),
             h( TextEditableComponent, {
+              fullWidth: true,
               doc,
               fieldName: 'paperId',
               value: paperId,
@@ -409,26 +415,38 @@ class DocumentManagementDocumentComponent extends React.Component {
     };
 
     // Correspondence
-    const getContact = doc => {
-      const { authorEmail } = doc.correspondence();
-      const { contacts } = doc.citation();
-      return _.find( contacts, contact => _.indexOf( _.get( contact, 'email' ), authorEmail ) > -1 );
+    const getVerified = doc => {
+      let radios = [];
+      let addType = (typeVal, displayName) => {
+        radios.push(
+          h('input', {
+            type: 'radio',
+            name: `document-verified-${doc.id()}`,
+            id: `document-verified-radio-${doc.id()}-${displayName}`,
+            value: typeVal,
+            checked: typeVal === doc.verified(),
+            onChange: () => doc.verified( typeVal )
+          }),
+          h('label', {
+            htmlFor: `document-verified-radio-${doc.id()}-${displayName}`
+          }, displayName)
+        );
+      };
+
+      [ [ false, 'unverified' ], [ true, 'verified' ] ].forEach( ([ field, name ]) => addType( field, _.capitalize( name ) ) );
+      return h( 'small.radioset', radios );
     };
 
     const getAuthorEmail = doc => {
       const { authorEmail } = doc.correspondence();
-      const isVerified = doc.verified();
-      let contact = getContact( doc );
       const element = [`${authorEmail} `];
-      if( contact ) element.push( h( 'span', ` <${contact.name}> ` ) );
-      if( isVerified ) element.push( h( 'i.material-icons', 'verified_user' ) );
       return h( TextEditableComponent, {
           doc,
           fieldName: 'authorEmail',
           value: authorEmail,
           label: h( 'span', element ),
           apiKey
-        });
+      });
     };
 
     const getDocumentCorrespondence = doc => {
@@ -448,7 +466,10 @@ class DocumentManagementDocumentComponent extends React.Component {
 
       } else {
         content = h( 'div.document-management-document-section-items', [
-          getAuthorEmail( doc ),
+          h( 'div.document-management-document-section-items-row', [
+            getAuthorEmail( doc ),
+            getVerified( doc )
+          ]),
           h( DocumentEmailButtonComponent, {
             params: { doc, apiKey },
             workingMessage: 'Sending...',
@@ -486,7 +507,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             name: `document-status-${doc.id()}`,
             id: `document-status-radio-${doc.id()}-${typeVal}`,
             value: typeVal,
-            defaultChecked: _.get( DOCUMENT_STATUS_FIELDS, typeVal ) === doc.status(),
+            checked: _.get( DOCUMENT_STATUS_FIELDS, typeVal ) === doc.status(),
             onChange: e => {
               let newlySelectedStatus = _.get( DOCUMENT_STATUS_FIELDS, e.target.value );
               doc.status( newlySelectedStatus );

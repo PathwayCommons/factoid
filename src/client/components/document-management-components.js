@@ -3,6 +3,7 @@ import h from 'react-hyperscript';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
+import queryString from 'query-string';
 
 import Document from '../../model/document';
 import {
@@ -33,20 +34,18 @@ const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get(
  * @param {string} apiKey to validate against protected routes
  */
 const sendMail = ( emailType, doc, apiKey ) => {
-  const url = '/api/document/email';
-  const getDocKeys = doc => Promise.all([ doc.id(), doc.secret() ]);
+  const id = doc.id();
+  const secret = doc.secret();
+  const url = `/api/document/email/${id}/${secret}/?${queryString.stringify({ apiKey, emailType })}`;
 
-  return getDocKeys( doc )
-    .then( ( [id, secret ] ) => fetch( url,
+  return fetch( url,
       {
-        method: 'POST',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
-        },
-        body: JSON.stringify( { apiKey, emailType, id, secret } )
-      })
-    );
+        }
+      });
 };
 
 class SendingComponent extends React.Component {
@@ -152,7 +151,8 @@ class DocumentRefreshButtonComponent extends DocumentButtonComponent {
   }
 
   doWork( params ) {
-    const url = '/api/document';
+    const { id, secret, apiKey } = this.props;
+    const url = `/api/document/${id}/${secret}/?${queryString.stringify({ apiKey })}`;
     return fetch( url, {
       method: 'PATCH',
       headers: {
@@ -201,18 +201,16 @@ class TextEditableComponent extends React.Component {
        .then( () => doc );
     })
     .then( doc => {
-      const params = {
-        id: doc.id(),
-        secret: doc.secret(),
-        apiKey: this.props.apiKey
-      };
-      const url = '/api/document';
+      const id = doc.id();
+      const secret = doc.secret();
+      const { apiKey } = this.props;
+      const url = `/api/document/${id}/${secret}/?${queryString.stringify({ apiKey })}`;
       return fetch( url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify( params )
+        body: JSON.stringify([])
       });
     })
     .finally( () => {
@@ -300,10 +298,13 @@ class DocumentManagementDocumentComponent extends React.Component {
 
     const getRefreshDocDataButton = doc => {
       return h( DocumentRefreshButtonComponent, {
+          id: doc.id(),
+          secret: doc.secret(),
+          apiKey,
           workingMessage: ' Please wait',
           disableWhen: doc.trashed(),
           buttonKey: doc.id(),
-          params: { id: doc.id(), secret: doc.secret(), apiKey },
+          params: [],
           value: 'refresh',
           title: 'Refresh document data',
           label: h( 'i.material-icons', 'refresh' )

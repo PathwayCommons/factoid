@@ -201,17 +201,6 @@ let getSbgnFromTemplates = templates => {
     .then(handleResponseError);
 };
 
-// Email
-http.post('/email', function( req, res, next ){
-  let { apiKey, emailType, id, secret } = req.body;
-  return (
-    tryPromise( () => checkApiKey( apiKey ) )
-    .then( () => configureAndSendMail( emailType, id, secret ) )
-    .then( () => res.end() )
-    .catch( next )
-  );
-});
-
 // get all docs
 // - offset: pagination offset
 // - limit: pagination size limit
@@ -484,14 +473,30 @@ http.post('/', function( req, res, next ){
     .catch( next );
 });
 
+// Email
+http.patch('/email/:id/:secret', function( req, res, next ){
+  const { id, secret } = req.params;
+  const { apiKey, emailType } = req.query;
+  return (
+    tryPromise( () => checkApiKey( apiKey ) )
+    .then( () => configureAndSendMail( emailType, id, secret ) )
+    .then( () => res.end() )
+    .catch( next )
+  );
+});
+
 // Update document fields provided and re-apply fillDoc
-http.patch('/', function( req, res, next ){
-  const { apiKey, id, secret } = req.body;
+http.patch('/:id/:secret', function( req, res, next ){
+  const { id, secret } = req.params;
+  const { apiKey } = req.query;
   const updateDocFields = doc => {
-    const updates = _.omit( req.body, [ 'apiKey', 'id', 'secret' ] );
-    const updatePromises = _.toPairs( updates ).map( ([ field, value ]) => doc[field]( value ).then( () => doc ) );
+    const updates = req.body;
+    const updatePromises = updates.map( ({ op, path, value }) => {
+      if( op == 'replace' ) return doc[path]( value );
+    });
     return Promise.all( updatePromises ).then( () => doc );
   };
+
   return (
     tryPromise( () => checkApiKey( apiKey ) )
     .then( loadTables )

@@ -35,6 +35,14 @@
   margin: 0.5em;
 }
 
+.editor-submit {
+  position: absolute;
+  right: 0;
+  box-sizing: border-box;
+  z-index: 1;
+  padding: 0.75em 0.5em;
+}
+
 .editor-share {
   position: absolute;
   right: 0;

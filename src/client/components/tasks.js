@@ -1,5 +1,6 @@
 import DataComponent from './data-component';
 import h from 'react-hyperscript';
+import Document from '../../model/document';
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
 
@@ -42,13 +43,14 @@ class TaskView extends DataComponent {
       this.dirty();
     };
 
-    this.onSubmit = () => {
-      this.dirty();
+    this.onStatusChange = status => {
+      const { SUBMITTED } = Document.statusFields();
+      if( status === SUBMITTED ) this.dirty();
     };
 
     this.props.document.on('add', this.onAdd);
     this.props.document.on('remove', this.onRemove);
-    this.props.document.on('submit', this.onSubmit);
+    this.props.document.on('status', this.onStatusChange);
 
     this.props.document.elements().forEach(ele => bindEleEvts(ele, update));
   }
@@ -115,7 +117,7 @@ class TaskView extends DataComponent {
     } else {
       return h('div.task-view', [
         h('div.task-view-done', [
-          h('div.task-view-done-message', 'Your figure has been submitted, and you will be contacted shortly regarding its publication status.')
+          h('div.task-view-done-message', 'Congratuations and thank you! Check your email for links to your pathway data.')
         ])
       ]);
     }

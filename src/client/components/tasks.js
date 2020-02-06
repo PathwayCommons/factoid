@@ -1,6 +1,6 @@
+import _ from 'lodash';
 import DataComponent from './data-component';
 import h from 'react-hyperscript';
-import Document from '../../model/document';
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
 
@@ -43,14 +43,13 @@ class TaskView extends DataComponent {
       this.dirty();
     };
 
-    this.onStatusChange = status => {
-      const { SUBMITTED } = Document.statusFields();
-      if( status === SUBMITTED ) this.dirty();
+    this.onUpdate = change => {
+      if( _.has( change, 'status' ) ) this.dirty();
     };
 
     this.props.document.on('add', this.onAdd);
     this.props.document.on('remove', this.onRemove);
-    this.props.document.on('status', this.onStatusChange);
+    this.props.document.on('update', this.onUpdate);
 
     this.props.document.elements().forEach(ele => bindEleEvts(ele, update));
   }
@@ -117,7 +116,13 @@ class TaskView extends DataComponent {
     } else {
       return h('div.task-view', [
         h('div.task-view-done', [
-          h('div.task-view-done-message', 'Congratuations and thank you! Check your email for links to your pathway data.')
+          h('div.task-view-done-message', [
+            h('p', 'Congratulations! We will email you when your pathway is ready to be accessed.'),
+            h('p', 'In the meantime, please browse recent pathways shared by authors.'),
+            h('a.plain-link', {
+              href: 'https://biofactoid.org/'
+            }, 'here')
+          ])
         ])
       ]);
     }

@@ -121,7 +121,9 @@ class Editor extends DataComponent {
     doc.on('localadd', updateLastEditDate);
     doc.on('localremove', updateLastEditDate);
 
-    doc.on('submit', () => this.dirty());
+    doc.on('update', change => {
+      if( _.has( change, 'status' ) ) this.dirty();
+    });
 
     doc.on('load', () => {
       doc.interactions().concat( doc.complexes() ).forEach( listenForRmPpt );
@@ -496,7 +498,12 @@ class Editor extends DataComponent {
       ]),
       h('div.editor-submit', [
         h(Popover, { tippy: { html: h(TaskView, { document, bus } ) } }, [
-          document.submitted() ? h('button.editor-submit-button', 'Submitted') : h('button.editor-submit-button.super-salient-button', 'Submit')
+          h('button.editor-submit-button', {
+            disabled: document.trashed(),
+            className: makeClassList({
+              'super-salient-button': !document.trashed() && !document.submitted()
+            })
+          }, document.submitted() ?  'Submitted' : 'Submit')
         ])
       ]),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),

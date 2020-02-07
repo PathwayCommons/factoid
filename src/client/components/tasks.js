@@ -2,6 +2,8 @@ import _ from 'lodash';
 import DataComponent from './data-component';
 import h from 'react-hyperscript';
 
+import { BASE_URL } from '../../config';
+
 const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
 
 let bindEleEvts = (ele, cb) => {
@@ -68,7 +70,7 @@ class TaskView extends DataComponent {
 
   render(){
     let { document, bus } = this.props;
-    let submitted = this.props.document.submitted();
+    let done = document.submitted() || document.published();
     let incompleteEles = this.props.document.elements().filter(ele => {
       return !ele.completed() && !ele.isInteraction();
     });
@@ -98,7 +100,7 @@ class TaskView extends DataComponent {
       return `You have ${numIncompleteEles} incomplete items:`;
     };
 
-    if( !submitted ){
+    if( !done ){
       return h('div.task-view', [
         incompleteEles.length > 0 ? h('div.task-view-header', tasksMsg()) : null,
         incompleteEles.length > 0 ? h('div.task-view-items', [
@@ -110,18 +112,22 @@ class TaskView extends DataComponent {
         ]) : null,
         h('div.task-view-confirm', 'Are you sure you want to submit?'),
         h('div.task-view-confirm-button-area', [
-          h('button.salient-button.task-view-confirm-button', { onClick: () => this.submit() }, 'Yes, submit')
+          h('button.salient-button.task-view-confirm-button', {
+            disabled: document.trashed(),
+            onClick: () => this.submit()
+          }, 'Yes, submit')
         ])
       ]);
     } else {
       return h('div.task-view', [
         h('div.task-view-done', [
           h('div.task-view-done-message', [
-            h('p', 'Congratulations! We will email you when your pathway is ready to be accessed.'),
-            h('p', 'In the meantime, please browse recent pathways shared by authors.'),
-            h('a.plain-link', {
-              href: 'https://biofactoid.org/'
-            }, 'here')
+            h('p', 'It\'s submitted! You should receive an email when your pathway is online.'),
+            h('p', [
+              h('a.plain-link', {
+                href: BASE_URL
+              }, 'Browse recent pathways or add another article')
+            ])
           ])
         ])
       ]);

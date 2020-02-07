@@ -234,6 +234,10 @@ class Editor extends DataComponent {
     ;
   }
 
+  done(){
+    return this.data.document.submitted() || this.data.document.published();
+  }
+
   editable(){
     return this.data.document.editable();
   }
@@ -496,16 +500,16 @@ class Editor extends DataComponent {
       h('div.editor-main-menu', [
         h(MainMenu, { bus, document, history })
       ]),
-      h('div.editor-submit', [
+      this.editable() ? h('div.editor-submit', [
         h(Popover, { tippy: { html: h(TaskView, { document, bus } ) } }, [
           h('button.editor-submit-button', {
             disabled: document.trashed(),
             className: makeClassList({
-              'super-salient-button': !document.trashed() && !document.submitted()
+              'super-salient-button': !this.done()
             })
-          }, document.submitted() ?  'Submitted' : 'Submit')
+          }, this.done() ?  'Submitted' : 'Submit')
         ])
-      ]),
+      ]) : null,
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
       h(UndoRemove, { controller, document, bus }),
       h('div.editor-graph#editor-graph'),

@@ -534,8 +534,8 @@ class Editor extends DataComponent {
           h('div.editor-help-title', 'Welcome'),
           h('div.editor-scroll-box', [
             h('div.editor-help-copy', `
-              Biofactoid assists you, the author, in creating a shareable digital summary of the biological pathway information contained in your article.
-              With one-click sharing, researchers can easily discover and read your article.
+              Please take a moment to learn how to create a pathway containing the key biological interactions from your article.
+              Click 'Submit' when you are satisfied that your pathway is complete.
             `),
             h('div.editor-help-cells', [
               h('div.editor-help-cell', [
@@ -548,7 +548,11 @@ class Editor extends DataComponent {
               ]),
               h('div.editor-help-cell', [
                 h('img.editor-help-img', { src: '/image/welcome-aboard-3.svg' }),
-                h('div.editor-help-caption', `3. Share your article's summary`)
+                h('div.editor-help-caption', `3. For complexes, drag items together`)
+              ]),
+              h('div.editor-help-cell', [
+                h('img.editor-help-img', { src: '/image/welcome-aboard-4.svg' }),
+                h('div.editor-help-caption', `4. Submit when finished`)
               ])
             ])
           ]),

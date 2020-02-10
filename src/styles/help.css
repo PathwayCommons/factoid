@@ -151,13 +151,13 @@
 
   .editor-help-close {
     font-size: 1em;
-    position: static;
+    position: relative;
   }
 }
 
 @media only screen and (min-height: 600px) and (min-width: 600px) {
   .editor-help-close {
-    position: absolute;
+    position: relative;
     right: 0;
     bottom: 0;
     margin: 0.5em;

@@ -22,6 +22,7 @@ const DOCUMENT_STATUS_FIELDS = Object.freeze({
   REQUESTED: 'requested',
   APPROVED: 'approved',
   SUBMITTED: 'submitted',
+  PUBLISHED: 'published',
   TRASHED: 'trashed'
 });
 
@@ -403,6 +404,8 @@ class Document {
   approved(){ return this.status() === DOCUMENT_STATUS_FIELDS.APPROVED ? true : false; }
   submit(){ return this.status( DOCUMENT_STATUS_FIELDS.SUBMITTED ); }
   submitted(){ return this.status() === DOCUMENT_STATUS_FIELDS.SUBMITTED ? true : false; }
+  publish(){ return this.status( DOCUMENT_STATUS_FIELDS.PUBLISHED ); }
+  published(){ return this.status() === DOCUMENT_STATUS_FIELDS.PUBLISHED ? true : false; }
   trash(){ return this.status( DOCUMENT_STATUS_FIELDS.TRASHED ); }
   trashed(){ return this.status() === DOCUMENT_STATUS_FIELDS.TRASHED ? true : false; }
 

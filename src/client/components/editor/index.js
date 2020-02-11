@@ -22,7 +22,7 @@ import * as defs from './defs';
 import EditorButtons from './buttons';
 import MainMenu from '../main-menu';
 import UndoRemove from './undo-remove';
-import { ShareView } from '../share';
+import { TaskView } from '../tasks';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -121,7 +121,9 @@ class Editor extends DataComponent {
     doc.on('localadd', updateLastEditDate);
     doc.on('localremove', updateLastEditDate);
 
-    doc.on('submit', () => this.dirty());
+    doc.on('update', change => {
+      if( _.has( change, 'status' ) ) this.dirty();
+    });
 
     doc.on('load', () => {
       doc.interactions().concat( doc.complexes() ).forEach( listenForRmPpt );
@@ -230,6 +232,10 @@ class Editor extends DataComponent {
       } )
       .catch( (err) => logger.error('An error occurred livening the doc', err) )
     ;
+  }
+
+  done(){
+    return this.data.document.submitted() || this.data.document.published();
   }
 
   editable(){
@@ -475,7 +481,7 @@ class Editor extends DataComponent {
   }
 
   render(){
-    let { document, bus, showHelp, cy } = this.data;
+    let { document, bus, showHelp } = this.data;
     let controller = this;
     let { history } = this.props;
 
@@ -494,23 +500,16 @@ class Editor extends DataComponent {
       h('div.editor-main-menu', [
         h(MainMenu, { bus, document, history })
       ]),
-      h('div.editor-share', {
-
-      }, [
-        document.editable() ? (
-          h(Popover, { tippy: { html: h(ShareView, { cy, document, bus } ) } }, [
-            h('button.editor-share-button.super-salient-button', {
-              onClick: () => bus.emit('toggleshare')
-            }, 'Share')
-          ])
-        ) : (
-          !document.hasTweet() ? null : h('a', { href: document.tweetUrl() }, [
-            h('button.editor-tweet-button.super-salient-button', [
-              h('i.icon.icon-t-white')
-            ])
-          ])
-        )
-      ]),
+      this.editable() ? h('div.editor-submit', [
+        h(Popover, { tippy: { html: h(TaskView, { document, bus } ) } }, [
+          h('button.editor-submit-button', {
+            disabled: document.trashed(),
+            className: makeClassList({
+              'super-salient-button': !this.done()
+            })
+          }, this.done() ?  'Submitted' : 'Submit')
+        ])
+      ]) : null,
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
       h(UndoRemove, { controller, document, bus }),
       h('div.editor-graph#editor-graph'),

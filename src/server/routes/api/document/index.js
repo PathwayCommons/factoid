@@ -208,7 +208,7 @@ let getSbgnFromTemplates = templates => {
 // - status: include docs bearing valid Document 'status'
 // - ids: only get the docs for the specified comma-separated list of ids (disables pagination)
 http.get('/', function( req, res, next ){
-  let { limit, offset, apiKey } = Object.assign({
+  let { limit, offset } = Object.assign({
     limit: 50,
     offset: 0
   }, req.query);
@@ -223,8 +223,7 @@ http.get('/', function( req, res, next ){
   let tables;
 
   return (
-    tryPromise( () => checkApiKey(apiKey) )
-    .then( loadTables )
+    tryPromise( () => loadTables() )
     .then( tbls => {
       tables = tbls;
 
@@ -234,6 +233,8 @@ http.get('/', function( req, res, next ){
       let t = tables.docDb;
       let { table, conn, rethink: r } = t;
       let q = table;
+
+      q = q.orderBy(r.desc('createdDate'));
 
       if( ids ){ // doc id must be in specified id list
         let exprs = ids.map(id => r.row('id').eq(id));

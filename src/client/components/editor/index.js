@@ -534,8 +534,7 @@ class Editor extends DataComponent {
           h('div.editor-help-title', 'Welcome'),
           h('div.editor-scroll-box', [
             h('div.editor-help-copy', `
-              Please take a moment to learn how to create a pathway containing the key biological interactions from your article.
-              Click 'Submit' when you are satisfied that your pathway is complete.
+              In just a few simple steps you'll compose a pathway containing the key biological interactions described in your article.
             `),
             h('div.editor-help-cells', [
               h('div.editor-help-cell', [
@@ -552,14 +551,14 @@ class Editor extends DataComponent {
               ]),
               h('div.editor-help-cell', [
                 h('img.editor-help-img', { src: '/image/welcome-aboard-4.svg' }),
-                h('div.editor-help-caption', `4. Submit when finished`)
+                h('div.editor-help-caption', `4. Submit to finish`)
               ])
             ])
           ]),
           h('div.editor-help-close', [
             h('button.editor-help-close-button.active-button', {
               onClick: () => this.toggleHelp()
-            }, `OK, let's get started`)
+            }, `OK, let's start`)
           ])
         ])
       ])

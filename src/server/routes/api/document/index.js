@@ -437,7 +437,7 @@ const tryVerify = async doc => {
 
     } else {
       const { authorEmail } = doc.correspondence();
-      const { contacts } = doc.citation();
+      const { authors: { contacts } } = doc.citation();
       const hasEmail = _.some( contacts, contact => _.includes( _.get( contact, 'email' ), authorEmail ) );
       if( hasEmail ) doVerify = true;
     }

@@ -485,14 +485,14 @@ class Editor extends DataComponent {
     let controller = this;
     let { history } = this.props;
 
-    const { authors, title = 'Unnamed document', reference } = document.citation();
+    const { authors: { abbreviation }, title = 'Unnamed document', reference } = document.citation();
 
     let editorContent = this.data.initted ? [
       h('div.editor-title', [
         h('div.editor-title-content', [
           h('div.editor-title-name', title ),
           h('div.editor-title-info', [
-            h('div', authors ),
+            h('div', abbreviation ),
             h('div', reference )
           ])
         ])

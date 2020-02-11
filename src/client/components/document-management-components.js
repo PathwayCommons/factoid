@@ -352,7 +352,7 @@ class DocumentManagementDocumentComponent extends React.Component {
         ];
 
       } else {
-        const { authors, contacts, title, reference, pmid, doi } = doc.citation();
+        const { authors: { contacts, abbreviation }, title, reference, pmid, doi } = doc.citation();
         const contactList = contacts.map( contact => `${contact.email} <${contact.name}>` ).join(', ');
         const { paperId } = doc.provided();
 
@@ -363,7 +363,7 @@ class DocumentManagementDocumentComponent extends React.Component {
                 target: '_blank'
               }, title )
             ]),
-            h('small.mute', `${authors}. ${reference}` ),
+            h('small.mute', `${abbreviation}. ${reference}` ),
             h( 'small.mute', [
               h( 'a.plain-link', {
                 href: DOI_LINK_BASE_URL + doi,

@@ -60,11 +60,10 @@ const getJournalNameString = Journal => {
   const hasJournalTitle = !_.isNil( _.get( Journal, ['Title'] ) ); //optional
   let name = '';
   if( hasJournalISOAbbreviation ){
-    name = `${_.get( Journal, ['ISOAbbreviation'] )}.`;
+    name = `${_.get( Journal, ['ISOAbbreviation'] )}`;
   } else if( hasJournalTitle ) {
-    name = `${_.get( Journal, ['Title'] )}.`;
+    name = `${_.get( Journal, ['Title'] )}`;
   }
-
   return name;
 };
 

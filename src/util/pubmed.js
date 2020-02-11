@@ -1,6 +1,14 @@
 import _ from 'lodash';
 
 const NUM_AUTHORS_SHOWING = 4;
+
+/**
+ * getAuthorName
+ *
+ * Retrieve a nicely formatted string of the author name
+ * @param {Object} Author returned as is from fetchPubmed PubmedArticleSet
+ * @return {String} ( First Initial Last | Collective )
+ */
 const getAuthorName = author => {
   let name = '';
   const collectiveName = _.get( author, 'CollectiveName' );
@@ -105,4 +113,4 @@ const getPubmedCitation = PubmedArticle => {
   return { authors, title, reference, abstract, pmid, doi };
 };
 
-export { getPubmedCitation };
+export { getPubmedCitation, getAuthorName };

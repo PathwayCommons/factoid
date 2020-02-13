@@ -112,6 +112,11 @@
   font-size: var(--smallFontSize);
 }
 
+.editor-title-info-authors-email {
+  margin-left: 0.4em;
+  vertical-align: middle;
+}
+
 .editor-task-list-active {
   & .editor-branding {
     left: calc(50% - 11em);

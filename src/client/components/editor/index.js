@@ -27,7 +27,7 @@ import MainMenu from '../main-menu';
 import UndoRemove from './undo-remove';
 import { TaskView } from '../tasks';
 
-import { ExpandableList } from '../expand-collapse';
+import { ExpandableListComponent } from '../expand-collapse';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -491,8 +491,9 @@ class Editor extends DataComponent {
     let { history } = this.props;
 
     const getTitleContent = document => {
-      let { authors, title = 'Unnamed document', reference, doi } = document.citation();
-      const authorList = _.get( authors, 'authorList', [] );
+      let { authors: { authorList }, title, reference, doi } = document.citation();
+      title = title || 'Untitled';
+      authorList = authorList || [];
       return [
         h('div.editor-title-name', [
           doi ? h( 'a.plain-link', {
@@ -502,9 +503,9 @@ class Editor extends DataComponent {
           title
         ]),
         h('div.editor-title-info', [
-          h( ExpandableList, {
-            maxHead: 3,
-            maxTail: 200
+          h( ExpandableListComponent, {
+            maxHead: 2,
+            maxTail: 2
           }, authorList.map( ({ name, email, abbrevName, isCollectiveName }) => {
               const term = `${abbrevName}${ isCollectiveName ? '': '[Author]'}`;
               const pubmedSearchQuery = queryString.stringify({ term });
@@ -531,7 +532,6 @@ class Editor extends DataComponent {
         ])
       ];
     };
-    // let { authors: { abbreviation }, title = 'Unnamed document', reference, doi } = document.citation();
     let editorContent = this.data.initted ? [
       h('div.editor-title', [
         h('div.editor-title-content', getTitleContent( document ) )

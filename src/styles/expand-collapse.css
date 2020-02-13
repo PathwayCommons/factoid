@@ -5,11 +5,20 @@
 .expandable-list-item {
   display: inline;
 
-  &.hidden {
+  &.elidable {
     display: none;
   }
 }
 
-.expandable-list-item:not(.hidden) ~ .expandable-list-item:not(.hidden)::before {
+.expandable-list-item .elide-toggle {
+  border: 0;
+  margin-left: 0.2em;
+
+  &.button-toggle-on {
+    display: none;
+  }
+}
+
+.expandable-list-item:not(.elidable, .elide-element) ~ .expandable-list-item:not(.elidable, .elide-element)::before {
   content: " • ";
 }

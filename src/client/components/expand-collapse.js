@@ -22,9 +22,17 @@ class ExpandableListItemComponent extends React.Component {
 
 class ElideComponent extends React.Component {
   render(){
-    const { onToggle, getState } = this.props;
     return h( ExpandableListItemComponent, { classes: { 'elide-element': true } }, [
-      h( Toggle, { onToggle, getState, className: 'elide-toggle' }, [ h('i.material-icons', 'more_horiz') ] )
+      h('i.material-icons', 'more_horiz')
+    ]);
+  }
+}
+
+class CollapseComponent extends React.Component {
+  render(){
+    const { onToggle, getState } = this.props;
+    return h( ExpandableListItemComponent, { classes: { 'elide-toggle-element': true } }, [
+      h( Toggle, { onToggle, getState, className: 'elide-toggle' }, [ h('small', 'Show fewer') ] )
     ]);
   }
 }
@@ -87,13 +95,15 @@ class ExpandableListComponent extends React.Component {
     let items = children.map( createItem );
 
     if( this.isElidable ){
-      const { expanded } = this.state;
       const startElide = _.findIndex( items, 'props.classes.elidable' );
-      const elideListElement = h( ElideComponent, {
-        getState: () => expanded,
+      const elidedElement = h( ElideComponent );
+      items = insertAt( items, startElide, elidedElement );
+
+      const collapseListElement = h( CollapseComponent, {
+        getState: () => this.state.expanded,
         onToggle: evt => this.handleElideClick( evt )
-      });
-      if( startElide > -1 ) items = insertAt( items, startElide, elideListElement );
+      }, h( 'small', 'Collapse' ) );
+      items = items.concat( collapseListElement );
     }
 
     return items;
@@ -102,6 +112,7 @@ class ExpandableListComponent extends React.Component {
   render(){
     const { children } = this.props;
     if( !children ) return null;
+    console.log(`isElidable: ${this.isElidable}`);
     return h('ul.expandable-list', this.getItems());
   }
 }

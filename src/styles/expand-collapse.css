@@ -10,13 +10,8 @@
   }
 }
 
-.expandable-list-item .elide-toggle {
-  border: 0;
+.expandable-list-item.elide-element {
   margin-left: 0.2em;
-
-  &.button-toggle-on {
-    display: none;
-  }
 }
 
 .expandable-list-item:not(.elidable, .elide-element) ~ .expandable-list-item:not(.elidable, .elide-element)::before {

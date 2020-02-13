@@ -20,19 +20,27 @@ class ExpandableListItemComponent extends React.Component {
   }
 }
 
-class ElideComponent extends React.Component {
+class ElideSymbolComponent extends React.Component {
   render(){
-    return h( ExpandableListItemComponent, { classes: { 'elide-element': true } }, [
-      h('i.material-icons', 'more_horiz')
+    const { elideSymbol } = this.props;
+    return h( ExpandableListItemComponent, {
+      classes: { 'elide-element': true }
+    }, [
+      elideSymbol
     ]);
   }
 }
 
-class CollapseComponent extends React.Component {
+class ElideToggleComponent extends React.Component {
   render(){
-    const { onToggle, getState } = this.props;
+    const { onToggle, getState, moreLabelComponent, fewerLabelComponent } = this.props;
+    const expanded = getState();
     return h( ExpandableListItemComponent, { classes: { 'elide-toggle-element': true } }, [
-      h( Toggle, { onToggle, getState, className: 'elide-toggle' }, [ h('small', 'Show fewer') ] )
+      h( Toggle, {
+        onToggle, getState, className: 'elide-toggle'
+      }, [
+        expanded ? fewerLabelComponent: moreLabelComponent
+      ])
     ]);
   }
 }
@@ -53,9 +61,7 @@ class ExpandableListComponent extends React.Component {
     super( props );
 
     this.state = {
-      expanded: false,
-      numHead: props.maxHead,
-      numTail: props.maxTail
+      expanded: false
     };
 
     this.length = props.children.length;
@@ -64,30 +70,22 @@ class ExpandableListComponent extends React.Component {
   }
 
   calcListStats(){
-    const { numHead, numTail } = this.state;
+    const { maxHead, maxTail } = this.props;
     const N = this.length;
-    const headEndIndex = Math.min( numHead, N );
+    const headEndIndex = Math.min( maxHead, N );
     const numTailItems = N - headEndIndex;
-    const itemsFromEnd = Math.min( numTailItems, numTail );
+    const itemsFromEnd = Math.min( numTailItems, maxTail );
     const tailStartIndex = N - itemsFromEnd;
     const numElidable = tailStartIndex - headEndIndex;
     return { headEndIndex, tailStartIndex, numElidable };
   }
 
   handleElideClick(){
-    this.setState( ( state, props ) => {
-      let numHead = props.maxHead;
-      let numTail = props.maxTail;
-      if( !state.expanded ){
-        numHead = this.length;
-        numTail = 0;
-      }
-      return { expanded: !state.expanded, numHead, numTail };
-    });
+    this.setState( { expanded: !this.state.expanded } );
   }
 
   getItems(){
-    const { children } = this.props;
+    const { children, elideSymbol, moreLabelComponent, fewerLabelComponent } = this.props;
     const { headEndIndex, tailStartIndex } = this.calcListStats();
     const shouldElide = i => i >= headEndIndex && i < tailStartIndex;
 
@@ -96,12 +94,14 @@ class ExpandableListComponent extends React.Component {
 
     if( this.isElidable ){
       const startElide = _.findIndex( items, 'props.classes.elidable' );
-      const elidedElement = h( ElideComponent );
+      const elidedElement = h( ElideSymbolComponent, { elideSymbol } );
       items = insertAt( items, startElide, elidedElement );
 
-      const collapseListElement = h( CollapseComponent, {
+      const collapseListElement = h( ElideToggleComponent, {
         getState: () => this.state.expanded,
-        onToggle: evt => this.handleElideClick( evt )
+        onToggle: evt => this.handleElideClick( evt ),
+        moreLabelComponent,
+        fewerLabelComponent
       }, h( 'small', 'Collapse' ) );
       items = items.concat( collapseListElement );
     }
@@ -112,14 +112,18 @@ class ExpandableListComponent extends React.Component {
   render(){
     const { children } = this.props;
     if( !children ) return null;
-    console.log(`isElidable: ${this.isElidable}`);
-    return h('ul.expandable-list', this.getItems());
+    return h('ul.expandable-list', {
+      className: makeClassList({ expanded: this.state.expanded })
+    }, this.getItems());
   }
 }
 
 ExpandableListComponent.defaultProps = {
   maxHead: 3,
-  maxTail: 1
+  maxTail: 1,
+  elideSymbol: h('i.material-icons', 'more_horiz'),
+  moreLabelComponent: h('span', 'More' ),
+  fewerLabelComponent: h('span', 'Fewer' )
 };
 
 export { ExpandableListComponent };

@@ -64,7 +64,7 @@ class ExpandableListComponent extends React.Component {
       expanded: false
     };
 
-    this.length = props.children.length;
+    this.length = _.get( props, ['children', 'length'], 0 );
     const { numElidable } = this.calcListStats();
     this.isElidable = numElidable > 0;
   }

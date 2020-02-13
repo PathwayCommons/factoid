@@ -5,8 +5,11 @@ import EventEmitter from 'eventemitter3';
 import io from 'socket.io-client';
 import _ from 'lodash';
 import Mousetrap from 'mousetrap';
+import queryString from 'query-string';
 
-import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL, EMAIL_CONTEXT_SIGNUP } from '../../../config';
+import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL, EMAIL_CONTEXT_SIGNUP,
+  DOI_LINK_BASE_URL, PUBMED_LINK_BASE_URL
+} from '../../../config';
 
 import { getId, defer, makeClassList, tryPromise } from '../../../util';
 import Document from '../../../model/document';
@@ -23,6 +26,8 @@ import EditorButtons from './buttons';
 import MainMenu from '../main-menu';
 import UndoRemove from './undo-remove';
 import { TaskView } from '../tasks';
+
+import { ExpandableList } from '../expand-collapse';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -485,17 +490,51 @@ class Editor extends DataComponent {
     let controller = this;
     let { history } = this.props;
 
-    const { authors: { abbreviation }, title = 'Unnamed document', reference } = document.citation();
+    const getTitleContent = document => {
+      let { authors, title = 'Unnamed document', reference, doi } = document.citation();
+      const authorList = _.get( authors, 'authorList', [] );
+      return [
+        h('div.editor-title-name', [
+          doi ? h( 'a.plain-link', {
+            href: DOI_LINK_BASE_URL + doi,
+            target: '_blank'
+          }, title ):
+          title
+        ]),
+        h('div.editor-title-info', [
+          h( ExpandableList, {
+            maxHead: 3,
+            maxTail: 200
+          }, authorList.map( ({ name, email, abbrevName, isCollectiveName }) => {
+              const term = `${abbrevName}${ isCollectiveName ? '': '[Author]'}`;
+              const pubmedSearchQuery = queryString.stringify({ term });
+              const pubmedSearchURL = `${PUBMED_LINK_BASE_URL}?${pubmedSearchQuery}`;
 
+              return [
+                h('a.plain-link', {
+                  target: '_blank',
+                  href: pubmedSearchURL,
+                  key: 'name'
+                },
+                `${name}`),
+                email ? h('a.plain-link', {
+                  target: '_blank',
+                  href: `mailto:${email}`,
+                  key: 'email'
+                },[
+                  h('i.material-icons.editor-title-info-authors-email', 'email')
+                ]): null
+              ];
+            })
+          ),
+          h('div', reference )
+        ])
+      ];
+    };
+    // let { authors: { abbreviation }, title = 'Unnamed document', reference, doi } = document.citation();
     let editorContent = this.data.initted ? [
       h('div.editor-title', [
-        h('div.editor-title-content', [
-          h('div.editor-title-name', title ),
-          h('div.editor-title-info', [
-            h('div', abbreviation ),
-            h('div', reference )
-          ])
-        ])
+        h('div.editor-title-content', getTitleContent( document ) )
       ]),
       h('div.editor-main-menu', [
         h(MainMenu, { bus, document, history })

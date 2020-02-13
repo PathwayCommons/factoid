@@ -1,0 +1,15 @@
+.expandable-list {
+  margin: 0 auto;
+}
+
+.expandable-list-item {
+  display: inline;
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.expandable-list-item:not(.hidden) ~ .expandable-list-item:not(.hidden)::before {
+  content: " • ";
+}

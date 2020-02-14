@@ -505,7 +505,8 @@ class Editor extends DataComponent {
           h('button.editor-submit-button', {
             disabled: document.trashed(),
             className: makeClassList({
-              'super-salient-button': !this.done()
+              'super-salient-button': true,
+              'submitted': this.done()
             })
           }, this.done() ?  'Submitted' : 'Submit')
         ])

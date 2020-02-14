@@ -43,6 +43,12 @@
   padding: 0.75em 0.5em;
 }
 
+.editor-submit-button {
+  &.submitted {
+    background-color: var(--completeColor);
+  }
+}
+
 .editor-share {
   position: absolute;
   right: 0;

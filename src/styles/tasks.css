@@ -1,6 +1,11 @@
 .task-view {
   width: 300px;
   padding: 0.25em 0.33em;
+
+  &.done {
+    width: 250px;
+    padding: 0;
+  }
 }
 
 .task-view-items {
@@ -19,14 +24,37 @@
   text-align: right;
 }
 
-.task-view-done {
+.task-view-done,
+.task-view-done-caption {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
 }
 
-.task-view-done-icon {
-  font-size: 1.25em;
-  text-align: right;
+.task-view-done-caption {
+  position: relative;
+  top: -1em;
 }
+
+.task-view-done-caption h1,
+p {
+  margin: 0.1em auto;
+}
+
+.task-view-done-caption-body {
+  font-size: 0.9em;
+}
+
+.task-view-done-caption-footer {
+  margin-top: 0.3em;
+  font-size: 0.8em;
+  color: var(--fadedColor);
+}
+
+.task-view-done-symbol i {
+  font-size: 5em;
+  text-align: right;
+  color: var(--completeColor);
+}
+

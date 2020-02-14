@@ -33,13 +33,13 @@ class ElideSymbolComponent extends React.Component {
 
 class ElideToggleComponent extends React.Component {
   render(){
-    const { onToggle, getState, moreLabelComponent, fewerLabelComponent } = this.props;
+    const { onToggle, getState, expandLabel, collapseLabel } = this.props;
     const expanded = getState();
     return h( ExpandableListItemComponent, { classes: { 'elide-toggle-element': true } }, [
       h( Toggle, {
         onToggle, getState, className: 'elide-toggle'
       }, [
-        expanded ? fewerLabelComponent: moreLabelComponent
+        expanded ? collapseLabel: expandLabel
       ])
     ]);
   }
@@ -85,7 +85,7 @@ class ExpandableListComponent extends React.Component {
   }
 
   getItems(){
-    const { children, elideSymbol, moreLabelComponent, fewerLabelComponent } = this.props;
+    const { children, elideSymbol, expandLabel, collapseLabel } = this.props;
     const { headEndIndex, tailStartIndex } = this.calcListStats();
     const shouldElide = i => i >= headEndIndex && i < tailStartIndex;
 
@@ -100,8 +100,8 @@ class ExpandableListComponent extends React.Component {
       const collapseListElement = h( ElideToggleComponent, {
         getState: () => this.state.expanded,
         onToggle: evt => this.handleElideClick( evt ),
-        moreLabelComponent,
-        fewerLabelComponent
+        expandLabel,
+        collapseLabel
       }, h( 'small', 'Collapse' ) );
       items = items.concat( collapseListElement );
     }
@@ -122,8 +122,8 @@ ExpandableListComponent.defaultProps = {
   maxHead: 3,
   maxTail: 1,
   elideSymbol: h('i.material-icons', 'more_horiz'),
-  moreLabelComponent: h('span', 'More' ),
-  fewerLabelComponent: h('span', 'Fewer' )
+  expandLabel: h('span', 'More' ),
+  collapseLabel: h('span', 'Fewer' )
 };
 
 export { ExpandableListComponent };

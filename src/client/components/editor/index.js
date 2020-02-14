@@ -506,7 +506,7 @@ class Editor extends DataComponent {
           h( ExpandableListComponent, {
             maxHead: 3,
             maxTail: 2,
-            moreLabelComponent: h('span', 'More authors' )
+            expandLabel: h('span', 'More authors' )
           }, authorList.map( ({ name, email, abbrevName, isCollectiveName }) => {
               const term = `${abbrevName}${ isCollectiveName ? '': '[Author]'}`;
               const pubmedSearchQuery = queryString.stringify({ term });

@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import DataComponent from './data-component';
 import h from 'react-hyperscript';
+import queryString from 'query-string';
 
 import { BASE_URL } from '../../config';
 
@@ -45,8 +46,28 @@ class TaskView extends DataComponent {
       this.dirty();
     };
 
+    this.onSubmit = () => {
+      const id = this.props.document.id();
+      const secret = this.props.document.secret();
+      const apiKey = '';
+      const params = [
+        { op: 'replace', path: 'status', value: 'published' }
+      ];
+      const url = `/api/document/status/${id}/${secret}/?${queryString.stringify({ apiKey })}`;
+      return fetch( url, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify( params )
+      });
+    };
+
     this.onUpdate = change => {
-      if( _.has( change, 'status' ) ) this.dirty();
+      if( _.has( change, 'status' ) ){
+        if( change.status === 'submitted' ) this.onSubmit();
+        this.dirty();
+      }
     };
 
     this.props.document.on('add', this.onAdd);

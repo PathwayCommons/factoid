@@ -491,10 +491,16 @@ class Editor extends DataComponent {
     let { history } = this.props;
 
     const getTitleContent = document => {
-      let { authors: { authorList }, title, reference, doi } = document.citation();
+      let { authors: { authorList, abbreviation }, title, reference, doi } = document.citation();
       title = title || 'Untitled';
       authorList = authorList || [];
-      return [
+      return this.editable() ? [
+        h('div.editor-title-name', title ),
+        h('div.editor-title-info', [
+            h('div', abbreviation ),
+            h('div', reference )
+        ])
+        ] : [
         h('div.editor-title-name', [
           doi ? h( 'a.plain-link', {
             href: DOI_LINK_BASE_URL + doi,

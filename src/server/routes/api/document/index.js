@@ -494,8 +494,9 @@ http.patch('/status/:id/:secret', function( req, res, next ){
   const tryPublish = async doc => {
     let didPublish = false;
     const hasEles = doc => doc.elements().length > 0;
+    const hasIncompleteEles = doc => doc.elements().some( ele => !ele.completed() && !ele.isInteraction() );
     const hasSubmittedStatus = doc => doc.status() === DOCUMENT_STATUS_FIELDS.SUBMITTED;
-    const isPublishable = doc => hasEles( doc ) && hasSubmittedStatus( doc );
+    const isPublishable = doc => hasEles( doc ) && !hasIncompleteEles( doc ) && hasSubmittedStatus( doc );
     if( isPublishable( doc ) ){
       await doc.publish();
       didPublish = true;

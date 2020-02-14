@@ -490,7 +490,6 @@ http.patch('/email/:id/:secret', function( req, res, next ){
 // Update document status
 http.patch('/status/:id/:secret', function( req, res, next ){
   const { id, secret } = req.params;
-  const { apiKey } = req.query;
 
   const tryPublish = async doc => {
     let didPublish = false;
@@ -526,8 +525,7 @@ http.patch('/status/:id/:secret', function( req, res, next ){
   };
 
   return (
-    tryPromise( () => checkApiKey( apiKey ) )
-    .then( () => res.end() )
+    tryPromise( () => res.end() )
     .then( loadTables )
     .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
     .then( updateDocStatus )

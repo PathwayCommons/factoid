@@ -128,12 +128,12 @@ class TaskView extends DataComponent {
           ]),
           h('div.task-view-done-caption', [
             h('h1.task-view-done-caption-title', 'Success!' ),
-            h('p.task-view-done-caption-body', 'Check for a confirmation email.' ),
+            h('p.task-view-done-caption-body', 'Check for a confirmation email' ),
             h('p.task-view-done-caption-footer', [
               h('a.plain-link', {
                 target: '_blank',
                 href: BASE_URL
-              },'Contribute another.' )
+              },'Contribute another' )
             ])
           ])
         ])

@@ -3,7 +3,7 @@ import Highlighter from '../highlighter';
 import Formula from './chemical-formula';
 import Tooltip from '../popover/tooltip';
 
-const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL, NCBI_LINK_BASE_URL, CHEBI_LINK_BASE_URL } = require('../../../config');
+const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL, NCBI_LINK_BASE_URL, CHEBI_LINK_BASE_URL, PUBMED_LINK_BASE_URL } = require('../../../config');
 
 let protein = (m, searchTerms, includeOrganism = true) => {
   return [
@@ -90,6 +90,10 @@ let link = m => {
     case 'ncbi':
       url = NCBI_LINK_BASE_URL + m.id;
       nsName = 'NCBI';
+      break;
+    case 'intn':
+      url = PUBMED_LINK_BASE_URL + m.id
+      nsName = 'PUBMED';
       break;
   }
 

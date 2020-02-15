@@ -9,8 +9,11 @@ import uuid from 'uuid';
 import Progression from './progression';
 import EventEmitter from 'eventemitter3';
 import { INTERACTION_TYPES, INTERACTION_TYPE } from '../../../model/element/interaction-type';
+import { tryPromise, makeCancelable } from '../../../util';
+import assocDisp from './entity-assoc-display';
 
 let stageCache = new WeakMap();
+let associationCache = new WeakMap();
 
 class InteractionInfo extends DataComponent {
   constructor( props ){
@@ -34,13 +37,17 @@ class InteractionInfo extends DataComponent {
     let initialStage = ORDERED_STAGES[1]; // skip the arrow / ppt types stage b/c the user drew the edge with the arrow already
 
     let stage = initCache( stageCache, el, el.completed() ? STAGES.COMPLETED : initialStage );
+    let assoc = initCache( associationCache, el, { matches: [], offset: 0 } );
 
     this.data = {
       el,
       stage,
       description: p.element.description(),
       progression,
-      bus: p.bus || new EventEmitter()
+      bus: p.bus || new EventEmitter(),
+      limit: defs.associationSearchLimit,
+      matches: assoc.matches,
+      offset: assoc.offset
     };
   }
 
@@ -118,11 +125,15 @@ class InteractionInfo extends DataComponent {
   componentDidMount(){
     let root = ReactDom.findDOMNode( this );
     let comment = root.querySelector('.interaction-info-description');
-    let { progression, bus, el } = this.data;
+    let { progression, bus, el, matches } = this.data;
     let { STAGES } = progression;
     let stage = progression.getStage();
 
     progression.goToStage( stage );
+
+    if( matches.length === 0 && el != null ){
+      this.updateMatches();
+    }
 
     this.onRemoteRedescribe = () => {
       this.setData({ description: this.data.el.description() });
@@ -171,6 +182,61 @@ class InteractionInfo extends DataComponent {
     el.removeListener('associate', this.onAssociate);
     bus.removeListener('retypeppt', this.onRetypePpt);
     bus.removeListener('retypepptskip', this.onRetypePptSkip);
+  }
+
+  updateMatches( offset = this.data.offset ) {
+    let { limit, el } = this.data;
+    let s = this.data;
+
+    let genes = el.participants().map( p => p.name() );
+
+    let q = {
+      genes,
+      limit,
+      offset: s.offset
+    };
+
+    let makeRequest = () => fetch( '/api/element-association/search-intn', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(q)
+    } );
+
+    let jsonify = res => res.json();
+
+    let updateView = matches => {
+      matches.forEach( m => s.matches.push(m) );
+      this.setData({ matches: s.matches, offset: s.offset });
+
+      // cache the matches in the element for re-creation of component
+      associationCache.set( el, {
+        matches: s.matches,
+        offset: s.offset
+      } );
+    };
+
+    return makeCancelable(
+      Promise.resolve()
+        .then( makeRequest )
+        .then( jsonify )
+        .then( updateView )
+    );
+  }
+
+  getMoreMatches( numMore = this.data.limit ){
+    let s = this.data;
+
+    // if( !s.name || s.gettingMoreMatches || this._unmounted ){ return Promise.resolve(); }
+
+    let offset = s.offset + numMore;
+
+    // this.setData({
+    //   gettingMoreMatches: true
+    // });
+
+    return this.updateMatches( offset );
   }
 
   redescribe( descr ){
@@ -264,9 +330,52 @@ class InteractionInfo extends DataComponent {
         }, IntnType.displayValue) );
       } );
 
-      children.push( h('label.interaction-info-assoc-radioset-label', 'Interaction type') );
+      let onMatchesScroll = _.debounce( div => {
+        let scrollMax = div.scrollHeight;
+        let scroll = div.scrollTop + div.clientHeight;
 
-      children.push( h('div.interaction-info-assoc-radioset', radiosetChildren) );
+        if( scroll >= scrollMax ){
+          this.getMoreMatches();
+        }
+      }, defs.updateDelay / 2 );
+
+      let renderMatch = m => {
+        return [
+          h('div.entity-info-name', m.type),
+          h('span.entity-info-section', [
+            h('span', m.text)
+          ])
+        ];
+
+      };
+
+
+      let { matches } = s;
+      let interactions = matches.map( m => {
+        return h('div.entity-info-match', [
+          h('div.entity-info-match-target', {
+            onClick: () => { // skip to next stage when clicking existing assoc
+              progression.forward();
+            }
+          }, renderMatch( m ) ),
+          assocDisp.link( { id: m.pmid, namespace: 'intn' } )
+        ])
+      } );
+
+      let container = h('div.entity-info-matches', {
+        // className: s.replacingMatches ? 'entity-info-matches-replacing' : '',
+        onScroll: evt => {
+          onMatchesScroll( evt.target );
+
+          evt.stopPropagation();
+        }
+      }, interactions);
+      //
+      // Promise.resolve().then( makeRequest ).then( jsonify ).then( matches => {
+      //   this.setData({ matches });
+      // } );
+
+      children.push(container);
     }
 
     return h('div.interaction-info', children);

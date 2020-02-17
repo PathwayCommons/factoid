@@ -47,7 +47,8 @@ class InteractionInfo extends DataComponent {
       bus: p.bus || new EventEmitter(),
       limit: defs.associationSearchLimit,
       matches: assoc.matches,
-      offset: assoc.offset
+      offset: assoc.offset,
+      gettingMoreMatches: false
     };
   }
 
@@ -208,17 +209,26 @@ class InteractionInfo extends DataComponent {
 
     let updateView = matches => {
       matches.forEach( m => s.matches.push(m) );
-      this.setData({ matches: s.matches, offset: s.offset });
 
       // cache the matches in the element for re-creation of component
       associationCache.set( el, {
         matches: s.matches,
         offset: s.offset
       } );
+
+      this.setData({ matches: s.matches, offset: s.offset, loadingMatches: false });
     };
+
+
+    let setLoadingMatches = () => {
+      this.setData({
+        loadingMatches: true
+      });
+    }
 
     return makeCancelable(
       Promise.resolve()
+        .then( setLoadingMatches )
         .then( makeRequest )
         .then( jsonify )
         .then( updateView )
@@ -228,15 +238,19 @@ class InteractionInfo extends DataComponent {
   getMoreMatches( numMore = this.data.limit ){
     let s = this.data;
 
-    // if( !s.name || s.gettingMoreMatches || this._unmounted ){ return Promise.resolve(); }
+    if ( s.gettingMoreMatches ) { return Promise.resolve() };
 
     let offset = s.offset + numMore;
 
-    // this.setData({
-    //   gettingMoreMatches: true
-    // });
+    this.setData({
+      gettingMoreMatches: true
+    });
 
-    return this.updateMatches( offset );
+    return this.updateMatches( offset ).then( () => {
+      this.setData({
+        gettingMoreMatches: false
+      });
+    } );
   }
 
   redescribe( descr ){
@@ -294,41 +308,6 @@ class InteractionInfo extends DataComponent {
 
       children.push( h('div.interaction-info-summary', summaryChildren) );
     } else if( stage === STAGES.ASSOCIATE ){
-      let radioName = 'interaction-info-assoc-radioset-' + el.id();
-      let radiosetChildren = [];
-
-      INTERACTION_TYPES.forEach( IntnType => {
-        let radioId = 'interaction-info-assoc-radioset-item-' + uuid();
-        let checked = el.associated() && el.association().value === IntnType.value;
-        let indented = [
-          INTERACTION_TYPE.PHOSPHORYLATION,
-          INTERACTION_TYPE.DEPHOSPHORYLATION,
-          INTERACTION_TYPE.METHYLATION,
-          INTERACTION_TYPE.DEMETHYLATION,
-          INTERACTION_TYPE.UBIQUITINATION,
-          INTERACTION_TYPE.DEUBIQUITINATION
-        ].some( IndentedType => IndentedType.value === IntnType.value );
-
-        radiosetChildren.push( h('input.interaction-info-type-radio', {
-          type: 'radio',
-          onChange: () => {
-            this.associate( IntnType );
-            progression.forward();
-          },
-          onClick: () => { // skip to next stage when clicking existing assoc
-            if( checked ){ progression.forward(); }
-          },
-          id: radioId,
-          name: radioName,
-          value: IntnType.value,
-          checked
-        }) );
-
-        radiosetChildren.push( h('label.interaction-info-assoc-radio-label', {
-          className: indented ? 'interaction-info-type-radio-indented' : '',
-          htmlFor: radioId
-        }, IntnType.displayValue) );
-      } );
 
       let onMatchesScroll = _.debounce( div => {
         let scrollMax = div.scrollHeight;
@@ -338,6 +317,10 @@ class InteractionInfo extends DataComponent {
           this.getMoreMatches();
         }
       }, defs.updateDelay / 2 );
+
+      let Loader = ({ loading = true }) => h('div.entity-info-matches-loading' + (loading ? '.entity-info-matches-loading-active' : ''), [
+        loading ? h('i.icon.icon-spinner') : h('i.material-icons', 'remove')
+      ]);
 
       let renderMatch = m => {
         return [
@@ -350,8 +333,8 @@ class InteractionInfo extends DataComponent {
       };
 
 
-      let { matches } = s;
-      let interactions = matches.map( m => {
+      let { matches, loadingMatches } = s;
+      let getInteractions = () => matches.map( m => {
         return h('div.entity-info-match', [
           h('div.entity-info-match-target', {
             onClick: () => { // skip to next stage when clicking existing assoc
@@ -362,20 +345,24 @@ class InteractionInfo extends DataComponent {
         ])
       } );
 
-      let container = h('div.entity-info-matches', {
-        // className: s.replacingMatches ? 'entity-info-matches-replacing' : '',
+      let getContent = () => {
+        if ( matches.length == 0 && loadingMatches ) {
+          return h(Loader);
+        }
+        else {
+          return getInteractionsContainer();
+        }
+      }
+
+      let getInteractionsContainer = () => h('div.entity-info-matches', {
         onScroll: evt => {
           onMatchesScroll( evt.target );
 
           evt.stopPropagation();
         }
-      }, interactions);
-      //
-      // Promise.resolve().then( makeRequest ).then( jsonify ).then( matches => {
-      //   this.setData({ matches });
-      // } );
+      }, [ ...getInteractions(), h(Loader, { loading: s.gettingMoreMatches }) ]);
 
-      children.push(container);
+      children.push(getContent());
     }
 
     return h('div.interaction-info', children);

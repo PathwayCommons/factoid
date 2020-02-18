@@ -189,12 +189,35 @@ class InteractionInfo extends DataComponent {
     let { limit, el } = this.data;
     let s = this.data;
 
-    let genes = el.participants().map( p => p.name() );
+    let sign;
+    let sources, targets;
+
+    let assoc = el.association();
+
+    if ( assoc.isPositive() ) {
+      sign = 'P';
+    }
+    else if ( assoc.isNegative() ) {
+      sign = 'N';
+    }
+    else {
+      sign = 'U';
+    }
+
+    if ( assoc.isSigned() ) {
+      sources = [ assoc.getSource().name() ];
+      targets = [ assoc.getTarget().name() ];
+    }
+    else {
+      sources = el.participants().map( p => p.name() );
+    }
 
     let q = {
-      genes,
+      sources,
+      targets,
       limit,
-      offset: s.offset
+      offset: s.offset,
+      sign
     };
 
     let makeRequest = () => fetch( '/api/element-association/search-intn', {
@@ -339,6 +362,9 @@ class InteractionInfo extends DataComponent {
           h('div.entity-info-match-target', {
             onClick: () => { // skip to next stage when clicking existing assoc
               progression.forward();
+              // TODO: make the mapping between indra and factoid
+              // and call this method after finding the correct factoid interaction type
+              // this.associate( intnType );
             }
           }, renderMatch( m ) ),
           assocDisp.link( { id: m.pmid, namespace: 'intn' } )

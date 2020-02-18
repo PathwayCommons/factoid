@@ -53,9 +53,6 @@
   border-bottom-left-radius: 0.5em;
 }
 
-.editor-share-button {
-}
-
 .editor-button-group {
   display: inline-flex;
   flex-direction: column;

@@ -2,10 +2,10 @@ import _ from 'lodash';
 import h from 'react-hyperscript';
 import { Component } from 'react';
 import Popover from './popover/popover';
-import { makeClassList } from '../../util';
+import { makeClassList, tryPromise } from '../../util';
 import EventEmitter from 'eventemitter3';
 
-import { EMAIL_CONTEXT_SIGNUP } from '../../config';
+import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME, NODE_ENV } from '../../config';
 
 const checkStatus = response => {
   if ( response.status >= 200 && response.status < 300 ) {
@@ -29,7 +29,6 @@ class RequestForm extends Component {
         emailAddress: '',
         isEmailValid: false
       },
-      isCorrespondingAuthor: true,
       submitting: false,
       done: false,
       errors: {
@@ -49,7 +48,6 @@ class RequestForm extends Component {
         emailAddress: '',
         isEmailValid: false
       },
-      isCorrespondingAuthor: true,
       submitting: false,
       done: false,
       errors: {
@@ -73,7 +71,7 @@ class RequestForm extends Component {
   }
 
   submitRequest(){
-    const { paperId, authorEmail, isCorrespondingAuthor } = this.state;
+    const { paperId, authorEmail } = this.state;
     const { emailAddress, isEmailValid } = authorEmail;
 
     if( !paperId || !emailAddress ){
@@ -87,7 +85,6 @@ class RequestForm extends Component {
       const data = _.assign( {}, {
         paperId: _.trim( paperId ),
         authorEmail: emailAddress,
-        isCorrespondingAuthor,
         context: EMAIL_CONTEXT_SIGNUP
       });
       const fetchOpts = {
@@ -127,7 +124,7 @@ class RequestForm extends Component {
       }, [
         h('input', {
           type: 'text',
-          placeholder: 'PubMed link',
+          placeholder: 'Article title',
           onChange: e => this.updateForm({ paperId: e.target.value }),
           value: this.state.paperId
         }),
@@ -142,25 +139,6 @@ class RequestForm extends Component {
           }),
           value: this.state.authorEmail.value
         }),
-        h('div.home-request-form-author', [
-          h('span', 'Are you the corresponding author for the article?'),
-          h('input', {
-            type: 'radio',
-            name: 'corrauth',
-            id: 'coreauthtrue',
-            checked: this.state.isCorrespondingAuthor,
-            onChange: e => this.updateForm({ isCorrespondingAuthor: e.target.value === 'on' })
-          }),
-          h('label', { htmlFor: 'coreauthtrue' }, 'Yes'),
-          h('input', {
-            type: 'radio',
-            name: 'corrauth',
-            id: 'coreauthfalse',
-            checked: !this.state.isCorrespondingAuthor,
-            onChange: e => this.updateForm({ isCorrespondingAuthor: e.target.value !== 'on' })
-          }),
-          h('label', { htmlFor: 'coreauthfalse' }, 'No')
-        ]),
         h('div.home-request-error', {
           className: makeClassList({ 'home-request-error-message-shown': this.state.errors.incompleteForm })
         }, 'Fill out everything above, then try again.'),
@@ -178,6 +156,155 @@ class RequestForm extends Component {
   }
 }
 
+// N.b. scroller lists any doc in debug mode
+class Scroller extends Component {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      pagerLeftAvailable: false,
+      pagerRightAvailable: false,
+      docs: []
+    };
+
+    this.onScrollExplore = _.debounce(() => {
+      this.updatePagerAvailability();
+    }, 40);
+  }
+
+  componentDidMount(){
+    this.refreshDocs().then(() => this.onScrollExplore());
+  }
+
+  scrollExplore(factor = 1){
+    if( this.exploreDocsContainer ){
+      const container = this.exploreDocsContainer;
+      const padding = parseInt(getComputedStyle(container)['padding-left']);
+      const width = container.clientWidth - 2*padding;
+
+      this.exploreDocsContainer.scrollBy({
+        left: width * factor,
+        behavior: 'smooth'
+      });
+    }
+  }
+
+  scrollExploreLeft(){
+    this.scrollExplore(-1);
+  }
+
+  scrollExploreRight(){
+    this.scrollExplore(1);
+  }
+
+  updatePagerAvailability(){
+    if( this.exploreDocsContainer ){
+      const haveNoDocs = this.state.docs.length === 0;
+      const { scrollLeft, scrollWidth, clientWidth } = this.exploreDocsContainer;
+      const allTheWayLeft = scrollLeft === 0;
+      const allTheWayRight = scrollLeft + clientWidth >= scrollWidth;
+      let leftAvail = !allTheWayLeft && !haveNoDocs;
+      let rightAvail = !allTheWayRight && !haveNoDocs;
+
+      this.setState({
+        pagerLeftAvailable: leftAvail,
+        pagerRightAvailable: rightAvail
+      });
+    }
+  }
+
+  refreshDocs(){
+    const url = `/api/document`;
+
+    const toJson = res => res.json();
+    const update = docs => new Promise(resolve => this.setState({ docs }, () => resolve(docs)));
+    const doFetch = () => fetch(url);
+
+    return tryPromise(doFetch).then(toJson).then(update);
+  }
+
+  render(){
+    const exploreDocEntry = doc => {
+      const Article = doc.article.MedlineCitation.Article;
+      const title = Article.ArticleTitle;
+      let authorNames = Article.AuthorList.map(a => `${a.ForeName} ${a.LastName}`);
+      const journalName = Article.Journal.ISOAbbreviation;
+      const id = doc.id;
+      const link = doc.publicUrl;
+
+      if( authorNames.length > 3 ){
+        authorNames = authorNames.slice(0, 3).concat([ '...', authorNames[authorNames.length - 1] ]);
+      }
+
+      return h('div.scroller-doc', {
+      }, [
+        h('a', {
+          href: link,
+          target: '_blank',
+          onTouchStart: e => e.preventDefault()
+        }, [
+          h('div.scroller-doc-descr', [
+            h('div.scroller-doc-title', title),
+            h('div.scroller-doc-authors', authorNames.map((name, i) => h(`span.scroller-doc-author.scroller-doc-author-${i}`, name))),
+            h('div.scroller-doc-journal', journalName)
+          ]),
+          h('div.scroller-doc-figure', {
+            style: {
+              backgroundImage: `url('/api/document/${id}.png')`
+            }
+          }),
+          h('div.scroller-doc-journal-banner')
+        ])
+      ]);
+    };
+
+    const docPlaceholders = () => {
+      const numPlaceholders = 20;
+      const placeholders = [];
+
+      for( let i = 0; i < numPlaceholders; i++ ){
+        const p = h('div.scroller-doc.scroller-doc-placeholder');
+
+        placeholders.push(p);
+      }
+
+      return placeholders;
+    };
+
+    const anyDoc = () => true;
+    const isPublished = doc => doc.status.toLowerCase() === 'published';
+    const docs = this.state.docs.filter(NODE_ENV === 'production' ? isPublished : anyDoc);
+
+    return h('div.scroller', [
+      h('div.scroller-pager.scroller-pager-left', {
+        className: makeClassList({
+          'scroller-pager-available': this.state.pagerLeftAvailable
+        }),
+        onClick: () => this.scrollExploreLeft()
+      }, [
+        h('i.scroller-pager-icon.material-icons', 'chevron_left')
+      ]),
+      h('div.scroller-pager.scroller-pager-right', {
+        className: makeClassList({
+          'scroller-pager-available': this.state.pagerRightAvailable
+        }),
+        onClick: () => this.scrollExploreRight()
+      }, [
+        h('i.scroller-pager-icon.material-icons', 'chevron_right')
+      ]),
+      h('div.scroller-content', {
+        className: makeClassList({
+          'scroller-content-only-placeholders': docs.length === 0
+        }),
+        onScroll: () => this.onScrollExplore(),
+        ref: el => this.exploreDocsContainer = el
+      }, (docs.length > 0 ? docs.map(exploreDocEntry) : docPlaceholders()).concat([
+        h('div.scroller-doc-spacer')
+      ]))
+    ]);
+  }
+}
+
 class Home extends Component {
   constructor(props){
     super(props);
@@ -185,12 +312,17 @@ class Home extends Component {
     this.bus = new EventEmitter();
   }
 
+  componentDidMount(){
+    document.title = 'Biofactoid';
+  }
+
   render(){
     const CTA = () => {
       return h(Popover, {
         tippy: {
           html: h(RequestForm, { bus: this.bus }),
-          onHidden: () => this.bus.emit('closecta')
+          onHidden: () => this.bus.emit('closecta'),
+          placement: 'top'
         }
       }, [
         h('button.home-cta-button.salient-button', 'Get started')
@@ -198,78 +330,68 @@ class Home extends Component {
     };
 
     return h('div.home', [
-      h('div.home-banner', [
-        h('div.home-banner-overlay'),
-        h('div.home-corner-logo'),
-        h('div.home-banner-logo', [
-          h('h1.home-banner-title', 'Biofactoid'),
-          h('div.home-banner-tagline', 'Summarise.  Share.  Discover.')
+      h('div..home-section.home-figure-section.home-banner', [
+        h('div.home-figure.home-figure-0'),
+        h('div.home-figure.home-figure-banner-bg'),
+        h('div.home-caption.home-banner-caption', [
+          h('div.home-banner-logo', [
+            h('h1.home-banner-title', 'Biofactoid')
+          ]),
+          h('div.home-banner-tagline', 'Explore the biological pathway in an article, shared by the author')
         ]),
-        h('div.home-cta.home-banner-cta', [
-          h(CTA)
+        h('div.home-explore#home-explore', [
+          h('h2', 'Recently shared pathways'),
+          h(Scroller)
         ])
       ]),
       h('div.home-section.home-figure-section', [
         h('div.home-figure.home-figure-1'),
         h('div.home-caption', [
-          h('h2', 'Summarize'),
-          h('p', `By using Biofactoid for just a few minutes, you can clearly summarize the interactions in your subcellular biology article.`)
-        ])
-      ]),
-      h('div.home-section.home-figure-section', [
-        h('div.home-figure.home-figure-2'),
-        h('div.home-caption', [
-          h('h2', 'Share'),
-          h('p', `Share a compelling visual abstract that other researchers can grasp at a glance.`)
-        ])
-      ]),
-      h('div.home-section.home-figure-section', [
-        h('div.home-figure.home-figure-3'),
-        h('div.home-caption', [
-          h('h2', 'Discover'),
-          h('p', `Easily sift through the deluge of newly-published articles to find hidden gems.  Biofactoid connects you to research and researchers that are relevant to you.`)
-        ])
-      ]),
-      h('div.home-example-doc-section-wrapper', [
-        h('div.home-section.home-text-section.home-example-doc-section', [
-
-          h('div.home-example-doc.home-example-doc-1', [
-            h('a', { href: 'https://biofactoid.org/document/7826fd5b-d5af-4f4c-9645-de5264907272' }, [
-              h('div.home-example-doc-figure'),
-              h('div.home-example-doc-caption', [
-                h('div.home-example-doc-title', 'Ritchie et al. (2019). SLC19A1 Is an Importer of the Immunotransmitter cGAMP. Mol. Cell 74.'),
-                h('div.home-example-doc-descr', `2'3'-cyclic-GMP-AMP (cGAMP) is an immunotransmitter produced and secreted by cancer cells that is uptaken by host cells to elicit an antitumoral immune response. Using a CRISPR screen, Ritchie et al. identify SLC19A1 as the first importer of cGAMP and other cyclic dinucleotides (CDNs).`)
-              ])
-            ])
+          h('p', [
+            `Compose your pathway by adding the key interactions`, h('sup', '*'), ` you researched.  `,
+            `Share so everyone else can explore it and link to your article.`
           ]),
-          h('div.home-example-doc.home-example-doc-2', [
-            h('a', { href: 'https://biofactoid.org/document/8325ea13-4f53-46f1-a27b-c8c32ae17fa6' }, [
-              h('div.home-example-doc-figure'),
-              h('div.home-example-doc-caption', [
-                h('div.home-example-doc-title', 'Gruber et al. (2019). HAT1 Coordinates Histone Production and Acetylation via H4 Promoter Binding. Mol. Cell 75.'),
-                h('div.home-example-doc-descr', `Nascent histone H4 is acetylated by cytoplasmic histone acetyltransferase 1 (HAT1) and then de-acetylated after chromatin insertion, releasing free acetate. Gruber et al. discover that HAT1 also binds an acetate-sensitive promoter element in histone H4 genes. Therefore, histone production and acetylation are linked by HAT1 to drive cell division via acetyl-Co-A regeneration.`)
-              ])
-            ])
+          h('p', `Our mission is to integrate published pathway knowledge and make it freely available to researchers.`),
+          h('p.home-figure-footnote', [
+            h('sup', '*'),
+            `Add interactions such as binding, post-translational modification, and transcription.  Add chemicals or genes from human, mouse, rat, S. cervisiae, D. melanogaster, E. coli, C. elegans, D. rerio, and A. thaliana.`
           ])
-        ])
-      ]),
-      h('div.home-section.home-text-section', [
-        h('div.home-cta.home-footer-cta', [
+        ]),
+        h('div.home-cta', [
           h(CTA)
         ]),
-        h('div.home-credits', [
+
+        h('div.home-figure-footer', [
+          h('div.home-nav', [
+            h('a.home-nav-link', [
+              h(Popover, {
+                tippy: {
+                  html: h('div.home-contact-info', [
+                    h('p', [
+                      'Biofactoid is freely brought to you in collaboration with ',
+                      h('a.plain-link', { href: 'https://baderlab.org' }, 'Bader Lab at the University of Toronto'),
+                      ', ',
+                      h('a.plain-link', { href: 'http://sanderlab.org' }, 'Sander Lab at Harvard'),
+                      ', and the ',
+                      h('a.plain-link', { href: 'https://www.ohsu.edu/people/emek-demir/AFE06DC89ED9AAF1634F77D11CCA24C3' }, 'Pathway and Omics Lab at the University of Oregon'),
+                      '.'
+                    ]),
+                    h('p', [
+                      `Contact us at `,
+                      h('a.plain-link', { href: 'mailto:info@biofactoid.org' }, 'info@biofactoid.org'),
+                      `.`
+                    ])
+                  ])
+                }
+              }, [
+                'Contact'
+              ])
+            ]),
+            h('a.home-nav-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}` }, 'Twitter'),
+            h('a.home-nav-link', { href: 'https://github.com/PathwayCommons/factoid' }, 'GitHub')
+          ]),
           h('p.home-credit-logos', [
             h('i.home-credit-logo'),
-          ]),
-          h('p.home-credit-text', [
-            'Biofactoid is freely brought to you in collaboration with ',
-            h('a.plain-link', { href: 'https://baderlab.org' }, 'Bader Lab at the University of Toronto'),
-            ', ',
-            h('a.plain-link', { href: 'http://sanderlab.org' }, 'Sander Lab at Harvard'),
-            ', and the ',
-            h('a.plain-link', { href: 'https://www.ohsu.edu/people/emek-demir/AFE06DC89ED9AAF1634F77D11CCA24C3' }, 'Pathway and Omics Lab at the University of Oregon'),
-            '.  ',
-            ''
           ])
         ])
       ])

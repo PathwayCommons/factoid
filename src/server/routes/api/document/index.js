@@ -7,6 +7,7 @@ import fetch from 'node-fetch';
 import cytosnap from 'cytosnap';
 import emailRegex from 'email-regex';
 import Twitter from 'twitter';
+import LRUCache from 'lru-cache';
 
 import { tryPromise, makeStaticStylesheet } from '../../../../util';
 import sendMail from '../../../email-transport';
@@ -32,7 +33,8 @@ import { BASE_URL,
   EMAIL_CONTEXT_SIGNUP,
   EMAIL_CONTEXT_JOURNAL,
   EMAIL_TYPE_INVITE,
-  EMAIL_TYPE_REQUEST_ISSUE
+  EMAIL_TYPE_REQUEST_ISSUE,
+  DOCUMENT_IMAGE_CACHE_SIZE
  } from '../../../../config';
 
  const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -204,11 +206,11 @@ let getSbgnFromTemplates = templates => {
 // get all docs
 // - offset: pagination offset
 // - limit: pagination size limit
-// - apiKey: to authorise doc creation
+// - apiKey: to authorise secret access
 // - status: include docs bearing valid Document 'status'
 // - ids: only get the docs for the specified comma-separated list of ids (disables pagination)
 http.get('/', function( req, res, next ){
-  let { limit, offset } = Object.assign({
+  let { limit, offset, apiKey } = Object.assign({
     limit: 50,
     offset: 0
   }, req.query);
@@ -271,9 +273,19 @@ http.get('/', function( req, res, next ){
       return q.run(conn);
     })
     .then( cursor => cursor.toArray() )
-    .then( res => { // map ids to full doc json
+    .then( res => {
+      try {
+        checkApiKey(apiKey);
+
+        return { res, haveSecretAccess: true };
+      } catch( err ){
+        return { res, haveSecretAccess: false };
+      }
+    } )
+    .then( ({res, haveSecretAccess}) => { // map ids to full doc json
       return Promise.all(res.map(docDbJson => {
-        let { id, secret } = docDbJson;
+        let { id } = docDbJson;
+        let secret = haveSecretAccess ? docDbJson.secret : undefined;
         let docOpts = _.assign( {}, tables, { id, secret } );
 
         return loadDoc(docOpts).then(getDocJson);
@@ -297,15 +309,11 @@ const getDocumentJson = id => {
   );
 };
 
-// get doc figure as png image
-http.get('/(:id).png', function( req, res, next ){
-  const id = req.params.id;
+const getDocumentImageBuffer = id => {
   const cyStylesheet = makeStaticStylesheet();
   const imageWidth = DOCUMENT_IMAGE_WIDTH;
   const imageHeight = DOCUMENT_IMAGE_HEIGHT;
   const imagePadding = DOCUMENT_IMAGE_PADDING;
-
-  res.setHeader('content-type', 'image/png');
 
   const getDoc = id => {
     return ( tryPromise( loadTables )
@@ -329,7 +337,7 @@ http.get('/(:id).png', function( req, res, next ){
           padding: imagePadding
         },
         format: 'png',
-        resolvesTo: 'stream',
+        resolvesTo: 'base64',
         background: '#fff',
         width: imageWidth,
         height: imageHeight
@@ -337,12 +345,40 @@ http.get('/(:id).png', function( req, res, next ){
     );
   };
 
-  ( tryPromise(() => getDoc(id))
+  const convertToBuffer = base64 => Buffer.from(base64, 'base64');
+
+  return ( tryPromise(() => getDoc(id))
     .then(getElesJson)
     .then(getPngImage)
-    .then(stream => stream.pipe(res))
-    .catch( next )
+    .then(convertToBuffer)
   );
+};
+
+const imageCache = new LRUCache({
+  max: DOCUMENT_IMAGE_CACHE_SIZE
+});
+
+// get doc figure as png image
+http.get('/(:id).png', function( req, res, next ){
+  const id = req.params.id;
+
+  res.setHeader('content-type', 'image/png');
+
+  if( imageCache.has(id) ){
+    const img = imageCache.get(id);
+
+    res.send(img);
+  } else {
+    ( tryPromise(() => getDocumentImageBuffer(id))
+      .then(buffer => {
+        imageCache.set(id, buffer);
+
+        return buffer;
+      })
+      .then(buffer => res.send(buffer))
+      .catch( next )
+    );
+  }
 });
 
 // tweet a document as a card with a caption (text)

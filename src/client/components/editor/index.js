@@ -193,7 +193,6 @@ class Editor extends DataComponent {
             body: JSON.stringify({
               paperId: DEMO_ID,
               authorEmail: DEMO_AUTHOR_EMAIL,
-              isCorrespondingAuthor: true,
               context: EMAIL_CONTEXT_SIGNUP
             })
           });
@@ -211,6 +210,14 @@ class Editor extends DataComponent {
       .then( () => logger.info('Document synch active') )
       .then( () => {
         this.setData({ initted: true, showHelp: this.data.document.editable() });
+
+        const title = _.get(this.data.document.article(), ['MedlineCitation', 'Article', 'ArticleTitle']);
+
+        if( title ){
+          document.title = `${title} : Biofactoid`;
+        } else {
+          document.title = `Biofactoid`;
+        }
 
         logger.info('The editor is initialising');
       } )

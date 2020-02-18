@@ -47,8 +47,6 @@ class TaskView extends DataComponent {
 
     this.onUpdate = change => {
       if( _.has( change, 'status' ) ) this.dirty();
-      // TODO onSubmit
-      // Look for change.status === 'submitted'
     };
 
     this.props.document.on('add', this.onAdd);

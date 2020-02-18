@@ -491,6 +491,7 @@ http.patch('/email/:id/:secret', function( req, res, next ){
 http.patch('/status/:id/:secret', function( req, res, next ){
   const { id, secret } = req.params;
 
+  // Publish criteria: non-empty; all entities complete
   const tryPublish = async doc => {
     let didPublish = false;
     const hasEles = doc => doc.elements().length > 0;
@@ -504,32 +505,36 @@ http.patch('/status/:id/:secret', function( req, res, next ){
     return didPublish;
   };
 
-  const sendFollowUpNotification = doc => configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() ).then( () => true );
-  const handlePublishRequest = async doc => tryPublish( doc ).then( didPublish => didPublish ? sendFollowUpNotification( doc ): false );
+  const sendFollowUpNotification = async doc => await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
+  const handlePublishRequest = async doc => {
+    const didPublish = await tryPublish( doc );
+    if( didPublish ) await sendFollowUpNotification( doc );
+  };
 
   const updateDocStatus = async doc => {
     const updates = req.body;
-    const updatePromises = updates.map( ({ op, path, value }) => {
-      if( path === 'status' && op === 'replace' ){
-        switch ( value ){
-          case DOCUMENT_STATUS_FIELDS.PUBLISHED:
-            return handlePublishRequest( doc );
+    for( const update of updates ){
+      const { op, path, value } = update;
+      if( op === 'replace' && path === 'status' ){
+        switch ( value ) {
+          case DOCUMENT_STATUS_FIELDS.PUBLISHED: {
+            await handlePublishRequest( doc );
+            break;
+          }
           default:
-            throw new Error( 'Invalid parameters' );
+            break;
         }
-
-      } else {
-        throw new Error( 'Invalid parameters' );
       }
-    });
-    return Promise.all( updatePromises ).then( () => doc );
+    }
+    return doc;
   };
 
   return (
-    tryPromise( () => res.end() )
-    .then( loadTables )
+    tryPromise( () => loadTables() )
     .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
     .then( updateDocStatus )
+    .then( getDocJson )
+    .then( json => res.json( json ) )
     .catch( next )
   );
 });

@@ -92,7 +92,7 @@ let link = m => {
       nsName = 'NCBI';
       break;
     case 'intn':
-      url = PUBMED_LINK_BASE_URL + m.id
+      url = PUBMED_LINK_BASE_URL + m.id;
       nsName = 'PUBMED';
       break;
   }

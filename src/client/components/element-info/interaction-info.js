@@ -5,11 +5,10 @@ import { initCache, error } from '../../../util';
 import _ from 'lodash';
 import * as defs from '../../defs';
 import { animateDomForEdit } from '../animate';
-import uuid from 'uuid';
 import Progression from './progression';
 import EventEmitter from 'eventemitter3';
-import { INTERACTION_TYPES, INTERACTION_TYPE } from '../../../model/element/interaction-type';
-import { tryPromise, makeCancelable } from '../../../util';
+// import { INTERACTION_TYPES, INTERACTION_TYPE } from '../../../model/element/interaction-type';
+import { makeCancelable } from '../../../util';
 import assocDisp from './entity-assoc-display';
 
 let stageCache = new WeakMap();
@@ -212,11 +211,13 @@ class InteractionInfo extends DataComponent {
       sources = el.participants().map( p => p.name() );
     }
 
+    offset = offset || s.offset;
+
     let q = {
       sources,
       targets,
       limit,
-      offset: s.offset,
+      offset: offset,
       sign
     };
 
@@ -236,10 +237,10 @@ class InteractionInfo extends DataComponent {
       // cache the matches in the element for re-creation of component
       associationCache.set( el, {
         matches: s.matches,
-        offset: s.offset
+        offset
       } );
 
-      this.setData({ matches: s.matches, offset: s.offset, loadingMatches: false });
+      this.setData({ matches: s.matches, offset, loadingMatches: false });
     };
 
 
@@ -247,7 +248,7 @@ class InteractionInfo extends DataComponent {
       this.setData({
         loadingMatches: true
       });
-    }
+    };
 
     return makeCancelable(
       Promise.resolve()
@@ -261,7 +262,7 @@ class InteractionInfo extends DataComponent {
   getMoreMatches( numMore = this.data.limit ){
     let s = this.data;
 
-    if ( s.gettingMoreMatches ) { return Promise.resolve() };
+    if ( s.gettingMoreMatches ) { return Promise.resolve(); }
 
     let offset = s.offset + numMore;
 
@@ -368,7 +369,7 @@ class InteractionInfo extends DataComponent {
             }
           }, renderMatch( m ) ),
           assocDisp.link( { id: m.pmid, namespace: 'intn' } )
-        ])
+        ]);
       } );
 
       let getContent = () => {
@@ -378,7 +379,7 @@ class InteractionInfo extends DataComponent {
         else {
           return getInteractionsContainer();
         }
-      }
+      };
 
       let getInteractionsContainer = () => h('div.entity-info-matches', {
         onScroll: evt => {

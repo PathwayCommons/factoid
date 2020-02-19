@@ -7,11 +7,10 @@ import querystring from 'querystring';
 import LRUCache from 'lru-cache';
 
 const QUERY_CACHE_SIZE = 1000;
-const BASE_URL = INDRA_INTERACTION_BASE_URL
+const BASE_URL = INDRA_INTERACTION_BASE_URL;
 
 const request = ( endpt, query ) => {
   let addr = BASE_URL + `${endpt}?` + querystring.stringify( query );
-  console.log(addr)
 
   return (
     tryPromise( () => fetch( addr ) )

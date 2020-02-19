@@ -5,7 +5,7 @@ import Express from 'express';
 const jsonifyResult = response => ( result => response.json( result ) );
 const http = Express.Router();
 const nodeProvider = groundingSearch;
-const intnProvider = indraIntreaction
+const intnProvider = indraIntreaction;
 
 http.post('/search', function( req, res ){
   (
@@ -28,7 +28,7 @@ http.post('/search-intn', function( req, res ){
     intnProvider.search( req.body )
     .then( jsonifyResult(res) )
     .catch( err => res.status(500).send(err) )
-  )
+  );
 });
 
 export default http;

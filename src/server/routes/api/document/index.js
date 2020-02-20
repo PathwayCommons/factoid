@@ -32,7 +32,8 @@ import { BASE_URL,
   EMAIL_CONTEXT_SIGNUP,
   EMAIL_CONTEXT_JOURNAL,
   EMAIL_TYPE_INVITE,
-  EMAIL_TYPE_REQUEST_ISSUE
+  EMAIL_TYPE_REQUEST_ISSUE,
+  EMAIL_TYPE_FOLLOWUP
  } from '../../../../config';
 
  const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -486,23 +487,67 @@ http.patch('/email/:id/:secret', function( req, res, next ){
   );
 });
 
-// Update document fields provided and re-apply fillDoc
+// Update document status
+http.patch('/status/:id/:secret', function( req, res, next ){
+  const { id, secret } = req.params;
+
+  // Publish criteria: non-empty; all entities complete
+  const tryPublish = async doc => {
+    let didPublish = false;
+    const hasEles = doc => doc.elements().length > 0;
+    const hasIncompleteEles = doc => doc.elements().some( ele => !ele.completed() && !ele.isInteraction() );
+    const hasSubmittedStatus = doc => doc.status() === DOCUMENT_STATUS_FIELDS.SUBMITTED;
+    const isPublishable = doc => hasEles( doc ) && !hasIncompleteEles( doc ) && hasSubmittedStatus( doc );
+    if( isPublishable( doc ) ){
+      await doc.publish();
+      didPublish = true;
+    }
+    return didPublish;
+  };
+
+  const sendFollowUpNotification = async doc => await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
+  const handlePublishRequest = async doc => {
+    const didPublish = await tryPublish( doc );
+    if( didPublish ) await sendFollowUpNotification( doc );
+  };
+
+  const updateDocStatus = async doc => {
+    const updates = req.body;
+    for( const update of updates ){
+      const { op, path, value } = update;
+      if( op === 'replace' && path === 'status' ){
+        switch ( value ) {
+          case DOCUMENT_STATUS_FIELDS.PUBLISHED: {
+            await handlePublishRequest( doc );
+            break;
+          }
+          default:
+            break;
+        }
+      }
+    }
+    return doc;
+  };
+
+  return (
+    tryPromise( () => loadTables() )
+    .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
+    .then( updateDocStatus )
+    .then( getDocJson )
+    .then( json => res.json( json ) )
+    .catch( next )
+  );
+});
+
+// Refresh the document data
 http.patch('/:id/:secret', function( req, res, next ){
   const { id, secret } = req.params;
   const { apiKey } = req.query;
-  const updateDocFields = doc => {
-    const updates = req.body;
-    const updatePromises = updates.map( ({ op, path, value }) => {
-      if( op == 'replace' ) return doc[path]( value );
-    });
-    return Promise.all( updatePromises ).then( () => doc );
-  };
 
   return (
     tryPromise( () => checkApiKey( apiKey ) )
     .then( loadTables )
     .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
-    .then( updateDocFields )
     .then( fillDoc )
     .then( tryVerify )
     .then( getDocJson )

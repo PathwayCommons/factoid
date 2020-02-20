@@ -3,6 +3,7 @@ import DataComponent from './data-component';
 import h from 'react-hyperscript';
 
 import { BASE_URL } from '../../config';
+import Document from '../../model/document';
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
 
@@ -45,8 +46,28 @@ class TaskView extends DataComponent {
       this.dirty();
     };
 
+    this.onSubmit = () => {
+      const DOCUMENT_STATUS_FIELDS = Document.statusFields();
+      const id = this.props.document.id();
+      const secret = this.props.document.secret();
+      const params = [
+        { op: 'replace', path: 'status', value: DOCUMENT_STATUS_FIELDS.PUBLISHED }
+      ];
+      const url = `/api/document/status/${id}/${secret}`;
+      return fetch( url, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify( params )
+      });
+    };
+
     this.onUpdate = change => {
-      if( _.has( change, 'status' ) ) this.dirty();
+      if( _.has( change, 'status' ) ){
+        if( change.status === 'submitted' ) this.onSubmit();
+        this.dirty();
+      }
     };
 
     this.props.document.on('add', this.onAdd);

@@ -140,14 +140,19 @@ class TaskView extends DataComponent {
         ])
       ]);
     } else {
-      return h('div.task-view', [
+      return h('div.task-view.done', [
         h('div.task-view-done', [
-          h('div.task-view-done-message', [
-            h('p', 'It\'s submitted! You should receive an email when your pathway is online.'),
-            h('p', [
+          h('div.task-view-done-symbol', [
+            h('i.material-icons', 'check_circle_outline' ),
+          ]),
+          h('div.task-view-done-caption', [
+            h('h1.task-view-done-caption-title', 'Success!' ),
+            h('p.task-view-done-caption-body', 'Check for a confirmation email' ),
+            h('p.task-view-done-caption-footer', [
               h('a.plain-link', {
+                target: '_blank',
                 href: BASE_URL
-              }, 'Browse recent pathways or add another article')
+              },'Contribute another' )
             ])
           ])
         ])

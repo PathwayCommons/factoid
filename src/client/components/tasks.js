@@ -3,6 +3,7 @@ import DataComponent from './data-component';
 import h from 'react-hyperscript';
 
 import { BASE_URL } from '../../config';
+import Document from '../../model/document';
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
 
@@ -45,8 +46,28 @@ class TaskView extends DataComponent {
       this.dirty();
     };
 
+    this.onSubmit = () => {
+      const DOCUMENT_STATUS_FIELDS = Document.statusFields();
+      const id = this.props.document.id();
+      const secret = this.props.document.secret();
+      const params = [
+        { op: 'replace', path: 'status', value: DOCUMENT_STATUS_FIELDS.PUBLISHED }
+      ];
+      const url = `/api/document/status/${id}/${secret}`;
+      return fetch( url, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify( params )
+      });
+    };
+
     this.onUpdate = change => {
-      if( _.has( change, 'status' ) ) this.dirty();
+      if( _.has( change, 'status' ) ){
+        if( change.status === 'submitted' ) this.onSubmit();
+        this.dirty();
+      }
     };
 
     this.props.document.on('add', this.onAdd);
@@ -119,14 +140,19 @@ class TaskView extends DataComponent {
         ])
       ]);
     } else {
-      return h('div.task-view', [
+      return h('div.task-view.done', [
         h('div.task-view-done', [
-          h('div.task-view-done-message', [
-            h('p', 'It\'s submitted! You should receive an email when your pathway is online.'),
-            h('p', [
+          h('div.task-view-done-symbol', [
+            h('i.material-icons', 'check_circle_outline' ),
+          ]),
+          h('div.task-view-done-caption', [
+            h('h1.task-view-done-caption-title', 'Success!' ),
+            h('p.task-view-done-caption-body', 'Check for a confirmation email' ),
+            h('p.task-view-done-caption-footer', [
               h('a.plain-link', {
+                target: '_blank',
                 href: BASE_URL
-              }, 'Browse recent pathways or add another article')
+              },'Contribute another' )
             ])
           ])
         ])

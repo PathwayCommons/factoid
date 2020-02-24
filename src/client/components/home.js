@@ -390,7 +390,7 @@ class Home extends Component {
             h('a.home-nav-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}` }, 'Twitter'),
             h('a.home-nav-link', { href: 'https://github.com/PathwayCommons/factoid' }, 'GitHub')
           ]),
-          h('p.home-credit-logos', [
+          h('div.home-credit-logos', [
             h('i.home-credit-logo'),
           ])
         ])

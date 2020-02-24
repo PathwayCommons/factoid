@@ -456,6 +456,9 @@
 
 .home-credit-logos {
   text-align: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .home-credit-logo {

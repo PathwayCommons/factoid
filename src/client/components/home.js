@@ -271,9 +271,8 @@ class Scroller extends Component {
       return placeholders;
     };
 
-    const anyDoc = () => true;
     const isPublished = doc => doc.status.toLowerCase() === 'published';
-    const docs = this.state.docs.filter(NODE_ENV === 'production' ? isPublished : anyDoc);
+    const docs = this.state.docs.filter(isPublished);
 
     return h('div.scroller', [
       h('div.scroller-pager.scroller-pager-left', {

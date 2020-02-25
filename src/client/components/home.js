@@ -340,7 +340,7 @@ class Home extends Component {
           h('div.home-banner-tagline', 'Explore the biological pathway in an article, shared by the author')
         ]),
         h('div.home-explore#home-explore', [
-          h('h2', 'Recently shared pathways'),
+          h('h2', 'Recently shared articles'),
           h(Scroller)
         ])
       ]),

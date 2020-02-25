@@ -101,6 +101,7 @@
   border-bottom-right-radius: 0.25em;
   max-width: calc(100% - 10.5em);
   pointer-events: all;
+  line-height: 1.5;
 }
 
 .editor-title-name,

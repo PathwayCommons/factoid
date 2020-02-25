@@ -120,7 +120,34 @@ const fillDocArticle = async ( doc, paperId ) => {
     // TODO - is this a unique request?
     await doc.issues({ paperId: null });
   } catch ( error ){
-    await doc.issues({ paperId: { error, message: error.message } });
+    await doc.article({
+      "MedlineCitation": {
+        "Article": {
+          "Abstract": "",
+          "ArticleTitle": `${paperId}`,
+          "AuthorList": [],
+          "Journal": {
+            "ISOAbbreviation": "",
+            "ISSN": null,
+            "Issue": null,
+            "PubDate": null,
+            "Title": "",
+            "Volume": null
+          }
+        },
+        "ChemicalList": null,
+        "InvestigatorList": null,
+        "KeywordList": null,
+        "MeshheadingList": null
+      },
+      "PubmedData": {
+        "ArticleIdList": [],
+        "History": [],
+        "ReferenceList": null
+      }
+    });
+
+    await doc.issues({ paperId: null });
   }
 };
 

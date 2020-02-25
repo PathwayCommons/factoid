@@ -129,7 +129,7 @@ class RequestForm extends Component {
           value: this.state.paperId
         }),
         h('input', {
-          type: 'email',
+          type: 'text',
           placeholder: 'Email address',
           onChange: e => this.updateForm({
             authorEmail: {
@@ -271,9 +271,8 @@ class Scroller extends Component {
       return placeholders;
     };
 
-    const anyDoc = () => true;
     const isPublished = doc => doc.status.toLowerCase() === 'published';
-    const docs = this.state.docs.filter(NODE_ENV === 'production' ? isPublished : anyDoc);
+    const docs = this.state.docs.filter(isPublished);
 
     return h('div.scroller', [
       h('div.scroller-pager.scroller-pager-left', {
@@ -340,7 +339,7 @@ class Home extends Component {
           h('div.home-banner-tagline', 'Explore the biological pathway in an article, shared by the author')
         ]),
         h('div.home-explore#home-explore', [
-          h('h2', 'Recently shared pathways'),
+          h('h2', 'Recently shared articles'),
           h(Scroller)
         ])
       ]),

@@ -6,7 +6,7 @@ import io from 'socket.io-client';
 import _ from 'lodash';
 import Mousetrap from 'mousetrap';
 
-import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL, EMAIL_CONTEXT_SIGNUP } from '../../../config';
+import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL, EMAIL_CONTEXT_SIGNUP, DOI_LINK_BASE_URL } from '../../../config';
 
 import { getId, defer, makeClassList, tryPromise } from '../../../util';
 import Document from '../../../model/document';
@@ -492,15 +492,17 @@ class Editor extends DataComponent {
     let controller = this;
     let { history } = this.props;
 
-    const { authors: { abbreviation }, title = 'Unnamed document', reference } = document.citation();
+    const { authors: { abbreviation }, title = 'Unnamed document', reference, doi } = document.citation();
 
     let editorContent = this.data.initted ? [
       h('div.editor-title', [
         h('div.editor-title-content', [
-          h('div.editor-title-name', title ),
-          h('div.editor-title-info', [
-            h('div', abbreviation ),
-            h('div', reference )
+          h(doi ? 'a' : 'div', (doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` } : {}), [
+            h('div.editor-title-name' + (doi ? '.plain-link.link-like' : ''), title ),
+            h('div.editor-title-info', [
+              h('div', abbreviation ),
+              h('div', reference )
+            ])
           ])
         ])
       ]),

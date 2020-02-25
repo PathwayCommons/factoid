@@ -408,7 +408,8 @@ h3 {
   margin: 1em 0;
 }
 
-a {
+a,
+.link-like {
   color: inherit;
   text-decoration: none;
   cursor: pointer;

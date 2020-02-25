@@ -129,7 +129,7 @@ class RequestForm extends Component {
           value: this.state.paperId
         }),
         h('input', {
-          type: 'email',
+          type: 'text',
           placeholder: 'Email address',
           onChange: e => this.updateForm({
             authorEmail: {

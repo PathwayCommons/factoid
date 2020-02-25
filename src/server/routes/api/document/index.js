@@ -113,21 +113,52 @@ const fillDocCorrespondence = async ( doc, authorEmail, context ) => {
   }
 };
 
-const fillDocArticle = async ( doc, paperId ) => {
+const fillDocArticle = async ( doc, paperId, context ) => {
   try {
     const pubmedRecord = await getPubmedArticle( paperId );
     await doc.article( pubmedRecord );
     // TODO - is this a unique request?
     await doc.issues({ paperId: null });
   } catch ( error ){
-    await doc.issues({ paperId: { error, message: error.message } });
+
+    if( context === EMAIL_CONTEXT_JOURNAL ){
+      await doc.article({
+        "MedlineCitation": {
+          "Article": {
+            "Abstract": null,
+            "ArticleTitle": `${paperId}`,
+            "AuthorList": [],
+            "Journal": {
+              "ISOAbbreviation": "Journal",
+              "ISSN": null,
+              "Issue": null,
+              "PubDate": null,
+              "Title": "Journal",
+              "Volume": null
+            }
+          },
+          "ChemicalList": null,
+          "InvestigatorList": null,
+          "KeywordList": null,
+          "MeshheadingList": null
+        },
+        "PubmedData": {
+          "ArticleIdList": [],
+          "History": [],
+          "ReferenceList": null
+        }
+      });
+      await doc.issues({ paperId: null });
+    } else {
+      await doc.issues({ paperId: { error, message: error.message } });
+    }
   }
 };
 
 const fillDoc = async doc => {
   const { paperId, authorEmail, context } = doc.provided();
   await fillDocCorrespondence( doc, authorEmail, context );
-  await fillDocArticle( doc, paperId );
+  await fillDocArticle( doc, paperId, context );
   return doc;
 };
 

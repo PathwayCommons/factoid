@@ -5,7 +5,7 @@ import Popover from './popover/popover';
 import { makeClassList, tryPromise } from '../../util';
 import EventEmitter from 'eventemitter3';
 
-import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME, NODE_ENV } from '../../config';
+import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME } from '../../config';
 
 const checkStatus = response => {
   if ( response.status >= 200 && response.status < 300 ) {

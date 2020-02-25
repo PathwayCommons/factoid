@@ -6,8 +6,8 @@ import { expect } from 'chai';
 import { pubmedDataConverter } from '../../src/server/routes/api/document/pubmed/fetchPubmed';
 
 const TEST_PUBMED_DATA = new Map([
-  ['9417067', 'pmid_9417067.xml'], 
-  ['29440426', 'pmid_29440426.xml'], 
+  ['9417067', 'pmid_9417067.xml'],
+  ['29440426', 'pmid_29440426.xml'],
   ['30078747', 'pmid_30078747.xml'], // InvestigatorList
   ['30115697', 'pmid_30115697.xml'], // HTML markup in AbstractText; ORCIDs
   ['31511694', 'pmid_31511694.xml']
@@ -83,7 +83,7 @@ describe('fetchPubmed', function(){
               before( () => {
                 Journal = _.get( Article, 'Journal' );
               });
-    
+
               it('Should possess top-level attributes', () => {
                 expect( Journal ).to.have.property( 'Title' );
                 expect( Journal ).to.have.property( 'Volume' );
@@ -91,6 +91,20 @@ describe('fetchPubmed', function(){
                 expect( Journal ).to.have.property( 'PubDate' );
                 expect( Journal ).to.have.property( 'ISSN' );
                 expect( Journal ).to.have.property( 'ISOAbbreviation' );
+              });
+            });
+
+            describe( 'Abstract', () => {
+
+              let Abstract;
+              before( () => {
+                Abstract = _.get( Article, 'Abstract' );
+              });
+
+              it('Should be a (optional) string', () => {
+                if( Abstract ){
+                  expect( Abstract ).to.be.a('string');
+                }
               });
             });
 
@@ -105,14 +119,14 @@ describe('fetchPubmed', function(){
                 expect( AuthorList.length ).to.be.at.least( 1 );
               });
 
-              
+
               describe( 'Author', () => {
 
                 let Author;
                 before( () => {
                   Author = _.head( AuthorList );
                 });
-    
+
                 it('Should have item with top-level attributes', () => {
                   expect( Author ).to.have.nested.property( 'LastName' );
                   expect( Author ).to.have.nested.property( 'ForeName' );
@@ -130,17 +144,17 @@ describe('fetchPubmed', function(){
                   before( () => {
                     Identifier = _.get( Author, 'Identifier' );
                   });
-      
+
                   it('Should have item with top-level attributes', () => {
                     if(Identifier){
                       expect( Identifier ).to.have.property( 'Source' );
-                      expect( Identifier ).to.have.property( 'id' );  
+                      expect( Identifier ).to.have.property( 'id' );
                     }
                   });
-      
+
                 });//Identifier
-    
-    
+
+
               }); // Author
 
             });
@@ -157,15 +171,24 @@ describe('fetchPubmed', function(){
               expect( MedlineCitation ).to.have.nested.property( 'ChemicalList' );
             });
 
-            it('Should consist of multiple items or null', () => {
+            it('Should consist of one item or null', () => {
               expect( ChemicalList === null || Array.isArray( ChemicalList ) ).to.be.true;
             });
 
-            it('Should have item with top-level attributes', () => {
-              if ( ChemicalList !== null ){
-                expect( ChemicalList[0] ).to.have.property( 'RegistryNumber' );
-                expect( ChemicalList[0] ).to.have.property( 'NameOfSubstance' );
-              }
+            describe( 'Chemical', () => {
+
+              let Chemical;
+              before( () => {
+                Chemical = _.head( ChemicalList );
+              });
+
+              it('Should have optional item with top-level attributes', () => {
+                if( Chemical ){
+                  expect( Chemical ).to.have.property( 'RegistryNumber' );
+                  expect( Chemical ).to.have.property( 'NameOfSubstance' );
+                  expect( Chemical ).to.have.property( 'UI' );
+                }
+              });
             });
 
           });//ChemicalList
@@ -244,7 +267,7 @@ describe('fetchPubmed', function(){
                   expect( Investigator ).to.have.nested.property( 'AffiliationInfo' );
                 }
               });
-            
+
             });//InvestigatorList
 
           });//KeywordList

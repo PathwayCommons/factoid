@@ -124,6 +124,10 @@ class DocumentManagement extends DirtyComponent {
     this.setState({ status }, () => this.updateDocs() );
   }
 
+  componentDidMount(){
+    document.title = `Admin : Biofactoid`;
+  }
+
   componentWillUnmount(){
     const { docs } = this.state;
 

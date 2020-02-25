@@ -7,14 +7,15 @@ import fetch from 'node-fetch';
 import cytosnap from 'cytosnap';
 import emailRegex from 'email-regex';
 import Twitter from 'twitter';
+import LRUCache from 'lru-cache';
 
 import { tryPromise, makeStaticStylesheet } from '../../../../util';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
 import db from '../../../db';
 import logger from '../../../logger';
-import { makeCyEles, msgFactory } from '../../../../util';
-import { getPubmedArticle } from './pubmed';
+import { makeCyEles, msgFactory, updateCorrespondence } from '../../../../util';
+import { getPubmedArticle, ArticleIDError } from './pubmed';
 
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
@@ -29,7 +30,12 @@ import { BASE_URL,
   TWITTER_ACCESS_TOKEN_SECRET,
   DEMO_CAN_BE_SHARED,
   DOCUMENT_IMAGE_PADDING,
-  EMAIL_CONTEXT_SIGNUP
+  EMAIL_CONTEXT_SIGNUP,
+  EMAIL_CONTEXT_JOURNAL,
+  EMAIL_TYPE_INVITE,
+  EMAIL_TYPE_REQUEST_ISSUE,
+  DOCUMENT_IMAGE_CACHE_SIZE,
+  EMAIL_TYPE_FOLLOWUP
  } from '../../../../config';
 
  const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -95,15 +101,15 @@ const DEFAULT_CORRESPONDENCE = {
   context: EMAIL_CONTEXT_SIGNUP
 };
 
-const fillDocCorrespondence = async ( doc, authorEmail, isCorrespondingAuthor, context ) => {
+const fillDocCorrespondence = async ( doc, authorEmail, context ) => {
   try {
     if( !emailRegex({exact: true}).test( authorEmail ) ) throw new TypeError( `Could not detect an email for '${authorEmail}'` );
     const emails = _.get( doc.correspondence(), 'emails' );
-    const data = _.defaults( { authorEmail, isCorrespondingAuthor, context, emails }, DEFAULT_CORRESPONDENCE );
+    const data = _.defaults( { authorEmail, context, emails }, DEFAULT_CORRESPONDENCE );
     await doc.correspondence( data );
     await doc.issues({ authorEmail: null });
   } catch ( error ){
-    await doc.issues({ authorEmail: `${error.message}` });
+    await doc.issues({ authorEmail: { error, message: error.message } });
   }
 };
 
@@ -111,20 +117,90 @@ const fillDocArticle = async ( doc, paperId ) => {
   try {
     const pubmedRecord = await getPubmedArticle( paperId );
     await doc.article( pubmedRecord );
+    // TODO - is this a unique request?
     await doc.issues({ paperId: null });
   } catch ( error ){
-    await doc.issues({ paperId: `${error.message}` });
+    await doc.article({
+      "MedlineCitation": {
+        "Article": {
+          "Abstract": "",
+          "ArticleTitle": `${paperId}`,
+          "AuthorList": [],
+          "Journal": {
+            "ISOAbbreviation": "",
+            "ISSN": null,
+            "Issue": null,
+            "PubDate": null,
+            "Title": "",
+            "Volume": null
+          }
+        },
+        "ChemicalList": null,
+        "InvestigatorList": null,
+        "KeywordList": null,
+        "MeshheadingList": null
+      },
+      "PubmedData": {
+        "ArticleIdList": [],
+        "History": [],
+        "ReferenceList": null
+      }
+    });
+
+    await doc.issues({ paperId: null });
   }
 };
 
-let fillDoc = async doc => {
-  const { paperId, authorEmail, isCorrespondingAuthor, context } = doc.provided();
-  await fillDocCorrespondence( doc, authorEmail, isCorrespondingAuthor, context );
+const fillDoc = async doc => {
+  const { paperId, authorEmail, context } = doc.provided();
+  await fillDocCorrespondence( doc, authorEmail, context );
   await fillDocArticle( doc, paperId );
   return doc;
 };
 
-// let getReachOutput = text => provider.getRawResponse( text );
+const configureAndSendMail = async ( emailType, id, secret ) => {
+  let info;
+  const { docDb, eleDb } = await loadTables();
+  const doc =  await loadDoc ({ docDb, eleDb, id, secret });
+
+  try {
+    const mailOpts =  await msgFactory( emailType, doc );
+    info =  await sendMail( mailOpts );
+
+  } catch ( error ) {
+    logger.error( `Error sending email: ${error.message}`);
+    info = _.assign( {}, { error, date: new Date() });
+    throw error;
+
+  } finally {
+    await updateCorrespondence( doc, info, emailType );
+  }
+};
+
+const hasIssues = doc => _.values( doc.issues() ).some( i => !_.isNull( i ) );
+const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
+const sendInviteNotification = async doc => {
+  let emailType = EMAIL_TYPE_INVITE;
+  const id = doc.id();
+  const secret = doc.secret();
+  const issueExists = hasIssues( doc );
+
+  const hasPaperIdIssue = hasIssue( doc, 'paperId' );
+  const hasPaperIdError = hasPaperIdIssue && _.get( doc.issues(), ['paperId', 'error'] ) instanceof ArticleIDError;
+  const { context } = doc.provided();
+  const isSignup = ( context && context === EMAIL_CONTEXT_SIGNUP );
+  const doNotify = isSignup && hasPaperIdError;
+
+  if( issueExists ){
+    emailType = EMAIL_TYPE_REQUEST_ISSUE;
+    if( doNotify ) await configureAndSendMail( emailType, id, secret );
+
+  } else {
+    await configureAndSendMail( emailType, id, secret );
+  }
+
+  return doc;
+};
 
 let handleResponseError = response => {
   if (!response.ok) {
@@ -155,25 +231,10 @@ let getSbgnFromTemplates = templates => {
     .then(handleResponseError);
 };
 
-// Email
-http.post('/email', function( req, res, next ){
-  let { apiKey, emailType, id, secret } = req.body;
-  // msgFactory = ( emailType, doc )
-  return (
-    tryPromise( () => checkApiKey( apiKey ) )
-    .then( loadTables )
-    .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
-    .then( doc =>  msgFactory( emailType, doc ) )
-    .then( mailOpts => sendMail( mailOpts ) )
-    .then( info => res.json( info ) )
-    .catch( next )
-  );
-});
-
 // get all docs
 // - offset: pagination offset
 // - limit: pagination size limit
-// - apiKey: to authorise doc creation
+// - apiKey: to authorise secret access
 // - status: include docs bearing valid Document 'status'
 // - ids: only get the docs for the specified comma-separated list of ids (disables pagination)
 http.get('/', function( req, res, next ){
@@ -192,8 +253,7 @@ http.get('/', function( req, res, next ){
   let tables;
 
   return (
-    tryPromise( () => checkApiKey(apiKey) )
-    .then( loadTables )
+    tryPromise( () => loadTables() )
     .then( tbls => {
       tables = tbls;
 
@@ -203,6 +263,8 @@ http.get('/', function( req, res, next ){
       let t = tables.docDb;
       let { table, conn, rethink: r } = t;
       let q = table;
+
+      q = q.orderBy(r.desc('createdDate'));
 
       if( ids ){ // doc id must be in specified id list
         let exprs = ids.map(id => r.row('id').eq(id));
@@ -239,9 +301,19 @@ http.get('/', function( req, res, next ){
       return q.run(conn);
     })
     .then( cursor => cursor.toArray() )
-    .then( res => { // map ids to full doc json
+    .then( res => {
+      try {
+        checkApiKey(apiKey);
+
+        return { res, haveSecretAccess: true };
+      } catch( err ){
+        return { res, haveSecretAccess: false };
+      }
+    } )
+    .then( ({res, haveSecretAccess}) => { // map ids to full doc json
       return Promise.all(res.map(docDbJson => {
-        let { id, secret } = docDbJson;
+        let { id } = docDbJson;
+        let secret = haveSecretAccess ? docDbJson.secret : undefined;
         let docOpts = _.assign( {}, tables, { id, secret } );
 
         return loadDoc(docOpts).then(getDocJson);
@@ -265,15 +337,11 @@ const getDocumentJson = id => {
   );
 };
 
-// get doc figure as png image
-http.get('/(:id).png', function( req, res, next ){
-  const id = req.params.id;
+const getDocumentImageBuffer = id => {
   const cyStylesheet = makeStaticStylesheet();
   const imageWidth = DOCUMENT_IMAGE_WIDTH;
   const imageHeight = DOCUMENT_IMAGE_HEIGHT;
   const imagePadding = DOCUMENT_IMAGE_PADDING;
-
-  res.setHeader('content-type', 'image/png');
 
   const getDoc = id => {
     return ( tryPromise( loadTables )
@@ -297,7 +365,7 @@ http.get('/(:id).png', function( req, res, next ){
           padding: imagePadding
         },
         format: 'png',
-        resolvesTo: 'stream',
+        resolvesTo: 'base64',
         background: '#fff',
         width: imageWidth,
         height: imageHeight
@@ -305,12 +373,40 @@ http.get('/(:id).png', function( req, res, next ){
     );
   };
 
-  ( tryPromise(() => getDoc(id))
+  const convertToBuffer = base64 => Buffer.from(base64, 'base64');
+
+  return ( tryPromise(() => getDoc(id))
     .then(getElesJson)
     .then(getPngImage)
-    .then(stream => stream.pipe(res))
-    .catch( next )
+    .then(convertToBuffer)
   );
+};
+
+const imageCache = new LRUCache({
+  max: DOCUMENT_IMAGE_CACHE_SIZE
+});
+
+// get doc figure as png image
+http.get('/(:id).png', function( req, res, next ){
+  const id = req.params.id;
+
+  res.setHeader('content-type', 'image/png');
+
+  if( imageCache.has(id) ){
+    const img = imageCache.get(id);
+
+    res.send(img);
+  } else {
+    ( tryPromise(() => getDocumentImageBuffer(id))
+      .then(buffer => {
+        imageCache.set(id, buffer);
+
+        return buffer;
+      })
+      .then(buffer => res.send(buffer))
+      .catch( next )
+    );
+  }
 });
 
 // tweet a document as a card with a caption (text)
@@ -364,6 +460,19 @@ const checkApiKey = (apiKey) => {
   }
 };
 
+const checkRequestContext = async provided => {
+  const { apiKey, context } = provided;
+  switch ( context ) {
+    case EMAIL_CONTEXT_JOURNAL:
+      checkApiKey( apiKey );
+      break;
+    case EMAIL_CONTEXT_SIGNUP:
+      break;
+    default:
+      throw new TypeError(`The specified context '${context}' is not recognized`);
+  }
+};
+
 // delete the demo doc
 http.delete('/:secret', function(req, res, next){
   let secret = req.params.secret;
@@ -381,6 +490,28 @@ http.delete('/:secret', function(req, res, next){
   );
 });
 
+// Attempt to verify; Idempotent
+const tryVerify = async doc => {
+
+  if( !doc.verified() ){
+    let doVerify = false;
+    const { context } = doc.provided();
+
+    if( context && context === EMAIL_CONTEXT_JOURNAL ){
+      doVerify = true;
+
+    } else {
+      const { authorEmail } = doc.correspondence();
+      const { authors: { contacts } } = doc.citation();
+      const hasEmail = _.some( contacts, contact => _.includes( _.get( contact, 'email' ), authorEmail ) );
+      if( hasEmail ) doVerify = true;
+    }
+    if( doVerify ) await doc.verified( true );
+  }
+
+  return doc;
+};
+
 // create new doc
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
@@ -388,32 +519,100 @@ http.post('/', function( req, res, next ){
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
 
-  ( tryPromise( () => createSecret({ secret }) )
+  const setRequestStatus = doc => tryPromise( () => doc.request() ).then( () => doc );
+  const setApprovedStatus = doc => tryPromise( () => hasIssues( doc ) )
+    .then( issueExists => !issueExists ? doc.approve() : null )
+    .then( () => doc );
+
+
+  checkRequestContext( provided )
+    .then( () => res.end() )
+    .then( () => createSecret({ secret }) )
     .then( loadTables )
     .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided }) )
-    .catch( e => { logger.error(`Error creating doc: ${e.message}`); next( e ); })
-    .then( doc => doc.request().then( () => doc ) )
+    .then( setRequestStatus )
     .then( fillDoc )
+    .then( setApprovedStatus )
+    .then( tryVerify )
+    .then( sendInviteNotification )
+    .catch( next );
+});
+
+// Email
+http.patch('/email/:id/:secret', function( req, res, next ){
+  const { id, secret } = req.params;
+  const { apiKey, emailType } = req.query;
+  return (
+    tryPromise( () => checkApiKey( apiKey ) )
+    .then( () => configureAndSendMail( emailType, id, secret ) )
+    .then( () => res.end() )
+    .catch( next )
+  );
+});
+
+// Update document status
+http.patch('/status/:id/:secret', function( req, res, next ){
+  const { id, secret } = req.params;
+
+  // Publish criteria: non-empty; all entities complete
+  const tryPublish = async doc => {
+    let didPublish = false;
+    const hasEles = doc => doc.elements().length > 0;
+    const hasIncompleteEles = doc => doc.elements().some( ele => !ele.completed() && !ele.isInteraction() );
+    const hasSubmittedStatus = doc => doc.status() === DOCUMENT_STATUS_FIELDS.SUBMITTED;
+    const isPublishable = doc => hasEles( doc ) && !hasIncompleteEles( doc ) && hasSubmittedStatus( doc );
+    if( isPublishable( doc ) ){
+      await doc.publish();
+      didPublish = true;
+    }
+    return didPublish;
+  };
+
+  const sendFollowUpNotification = async doc => await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
+  const handlePublishRequest = async doc => {
+    const didPublish = await tryPublish( doc );
+    if( didPublish ) await sendFollowUpNotification( doc );
+  };
+
+  const updateDocStatus = async doc => {
+    const updates = req.body;
+    for( const update of updates ){
+      const { op, path, value } = update;
+      if( op === 'replace' && path === 'status' ){
+        switch ( value ) {
+          case DOCUMENT_STATUS_FIELDS.PUBLISHED: {
+            await handlePublishRequest( doc );
+            break;
+          }
+          default:
+            break;
+        }
+      }
+    }
+    return doc;
+  };
+
+  return (
+    tryPromise( () => loadTables() )
+    .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
+    .then( updateDocStatus )
     .then( getDocJson )
     .then( json => res.json( json ) )
     .catch( next )
   );
 });
 
-// Update document fields provided and re-apply fillDoc
-http.patch('/', function( req, res, next ){
-  const { apiKey, id, secret } = req.body;
-  const updateDocFields = doc => {
-    const updates = _.omit( req.body, [ 'apiKey', 'id', 'secret' ] );
-    const updatePromises = _.toPairs( updates ).map( ([ field, value ]) => doc[field]( value ).then( () => doc ) );
-    return Promise.all( updatePromises ).then( () => doc );
-  };
+// Refresh the document data
+http.patch('/:id/:secret', function( req, res, next ){
+  const { id, secret } = req.params;
+  const { apiKey } = req.query;
+
   return (
     tryPromise( () => checkApiKey( apiKey ) )
     .then( loadTables )
     .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
-    .then( updateDocFields )
     .then( fillDoc )
+    .then( tryVerify )
     .then( getDocJson )
     .then( json => res.json( json ) )
     .catch( next )

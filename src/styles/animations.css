@@ -17,3 +17,13 @@
     opacity: 1;
   }
 }
+
+@keyframes shiftBgRight {
+  0% {
+    background-position-x: 0;
+  }
+
+  100% {
+    background-position-x: 400px;
+  }
+}

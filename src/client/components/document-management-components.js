@@ -3,11 +3,11 @@ import h from 'react-hyperscript';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
+import queryString from 'query-string';
 
 import Document from '../../model/document';
 import {
   tryPromise,
-  sendMail,
   makeClassList
 } from '../../util';
 import logger from '../logger';
@@ -23,6 +23,30 @@ const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
 const hasIssues = doc => _.values( doc.issues() ).some( i => !_.isNull( i ) );
 const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
+
+/**
+ * sendMail
+ *
+ * Client-side helper to send email and update doc state
+ *
+ * @param {String} emailType one of the recognized types to configure email template
+ * @param {object} doc the model object
+ * @param {string} apiKey to validate against protected routes
+ */
+const sendMail = ( emailType, doc, apiKey ) => {
+  const id = doc.id();
+  const secret = doc.secret();
+  const url = `/api/document/email/${id}/${secret}/?${queryString.stringify({ apiKey, emailType })}`;
+
+  return fetch( url,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+};
 
 class SendingComponent extends React.Component {
   constructor( props ){
@@ -113,7 +137,7 @@ class DocumentEmailButtonComponent extends DocumentButtonComponent {
       return h( 'small.mute', [
         h('span', ` ${_.size( infos )}`),
         h('span', ` | ${last}`),
-        error ? h('span.invalid', ` | ${error.statusText}`): null
+        error ? h('span.invalid', ` | ${error.code}`): null
       ]);
     } else {
       return null;
@@ -127,7 +151,8 @@ class DocumentRefreshButtonComponent extends DocumentButtonComponent {
   }
 
   doWork( params ) {
-    const url = '/api/document';
+    const { id, secret, apiKey } = this.props;
+    const url = `/api/document/${id}/${secret}/?${queryString.stringify({ apiKey })}`;
     return fetch( url, {
       method: 'PATCH',
       headers: {
@@ -176,18 +201,16 @@ class TextEditableComponent extends React.Component {
        .then( () => doc );
     })
     .then( doc => {
-      const params = {
-        id: doc.id(),
-        secret: doc.secret(),
-        apiKey: this.props.apiKey
-      };
-      const url = '/api/document';
+      const id = doc.id();
+      const secret = doc.secret();
+      const { apiKey } = this.props;
+      const url = `/api/document/${id}/${secret}/?${queryString.stringify({ apiKey })}`;
       return fetch( url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify( params )
+        body: JSON.stringify([])
       });
     })
     .finally( () => {
@@ -224,9 +247,13 @@ class TextEditableComponent extends React.Component {
   }
 
   render() {
-    const { doc, label } = this.props;
+    const { doc, label, fullWidth } = this.props;
 
-    const editContent = h('div.document-management-text-editable', [
+    const editContent = h('div.document-management-text-editable', {
+      className: makeClassList({
+        'full-width': fullWidth
+      })
+    }, [
       h('input', {
         className: makeClassList({
           'hide-by-default': true,
@@ -271,10 +298,13 @@ class DocumentManagementDocumentComponent extends React.Component {
 
     const getRefreshDocDataButton = doc => {
       return h( DocumentRefreshButtonComponent, {
+          id: doc.id(),
+          secret: doc.secret(),
+          apiKey,
           workingMessage: ' Please wait',
           disableWhen: doc.trashed(),
           buttonKey: doc.id(),
-          params: { id: doc.id(), secret: doc.secret(), apiKey },
+          params: [],
           value: 'refresh',
           title: 'Refresh document data',
           label: h( 'i.material-icons', 'refresh' )
@@ -312,17 +342,18 @@ class DocumentManagementDocumentComponent extends React.Component {
         const paperId = _.get( doc.provided(), 'paperId' );
         items = [
           h( TextEditableComponent, {
+            className: 'full-width',
             doc,
             fieldName: 'paperId',
             value: paperId,
-            label: h( 'span', `${paperIdIssue} ` ),
+            label: h( 'span', `${paperIdIssue.message}` ),
             apiKey
           })
         ];
 
       } else {
-        const { authors, contacts, title, reference, pmid, doi } = doc.citation();
-        const contactList = contacts.map( contact => `${contact.email} <${contact.name}>` ).join(', ');
+        const { authors: { contacts, abbreviation }, title, reference, pmid, doi } = doc.citation();
+        const contactList = !_.isArray( contacts ) && contacts.map( contact => `${contact.email} <${contact.name}>` ).join(', ');
         const { paperId } = doc.provided();
 
         items =  [
@@ -332,7 +363,7 @@ class DocumentManagementDocumentComponent extends React.Component {
                 target: '_blank'
               }, title )
             ]),
-            h('small.mute', `${authors}. ${reference}` ),
+            h('small.mute', `${abbreviation}. ${reference}` ),
             h( 'small.mute', [
               h( 'a.plain-link', {
                 href: DOI_LINK_BASE_URL + doi,
@@ -341,6 +372,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             ]),
             h('small.mute', contactList),
             h( TextEditableComponent, {
+              fullWidth: true,
               doc,
               fieldName: 'paperId',
               value: paperId,
@@ -384,25 +416,38 @@ class DocumentManagementDocumentComponent extends React.Component {
     };
 
     // Correspondence
-    const getContact = doc => {
-      const { authorEmail } = doc.correspondence();
-      const { contacts } = doc.citation();
-      return _.find( contacts, contact => _.indexOf( _.get( contact, 'email' ), authorEmail ) > -1 );
+    const getVerified = doc => {
+      let radios = [];
+      let addType = (typeVal, displayName) => {
+        radios.push(
+          h('input', {
+            type: 'radio',
+            name: `document-verified-${doc.id()}`,
+            id: `document-verified-radio-${doc.id()}-${displayName}`,
+            value: typeVal,
+            checked: typeVal === doc.verified(),
+            onChange: () => doc.verified( typeVal )
+          }),
+          h('label', {
+            htmlFor: `document-verified-radio-${doc.id()}-${displayName}`
+          }, displayName)
+        );
+      };
+
+      [ [ false, 'unverified' ], [ true, 'verified' ] ].forEach( ([ field, name ]) => addType( field, _.capitalize( name ) ) );
+      return h( 'small.radioset', radios );
     };
 
     const getAuthorEmail = doc => {
-      const { authorEmail, isCorrespondingAuthor } = doc.correspondence();
-      let contact = getContact( doc );
+      const { authorEmail } = doc.correspondence();
       const element = [`${authorEmail} `];
-      if( contact ) element.push( h( 'span', ` <${contact.name}> ` ) );
-      if( isCorrespondingAuthor ) element.push( h( 'small', '(Corresponding) ' ) );
       return h( TextEditableComponent, {
           doc,
           fieldName: 'authorEmail',
           value: authorEmail,
           label: h( 'span', element ),
           apiKey
-        });
+      });
     };
 
     const getDocumentCorrespondence = doc => {
@@ -415,14 +460,17 @@ class DocumentManagementDocumentComponent extends React.Component {
             doc,
             fieldName: 'authorEmail',
             value: authorEmail,
-            label: h( 'span', `${authorEmailIssue} `),
+            label: h( 'span', `${authorEmailIssue.message} `),
             apiKey
           })
         ]);
 
       } else {
         content = h( 'div.document-management-document-section-items', [
-          getAuthorEmail( doc ),
+          h( 'div.document-management-document-section-items-row', [
+            getAuthorEmail( doc ),
+            getVerified( doc )
+          ]),
           h( DocumentEmailButtonComponent, {
             params: { doc, apiKey },
             workingMessage: 'Sending...',
@@ -460,7 +508,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             name: `document-status-${doc.id()}`,
             id: `document-status-radio-${doc.id()}-${typeVal}`,
             value: typeVal,
-            defaultChecked: _.get( DOCUMENT_STATUS_FIELDS, typeVal ) === doc.status(),
+            checked: _.get( DOCUMENT_STATUS_FIELDS, typeVal ) === doc.status(),
             onChange: e => {
               let newlySelectedStatus = _.get( DOCUMENT_STATUS_FIELDS, e.target.value );
               doc.status( newlySelectedStatus );

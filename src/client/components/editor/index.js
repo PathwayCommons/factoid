@@ -6,7 +6,7 @@ import io from 'socket.io-client';
 import _ from 'lodash';
 import Mousetrap from 'mousetrap';
 
-import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL, EMAIL_CONTEXT_SIGNUP } from '../../../config';
+import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL, EMAIL_CONTEXT_SIGNUP, DOI_LINK_BASE_URL } from '../../../config';
 
 import { getId, defer, makeClassList, tryPromise } from '../../../util';
 import Document from '../../../model/document';
@@ -22,7 +22,7 @@ import * as defs from './defs';
 import EditorButtons from './buttons';
 import MainMenu from '../main-menu';
 import UndoRemove from './undo-remove';
-import { ShareView } from '../share';
+import { TaskView } from '../tasks';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -121,7 +121,9 @@ class Editor extends DataComponent {
     doc.on('localadd', updateLastEditDate);
     doc.on('localremove', updateLastEditDate);
 
-    doc.on('submit', () => this.dirty());
+    doc.on('update', change => {
+      if( _.has( change, 'status' ) ) this.dirty();
+    });
 
     doc.on('load', () => {
       doc.interactions().concat( doc.complexes() ).forEach( listenForRmPpt );
@@ -191,7 +193,6 @@ class Editor extends DataComponent {
             body: JSON.stringify({
               paperId: DEMO_ID,
               authorEmail: DEMO_AUTHOR_EMAIL,
-              isCorrespondingAuthor: true,
               context: EMAIL_CONTEXT_SIGNUP
             })
           });
@@ -209,6 +210,14 @@ class Editor extends DataComponent {
       .then( () => logger.info('Document synch active') )
       .then( () => {
         this.setData({ initted: true, showHelp: this.data.document.editable() });
+
+        const title = _.get(this.data.document.article(), ['MedlineCitation', 'Article', 'ArticleTitle']);
+
+        if( title ){
+          document.title = `${title} : Biofactoid`;
+        } else {
+          document.title = `Biofactoid`;
+        }
 
         logger.info('The editor is initialising');
       } )
@@ -230,6 +239,10 @@ class Editor extends DataComponent {
       } )
       .catch( (err) => logger.error('An error occurred livening the doc', err) )
     ;
+  }
+
+  done(){
+    return this.data.document.submitted() || this.data.document.published();
   }
 
   editable(){
@@ -475,42 +488,38 @@ class Editor extends DataComponent {
   }
 
   render(){
-    let { document, bus, showHelp, cy } = this.data;
+    let { document, bus, showHelp } = this.data;
     let controller = this;
     let { history } = this.props;
 
-    const { authors, title = 'Unnamed document', reference } = document.citation();
+    const { authors: { abbreviation }, title = 'Unnamed document', reference, doi } = document.citation();
 
     let editorContent = this.data.initted ? [
       h('div.editor-title', [
         h('div.editor-title-content', [
-          h('div.editor-title-name', title ),
-          h('div.editor-title-info', [
-            h('div', authors ),
-            h('div', reference )
+          h(doi ? 'a' : 'div', (doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` } : {}), [
+            h('div.editor-title-name' + (doi ? '.plain-link.link-like' : ''), title ),
+            h('div.editor-title-info', [
+              h('div', abbreviation ),
+              h('div', reference )
+            ])
           ])
         ])
       ]),
       h('div.editor-main-menu', [
         h(MainMenu, { bus, document, history })
       ]),
-      h('div.editor-share', {
-
-      }, [
-        document.editable() ? (
-          h(Popover, { tippy: { html: h(ShareView, { cy, document, bus } ) } }, [
-            h('button.editor-share-button.super-salient-button', {
-              onClick: () => bus.emit('toggleshare')
-            }, 'Share')
-          ])
-        ) : (
-          !document.hasTweet() ? null : h('a', { href: document.tweetUrl() }, [
-            h('button.editor-tweet-button.super-salient-button', [
-              h('i.icon.icon-t-white')
-            ])
-          ])
-        )
-      ]),
+      this.editable() ? h('div.editor-submit', [
+        h(Popover, { tippy: { html: h(TaskView, { document, bus } ) } }, [
+          h('button.editor-submit-button', {
+            disabled: document.trashed(),
+            className: makeClassList({
+              'super-salient-button': true,
+              'submitted': this.done()
+            })
+          }, this.done() ?  'Submitted' : 'Submit')
+        ])
+      ]) : null,
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
       h(UndoRemove, { controller, document, bus }),
       h('div.editor-graph#editor-graph'),
@@ -534,8 +543,7 @@ class Editor extends DataComponent {
           h('div.editor-help-title', 'Welcome'),
           h('div.editor-scroll-box', [
             h('div.editor-help-copy', `
-              Biofactoid assists you, the author, in creating a shareable digital summary of the biological pathway information contained in your article.
-              With one-click sharing, researchers can easily discover and read your article.
+              In just a few simple steps you'll compose a pathway containing the key biological interactions described in your article.
             `),
             h('div.editor-help-cells', [
               h('div.editor-help-cell', [
@@ -548,14 +556,18 @@ class Editor extends DataComponent {
               ]),
               h('div.editor-help-cell', [
                 h('img.editor-help-img', { src: '/image/welcome-aboard-3.svg' }),
-                h('div.editor-help-caption', `3. Share your article's summary`)
+                h('div.editor-help-caption', `3. For complexes, drag items together`)
+              ]),
+              h('div.editor-help-cell', [
+                h('img.editor-help-img', { src: '/image/welcome-aboard-4.svg' }),
+                h('div.editor-help-caption', `4. Submit to finish`)
               ])
             ])
           ]),
           h('div.editor-help-close', [
             h('button.editor-help-close-button.active-button', {
               onClick: () => this.toggleHelp()
-            }, `OK, let's get started`)
+            }, `OK, let's start`)
           ])
         ])
       ])

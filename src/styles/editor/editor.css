@@ -35,6 +35,20 @@
   margin: 0.5em;
 }
 
+.editor-submit {
+  position: absolute;
+  right: 0;
+  box-sizing: border-box;
+  z-index: 1;
+  padding: 0.75em 0.5em;
+}
+
+.editor-submit-button {
+  &.submitted {
+    background-color: var(--completeColor);
+  }
+}
+
 .editor-share {
   position: absolute;
   right: 0;
@@ -43,9 +57,6 @@
   padding: 0.25em 0.5em;
   background: rgba(255, 255, 255, 0.5);
   border-bottom-left-radius: 0.5em;
-}
-
-.editor-share-button {
 }
 
 .editor-button-group {
@@ -90,6 +101,7 @@
   border-bottom-right-radius: 0.25em;
   max-width: calc(100% - 10.5em);
   pointer-events: all;
+  line-height: 1.5;
 }
 
 .editor-title-name,

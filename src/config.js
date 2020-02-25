@@ -72,15 +72,19 @@ export const SMTP_PASSWORD = env('SMTP_PASSWORD', 'password');
 export const EMAIL_VENDOR_MAILJET = env('EMAIL_VENDOR_MAILJET', 'Mailjet');
 export const MAILJET_TMPLID_INVITE = env('MAILJET_TMPLID_INVITE', '1005099');
 export const MAILJET_TMPLID_FOLLOWUP = env('MAILJET_TMPLID_FOLLOWUP', '988309');
+export const MAILJET_TMPLID_REQUEST_ISSUE = env('MAILJET_TMPLID_REQUEST_ISSUE', '1202251');
 export const EMAIL_CONTEXT_JOURNAL = env('EMAIL_CONTEXT_JOURNAL', 'journal');
 export const EMAIL_CONTEXT_SIGNUP = env('EMAIL_CONTEXT_SIGNUP', 'signup');
 export const EMAIL_TYPE_INVITE = env('EMAIL_TYPE_INVITE', 'invite');
 export const EMAIL_TYPE_FOLLOWUP = env('EMAIL_TYPE_FOLLOWUP', 'followUp');
+export const EMAIL_TYPE_REQUEST_ISSUE = env('EMAIL_TYPE_REQUEST_ISSUE', 'requestIssue');
 export const EMAIL_SUBJECT_INVITE = env('EMAIL_SUBJECT_INVITE', 'Your invitation to Biofactoid is ready');
 export const EMAIL_SUBJECT_FOLLOWUP = env('EMAIL_SUBJECT_FOLLOWUP', 'Thank you for sharing your research with Biofactoid');
-
+export const EMAIL_SUBJECT_REQUEST_ISSUE = env('EMAIL_SUBJECT_REQUEST_ISSUE', 'Please re-submit your request to Biofactoid');
+export const EMAIL_ADDRESS_INFO = env('EMAIL_ADDRESS_INFO', 'info@biofactoid.org');
 
 // Sharing
+export const DOCUMENT_IMAGE_CACHE_SIZE = env('DOCUMENT_IMAGE_CACHE_SIZE', 100);
 export const DOCUMENT_IMAGE_WIDTH = env('DOCUMENT_IMAGE_WIDTH', 2400);
 export const DOCUMENT_IMAGE_HEIGHT = env('DOCUMENT_IMAGE_HEIGHT', 1200);
 export const DOCUMENT_IMAGE_PADDING = env('DOCUMENT_IMAGE_PADDING', 50);

@@ -28,12 +28,26 @@ const pubmedDataConverter = json => {
   };
 };
 
+const checkResponseStatus = response => {
+  const { statusText, ok, status } = response;
+  if ( !ok ) {
+    throw Error( `Error in PubMed ESEARCH: ${status} -- ${statusText}` );
+  }
+  return response;
+};
 const eSearchPubmed = term => {
   const params = _.assign( {}, DEFAULT_ESEARCH_PARAMS, { term } );
   const url = EUTILS_SEARCH_URL + '?' + queryString.stringify( params );
-  return fetch( url )
-    .then( response => response.json() )
-    .then( pubmedDataConverter );
+  const userAgent = `${process.env.npm_package_name}/${process.env.npm_package_version}`;
+  return fetch( url, {
+    method: 'GET',
+    headers: {
+      'User-Agent': userAgent
+    }
+  })
+  .then( checkResponseStatus )
+  .then( response => response.json() )
+  .then( pubmedDataConverter );
 };
 
 /**

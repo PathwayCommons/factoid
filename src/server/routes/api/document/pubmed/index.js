@@ -11,42 +11,57 @@ import {
 
 const digitsRegex = /^[0-9.]+$/;
 
+class ArticleIDError extends Error {
+  constructor(...params) {
+    super(...params);
+    this.name = 'ArticleIDError';
+  }
+}
+
 const findPubmedId = async paperId => {
 
   let id;
   const errMessage = `Unrecognized paperId '${paperId}'`;
   if( !_.isString( paperId ) ) throw new TypeError( errMessage );
+  const getUniqueIdOrThrow = async query => {
+    const { searchHits, count } = await searchPubmed( query );
+    if( count === 1 ){
+      return _.first( searchHits );
+    } else {
+      throw new ArticleIDError( errMessage );
+    }
+  };
   const isUidLike = digitsRegex.test( paperId );
-  const isPubMedUrlLike = paperId.startsWith( PUBMED_LINK_BASE_URL );
 
   if( isUidLike ){
+    // Case: a bunch of digits, periods
     id = paperId;
 
-  } else if( isPubMedUrlLike ){
-    const pubmedUrl = new URL( PUBMED_LINK_BASE_URL );
-    const paperIdUrl = new URL( paperId );
-    const isSameHost = paperIdUrl.hostname === pubmedUrl.hostname;
+  } else {
+    const isPubMedUrlLike = paperId.startsWith( PUBMED_LINK_BASE_URL );
 
-    const pathUidMatchResult = paperIdUrl.pathname.match( /^\/pubmed\/([0-9.]+)$/ );
-    const paperIdUrlSearchTerm = paperIdUrl.searchParams.get('term');
+    if( isPubMedUrlLike ) {
+      // Case: URL, look for path or exact search term
+      const pubmedUrl = new URL( PUBMED_LINK_BASE_URL );
+      const paperIdUrl = new URL( paperId );
+      const isSameHost = paperIdUrl.hostname === pubmedUrl.hostname;
+      const pathUidMatchResult = paperIdUrl.pathname.match( /^\/pubmed\/([0-9.]+)$/ );
 
-    if( isSameHost && !_.isNull( pathUidMatchResult ) ){
-      id = pathUidMatchResult[1];
+      if( isSameHost && !_.isNull( pathUidMatchResult ) ){
+        id = pathUidMatchResult[1];
 
-    } else if( isSameHost && paperIdUrlSearchTerm ) {
-      const { searchHits, count } = await searchPubmed( paperIdUrlSearchTerm );
-      if( count === 1 ){
-        id = _.first( searchHits );
       } else {
-        throw new TypeError( errMessage );
+        const paperIdUrlSearchTerm = paperIdUrl.searchParams.get('term');
+
+        if( isSameHost && paperIdUrlSearchTerm ) {
+          id = getUniqueIdOrThrow( paperIdUrlSearchTerm );
+        }
       }
 
     } else {
-      throw new TypeError( errMessage );
+      //Last bucket - do a search (title, doi, ...)
+      id = getUniqueIdOrThrow( paperId );
     }
-
-  } else {
-    throw new TypeError( errMessage );
   }
 
   return id;
@@ -75,8 +90,8 @@ const getPubmedArticle = async paperId => {
   if( !_.isEmpty( PubmedArticleSet ) ){
     return _.head( PubmedArticleSet );
   } else {
-    throw new Error( `No PubMed record for '${paperId}'` );
+    throw new ArticleIDError( `No PubMed record for '${paperId}'` );
   }
 };
 
-export { getPubmedArticle };
+export { getPubmedArticle, ArticleIDError };

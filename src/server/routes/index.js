@@ -1,6 +1,6 @@
 import express from 'express';
 import { getDocumentJson } from './api/document';
-import { TWITTER_ACCOUNT_NAME, BASE_URL } from '../../config';
+import { TWITTER_ACCOUNT_NAME, BASE_URL, EMAIL_ADDRESS_INFO } from '../../config';
 
 const http = express.Router();
 
@@ -12,6 +12,7 @@ const getDocumentPage = function(req, res) {
       TWITTER_ACCOUNT_NAME,
       BASE_URL
     }))
+    .catch( () => res.render( '404', { EMAIL_ADDRESS_INFO } ) )
   );
 };
 

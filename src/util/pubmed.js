@@ -1,7 +1,15 @@
 import _ from 'lodash';
 
 const NUM_AUTHORS_SHOWING = 4;
-const getName = author => {
+
+/**
+ * getAuthorName
+ *
+ * Retrieve a nicely formatted string of the author name
+ * @param {Object} Author returned as is from fetchPubmed PubmedArticleSet
+ * @return {String} ( First Initial Last | Collective )
+ */
+const getAuthorName = author => {
   let name = '';
   const collectiveName = _.get( author, 'CollectiveName' );
   const isPerson = _.isNull( collectiveName );
@@ -13,7 +21,29 @@ const getName = author => {
   } else {
     name = collectiveName;
   }
-  return name; 
+  return name;
+};
+
+/**
+ * getAbbrevAuthorName
+ *
+ * Retrieve a nicely formatted string of the abbreviated author name ( LastName Initials | Collective )
+ * @param {Object} Author returned as is from fetchPubmed PubmedArticleSet
+ * @return {String}
+ */
+const getAbbrevAuthorName = author => {
+  let name = '';
+  const collectiveName = _.get( author, 'CollectiveName' );
+  const isPerson = _.isNull( collectiveName );
+  if( isPerson ){
+    const LastName = _.get( author, 'LastName' ); // required
+    const Initials = _.get( author, 'Initials' ); // optional
+    name = [ LastName, Initials ].join(' ');
+
+  } else {
+    name = collectiveName;
+  }
+  return name;
 };
 
 const getEmail = author => {
@@ -28,82 +58,95 @@ const getEmail = author => {
 
 const getContact = author => {
   const email = getEmail( author );
-  const name = getName( author );
+  const name = getAuthorName( author );
   return { name, email };
 };
 
 // Always show the last author
 // Corresponding author is ambiguous in PubMed
-const getAuthorString = AuthorList => {
+const getAuthorAbbrev = AuthorList => {
   const leadingAuthors = _.take( AuthorList, NUM_AUTHORS_SHOWING - 1 );
   const lastAuthor =  _.last( AuthorList );
   const authorList = leadingAuthors.concat( lastAuthor );
-  
-  const authorStringList = _.uniq( authorList.map( getName ) );
+
+  const authorStringList = _.uniq( authorList.map( getAuthorName ) );
   if( leadingAuthors.length && leadingAuthors.length < AuthorList.length - 1  ) authorStringList.splice( NUM_AUTHORS_SHOWING - 1, 0, '...' );
   return authorStringList.join(', ');
 };
 
 const getContacts = AuthorList => AuthorList.map( getContact ).filter( contact => !_.isEmpty( _.get( contact, 'email' ) ) );
 
+const getAuthorList = AuthorList => {
+  return AuthorList.map( Author => {
+    return {
+      name: getAuthorName( Author ),
+      email: _.head( getEmail( Author ) ),
+      abbrevName: getAbbrevAuthorName( Author ),
+      isCollectiveName: !_.isNull( _.get( Author, 'CollectiveName' ) )
+    };
+  });
+};
+
 const getAuthors = AuthorList => {
-  let authors, contacts;
+  let abbreviation = null,
+    contacts = null,
+    authorList = null;
   if( AuthorList ){
-    authors = getAuthorString( AuthorList );
+    abbreviation = getAuthorAbbrev( AuthorList );
     contacts = getContacts( AuthorList );
+    authorList = getAuthorList( AuthorList );
   }
-  return { authors, contacts };
+  return { abbreviation, contacts, authorList };
 };
 
 const getJournalNameString = Journal => {
-  const hasJournalISOAbbreviation = !_.isNull( _.get( Journal, ['ISOAbbreviation'] ) ); //optional 
-  const hasJournalTitle = !_.isNull( _.get( Journal, ['Title'] ) ); //optional 
+  const hasJournalISOAbbreviation = !_.isNil( _.get( Journal, ['ISOAbbreviation'] ) ); //optional
+  const hasJournalTitle = !_.isNil( _.get( Journal, ['Title'] ) ); //optional
   let name = '';
-  if( hasJournalISOAbbreviation ){ 
-    name = `${_.get( Journal, ['ISOAbbreviation'] )}.`;
+  if( hasJournalISOAbbreviation ){
+    name = `${_.get( Journal, ['ISOAbbreviation'] )}`;
   } else if( hasJournalTitle ) {
-    name = `${_.get( Journal, ['Title'] )}.`;
+    name = `${_.get( Journal, ['Title'] )}`;
   }
-
   return name;
 };
 
 const getReferenceString = Journal => {
-  const journalName = getJournalNameString( Journal ); 
-  const journalVolume = !_.isNull( _.get( Journal, ['Volume'] ) ) ? _.get( Journal, ['Volume'] ): ''; //optional 
-  const pubDateYear = !_.isNull( _.get( Journal, ['PubDate', 'Year'] ) ) ? `(${_.get( Journal, ['PubDate', 'Year'] )})`: ''; //optional 
-  return _.compact( [ journalName, journalVolume, pubDateYear ] ).join(' ');
+  const journalName = getJournalNameString( Journal );
+  const journalVolume = !_.isNil( _.get( Journal, ['Volume'] ) ) ? _.get( Journal, ['Volume'] ): ''; //optional
+  const pubDateYear = !_.isNil( _.get( Journal, ['PubDate', 'Year'] ) ) ? `(${_.get( Journal, ['PubDate', 'Year'] )})`: ''; //optional
+  return _.compact( [ journalName, journalVolume, pubDateYear ] ).join(' ') || null;
 };
 
-const getArticleId = ( PubmedArticle, IdType ) => _.get( _.find( _.get( PubmedArticle, ['PubmedData', 'ArticleIdList'], [] ), [ 'IdType', IdType ] ), 'id' );
+const getArticleId = ( PubmedArticle, IdType ) => _.get( _.find( _.get( PubmedArticle, ['PubmedData', 'ArticleIdList'], [] ), [ 'IdType', IdType ] ), 'id', null );
 
 /**
  * getPubmedCitation
- * 
+ *
  * Retrieve a nicely formatted set of citation items from a PubmedArticle
  *  -- authors, title, and reference
  * @param {Object} PubmedArticle Returned from fetchPubmed PubmedArticleSet
- * @return {Object} result 
- * @return {String} result.authors The CollectiveName or 'LastName et al.' 
- * @return {String} result.contacts 
- * @return {String} result.title 
- * @return {String} result.reference (<ISOAbbreviation> | <Title>) <Year>; <Volume> 
+ * @return {Object} result
+ * @return {String} result.authors The CollectiveName or 'LastName et al.'
+ * @return {String} result.contacts
+ * @return {String} result.title
+ * @return {String} result.reference (<ISOAbbreviation> | <Title>) <Year>; <Volume>
  * @return {String} result.pmid
  * @return {String} result.doi
  */
 const getPubmedCitation = PubmedArticle => {
   const Article = _.get( PubmedArticle, ['MedlineCitation','Article'] ); //required
   const Journal = _.get( Article, ['Journal'] ); //required
-  const title = _.get( Article, ['ArticleTitle'] ); //required
   const AuthorList = _.get( Article, ['AuthorList'] ); //optional
 
-  const { authors, contacts } = getAuthors( AuthorList ); 
+  const title = _.get( Article, ['ArticleTitle'], null ); //required
+  const authors = getAuthors( AuthorList );
   const reference = getReferenceString( Journal );
-  const abstract = _.get( Article, 'Abstract' );
+  const abstract = _.get( Article, 'Abstract', null );
   const pmid = getArticleId( PubmedArticle, 'pubmed' );
   const doi = getArticleId( PubmedArticle, 'doi' );
-  
-  return { authors, contacts, title, reference, abstract, pmid, doi };
+
+  return { title, authors, reference, abstract, pmid, doi };
 };
 
-export { getPubmedCitation }; 
+export { getPubmedCitation };

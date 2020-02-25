@@ -38,7 +38,7 @@ const msgFactory = ( emailType, doc ) => {
       vendor: EMAIL_VENDOR_MAILJET,
       vars: {
         baseUrl: BASE_URL,
-        citation: `${title} ${reference}`
+        citation: _.compact([title, reference]).join(' ')
       }
     }
   };

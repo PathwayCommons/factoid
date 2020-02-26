@@ -31,9 +31,7 @@ const msgFactory = ( emailType, doc ) => {
       name: EMAIL_FROM,
       address: EMAIL_FROM_ADDR
     },
-    to: {
-      address: `${authorEmail}`
-    },
+    to: authorEmail,
     template: {
       vendor: EMAIL_VENDOR_MAILJET,
       vars: {

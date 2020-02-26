@@ -225,10 +225,8 @@ class Scroller extends Component {
 
   render(){
     const exploreDocEntry = doc => {
-      const Article = doc.article.MedlineCitation.Article;
-      const title = Article.ArticleTitle;
-      let authorNames = Article.AuthorList.map(a => a.LastName ? `${a.ForeName} ${a.LastName}` : a.CollectiveName );
-      const journalName = Article.Journal.ISOAbbreviation;
+      const { title, authors: { authorList }, reference: journalName } = doc.citation;
+      let authorNames = authorList.map( a => a.name );
       const id = doc.id;
       const link = doc.publicUrl;
 

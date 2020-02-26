@@ -211,7 +211,7 @@ class Editor extends DataComponent {
       .then( () => {
         this.setData({ initted: true, showHelp: this.data.document.editable() });
 
-        const title = _.get(this.data.document.article(), ['MedlineCitation', 'Article', 'ArticleTitle']);
+        const title = _.get(this.data.document.citation(), ['title']);
 
         if( title ){
           document.title = `${title} : Biofactoid`;

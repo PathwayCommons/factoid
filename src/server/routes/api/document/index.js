@@ -5,7 +5,6 @@ import _ from 'lodash';
 import uuid from 'uuid';
 import fetch from 'node-fetch';
 import cytosnap from 'cytosnap';
-import emailRegex from 'email-regex';
 import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 
@@ -103,7 +102,6 @@ const DEFAULT_CORRESPONDENCE = {
 
 const fillDocCorrespondence = async ( doc, authorEmail, context ) => {
   try {
-    if( !emailRegex({exact: true}).test( authorEmail ) ) throw new TypeError( `Could not detect an email for '${authorEmail}'` );
     const emails = _.get( doc.correspondence(), 'emails' );
     const data = _.defaults( { authorEmail, context, emails }, DEFAULT_CORRESPONDENCE );
     await doc.correspondence( data );

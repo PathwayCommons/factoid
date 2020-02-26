@@ -67,6 +67,38 @@ const findPubmedId = async paperId => {
   return id;
 };
 
+const generatePubmedArticle = title => {
+
+  const PubMedArticle = {
+    "MedlineCitation": {
+      "Article": {
+        "Abstract": null,
+        "ArticleTitle": null,
+        "AuthorList": [],
+        "Journal": {
+          "ISOAbbreviation": null,
+          "ISSN": null,
+          "Issue": null,
+          "PubDate": null,
+          "Title": null,
+          "Volume": null
+        }
+      },
+      "ChemicalList": [],
+      "InvestigatorList": [],
+      "KeywordList": [],
+      "MeshheadingList": []
+    },
+    "PubmedData": {
+      "ArticleIdList": [],
+      "History": [],
+      "ReferenceList": []
+    }
+  };
+
+  return _.set( PubMedArticle, [ 'MedlineCitation', 'Article', 'ArticleTitle' ], title );
+};
+
 /**
  * getPubmedRecord
  *
@@ -74,6 +106,7 @@ const findPubmedId = async paperId => {
  *   - A set of digits
  *   - A url
  *     - Containing a set of digits e.g. 'https://www.ncbi.nlm.nih.gov/pubmed/123456'
+ *     - Containing a query e.g. 'https://www.ncbi.nlm.nih.gov/pubmed/?term=123456'
  *     - A search returning a single PubMed UID
  *
  * @param {String} paperId Contains or references a single PubMed uid (see above). If 'demo' return canned demo data.
@@ -81,16 +114,26 @@ const findPubmedId = async paperId => {
  * @throws {TypeError} When paperId falls outside of the above cases
  */
 const getPubmedArticle = async paperId => {
-  if( paperId === DEMO_ID ) return demoPubmedArticle;
-  const candidateId = await findPubmedId( paperId );
-  const { PubmedArticleSet } = await fetchPubmed({
-    uids: [ candidateId ]
-  });
+  if( paperId === DEMO_ID ){
+    return demoPubmedArticle;
 
-  if( !_.isEmpty( PubmedArticleSet ) ){
-    return _.head( PubmedArticleSet );
   } else {
-    throw new ArticleIDError( `No PubMed record for '${paperId}'` );
+    try {
+      const candidateId = await findPubmedId( paperId );
+      const { PubmedArticleSet } = await fetchPubmed({
+        uids: [ candidateId ]
+      });
+
+      if( !_.isEmpty( PubmedArticleSet ) ){
+        return _.head( PubmedArticleSet );
+      } else {
+        throw new ArticleIDError( `No PubMed record for '${paperId}'` );
+      }
+
+    } catch ( err ) {
+      return generatePubmedArticle( paperId );
+
+    }
   }
 };
 

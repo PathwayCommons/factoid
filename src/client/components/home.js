@@ -25,15 +25,11 @@ class RequestForm extends Component {
 
     this.state = {
       paperId: '',
-      authorEmail: {
-        emailAddress: '',
-        isEmailValid: false
-      },
+      authorEmail: '',
       submitting: false,
       done: false,
       errors: {
         incompleteForm: false,
-        email: false,
         network: false
       }
     };
@@ -44,15 +40,11 @@ class RequestForm extends Component {
   reset(){
     this.setState({
       paperId: '',
-      authorEmail: {
-        emailAddress: '',
-        isEmailValid: false
-      },
+      authorEmail: '',
       submitting: false,
       done: false,
       errors: {
         incompleteForm: false,
-        email: false,
         network: false
       }
     });
@@ -72,19 +64,15 @@ class RequestForm extends Component {
 
   submitRequest(){
     const { paperId, authorEmail } = this.state;
-    const { emailAddress, isEmailValid } = authorEmail;
 
-    if( !paperId || !emailAddress ){
+    if( !paperId || !authorEmail ){
       this.setState({ errors: { incompleteForm: true } });
-
-    } else if( !isEmailValid ){
-      this.setState({ errors: { incompleteForm: false, email: true } });
 
     } else {
       const url = 'api/document';
       const data = _.assign( {}, {
         paperId: _.trim( paperId ),
-        authorEmail: emailAddress,
+        authorEmail,
         context: EMAIL_CONTEXT_SIGNUP
       });
       const fetchOpts = {
@@ -95,7 +83,7 @@ class RequestForm extends Component {
         body: JSON.stringify( data )
       };
 
-      this.setState({ submitting: true, errors: { incompleteForm: false, email: false, network: false } });
+      this.setState({ submitting: true, errors: { incompleteForm: false, network: false } });
       fetch( url, fetchOpts )
         .then( checkStatus )
         .then( () => new Promise( resolve => this.setState({ done: true }, resolve ) ) )
@@ -132,19 +120,13 @@ class RequestForm extends Component {
           type: 'text',
           placeholder: 'Email address',
           onChange: e => this.updateForm({
-            authorEmail: {
-              emailAddress: e.target.value,
-              isEmailValid: e.target.validity.valid
-            }
+            authorEmail: e.target.value
           }),
-          value: this.state.authorEmail.value
+          value: this.state.authorEmail
         }),
         h('div.home-request-error', {
           className: makeClassList({ 'home-request-error-message-shown': this.state.errors.incompleteForm })
         }, 'Fill out everything above, then try again.'),
-        h('div.home-request-error', {
-          className: makeClassList({ 'home-request-error-message-shown': !this.state.errors.paperId && this.state.errors.email })
-        }, 'Please enter a valid email'),
         h('div.home-request-error', {
           className: makeClassList({ 'home-request-error-message-shown': this.state.errors.network })
         }, 'Please try again later'),

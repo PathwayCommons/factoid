@@ -268,16 +268,14 @@ http.get('/', function( req, res, next ){
     })
     .then( cursor => cursor.toArray() )
     .then( res => {
-      if( !_.isUndefined( apiKey ) ){
-        try {
-          checkApiKey(apiKey);
-          return { res, haveSecretAccess: true };
-        } catch( err ){ throw err; }
+      try {
+        checkApiKey(apiKey);
 
-      } else {
+        return { res, haveSecretAccess: true };
+      } catch( err ){
         return { res, haveSecretAccess: false };
       }
-    })
+    } )
     .then( ({res, haveSecretAccess}) => { // map ids to full doc json
       return Promise.all(res.map(docDbJson => {
         let { id } = docDbJson;

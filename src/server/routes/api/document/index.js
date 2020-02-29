@@ -410,6 +410,15 @@ http.post('/:id/tweet', function( req, res, next ){
   );
 });
 
+http.get('/api-key-verify', function( req, res, next ){
+  let apiKey = req.query.apiKey;
+
+  ( tryPromise( () => checkApiKey( apiKey ) )
+    .then( () => res.end() )
+    .catch( next )
+  );
+});
+
 // get existing doc as json
 http.get('/:id', function( req, res, next ){
   let id = req.params.id;

@@ -86,12 +86,25 @@ describe('fetchPubmed', function(){
 
               it('Should possess top-level attributes', () => {
                 expect( Journal ).to.have.property( 'Title' );
-                expect( Journal ).to.have.property( 'Volume' );
-                expect( Journal ).to.have.property( 'Issue' );
-                expect( Journal ).to.have.property( 'PubDate' );
+                expect( Journal ).to.have.property( 'JournalIssue' );
                 expect( Journal ).to.have.property( 'ISSN' );
                 expect( Journal ).to.have.property( 'ISOAbbreviation' );
               });
+
+              describe( 'JournalIssue', () => {
+
+                let JournalIssue;
+                before( () => {
+                  JournalIssue = _.get( Journal, 'JournalIssue' );
+                });
+
+                it('Should possess top-level attributes', () => {
+                  expect( JournalIssue ).to.have.property( 'Volume' );
+                  expect( JournalIssue ).to.have.property( 'Issue' );
+                  expect( JournalIssue ).to.have.property( 'PubDate' );
+                });
+              });
+
             });
 
             describe( 'Abstract', () => {

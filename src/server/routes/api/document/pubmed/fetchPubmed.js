@@ -95,11 +95,26 @@ const getAuthorList = Article => {
 
 //<!ELEMENT	PubDate ( ( Year, ((Month, Day?) | Season)? ) | MedlineDate ) >
 const getPubDate = JournalIssue => {
+  let date;
   const PubDate = _.get( JournalIssue, ['PubDate', '0'] );
-  const Year = _.get( PubDate, ['Year', '0'], null );
-  const Month = _.get( PubDate, ['Month', '0'], null );
-  const Day = _.get( PubDate, ['Day', '0'], null );
-  return { Year, Month, Day };
+
+  if( _.has( PubDate, 'MedlineDate' ) ) {
+    date = ({ MedlineDate:  _.get( PubDate, ['MedlineDate', '0'] ) });
+
+  } else {
+    const Year = _.get( PubDate, ['Year', '0'] );
+
+    if( _.has( PubDate, 'Season' ) ) {
+      const Season = _.get( PubDate, ['Season', '0'] );
+      date = ({ Year, Season });
+
+    } else {
+      const Month = _.get( PubDate, ['Month', '0'] );
+      const Day = _.get( PubDate, ['Day', '0'], null );
+      date = ({ Year, Month, Day });
+    }
+  }
+  return date;
 };
 
 const getJournal = Article => {
@@ -116,9 +131,11 @@ const getJournal = Article => {
 
   return {
     Title,
-    Volume,
-    Issue,
-    PubDate,
+    JournalIssue: {
+      Volume,
+      Issue,
+      PubDate
+    },
     ISSN,
     ISOAbbreviation
   };

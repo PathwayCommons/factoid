@@ -111,10 +111,17 @@ const getJournalNameString = Journal => {
   return name;
 };
 
+const getPubDateYear = JournalIssue => {
+  const hasMedlineDate = _.has( JournalIssue, ['PubDate', 'MedlineDate'] );
+  const year = hasMedlineDate ? _.get( JournalIssue, ['PubDate', 'MedlineDate'] ) : _.get( JournalIssue, ['PubDate', 'Year'] );
+  return `(${year})`;
+};
+
 const getReferenceString = Journal => {
   const journalName = getJournalNameString( Journal );
-  const journalVolume = !_.isNil( _.get( Journal, ['Volume'] ) ) ? _.get( Journal, ['Volume'] ): ''; //optional
-  const pubDateYear = !_.isNil( _.get( Journal, ['PubDate', 'Year'] ) ) ? `(${_.get( Journal, ['PubDate', 'Year'] )})`: ''; //optional
+  const JournalIssue = _.get( Journal, ['JournalIssue'] );
+  const journalVolume = !_.isNil( _.get( JournalIssue, ['Volume'] ) ) ? _.get( JournalIssue, ['Volume'] ): ''; //optional
+  const pubDateYear = getPubDateYear( JournalIssue );
   return _.compact( [ journalName, journalVolume, pubDateYear ] ).join(' ') || null;
 };
 

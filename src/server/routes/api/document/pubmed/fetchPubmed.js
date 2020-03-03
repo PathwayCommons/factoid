@@ -5,6 +5,7 @@ import fetch from 'node-fetch';
 import emailRegex from 'email-regex';
 
 import { NCBI_EUTILS_BASE_URL, NCBI_EUTILS_API_KEY } from '../../../../../config';
+import { checkHTTPStatus } from '../../../../../util';
 
 const EUTILS_FETCH_URL = NCBI_EUTILS_BASE_URL + 'efetch.fcgi';
 const DEFAULT_EFETCH_PARAMS = {
@@ -295,19 +296,10 @@ const processPubmedResponse = json => {
   // return json;
 };
 
-const pubmedDataConverter = async xml => {
-  const rawJSON = await xml2js.parseStringPromise( xml );
-  return processPubmedResponse( rawJSON );
-};
-
+const pubmedDataConverter = async json => processPubmedResponse( json );
 const toText = res => res.text();
-const checkResponseStatus = response => {
-  const { statusText, ok, status } = response;
-  if ( !ok ) {
-    throw Error( `Error in PubMed EFETCH: ${status} -- ${statusText}` );
-  }
-  return response;
-};
+const xml2json = async xml => await xml2js.parseStringPromise( xml );
+
 const eFetchPubmed = ( { uids, query_key, webenv } )=> {
   let params;
   if( !_.isEmpty( uids ) ){
@@ -329,8 +321,9 @@ const eFetchPubmed = ( { uids, query_key, webenv } )=> {
       'User-Agent': userAgent
     }
   })
-  .then( checkResponseStatus )
+  .then( checkHTTPStatus )
   .then( toText )
+  .then( xml2json )
   .then( pubmedDataConverter );
 };
 
@@ -344,6 +337,7 @@ const eFetchPubmed = ( { uids, query_key, webenv } )=> {
  * @param { String } query_key See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
  * @param { String } webenv See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
  * @returns { Object } result The fetch result from PubMed. See pubmedDataConverter.
+ * @throws { HTTPStatusError }
  */
 const fetchPubmed = ( { uids, query_key, webenv } ) => eFetchPubmed( { uids, query_key, webenv } );
 

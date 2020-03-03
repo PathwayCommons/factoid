@@ -3,6 +3,7 @@ import queryString from 'query-string';
 import fetch from 'node-fetch';
 
 import { NCBI_EUTILS_BASE_URL, NCBI_EUTILS_API_KEY } from '../../../../../config';
+import { checkHTTPStatus } from '../../../../../util';
 
 const EUTILS_SEARCH_URL = NCBI_EUTILS_BASE_URL + 'esearch.fcgi';
 const DEFAULT_ESEARCH_PARAMS = {
@@ -28,13 +29,12 @@ const pubmedDataConverter = json => {
   };
 };
 
-const checkResponseStatus = response => {
-  const { statusText, ok, status } = response;
-  if ( !ok ) {
-    throw Error( `Error in PubMed ESEARCH: ${status} -- ${statusText}` );
-  }
-  return response;
+const checkEsearchResult = json => {
+  const errorMessage =  _.get( json, ['esearchresult', 'Error'] );
+  if( errorMessage ) throw new Error( errorMessage );
+  return json;
 };
+
 const eSearchPubmed = term => {
   const params = _.assign( {}, DEFAULT_ESEARCH_PARAMS, { term } );
   const url = EUTILS_SEARCH_URL + '?' + queryString.stringify( params );
@@ -45,8 +45,9 @@ const eSearchPubmed = term => {
       'User-Agent': userAgent
     }
   })
-  .then( checkResponseStatus )
+  .then( checkHTTPStatus )
   .then( response => response.json() )
+  .then( checkEsearchResult )
   .then( pubmedDataConverter );
 };
 
@@ -60,6 +61,8 @@ const eSearchPubmed = term => {
  * @returns { Number } result.count The number of searchHits containing PMIDs
  * @returns { String } result.query_key See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
  * @returns { String } result.webenv See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
+ * @throws { Error }
+ * @throws { HTTPStatusError }
  */
 const searchPubmed = q => eSearchPubmed( q );
 

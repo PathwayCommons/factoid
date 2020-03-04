@@ -5,6 +5,7 @@ import fetch from 'node-fetch';
 import emailRegex from 'email-regex';
 
 import { NCBI_EUTILS_BASE_URL, NCBI_EUTILS_API_KEY } from '../../../../../config';
+import { checkHTTPStatus } from '../../../../../util';
 
 const EUTILS_FETCH_URL = NCBI_EUTILS_BASE_URL + 'efetch.fcgi';
 const DEFAULT_EFETCH_PARAMS = {
@@ -295,19 +296,16 @@ const processPubmedResponse = json => {
   // return json;
 };
 
-const pubmedDataConverter = async xml => {
-  const rawJSON = await xml2js.parseStringPromise( xml );
-  return processPubmedResponse( rawJSON );
+const pubmedDataConverter = async json => processPubmedResponse( json );
+const toText = res => res.text();
+const xml2json = async xml => await xml2js.parseStringPromise( xml );
+
+const checkEfetchResult = json => {
+  const errorMessage =  _.get( json, ['eFetchResult', 'ERROR'] );
+  if( errorMessage ) throw new Error( errorMessage );
+  return json;
 };
 
-const toText = res => res.text();
-const checkResponseStatus = response => {
-  const { statusText, ok, status } = response;
-  if ( !ok ) {
-    throw Error( `Error in PubMed EFETCH: ${status} -- ${statusText}` );
-  }
-  return response;
-};
 const eFetchPubmed = ( { uids, query_key, webenv } )=> {
   let params;
   if( !_.isEmpty( uids ) ){
@@ -329,8 +327,10 @@ const eFetchPubmed = ( { uids, query_key, webenv } )=> {
       'User-Agent': userAgent
     }
   })
-  .then( checkResponseStatus )
+  .then( checkHTTPStatus ) // HTTPStatusError
   .then( toText )
+  .then( xml2json )
+  .then( checkEfetchResult ) //Error
   .then( pubmedDataConverter );
 };
 

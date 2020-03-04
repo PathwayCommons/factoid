@@ -119,10 +119,10 @@ const fillDocArticle = async ( doc, paperId ) => {
     const pubmedRecord = await getPubmedArticle( paperId );
     await doc.article( pubmedRecord );
     await doc.issues({ paperId: null });
-  } catch ( e ) {
+  } catch ( error ) {
     const pubmedRecord = createPubmedArticle({ articleTitle: paperId });
     await doc.article( pubmedRecord );
-    await doc.issues({ paperId: { e, message: e.message } });
+    await doc.issues({ paperId: { error, message: error.message } });
   }
 };
 

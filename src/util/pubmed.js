@@ -209,8 +209,9 @@ const createPubmedArticle = ({ articleTitle, journalName = null, publicationYear
 };
 
 class ArticleIDError extends Error {
-  constructor(...params) {
-    super(...params);
+  constructor( message, id ) {
+    super( message );
+    this.id = id;
     this.name = 'ArticleIDError';
   }
 }

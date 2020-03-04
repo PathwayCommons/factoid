@@ -1,11 +1,8 @@
 import _ from 'lodash';
 import { URL } from 'url';
-
 import { fetchPubmed } from './fetchPubmed';
 import demoPubmedArticle from './demoPubmedArticle';
 import { searchPubmed } from './searchPubmed';
-import logger from '../../../../logger';
-import { ArticleIDError } from '../../../../../util/pubmed';
 
 import {
   PUBMED_LINK_BASE_URL,
@@ -14,29 +11,24 @@ import {
 
 const digitsRegex = /^[0-9.]+$/;
 
-/**
- * findPubmedId
- *
- * Try to extract out a PMID from the input, which can be:
- *   1. number (including period(s))
- *   2. PubMed url, such as an article path (/123345) or search (e.g. /?term=title)
- *   3. a text query (e.g. title)
- * Will throw an 'ArticleIDError' if 1 and 2 do not apply and a PubMed search does
- * not return a unique result. This function is necessary because it polyfills
- * capabilities in EUTILS that are through  the PubMed website.
- *
- * @param {string} paperId the description of an article
- * @returns {string} the candidate uid
- * @throws {ArticleIDError} if it cannot identify a non-emptu, unique record
- */
+class ArticleIDError extends Error {
+  constructor(...params) {
+    super(...params);
+    this.name = 'ArticleIDError';
+  }
+}
+
 const findPubmedId = async paperId => {
+
   let id;
+  const errMessage = `Unrecognized paperId '${paperId}'`;
+  if( !_.isString( paperId ) ) throw new TypeError( errMessage );
   const getUniqueIdOrThrow = async query => {
     const { searchHits, count } = await searchPubmed( query );
     if( count === 1 ){
       return _.first( searchHits );
     } else {
-      throw new ArticleIDError( `Unrecognized paperId '${paperId}'`, paperId );
+      throw new ArticleIDError( errMessage );
     }
   };
   const isUidLike = digitsRegex.test( paperId );
@@ -46,7 +38,6 @@ const findPubmedId = async paperId => {
     id = paperId;
 
   } else {
-    if ( !_.isString( paperId )  ) throw new ArticleIDError( `Missing paperId`, paperId );
     const isPubMedUrlLike = paperId.startsWith( PUBMED_LINK_BASE_URL );
 
     if( isPubMedUrlLike ) {
@@ -63,31 +54,64 @@ const findPubmedId = async paperId => {
         const paperIdUrlSearchTerm = paperIdUrl.searchParams.get('term');
 
         if( isSameHost && paperIdUrlSearchTerm ) {
-          id = await getUniqueIdOrThrow( paperIdUrlSearchTerm );
+          id = getUniqueIdOrThrow( paperIdUrlSearchTerm );
         }
       }
 
     } else {
       //Last bucket - do a search (title, doi, ...)
-      id = await getUniqueIdOrThrow( paperId );
+      id = getUniqueIdOrThrow( paperId );
     }
   }
 
   return id;
 };
 
+const generatePubmedArticle = title => {
+
+  const PubMedArticle = {
+    "MedlineCitation": {
+      "Article": {
+        "Abstract": null,
+        "ArticleTitle": null,
+        "AuthorList": [],
+        "Journal": {
+          "ISOAbbreviation": null,
+          "ISSN": null,
+          "Issue": null,
+          "PubDate": null,
+          "Title": null,
+          "Volume": null
+        }
+      },
+      "ChemicalList": [],
+      "InvestigatorList": [],
+      "KeywordList": [],
+      "MeshheadingList": []
+    },
+    "PubmedData": {
+      "ArticleIdList": [],
+      "History": [],
+      "ReferenceList": []
+    }
+  };
+
+  return _.set( PubMedArticle, [ 'MedlineCitation', 'Article', 'ArticleTitle' ], title );
+};
+
 /**
  * getPubmedRecord
  *
  * Retrieve a single PubmedArticle. Shall interpret an input as either:
- *   - A number (with optional period)
+ *   - A set of digits
  *   - A url
- *     - with an PubMed article path e.g. 'https://www.ncbi.nlm.nih.gov/pubmed/123456'
- *     - with an PubMed search query.g. 'https://www.ncbi.nlm.nih.gov/pubmed/?term=123456'
- *     - A search returning a unique PubMed ID
+ *     - Containing a set of digits e.g. 'https://www.ncbi.nlm.nih.gov/pubmed/123456'
+ *     - Containing a query e.g. 'https://www.ncbi.nlm.nih.gov/pubmed/?term=123456'
+ *     - A search returning a single PubMed UID
  *
- * @param {string} paperId Contains or references a single PubMed uid (see above). If 'demo' return canned demo data.
+ * @param {String} paperId Contains or references a single PubMed uid (see above). If 'demo' return canned demo data.
  * @return {Object} The unique PubMedArticle (see [NLM DTD]{@link https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_190101.dtd} )
+ * @throws {TypeError} When paperId falls outside of the above cases
  */
 const getPubmedArticle = async paperId => {
   if( paperId === DEMO_ID ){
@@ -103,15 +127,14 @@ const getPubmedArticle = async paperId => {
       if( !_.isEmpty( PubmedArticleSet ) ){
         return _.head( PubmedArticleSet );
       } else {
-        throw new ArticleIDError( `No PubMed record found '${paperId}'`, paperId );
+        throw new ArticleIDError( `No PubMed record for '${paperId}'` );
       }
-    } catch ( e ) {
-      // Error types to note: ArticleIDError, HTTPStatusError, FetchError
-      logger.error( `Unable to retrieve a PubmedArticle for '${paperId}'` );
-      logger.error( `${e.name}: ${e.message}` );
-      throw e;
+
+    } catch ( err ) {
+      return generatePubmedArticle( paperId );
+
     }
   }
 };
 
-export { getPubmedArticle };
+export { getPubmedArticle, ArticleIDError };

@@ -113,18 +113,8 @@ const getJournalNameString = Journal => {
 
 const getPubDateYear = JournalIssue => {
   const hasMedlineDate = _.has( JournalIssue, ['PubDate', 'MedlineDate'] );
-  const hasPubYear = !_.isNil( _.get( JournalIssue, ['PubDate', 'Year'] ) );
-  let year;
-
-  if( hasMedlineDate ){
-    year = _.get( JournalIssue, ['PubDate', 'MedlineDate'] );
-  } else if ( hasPubYear ) {
-    year = _.get( JournalIssue, ['PubDate', 'Year'] );
-  } else {
-    year = '';
-  }
-
-  return year && `(${year})`;
+  const year = hasMedlineDate ? _.get( JournalIssue, ['PubDate', 'MedlineDate'] ) : _.get( JournalIssue, ['PubDate', 'Year'] );
+  return `(${year})`;
 };
 
 const getReferenceString = Journal => {
@@ -166,65 +156,4 @@ const getPubmedCitation = PubmedArticle => {
   return { title, authors, reference, abstract, pmid, doi };
 };
 
-/**
- * createPubmedArticle
- *
- * Manually fill in some PubmedArticle details
- *
- * @param {Object} opts values for the PubmedArticle
- * @param {string} opts.articleTitle title the of the article
- * @param {string} opts.journalTitle name of journal
- * @param {string} opts.publicationYear pubYear the year of publication
- * @returns {Object} the populated PubMedArticle
- */
-const createPubmedArticle = ({ articleTitle = 'Untitled', journalName = null, publicationYear = null }) => {
-
-  const PubMedArticle = {
-    MedlineCitation: {
-      Article: {
-        Abstract: null,
-        ArticleTitle: null,
-        AuthorList: [],
-        Journal: {
-          ISOAbbreviation: null,
-          ISSN: null,
-          Title: null,
-          JournalIssue: {
-            Issue: null,
-            PubDate: {
-              Year: null,
-              Month: null,
-              Day: null
-            },
-            Volume: null
-          }
-        }
-      },
-      ChemicalList: [],
-      InvestigatorList: [],
-      KeywordList: [],
-      MeshheadingList: []
-    },
-    PubmedData: {
-      ArticleIdList: [],
-      History: [],
-      ReferenceList: []
-    }
-  };
-
-  _.set( PubMedArticle, [ 'MedlineCitation', 'Article', 'ArticleTitle' ], articleTitle );
-  _.set( PubMedArticle, [ 'MedlineCitation', 'Article', 'Journal', 'Title' ], journalName );
-  _.set( PubMedArticle, [ 'MedlineCitation', 'Article', 'Journal', 'JournalIssue', 'PubDate', 'Year' ], publicationYear );
-  return PubMedArticle;
-};
-
-class ArticleIDError extends Error {
-  constructor( message, id ) {
-    super( message );
-    this.id = id;
-    this.name = 'ArticleIDError';
-  }
-}
-
-
-export { getPubmedCitation, createPubmedArticle, ArticleIDError };
+export { getPubmedCitation };

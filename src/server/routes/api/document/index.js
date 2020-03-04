@@ -8,13 +8,12 @@ import cytosnap from 'cytosnap';
 import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 
-import { tryPromise, makeStaticStylesheet } from '../../../../util';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
 import db from '../../../db';
 import logger from '../../../logger';
-import { makeCyEles, msgFactory, updateCorrespondence } from '../../../../util';
-import { getPubmedArticle, ArticleIDError } from './pubmed';
+import { makeCyEles, msgFactory, updateCorrespondence, tryPromise, makeStaticStylesheet, findEmailAddress, EmailError } from '../../../../util';
+import { getPubmedArticle } from './pubmed';
 
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
@@ -32,10 +31,10 @@ import { BASE_URL,
   EMAIL_CONTEXT_SIGNUP,
   EMAIL_CONTEXT_JOURNAL,
   EMAIL_TYPE_INVITE,
-  EMAIL_TYPE_REQUEST_ISSUE,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP
  } from '../../../../config';
+import { createPubmedArticle } from '../../../../util/pubmed';
 
  const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
@@ -101,20 +100,30 @@ const DEFAULT_CORRESPONDENCE = {
 };
 
 const fillDocCorrespondence = async ( doc, authorEmail, context ) => {
+  let address = [];
   try {
-    const emails = _.get( doc.correspondence(), 'emails' );
-    const data = _.defaults( { authorEmail, context, emails }, DEFAULT_CORRESPONDENCE );
-    await doc.correspondence( data );
+    address = findEmailAddress( authorEmail );
+    if( _.isEmpty( address ) ) throw new EmailError(`Unable to find email for '${authorEmail}'`, authorEmail);
     await doc.issues({ authorEmail: null });
   } catch ( error ){
     await doc.issues({ authorEmail: { error, message: error.message } });
+  } finally {
+    const emails = _.get( doc.correspondence(), 'emails' );
+    const data = _.defaults( { authorEmail: address, context, emails }, DEFAULT_CORRESPONDENCE );
+    await doc.correspondence( data );
   }
 };
 
 const fillDocArticle = async ( doc, paperId ) => {
-  const pubmedRecord = await getPubmedArticle( paperId );
-  await doc.article( pubmedRecord );
-  await doc.issues({ paperId: null });
+  try {
+    const pubmedRecord = await getPubmedArticle( paperId );
+    await doc.article( pubmedRecord );
+    await doc.issues({ paperId: null });
+  } catch ( error ) {
+    const pubmedRecord = createPubmedArticle({ articleTitle: paperId });
+    await doc.article( pubmedRecord );
+    await doc.issues({ paperId: { error, message: error.message } });
+  }
 };
 
 const fillDoc = async doc => {
@@ -143,28 +152,14 @@ const configureAndSendMail = async ( emailType, id, secret ) => {
   }
 };
 
-const hasIssues = doc => _.values( doc.issues() ).some( i => !_.isNull( i ) );
+// Do not try send when there are email issues
 const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
 const sendInviteNotification = async doc => {
   let emailType = EMAIL_TYPE_INVITE;
   const id = doc.id();
   const secret = doc.secret();
-  const issueExists = hasIssues( doc );
-
-  const hasPaperIdIssue = hasIssue( doc, 'paperId' );
-  const hasPaperIdError = hasPaperIdIssue && _.get( doc.issues(), ['paperId', 'error'] ) instanceof ArticleIDError;
-  const { context } = doc.provided();
-  const isSignup = ( context && context === EMAIL_CONTEXT_SIGNUP );
-  const doNotify = isSignup && hasPaperIdError;
-
-  if( issueExists ){
-    emailType = EMAIL_TYPE_REQUEST_ISSUE;
-    if( doNotify ) await configureAndSendMail( emailType, id, secret );
-
-  } else {
-    await configureAndSendMail( emailType, id, secret );
-  }
-
+  const hasAuthorEmailIssue = hasIssue( doc, 'authorEmail' );
+  if( !hasAuthorEmailIssue ) await configureAndSendMail( emailType, id, secret );
   return doc;
 };
 
@@ -478,7 +473,7 @@ const tryVerify = async doc => {
     } else {
       const { authorEmail } = doc.correspondence();
       const { authors: { contacts } } = doc.citation();
-      const hasEmail = _.some( contacts, contact => _.includes( _.get( contact, 'email' ), authorEmail ) );
+      const hasEmail = _.some( contacts, contact => !_.isEmpty( _.intersection( _.get( contact, 'email' ), authorEmail ) ) );
       if( hasEmail ) doVerify = true;
     }
     if( doVerify ) await doc.verified( true );
@@ -495,10 +490,7 @@ http.post('/', function( req, res, next ){
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
 
   const setRequestStatus = doc => tryPromise( () => doc.request() ).then( () => doc );
-  const setApprovedStatus = doc => tryPromise( () => hasIssues( doc ) )
-    .then( issueExists => !issueExists ? doc.approve() : null )
-    .then( () => doc );
-
+  const setApprovedStatus = doc => tryPromise( () => doc.approve() ).then( () => doc );
 
   checkRequestContext( provided )
     .then( () => res.end() )

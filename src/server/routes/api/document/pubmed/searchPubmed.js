@@ -3,6 +3,7 @@ import queryString from 'query-string';
 import fetch from 'node-fetch';
 
 import { NCBI_EUTILS_BASE_URL, NCBI_EUTILS_API_KEY } from '../../../../../config';
+import { checkHTTPStatus } from '../../../../../util';
 
 const EUTILS_SEARCH_URL = NCBI_EUTILS_BASE_URL + 'esearch.fcgi';
 const DEFAULT_ESEARCH_PARAMS = {
@@ -28,13 +29,12 @@ const pubmedDataConverter = json => {
   };
 };
 
-const checkResponseStatus = response => {
-  const { statusText, ok, status } = response;
-  if ( !ok ) {
-    throw Error( `Error in PubMed ESEARCH: ${status} -- ${statusText}` );
-  }
-  return response;
+const checkEsearchResult = json => {
+  const errorMessage =  _.get( json, ['esearchresult', 'ERROR'] );
+  if( errorMessage ) throw new Error( errorMessage );
+  return json;
 };
+
 const eSearchPubmed = term => {
   const params = _.assign( {}, DEFAULT_ESEARCH_PARAMS, { term } );
   const url = EUTILS_SEARCH_URL + '?' + queryString.stringify( params );
@@ -44,9 +44,10 @@ const eSearchPubmed = term => {
     headers: {
       'User-Agent': userAgent
     }
-  })
-  .then( checkResponseStatus )
+  }) // FetchError
+  .then( checkHTTPStatus ) // HTTPStatusError
   .then( response => response.json() )
+  .then( checkEsearchResult ) // Error (programmatic)
   .then( pubmedDataConverter );
 };
 

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { tryPromise } from './promise';
-import emailRegex from 'email-regex';
+
 import {
   BASE_URL,
   EMAIL_FROM,
@@ -89,68 +89,4 @@ const updateCorrespondence = ( doc, info, emailType ) => {
     .then( update => doc.correspondence( update ) );
 };
 
-/**
- * findEmailAddress
- *
- * Helper method to extract email addresses from strings and address objects supported by [Nodemailer]{@link https://nodemailer.com/message/addresses/}
- * @param {*} address a string, Object, or mixed array of string[], Object[]
- * @returns {*} an array of email addresses, possibly empty
- * @throws {TypeError}
- */
-const findEmailAddress = address => {
-
-  const fromString = str => {
-    let output = [];
-    const addr = str.replace(/,/g, ' ').match( emailRegex() );
-    if( addr ) output = addr;
-    return output;
-  };
-  const fromPlainObject = obj => {
-    let output = [];
-    if( _.has( obj, 'address' ) ) output = _.get( obj, 'address', '' ).match( emailRegex() );
-    return output;
-  };
-  const fromArray = arr => {
-    const address = arr.map( elt => {
-      if( _.isString( elt ) ){
-        return fromString( elt );
-      } else if ( _.isPlainObject( elt ) ){
-        return fromPlainObject( elt );
-      } else {
-        return null;
-      }
-    });
-    return _.uniq( _.compact( _.flatten( address ) ) );
-  };
-
-  const type = typeof address;
-  switch ( type ) {
-    case 'string':
-      return fromString( address );
-    case 'object':
-      if( _.isArray( address ) ) {
-        return fromArray( address );
-      } else if ( _.isPlainObject( address ) ) {
-        return fromPlainObject( address );
-      } else {
-        throw new TypeError('Invalid address');
-      }
-    default:
-      throw new TypeError('Invalid address');
-  }
-};
-
-/**
- * EmailError
- *
- * Class representing an EmailError formatting error
- */
-class EmailError extends Error {
-  constructor( message, address ) {
-    super( message );
-    this.address = address;
-    this.name = 'EmailError';
-  }
-}
-
-export { msgFactory, updateCorrespondence, findEmailAddress, EmailError };
+export { msgFactory, updateCorrespondence };

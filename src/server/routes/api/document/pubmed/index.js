@@ -30,14 +30,13 @@ const digitsRegex = /^[0-9.]+$/;
  * @throws {ArticleIDError} if it cannot identify a non-emptu, unique record
  */
 const findPubmedId = async paperId => {
-
   let id;
   const getUniqueIdOrThrow = async query => {
     const { searchHits, count } = await searchPubmed( query );
     if( count === 1 ){
       return _.first( searchHits );
     } else {
-      throw new ArticleIDError( 'Unrecognized paperId', paperId );
+      throw new ArticleIDError( `Unrecognized paperId '${paperId}'`, paperId );
     }
   };
   const isUidLike = digitsRegex.test( paperId );
@@ -47,6 +46,7 @@ const findPubmedId = async paperId => {
     id = paperId;
 
   } else {
+    if ( !_.isString( paperId )  ) throw new ArticleIDError( `Missing paperId`, paperId );
     const isPubMedUrlLike = paperId.startsWith( PUBMED_LINK_BASE_URL );
 
     if( isPubMedUrlLike ) {
@@ -103,7 +103,7 @@ const getPubmedArticle = async paperId => {
       if( !_.isEmpty( PubmedArticleSet ) ){
         return _.head( PubmedArticleSet );
       } else {
-        throw new ArticleIDError( 'No PubMed record found', paperId );
+        throw new ArticleIDError( `No PubMed record found '${paperId}'`, paperId );
       }
     } catch ( e ) {
       // Error types to note: ArticleIDError, HTTPStatusError, FetchError

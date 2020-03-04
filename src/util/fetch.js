@@ -24,7 +24,7 @@ class HTTPStatusError extends Error {
 const checkHTTPStatus = response => {
   const { statusText, status, ok } = response;
   if ( !ok ) {
-    throw new HTTPStatusError( 'Bad status', status, statusText );
+    throw new HTTPStatusError( `${statusText} (${status})`, status, statusText );
   }
   return response;
 };

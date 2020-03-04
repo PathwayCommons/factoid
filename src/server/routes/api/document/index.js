@@ -103,7 +103,7 @@ const fillDocCorrespondence = async ( doc, authorEmail, context ) => {
   let address = [];
   try {
     address = findEmailAddress( authorEmail );
-    if( _.isEmpty( address ) ) throw new EmailError('Unable to find email', authorEmail);
+    if( _.isEmpty( address ) ) throw new EmailError(`Unable to find email for '${authorEmail}'`, authorEmail);
     await doc.issues({ authorEmail: null });
   } catch ( error ){
     await doc.issues({ authorEmail: { error, message: error.message } });

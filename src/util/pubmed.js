@@ -113,8 +113,18 @@ const getJournalNameString = Journal => {
 
 const getPubDateYear = JournalIssue => {
   const hasMedlineDate = _.has( JournalIssue, ['PubDate', 'MedlineDate'] );
-  const year = hasMedlineDate ? _.get( JournalIssue, ['PubDate', 'MedlineDate'] ) : _.get( JournalIssue, ['PubDate', 'Year'] );
-  return `(${year})`;
+  const hasPubYear = !_.isNil( _.get( JournalIssue, ['PubDate', 'Year'] ) );
+  let year;
+
+  if( hasMedlineDate ){
+    year = _.get( JournalIssue, ['PubDate', 'MedlineDate'] );
+  } else if ( hasPubYear ) {
+    year = _.get( JournalIssue, ['PubDate', 'Year'] );
+  } else {
+    year = '';
+  }
+
+  return year && `(${year})`;
 };
 
 const getReferenceString = Journal => {
@@ -167,7 +177,7 @@ const getPubmedCitation = PubmedArticle => {
  * @param {string} opts.publicationYear pubYear the year of publication
  * @returns {Object} the populated PubMedArticle
  */
-const createPubmedArticle = ({ articleTitle, journalName = null, publicationYear = null }) => {
+const createPubmedArticle = ({ articleTitle = 'Untitled', journalName = null, publicationYear = null }) => {
 
   const PubMedArticle = {
     MedlineCitation: {

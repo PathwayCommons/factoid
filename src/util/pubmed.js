@@ -156,4 +156,64 @@ const getPubmedCitation = PubmedArticle => {
   return { title, authors, reference, abstract, pmid, doi };
 };
 
-export { getPubmedCitation };
+/**
+ * createPubmedArticle
+ *
+ * Manually fill in some PubmedArticle details
+ *
+ * @param {Object} opts values for the PubmedArticle
+ * @param {string} opts.articleTitle title the of the article
+ * @param {string} opts.journalTitle name of journal
+ * @param {string} opts.publicationYear pubYear the year of publication
+ * @returns {Object} the populated PubMedArticle
+ */
+const createPubmedArticle = ({ articleTitle, journalName = null, publicationYear = null }) => {
+
+  const PubMedArticle = {
+    MedlineCitation: {
+      Article: {
+        Abstract: null,
+        ArticleTitle: null,
+        AuthorList: [],
+        Journal: {
+          ISOAbbreviation: null,
+          ISSN: null,
+          Title: null,
+          JournalIssue: {
+            Issue: null,
+            PubDate: {
+              Year: null,
+              Month: null,
+              Day: null
+            },
+            Volume: null
+          }
+        }
+      },
+      ChemicalList: [],
+      InvestigatorList: [],
+      KeywordList: [],
+      MeshheadingList: []
+    },
+    PubmedData: {
+      ArticleIdList: [],
+      History: [],
+      ReferenceList: []
+    }
+  };
+
+  _.set( PubMedArticle, [ 'MedlineCitation', 'Article', 'ArticleTitle' ], articleTitle );
+  _.set( PubMedArticle, [ 'MedlineCitation', 'Article', 'Journal', 'Title' ], journalName );
+  _.set( PubMedArticle, [ 'MedlineCitation', 'Article', 'Journal', 'JournalIssue', 'PubDate', 'Year' ], publicationYear );
+  return PubMedArticle;
+};
+
+class ArticleIDError extends Error {
+  constructor(...params) {
+    super(...params);
+    this.name = 'ArticleIDError';
+  }
+}
+
+
+export { getPubmedCitation, createPubmedArticle, ArticleIDError };

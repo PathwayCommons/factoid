@@ -30,7 +30,7 @@ const pubmedDataConverter = json => {
 };
 
 const checkEsearchResult = json => {
-  const errorMessage =  _.get( json, ['esearchresult', 'Error'] );
+  const errorMessage =  _.get( json, ['esearchresult', 'ERROR'] );
   if( errorMessage ) throw new Error( errorMessage );
   return json;
 };
@@ -44,10 +44,10 @@ const eSearchPubmed = term => {
     headers: {
       'User-Agent': userAgent
     }
-  })
-  .then( checkHTTPStatus )
+  }) // FetchError
+  .then( checkHTTPStatus ) // HTTPStatusError
   .then( response => response.json() )
-  .then( checkEsearchResult )
+  .then( checkEsearchResult ) // Error (programmatic)
   .then( pubmedDataConverter );
 };
 
@@ -61,8 +61,6 @@ const eSearchPubmed = term => {
  * @returns { Number } result.count The number of searchHits containing PMIDs
  * @returns { String } result.query_key See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
  * @returns { String } result.webenv See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
- * @throws { Error }
- * @throws { HTTPStatusError }
  */
 const searchPubmed = q => eSearchPubmed( q );
 

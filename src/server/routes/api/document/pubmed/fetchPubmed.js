@@ -300,6 +300,12 @@ const pubmedDataConverter = async json => processPubmedResponse( json );
 const toText = res => res.text();
 const xml2json = async xml => await xml2js.parseStringPromise( xml );
 
+const checkEfetchResult = json => {
+  const errorMessage =  _.get( json, ['eFetchResult', 'ERROR'] );
+  if( errorMessage ) throw new Error( errorMessage );
+  return json;
+};
+
 const eFetchPubmed = ( { uids, query_key, webenv } )=> {
   let params;
   if( !_.isEmpty( uids ) ){
@@ -320,10 +326,11 @@ const eFetchPubmed = ( { uids, query_key, webenv } )=> {
     headers: {
       'User-Agent': userAgent
     }
-  })
-  .then( checkHTTPStatus )
+  }) // FetchError
+  .then( checkHTTPStatus ) // HTTPStatusError
   .then( toText )
   .then( xml2json )
+  .then( checkEfetchResult ) //Error
   .then( pubmedDataConverter );
 };
 
@@ -337,7 +344,6 @@ const eFetchPubmed = ( { uids, query_key, webenv } )=> {
  * @param { String } query_key See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
  * @param { String } webenv See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
  * @returns { Object } result The fetch result from PubMed. See pubmedDataConverter.
- * @throws { HTTPStatusError }
  */
 const fetchPubmed = ( { uids, query_key, webenv } ) => eFetchPubmed( { uids, query_key, webenv } );
 

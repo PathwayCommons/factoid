@@ -33,6 +33,7 @@ Services:
 - `PC_URL` : base url for pathway commons apps, to search or link
 - `BIOPAX_CONVERTER_URL` : url for the factoid to biopax/sbgn converter
 - `GROUNDING_SEARCH_BASE_URL`: url for the [grounding service](https://github.com/PathwayCommons/grounding-search)
+- `INDRA_INTERACTION_BASE_URL`: url for the [indra interaction service](https://github.com/metincansiper/IndraInteractionServer/)
 - `NCBI_EUTILS_BASE_URL` : url for the NCBI E-utilities
 - `NCBI_EUTILS_API_KEY` : API key for the NCBI E-utilities
 
@@ -151,7 +152,7 @@ docker-compose down
 
 Restarting after the app services have been stopped (index exists):
 ```sh
-docker-compose up -d webapp grounding db index
+docker-compose up -d webapp grounding db index indra
 ```
 
 

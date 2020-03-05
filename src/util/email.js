@@ -89,4 +89,17 @@ const updateCorrespondence = ( doc, info, emailType ) => {
     .then( update => doc.correspondence( update ) );
 };
 
-export { msgFactory, updateCorrespondence };
+/**
+ * EmailError
+ *
+ * Class representing an EmailError formatting error
+ */
+class EmailError extends Error {
+  constructor( message, address ) {
+    super( message );
+    this.address = address;
+    this.name = 'EmailError';
+  }
+}
+
+export { msgFactory, updateCorrespondence, EmailError };

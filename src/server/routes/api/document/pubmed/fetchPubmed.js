@@ -110,8 +110,16 @@ const getPubDate = JournalIssue => {
       date = ({ Year, Season });
 
     } else {
-      const Month = _.get( PubDate, ['Month', '0'] );
-      const Day = _.get( PubDate, ['Day', '0'], null );
+      let Month = null, Day = null;
+
+      if( _.has( PubDate, ['Month'] ) ){
+        Month = _.get( PubDate, ['Month', '0'] );
+      }
+
+      if( _.has( PubDate, ['Day'] ) ){
+        Day = _.get( PubDate, ['Day', '0'] );
+      }
+
       date = ({ Year, Month, Day });
     }
   }

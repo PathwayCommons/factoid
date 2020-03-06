@@ -94,6 +94,13 @@ let loadTables = () => Promise.all( tables.map( loadTable ) ).then( dbInfos => (
 
 let getDocJson = doc => doc.json();
 
+let deleteTableRows = async ( apiKey, secret ) => {
+  let clearRows = db => db.table.filter({ secret }).delete().run( db.conn );
+  return tryPromise( () => checkApiKey( apiKey ) )
+    .then( loadTables )
+    .then( ({ docDb, eleDb }) => Promise.all( [ docDb, eleDb ].map( clearRows ) ) );
+};
+
 const DEFAULT_CORRESPONDENCE = {
   emails: [],
   context: EMAIL_CONTEXT_SIGNUP
@@ -494,21 +501,10 @@ const checkRequestContext = async provided => {
   }
 };
 
-// delete the demo doc
 http.delete('/:secret', function(req, res, next){
   let secret = req.params.secret;
   let { apiKey } = req.body;
-
-  let clearDemoRows = db => db.table.filter({ secret }).delete().run(db.conn);
-
-  ( tryPromise(() => checkApiKey(apiKey))
-    .then(loadTables)
-    .then(({ docDb, eleDb }) => (
-      Promise.all([docDb, eleDb].map(clearDemoRows))
-    ))
-    .then(() => res.sendStatus(200))
-    .catch(err => next(err))
-  );
+  deleteTableRows( apiKey, secret ).then( () => res.end() ).catch( next );
 });
 
 // Attempt to verify; Idempotent
@@ -542,12 +538,16 @@ http.post('/', function( req, res, next ){
 
   const setRequestStatus = doc => tryPromise( () => doc.request() ).then( () => doc );
   const setApprovedStatus = doc => tryPromise( () => doc.approve() ).then( () => doc );
+  const handleDocCreation = async ({ docDb, eleDb }) => {
+    if( id === DEMO_ID ) await deleteTableRows( API_KEY, secret );
+    return await createDoc({ docDb, eleDb, id, secret, provided });
+  };
 
   checkRequestContext( provided )
     .then( () => res.end() )
     .then( () => createSecret({ secret }) )
     .then( loadTables )
-    .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided }) )
+    .then( handleDocCreation )
     .then( setRequestStatus )
     .then( fillDoc )
     .then( setApprovedStatus )

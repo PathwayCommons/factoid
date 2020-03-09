@@ -109,6 +109,27 @@ class RequestForm extends Component {
       ]);
     }
 
+    const contextSelector = contexts => {
+      let radios = [];
+      let addType = (typeVal, displayName) => {
+        radios.push(
+          h('input', {
+            type: 'radio',
+            name: `home-request-form-context-${typeVal}`,
+            id: `home-request-form-radio-context-${typeVal}`,
+            value: typeVal,
+            checked: this.state.context === typeVal,
+            onChange: e => this.handleContextChange(e)
+          }),
+          h('label', {
+            htmlFor: `home-request-form-radio-context-${EMAIL_CONTEXT_SIGNUP}`
+          }, displayName)
+        );
+      };
+      contexts.forEach( context => addType( context, _.capitalize( context ) ) );
+      return h( 'div.radioset', radios );
+    };
+
     return h('div.home-request-form-container', [
       h('div.home-request-form-description', 'Claim your article'),
       h('i.icon.icon-spinner.home-request-spinner', {
@@ -131,31 +152,7 @@ class RequestForm extends Component {
           }),
           value: this.state.authorEmail
         }),
-        this.props.apiKey ?
-        h( 'div.radioset', [
-          h('input', {
-            type: 'radio',
-            name: `home-request-form-context-${EMAIL_CONTEXT_SIGNUP}`,
-            id: `home-request-form-radio-context-${EMAIL_CONTEXT_SIGNUP}`,
-            value: EMAIL_CONTEXT_SIGNUP,
-            checked: this.state.context === EMAIL_CONTEXT_SIGNUP,
-            onChange: e => this.handleContextChange(e)
-          }),
-          h('label', {
-            htmlFor: `home-request-form-radio-context-${EMAIL_CONTEXT_SIGNUP}`
-          }, _.capitalize(EMAIL_CONTEXT_SIGNUP)),
-          h('input', {
-            type: 'radio',
-            name: `home-request-form-context-${EMAIL_CONTEXT_JOURNAL}`,
-            id: `home-request-form-radio-context-${EMAIL_CONTEXT_JOURNAL}`,
-            value: EMAIL_CONTEXT_JOURNAL,
-            checked: this.state.context === EMAIL_CONTEXT_JOURNAL,
-            onChange: e => this.handleContextChange(e)
-          }),
-          h('label', {
-            htmlFor: `home-request-form-radio-context-${EMAIL_CONTEXT_JOURNAL}`
-          }, _.capitalize(EMAIL_CONTEXT_JOURNAL))
-        ]) : null,
+        this.props.apiKey ? contextSelector([ EMAIL_CONTEXT_SIGNUP, EMAIL_CONTEXT_JOURNAL ]) : null,
         h('div.home-request-error', {
           className: makeClassList({ 'home-request-error-message-shown': this.state.errors.incompleteForm })
         }, 'Fill out everything above, then try again.'),

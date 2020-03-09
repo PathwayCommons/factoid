@@ -2,12 +2,17 @@ import _ from 'lodash';
 import h from 'react-hyperscript';
 import queryString from 'query-string';
 import io from 'socket.io-client';
+import EventEmitter from 'eventemitter3';
 
 import { DocumentManagementDocumentComponent } from './document-management-components';
 import logger from '../logger';
 import DirtyComponent from './dirty-component';
 import Document from '../../model/document';
 import { tryPromise } from '../../util';
+import Popover from './popover/popover';
+import { checkHTTPStatus } from '../../util';
+import { EMAIL_CONTEXT_JOURNAL } from '../../config';
+import { RequestForm } from './home';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 const DEFAULT_STATUS_FIELDS = _.pull( _.values( DOCUMENT_STATUS_FIELDS ), DOCUMENT_STATUS_FIELDS.TRASHED );
@@ -30,14 +35,6 @@ const toDocs = ( docJSON, docSocket, eleSocket ) => {
   });
 
   return Promise.all( docPromises );
-};
-
-const checkResponseStatus = response => {
-  const { statusText, ok, status } = response;
-  if ( !ok ) {
-    throw Error( `Error: ${status} -- ${statusText}` );
-  }
-  return response;
 };
 
 class DocumentManagement extends DirtyComponent {
@@ -66,6 +63,8 @@ class DocumentManagement extends DirtyComponent {
       status
     };
 
+    this.bus = new EventEmitter();
+
     this.checkApiKey( apiKey )
       .then( () => this.getDocs() )
       .catch( () => {} ); //swallow
@@ -76,7 +75,7 @@ class DocumentManagement extends DirtyComponent {
     const params = queryString.stringify( { apiKey } );
 
     return fetch(`${url}?${params}`)
-      .then( checkResponseStatus )
+      .then( checkHTTPStatus )
       .then( () => new Promise( resolve => this.setState( { apiKeyError: null, validApiKey: true }, resolve ) ))
       .catch( e => {
         this.setState( { apiKeyError: apiKey ? e : null, validApiKey: false }, () => this.props.history.push(`/document`) );
@@ -148,6 +147,22 @@ class DocumentManagement extends DirtyComponent {
       h('h1', 'Document management panel')
     ]);
 
+    const getAddDoc = () => {
+      return h( Popover, {
+        tippy: {
+          html: h( RequestForm, {
+            apiKey,
+            context: EMAIL_CONTEXT_JOURNAL,
+            bus: this.bus
+          }),
+          onHidden: () => this.bus.emit( 'closecta' ),
+          placement: 'top'
+        }
+      }, [
+        h('button', [ h( 'i.material-icons', 'add' ) ])
+      ]);
+    };
+
     // Authorization
     const apiKeyForm =
       h('form', [
@@ -189,7 +204,8 @@ class DocumentManagement extends DirtyComponent {
 
 
     const documentMenu = h('div.document-management-document-control-menu', [
-      getDocStatusFilter()
+      h( 'div.document-management-document-control-menu-item', [getDocStatusFilter()]),
+      h( 'div.document-management-document-control-menu-item', [getAddDoc()])
     ]);
 
     const documentList = h( 'ul', orderByCreatedDate( docs ).map( doc => {

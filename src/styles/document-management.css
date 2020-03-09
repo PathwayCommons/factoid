@@ -50,6 +50,10 @@
   }
 }
 
+.document-management-document-control-menu-item {
+  margin-bottom: 5px;
+}
+
 .document-management-submit-spinner {
   vertical-align: middle;
 }

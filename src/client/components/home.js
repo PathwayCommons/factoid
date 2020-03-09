@@ -5,7 +5,7 @@ import Popover from './popover/popover';
 import { makeClassList, tryPromise } from '../../util';
 import EventEmitter from 'eventemitter3';
 
-import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME } from '../../config';
+import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME, EMAIL_CONTEXT_JOURNAL } from '../../config';
 
 const checkStatus = response => {
   if ( response.status >= 200 && response.status < 300 ) {
@@ -26,6 +26,7 @@ class RequestForm extends Component {
     this.state = {
       paperId: '',
       authorEmail: '',
+      context: this.props.context || EMAIL_CONTEXT_SIGNUP,
       submitting: false,
       done: false,
       errors: {
@@ -62,8 +63,13 @@ class RequestForm extends Component {
     this.setState(fields);
   }
 
+  handleContextChange(e){
+    this.setState({ context: e.target.value });
+  }
+
   submitRequest(){
-    const { paperId, authorEmail } = this.state;
+    const { paperId, authorEmail, context } = this.state;
+    const { apiKey } = this.props;
 
     if( !paperId || !authorEmail ){
       this.setState({ errors: { incompleteForm: true } });
@@ -73,7 +79,8 @@ class RequestForm extends Component {
       const data = _.assign( {}, {
         paperId: _.trim( paperId ),
         authorEmail,
-        context: EMAIL_CONTEXT_SIGNUP
+        context,
+        apiKey
       });
       const fetchOpts = {
         method: 'POST',
@@ -124,6 +131,31 @@ class RequestForm extends Component {
           }),
           value: this.state.authorEmail
         }),
+        this.props.apiKey ?
+        h( 'div.radioset', [
+          h('input', {
+            type: 'radio',
+            name: `home-request-form-context-${EMAIL_CONTEXT_SIGNUP}`,
+            id: `home-request-form-radio-context-${EMAIL_CONTEXT_SIGNUP}`,
+            value: EMAIL_CONTEXT_SIGNUP,
+            checked: this.state.context === EMAIL_CONTEXT_SIGNUP,
+            onChange: e => this.handleContextChange(e)
+          }),
+          h('label', {
+            htmlFor: `home-request-form-radio-context-${EMAIL_CONTEXT_SIGNUP}`
+          }, _.capitalize(EMAIL_CONTEXT_SIGNUP)),
+          h('input', {
+            type: 'radio',
+            name: `home-request-form-context-${EMAIL_CONTEXT_JOURNAL}`,
+            id: `home-request-form-radio-context-${EMAIL_CONTEXT_JOURNAL}`,
+            value: EMAIL_CONTEXT_JOURNAL,
+            checked: this.state.context === EMAIL_CONTEXT_JOURNAL,
+            onChange: e => this.handleContextChange(e)
+          }),
+          h('label', {
+            htmlFor: `home-request-form-radio-context-${EMAIL_CONTEXT_JOURNAL}`
+          }, _.capitalize(EMAIL_CONTEXT_JOURNAL))
+        ]) : null,
         h('div.home-request-error', {
           className: makeClassList({ 'home-request-error-message-shown': this.state.errors.incompleteForm })
         }, 'Fill out everything above, then try again.'),
@@ -378,4 +410,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export { Home as default, RequestForm };

@@ -330,7 +330,7 @@ class Home extends Component {
         tippy: {
           html: h(RequestForm, {
             bus: this.bus,
-            doneMessage: 'Thank you for your request!  We will contact you soon with next steps.'
+            doneMsg: 'Thank you for your request!  We will contact you soon with next steps.'
           }),
           onHidden: () => this.bus.emit('closecta'),
           placement: 'top'

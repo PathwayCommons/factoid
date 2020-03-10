@@ -104,7 +104,9 @@ class RequestForm extends Component {
       return h('div.home-request-form-container', [
         h('div.home-request-form-done', [
           h('div.home-request-form-done-icon', [ h('i.material-icons', 'check') ]),
-          h('div.home-request-form-done-descr', 'Thank you for your request!  We will contact you soon with next steps.')
+          h('div.home-request-form-done-descr', this.props.apiKey ?
+            'Request submitted.': 'Thank you for your request!  We will contact you soon with next steps.'
+          )
         ])
       ]);
     }
@@ -127,7 +129,7 @@ class RequestForm extends Component {
         );
       };
       contexts.forEach( context => addType( context, _.capitalize( context ) ) );
-      return h( 'div.radioset', radios );
+      return h( 'div.radioset.home-request-form-radioset', radios );
     };
 
     return h('div.home-request-form-container', [

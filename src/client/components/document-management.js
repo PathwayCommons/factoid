@@ -153,6 +153,7 @@ class DocumentManagement extends DirtyComponent {
           html: h( RequestForm, {
             apiKey,
             context: EMAIL_CONTEXT_JOURNAL,
+            doneMsg: 'Request submitted.',
             bus: this.bus
           }),
           onHidden: () => this.bus.emit( 'closecta' ),

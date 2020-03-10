@@ -104,9 +104,7 @@ class RequestForm extends Component {
       return h('div.home-request-form-container', [
         h('div.home-request-form-done', [
           h('div.home-request-form-done-icon', [ h('i.material-icons', 'check') ]),
-          h('div.home-request-form-done-descr', this.props.apiKey ?
-            'Request submitted.': 'Thank you for your request!  We will contact you soon with next steps.'
-          )
+          h('div.home-request-form-done-msg', this.props.doneMsg )
         ])
       ]);
     }
@@ -330,7 +328,10 @@ class Home extends Component {
     const CTA = () => {
       return h(Popover, {
         tippy: {
-          html: h(RequestForm, { bus: this.bus }),
+          html: h(RequestForm, {
+            bus: this.bus,
+            doneMessage: 'Thank you for your request!  We will contact you soon with next steps.'
+          }),
           onHidden: () => this.bus.emit('closecta'),
           placement: 'top'
         }

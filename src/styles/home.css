@@ -387,6 +387,10 @@
   box-sizing: border-box;
 }
 
+.home-request-form-radioset {
+  margin-top: 0.5em;
+}
+
 .home-request-form-submitting {
   opacity: 0.333;
   pointer-events: none;
@@ -451,6 +455,10 @@
 
 .home-request-form-done-icon {
   font-size: 2em;
+  text-align: center;
+}
+
+.home-request-form-done-msg {
   text-align: center;
 }
 

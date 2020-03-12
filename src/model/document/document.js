@@ -18,7 +18,7 @@ const DEFAULTS = Object.freeze({
 });
 
 const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'status', 'verified' ];
-const READONLY_METADATA_FIELDS = _.difference( METADATA_FIELDS, ['provided', 'correspondence', 'status'] );
+const READONLY_METADATA_FIELDS = _.difference( METADATA_FIELDS, ['provided', 'correspondence'] );
 const DOCUMENT_STATUS_FIELDS = Object.freeze({
   REQUESTED: 'requested',
   APPROVED: 'approved',

@@ -1,7 +1,7 @@
 version: "3.4"
 services:
   webapp:
-    image: pathwaycommons/factoid:${FACTOID_IMAGE_TAG:-unstable}
+    image: factoid:latest
     container_name: webapp_container
     depends_on:
       - db
@@ -54,7 +54,7 @@ services:
     volumes:
       - dbdata:/data
   indra:
-    image: indra_intn_server:latest
+    image: pathwaycommons/indra-interaction-server:${INDRA_IMAGE_TAG:-latest}
     container_name: indra_container
     ports:
       - "${INDRA_PORT:-3030}:8000"

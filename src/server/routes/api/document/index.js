@@ -544,10 +544,10 @@ http.post('/', function( req, res, next ){
   };
 
   checkRequestContext( provided )
-    .then( () => res.end() )
     .then( () => createSecret({ secret }) )
     .then( loadTables )
     .then( handleDocCreation )
+    .then( doc => { res.end(); return doc; } )
     .then( setRequestStatus )
     .then( fillDoc )
     .then( setApprovedStatus )

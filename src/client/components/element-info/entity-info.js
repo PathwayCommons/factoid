@@ -497,12 +497,20 @@ class EntityInfo extends DataComponent {
 
     if( !doc.editable() ){
       if( assoc == null ){
-        children.push( h('div.entity-info-no-assoc', [
-          h('div.element-info-message.element-info-no-data', [
-            h('i.material-icons', 'info'),
-            h('span', ' This entity has no data associated with it.')
-          ])
-        ]) );
+        const type = s.element.type();
+        const name = s.name;
+        const entityNames = s.element.participants().map(ppt => ppt.name());
+
+        if( isComplex(s.element.type()) ){
+          children.push( h('div.entity-info-assoc', targetFromAssoc({ type, name, entityNames }, true )) );
+        } else {
+          children.push( h('div.entity-info-no-assoc', [
+            h('div.element-info-message.element-info-no-data', [
+              h('i.material-icons', 'info'),
+              h('span', ' This entity has no data associated with it.')
+            ])
+          ]) );
+        }
       } else {
         children.push( h('div.entity-info-assoc', allAssoc( assoc, true, false )) );
       }

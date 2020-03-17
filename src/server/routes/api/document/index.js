@@ -542,17 +542,19 @@ http.post('/', function( req, res, next ){
     if( id === DEMO_ID ) await deleteTableRows( API_KEY, secret );
     return await createDoc({ docDb, eleDb, id, secret, provided });
   };
+  const sendJSONResponse = doc => tryPromise( () => doc.json() )
+  .then( json => res.json( json ) );
 
   checkRequestContext( provided )
     .then( () => createSecret({ secret }) )
     .then( loadTables )
     .then( handleDocCreation )
-    .then( doc => { res.end(); return doc; } )
     .then( setRequestStatus )
     .then( fillDoc )
     .then( setApprovedStatus )
     .then( tryVerify )
     .then( sendInviteNotification )
+    .then( sendJSONResponse )
     .catch( next );
 });
 

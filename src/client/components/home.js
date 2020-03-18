@@ -5,7 +5,7 @@ import Popover from './popover/popover';
 import { makeClassList, tryPromise } from '../../util';
 import EventEmitter from 'eventemitter3';
 
-import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME, EMAIL_CONTEXT_JOURNAL } from '../../config';
+import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME, EMAIL_CONTEXT_JOURNAL, DOI_LINK_BASE_URL } from '../../config';
 
 const checkStatus = response => {
   if ( response.status >= 200 && response.status < 300 ) {
@@ -29,6 +29,7 @@ class RequestForm extends Component {
       context: this.props.context || EMAIL_CONTEXT_SIGNUP,
       submitting: false,
       done: false,
+      docJSON: undefined,
       errors: {
         incompleteForm: false,
         network: false
@@ -44,6 +45,7 @@ class RequestForm extends Component {
       authorEmail: '',
       submitting: false,
       done: false,
+      docJSON: undefined,
       errors: {
         incompleteForm: false,
         network: false
@@ -93,18 +95,26 @@ class RequestForm extends Component {
       this.setState({ submitting: true, errors: { incompleteForm: false, network: false } });
       fetch( url, fetchOpts )
         .then( checkStatus )
-        .then( () => new Promise( resolve => this.setState({ done: true }, resolve ) ) )
+        .then( response => response.json() )
+        .then( docJSON => new Promise( resolve => this.setState({ done: true, docJSON }, resolve ) ) )
         .catch( () => new Promise( resolve => this.setState({ errors: { network: true } }, resolve ) ) )
         .finally( () => new Promise( resolve => this.setState({ submitting: false }, resolve ) ) );
     }
   }
 
   render(){
-    if( this.state.done ){
+    const { done, docJSON } = this.state;
+    if( done && docJSON ){
+      const { privateUrl, citation: { doi, title, reference } } = docJSON;
+      const articleString = _.compact([ title, reference ]).join(' ');
       return h('div.home-request-form-container', [
         h('div.home-request-form-done', [
-          h('div.home-request-form-done-icon', [ h('i.material-icons', 'check') ]),
-          h('div.home-request-form-done-msg', this.props.doneMsg )
+          h( 'a.home-request-form-done-button', { href: privateUrl, target: '_blank', }, 'START BIOFACTOID' ),
+          h( 'div.home-request-form-done-body', [
+            h( 'span', 'Article: ' ),
+            h( doi ? 'a.plain-link': 'span', (doi ? { href: `${DOI_LINK_BASE_URL}${doi}`, target: '_blank'}: {}), articleString )
+          ]),
+          h( 'div.home-request-form-done-footer', 'An email invitation has also been sent.' )
         ])
       ]);
     }

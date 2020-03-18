@@ -453,6 +453,31 @@
   display: block;
 }
 
+.home-request-form-done > * {
+  text-align: center;
+  margin: 0 0 0.5em;
+}
+
+.home-request-form-done .home-request-form-done-button {
+  display: block;
+  border-radius: var(--widgetBorderRadius);
+  background-color: var(--brandColor);
+  color: var(--buttonActiveColor);
+  padding: 0.2em 0.5em;
+  text-decoration: none;
+  font-size: 1.4em;
+  font-weight: bold;
+}
+
+.home-request-form-done-body {
+  color: var(--buttonActiveColor);
+}
+
+.home-request-form-done-footer {
+  color: var(--fadedColor);
+  font-size: 0.8em;
+}
+
 .home-request-form-done-icon {
   font-size: 2em;
   text-align: center;

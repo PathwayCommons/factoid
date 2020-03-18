@@ -543,7 +543,8 @@ http.post('/', function( req, res, next ){
     return await createDoc({ docDb, eleDb, id, secret, provided });
   };
   const sendJSONResponse = doc => tryPromise( () => doc.json() )
-  .then( json => res.json( json ) );
+  .then( json => res.json( json ) )
+  .then( () => doc );
 
   checkRequestContext( provided )
     .then( () => createSecret({ secret }) )
@@ -553,8 +554,8 @@ http.post('/', function( req, res, next ){
     .then( fillDoc )
     .then( setApprovedStatus )
     .then( tryVerify )
-    .then( sendInviteNotification )
     .then( sendJSONResponse )
+    .then( sendInviteNotification )
     .catch( next );
 });
 

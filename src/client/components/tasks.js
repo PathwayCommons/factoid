@@ -97,7 +97,7 @@ class TaskView extends DataComponent {
       return !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX;
     });
 
-    let ntfns = document.entities().filter(ele => !ele.completed()).map(ele => {
+    let ntfns = incompleteEles.map(ele => {
       let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + (ele.completed() ? '' : '') }`;
       let innerMsg = entMsg(ele);
 

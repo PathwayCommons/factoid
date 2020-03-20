@@ -11,7 +11,6 @@ services:
     environment:
       BASE_URL:
       GROUNDING_SEARCH_BASE_URL: "http://grounding:3000"
-      INDRA_INTERACTION_BASE_URL: "http://indra:8000/"
       DB_HOST: "db"
       API_KEY:
       EMAIL_ENABLED:
@@ -53,11 +52,6 @@ services:
       - "${DB_ADMIN_PORT:-8080}:8080"
     volumes:
       - dbdata:/data
-  indra:
-    image: pathwaycommons/indra-interaction-server:${INDRA_IMAGE_TAG:-latest}
-    container_name: indra_container
-    ports:
-      - "${INDRA_PORT:-3030}:8000"
 
 volumes:
   dbdata:

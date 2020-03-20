@@ -188,37 +188,17 @@ class InteractionInfo extends DataComponent {
     let { limit, el } = this.data;
     let s = this.data;
 
-    let sign;
-    let sources, targets;
-
-    let assoc = el.association();
-
-    if ( assoc.isPositive() ) {
-      sign = 'P';
-    }
-    else if ( assoc.isNegative() ) {
-      sign = 'N';
-    }
-    else {
-      sign = 'U';
-    }
-
-    if ( assoc.isSigned() ) {
-      sources = [ assoc.getSource().name() ];
-      targets = [ assoc.getTarget().name() ];
-    }
-    else {
-      sources = el.participants().map( p => p.name() );
-    }
+    let agents = el.participants().map( p => p.name() );
+    let agent0 = agents[0];
+    let agent1 = agents[1];
 
     offset = offset || s.offset;
 
     let q = {
-      sources,
-      targets,
+      agent0,
+      agent1,
       limit,
-      offset: offset,
-      sign
+      offset: offset
     };
 
     let makeRequest = () => fetch( '/api/element-association/search-intn', {

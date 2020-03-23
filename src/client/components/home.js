@@ -4,11 +4,9 @@ import { Component } from 'react';
 import Popover from './popover/popover';
 import { makeClassList, tryPromise } from '../../util';
 import EventEmitter from 'eventemitter3';
+import { truncateString } from '../../util';
 
 import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME, EMAIL_CONTEXT_JOURNAL, DOI_LINK_BASE_URL } from '../../config';
-
-// Truncate long titles by character count
-const MAX_CHARS_TITLE = 150;
 
 const checkStatus = response => {
   if ( response.status >= 200 && response.status < 300 ) {
@@ -18,11 +16,6 @@ const checkStatus = response => {
     error.response = response;
     throw error;
   }
-};
-
-const truncateStr = ( raw, maxChars ) => {
-  const text = raw || '';
-  return text.length > maxChars ? `${text.slice( 0, maxChars )}...` : text;
 };
 
 class RequestForm extends Component {
@@ -114,7 +107,7 @@ class RequestForm extends Component {
     const { done, docJSON } = this.state;
     if( done && docJSON ){
       const { privateUrl, citation: { doi, title, reference } } = docJSON;
-      const articleString = _.compact([ truncateStr( title, MAX_CHARS_TITLE ), reference ]).join(' ');
+      const articleString = _.compact([ truncateString( title ), reference ]).join(' ');
 
       return h('div.home-request-form-container', [
         h('div.home-request-form-done', [

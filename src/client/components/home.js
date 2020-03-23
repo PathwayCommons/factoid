@@ -7,6 +7,9 @@ import EventEmitter from 'eventemitter3';
 
 import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME, EMAIL_CONTEXT_JOURNAL, DOI_LINK_BASE_URL } from '../../config';
 
+// Truncate long titles by character count
+const MAX_CHARS_TITLE = 150;
+
 const checkStatus = response => {
   if ( response.status >= 200 && response.status < 300 ) {
     return response;
@@ -15,6 +18,11 @@ const checkStatus = response => {
     error.response = response;
     throw error;
   }
+};
+
+const truncateStr = ( raw, maxChars ) => {
+  const text = raw || '';
+  return text.length > maxChars ? `${text.slice( 0, maxChars )}...` : text;
 };
 
 class RequestForm extends Component {
@@ -106,13 +114,13 @@ class RequestForm extends Component {
     const { done, docJSON } = this.state;
     if( done && docJSON ){
       const { privateUrl, citation: { doi, title, reference } } = docJSON;
-      const articleString = _.compact([ title, reference ]).join(' ');
+      const articleString = _.compact([ truncateStr( title, MAX_CHARS_TITLE ), reference ]).join(' ');
+
       return h('div.home-request-form-container', [
         h('div.home-request-form-done', [
           h( 'a.home-request-form-done-button', { href: privateUrl, target: '_blank', }, 'START BIOFACTOID' ),
           h( 'div.home-request-form-done-body', [
-            h( 'span', 'Article: ' ),
-            h( doi ? 'a.plain-link': 'span', (doi ? { href: `${DOI_LINK_BASE_URL}${doi}`, target: '_blank'}: {}), articleString )
+            h( doi ? 'a.plain-link': 'span', (doi ? { href: `${DOI_LINK_BASE_URL}${doi}`, target: '_blank'}: {}), `Article: ${articleString}` )
           ]),
           h( 'div.home-request-form-done-footer', 'An email invitation has also been sent.' )
         ])

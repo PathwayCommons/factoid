@@ -18,4 +18,8 @@ function longestCommonPrefixLength(str1, str2){
   return i;
 }
 
-export { stringDistanceMetric, longestCommonPrefixLength };
+const truncateString = ( text, maxChars = 150, texOverflow = '...' ) => {
+  return text.length > maxChars ? `${text.slice( 0, maxChars )}${texOverflow}` : text;
+};
+
+export { stringDistanceMetric, longestCommonPrefixLength, truncateString };

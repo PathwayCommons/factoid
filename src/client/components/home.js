@@ -4,6 +4,7 @@ import { Component } from 'react';
 import Popover from './popover/popover';
 import { makeClassList, tryPromise } from '../../util';
 import EventEmitter from 'eventemitter3';
+import { truncateString } from '../../util';
 
 import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME, EMAIL_CONTEXT_JOURNAL, DOI_LINK_BASE_URL } from '../../config';
 
@@ -106,13 +107,13 @@ class RequestForm extends Component {
     const { done, docJSON } = this.state;
     if( done && docJSON ){
       const { privateUrl, citation: { doi, title, reference } } = docJSON;
-      const articleString = _.compact([ title, reference ]).join(' ');
+      const articleString = _.compact([ truncateString( title ), reference ]).join(' ');
+
       return h('div.home-request-form-container', [
         h('div.home-request-form-done', [
           h( 'a.home-request-form-done-button', { href: privateUrl, target: '_blank', }, 'START BIOFACTOID' ),
           h( 'div.home-request-form-done-body', [
-            h( 'span', 'Article: ' ),
-            h( doi ? 'a.plain-link': 'span', (doi ? { href: `${DOI_LINK_BASE_URL}${doi}`, target: '_blank'}: {}), articleString )
+            h( doi ? 'a.plain-link': 'span', (doi ? { href: `${DOI_LINK_BASE_URL}${doi}`, target: '_blank'}: {}), `Article: ${articleString}` )
           ]),
           h( 'div.home-request-form-done-footer', 'An email invitation has also been sent.' )
         ])

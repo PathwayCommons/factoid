@@ -429,14 +429,12 @@ http.get('/(:id).png', function( req, res, next ){
 });
 
 // tweet a document as a card with a caption (text)
-http.post('/:id/tweet', function( req, res, next ){
-  const id = req.params.id;
-  const { text, secret } = _.assign({ text: '', secret: 'read-only-no-secret-specified' }, req.body);
+const tweetDoc = ( id, secret, text ) => {
   const url = `${BASE_URL}/document/${id}`;
   const status = `${text} ${url}`;
   let db;
 
-  ( tryPromise(() => loadTable('document'))
+  return ( tryPromise(() => loadTable('document'))
     .then(docDb => {
       db = docDb;
 
@@ -458,9 +456,17 @@ http.post('/:id/tweet', function( req, res, next ){
     .then(tweet => {
       return db.table.get(id).update({ tweet }).run(db.conn).then(() => tweet);
     })
-    .then(json => res.json(json))
-    .catch(next)
   );
+};
+
+// tweet a document as a card with a caption (text)
+http.post('/:id/tweet', function( req, res, next ){
+  const id = req.params.id;
+  const { text, secret } = _.assign({ text: '', secret: 'read-only-no-secret-specified' }, req.body);
+
+  tweetDoc( id, secret, text )
+    .then( json => res.json( json ) )
+    .catch( next );
 });
 
 http.get('/api-key-verify', function( req, res, next ){
@@ -590,9 +596,22 @@ http.patch('/status/:id/:secret', function( req, res, next ){
   };
 
   const sendFollowUpNotification = async doc => await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
+  const tryTweetingDoc = async doc => {
+    if ( !doc.hasTweet() ) {
+      try {
+        let text = doc.toText(); // Room to improve blurb
+        return tweetDoc( doc.id(), doc.secret(), text );
+      } catch ( e ) {
+        logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow
+      }
+    }
+  };
   const handlePublishRequest = async doc => {
     const didPublish = await tryPublish( doc );
-    if( didPublish ) await sendFollowUpNotification( doc );
+    if( didPublish ) {
+      await tryTweetingDoc( doc );
+      await sendFollowUpNotification( doc );
+    }
   };
 
   const updateDocStatus = async doc => {

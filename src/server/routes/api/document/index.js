@@ -9,7 +9,7 @@ import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
 
-import { tryPromise, makeStaticStylesheet, makeCyEles, msgFactory, updateCorrespondence, EmailError } from '../../../../util';
+import { tryPromise, makeStaticStylesheet, makeCyEles, msgFactory, updateCorrespondence, EmailError, truncateString } from '../../../../util';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
 import db from '../../../db';
@@ -27,6 +27,7 @@ import { BASE_URL,
   TWITTER_CONSUMER_SECRET,
   TWITTER_ACCESS_TOKEN_KEY,
   TWITTER_ACCESS_TOKEN_SECRET,
+  MAX_TWEET_LENGTH,
   DEMO_CAN_BE_SHARED,
   DOCUMENT_IMAGE_PADDING,
   EMAIL_CONTEXT_SIGNUP,
@@ -36,7 +37,8 @@ import { BASE_URL,
   EMAIL_TYPE_FOLLOWUP
  } from '../../../../config';
 
- const DOCUMENT_STATUS_FIELDS = Document.statusFields();
+import { ENTITY_TYPE } from '../../../../model/element/entity-type';
+const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
 const http = Express.Router();
 
@@ -585,7 +587,7 @@ http.patch('/status/:id/:secret', function( req, res, next ){
   const tryPublish = async doc => {
     let didPublish = false;
     const hasEles = doc => doc.elements().length > 0;
-    const hasIncompleteEles = doc => doc.elements().some( ele => !ele.completed() && !ele.isInteraction() );
+    const hasIncompleteEles = doc => doc.elements().some( ele => !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX );
     const hasSubmittedStatus = doc => doc.status() === DOCUMENT_STATUS_FIELDS.SUBMITTED;
     const isPublishable = doc => hasEles( doc ) && !hasIncompleteEles( doc ) && hasSubmittedStatus( doc );
     if( isPublishable( doc ) ){
@@ -599,7 +601,7 @@ http.patch('/status/:id/:secret', function( req, res, next ){
   const tryTweetingDoc = async doc => {
     if ( !doc.hasTweet() ) {
       try {
-        let text = doc.toText(); // Room to improve blurb
+        let text = truncateString( doc.toText(), MAX_TWEET_LENGTH ); // TODO?
         return tweetDoc( doc.id(), doc.secret(), text );
       } catch ( e ) {
         logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow

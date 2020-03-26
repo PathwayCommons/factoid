@@ -11,9 +11,7 @@ import { emitter as popoverEmitter } from '../../popover/popover';
 export default function({ bus, cy, document }){
   let isSmallScreen = () => window.innerWidth <= 650;
 
-  let hideAllTippies = (list = '_tippies') => {
-    const event = null;
-
+  let hideAllTippies = (list = '_tippies', event) => {
     cy.elements().forEach( el => hideTippy(el, event, list) );
   };
 
@@ -65,7 +63,7 @@ export default function({ bus, cy, document }){
 
   cy.on('tap', e => {
     if( e.target === cy ){
-      hideAllTippies();
+      hideAllTippies('_tippies', e);
       hideAllPopovers();
     }
   });

@@ -5,6 +5,7 @@ import fetch from 'node-fetch';
 import emailRegex from 'email-regex';
 
 import { NCBI_EUTILS_BASE_URL, NCBI_EUTILS_API_KEY } from '../../../../../config';
+import { checkHTTPStatus } from '../../../../../util';
 
 const EUTILS_FETCH_URL = NCBI_EUTILS_BASE_URL + 'efetch.fcgi';
 const DEFAULT_EFETCH_PARAMS = {
@@ -95,11 +96,34 @@ const getAuthorList = Article => {
 
 //<!ELEMENT	PubDate ( ( Year, ((Month, Day?) | Season)? ) | MedlineDate ) >
 const getPubDate = JournalIssue => {
+  let date;
   const PubDate = _.get( JournalIssue, ['PubDate', '0'] );
-  const Year = _.get( PubDate, ['Year', '0'], null );
-  const Month = _.get( PubDate, ['Month', '0'], null );
-  const Day = _.get( PubDate, ['Day', '0'], null );
-  return { Year, Month, Day };
+
+  if( _.has( PubDate, 'MedlineDate' ) ) {
+    date = ({ MedlineDate:  _.get( PubDate, ['MedlineDate', '0'] ) });
+
+  } else {
+    const Year = _.get( PubDate, ['Year', '0'] );
+
+    if( _.has( PubDate, 'Season' ) ) {
+      const Season = _.get( PubDate, ['Season', '0'] );
+      date = ({ Year, Season });
+
+    } else {
+      let Month = null, Day = null;
+
+      if( _.has( PubDate, ['Month'] ) ){
+        Month = _.get( PubDate, ['Month', '0'] );
+      }
+
+      if( _.has( PubDate, ['Day'] ) ){
+        Day = _.get( PubDate, ['Day', '0'] );
+      }
+
+      date = ({ Year, Month, Day });
+    }
+  }
+  return date;
 };
 
 const getJournal = Article => {
@@ -116,9 +140,11 @@ const getJournal = Article => {
 
   return {
     Title,
-    Volume,
-    Issue,
-    PubDate,
+    JournalIssue: {
+      Volume,
+      Issue,
+      PubDate
+    },
     ISSN,
     ISOAbbreviation
   };
@@ -278,19 +304,16 @@ const processPubmedResponse = json => {
   // return json;
 };
 
-const pubmedDataConverter = async xml => {
-  const rawJSON = await xml2js.parseStringPromise( xml );
-  return processPubmedResponse( rawJSON );
+const pubmedDataConverter = async json => processPubmedResponse( json );
+const toText = res => res.text();
+const xml2json = async xml => await xml2js.parseStringPromise( xml );
+
+const checkEfetchResult = json => {
+  const errorMessage =  _.get( json, ['eFetchResult', 'ERROR'] );
+  if( errorMessage ) throw new Error( errorMessage );
+  return json;
 };
 
-const toText = res => res.text();
-const checkResponseStatus = response => {
-  const { statusText, ok, status } = response;
-  if ( !ok ) {
-    throw Error( `Error in PubMed EFETCH: ${status} -- ${statusText}` );
-  }
-  return response;
-};
 const eFetchPubmed = ( { uids, query_key, webenv } )=> {
   let params;
   if( !_.isEmpty( uids ) ){
@@ -312,8 +335,10 @@ const eFetchPubmed = ( { uids, query_key, webenv } )=> {
       'User-Agent': userAgent
     }
   })
-  .then( checkResponseStatus )
+  .then( checkHTTPStatus ) // HTTPStatusError
   .then( toText )
+  .then( xml2json )
+  .then( checkEfetchResult ) //Error
   .then( pubmedDataConverter );
 };
 

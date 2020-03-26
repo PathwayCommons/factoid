@@ -353,7 +353,7 @@ class DocumentManagementDocumentComponent extends React.Component {
 
       } else {
         const { authors: { contacts, abbreviation }, title, reference, pmid, doi } = doc.citation();
-        const contactList = !_.isArray( contacts ) && contacts.map( contact => `${contact.email} <${contact.name}>` ).join(', ');
+        const contactList = _.isArray( contacts ) && contacts.map( contact => `${contact.email} <${contact.name}>` ).join(', ');
         const { paperId } = doc.provided();
 
         items =  [

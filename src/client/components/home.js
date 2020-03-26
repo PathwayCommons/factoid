@@ -4,8 +4,9 @@ import { Component } from 'react';
 import Popover from './popover/popover';
 import { makeClassList, tryPromise } from '../../util';
 import EventEmitter from 'eventemitter3';
+import { truncateString } from '../../util';
 
-import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME } from '../../config';
+import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME, EMAIL_CONTEXT_JOURNAL, DOI_LINK_BASE_URL } from '../../config';
 
 const checkStatus = response => {
   if ( response.status >= 200 && response.status < 300 ) {
@@ -25,15 +26,13 @@ class RequestForm extends Component {
 
     this.state = {
       paperId: '',
-      authorEmail: {
-        emailAddress: '',
-        isEmailValid: false
-      },
+      authorEmail: '',
+      context: this.props.context || EMAIL_CONTEXT_SIGNUP,
       submitting: false,
       done: false,
+      docJSON: undefined,
       errors: {
         incompleteForm: false,
-        email: false,
         network: false
       }
     };
@@ -44,15 +43,12 @@ class RequestForm extends Component {
   reset(){
     this.setState({
       paperId: '',
-      authorEmail: {
-        emailAddress: '',
-        isEmailValid: false
-      },
+      authorEmail: '',
       submitting: false,
       done: false,
+      docJSON: undefined,
       errors: {
         incompleteForm: false,
-        email: false,
         network: false
       }
     });
@@ -70,22 +66,24 @@ class RequestForm extends Component {
     this.setState(fields);
   }
 
+  handleContextChange(e){
+    this.setState({ context: e.target.value });
+  }
+
   submitRequest(){
-    const { paperId, authorEmail } = this.state;
-    const { emailAddress, isEmailValid } = authorEmail;
+    const { paperId, authorEmail, context } = this.state;
+    const { apiKey } = this.props;
 
-    if( !paperId || !emailAddress ){
+    if( !paperId || !authorEmail ){
       this.setState({ errors: { incompleteForm: true } });
-
-    } else if( !isEmailValid ){
-      this.setState({ errors: { incompleteForm: false, email: true } });
 
     } else {
       const url = 'api/document';
       const data = _.assign( {}, {
         paperId: _.trim( paperId ),
-        authorEmail: emailAddress,
-        context: EMAIL_CONTEXT_SIGNUP
+        authorEmail,
+        context,
+        apiKey
       });
       const fetchOpts = {
         method: 'POST',
@@ -95,24 +93,53 @@ class RequestForm extends Component {
         body: JSON.stringify( data )
       };
 
-      this.setState({ submitting: true, errors: { incompleteForm: false, email: false, network: false } });
+      this.setState({ submitting: true, errors: { incompleteForm: false, network: false } });
       fetch( url, fetchOpts )
         .then( checkStatus )
-        .then( () => new Promise( resolve => this.setState({ done: true }, resolve ) ) )
+        .then( response => response.json() )
+        .then( docJSON => new Promise( resolve => this.setState({ done: true, docJSON }, resolve ) ) )
         .catch( () => new Promise( resolve => this.setState({ errors: { network: true } }, resolve ) ) )
         .finally( () => new Promise( resolve => this.setState({ submitting: false }, resolve ) ) );
     }
   }
 
   render(){
-    if( this.state.done ){
+    const { done, docJSON } = this.state;
+    if( done && docJSON ){
+      const { privateUrl, citation: { doi, title, reference } } = docJSON;
+      const articleString = _.compact([ truncateString( title ), reference ]).join(' ');
+
       return h('div.home-request-form-container', [
         h('div.home-request-form-done', [
-          h('div.home-request-form-done-icon', [ h('i.material-icons', 'check') ]),
-          h('div.home-request-form-done-descr', 'Thank you for your request!  We will contact you soon with next steps.')
+          h( 'a.home-request-form-done-button', { href: privateUrl, target: '_blank', }, 'START BIOFACTOID' ),
+          h( 'div.home-request-form-done-body', [
+            h( doi ? 'a.plain-link': 'span', (doi ? { href: `${DOI_LINK_BASE_URL}${doi}`, target: '_blank'}: {}), `Article: ${articleString}` )
+          ]),
+          h( 'div.home-request-form-done-footer', 'An email invitation has also been sent.' )
         ])
       ]);
     }
+
+    const contextSelector = contexts => {
+      let radios = [];
+      let addType = (typeVal, displayName) => {
+        radios.push(
+          h('input', {
+            type: 'radio',
+            name: `home-request-form-context-${typeVal}`,
+            id: `home-request-form-radio-context-${typeVal}`,
+            value: typeVal,
+            checked: this.state.context === typeVal,
+            onChange: e => this.handleContextChange(e)
+          }),
+          h('label', {
+            htmlFor: `home-request-form-radio-context-${EMAIL_CONTEXT_SIGNUP}`
+          }, displayName)
+        );
+      };
+      contexts.forEach( context => addType( context, _.capitalize( context ) ) );
+      return h( 'div.radioset.home-request-form-radioset', radios );
+    };
 
     return h('div.home-request-form-container', [
       h('div.home-request-form-description', 'Claim your article'),
@@ -132,19 +159,14 @@ class RequestForm extends Component {
           type: 'text',
           placeholder: 'Email address',
           onChange: e => this.updateForm({
-            authorEmail: {
-              emailAddress: e.target.value,
-              isEmailValid: e.target.validity.valid
-            }
+            authorEmail: e.target.value
           }),
-          value: this.state.authorEmail.value
+          value: this.state.authorEmail
         }),
+        this.props.apiKey ? contextSelector([ EMAIL_CONTEXT_SIGNUP, EMAIL_CONTEXT_JOURNAL ]) : null,
         h('div.home-request-error', {
           className: makeClassList({ 'home-request-error-message-shown': this.state.errors.incompleteForm })
         }, 'Fill out everything above, then try again.'),
-        h('div.home-request-error', {
-          className: makeClassList({ 'home-request-error-message-shown': !this.state.errors.paperId && this.state.errors.email })
-        }, 'Please enter a valid email'),
         h('div.home-request-error', {
           className: makeClassList({ 'home-request-error-message-shown': this.state.errors.network })
         }, 'Please try again later'),
@@ -225,10 +247,8 @@ class Scroller extends Component {
 
   render(){
     const exploreDocEntry = doc => {
-      const Article = doc.article.MedlineCitation.Article;
-      const title = Article.ArticleTitle;
-      let authorNames = Article.AuthorList.map(a => a.LastName ? `${a.ForeName} ${a.LastName}` : a.CollectiveName );
-      const journalName = Article.Journal.ISOAbbreviation;
+      const { title, authors: { authorList }, reference: journalName } = doc.citation;
+      let authorNames = authorList.map( a => a.name );
       const id = doc.id;
       const link = doc.publicUrl;
 
@@ -319,7 +339,10 @@ class Home extends Component {
     const CTA = () => {
       return h(Popover, {
         tippy: {
-          html: h(RequestForm, { bus: this.bus }),
+          html: h(RequestForm, {
+            bus: this.bus,
+            doneMsg: 'Thank you for your request!  We will contact you soon with next steps.'
+          }),
           onHidden: () => this.bus.emit('closecta'),
           placement: 'top'
         }
@@ -398,4 +421,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export { Home as default, RequestForm };

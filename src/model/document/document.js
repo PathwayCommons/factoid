@@ -18,6 +18,7 @@ const DEFAULTS = Object.freeze({
 });
 
 const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'status', 'verified' ];
+const READONLY_METADATA_FIELDS = _.difference( METADATA_FIELDS, ['provided', 'correspondence'] );
 const DOCUMENT_STATUS_FIELDS = Object.freeze({
   REQUESTED: 'requested',
   APPROVED: 'approved',
@@ -424,7 +425,7 @@ class Document {
       publicUrl: this.publicUrl(),
       privateUrl: this.privateUrl(),
       citation: this.citation()
-    }, _.pick(this.syncher.get(), METADATA_FIELDS));
+    }, _.pick(this.syncher.get(), this.syncher.hasCorrectSecret() ? METADATA_FIELDS: READONLY_METADATA_FIELDS  ));
   }
 
   toBiopaxTemplates(){

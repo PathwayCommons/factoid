@@ -31,14 +31,12 @@ const msgFactory = ( emailType, doc ) => {
       name: EMAIL_FROM,
       address: EMAIL_FROM_ADDR
     },
-    to: {
-      address: `${authorEmail}`
-    },
+    to: authorEmail,
     template: {
       vendor: EMAIL_VENDOR_MAILJET,
       vars: {
         baseUrl: BASE_URL,
-        citation: `${title} ${reference}`
+        citation: _.compact([title, reference]).join(' ')
       }
     }
   };
@@ -63,7 +61,8 @@ const msgFactory = ( emailType, doc ) => {
       _.set( data, ['template', 'vars'], {
         publicUrl: `${BASE_URL}${doc.publicUrl()}`,
         hasTweet: `${doc.hasTweet()}`,
-        tweetUrl: doc.tweetUrl()
+        tweetUrl: doc.tweetUrl(),
+        imageUrl: `${BASE_URL}/api${doc.publicUrl()}.png`,
       });
       break;
     default:
@@ -91,4 +90,17 @@ const updateCorrespondence = ( doc, info, emailType ) => {
     .then( update => doc.correspondence( update ) );
 };
 
-export { msgFactory, updateCorrespondence };
+/**
+ * EmailError
+ *
+ * Class representing an EmailError formatting error
+ */
+class EmailError extends Error {
+  constructor( message, address ) {
+    super( message );
+    this.address = address;
+    this.name = 'EmailError';
+  }
+}
+
+export { msgFactory, updateCorrespondence, EmailError };

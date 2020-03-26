@@ -4,6 +4,7 @@ import h from 'react-hyperscript';
 
 import { BASE_URL } from '../../config';
 import Document from '../../model/document';
+import { ENTITY_TYPE } from '../../model/element/entity-type';
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
 
@@ -93,10 +94,10 @@ class TaskView extends DataComponent {
     let { document, bus } = this.props;
     let done = document.submitted() || document.published();
     let incompleteEles = this.props.document.elements().filter(ele => {
-      return !ele.completed() && !ele.isInteraction();
+      return !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX;
     });
 
-    let ntfns = document.entities().filter(ele => !ele.completed()).map(ele => {
+    let ntfns = incompleteEles.map(ele => {
       let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + (ele.completed() ? '' : '') }`;
       let innerMsg = entMsg(ele);
 

@@ -2,12 +2,17 @@ import _ from 'lodash';
 import h from 'react-hyperscript';
 import queryString from 'query-string';
 import io from 'socket.io-client';
+import EventEmitter from 'eventemitter3';
 
 import { DocumentManagementDocumentComponent } from './document-management-components';
 import logger from '../logger';
 import DirtyComponent from './dirty-component';
 import Document from '../../model/document';
 import { tryPromise } from '../../util';
+import Popover from './popover/popover';
+import { checkHTTPStatus } from '../../util';
+import { EMAIL_CONTEXT_JOURNAL } from '../../config';
+import { RequestForm } from './home';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 const DEFAULT_STATUS_FIELDS = _.pull( _.values( DOCUMENT_STATUS_FIELDS ), DOCUMENT_STATUS_FIELDS.TRASHED );
@@ -53,13 +58,29 @@ class DocumentManagement extends DirtyComponent {
     this.state = {
       apiKey,
       validApiKey: false,
+      apiKeyError: null,
       docs: [],
-      error: undefined,
       status
     };
 
-    this.getDocs( apiKey )
+    this.bus = new EventEmitter();
+
+    this.checkApiKey( apiKey )
+      .then( () => this.getDocs() )
       .catch( () => {} ); //swallow
+  }
+
+  checkApiKey( apiKey ){
+    const url = '/api/document/api-key-verify';
+    const params = queryString.stringify( { apiKey } );
+
+    return fetch(`${url}?${params}`)
+      .then( checkHTTPStatus )
+      .then( () => new Promise( resolve => this.setState( { apiKeyError: null, validApiKey: true }, resolve ) ))
+      .catch( e => {
+        this.setState( { apiKeyError: apiKey ? e : null, validApiKey: false }, () => this.props.history.push(`/document`) );
+        throw e;
+      });
   }
 
   getUrlParams(){
@@ -83,25 +104,8 @@ class DocumentManagement extends DirtyComponent {
         docs.forEach( doc => doc.on( 'update', () => this.dirty() ) );
         return docs;
       })
-      .then( docs => new Promise( resolve => {
-        this.setState({
-          validApiKey: true, // no error means its good
-          error: null,
-          docs }, resolve);
-      }))
+      .then( docs => new Promise( resolve => this.setState( { docs }, resolve ) ) )
       .then( () => this.updateUrlParams() );
-  }
-
-  updateDocs(){
-    this.getDocs()
-      .catch( e => {
-        this.setState( {
-          error: e,
-          validApiKey: false,
-          apiKey: ''
-         }, () => this.props.history.push(`/document`) );
-        return;
-      });
   }
 
   handleApiKeyFormChange( apiKey ) {
@@ -110,7 +114,9 @@ class DocumentManagement extends DirtyComponent {
 
   handleApiKeySubmit( event ){
     event.preventDefault();
-    this.updateDocs();
+    this.checkApiKey( event.target.value )
+      .then( () => this.getDocs() )
+      .catch( () => {} );
   }
 
   handleApproveRequest( doc ){
@@ -121,7 +127,7 @@ class DocumentManagement extends DirtyComponent {
     const { value, checked } = e.target;
     const status = this.state.status.slice();
     checked ? status.push( value ) : _.pull( status, value );
-    this.setState({ status }, () => this.updateDocs() );
+    this.setState({ status }, () => this.getDocs() );
   }
 
   componentDidMount(){
@@ -137,10 +143,26 @@ class DocumentManagement extends DirtyComponent {
 
   render(){
     let { docs, apiKey, status, validApiKey } = this.state;
-
     const header = h('div.page-content-title', [
       h('h1', 'Document management panel')
     ]);
+
+    const getAddDoc = () => {
+      return h( Popover, {
+        tippy: {
+          html: h( RequestForm, {
+            apiKey,
+            context: EMAIL_CONTEXT_JOURNAL,
+            doneMsg: 'Request submitted.',
+            bus: this.bus
+          }),
+          onHidden: () => this.bus.emit( 'closecta' ),
+          placement: 'top'
+        }
+      }, [
+        h('button', [ h( 'i.material-icons', 'add' ) ])
+      ]);
+    };
 
     // Authorization
     const apiKeyForm =
@@ -151,8 +173,9 @@ class DocumentManagement extends DirtyComponent {
           value: apiKey,
           onChange: e => this.handleApiKeyFormChange( e.target.value )
         }),
-        this.state.error ? h('div.error', 'Unable to authorize' ): null,
+        this.state.apiKeyError ? h('div.error', 'Unable to authorize' ): null,
         h('button', {
+          value: apiKey,
           onClick: e => this.handleApiKeySubmit( e )
         }, 'Submit' )
       ]);
@@ -182,7 +205,8 @@ class DocumentManagement extends DirtyComponent {
 
 
     const documentMenu = h('div.document-management-document-control-menu', [
-      getDocStatusFilter()
+      h( 'div.document-management-document-control-menu-item', [getDocStatusFilter()]),
+      h( 'div.document-management-document-control-menu-item', [getAddDoc()])
     ]);
 
     const documentList = h( 'ul', orderByCreatedDate( docs ).map( doc => {

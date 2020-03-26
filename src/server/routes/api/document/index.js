@@ -5,18 +5,17 @@ import _ from 'lodash';
 import uuid from 'uuid';
 import fetch from 'node-fetch';
 import cytosnap from 'cytosnap';
-import emailRegex from 'email-regex';
 import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
+import emailRegex from 'email-regex';
 
-import { tryPromise, makeStaticStylesheet } from '../../../../util';
+import { tryPromise, makeStaticStylesheet, makeCyEles, msgFactory, updateCorrespondence, EmailError, truncateString } from '../../../../util';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
 import db from '../../../db';
 import logger from '../../../logger';
-import { makeCyEles, msgFactory, updateCorrespondence } from '../../../../util';
-import { getPubmedArticle, ArticleIDError } from './pubmed';
-
+import { getPubmedArticle } from './pubmed';
+import { createPubmedArticle } from '../../../../util/pubmed';
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
   API_KEY,
@@ -28,17 +27,18 @@ import { BASE_URL,
   TWITTER_CONSUMER_SECRET,
   TWITTER_ACCESS_TOKEN_KEY,
   TWITTER_ACCESS_TOKEN_SECRET,
+  MAX_TWEET_LENGTH,
   DEMO_CAN_BE_SHARED,
   DOCUMENT_IMAGE_PADDING,
   EMAIL_CONTEXT_SIGNUP,
   EMAIL_CONTEXT_JOURNAL,
   EMAIL_TYPE_INVITE,
-  EMAIL_TYPE_REQUEST_ISSUE,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP
  } from '../../../../config';
 
- const DOCUMENT_STATUS_FIELDS = Document.statusFields();
+import { ENTITY_TYPE } from '../../../../model/element/entity-type';
+const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
 const http = Express.Router();
 
@@ -96,20 +96,81 @@ let loadTables = () => Promise.all( tables.map( loadTable ) ).then( dbInfos => (
 
 let getDocJson = doc => doc.json();
 
+let deleteTableRows = async ( apiKey, secret ) => {
+  let clearRows = db => db.table.filter({ secret }).delete().run( db.conn );
+  return tryPromise( () => checkApiKey( apiKey ) )
+    .then( loadTables )
+    .then( ({ docDb, eleDb }) => Promise.all( [ docDb, eleDb ].map( clearRows ) ) );
+};
+
 const DEFAULT_CORRESPONDENCE = {
   emails: [],
   context: EMAIL_CONTEXT_SIGNUP
 };
 
+/**
+ * findEmailAddress
+ *
+ * Helper method to extract email addresses from strings and address objects supported by [Nodemailer]{@link https://nodemailer.com/message/addresses/}
+ * @param {*} address a string, Object, or mixed array of string[], Object[]
+ * @returns {*} an array of email addresses, possibly empty
+ * @throws {TypeError}
+ */
+const findEmailAddress = address => {
+
+  const fromString = str => {
+    let output = [];
+    const addr = str.replace(/,/g, ' ').match( emailRegex() );
+    if( addr ) output = addr;
+    return output;
+  };
+  const fromPlainObject = obj => {
+    let output = [];
+    if( _.has( obj, 'address' ) ) output = _.get( obj, 'address', '' ).match( emailRegex() );
+    return output;
+  };
+  const fromArray = arr => {
+    const address = arr.map( elt => {
+      if( _.isString( elt ) ){
+        return fromString( elt );
+      } else if ( _.isPlainObject( elt ) ){
+        return fromPlainObject( elt );
+      } else {
+        return null;
+      }
+    });
+    return _.uniq( _.compact( _.flatten( address ) ) );
+  };
+
+  const type = typeof address;
+  switch ( type ) {
+    case 'string':
+      return fromString( address );
+    case 'object':
+      if( _.isArray( address ) ) {
+        return fromArray( address );
+      } else if ( _.isPlainObject( address ) ) {
+        return fromPlainObject( address );
+      } else {
+        throw new TypeError('Invalid address');
+      }
+    default:
+      throw new TypeError('Invalid address');
+  }
+};
+
 const fillDocCorrespondence = async ( doc, authorEmail, context ) => {
+  let address = [];
   try {
-    if( !emailRegex({exact: true}).test( authorEmail ) ) throw new TypeError( `Could not detect an email for '${authorEmail}'` );
-    const emails = _.get( doc.correspondence(), 'emails' );
-    const data = _.defaults( { authorEmail, context, emails }, DEFAULT_CORRESPONDENCE );
-    await doc.correspondence( data );
+    address = findEmailAddress( authorEmail );
+    if( _.isEmpty( address ) ) throw new EmailError(`Unable to find email for '${authorEmail}'`, authorEmail);
     await doc.issues({ authorEmail: null });
   } catch ( error ){
     await doc.issues({ authorEmail: { error, message: error.message } });
+  } finally {
+    const emails = _.get( doc.correspondence(), 'emails' );
+    const data = _.defaults( { authorEmail: address, context, emails }, DEFAULT_CORRESPONDENCE );
+    await doc.correspondence( data );
   }
 };
 
@@ -117,37 +178,11 @@ const fillDocArticle = async ( doc, paperId ) => {
   try {
     const pubmedRecord = await getPubmedArticle( paperId );
     await doc.article( pubmedRecord );
-    // TODO - is this a unique request?
     await doc.issues({ paperId: null });
-  } catch ( error ){
-    await doc.article({
-      "MedlineCitation": {
-        "Article": {
-          "Abstract": "",
-          "ArticleTitle": `${paperId}`,
-          "AuthorList": [],
-          "Journal": {
-            "ISOAbbreviation": "",
-            "ISSN": null,
-            "Issue": null,
-            "PubDate": null,
-            "Title": "",
-            "Volume": null
-          }
-        },
-        "ChemicalList": null,
-        "InvestigatorList": null,
-        "KeywordList": null,
-        "MeshheadingList": null
-      },
-      "PubmedData": {
-        "ArticleIdList": [],
-        "History": [],
-        "ReferenceList": null
-      }
-    });
-
-    await doc.issues({ paperId: null });
+  } catch ( error ) {
+    const pubmedRecord = createPubmedArticle({ articleTitle: paperId });
+    await doc.article( pubmedRecord );
+    await doc.issues({ paperId: { error, message: error.message } });
   }
 };
 
@@ -177,28 +212,14 @@ const configureAndSendMail = async ( emailType, id, secret ) => {
   }
 };
 
-const hasIssues = doc => _.values( doc.issues() ).some( i => !_.isNull( i ) );
+// Do not try send when there are email issues
 const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
 const sendInviteNotification = async doc => {
   let emailType = EMAIL_TYPE_INVITE;
   const id = doc.id();
   const secret = doc.secret();
-  const issueExists = hasIssues( doc );
-
-  const hasPaperIdIssue = hasIssue( doc, 'paperId' );
-  const hasPaperIdError = hasPaperIdIssue && _.get( doc.issues(), ['paperId', 'error'] ) instanceof ArticleIDError;
-  const { context } = doc.provided();
-  const isSignup = ( context && context === EMAIL_CONTEXT_SIGNUP );
-  const doNotify = isSignup && hasPaperIdError;
-
-  if( issueExists ){
-    emailType = EMAIL_TYPE_REQUEST_ISSUE;
-    if( doNotify ) await configureAndSendMail( emailType, id, secret );
-
-  } else {
-    await configureAndSendMail( emailType, id, secret );
-  }
-
+  const hasAuthorEmailIssue = hasIssue( doc, 'authorEmail' );
+  if( !hasAuthorEmailIssue ) await configureAndSendMail( emailType, id, secret );
   return doc;
 };
 
@@ -410,14 +431,12 @@ http.get('/(:id).png', function( req, res, next ){
 });
 
 // tweet a document as a card with a caption (text)
-http.post('/:id/tweet', function( req, res, next ){
-  const id = req.params.id;
-  const { text, secret } = _.assign({ text: '', secret: 'read-only-no-secret-specified' }, req.body);
+const tweetDoc = ( id, secret, text ) => {
   const url = `${BASE_URL}/document/${id}`;
   const status = `${text} ${url}`;
   let db;
 
-  ( tryPromise(() => loadTable('document'))
+  return ( tryPromise(() => loadTable('document'))
     .then(docDb => {
       db = docDb;
 
@@ -439,8 +458,25 @@ http.post('/:id/tweet', function( req, res, next ){
     .then(tweet => {
       return db.table.get(id).update({ tweet }).run(db.conn).then(() => tweet);
     })
-    .then(json => res.json(json))
-    .catch(next)
+  );
+};
+
+// tweet a document as a card with a caption (text)
+http.post('/:id/tweet', function( req, res, next ){
+  const id = req.params.id;
+  const { text, secret } = _.assign({ text: '', secret: 'read-only-no-secret-specified' }, req.body);
+
+  tweetDoc( id, secret, text )
+    .then( json => res.json( json ) )
+    .catch( next );
+});
+
+http.get('/api-key-verify', function( req, res, next ){
+  let apiKey = req.query.apiKey;
+
+  ( tryPromise( () => checkApiKey( apiKey ) )
+    .then( () => res.end() )
+    .catch( next )
   );
 });
 
@@ -473,21 +509,10 @@ const checkRequestContext = async provided => {
   }
 };
 
-// delete the demo doc
 http.delete('/:secret', function(req, res, next){
   let secret = req.params.secret;
   let { apiKey } = req.body;
-
-  let clearDemoRows = db => db.table.filter({ secret }).delete().run(db.conn);
-
-  ( tryPromise(() => checkApiKey(apiKey))
-    .then(loadTables)
-    .then(({ docDb, eleDb }) => (
-      Promise.all([docDb, eleDb].map(clearDemoRows))
-    ))
-    .then(() => res.sendStatus(200))
-    .catch(err => next(err))
-  );
+  deleteTableRows( apiKey, secret ).then( () => res.end() ).catch( next );
 });
 
 // Attempt to verify; Idempotent
@@ -503,7 +528,7 @@ const tryVerify = async doc => {
     } else {
       const { authorEmail } = doc.correspondence();
       const { authors: { contacts } } = doc.citation();
-      const hasEmail = _.some( contacts, contact => _.includes( _.get( contact, 'email' ), authorEmail ) );
+      const hasEmail = _.some( contacts, contact => !_.isEmpty( _.intersection( _.get( contact, 'email' ), authorEmail ) ) );
       if( hasEmail ) doVerify = true;
     }
     if( doVerify ) await doc.verified( true );
@@ -520,20 +545,24 @@ http.post('/', function( req, res, next ){
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
 
   const setRequestStatus = doc => tryPromise( () => doc.request() ).then( () => doc );
-  const setApprovedStatus = doc => tryPromise( () => hasIssues( doc ) )
-    .then( issueExists => !issueExists ? doc.approve() : null )
-    .then( () => doc );
-
+  const setApprovedStatus = doc => tryPromise( () => doc.approve() ).then( () => doc );
+  const handleDocCreation = async ({ docDb, eleDb }) => {
+    if( id === DEMO_ID ) await deleteTableRows( API_KEY, secret );
+    return await createDoc({ docDb, eleDb, id, secret, provided });
+  };
+  const sendJSONResponse = doc => tryPromise( () => doc.json() )
+  .then( json => res.json( json ) )
+  .then( () => doc );
 
   checkRequestContext( provided )
-    .then( () => res.end() )
     .then( () => createSecret({ secret }) )
     .then( loadTables )
-    .then( ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided }) )
+    .then( handleDocCreation )
     .then( setRequestStatus )
     .then( fillDoc )
     .then( setApprovedStatus )
     .then( tryVerify )
+    .then( sendJSONResponse )
     .then( sendInviteNotification )
     .catch( next );
 });
@@ -558,7 +587,7 @@ http.patch('/status/:id/:secret', function( req, res, next ){
   const tryPublish = async doc => {
     let didPublish = false;
     const hasEles = doc => doc.elements().length > 0;
-    const hasIncompleteEles = doc => doc.elements().some( ele => !ele.completed() && !ele.isInteraction() );
+    const hasIncompleteEles = doc => doc.elements().some( ele => !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX );
     const hasSubmittedStatus = doc => doc.status() === DOCUMENT_STATUS_FIELDS.SUBMITTED;
     const isPublishable = doc => hasEles( doc ) && !hasIncompleteEles( doc ) && hasSubmittedStatus( doc );
     if( isPublishable( doc ) ){
@@ -569,9 +598,22 @@ http.patch('/status/:id/:secret', function( req, res, next ){
   };
 
   const sendFollowUpNotification = async doc => await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
+  const tryTweetingDoc = async doc => {
+    if ( !doc.hasTweet() ) {
+      try {
+        let text = truncateString( doc.toText(), MAX_TWEET_LENGTH ); // TODO?
+        return tweetDoc( doc.id(), doc.secret(), text );
+      } catch ( e ) {
+        logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow
+      }
+    }
+  };
   const handlePublishRequest = async doc => {
     const didPublish = await tryPublish( doc );
-    if( didPublish ) await sendFollowUpNotification( doc );
+    if( didPublish ) {
+      await tryTweetingDoc( doc );
+      await sendFollowUpNotification( doc );
+    }
   };
 
   const updateDocStatus = async doc => {

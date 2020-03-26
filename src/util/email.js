@@ -61,7 +61,8 @@ const msgFactory = ( emailType, doc ) => {
       _.set( data, ['template', 'vars'], {
         publicUrl: `${BASE_URL}${doc.publicUrl()}`,
         hasTweet: `${doc.hasTweet()}`,
-        tweetUrl: doc.tweetUrl()
+        tweetUrl: doc.tweetUrl(),
+        imageUrl: `${BASE_URL}/api${doc.publicUrl()}.png`,
       });
       break;
     default:

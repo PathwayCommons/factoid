@@ -1,6 +1,8 @@
 .editor {
-  height: 100%;
-  width: 100%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   position: absolute;
   opacity: 0.01;
   transition-duration: 300ms;
@@ -126,16 +128,9 @@
   z-index: 0;
   position: absolute;
   left: 0;
+  right: 0;
+  bottom: 0;
   top: 0;
-  width: 100%;
-  height: 100%;
-  transform: translate3d(0, 0, 0);
-  transition: transform 200ms ease-out;
-}
-
-.editor-graph-shifted {
-  transform: translate3d(-21.5em, 0, 0);
-  transition: transform 200ms ease-out;
 }
 
 .editor-menu-content {

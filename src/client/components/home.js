@@ -212,6 +212,12 @@ class Scroller extends Component {
 
   componentDidMount(){
     this.refreshDocs().then(() => this.updatePagerAvailabilityDebounced());
+
+    window.addEventListener('resize', this.updatePagerAvailabilityDebounced);
+  }
+
+  componentWillUnmount(){
+    window.removeEventListener('resize', this.updatePagerAvailabilityDebounced);
   }
 
   hoverOverDoc(doc){

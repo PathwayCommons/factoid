@@ -186,16 +186,44 @@ class Scroller extends Component {
     this.state = {
       pagerLeftAvailable: false,
       pagerRightAvailable: false,
+      isScrolling: false,
       docs: []
     };
 
-    this.onScrollExplore = _.debounce(() => {
+    this.updatePagerAvailabilityDebounced = _.debounce(() => {
       this.updatePagerAvailability();
     }, 40);
+
+    this.setScrollState = () => {
+      this.setState({ isScrolling: true });
+
+      this.clearScrollStateDebounced();
+    };
+    
+    this.clearScrollStateDebounced = _.debounce(() => {
+      this.setState({ isScrolling: false });
+    }, 250);
+
+    this.onScrollExplore = () => {
+      this.updatePagerAvailabilityDebounced();
+      this.setScrollState();
+    };
   }
 
   componentDidMount(){
-    this.refreshDocs().then(() => this.onScrollExplore());
+    this.refreshDocs().then(() => this.updatePagerAvailabilityDebounced());
+  }
+
+  hoverOverDoc(doc){
+    doc.hovered = true;
+
+    this.setState({ dirty: Date.now() });
+  }
+
+  hoverOutDoc(doc){
+    doc.hovered = false;
+
+    this.setState({ dirty: Date.now() });
   }
 
   scrollExplore(factor = 1){
@@ -251,12 +279,22 @@ class Scroller extends Component {
       let authorNames = authorList.map( a => a.name );
       const id = doc.id;
       const link = doc.publicUrl;
+      const hovered = doc.hovered;
 
       if( authorNames.length > 3 ){
         authorNames = authorNames.slice(0, 3).concat([ '...', authorNames[authorNames.length - 1] ]);
       }
 
       return h('div.scroller-doc', {
+        className: makeClassList({
+          'scroller-doc-scrolling': this.state.isScrolling,
+          'scroller-doc-hovered': hovered
+        }),
+        onTouchStart: () => this.hoverOverDoc(doc),
+        onTouchMove: () => this.hoverOutDoc(doc),
+        onTouchEnd: () => this.hoverOutDoc(doc),
+        onMouseOver: () => this.hoverOverDoc(doc),
+        onMouseOut: () => this.hoverOutDoc(doc)
       }, [
         h('a', {
           href: link,

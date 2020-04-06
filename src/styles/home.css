@@ -111,8 +111,7 @@
   -webkit-user-select: none;
   overflow: visible;
 
-  &:active,
-  &:hover {
+  &.scroller-doc-hovered {
     z-index: 8;
     background-color: #fff;
 

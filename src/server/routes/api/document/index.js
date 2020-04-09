@@ -252,6 +252,23 @@ let getSbgnFromTemplates = templates => {
     .then(handleResponseError);
 };
 
+/**
+ * @swagger
+ *
+ * /:
+ *   get:
+ *     description: Retrieve a list of documents
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: limit
+ *         description: Pagination size limit
+ *         required: false
+ *         type: number
+ *     responses:
+ *       200:
+ *         description: retrieve
+ */
 // get all docs
 // - offset: pagination offset
 // - limit: pagination size limit

@@ -129,8 +129,8 @@ class InteractionType {
       if( entity.name() ){
         name = entity.name();
       } else if( isComplex( entity.type() ) ){
-        const components = entity.participants().map(ppt => ppt.name()).join(':');
-        name = `Complex (${components})`;
+        const participantNames = entity.participants().map(ppt => ppt.name()).join(':');
+        name = `Complex (${participantNames})`;
       }
 
       return name;

@@ -542,6 +542,15 @@ let getSbgnFromTemplates = templates => {
  *               Citation:
  *                 type: string
  *
+ *   status:
+ *     type: string
+ *     enum:
+ *       - requested
+ *       - approved
+ *       - submitted
+ *       - published
+ *       - trashed
+ *
  *   Document:
  *     properties:
  *       id:
@@ -622,13 +631,7 @@ let getSbgnFromTemplates = templates => {
  *         summary: Accepts one of
  *         required: false
  *         schema:
- *           type: string
- *           enum:
- *             - requested
- *             - approved
- *             - submitted
- *             - published
- *             - trashed
+ *           $ref: '#/components/status'
  *         allowEmptyValue: true
  *       - name: apiKey
  *         in: query
@@ -1161,7 +1164,59 @@ http.patch('/email/:id/:secret', function( req, res, next ){
   );
 });
 
-// Update document status
+/**
+ * @swagger
+ *
+ * /api/document/status/{id}/{secret}:
+ *   patch:
+ *     description: Update Document status
+ *     summary: Update Document status; On publish take action (Tweet, email)
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: The Document id
+ *         required: true
+ *         type: string
+ *       - name: secret
+ *         in: path
+ *         description: The Document secret
+ *         required: true
+ *         type: string
+ *     requestBody:
+ *       description: Data to update status
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 op:
+ *                   type: string
+ *                   enum:
+ *                     - replace
+ *                   required: true
+ *                 path:
+ *                   type: string
+ *                   enum:
+ *                     - status
+ *                   required: true
+ *                 value:
+ *                   $ref: '#/components/status'
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/Document'
+ *       '500':
+ *         $ref: '#/components/responses/500'
+ */
 http.patch('/status/:id/:secret', function( req, res, next ){
   const { id, secret } = req.params;
 

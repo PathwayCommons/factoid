@@ -257,12 +257,181 @@ let getSbgnFromTemplates = templates => {
  *
  * components:
  *
+ *   Element:
+ *     properties:
+ *       id:
+ *         type: string
+ *       name:
+ *         type: string
+ *
  *   Organism:
  *     properties:
  *       id:
  *         type: string
  *       name:
  *         type: string
+ *
+ *   Author:
+ *     properties:
+ *       LastName:
+ *         type: string
+ *       ForeName:
+ *         type: string
+ *       Initials:
+ *         type: string
+ *       CollectiveName:
+ *         type: string
+ *
+ *   ArticleId:
+ *     properties:
+ *       IdType:
+ *         type: string
+ *       id:
+ *         type: string
+ *
+ *   ArticleIdList:
+ *     type: array
+ *     items:
+ *       $ref: '#/components/ArticleId'
+ *
+ *   Journal:
+ *     properties:
+ *       ISOAbbreviation:
+ *         type: string
+ *       ISSN:
+ *         type: string
+ *       Title:
+ *         type: string
+ *       JournalIssue:
+ *         type: object
+ *         properties:
+ *           Issue:
+ *             type: string
+ *           PubDate:
+ *             type: object
+ *             properties:
+ *               Year:
+ *                 type: string
+ *               Month:
+ *                 type: string
+ *               Day:
+ *                 type: string
+ *               Season:
+ *                 type: string
+ *               MedlineDate:
+ *                 type: string
+ *           Volume:
+ *             type: string
+ *
+ *   citation:
+ *     properties:
+ *       title:
+ *         type: string
+ *       authors:
+ *         type: object
+ *         properties:
+ *           abbreviation:
+ *             type: string
+ *           contacts:
+ *             type: array
+ *             items:
+ *               type: string
+ *           authorList:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                 abbrevName:
+ *                   type: string
+ *                 isCollectiveName:
+ *                   type: boolean
+ *       reference:
+ *         type: string
+ *       abstract:
+ *         type: string
+ *       pmid:
+ *         type: string
+ *       doi:
+ *         type: string
+ *
+ *   article:
+ *     properties:
+ *       MedlineCitation:
+ *         type: object
+ *         properties:
+ *           Article:
+ *             type: object
+ *             properties:
+ *               Abstract:
+ *                 type: string
+ *               ArticleTitle:
+ *                 type: string
+ *               AuthorList:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/Author'
+ *               Journal:
+ *                 $ref: '#/components/Journal'
+ *           ChemicalList:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 NameOfSubstance:
+ *                   type: String
+ *                 RegistryNumber:
+ *                   type: String
+ *                 UI:
+ *                   type: String
+ *           InvestigatorList:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/Author'
+ *           KeywordList:
+ *             type: array
+ *             items:
+ *               type: string
+ *           MeshheadingList:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 DescriptorName:
+ *                   type: string
+ *                 isMajorTopicYN:
+ *                   type: boolean
+ *                 UI:
+ *                   type: String
+ *       PubmedData:
+ *         type: object
+ *         properties:
+ *           ArticleIdList:
+ *              $ref: '#/components/ArticleIdList'
+ *           History:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 PubStatus:
+ *                   type: string
+ *                 PubMedPubDate:
+ *                   type: object
+ *                   properties:
+ *                     Year:
+ *                       type: string
+ *                     Month:
+ *                       type: string
+ *                     Day:
+ *                       type: string
+ *           ReferenceList:
+ *             type: object
+ *             properties:
+ *               ArticleIdList:
+ *                 $ref: '#/components/ArticleIdList'
+ *               Citation:
+ *                 type: string
  *
  *   Document:
  *     properties:
@@ -274,8 +443,26 @@ let getSbgnFromTemplates = templates => {
  *         type: array
  *         items:
  *           type: string
+ *       elements:
+ *         type: array
+ *         items:
+ *           $ref: '#/components/Element'
+ *       publicUrl:
+ *         type: string
+ *       privateUrl:
+ *         type: string
+ *       citation:
+ *         $ref: '#/components/citation'
+ *       article:
+ *         $ref: '#/components/article'
+ *       createdDate:
+ *         type: string
+ *       lastEditedDate:
+ *         type: string
  *       status:
  *         type: string
+ *       verified:
+ *         type: boolean
  */
 
 /**
@@ -296,13 +483,13 @@ let getSbgnFromTemplates = templates => {
  *         allowEmptyValue: true
  *       - name: offset
  *         in: query
- *         description: Document to skip
+ *         description: Pagination start index
  *         required: false
  *         type: number
  *         allowEmptyValue: true
  *       - name: ids
  *         in: query
- *         description: Restrict response to Document with specified IDs
+ *         description: Filter by comma-separated IDs
  *         summary: Accepts a comma-separated list of doc ids. Disables pagination when used.
  *         required: false
  *         schema:
@@ -310,16 +497,21 @@ let getSbgnFromTemplates = templates => {
  *         allowEmptyValue: true
  *       - name: status
  *         in: query
- *         description:  Restrict response to Document with specified status
+ *         description: Filter by Documents status
  *         summary: Accepts one of
  *         required: false
  *         schema:
  *           type: string
- *           enum: [requested, approved, submitted, published, trashed]
+ *           enum:
+ *             - requested
+ *             - approved
+ *             - submitted
+ *             - published
+ *             - trashed
  *         allowEmptyValue: true
  *       - name: apiKey
  *         in: query
- *         description: The API key to access
+ *         description: Key allows access to private fields
  *         required: false
  *         type: string
  *         allowEmptyValue: true
@@ -609,7 +801,44 @@ const tryVerify = async doc => {
   return doc;
 };
 
-// create new doc
+/**
+ * @swagger
+ *
+ * /api/document:
+ *   post:
+ *     description: Request Document creation
+ *     summary: Request to create a Document
+ *     tags:
+ *       - Document
+ *     requestBody:
+ *       description: Data to create a Document
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               paperId:
+ *                 type: string
+ *               authorEmail:
+ *                 type: string
+ *               context:
+ *                 type: string
+ *                 enum:
+ *                   - signup
+ *                   - journal
+ *                 required: true
+ *               apiKey:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: The requested Document
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/Document'
+ */
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
   const { paperId } = provided;

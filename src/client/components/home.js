@@ -186,16 +186,50 @@ class Scroller extends Component {
     this.state = {
       pagerLeftAvailable: false,
       pagerRightAvailable: false,
+      isScrolling: false,
       docs: []
     };
 
-    this.onScrollExplore = _.debounce(() => {
+    this.updatePagerAvailabilityDebounced = _.debounce(() => {
       this.updatePagerAvailability();
     }, 40);
+
+    this.setScrollState = () => {
+      this.setState({ isScrolling: true });
+
+      this.clearScrollStateDebounced();
+    };
+    
+    this.clearScrollStateDebounced = _.debounce(() => {
+      this.setState({ isScrolling: false });
+    }, 250);
+
+    this.onScrollExplore = () => {
+      this.updatePagerAvailabilityDebounced();
+      this.setScrollState();
+    };
   }
 
   componentDidMount(){
-    this.refreshDocs().then(() => this.onScrollExplore());
+    this.refreshDocs().then(() => this.updatePagerAvailabilityDebounced());
+
+    window.addEventListener('resize', this.updatePagerAvailabilityDebounced);
+  }
+
+  componentWillUnmount(){
+    window.removeEventListener('resize', this.updatePagerAvailabilityDebounced);
+  }
+
+  hoverOverDoc(doc){
+    doc.hovered = true;
+
+    this.setState({ dirty: Date.now() });
+  }
+
+  hoverOutDoc(doc){
+    doc.hovered = false;
+
+    this.setState({ dirty: Date.now() });
   }
 
   scrollExplore(factor = 1){
@@ -251,12 +285,22 @@ class Scroller extends Component {
       let authorNames = authorList.map( a => a.name );
       const id = doc.id;
       const link = doc.publicUrl;
+      const hovered = doc.hovered;
 
       if( authorNames.length > 3 ){
         authorNames = authorNames.slice(0, 3).concat([ '...', authorNames[authorNames.length - 1] ]);
       }
 
       return h('div.scroller-doc', {
+        className: makeClassList({
+          'scroller-doc-scrolling': this.state.isScrolling,
+          'scroller-doc-hovered': hovered
+        }),
+        onTouchStart: () => this.hoverOverDoc(doc),
+        onTouchMove: () => this.hoverOutDoc(doc),
+        onTouchEnd: () => this.hoverOutDoc(doc),
+        onMouseOver: () => this.hoverOverDoc(doc),
+        onMouseOut: () => this.hoverOutDoc(doc)
       }, [
         h('a', {
           href: link,
@@ -391,11 +435,11 @@ class Home extends Component {
                   html: h('div.home-contact-info', [
                     h('p', [
                       'Biofactoid is freely brought to you in collaboration with ',
-                      h('a.plain-link', { href: 'https://baderlab.org' }, 'Bader Lab at the University of Toronto'),
+                      h('a.plain-link', { href: 'https://baderlab.org', target: '_blank' }, 'Bader Lab at the University of Toronto'),
                       ', ',
-                      h('a.plain-link', { href: 'http://sanderlab.org' }, 'Sander Lab at Harvard'),
+                      h('a.plain-link', { href: 'http://sanderlab.org', target: '_blank' }, 'Sander Lab at Harvard'),
                       ', and the ',
-                      h('a.plain-link', { href: 'https://www.ohsu.edu/people/emek-demir/AFE06DC89ED9AAF1634F77D11CCA24C3' }, 'Pathway and Omics Lab at the University of Oregon'),
+                      h('a.plain-link', { href: 'https://www.ohsu.edu/people/emek-demir/AFE06DC89ED9AAF1634F77D11CCA24C3', target: '_blank' }, 'Pathway and Omics Lab at the University of Oregon'),
                       '.'
                     ]),
                     h('p', [
@@ -409,8 +453,8 @@ class Home extends Component {
                 'Contact'
               ])
             ]),
-            h('a.home-nav-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}` }, 'Twitter'),
-            h('a.home-nav-link', { href: 'https://github.com/PathwayCommons/factoid' }, 'GitHub')
+            h('a.home-nav-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}`, target: '_blank' }, 'Twitter'),
+            h('a.home-nav-link', { href: 'https://github.com/PathwayCommons/factoid', target: '_blank' }, 'GitHub')
           ]),
           h('div.home-credit-logos', [
             h('i.home-credit-logo'),

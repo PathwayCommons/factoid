@@ -463,6 +463,12 @@ let getSbgnFromTemplates = templates => {
  *         type: string
  *       verified:
  *         type: boolean
+ *
+ *   responses:
+ *     '200':
+ *       description: Success
+ *     'Bad ID':
+ *       description: No response from database for ID
  */
 
 /**
@@ -517,7 +523,7 @@ let getSbgnFromTemplates = templates => {
  *         allowEmptyValue: true
  *     responses:
  *       '200':
- *         description: A list of Documents
+ *         description: ok
  *         content:
  *           application/json:
  *             schema:
@@ -671,7 +677,29 @@ const imageCache = new LRUCache({
   max: DOCUMENT_IMAGE_CACHE_SIZE
 });
 
-// get doc figure as png image
+/**
+ * @swagger
+ *
+ * /api/document/{id}.png:
+ *   get:
+ *     description: Retrieve a PNG image of the Document elements
+ *     summary: Retrieve a PNG image of the Document elements
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           image/png:
+ *             type: string
+ *             format: binary
+ *       '500':
+ *         $ref: '#/components/responses/Bad ID'
+ */
 http.get('/(:id).png', function( req, res, next ){
   const id = req.params.id;
 
@@ -744,7 +772,29 @@ http.get('/api-key-verify', function( req, res, next ){
   );
 });
 
-// get existing doc as json
+/**
+ * @swagger
+ *
+ * /api/document/{id}:
+ *   get:
+ *     description: Retrieve a Document by ID
+ *     summary: Retrieve a single Document
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/Document'
+ *       '500':
+ *         $ref: '#/components/responses/Bad ID'
+ */
 http.get('/:id', function( req, res, next ){
   let id = req.params.id;
 
@@ -831,13 +881,15 @@ const tryVerify = async doc => {
  *                 type: string
  *     responses:
  *       '200':
- *         description: The requested Document
+ *         description: ok
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/Document'
+ *       '500':
+ *         description: The specified 'context' is not recognized
  */
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
@@ -962,6 +1014,28 @@ http.patch('/:id/:secret', function( req, res, next ){
   );
 });
 
+/**
+ * @swagger
+ *
+ * /api/document/biopax/{id}:
+ *   get:
+ *     description: Retrieve Document in BioPAX format
+ *     summary: Retrieve Document in BioPAX format
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/vnd.biopax.rdf+xml:
+ *             description: Retrieve Document in BioPAX format (http://www.biopax.org/)
+ *       '500':
+ *         $ref: '#/components/responses/Bad ID'
+ */
 http.get('/biopax/:id', function( req, res, next ){
   let id = req.params.id;
   tryPromise( loadTables )
@@ -974,6 +1048,28 @@ http.get('/biopax/:id', function( req, res, next ){
     .catch( next );
 });
 
+/**
+ * @swagger
+ *
+ * /api/document/sbgn/{id}:
+ *   get:
+ *     description: Retrieve Document in SBGN-ML format
+ *     summary: Retrieve Document in SBGN-ML format
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/xml:
+ *             description: Retrieve Document in SBGN-ML format (https://github.com/sbgn/sbgn/wiki/SBGN_ML)
+ *       '500':
+ *         $ref: '#/components/responses/Bad ID'
+ */
 http.get('/sbgn/:id', function( req, res, next ){
   let id = req.params.id;
   tryPromise( loadTables )
@@ -986,6 +1082,28 @@ http.get('/sbgn/:id', function( req, res, next ){
     .catch( next );
 });
 
+/**
+ * @swagger
+ *
+ * /api/document/text/{id}:
+ *   get:
+ *     description: Document interactions described in plain english.
+ *     summary: Document interactions described in plain english.
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           text/plain:
+ *             description: Document interactions described in plain english.
+ *       '500':
+ *         $ref: '#/components/responses/Bad ID'
+ */
 http.get('/text/:id', function( req, res, next ){
   let id = req.params.id;
   tryPromise( loadTables )

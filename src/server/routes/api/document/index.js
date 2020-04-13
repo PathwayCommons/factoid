@@ -257,6 +257,13 @@ let getSbgnFromTemplates = templates => {
  *
  * components:
  *
+ *   securitySchemes:
+ *     ApiKeyAuth:
+ *       type: apiKey
+ *       description: API key to authorize requests.
+ *       in: query
+ *       name: apiKey
+ *
  *   entry:
  *     properties:
  *       id:
@@ -571,6 +578,8 @@ let getSbgnFromTemplates = templates => {
  *   responses:
  *     '200':
  *       description: Success
+ *     '500':
+ *       description: Error
  *     'Bad ID':
  *       description: No response from database for ID
  */
@@ -580,6 +589,8 @@ let getSbgnFromTemplates = templates => {
  *
  * /api/document:
  *   get:
+ *     security:
+ *       - ApiKeyAuth: []
  *     description: Retrieve Documents
  *     summary: Filter and retrieve a list of paginated Documents
  *     tags:
@@ -858,6 +869,40 @@ const tweetDoc = ( id, secret, text ) => {
 };
 
 // tweet a document as a card with a caption (text)
+/**
+ * @swagger
+ *
+ * /api/document/{id}/tweet:
+ *   post:
+ *     description: Tweet a document as a card with a caption (text)
+ *     summary: Tweet a document as a card with a caption (text)
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *     requestBody:
+ *       description: Data used in creating Tweet
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               secret:
+ *                 type: string
+ *               text:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       '500':
+ *         description: Error
+ */
 http.post('/:id/tweet', function( req, res, next ){
   const id = req.params.id;
   const { text, secret } = _.assign({ text: '', secret: 'read-only-no-secret-specified' }, req.body);
@@ -867,6 +912,31 @@ http.post('/:id/tweet', function( req, res, next ){
     .catch( next );
 });
 
+
+/**
+ * @swagger
+ *
+ * /api/document/api-key-verify:
+ *   get:
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Verify an API key
+ *     summary: Verify an API key
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: apiKey
+ *         in: query
+ *         description: API key
+ *         required: true
+ *         type: string
+ *         allowEmptyValue: true
+ *     responses:
+ *       '200':
+ *         $ref: '#/components/responses/200'
+ *       '500':
+ *         description: Invalid API key
+ */
 http.get('/api-key-verify', function( req, res, next ){
   let apiKey = req.query.apiKey;
 
@@ -927,9 +997,32 @@ const checkRequestContext = async provided => {
   }
 };
 
+/**
+ * @swagger
+ *
+ * /api/document/{secret}:
+ *   delete:
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Delete an existing Document
+ *     summary: Delete an existing Document
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: secret
+ *         in: path
+ *         description: Document secret
+ *         required: true
+ *         type: string
+ *     responses:
+ *       '200':
+ *         $ref: '#/components/responses/200'
+ *       '500':
+ *         $ref: '#/components/responses/500'
+ */
 http.delete('/:secret', function(req, res, next){
   let secret = req.params.secret;
-  let { apiKey } = req.body;
+  let { apiKey } = req.query;
   deleteTableRows( apiKey, secret ).then( () => res.end() ).catch( next );
 });
 
@@ -1024,7 +1117,43 @@ http.post('/', function( req, res, next ){
     .catch( next );
 });
 
-// Email
+/**
+ * @swagger
+ *
+ * /api/document/email/{id}/{secret}:
+ *   patch:
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Send email to author(s) associated with a Document
+ *     summary: Send email to author(s) associated with a Document
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: The Document id
+ *         required: true
+ *         type: string
+ *       - name: secret
+ *         in: path
+ *         description: The Document secret
+ *         required: true
+ *         type: string
+ *       - name: emailType
+ *         in: query
+ *         description: The type of email (invite, followUp, requestIssue)
+ *         required: true
+ *         type: string
+ *         enum:
+ *           - invite
+ *           - followUp
+ *           - requestIssue
+ *     responses:
+ *       '200':
+ *         $ref: '#/components/responses/200'
+ *       '500':
+ *         $ref: '#/components/responses/500'
+ */
 http.patch('/email/:id/:secret', function( req, res, next ){
   const { id, secret } = req.params;
   const { apiKey, emailType } = req.query;
@@ -1101,7 +1230,38 @@ http.patch('/status/:id/:secret', function( req, res, next ){
   );
 });
 
-// Refresh the document data
+/**
+ * @swagger
+ *
+ * /api/document/{id}/{secret}:
+ *   patch:
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Refresh existing Document metadata
+ *     summary: Refresh existing Document metadata
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: The Document id
+ *         required: true
+ *         type: string
+ *       - name: secret
+ *         in: path
+ *         description: The Document secret
+ *         required: true
+ *         type: string
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/Document'
+ *       '500':
+ *         $ref: '#/components/responses/500'
+ */
 http.patch('/:id/:secret', function( req, res, next ){
   const { id, secret } = req.params;
   const { apiKey } = req.query;

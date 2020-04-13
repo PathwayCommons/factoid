@@ -786,8 +786,8 @@ const imageCache = new LRUCache({
  *
  * /api/document/{id}.png:
  *   get:
- *     description: Retrieve a PNG image of the Document elements
- *     summary: Retrieve a PNG image of the Document elements
+ *     description: Retrieve a PNG image of a single Document's interaction data
+ *     summary: Retrieve a PNG image of a single Document's interaction data
  *     tags:
  *       - Document
  *     parameters:
@@ -881,8 +881,8 @@ http.get('/api-key-verify', function( req, res, next ){
  *
  * /api/document/{id}:
  *   get:
- *     description: Retrieve a Document by ID
- *     summary: Retrieve a single Document
+ *     description: Retrieve a single Document by ID
+ *     summary: Retrieve a single Document by ID
  *     tags:
  *       - Document
  *     parameters:
@@ -960,8 +960,8 @@ const tryVerify = async doc => {
  *
  * /api/document:
  *   post:
- *     description: Request Document creation
- *     summary: Request to create a Document
+ *     description: Create a Document
+ *     summary: Create a Document
  *     tags:
  *       - Document
  *     requestBody:
@@ -1123,8 +1123,8 @@ http.patch('/:id/:secret', function( req, res, next ){
  *
  * /api/document/biopax/{id}:
  *   get:
- *     description: Retrieve Document in BioPAX format
- *     summary: Retrieve Document in BioPAX format
+ *     description: Retrieve a single Document in BioPAX format
+ *     summary: Retrieve a single Document in BioPAX format
  *     tags:
  *       - Document
  *     parameters:
@@ -1157,8 +1157,8 @@ http.get('/biopax/:id', function( req, res, next ){
  *
  * /api/document/sbgn/{id}:
  *   get:
- *     description: Retrieve Document in SBGN-ML format
- *     summary: Retrieve Document in SBGN-ML format
+ *     description: Retrieve a single Document in SBGN-ML format
+ *     summary: Retrieve a single Document in SBGN-ML format
  *     tags:
  *       - Document
  *     parameters:
@@ -1191,8 +1191,8 @@ http.get('/sbgn/:id', function( req, res, next ){
  *
  * /api/document/text/{id}:
  *   get:
- *     description: Document interactions described in plain english.
- *     summary: Document interactions described in plain english.
+ *     description: Retrieve plain english description of a Document's interactions
+ *     summary:  Retrieve plain english description of a Document's interactions
  *     tags:
  *       - Document
  *     parameters:
@@ -1204,7 +1204,7 @@ http.get('/sbgn/:id', function( req, res, next ){
  *         description: ok
  *         content:
  *           text/plain:
- *             description: Document interactions described in plain english.
+ *             description: Retrieve plain english description of a Document's interactions
  *       '500':
  *         $ref: '#/components/responses/Bad ID'
  */

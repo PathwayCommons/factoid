@@ -255,26 +255,84 @@ let getSbgnFromTemplates = templates => {
 /**
  * @swagger
  *
- * /:
+ * components:
+ *
+ *   Organism:
+ *     properties:
+ *       id:
+ *         type: string
+ *       name:
+ *         type: string
+ *
+ *   Document:
+ *     properties:
+ *       id:
+ *         type: string
+ *       secret:
+ *         type: string
+ *       organisms:
+ *         type: array
+ *         items:
+ *           type: string
+ *       status:
+ *         type: string
+ */
+
+/**
+ * @swagger
+ *
+ * /api/document:
  *   get:
- *     description: Retrieve a list of documents
- *     produces:
- *       - application/json
+ *     description: Retrieve Documents
+ *     summary: Filter and retrieve a list of paginated Documents
+ *     tags:
+ *       - Document
  *     parameters:
  *       - name: limit
+ *         in: query
  *         description: Pagination size limit
  *         required: false
  *         type: number
+ *         allowEmptyValue: true
+ *       - name: offset
+ *         in: query
+ *         description: Document to skip
+ *         required: false
+ *         type: number
+ *         allowEmptyValue: true
+ *       - name: ids
+ *         in: query
+ *         description: Restrict response to Document with specified IDs
+ *         summary: Accepts a comma-separated list of doc ids. Disables pagination when used.
+ *         required: false
+ *         schema:
+ *           type: string
+ *         allowEmptyValue: true
+ *       - name: status
+ *         in: query
+ *         description:  Restrict response to Document with specified status
+ *         summary: Accepts one of
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [requested, approved, submitted, published, trashed]
+ *         allowEmptyValue: true
+ *       - name: apiKey
+ *         in: query
+ *         description: The API key to access
+ *         required: false
+ *         type: string
+ *         allowEmptyValue: true
  *     responses:
- *       200:
- *         description: retrieve
+ *       '200':
+ *         description: A list of Documents
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/Document'
  */
-// get all docs
-// - offset: pagination offset
-// - limit: pagination size limit
-// - apiKey: to authorise secret access
-// - status: include docs bearing valid Document 'status'
-// - ids: only get the docs for the specified comma-separated list of ids (disables pagination)
 http.get('/', function( req, res, next ){
   let limit = _.toInteger( _.get( req.query, 'limit', 50 ) );
   let offset = _.toInteger( _.get( req.query, 'offset', 0 ) );

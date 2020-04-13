@@ -918,8 +918,6 @@ http.post('/:id/tweet', function( req, res, next ){
  *
  * /api/document/api-key-verify:
  *   get:
- *     security:
- *       - ApiKeyAuth: []
  *     description: Verify an API key
  *     summary: Verify an API key
  *     tags:
@@ -1074,8 +1072,6 @@ const tryVerify = async doc => {
  *                   - signup
  *                   - journal
  *                 required: true
- *               apiKey:
- *                 type: string
  *     responses:
  *       '200':
  *         description: ok

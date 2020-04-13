@@ -257,12 +257,101 @@ let getSbgnFromTemplates = templates => {
  *
  * components:
  *
- *   Element:
+ *   entry:
  *     properties:
  *       id:
  *         type: string
+ *       group:
+ *         type: string
+ *         enum:
+ *           - negative
+ *           - positive
+ *
+ *   entity-association:
+ *     properties:
+ *       id:
+ *         type: string
+ *
+ *   Entity:
+ *     properties:
+ *       id:
+ *         type: string
+ *       secret:
+ *         type: string
+ *       position:
+ *         type: object
+ *         properties:
+ *           x:
+ *             type: number
+ *           y:
+ *             type: number
+ *       description:
+ *         type: string
  *       name:
  *         type: string
+ *       'type':
+ *         type: string
+ *         enum:
+ *           - chemical
+ *           - ggp
+ *           - DNA
+ *           - RNA
+ *           - protein
+ *           - complex
+ *       completed:
+ *         type: boolean
+ *       association:
+ *         type: object
+ *
+ *   Interaction:
+ *     properties:
+ *       id:
+ *         type: string
+ *       secret:
+ *         type: string
+ *       position:
+ *         type: object
+ *         properties:
+ *           x:
+ *             type: number
+ *           y:
+ *             type: number
+ *       description:
+ *         type: string
+ *       name:
+ *         type: string
+ *       'type':
+ *         type: string
+ *         enum:
+ *           - binding
+ *           - transcription-translation
+ *           - modification
+ *           - phosphorylation
+ *           - (de)phosphorylation
+ *           - ubiquitination
+ *           - (de)ubiquitination
+ *           - methlyation
+ *           - (de)methlyation
+ *           - interaction
+ *       completed:
+ *         type: boolean
+ *       association:
+ *         type: string
+ *         enum:
+ *           - binding
+ *           - transcription-translation
+ *           - modification
+ *           - phosphorylation
+ *           - (de)phosphorylation
+ *           - ubiquitination
+ *           - (de)ubiquitination
+ *           - methlyation
+ *           - (de)methlyation
+ *           - interaction
+ *       entries:
+ *         type: array
+ *         items:
+ *           $ref: '#/components/entry'
  *
  *   Organism:
  *     properties:
@@ -446,7 +535,9 @@ let getSbgnFromTemplates = templates => {
  *       elements:
  *         type: array
  *         items:
- *           $ref: '#/components/Element'
+ *           oneOf:
+ *             - $ref: '#/components/Entity'
+ *             - $ref: '#/components/Interaction'
  *       publicUrl:
  *         type: string
  *       privateUrl:

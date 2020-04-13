@@ -360,8 +360,21 @@ let getSbgnFromTemplates = templates => {
  *       name:
  *         type: string
  *
+ *   Affiliation:
+ *     properties:
+ *       Affiliation:
+ *         type: string
+ *       email:
+ *         type: array
+ *         items:
+ *           type: string
+ *
  *   Author:
  *     properties:
+ *       AffiliationInfo:
+ *         type: array
+ *         items:
+ *           $ref: '#/components/Affiliation'
  *       LastName:
  *         type: string
  *       ForeName:

@@ -619,7 +619,7 @@ let getSbgnFromTemplates = templates => {
  *         allowEmptyValue: true
  *       - name: ids
  *         in: query
- *         description: Filter by comma-separated IDs
+ *         description: Document IDs (comma-delimited)
  *         summary: Accepts a comma-separated list of doc ids. Disables pagination when used.
  *         required: false
  *         schema:
@@ -627,17 +627,11 @@ let getSbgnFromTemplates = templates => {
  *         allowEmptyValue: true
  *       - name: status
  *         in: query
- *         description: Filter by Documents status
- *         summary: Accepts one of
+ *         description: Documents status
+ *         summary: Accepts one of the pre-defined statuses
  *         required: false
  *         schema:
  *           $ref: '#/components/status'
- *         allowEmptyValue: true
- *       - name: apiKey
- *         in: query
- *         description: Key allows access to private fields
- *         required: false
- *         type: string
  *         allowEmptyValue: true
  *     responses:
  *       '200':
@@ -806,6 +800,8 @@ const imageCache = new LRUCache({
  *       - Document
  *     parameters:
  *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
  *         in: path
  *         required: true
  *     responses:
@@ -881,8 +877,10 @@ const tweetDoc = ( id, secret, text ) => {
  *     summary: Tweet a document as a card with a caption (text)
  *     tags:
  *       - Document
- *     parameters:
+*     parameters:
  *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
  *         in: path
  *         required: true
  *     requestBody:
@@ -894,8 +892,11 @@ const tweetDoc = ( id, secret, text ) => {
  *             properties:
  *               secret:
  *                 type: string
+ *                 description: Document secret
  *               text:
  *                 type: string
+ *                 description: Text to be included in Tweet body
+ *                 default: The auto-generated text output (see text/{id})
  *     responses:
  *       '200':
  *         description: ok
@@ -958,6 +959,8 @@ http.get('/api-key-verify', function( req, res, next ){
  *       - Document
  *     parameters:
  *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
  *         in: path
  *         required: true
  *     responses:
@@ -1130,17 +1133,17 @@ http.post('/', function( req, res, next ){
  *     parameters:
  *       - name: id
  *         in: path
- *         description: The Document id
+ *         description: Document id
  *         required: true
  *         type: string
  *       - name: secret
  *         in: path
- *         description: The Document secret
+ *         description: Document secret
  *         required: true
  *         type: string
  *       - name: emailType
  *         in: query
- *         description: The type of email (invite, followUp, requestIssue)
+ *         description: Type of email (invite, followUp, requestIssue)
  *         required: true
  *         type: string
  *         enum:
@@ -1176,12 +1179,12 @@ http.patch('/email/:id/:secret', function( req, res, next ){
  *     parameters:
  *       - name: id
  *         in: path
- *         description: The Document id
+ *         description: Document id
  *         required: true
  *         type: string
  *       - name: secret
  *         in: path
- *         description: The Document secret
+ *         description: Document secret
  *         required: true
  *         type: string
  *     requestBody:
@@ -1295,12 +1298,12 @@ http.patch('/status/:id/:secret', function( req, res, next ){
  *     parameters:
  *       - name: id
  *         in: path
- *         description: The Document id
+ *         description: Document id
  *         required: true
  *         type: string
  *       - name: secret
  *         in: path
- *         description: The Document secret
+ *         description: Document secret
  *         required: true
  *         type: string
  *     responses:
@@ -1340,6 +1343,8 @@ http.patch('/:id/:secret', function( req, res, next ){
  *       - Document
  *     parameters:
  *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
  *         in: path
  *         required: true
  *     responses:
@@ -1374,6 +1379,8 @@ http.get('/biopax/:id', function( req, res, next ){
  *       - Document
  *     parameters:
  *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
  *         in: path
  *         required: true
  *     responses:
@@ -1408,6 +1415,8 @@ http.get('/sbgn/:id', function( req, res, next ){
  *       - Document
  *     parameters:
  *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
  *         in: path
  *         required: true
  *     responses:

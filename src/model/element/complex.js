@@ -63,7 +63,7 @@ class Complex extends Entity {
     } else {
       let name;
       if( this.named() ){
-        name = this.syncher.get('name');
+        name = super.name();
       } else {
         const participantNames = this.participants().map( p => p.name() ).join(':');
         name = `Complex (${participantNames})`;

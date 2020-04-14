@@ -1,7 +1,6 @@
 import { error } from '../../../util';
 import { PARTICIPANT_TYPE } from '../participant-type';
 import { BIOPAX_TEMPLATE_TYPE } from './biopax-type';
-import { isComplex } from '../element-type';
 
 const VALUE = 'unset';
 const DISPLAY_VALUE = 'Unset';
@@ -123,21 +122,8 @@ class InteractionType {
       verbPhrase = this.getSign().verbPhrase;
     }
 
-    const getName = entity => {
-      let name = '(?)';
-
-      if( entity.name() ){
-        name = entity.name();
-      } else if( isComplex( entity.type() ) ){
-        const participantNames = entity.participants().map(ppt => ppt.name()).join(':');
-        name = `Complex (${participantNames})`;
-      }
-
-      return name;
-    };
-
-    let srcName = getName( src );
-    let tgtName = getName( tgt );
+    let srcName = src.name() || '(?)';
+    let tgtName = tgt.name() || '(?)';
 
     return `${srcName} ${verbPhrase} ${tgtName} ${post}`;
   }

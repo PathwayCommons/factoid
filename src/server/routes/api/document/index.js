@@ -264,6 +264,13 @@ let getSbgnFromTemplates = templates => {
  *       in: query
  *       name: apiKey
  *
+ *   emailType:
+ *     type: string
+ *     enum:
+ *       - invite
+ *       - followUp
+ *       - requestIssue
+ *
  *   entry:
  *     properties:
  *       id:
@@ -309,6 +316,7 @@ let getSbgnFromTemplates = templates => {
  *         type: boolean
  *       association:
  *         type: object
+ *         description: Specific to data provider
  *
  *   Interaction:
  *     properties:
@@ -445,6 +453,7 @@ let getSbgnFromTemplates = templates => {
  *             type: array
  *             items:
  *               type: string
+ *               description: Email
  *           authorList:
  *             type: array
  *             items:
@@ -561,10 +570,11 @@ let getSbgnFromTemplates = templates => {
  *         type: array
  *         items:
  *           type: string
+ *           description: Organism ID
  *       elements:
  *         type: array
  *         items:
- *           oneOf:
+ *           anyOf:
  *             - $ref: '#/components/Entity'
  *             - $ref: '#/components/Interaction'
  *       publicUrl:
@@ -794,8 +804,8 @@ const imageCache = new LRUCache({
  *
  * /api/document/{id}.png:
  *   get:
- *     description: Retrieve a PNG image of a single Document's interaction data
- *     summary: Retrieve a PNG image of a single Document's interaction data
+ *     description: Retrieve a PNG of the Document's interactions
+ *     summary: Retrieve an image displaying Document interactions
  *     tags:
  *       - Document
  *     parameters:
@@ -867,14 +877,13 @@ const tweetDoc = ( id, secret, text ) => {
   );
 };
 
-// tweet a document as a card with a caption (text)
 /**
  * @swagger
  *
  * /api/document/{id}/tweet:
  *   post:
- *     description: Tweet a document as a card with a caption (text)
- *     summary: Tweet a document as a card with a caption (text)
+ *     description: Tweet a Document as a card provided text serving as the caption
+ *     summary: Tweet a Document as a card
  *     tags:
  *       - Document
 *     parameters:
@@ -923,7 +932,7 @@ http.post('/:id/tweet', function( req, res, next ){
  * /api/document/api-key-verify:
  *   get:
  *     description: Verify an API key
- *     summary: Verify an API key
+ *     summary: Verify an API key by the HTTP status
  *     tags:
  *       - Document
  *     parameters:
@@ -1143,13 +1152,10 @@ http.post('/', function( req, res, next ){
  *         type: string
  *       - name: emailType
  *         in: query
- *         description: Type of email (invite, followUp, requestIssue)
+ *         description: Type of email
  *         required: true
- *         type: string
- *         enum:
- *           - invite
- *           - followUp
- *           - requestIssue
+ *         schema:
+ *           $ref: '#/components/emailType'
  *     responses:
  *       '200':
  *         $ref: '#/components/responses/200'

@@ -252,12 +252,407 @@ let getSbgnFromTemplates = templates => {
     .then(handleResponseError);
 };
 
-// get all docs
-// - offset: pagination offset
-// - limit: pagination size limit
-// - apiKey: to authorise secret access
-// - status: include docs bearing valid Document 'status'
-// - ids: only get the docs for the specified comma-separated list of ids (disables pagination)
+/**
+ * @swagger
+ *
+ * components:
+ *
+ *   securitySchemes:
+ *     ApiKeyAuth:
+ *       type: apiKey
+ *       description: API key to authorize requests.
+ *       in: query
+ *       name: apiKey
+ *
+ *   emailType:
+ *     type: string
+ *     enum:
+ *       - invite
+ *       - followUp
+ *       - requestIssue
+ *
+ *   entry:
+ *     properties:
+ *       id:
+ *         type: string
+ *       group:
+ *         type: string
+ *         enum:
+ *           - negative
+ *           - positive
+ *
+ *   entity-association:
+ *     properties:
+ *       id:
+ *         type: string
+ *
+ *   Entity:
+ *     properties:
+ *       id:
+ *         type: string
+ *       secret:
+ *         type: string
+ *       position:
+ *         type: object
+ *         properties:
+ *           x:
+ *             type: number
+ *           y:
+ *             type: number
+ *       description:
+ *         type: string
+ *       name:
+ *         type: string
+ *       'type':
+ *         type: string
+ *         enum:
+ *           - chemical
+ *           - ggp
+ *           - DNA
+ *           - RNA
+ *           - protein
+ *           - complex
+ *       completed:
+ *         type: boolean
+ *       association:
+ *         type: object
+ *         description: Specific to data provider
+ *
+ *   Interaction:
+ *     properties:
+ *       id:
+ *         type: string
+ *       secret:
+ *         type: string
+ *       position:
+ *         type: object
+ *         properties:
+ *           x:
+ *             type: number
+ *           y:
+ *             type: number
+ *       description:
+ *         type: string
+ *       name:
+ *         type: string
+ *       'type':
+ *         type: string
+ *         enum:
+ *           - binding
+ *           - transcription-translation
+ *           - modification
+ *           - phosphorylation
+ *           - (de)phosphorylation
+ *           - ubiquitination
+ *           - (de)ubiquitination
+ *           - methlyation
+ *           - (de)methlyation
+ *           - interaction
+ *       completed:
+ *         type: boolean
+ *       association:
+ *         type: string
+ *         enum:
+ *           - binding
+ *           - transcription-translation
+ *           - modification
+ *           - phosphorylation
+ *           - (de)phosphorylation
+ *           - ubiquitination
+ *           - (de)ubiquitination
+ *           - methlyation
+ *           - (de)methlyation
+ *           - interaction
+ *       entries:
+ *         type: array
+ *         items:
+ *           $ref: '#/components/entry'
+ *
+ *   Organism:
+ *     properties:
+ *       id:
+ *         type: string
+ *       name:
+ *         type: string
+ *
+ *   Affiliation:
+ *     properties:
+ *       Affiliation:
+ *         type: string
+ *       email:
+ *         type: array
+ *         items:
+ *           type: string
+ *
+ *   Author:
+ *     properties:
+ *       AffiliationInfo:
+ *         type: array
+ *         items:
+ *           $ref: '#/components/Affiliation'
+ *       LastName:
+ *         type: string
+ *       ForeName:
+ *         type: string
+ *       Initials:
+ *         type: string
+ *       CollectiveName:
+ *         type: string
+ *
+ *   ArticleId:
+ *     properties:
+ *       IdType:
+ *         type: string
+ *       id:
+ *         type: string
+ *
+ *   ArticleIdList:
+ *     type: array
+ *     items:
+ *       $ref: '#/components/ArticleId'
+ *
+ *   Journal:
+ *     properties:
+ *       ISOAbbreviation:
+ *         type: string
+ *       ISSN:
+ *         type: string
+ *       Title:
+ *         type: string
+ *       JournalIssue:
+ *         type: object
+ *         properties:
+ *           Issue:
+ *             type: string
+ *           PubDate:
+ *             type: object
+ *             properties:
+ *               Year:
+ *                 type: string
+ *               Month:
+ *                 type: string
+ *               Day:
+ *                 type: string
+ *               Season:
+ *                 type: string
+ *               MedlineDate:
+ *                 type: string
+ *           Volume:
+ *             type: string
+ *
+ *   citation:
+ *     properties:
+ *       title:
+ *         type: string
+ *       authors:
+ *         type: object
+ *         properties:
+ *           abbreviation:
+ *             type: string
+ *           contacts:
+ *             type: array
+ *             items:
+ *               type: string
+ *               description: Email
+ *           authorList:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                 abbrevName:
+ *                   type: string
+ *                 isCollectiveName:
+ *                   type: boolean
+ *       reference:
+ *         type: string
+ *       abstract:
+ *         type: string
+ *       pmid:
+ *         type: string
+ *       doi:
+ *         type: string
+ *
+ *   article:
+ *     properties:
+ *       MedlineCitation:
+ *         type: object
+ *         properties:
+ *           Article:
+ *             type: object
+ *             properties:
+ *               Abstract:
+ *                 type: string
+ *               ArticleTitle:
+ *                 type: string
+ *               AuthorList:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/Author'
+ *               Journal:
+ *                 $ref: '#/components/Journal'
+ *           ChemicalList:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 NameOfSubstance:
+ *                   type: String
+ *                 RegistryNumber:
+ *                   type: String
+ *                 UI:
+ *                   type: String
+ *           InvestigatorList:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/Author'
+ *           KeywordList:
+ *             type: array
+ *             items:
+ *               type: string
+ *           MeshheadingList:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 DescriptorName:
+ *                   type: string
+ *                 isMajorTopicYN:
+ *                   type: boolean
+ *                 UI:
+ *                   type: String
+ *       PubmedData:
+ *         type: object
+ *         properties:
+ *           ArticleIdList:
+ *              $ref: '#/components/ArticleIdList'
+ *           History:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 PubStatus:
+ *                   type: string
+ *                 PubMedPubDate:
+ *                   type: object
+ *                   properties:
+ *                     Year:
+ *                       type: string
+ *                     Month:
+ *                       type: string
+ *                     Day:
+ *                       type: string
+ *           ReferenceList:
+ *             type: object
+ *             properties:
+ *               ArticleIdList:
+ *                 $ref: '#/components/ArticleIdList'
+ *               Citation:
+ *                 type: string
+ *
+ *   status:
+ *     type: string
+ *     enum:
+ *       - requested
+ *       - approved
+ *       - submitted
+ *       - published
+ *       - trashed
+ *
+ *   Document:
+ *     properties:
+ *       id:
+ *         type: string
+ *       secret:
+ *         type: string
+ *       organisms:
+ *         type: array
+ *         items:
+ *           type: string
+ *           description: Organism ID
+ *       elements:
+ *         type: array
+ *         items:
+ *           anyOf:
+ *             - $ref: '#/components/Entity'
+ *             - $ref: '#/components/Interaction'
+ *       publicUrl:
+ *         type: string
+ *       privateUrl:
+ *         type: string
+ *       citation:
+ *         $ref: '#/components/citation'
+ *       article:
+ *         $ref: '#/components/article'
+ *       createdDate:
+ *         type: string
+ *       lastEditedDate:
+ *         type: string
+ *       status:
+ *         type: string
+ *       verified:
+ *         type: boolean
+ *
+ *   responses:
+ *     '200':
+ *       description: Success
+ *     '500':
+ *       description: Error
+ *     'Bad ID':
+ *       description: No response from database for ID
+ */
+
+/**
+ * @swagger
+ *
+ * /api/document:
+ *   get:
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Retrieve Documents
+ *     summary: Filter and retrieve a list of paginated Documents
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: limit
+ *         in: query
+ *         description: Pagination size limit
+ *         required: false
+ *         type: number
+ *         allowEmptyValue: true
+ *       - name: offset
+ *         in: query
+ *         description: Pagination start index
+ *         required: false
+ *         type: number
+ *         allowEmptyValue: true
+ *       - name: ids
+ *         in: query
+ *         description: Document IDs (comma-delimited)
+ *         summary: Accepts a comma-separated list of doc ids. Disables pagination when used.
+ *         required: false
+ *         schema:
+ *           type: string
+ *         allowEmptyValue: true
+ *       - name: status
+ *         in: query
+ *         description: Documents status
+ *         summary: Accepts one of the pre-defined statuses
+ *         required: false
+ *         schema:
+ *           $ref: '#/components/status'
+ *         allowEmptyValue: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/Document'
+ */
 http.get('/', function( req, res, next ){
   let limit = _.toInteger( _.get( req.query, 'limit', 50 ) );
   let offset = _.toInteger( _.get( req.query, 'offset', 0 ) );
@@ -404,7 +799,31 @@ const imageCache = new LRUCache({
   max: DOCUMENT_IMAGE_CACHE_SIZE
 });
 
-// get doc figure as png image
+/**
+ * @swagger
+ *
+ * /api/document/{id}.png:
+ *   get:
+ *     description: Retrieve a PNG of the Document's interactions
+ *     summary: Retrieve an image displaying Document interactions
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           image/png:
+ *             type: string
+ *             format: binary
+ *       '500':
+ *         $ref: '#/components/responses/Bad ID'
+ */
 http.get('/(:id).png', function( req, res, next ){
   const id = req.params.id;
 
@@ -458,7 +877,45 @@ const tweetDoc = ( id, secret, text ) => {
   );
 };
 
-// tweet a document as a card with a caption (text)
+/**
+ * @swagger
+ *
+ * /api/document/{id}/tweet:
+ *   post:
+ *     description: Tweet a Document as a card provided text serving as the caption
+ *     summary: Tweet a Document as a card
+ *     tags:
+ *       - Document
+*     parameters:
+ *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
+ *         in: path
+ *         required: true
+ *     requestBody:
+ *       description: Data used in creating Tweet
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               secret:
+ *                 type: string
+ *                 description: Document secret
+ *               text:
+ *                 type: string
+ *                 description: Text to be included in Tweet body
+ *                 default: The auto-generated text output (see text/{id})
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       '500':
+ *         description: Error
+ */
 http.post('/:id/tweet', function( req, res, next ){
   const id = req.params.id;
   const { text, secret } = _.assign({ text: '', secret: 'read-only-no-secret-specified' }, req.body);
@@ -468,6 +925,29 @@ http.post('/:id/tweet', function( req, res, next ){
     .catch( next );
 });
 
+
+/**
+ * @swagger
+ *
+ * /api/document/api-key-verify:
+ *   get:
+ *     description: Verify an API key
+ *     summary: Verify an API key by the HTTP status
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: apiKey
+ *         in: query
+ *         description: API key
+ *         required: true
+ *         type: string
+ *         allowEmptyValue: true
+ *     responses:
+ *       '200':
+ *         $ref: '#/components/responses/200'
+ *       '500':
+ *         description: Invalid API key
+ */
 http.get('/api-key-verify', function( req, res, next ){
   let apiKey = req.query.apiKey;
 
@@ -477,7 +957,31 @@ http.get('/api-key-verify', function( req, res, next ){
   );
 });
 
-// get existing doc as json
+/**
+ * @swagger
+ *
+ * /api/document/{id}:
+ *   get:
+ *     description: Retrieve a single Document by ID
+ *     summary: Retrieve a single Document by ID
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/Document'
+ *       '500':
+ *         $ref: '#/components/responses/Bad ID'
+ */
 http.get('/:id', function( req, res, next ){
   let id = req.params.id;
 
@@ -506,9 +1010,32 @@ const checkRequestContext = async provided => {
   }
 };
 
+/**
+ * @swagger
+ *
+ * /api/document/{secret}:
+ *   delete:
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Delete an existing Document
+ *     summary: Delete an existing Document
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: secret
+ *         in: path
+ *         description: Document secret
+ *         required: true
+ *         type: string
+ *     responses:
+ *       '200':
+ *         $ref: '#/components/responses/200'
+ *       '500':
+ *         $ref: '#/components/responses/500'
+ */
 http.delete('/:secret', function(req, res, next){
   let secret = req.params.secret;
-  let { apiKey } = req.body;
+  let { apiKey } = req.query;
   deleteTableRows( apiKey, secret ).then( () => res.end() ).catch( next );
 });
 
@@ -534,7 +1061,44 @@ const tryVerify = async doc => {
   return doc;
 };
 
-// create new doc
+/**
+ * @swagger
+ *
+ * /api/document:
+ *   post:
+ *     description: Create a Document
+ *     summary: Create a Document
+ *     tags:
+ *       - Document
+ *     requestBody:
+ *       description: Data to create a Document
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               paperId:
+ *                 type: string
+ *               authorEmail:
+ *                 type: string
+ *               context:
+ *                 type: string
+ *                 enum:
+ *                   - signup
+ *                   - journal
+ *                 required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/Document'
+ *       '500':
+ *         description: The specified 'context' is not recognized
+ */
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
   const { paperId } = provided;
@@ -564,7 +1128,40 @@ http.post('/', function( req, res, next ){
     .catch( next );
 });
 
-// Email
+/**
+ * @swagger
+ *
+ * /api/document/email/{id}/{secret}:
+ *   patch:
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Send email to author(s) associated with a Document
+ *     summary: Send email to author(s) associated with a Document
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: Document id
+ *         required: true
+ *         type: string
+ *       - name: secret
+ *         in: path
+ *         description: Document secret
+ *         required: true
+ *         type: string
+ *       - name: emailType
+ *         in: query
+ *         description: Type of email
+ *         required: true
+ *         schema:
+ *           $ref: '#/components/emailType'
+ *     responses:
+ *       '200':
+ *         $ref: '#/components/responses/200'
+ *       '500':
+ *         $ref: '#/components/responses/500'
+ */
 http.patch('/email/:id/:secret', function( req, res, next ){
   const { id, secret } = req.params;
   const { apiKey, emailType } = req.query;
@@ -576,7 +1173,59 @@ http.patch('/email/:id/:secret', function( req, res, next ){
   );
 });
 
-// Update document status
+/**
+ * @swagger
+ *
+ * /api/document/status/{id}/{secret}:
+ *   patch:
+ *     description: Update Document status
+ *     summary: Update Document status; On publish take action (Tweet, email)
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: Document id
+ *         required: true
+ *         type: string
+ *       - name: secret
+ *         in: path
+ *         description: Document secret
+ *         required: true
+ *         type: string
+ *     requestBody:
+ *       description: Data to update status
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 op:
+ *                   type: string
+ *                   enum:
+ *                     - replace
+ *                   required: true
+ *                 path:
+ *                   type: string
+ *                   enum:
+ *                     - status
+ *                   required: true
+ *                 value:
+ *                   $ref: '#/components/status'
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/Document'
+ *       '500':
+ *         $ref: '#/components/responses/500'
+ */
 http.patch('/status/:id/:secret', function( req, res, next ){
   const { id, secret } = req.params;
 
@@ -641,7 +1290,38 @@ http.patch('/status/:id/:secret', function( req, res, next ){
   );
 });
 
-// Refresh the document data
+/**
+ * @swagger
+ *
+ * /api/document/{id}/{secret}:
+ *   patch:
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Refresh existing Document metadata
+ *     summary: Refresh existing Document metadata
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: Document id
+ *         required: true
+ *         type: string
+ *       - name: secret
+ *         in: path
+ *         description: Document secret
+ *         required: true
+ *         type: string
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/Document'
+ *       '500':
+ *         $ref: '#/components/responses/500'
+ */
 http.patch('/:id/:secret', function( req, res, next ){
   const { id, secret } = req.params;
   const { apiKey } = req.query;
@@ -658,6 +1338,30 @@ http.patch('/:id/:secret', function( req, res, next ){
   );
 });
 
+/**
+ * @swagger
+ *
+ * /api/document/biopax/{id}:
+ *   get:
+ *     description: Retrieve a single Document in BioPAX format
+ *     summary: Retrieve a single Document in BioPAX format
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/vnd.biopax.rdf+xml:
+ *             description: Retrieve Document in BioPAX format (http://www.biopax.org/)
+ *       '500':
+ *         $ref: '#/components/responses/Bad ID'
+ */
 http.get('/biopax/:id', function( req, res, next ){
   let id = req.params.id;
   tryPromise( loadTables )
@@ -670,6 +1374,30 @@ http.get('/biopax/:id', function( req, res, next ){
     .catch( next );
 });
 
+/**
+ * @swagger
+ *
+ * /api/document/sbgn/{id}:
+ *   get:
+ *     description: Retrieve a single Document in SBGN-ML format
+ *     summary: Retrieve a single Document in SBGN-ML format
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/xml:
+ *             description: Retrieve Document in SBGN-ML format (https://github.com/sbgn/sbgn/wiki/SBGN_ML)
+ *       '500':
+ *         $ref: '#/components/responses/Bad ID'
+ */
 http.get('/sbgn/:id', function( req, res, next ){
   let id = req.params.id;
   tryPromise( loadTables )
@@ -682,6 +1410,30 @@ http.get('/sbgn/:id', function( req, res, next ){
     .catch( next );
 });
 
+/**
+ * @swagger
+ *
+ * /api/document/text/{id}:
+ *   get:
+ *     description: Retrieve plain english description of a Document's interactions
+ *     summary:  Retrieve plain english description of a Document's interactions
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           text/plain:
+ *             description: Retrieve plain english description of a Document's interactions
+ *       '500':
+ *         $ref: '#/components/responses/Bad ID'
+ */
 http.get('/text/:id', function( req, res, next ){
   let id = req.params.id;
   tryPromise( loadTables )

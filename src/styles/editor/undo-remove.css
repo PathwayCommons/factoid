@@ -11,6 +11,7 @@
   opacity: 1;
   transition-property: opacity;
   transition-duration: 500ms;
+  display: none !important;
 }
 
 .editor-undo-rm-unavailable {

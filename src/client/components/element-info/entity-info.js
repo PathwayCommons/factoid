@@ -528,7 +528,7 @@ class EntityInfo extends DataComponent {
           h('input.input-round.entity-info-name-input', {
             type: 'text',
             placeholder,
-            value: s.name,
+            value: s.element.named() ? s.name : '',
             spellCheck: false,
             onChange: evt => this.rename( evt.target.value ),
             onKeyDown: evt => {

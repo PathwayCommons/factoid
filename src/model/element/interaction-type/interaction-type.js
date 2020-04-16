@@ -1,6 +1,7 @@
 import { error } from '../../../util';
 import { PARTICIPANT_TYPE } from '../participant-type';
 import { BIOPAX_TEMPLATE_TYPE } from './biopax-type';
+import _ from 'lodash';
 
 const VALUE = 'unset';
 const DISPLAY_VALUE = 'Unset';
@@ -128,10 +129,11 @@ class InteractionType {
     return `${srcName} ${verbPhrase} ${tgtName} ${post}`;
   }
 
-  validatePpts(){
+  validatePpts( transform = _.identity ){
     let intn = this.interaction;
-    let pptAssocsAllowed = () => this.constructor.isAllowedForInteraction(intn);
+    let pptAssocsAllowed = () => this.constructor.isAllowedForInteraction(intn, transform);
     let pptTypeAllowed = () => {
+      // transform function should not be called here since we need the sign of original participants
       let pptType = (
         intn.participants()
         .map(ppt => intn.participantType(ppt))
@@ -141,7 +143,7 @@ class InteractionType {
 
       return this.allowedParticipantTypes().some(type => type.value === pptType.value);
     };
-
+    console.log(pptAssocsAllowed(), pptTypeAllowed());
     return pptAssocsAllowed() && pptTypeAllowed();
   }
 

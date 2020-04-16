@@ -431,14 +431,25 @@ class Document {
   toBiopaxTemplates(){
     let interactions = this.interactions();
     let templates = [];
+    let getElById = id => this.elementSet.get(id);
+    let transform = el => {
+      let parentId = el.getParentId();
+
+      if ( parentId == null ) {
+        return el;
+      }
+
+      return getElById( parentId );
+    };
 
     interactions.forEach( intn => {
-      let template = intn.toBiopaxTemplate();
+      let template = intn.toBiopaxTemplate( transform );
       if (template !== null){
         templates.push(template);
       }
     } );
 
+    console.log(JSON.stringify(templates));
     return templates;
   }
 

@@ -668,7 +668,15 @@ http.get('/biopax/:id', function( req, res, next ){
     .then( loadDoc )
     .then( doc => doc.toBiopaxTemplates() )
     .then( getBiopaxFromTemplates )
+    .then( result => {
+      console.log(result);
+      return result;
+    } )
     .then( result => result.text() )
+    // .then( owl => {
+    //   console.log( owl );
+    //   return owl;
+    // })
     .then( owl => res.send( owl ))
     .catch( next );
 });

@@ -225,8 +225,8 @@ class Interaction extends Element {
     return _.assign( {}, super.json(), _.pick( this.syncher.get(), _.keys(DEFAULTS) ) );
   }
 
-  toBiopaxTemplate(){
-    return this.association().toBiopaxTemplate();
+  toBiopaxTemplate( getElById ){
+    return this.association().toBiopaxTemplate( getElById );
   }
 
   toString(){

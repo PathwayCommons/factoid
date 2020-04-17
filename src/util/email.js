@@ -27,6 +27,8 @@ const msgFactory = ( emailType, doc ) => {
     reference = ''
   } = doc.citation();
   const citation = _.compact([title, reference]).join(' ');
+  const privateUrl = `${BASE_URL}${doc.privateUrl()}`;
+  const publicUrl =  `${BASE_URL}${doc.publicUrl()}`;
 
   const email_contextual_content = {
     [EMAIL_CONTEXT_SIGNUP]: {
@@ -40,7 +42,7 @@ const msgFactory = ( emailType, doc ) => {
         cta: {
           title: `START BIOFACTOID`,
           body: `You are contributing for ${citation}`,
-          footer: `You can also begin by pasting the following into your browser ${BASE_URL}${doc.privateUrl()}`
+          footer: `You can also begin by pasting the following into your browser ${privateUrl}`
         }
       }
     },
@@ -55,7 +57,7 @@ const msgFactory = ( emailType, doc ) => {
         cta: {
           title: `START BIOFACTOID`,
           body: `You are contributing for ${citation}`,
-          footer: `You can also begin by pasting the following into your browser  ${BASE_URL}${doc.privateUrl()}`
+          footer: `You can also begin by pasting the following into your browser  ${privateUrl}`
         }
       }
     }
@@ -97,7 +99,7 @@ const msgFactory = ( emailType, doc ) => {
       _.set( data, 'subject', _.get( email_contextual_content, [context, 'subject'] ) );
       _.set( data, ['template', 'id'], MAILJET_TMPLID_INVITE );
       _.set( data, ['template', 'vars'], _.assign({
-        privateUrl: `${BASE_URL}${doc.privateUrl()}`,
+        privateUrl,
         context,
         explore: email_explore_content,
       }, email_contextual_content[context][emailType] ));
@@ -110,7 +112,7 @@ const msgFactory = ( emailType, doc ) => {
       _.set( data, 'subject', EMAIL_SUBJECT_FOLLOWUP );
       _.set( data, ['template', 'id'], MAILJET_TMPLID_FOLLOWUP );
       _.set( data, ['template', 'vars'], {
-        publicUrl: `${BASE_URL}${doc.publicUrl()}`,
+        publicUrl,
         hasTweet: `${doc.hasTweet()}`,
         tweetUrl: doc.tweetUrl(),
         imageUrl: `${BASE_URL}/api${doc.publicUrl()}.png`,

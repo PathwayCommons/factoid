@@ -42,7 +42,6 @@ class Modification extends InteractionType {
     let sourceType = transform( src ).type();
     let targetType = transform( tgt ).type();
 
-    // TODO: ggp?
     let validSrcTypes = [ENTITY_TYPE.GGP, ENTITY_TYPE.PROTEIN, ENTITY_TYPE.DNA, ENTITY_TYPE.RNA, ENTITY_TYPE.COMPLEX];
     let validTgtTypes = [ENTITY_TYPE.GGP, ENTITY_TYPE.PROTEIN, ENTITY_TYPE.DNA, ENTITY_TYPE.RNA];
 

@@ -39,7 +39,6 @@ class TranscriptionTranslation extends InteractionType {
       return false;
     }
 
-    let isProtein = ent => ent.type() === ENTITY_TYPE.PROTEIN;
     let sourceType = transform( src ).type();
     let targetType = transform( tgt ).type();
 

@@ -44,7 +44,7 @@ class Interaction extends InteractionType {
 
     // if only one participant is remained after the transformation skip the interaction
     if ( participants.length == 1 ) {
-      return;
+      return null;
     }
 
     template.participants = participants.map( participant => participant.toBiopaxTemplate() );

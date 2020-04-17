@@ -1,6 +1,5 @@
 import InteractionType from './interaction-type';
 import { PARTICIPANT_TYPE } from '../participant-type';
-import { ENTITY_TYPE } from '../entity-type';
 import { BIOPAX_TEMPLATE_TYPE } from './biopax-type';
 import _ from 'lodash';
 
@@ -38,7 +37,6 @@ class Binding extends InteractionType {
 
   toBiopaxTemplate( transform ){
     if ( !this.validatePpts() ){
-      console.log('binding invalid');
       return this.makeInvalidBiopaxTemplate();
     }
 
@@ -46,7 +44,7 @@ class Binding extends InteractionType {
 
     // if only one participant is remained after the transformation skip the interaction
     if ( participants.length == 1 ) {
-      return;
+      return null;
     }
 
     let participantTemplates = participants.map( participant => participant.toBiopaxTemplate() );

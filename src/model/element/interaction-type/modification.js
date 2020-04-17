@@ -42,8 +42,6 @@ class Modification extends InteractionType {
     let sourceType = transform( src ).type();
     let targetType = transform( tgt ).type();
 
-    console.log( sourceType, targetType );
-
     // TODO: ggp?
     let validSrcTypes = [ENTITY_TYPE.GGP, ENTITY_TYPE.PROTEIN, ENTITY_TYPE.DNA, ENTITY_TYPE.RNA, ENTITY_TYPE.COMPLEX];
     let validTgtTypes = [ENTITY_TYPE.GGP, ENTITY_TYPE.PROTEIN, ENTITY_TYPE.DNA, ENTITY_TYPE.RNA];
@@ -52,7 +50,6 @@ class Modification extends InteractionType {
   }
 
   toBiopaxTemplate(transform, effect){//effect is undefined in base Modification case (i.e., no phys. mod. feature)
-    console.log('here1');
     if ( !this.validatePpts( transform ) ){
       return this.makeInvalidBiopaxTemplate();
     }
@@ -61,19 +58,13 @@ class Modification extends InteractionType {
     let src = transform( this.getSource() );
     let tgt = transform( this.getTarget() );
 
-    console.log('here2', src.id(), tgt.id());
-
     // skip if the source and target became the same after the transformation
     if ( src.id() == tgt.id() ) {
       return null;
     }
 
-    console.log('here3');
-
     let srcTemplate = src.toBiopaxTemplate();
     let tgtTemplate = tgt.toBiopaxTemplate();
-
-    console.log('here4');
 
     let template = {
       type: BIOPAX_TEMPLATE_TYPE.PROTEIN_CONTROLS_STATE,
@@ -92,7 +83,6 @@ class Modification extends InteractionType {
       template.modification = effect;
     }
 
-    console.log('here5', template);
     return template;
   }
 

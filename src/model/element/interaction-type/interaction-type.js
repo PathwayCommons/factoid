@@ -143,7 +143,6 @@ class InteractionType {
 
       return this.allowedParticipantTypes().some(type => type.value === pptType.value);
     };
-    console.log(pptAssocsAllowed(), pptTypeAllowed());
     return pptAssocsAllowed() && pptTypeAllowed();
   }
 

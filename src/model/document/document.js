@@ -444,12 +444,11 @@ class Document {
 
     interactions.forEach( intn => {
       let template = intn.toBiopaxTemplate( transform );
-      if (template !== null){
+      if (template != null){
         templates.push(template);
       }
     } );
 
-    console.log(JSON.stringify(templates));
     return templates;
   }
 

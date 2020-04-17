@@ -230,7 +230,7 @@ function listenToDoc({ bus, cy, document, controller }){
     } );
   };
 
-  let onRenameDebounce = function( docEl, name ){
+  let onRenameDebounce = function( docEl ){
     onDoc( docEl, function( docEl, el ){
       refreshNameInCy(docEl, el);
       refreshComplexNameInCy(docEl);

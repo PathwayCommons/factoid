@@ -144,7 +144,7 @@ class Editor extends DataComponent {
     bus.on('remove', docEl => this.remove( docEl ));
     bus.on('togglehelp', () => this.toggleHelp());
 
-    let showHelp = JSON.parse(localStorage.getItem('showHelp'));
+    let showHelp = false;//JSON.parse(localStorage.getItem('showHelp'));
 
     if( showHelp == null ){
       showHelp = true;
@@ -525,7 +525,7 @@ class Editor extends DataComponent {
       h('div.editor-graph#editor-graph'),
       h('div.editor-help-background', {
         className: makeClassList({
-          'editor-help-background-shown': showHelp
+          'editor-help-background-shown': false
         }),
         onClick: () => this.toggleHelp()
       }),
@@ -534,42 +534,42 @@ class Editor extends DataComponent {
           'editor-help-shown': showHelp
         })
       }, [
-        h('div.editor-help-box', [
-          h('div.editor-help-close-icon', {
-            onClick: () => this.toggleHelp()
-          }, [
-            h('i.material-icons', 'close')
-          ]),
-          h('div.editor-help-title', 'Welcome'),
-          h('div.editor-scroll-box', [
-            h('div.editor-help-copy', `
-              In just a few simple steps you'll compose a pathway containing the key biological interactions described in your article.
-            `),
-            h('div.editor-help-cells', [
-              h('div.editor-help-cell', [
-                h('img.editor-help-img', { src: '/image/welcome-aboard-1.svg' }),
-                h('div.editor-help-caption', `1. Add your genes and chemicals`)
-              ]),
-              h('div.editor-help-cell', [
-                h('img.editor-help-img', { src: '/image/welcome-aboard-2.svg' }),
-                h('div.editor-help-caption', `2. Connect those that interact`)
-              ]),
-              h('div.editor-help-cell', [
-                h('img.editor-help-img', { src: '/image/welcome-aboard-3.svg' }),
-                h('div.editor-help-caption', `3. For complexes, drag items together`)
-              ]),
-              h('div.editor-help-cell', [
-                h('img.editor-help-img', { src: '/image/welcome-aboard-4.svg' }),
-                h('div.editor-help-caption', `4. Submit to finish`)
-              ])
-            ])
-          ]),
-          h('div.editor-help-close', [
-            h('button.editor-help-close-button.active-button', {
-              onClick: () => this.toggleHelp()
-            }, `OK, let's start`)
-          ])
-        ])
+        // h('div.editor-help-box', [
+        //   h('div.editor-help-close-icon', {
+        //     onClick: () => this.toggleHelp()
+        //   }, [
+        //     h('i.material-icons', 'close')
+        //   ]),
+        //   h('div.editor-help-title', 'Welcome'),
+        //   h('div.editor-scroll-box', [
+        //     h('div.editor-help-copy', `
+        //       In just a few simple steps you'll compose a pathway containing the key biological interactions described in your article.
+        //     `),
+        //     h('div.editor-help-cells', [
+        //       h('div.editor-help-cell', [
+        //         h('img.editor-help-img', { src: '/image/welcome-aboard-1.svg' }),
+        //         h('div.editor-help-caption', `1. Add your genes and chemicals`)
+        //       ]),
+        //       h('div.editor-help-cell', [
+        //         h('img.editor-help-img', { src: '/image/welcome-aboard-2.svg' }),
+        //         h('div.editor-help-caption', `2. Connect those that interact`)
+        //       ]),
+        //       h('div.editor-help-cell', [
+        //         h('img.editor-help-img', { src: '/image/welcome-aboard-3.svg' }),
+        //         h('div.editor-help-caption', `3. For complexes, drag items together`)
+        //       ]),
+        //       h('div.editor-help-cell', [
+        //         h('img.editor-help-img', { src: '/image/welcome-aboard-4.svg' }),
+        //         h('div.editor-help-caption', `4. Submit to finish`)
+        //       ])
+        //     ])
+        //   ]),
+        //   h('div.editor-help-close', [
+        //     h('button.editor-help-close-button.active-button', {
+        //       onClick: () => this.toggleHelp()
+        //     }, `OK, let's start`)
+        //   ])
+        // ])
       ])
     ] : [];
 

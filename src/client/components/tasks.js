@@ -2,9 +2,9 @@ import _ from 'lodash';
 import DataComponent from './data-component';
 import h from 'react-hyperscript';
 
-import { BASE_URL } from '../../config';
 import Document from '../../model/document';
 import { ENTITY_TYPE } from '../../model/element/entity-type';
+import { BASE_URL } from '../../config';
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
 
@@ -141,19 +141,54 @@ class TaskView extends DataComponent {
         ])
       ]);
     } else {
+      const {
+        title = 'Untitled',
+        reference = ''
+      } = document.citation();
+      const citation = _.compact([title, reference]).join(' ');
+      const publicUrl =  `${BASE_URL}${document.publicUrl()}`;
+      const imageUrl = `${BASE_URL}/api${document.publicUrl()}.png`;
       return h('div.task-view.done', [
         h('div.task-view-done', [
-          h('div.task-view-done-symbol', [
-            h('i.material-icons', 'check_circle_outline' ),
+          h('h1.task-view-done-title', 'Thank you!' ),
+
+          h('div.task-view-done-section', [
+            h('div.task-view-done-section-body', [
+              h('p', 'Your information has been connected to other biological knowledge that researchers are free to explore'),
+              h( 'a.task-view-done-button', { href: document.publicUrl(), target: '_blank', }, 'Start Explore' )
+            ])
           ]),
-          h('div.task-view-done-caption', [
-            h('h1.task-view-done-caption-title', 'Success!' ),
-            h('p.task-view-done-caption-body', 'Check for a confirmation email' ),
-            h('p.task-view-done-caption-footer', [
+          h('hr'),
+          h('div.task-view-done-section', [
+            h('div.task-view-done-section-body', [
+              h('p', 'Good things happen when you share!'),
+            ]),
+
+            h('div.task-view-done-section-body-links', [
+              document.hasTweet() ? h('a.plain-link', {
+                href: document.tweetUrl(),
+                target: '_blank'
+              },
+              [
+                h('i.icon.icon-t'),
+                ' See Tweet @biofactoid'
+              ]): null,
               h('a.plain-link', {
-                target: '_blank',
-                href: BASE_URL
-              },'Contribute another' )
+                href: imageUrl,
+                target: '_blank'
+              },
+              [
+                h( 'i.material-icons', 'image' ),
+                ' Get image'
+              ]),
+              h('a.plain-link', {
+                href: `mailto:?subject=Pathway data for ${citation} on Biofactoid&body=We have published pathway data for our article ${citation} on Biofactoid ${publicUrl}.`,
+                target: '_blank'
+              },
+              [
+                h( 'i.material-icons', 'email' ),
+                ' Email link'
+              ])
             ])
           ])
         ])

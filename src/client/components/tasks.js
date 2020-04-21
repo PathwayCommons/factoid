@@ -148,13 +148,12 @@ class TaskView extends DataComponent {
       const citation = _.compact([title, reference]).join(' ');
       const publicUrl =  `${BASE_URL}${document.publicUrl()}`;
       const imageUrl = `${BASE_URL}/api${document.publicUrl()}.png`;
-      return h('div.task-view.done', [
+      return h('div.task-view', [
         h('div.task-view-done', [
           h('h1.task-view-done-title', 'Thank you!' ),
-
           h('div.task-view-done-section', [
             h('div.task-view-done-section-body', [
-              h('p', 'Your information has been connected to other biological knowledge that researchers are free to explore'),
+              h('p', 'Your information is now integrated with a larger body of knowledge that all researchers are free to explore'),
               h( 'a.task-view-done-button', { href: document.publicUrl(), target: '_blank', }, 'Start Explore' )
             ])
           ]),
@@ -164,30 +163,33 @@ class TaskView extends DataComponent {
               h('p', 'Good things happen when you share!'),
             ]),
 
-            h('div.task-view-done-section-body-links', [
-              document.hasTweet() ? h('a.plain-link', {
-                href: document.tweetUrl(),
+            h('ul.task-view-done-section-list', [
+              document.hasTweet() ? h('li', [
+                h( 'i.icon.icon-t' ),
+                h('a.plain-link', {
+                  href: document.tweetUrl(),
                 target: '_blank'
-              },
-              [
-                h('i.icon.icon-t'),
+                },
                 ' See Tweet @biofactoid'
-              ]): null,
-              h('a.plain-link', {
-                href: imageUrl,
-                target: '_blank'
-              },
-              [
+                )
+              ]) : null,
+              h('li', [
                 h( 'i.material-icons', 'image' ),
+                h('a.plain-link', {
+                  href: imageUrl,
+                  target: '_blank'
+                },
                 ' Get image'
+                )
               ]),
-              h('a.plain-link', {
-                href: `mailto:?subject=Pathway data for ${citation} on Biofactoid&body=We have published pathway data for our article ${citation} on Biofactoid ${publicUrl}.`,
-                target: '_blank'
-              },
-              [
+              h('li', [
                 h( 'i.material-icons', 'email' ),
+                h('a.plain-link', {
+                  href: `mailto:?subject=Pathway data for ${citation} on Biofactoid&body=We have published pathway data for our article ${citation} on Biofactoid ${publicUrl}.`,
+                  target: '_blank'
+                },
                 ' Email link'
+                )
               ])
             ])
           ])

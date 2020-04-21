@@ -19,8 +19,10 @@ const BINDING_TYPES = ['Complex'];
 
 const getDocuments = pairs => {
   const getForPair = pair => {
-    let { agent0, agent1 } = pair;
-    return tryPromise( () => getInteractions(agent0.toUpperCase(), agent1.toUpperCase()) )
+    let agent0 = pair[0].toUpperCase();
+    let agent1 = pair[1].toUpperCase();
+
+    return tryPromise( () => getInteractions(agent0, agent1) )
       .then( intns => _.groupBy( intns, 'pmid' ) );
   };
 

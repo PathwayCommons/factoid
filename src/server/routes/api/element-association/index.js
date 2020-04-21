@@ -31,13 +31,13 @@ http.post('/search-documents', function( req, res ){
   );
 });
 
-// TODO: remove this just to be temporarly used for easier testing 
-http.get('/search-intn', function( req, res, next ){
-  let agent0 = 'TP53';
-  let agent1 = 'MDM2';
-  intnProvider.searchDocuments( { agent0, agent1, limit: 200, offset: 0 } )
-    .then( js => res.send( js ))
-    .catch( next );
+// TODO: remove this just to be temporarly used for easier testing
+http.get('/search-documents', function( req, res, next ){
+  let pairs = [ {agent0: 'TP53', agent1: 'MDM2'}, {agent0: 'TP53', agent1: 'EGFR'} ];
+
+  intnProvider.searchDocuments( { pairs } )
+  .then( js => res.send( js ))
+  .catch( next );
 });
 
 export default http;

@@ -38,14 +38,7 @@ function handleZoom( cy ){
 
 function handleFit( cy, bus ){
   let fit = () => {
-    cy.stop().animate({
-      fit: {
-        eles: cy.elements(),
-        padding: defs.padding
-      },
-      duration: defs.layoutAnimationDuration,
-      easing: defs.layoutAnimationEasing
-    });
+    cy.fit(defs.padding);
   };
 
   on('f', fit);

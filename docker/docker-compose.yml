@@ -11,6 +11,7 @@ services:
     environment:
       BASE_URL:
       GROUNDING_SEARCH_BASE_URL: "http://grounding:3000"
+      BIOPAX_CONVERTER_URL: "http://converter:8080/convert/v2/"
       DB_HOST: "db"
       API_KEY:
       EMAIL_ENABLED:
@@ -52,6 +53,11 @@ services:
       - "${DB_ADMIN_PORT:-8080}:8080"
     volumes:
       - dbdata:/data
+  converter:
+    image: pathwaycommons/factoid-converters:${FACTOID_CONVERTERS_IMAGE_TAG:-latest}
+    container_name: converters_container
+    ports:
+      - "${CONVERTER_PORT:-3082}:8080"
 
 volumes:
   dbdata:

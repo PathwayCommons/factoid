@@ -28,8 +28,8 @@ const swaggerOpts = {
 
 const swaggerDocument = swaggerJSDoc( swaggerOpts );
 
-http.get('/api-docs', swaggerUi.setup( swaggerDocument ));
-http.use('/api-docs', swaggerUi.serve);
+http.use('/', swaggerUi.serve);
+http.get('/', swaggerUi.setup( swaggerDocument ));
 
 http.use('/element-association', ElementAssociation);
 http.use('/document', Document);

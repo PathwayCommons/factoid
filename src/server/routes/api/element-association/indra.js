@@ -1,11 +1,13 @@
 import fetch from 'node-fetch';
 import _ from 'lodash';
 
-import { INDRA_STATEMENTS_URL, INDRA_ENGLISH_ASSEMBLER_URL } from '../../../../config';
+import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL } from '../../../../config';
 import logger from '../../../logger';
 import { tryPromise } from '../../../../util';
 import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
 import querystring from 'querystring';
+
+const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
 
 const SUB_MODIFICATION_TYPES = ['Phosphorylation', 'Dephosphorylation', 'Dephosphorylation',
   'Deubiquitination', 'Methylation', 'Demethylation'];

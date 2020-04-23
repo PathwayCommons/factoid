@@ -32,9 +32,21 @@ const getDocuments = pairs => {
     }
   };
 
+  const transform = o => {
+    let pmids = Object.keys( o );
+    let arr = pmids.map( pmid => {
+      let elements = o[ pmid ];
+      elements.forEach( e => delete e.pmid );
+      return { elements, pmid };
+    } );
+
+    return arr;
+  };
+
   let promises = pairs.map( getForPair );
   return Promise.all( promises )
-    .then( res => _.mergeWith( {}, ...res, merger ) );
+    .then( res => _.mergeWith( {}, ...res, merger ) )
+    .then( transform );
 };
 
 const transformIntnType = indraType => {

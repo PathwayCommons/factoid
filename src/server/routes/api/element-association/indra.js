@@ -38,6 +38,8 @@ const getDocuments = pairs => {
     let pmids = Object.keys( o );
     let arr = pmids.map( pmid => {
       let elements = o[ pmid ];
+      // prevent duplication of the same interactions in a document
+      elements = _.uniqWith( elements, _.isEqual );
       elements.forEach( e => delete e.pmid );
       return { elements, pmid };
     } );
@@ -82,12 +84,13 @@ const getInteractions = (agent0, agent1) => {
 
             const extractInteractions = statement => {
               let {id, type, evidence} = statement;
+              let pmids = _.uniq( evidence.map( e => e.pmid ) );
 
-              return evidence.map( e => {
+              return pmids.map( pmid => {
                 return {
                   text: sentences[id],
                   type: transformIntnType(type),
-                  pmid: e.pmid
+                  pmid
                 };
               } );
             };

@@ -59,6 +59,7 @@ export const PUBCHEM_LINK_BASE_URL = env('PUBCHEM_LINK_BASE_URL', 'https://pubch
 export const NCBI_LINK_BASE_URL = env('NCBI_LINK_BASE_URL', 'https://www.ncbi.nlm.nih.gov/gene/');
 export const PUBMED_LINK_BASE_URL = env('PUBMED_LINK_BASE_URL', 'https://www.ncbi.nlm.nih.gov/pubmed/');
 export const DOI_LINK_BASE_URL = env('DOI_LINK_BASE_URL', 'https://www.doi.org/');
+export const GOOGLE_SCHOLAR_BASE_URL = env('GOOGLE_SCHOLAR_BASE_URL', 'https://scholar.google.com/scholar?q=');
 
 // Email
 export const EMAIL_ENABLED = env('EMAIL_ENABLED', false);

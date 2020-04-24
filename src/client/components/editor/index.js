@@ -6,13 +6,11 @@ import io from 'socket.io-client';
 import _ from 'lodash';
 import Mousetrap from 'mousetrap';
 
-import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL, EMAIL_CONTEXT_SIGNUP, DOI_LINK_BASE_URL } from '../../../config';
+import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL, EMAIL_CONTEXT_SIGNUP } from '../../../config';
 
 import { getId, defer, makeClassList, tryPromise } from '../../../util';
 import Document from '../../../model/document';
 import { PARTICIPANT_TYPE } from '../../../model/element/participant-type';
-
-import Popover from '../popover/popover';
 
 import logger from '../../logger';
 import debug from '../../debug';
@@ -22,7 +20,10 @@ import * as defs from './defs';
 import EditorButtons from './buttons';
 import MainMenu from '../main-menu';
 import UndoRemove from './undo-remove';
-import { TaskView } from '../tasks';
+import EditorTitle from './title';
+import Submit from './submit';
+import Help from './help';
+import InfoPanel from './info-panel';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -492,90 +493,24 @@ class Editor extends DataComponent {
     let controller = this;
     let { history } = this.props;
 
-    const { authors: { abbreviation }, title = 'Unnamed document', reference, doi } = document.citation();
-
     let editorContent = this.data.initted ? [
-      h('div.editor-title', [
-        h('div.editor-title-content', [
-          h(doi ? 'a' : 'div', (doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` } : {}), [
-            h('div.editor-title-name' + (doi ? '.plain-link.link-like' : ''), title ),
-            h('div.editor-title-info', [
-              h('div', abbreviation ),
-              h('div', reference )
-            ])
-          ])
-        ])
-      ]),
+      h(EditorTitle, { citation: document.citation(), document }),
       h('div.editor-main-menu', [
         h(MainMenu, { bus, document, history })
       ]),
-      this.editable() ? h('div.editor-submit', [
-        h(Popover, { tippy: { html: h(TaskView, { document, bus } ) } }, [
-          h('button.editor-submit-button', {
-            disabled: document.trashed(),
-            className: makeClassList({
-              'super-salient-button': true,
-              'submitted': this.done()
-            })
-          }, this.done() ?  'Submitted' : 'Submit')
-        ])
-      ]) : null,
+      h(Submit, { document, bus, controller }),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
       h(UndoRemove, { controller, document, bus }),
       h('div.editor-graph#editor-graph'),
-      h('div.editor-help-background', {
-        className: makeClassList({
-          'editor-help-background-shown': showHelp
-        }),
-        onClick: () => this.toggleHelp()
-      }),
-      h('div.editor-help', {
-        className: makeClassList({
-          'editor-help-shown': showHelp
-        })
-      }, [
-        h('div.editor-help-box', [
-          h('div.editor-help-close-icon', {
-            onClick: () => this.toggleHelp()
-          }, [
-            h('i.material-icons', 'close')
-          ]),
-          h('div.editor-help-title', 'Welcome'),
-          h('div.editor-scroll-box', [
-            h('div.editor-help-copy', `
-              In just a few simple steps you'll compose a pathway containing the key biological interactions described in your article.
-            `),
-            h('div.editor-help-cells', [
-              h('div.editor-help-cell', [
-                h('img.editor-help-img', { src: '/image/welcome-aboard-1.svg' }),
-                h('div.editor-help-caption', `1. Add your genes and chemicals`)
-              ]),
-              h('div.editor-help-cell', [
-                h('img.editor-help-img', { src: '/image/welcome-aboard-2.svg' }),
-                h('div.editor-help-caption', `2. Connect those that interact`)
-              ]),
-              h('div.editor-help-cell', [
-                h('img.editor-help-img', { src: '/image/welcome-aboard-3.svg' }),
-                h('div.editor-help-caption', `3. For complexes, drag items together`)
-              ]),
-              h('div.editor-help-cell', [
-                h('img.editor-help-img', { src: '/image/welcome-aboard-4.svg' }),
-                h('div.editor-help-caption', `4. Submit to finish`)
-              ])
-            ])
-          ]),
-          h('div.editor-help-close', [
-            h('button.editor-help-close-button.active-button', {
-              onClick: () => this.toggleHelp()
-            }, `OK, let's start`)
-          ])
-        ])
-      ])
+      h(Help, { controller, showHelp, document }),
+      h(InfoPanel, { controller, bus, document, history })
     ] : [];
 
     return h('div.editor', {
       className: makeClassList({
-        'editor-initted': this.data.initted
+        'editor-initted': this.data.initted,
+        'editor-editable': document.editable(),
+        'editor-read-only': !document.editable()
       })
     }, editorContent);
   }
@@ -583,7 +518,12 @@ class Editor extends DataComponent {
   componentDidMount(){
     this.data.mountDeferred.resolve();
 
+    this.onRotate = _.debounce(() => {
+      this.fit();
+    }, 250);
+
     keyEmitter.on('escape', this.hideHelp);
+    window.addEventListener('orientationchange', this.onRotate);
   }
 
   componentWillUnmount(){
@@ -601,6 +541,7 @@ class Editor extends DataComponent {
     clearTimeout( this.rmAvailTimeout );
 
     keyEmitter.removeListener('escape', this.hideHelp);
+    window.removeEventListener('orientationchange', () => this.onRotate);
   }
 }
 

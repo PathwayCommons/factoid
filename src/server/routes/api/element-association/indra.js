@@ -80,16 +80,19 @@ const getInteractions = (agent0, agent1) => {
           .then( js => {
             const sentences = js.sentences;
 
-            const extractInteraction = statement => {
+            const extractInteractions = statement => {
               let {id, type, evidence} = statement;
-              return {
-                text: sentences[id],
-                type: transformIntnType(type),
-                pmid: evidence[0].pmid
-              };
+
+              return evidence.map( e => {
+                return {
+                  text: sentences[id],
+                  type: transformIntnType(type),
+                  pmid: e.pmid
+                };
+              } );
             };
 
-            let intns = stmts.map( extractInteraction );
+            let intns = _.flatten( stmts.map( extractInteractions ) );
             return intns;
           } );
       } )

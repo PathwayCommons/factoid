@@ -16,6 +16,7 @@ import db from '../../../db';
 import logger from '../../../logger';
 import { getPubmedArticle } from './pubmed';
 import { createPubmedArticle } from '../../../../util/pubmed';
+import * as indra from './indra';
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
   API_KEY,
@@ -1442,6 +1443,23 @@ http.get('/text/:id', function( req, res, next ){
     .then( doc => doc.toText() )
     .then( txt => res.send( txt ))
     .catch( next );
+});
+
+http.post('/search-documents', function( req, res ){
+  (
+    indra.searchDocuments( req.body )
+    .then( jsonifyResult(res) )
+    .catch( err => res.status(500).send(err) )
+  );
+});
+
+// TODO: remove this just to be temporarly used for easier testing
+http.get('/search-documents/test', function( req, res, next ){
+  let pairs = [ ['TP53', 'MDM2'], ['TP53', 'EGFR'] ];
+
+  indra.searchDocuments( { pairs } )
+  .then( js => res.send( js ))
+  .catch( next );
 });
 
 export default http;

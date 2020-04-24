@@ -84,7 +84,7 @@ const getInteractions = (agent0, agent1) => {
 
             const extractInteractions = statement => {
               let {id, type, evidence} = statement;
-              let pmids = _.uniq( evidence.map( e => e.pmid ) );
+              let pmids = _.uniq( evidence.map( e => e.pmid ).filter( pmid => pmid != undefined ) );
 
               return pmids.map( pmid => {
                 return {

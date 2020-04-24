@@ -1446,11 +1446,11 @@ http.get('/text/:id', function( req, res, next ){
 });
 
 http.post('/search-documents', function( req, res ){
-  (
-    indra.searchDocuments( req.body )
+  const jsonifyResult = response => ( result => response.json( result ) );
+
+  indra.searchDocuments( req.body )
     .then( jsonifyResult(res) )
-    .catch( err => res.status(500).send(err) )
-  );
+    .catch( err => res.status(500).send(err) );
 });
 
 // TODO: remove this just to be temporarly used for easier testing
@@ -1458,8 +1458,8 @@ http.get('/search-documents/test', function( req, res, next ){
   let pairs = [ ['TP53', 'MDM2'], ['TP53', 'EGFR'] ];
 
   indra.searchDocuments( { pairs } )
-  .then( js => res.send( js ))
-  .catch( next );
+    .then( js => res.send( js ))
+    .catch( next );
 });
 
 export default http;

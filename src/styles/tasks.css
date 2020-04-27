@@ -3,6 +3,30 @@
   padding: 0.25em 0.33em;
 }
 
+.task-view-spinner {
+  font-size: 2em;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -0.5em;
+  margin-top: -0.5em;
+  display: none;
+}
+
+.task-view-spinner-shown {
+  display: block;
+}
+
+.task-view-submit {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.task-view-submitting {
+  opacity: 0.333;
+  pointer-events: none;
+}
+
 .task-view-items {
   margin-left: 1em;
 

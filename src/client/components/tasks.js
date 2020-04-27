@@ -5,6 +5,7 @@ import h from 'react-hyperscript';
 import Document from '../../model/document';
 import { ENTITY_TYPE } from '../../model/element/entity-type';
 import { BASE_URL } from '../../config';
+import { makeClassList } from '../../util';
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
 
@@ -27,7 +28,8 @@ class TaskView extends DataComponent {
     super(props);
 
     this.state = {
-      submitted: false
+      done: false,
+      submitting: false
     };
   }
 
@@ -66,8 +68,13 @@ class TaskView extends DataComponent {
 
     this.onUpdate = change => {
       if( _.has( change, 'status' ) ){
-        if( change.status === 'submitted' ) this.onSubmit();
-        this.dirty();
+        if( change.status === 'submitted' ){
+          this.onSubmit()
+            .finally( () => {
+              new Promise( resolve => this.setState({ done: true, submitting: false }, resolve ) )
+              .then( () => this.dirty() );
+            });
+        }
       }
     };
 
@@ -87,12 +94,17 @@ class TaskView extends DataComponent {
   }
 
   submit(){
-    return this.props.document.submit();
+    new Promise( resolve => this.setState({ submitting: true }, resolve ) )
+      .then( () => this.props.document.submit() )
+      .catch( () => {
+          new Promise( resolve => this.setState({ done: true, submitting: false }, resolve ) )
+            .then( () => this.dirty() );
+      });
   }
 
   render(){
     let { document, bus } = this.props;
-    let done = document.submitted() || document.published();
+    let { done, submitting } = this.state;
     let incompleteEles = this.props.document.elements().filter(ele => {
       return !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX;
     });
@@ -124,20 +136,27 @@ class TaskView extends DataComponent {
 
     if( !done ){
       return h('div.task-view', [
-        incompleteEles.length > 0 ? h('div.task-view-header', tasksMsg()) : null,
-        incompleteEles.length > 0 ? h('div.task-view-items', [
-          h('ul', ntfns.map( ({ msg, ele }) => h('li', [
-            h('a.plain-link', {
-              onClick: () => bus.emit('opentip', ele)
-            }, msg)
-          ]) ))
-        ]) : null,
-        h('div.task-view-confirm', 'Are you sure you want to submit?'),
-        h('div.task-view-confirm-button-area', [
-          h('button.salient-button.task-view-confirm-button', {
-            disabled: document.trashed(),
-            onClick: () => this.submit()
-          }, 'Yes, submit')
+        h('i.icon.icon-spinner.task-view-spinner', {
+          className: makeClassList({ 'task-view-spinner-shown': submitting })
+        }),
+        h('div.task-view-submit',{
+          className: makeClassList({ 'task-view-submitting': submitting })
+        }, [
+          incompleteEles.length > 0 ? h('div.task-view-header', tasksMsg()) : null,
+          incompleteEles.length > 0 ? h('div.task-view-items', [
+            h('ul', ntfns.map( ({ msg, ele }) => h('li', [
+              h('a.plain-link', {
+                onClick: () => bus.emit('opentip', ele)
+              }, msg)
+            ]) ))
+          ]) : null,
+          h('div.task-view-confirm', 'Are you sure you want to submit?'),
+          h('div.task-view-confirm-button-area', [
+            h('button.salient-button.task-view-confirm-button', {
+              disabled: document.trashed(),
+              onClick: () => this.submit()
+            }, 'Yes, submit')
+          ])
         ])
       ]);
     } else {

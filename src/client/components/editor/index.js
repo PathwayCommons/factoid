@@ -169,6 +169,7 @@ class Editor extends DataComponent {
       mountDeferred: defer(),
       initted: false,
       showHelp,
+      done: false,
       rmList: {
         els: [],
         ppts: [],
@@ -239,10 +240,12 @@ class Editor extends DataComponent {
       } )
       .catch( (err) => logger.error('An error occurred livening the doc', err) )
     ;
+
+    this.onDone = this.onDone.bind(this);
   }
 
-  done(){
-    return this.data.document.submitted() || this.data.document.published();
+  onDone( done ){
+    return new Promise( resolve => this.setData({ done }, resolve) );
   }
 
   editable(){
@@ -510,14 +513,14 @@ class Editor extends DataComponent {
         h(MainMenu, { bus, document, history })
       ]),
       this.editable() ? h('div.editor-submit', [
-        h(Popover, { tippy: { html: h(TaskView, { document, bus } ) } }, [
+        h(Popover, { tippy: { html: h(TaskView, { document, bus, onDone: this.onDone } ) } }, [
           h('button.editor-submit-button', {
             disabled: document.trashed(),
             className: makeClassList({
               'super-salient-button': true,
-              'submitted': this.done()
+              'submitted': this.data.done
             })
-          }, this.done() ?  'Submitted' : 'Submit')
+          }, this.data.done ?  'Submitted' : 'Submit')
         ])
       ]) : null,
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),

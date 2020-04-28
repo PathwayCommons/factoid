@@ -72,6 +72,7 @@ class TaskView extends DataComponent {
           this.onSubmit()
             .finally( () => {
               new Promise( resolve => this.setState({ done: true, submitting: false }, resolve ) )
+              .then( () => this.props.onDone( true ) )
               .then( () => this.dirty() );
             });
         }
@@ -95,11 +96,7 @@ class TaskView extends DataComponent {
 
   submit(){
     new Promise( resolve => this.setState({ submitting: true }, resolve ) )
-      .then( () => this.props.document.submit() )
-      .catch( () => {
-          new Promise( resolve => this.setState({ done: true, submitting: false }, resolve ) )
-            .then( () => this.dirty() );
-      });
+      .then( () => this.props.document.submit() );
   }
 
   render(){

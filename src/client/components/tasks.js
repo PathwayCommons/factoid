@@ -28,7 +28,7 @@ class TaskView extends DataComponent {
     super(props);
 
     this.state = {
-      done: false,
+      done: props.document.submitted() || props.document.published(),
       submitting: false
     };
   }

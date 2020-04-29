@@ -210,7 +210,11 @@ class Editor extends DataComponent {
       .then( () => doc.synch(true) )
       .then( () => logger.info('Document synch active') )
       .then( () => {
-        this.setData({ initted: true, showHelp: this.data.document.editable() });
+        this.setData({
+          initted: true,
+          showHelp: this.data.document.editable(),
+          done: this.data.document.submitted() || this.data.document.published()
+        });
 
         const title = _.get(this.data.document.citation(), ['title']);
 

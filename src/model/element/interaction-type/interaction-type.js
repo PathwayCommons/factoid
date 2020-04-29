@@ -3,7 +3,6 @@ import _ from 'lodash';
 import { error } from '../../../util';
 import { PARTICIPANT_TYPE } from '../participant-type';
 import { BIOPAX_TEMPLATE_TYPE } from './biopax-type';
-import _ from 'lodash';
 
 const VALUE = 'unset';
 const DISPLAY_VALUE = 'Unset';

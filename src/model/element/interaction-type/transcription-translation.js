@@ -29,21 +29,43 @@ class TranscriptionTranslation extends InteractionType {
     return this.isSigned() && TranscriptionTranslation.isAllowedForInteraction(this.interaction);
   }
 
-  static isAllowedForInteraction( intn ){
-    let isProtein = ent => ent.type() === ENTITY_TYPE.PROTEIN;
-    let ppts = intn.participants();
+  static isAllowedForInteraction( intn, transform ){
+    let assoc = intn.association();
+    let src = assoc.getSource();
+    let tgt = assoc.getTarget();
 
-    return ppts.length === 2 && ppts.some(isProtein);
+    // a valid modification should be directed
+    if ( src == null || tgt == null ) {
+      return false;
+    }
+
+    let sourceType = transform( src ).type();
+    let targetType = transform( tgt ).type();
+
+    let validSrcTypes = [ENTITY_TYPE.GGP, ENTITY_TYPE.PROTEIN, ENTITY_TYPE.DNA, ENTITY_TYPE.RNA, ENTITY_TYPE.COMPLEX];
+    let validTgtTypes = [ENTITY_TYPE.GGP, ENTITY_TYPE.PROTEIN, ENTITY_TYPE.RNA];
+
+    return validSrcTypes.includes( sourceType ) && validTgtTypes.includes( targetType );
   }
 
-  toBiopaxTemplate(){
+  toBiopaxTemplate( transform ){
     if ( !this.validatePpts() ){
       return this.makeInvalidBiopaxTemplate();
     }
 
     //src, tgt shouldn't be null at this point (barring bug)
-    let srcTemplate = this.getSource().toBiopaxTemplate();
-    let tgtTemplate = this.getTarget().toBiopaxTemplate();
+    // let src = this.getSource();
+    // let tgt = this.getTarget();
+    let src = transform( this.getSource() );
+    let tgt = transform( this.getTarget() );
+
+    // skip if the source and target became the same after the transformation
+    if ( src.id() == tgt.id() ) {
+      return null;
+    }
+
+    let srcTemplate = src.toBiopaxTemplate();
+    let tgtTemplate = tgt.toBiopaxTemplate();
 
     let template = {
       type: BIOPAX_TEMPLATE_TYPE.EXPRESSION_REGULATION,

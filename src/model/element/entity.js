@@ -1,6 +1,7 @@
 import Element from './element';
 import _ from 'lodash';
 import { tryPromise } from '../../util';
+import { ENTITY_TYPE } from './entity-type';
 
 const TYPE = 'entity';
 
@@ -168,8 +169,13 @@ class Entity extends Element {
     let type = this.type();
     let name = this.name() || '';
     let xref = this.getBiopaxXref();
+    let entity = { type, name, xref };
 
-    return { type, name, xref };
+    if ( type == ENTITY_TYPE.COMPLEX ) {
+      entity.components = this.participants().map( p => p.toBiopaxTemplate() );
+    }
+
+    return entity;
   }
 
   toIndraTemplate(){

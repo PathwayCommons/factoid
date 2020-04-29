@@ -442,6 +442,13 @@ class Document {
     return templates;
   }
 
+  toIndraTemplates(){
+    let interactions = this.interactions();
+    let templates = interactions.map( i => i.toIndraTemplate() ).filter( t => t != null );
+
+    return templates;
+  }
+
   toText(){
     let interactions = this.interactions();
     let strings = interactions.map( intn => intn.toString() + '.' );

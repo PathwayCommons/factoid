@@ -229,6 +229,10 @@ class Interaction extends Element {
     return this.association().toBiopaxTemplate();
   }
 
+  toIndraTemplate(){
+    return this.association().toIndraTemplate();
+  }
+
   toString(){
     return this.association().toString();
   }

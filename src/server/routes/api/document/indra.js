@@ -19,10 +19,23 @@ const BASE_MODIFICATION_TYPES = ['Sumoylation', 'Desumoylation', 'Hydroxylation'
 const TRANSCRIPTION_TRANSLATION_TYPES = ['IncreaseAmount', 'DecreaseAmount'];
 const BINDING_TYPES = ['Complex'];
 
-const getDocuments = pairs => {
-  const getForPair = pair => {
-    let agent0 = pair[0].toUpperCase();
-    let agent1 = pair[1].toUpperCase();
+const getDocuments = templates => {
+  const getForIntn = intnTemplate => {
+    const getAgent = t => {
+      let agent;
+
+      if ( t.xref ) {
+        agent = t.xref.id + '@' + t.xref.namespace;
+      }
+      else {
+        agent = t.name;
+      }
+
+      return agent.toUpperCase();
+    };
+
+    let agent0 = getAgent( intnTemplate[0] );
+    let agent1 = getAgent( intnTemplate[1] );
 
     return tryPromise( () => getInteractions(agent0, agent1) )
       .then( intns => _.groupBy( intns, 'pmid' ) );
@@ -47,7 +60,7 @@ const getDocuments = pairs => {
     return arr;
   };
 
-  let promises = pairs.map( getForPair );
+  let promises = templates.map( getForIntn );
   return Promise.all( promises )
     .then( res => _.mergeWith( {}, ...res, merger ) )
     .then( transform );
@@ -123,8 +136,8 @@ const assembleEnglish = statements => {
 
 
 export const searchDocuments = opts => {
-  let { pairs } = opts;
-  return tryPromise( () => getDocuments(pairs) )
+  let { templates } = opts;
+  return tryPromise( () => getDocuments(templates) )
     .catch( err => {
       logger.error(`Finding indra documents failed`);
       logger.error(err);

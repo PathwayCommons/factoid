@@ -171,6 +171,25 @@ class Entity extends Element {
 
     return { type, name, xref };
   }
+
+  toIndraTemplate(){
+    let name = this.name();
+
+    // if the name is not set it means that there is no info for the entity
+    // so that entity must not be included
+    if ( !name ) {
+      return null;
+    }
+
+    let xref = this.association();
+    let validNamespaces = ['hgnc', 'chebi'];
+
+    if ( !_.includes( validNamespaces, xref.namespace ) ) {
+      xref = null;
+    }
+
+    return { name, xref };
+  }
 }
 
 export default Entity;

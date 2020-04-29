@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { error } from '../../../util';
 import { PARTICIPANT_TYPE } from '../participant-type';
 import { BIOPAX_TEMPLATE_TYPE } from './biopax-type';
@@ -100,6 +102,28 @@ class InteractionType {
 
   toBiopaxTemplate() {
     throw new Error(`Abstract method toBiopaxTemplate() is not overridden for interaction type of ${this.value}`);
+  }
+
+  toIndraTemplate() {
+    let source = this.getSource();
+    let target = this.getTarget();
+
+    let ppts;
+
+    if ( source && target ) {
+      ppts = [ source, target ];
+    }
+    else {
+      ppts = this.interaction.participants();
+    }
+
+    let templates = ppts.map( p => p.toIndraTemplate() );
+
+    if ( _.includes( templates, null ) ) {
+      return null;
+    }
+
+    return templates;
   }
 
   toString(verbPhrase, post = ''){

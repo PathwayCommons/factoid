@@ -187,7 +187,7 @@ class Entity extends Element {
       return null;
     }
 
-    let xref = this.association();
+    let xref = _.pick(this.association(), ['id', 'namespace']);
     let validNamespaces = ['hgnc', 'chebi'];
 
     if ( !_.includes( validNamespaces, xref.namespace ) ) {

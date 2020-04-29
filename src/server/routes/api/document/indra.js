@@ -1,10 +1,12 @@
 import fetch from 'node-fetch';
 import _ from 'lodash';
+import moment from 'moment';
 
 import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL } from '../../../../config';
 import logger from '../../../logger';
 import { tryPromise } from '../../../../util';
 import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
+import { fetchPubmed } from './pubmed/fetchPubmed';
 import querystring from 'querystring';
 
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
@@ -49,15 +51,42 @@ const getDocuments = templates => {
 
   const transform = o => {
     let pmids = Object.keys( o );
-    let arr = pmids.map( pmid => {
-      let elements = o[ pmid ];
-      // prevent duplication of the same interactions in a document
-      elements = _.uniqWith( elements, _.isEqual );
-      elements.forEach( e => delete e.pmid );
-      return { elements, pmid };
-    } );
+    return tryPromise( () => fetchPubmed({ uids: pmids }) )
+      .then( pubmeds => {
+        let articles = pubmeds.PubmedArticleSet;
+        
+        let arr = pmids.map( (pmid, i) => {
+          let pubmed = articles[i].MedlineCitation.Article;
+          let elements = o[ pmid ];
+          // prevent duplication of the same interactions in a document
+          elements = _.uniqWith( elements, _.isEqual );
+          elements.forEach( e => delete e.pmid );
 
-    return arr;
+          return { elements, pmid, pubmed };
+        } );
+
+        const getPubTime = doc => {
+            let dateJs = doc.pubmed.Journal.JournalIssue.PubDate;
+            let { Day: day, Year: year, Month: month, MedlineDate: medlineDate } = dateJs;
+
+            if ( medlineDate ) {
+              return new Date( medlineDate );
+            }
+
+            if ( month != null && isNaN( month ) ) {
+                month = moment().month(month).format("M");
+            }
+
+            // Date class accepts the moth indices starting by 0
+            month = month - 1;
+
+            return new Date( year, month, day ).getTime();
+        };
+
+        arr = _.sortBy( arr, doc => -getPubTime(doc) );
+
+        return arr;
+      } );
   };
 
   let promises = templates.map( getForIntn );

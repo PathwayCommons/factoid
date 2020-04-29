@@ -44,6 +44,7 @@ Links:
 - `NCBI_LINK_BASE_URL`: base url concatenated to id to generate a linkout
 - `PUBMED_LINK_BASE_URL`: base url concatenated to unique id to generate linkout
 - `DOI_LINK_BASE_URL`: base url concatenated to doi to generate linkout
+- `GOOGLE_SCHOLAR_BASE_URL` : base url concatenated to doi, title, or pmid to generate linkout 
 
 Demo:
 

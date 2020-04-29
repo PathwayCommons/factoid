@@ -9,8 +9,8 @@ class Demethylation extends Modification {
     super( intn );
   }
 
-  toBiopaxTemplate(){
-    return super.toBiopaxTemplate(EFFECT);
+  toBiopaxTemplate(transform){
+    return super.toBiopaxTemplate(transform, EFFECT);
   }
 
   toString(){

@@ -3,6 +3,7 @@ import xml2js from 'xml2js';
 import queryString from 'query-string';
 import fetch from 'node-fetch';
 import emailRegex from 'email-regex';
+import { URLSearchParams } from 'url';
 
 import { NCBI_EUTILS_BASE_URL, NCBI_EUTILS_API_KEY } from '../../../../../config';
 import { checkHTTPStatus } from '../../../../../util';
@@ -11,7 +12,6 @@ const EUTILS_FETCH_URL = NCBI_EUTILS_BASE_URL + 'efetch.fcgi';
 const DEFAULT_EFETCH_PARAMS = {
   db: 'pubmed',
   retmode: 'xml',
-  retmax: 10,
   retstart: 0,
   api_key: NCBI_EUTILS_API_KEY
 };
@@ -314,26 +314,18 @@ const checkEfetchResult = json => {
   return json;
 };
 
-const eFetchPubmed = ( { uids, query_key, webenv } )=> {
-  let params;
-  if( !_.isEmpty( uids ) ){
-    // Check that uid are string versions of numbers. '2349c87' will be interpreted by Pubmed as '2439'.
-    params = _.assign( {}, DEFAULT_EFETCH_PARAMS, { id: uids.join(',') } );
-
-  } else if( query_key && webenv ){
-    params = _.assign( {}, DEFAULT_EFETCH_PARAMS, { query_key, webenv } );
-
-  } else {
-    throw new Error( 'eFetchPubmed requires either uids or history parameters.' );
-  }
-
-  const url = EUTILS_FETCH_URL + '?' + queryString.stringify( params );
+const eFetchPubmed = ( { uids, query_key, webenv, opts } )=> {
+  let params = _.defaults( { id: uids, query_key, webenv }, opts, DEFAULT_EFETCH_PARAMS );
+  const url = EUTILS_FETCH_URL;
   const userAgent = `${process.env.npm_package_name}/${process.env.npm_package_version}`;
+  const body = new URLSearchParams( queryString.stringify( params ) );
+
   return fetch( url, {
-    method: 'GET',
+    method: 'POST',
     headers: {
       'User-Agent': userAgent
-    }
+    },
+    body
   })
   .then( checkHTTPStatus ) // HTTPStatusError
   .then( toText )
@@ -348,11 +340,12 @@ const eFetchPubmed = ( { uids, query_key, webenv } )=> {
  * Either a list of uids or, alternatively, a ( query_key, webenv ) pair resulting from a
  * pubmed search (i.e. searchPubmed function) can be used as parameters.
  *
- * @param { Object } uids The list of uids.
- * @param { String } query_key See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
- * @param { String } webenv See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
+ * @param { Object } uids The array of uids
+ * @param { String } query_key See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch|EUTILS docs }
+ * @param { String } webenv See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch|EUTILS docs }
+ * @param { Object } opts Specify EFETCH Optional Parameters – Retrieval {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch|EUTILS docs }
  * @returns { Object } result The fetch result from PubMed. See pubmedDataConverter.
  */
-const fetchPubmed = ( { uids, query_key, webenv } ) => eFetchPubmed( { uids, query_key, webenv } );
+const fetchPubmed = ( { uids, query_key, webenv, opts } ) => eFetchPubmed( { uids, query_key, webenv, opts } );
 
 export { fetchPubmed, pubmedDataConverter };

@@ -28,7 +28,7 @@ const getDocuments = templates => {
         agent = t.xref.id + '@' + t.xref.namespace;
       }
       else {
-        agent = t.name;
+        agent = t.name + '@TEXT';
       }
 
       return agent.toUpperCase();

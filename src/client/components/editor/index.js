@@ -509,7 +509,7 @@ class Editor extends DataComponent {
       h('div.editor-main-menu', [
         h(MainMenu, { bus, document, history })
       ]),
-      h(Submit, { document, bus, controller, cb: this.onDone }),
+      h(Submit, { document, bus, controller }),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
       h(UndoRemove, { controller, document, bus }),
       h('div.editor-graph#editor-graph'),

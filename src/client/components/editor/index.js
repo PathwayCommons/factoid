@@ -245,8 +245,6 @@ class Editor extends DataComponent {
       } )
       .catch( (err) => logger.error('An error occurred livening the doc', err) )
     ;
-
-    this.onDone = this.onDone.bind(this);
   }
 
   done(){

@@ -56,26 +56,24 @@
   }
 }
 
-.task-view-done-section-body {
-  & p {
-    font-size: 0.95em;
-    line-height: 1.3em;
-  }
-}
-
 .task-view-done-title {
   font-size: 1.2em;
   font-weight: bold;
 }
 
-.task-view-done-section-list {
-  margin: 0;
-  padding: 0;
-  list-style-type: none;
+.task-view-done-section-body {
+  & p {
+    font-size: 0.95em;
+    line-height: 1.3em;
+  }
 
+  & ul,
   & li {
     margin: 0;
-    padding: 0;
+  }
+
+  & ul {
+    list-style: none;
   }
 }
 

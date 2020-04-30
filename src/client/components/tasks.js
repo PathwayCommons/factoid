@@ -175,27 +175,25 @@ class TaskView extends DataComponent {
           h('div.task-view-done-section', [
             h('div.task-view-done-section-body', [
               h('p', 'Good things happen when you share!'),
-            ]),
-
-            h('ul.task-view-done-section-list', [
-              document.hasTweet() ? h('li', [
-                h( 'i.icon.icon-t' ),
-                h('a.plain-link', {
-                  href: document.tweetUrl(),
-                target: '_blank'
-                },
-                ' See Tweet @biofactoid'
-                )
-              ]) : null,
-              h('li', [
-                h( 'i.material-icons', 'image' ),
-                h('a.plain-link', {
-                  href: imageUrl,
-                  target: '_blank',
-                  download: true
-                },
-                ' Download image'
-                )
+              h('ul', [
+                document.hasTweet() ? h('li', [
+                  h( 'i.icon.icon-t' ),
+                  h('a.plain-link', {
+                    href: document.tweetUrl(),
+                  target: '_blank'
+                  },
+                  ' Twitter'
+                  )
+                ]) : null,
+                h('li', [
+                  h( 'i.material-icons', 'image' ),
+                  h('a.plain-link', {
+                    href: imageUrl,
+                    download: true
+                  },
+                  ' Download'
+                  )
+                ])
               ])
             ])
           ])

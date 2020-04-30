@@ -39,10 +39,14 @@
 
 .editor-submit {
   position: absolute;
-  right: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
   box-sizing: border-box;
   z-index: 1;
   padding: 0.75em 0.5em;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 0.25em;
 }
 
 .editor-submit-button {

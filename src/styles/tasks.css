@@ -50,18 +50,22 @@
   flex-direction: column;
   align-items: center;
   margin: 0.1em;
+
+  & p {
+    margin: 0.5em 0;
+  }
 }
 
 .task-view-done-section-body {
   & p {
     font-size: 0.95em;
     line-height: 1.3em;
-    margin: 0 0 0.5em;
   }
 }
 
 .task-view-done-title {
-  margin: 0;
+  font-size: 1.2em;
+  font-weight: bold;
 }
 
 .task-view-done-section-list {
@@ -80,7 +84,7 @@
   border: 0;
   height: 0;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
-  margin: 1em;
+  margin: 0.5em;
 }
 
 .task-view-done-button {
@@ -89,10 +93,16 @@
   border-radius: var(--widgetBorderRadius);
   background-color: var(--brandColor);
   color: var(--buttonActiveColor);
-  padding: 0.2em 0;
+  padding: 0.1em 0;
   text-decoration: none;
   font-size: 1.5em;
   font-weight: bold;
-  width: 100%;
+  width: 75%;
+  text-align: center;
+}
+
+.task-view-done-section-footer {
+  color: var(--fadedColor);
+  font-size: 0.8em;
   text-align: center;
 }

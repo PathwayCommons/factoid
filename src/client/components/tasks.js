@@ -157,20 +157,18 @@ class TaskView extends DataComponent {
         ])
       ]);
     } else {
-      const {
-        title = 'Untitled',
-        reference = ''
-      } = document.citation();
-      const citation = _.compact([title, reference]).join(' ');
       const publicUrl =  `${BASE_URL}${document.publicUrl()}`;
       const imageUrl = `${BASE_URL}/api${document.publicUrl()}.png`;
       return h('div.task-view', [
         h('div.task-view-done', [
-          h('h1.task-view-done-title', 'Thank you!' ),
+          h('div.task-view-done-title', 'Thank you!' ),
           h('div.task-view-done-section', [
             h('div.task-view-done-section-body', [
-              h('p', 'Your information is now integrated with a larger body of knowledge that all researchers are free to explore'),
-              h( 'a.task-view-done-button', { href: document.publicUrl(), target: '_blank', }, 'Start Explore' )
+              h('p', 'Your paper is now linked to many others and shared for everyone to explore.'),
+              h( 'a.task-view-done-button', { href: publicUrl, target: '_blank', }, 'Explore' )
+            ]),
+            h('div.task-view-done-section-footer', [
+              h('p', `Explore link: ${publicUrl}`)
             ])
           ]),
           h('hr'),
@@ -193,18 +191,10 @@ class TaskView extends DataComponent {
                 h( 'i.material-icons', 'image' ),
                 h('a.plain-link', {
                   href: imageUrl,
-                  target: '_blank'
+                  target: '_blank',
+                  download: true
                 },
-                ' Get image'
-                )
-              ]),
-              h('li', [
-                h( 'i.material-icons', 'email' ),
-                h('a.plain-link', {
-                  href: `mailto:?subject=Pathway data for ${citation} on Biofactoid&body=We have published pathway data for our article ${citation} on Biofactoid ${publicUrl}.`,
-                  target: '_blank'
-                },
-                ' Email link'
+                ' Download image'
                 )
               ])
             ])

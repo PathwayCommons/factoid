@@ -198,6 +198,20 @@
   right: 400px;
 }
 
+.editor-explore-share {
+  position: fixed;
+  top: 0;
+  right: 400px;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0.5em 0.75em;
+  border-bottom-left-radius: 0.25em;
+
+  & .native-share-icon {
+    font-size: 1.5em;
+  }
+}
+
 @media (max-width: 1000px) {
   .editor-info-panel {
     top: 50%;
@@ -212,6 +226,10 @@
   .editor-read-only .editor-graph {
     right: 0;
     bottom: 50%;
+  }
+
+  .editor-explore-share {
+    right: 0;
   }
 }
 

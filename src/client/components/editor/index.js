@@ -24,6 +24,7 @@ import EditorTitle from './title';
 import Submit from './submit';
 import Help from './help';
 import InfoPanel from './info-panel';
+import ExploreShare from './explore-share';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -498,6 +499,7 @@ class Editor extends DataComponent {
       h('div.editor-main-menu', [
         h(MainMenu, { bus, document, history })
       ]),
+      h(ExploreShare, { document, bus, controller }),
       h(Submit, { document, bus, controller }),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
       h(UndoRemove, { controller, document, bus }),

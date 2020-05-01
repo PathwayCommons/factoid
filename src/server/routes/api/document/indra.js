@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import _ from 'lodash';
-import moment from 'moment';
+import { parse as dateParse } from 'date-fns';
 
 import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL } from '../../../../config';
 import logger from '../../../logger';
@@ -74,7 +74,7 @@ const getDocuments = templates => {
             }
 
             if ( month != null && isNaN( month ) ) {
-                month = moment().month(month).format("M");
+                month = dateParse(month, 'MMM', new Date()).getMonth() + 1;
             }
 
             // Date class accepts the moth indices starting by 0

@@ -178,23 +178,18 @@ class Entity extends Element {
     return entity;
   }
 
-  toIndraTemplate(){
+  toSearchTemplate(){
     let name = this.name();
 
-    // if the name is not set it means that there is no info for the entity
-    // so that entity must not be included
+    // entries with no name should be skipped
     if ( !name ) {
       return null;
     }
 
-    let xref = _.pick(this.association(), ['id', 'namespace']);
-    let validNamespaces = ['hgnc', 'chebi'];
-
-    if ( !_.includes( validNamespaces, xref.namespace ) ) {
-      xref = null;
-    }
-
-    return { name, xref };
+    let template = _.pick(this.association(), ['id', 'namespace', 'dbXrefs']);
+    template.name = name;
+    
+    return template;
   }
 }
 

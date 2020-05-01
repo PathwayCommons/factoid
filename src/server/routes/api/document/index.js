@@ -1458,7 +1458,7 @@ http.get('/search-documents/:id', function( req, res, next ){
   tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
-    .then( doc => doc.toIndraTemplates() )
+    .then( doc => doc.toSearchTemplates() )
     .then( templates => indra.searchDocuments( { templates } ) )
     .then( js => res.json( js ))
     .catch( next );

@@ -104,12 +104,13 @@ class InteractionType {
     throw new Error(`Abstract method toBiopaxTemplate() is not overridden for interaction type of ${this.value}`);
   }
 
-  toIndraTemplate() {
+  toSearchTemplate() {
     let source = this.getSource();
     let target = this.getTarget();
 
     let ppts;
 
+    // if directed list the participants in order
     if ( source && target ) {
       ppts = [ source, target ];
     }
@@ -117,8 +118,9 @@ class InteractionType {
       ppts = this.interaction.participants();
     }
 
-    let templates = ppts.map( p => p.toIndraTemplate() );
+    let templates = ppts.map( p => p.toSearchTemplate() );
 
+    // if there is some participants with invalid template skip the interaction
     if ( _.includes( templates, null ) ) {
       return null;
     }

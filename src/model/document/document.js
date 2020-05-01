@@ -452,9 +452,9 @@ class Document {
     return templates;
   }
 
-  toIndraTemplates(){
+  toSearchTemplates(){
     let interactions = this.interactions();
-    let templates = interactions.map( i => i.toIndraTemplate() ).filter( t => t != null );
+    let templates = interactions.map( i => i.toSearchTemplate() ).filter( t => t != null );
 
     return templates;
   }

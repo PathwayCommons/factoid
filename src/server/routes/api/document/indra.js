@@ -25,15 +25,33 @@ const getDocuments = templates => {
   const getForIntn = intnTemplate => {
     const getAgent = t => {
       let agent;
-
-      if ( t.xref ) {
-        agent = t.xref.id + '@' + t.xref.namespace;
+      let xref = getXref( t );
+      if ( xref ) {
+        agent = sanitizeId(xref.id) + '@' + xref.db;
       }
       else {
         agent = t.name + '@TEXT';
       }
 
       return agent.toUpperCase();
+    };
+
+    // for some datasources id may be in a form like "HGNC:10937"
+    // in that cases just consider the string coming after ":"
+    const sanitizeId = id => {
+      let arr = id.split(':');
+
+      if ( arr.length == 1 ) {
+        return arr[0];
+      }
+
+      return arr[1];
+    };
+
+    const getXref = t => {
+      let validDbs = ['hgnc', 'chebi'];
+      let xref = _.find( t.dbXrefs, x => _.includes( validDbs, x.db.toLowerCase() ) );
+      return xref;
     };
 
     let agent0 = getAgent( intnTemplate[0] );

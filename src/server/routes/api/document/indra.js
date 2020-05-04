@@ -49,8 +49,19 @@ const getDocuments = templates => {
     };
 
     const getXref = t => {
-      let validDbs = ['hgnc', 'chebi'];
-      let xref = _.find( t.dbXrefs, x => _.includes( validDbs, x.db.toLowerCase() ) );
+      let ns = t.namespace;
+      let xref = null;
+
+      if ( ns == 'chebi' ) {
+        xref = {
+          id: t.id,
+          db: ns
+        };
+      }
+      else {
+        xref = _.find( t.dbXrefs, x => x.db.toLowerCase() == 'hgnc' );
+      }
+
       return xref;
     };
 
@@ -69,6 +80,11 @@ const getDocuments = templates => {
 
   const transform = o => {
     let pmids = Object.keys( o );
+
+    if ( pmids.length == 0 ) {
+      return [];
+    }
+
     return tryPromise( () => fetchPubmed({ uids: pmids }) )
       .then( pubmeds => {
         let articles = pubmeds.PubmedArticleSet;

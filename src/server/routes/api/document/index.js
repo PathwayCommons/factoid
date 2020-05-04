@@ -8,6 +8,7 @@ import cytosnap from 'cytosnap';
 import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
+import url from 'url';
 
 import { tryPromise, makeStaticStylesheet, makeCyEles, msgFactory, updateCorrespondence, EmailError, truncateString } from '../../../../util';
 import sendMail from '../../../email-transport';
@@ -1459,6 +1460,27 @@ http.get('/search-documents/:id', function( req, res, next ){
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
     .then( doc => doc.toSearchTemplates() )
+    .then( templates => indra.searchDocuments( { templates } ) )
+    .then( js => res.json( js ))
+    .catch( next );
+});
+
+http.get('/related-papers/:id', function( req, res, next ){
+  let id = req.params.id;
+  let queryObject = url.parse(req.url, true).query;
+  let { interactionId } = queryObject;
+
+  tryPromise( loadTables )
+    .then( json => _.assign( {}, json, { id } ) )
+    .then( loadDoc )
+    .then( doc => {
+      if ( interactionId ) {
+        let intn = doc.get(interactionId );
+        return [ intn.toSearchTemplate() ];
+      }
+
+      return doc.toSearchTemplates();
+    } )
     .then( templates => indra.searchDocuments( { templates } ) )
     .then( js => res.json( js ))
     .catch( next );

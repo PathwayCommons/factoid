@@ -181,11 +181,14 @@ const getInteractions = (agent0, agent1) => {
 const getStatements = (agent0, agent1) => {
   let query = { format: 'json-js', agent0, agent1 };
   let addr = INDRA_STATEMENTS_URL + '?' + querystring.stringify( query );
-  return (
-    tryPromise( () => fetch(addr) )
-      .then( res => res.json() )
-      .then( js => Object.values(js.statements) )
-  );
+  return tryPromise( () => fetch(addr) )
+    .then( res => res.json() )
+    .then( js => Object.values(js.statements) )
+    .catch( err => {
+      logger.error( `Unable to retrieve the indra staments for the entity pair '${agent0}-${agent1}'` );
+      logger.error( err );
+      throw err;
+    } );
 };
 
 const assembleEnglish = statements => {
@@ -194,6 +197,11 @@ const assembleEnglish = statements => {
     method: 'post',
     body: JSON.stringify({statements}),
     headers: { 'Content-Type': 'application/json' }
+  } )
+  .catch( err => {
+    logger.error( `Unable to assemble english for the indra statements` );
+    logger.error( err );
+    throw err;
   } );
 };
 

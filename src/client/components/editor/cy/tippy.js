@@ -190,7 +190,7 @@ export default function({ bus, cy, document }){
     let tippy = tippyjs( ref, _.assign( {}, tippyDefaults, {
       duration: 0,
       placement: 'bottom',
-      hideOnClick: false,
+      hideOnClick: true, // needs workaround below
       sticky: true,
       livePlacement: true,
       onHidden: _.debounce( () => destroyTippyFor( el, sublist ), 100 ) // debounce allows toggling a tippy on an ele
@@ -215,7 +215,12 @@ export default function({ bus, cy, document }){
       addToList(sublist);
     }
 
-    tippy.show();
+    // workaround: hideOnClick:true prevents show()
+    // cause: a cy event for click is emitted before the original click event bubbles up to the page body
+    // approach: use setTimeout() so the show() happens on the tick after the click callback stack is unwound
+    setTimeout(() => {
+      tippy.show();
+    }, 0);
 
     return tippy;
   };

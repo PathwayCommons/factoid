@@ -29,7 +29,7 @@ export class NativeShare extends DataComponent {
 }
 
 export function isNativeShareSupported(){
-  return true || 'share' in navigator && _.isFunction(navigator.share);
+  return 'share' in navigator && _.isFunction(navigator.share);
 }
 
 export default NativeShare;

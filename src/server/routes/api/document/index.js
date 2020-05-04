@@ -1446,25 +1446,6 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
-http.post('/search-documents-for-intns', function( req, res ){
-  const jsonifyResult = response => ( result => response.json( result ) );
-
-  indra.searchDocuments( req.body )
-    .then( jsonifyResult(res) )
-    .catch( err => res.status(500).send(err) );
-});
-
-http.get('/search-documents/:id', function( req, res, next ){
-  let id = req.params.id;
-  tryPromise( loadTables )
-    .then( json => _.assign( {}, json, { id } ) )
-    .then( loadDoc )
-    .then( doc => doc.toSearchTemplates() )
-    .then( templates => indra.searchDocuments( { templates } ) )
-    .then( js => res.json( js ))
-    .catch( next );
-});
-
 http.get('/related-papers/:id', function( req, res, next ){
   let id = req.params.id;
   let queryObject = url.parse(req.url, true).query;
@@ -1483,15 +1464,6 @@ http.get('/related-papers/:id', function( req, res, next ){
     } )
     .then( templates => indra.searchDocuments( { templates } ) )
     .then( js => res.json( js ))
-    .catch( next );
-});
-
-// TODO: remove this just to be temporarly used for easier testing
-http.get('/search-documents/test/intn', function( req, res, next ){
-  let templates = [ [{name: 'TP53'}, {name: 'MDM2'}], [{name: 'TP53'}, {name: 'EGFR'}] ];
-
-  indra.searchDocuments( { templates } )
-    .then( js => res.send( js ))
     .catch( next );
 });
 

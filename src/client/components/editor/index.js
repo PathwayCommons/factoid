@@ -24,6 +24,7 @@ import EditorTitle from './title';
 import Submit from './submit';
 import Help from './help';
 import InfoPanel from './info-panel';
+import ExploreShare from './explore-share';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -507,6 +508,7 @@ class Editor extends DataComponent {
       h('div.editor-main-menu', [
         h(MainMenu, { bus, document, history })
       ]),
+      h(ExploreShare, { document, bus, controller }),
       h(Submit, { document, bus, controller }),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
       h(UndoRemove, { controller, document, bus }),
@@ -525,6 +527,32 @@ class Editor extends DataComponent {
   }
 
   componentDidMount(){
+    const container = document.querySelector('.editor');
+
+    this.fixPageHeight = () => {
+      const h = window.innerHeight + 'px';
+   
+      document.body.style.height = h;
+      document.documentElement.style.height = h;
+      container.style.height = h;
+      window.scrollTo(0, 0);
+
+      if( this.data.cy ){
+        this.data.cy.resize().fit();
+      }
+    };
+
+    this.resetPageHeight = () => {
+      document.body.removeAttribute('style');
+      document.documentElement.removeAttribute('style');
+    };
+
+    window.addEventListener('resize', () => {
+      this.fixPageHeight();
+    });
+
+    this.fixPageHeight();
+    
     this.data.mountDeferred.resolve();
 
     this.onRotate = _.debounce(() => {
@@ -548,6 +576,9 @@ class Editor extends DataComponent {
     document.removeAllListeners();
     bus.removeAllListeners();
     clearTimeout( this.rmAvailTimeout );
+
+    window.removeEventListener('resize', this.fixPageHeight);
+    this.resetPageHeight();
 
     keyEmitter.removeListener('escape', this.hideHelp);
     window.removeEventListener('orientationchange', () => this.onRotate);

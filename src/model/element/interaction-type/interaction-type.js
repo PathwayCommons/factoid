@@ -126,7 +126,7 @@ class InteractionType {
     let srcName = src.name() || '(?)';
     let tgtName = tgt.name() || '(?)';
 
-    return `${srcName} ${verbPhrase} ${tgtName} ${post}`;
+    return _.compact([srcName, verbPhrase, tgtName, post]).join(' ');
   }
 
   validatePpts( transform = _.identity ){

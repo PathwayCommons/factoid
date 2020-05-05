@@ -40,4 +40,12 @@
       background-image: url('./image/arrow-unsigned-white.svg');
     }
   }
+
+  &.icon-shr {
+    background-image: url('./image/share.svg');
+
+    &.icon-white {
+      background-image: url('./image/share-white.svg');
+    }
+  }
 }

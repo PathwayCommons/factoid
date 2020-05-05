@@ -39,10 +39,14 @@
 
 .editor-submit {
   position: absolute;
-  right: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
   box-sizing: border-box;
   z-index: 1;
   padding: 0.75em 0.5em;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 0.25em;
 }
 
 .editor-submit-button {
@@ -128,9 +132,9 @@
   z-index: 0;
   position: fixed;
   left: 0;
-  top: 0;
-  bottom: 0;
   right: 0;
+  bottom: 0;
+  top: 0;
 }
 
 .editor-menu-content {
@@ -186,12 +190,26 @@
   padding: 0.5em;
   overflow: visible;
   z-index: 3;
-  box-shadow: 0 0 2em 0 rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 2em 4px rgba(0, 0, 0, 0.25);
   background: #fff;
 }
 
 .editor-read-only .editor-graph {
   right: 400px;
+}
+
+.editor-explore-share {
+  position: fixed;
+  top: 0;
+  right: 400px;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0.5em 0.75em;
+  border-bottom-left-radius: 0.25em;
+
+  & .native-share-icon {
+    font-size: 1.5em;
+  }
 }
 
 @media (max-width: 1000px) {
@@ -208,6 +226,10 @@
   .editor-read-only .editor-graph {
     right: 0;
     bottom: 50%;
+  }
+
+  .editor-explore-share {
+    right: 0;
   }
 }
 

@@ -7,7 +7,7 @@ import TextareaAutosize from 'react-autosize-textarea';
 import { focusDomElement, makeClassList } from '../../util';
 import { TWITTER_ACCOUNT_NAME, MAX_TWEET_LENGTH, DEMO_CAN_BE_SHARED, DEMO_ID, DEMO_CAN_BE_SHARED_MULTIPLE_TIMES } from '../../config';
 
-class ShareView extends DataComponent {
+class TwitterShare extends DataComponent {
   constructor(props){
     super(props);
 
@@ -138,4 +138,4 @@ class ShareView extends DataComponent {
 }
 
 
-export { ShareView };
+export { TwitterShare };

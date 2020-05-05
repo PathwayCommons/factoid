@@ -1,11 +1,13 @@
 import _ from 'lodash';
 import DataComponent from './data-component';
 import h from 'react-hyperscript';
+import { Component } from 'react';
 
 import Document from '../../model/document';
 import { ENTITY_TYPE } from '../../model/element/entity-type';
 import { BASE_URL } from '../../config';
 import { makeClassList } from '../../util';
+import { NativeShare, isNativeShareSupported } from './native-share';
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
 
@@ -22,9 +24,6 @@ let unbindEleEvts = (ele, cb) => {
   });
 };
 
-import { Component } from 'react';
-import { NativeShare, isNativeShareSupported } from './native-share';
-
 export class TaskShare extends Component {
   constructor( props ){
     super( props );
@@ -33,19 +32,18 @@ export class TaskShare extends Component {
   render(){
     const { document } = this.props;
 
-    // if( !isNativeShareSupported() ){
-    //   return null;
-    // }
+    if( !isNativeShareSupported() ){
+      return null;
+    }
 
     return h('div.task-view-share', [
       h( NativeShare, {
         title: document.citation().title,
         text: '',
-        url: BASE_URL + document.publicUrl(),
-        // buttonClass: 'plain-link'
+        url: BASE_URL + document.publicUrl()
       }, [
         h('i.material-icons', 'share'),
-        h('span.task-view-share-label', ' Share')
+        h('span', ' Share')
       ])
     ]);
   }
@@ -194,18 +192,21 @@ class TaskView extends DataComponent {
               h('p', 'Your paper is now linked to many others and shared for everyone to explore.'),
               h( 'a.task-view-done-button', { href: publicUrl, target: '_blank', }, 'Explore' )
             ]),
-            h('div.task-view-done-section-footer', [
+            !isNativeShareSupported() ? h('div.task-view-done-section-footer', [
               h('p', `Explore link: ${publicUrl}`)
-            ])
+            ]): null
           ]),
           h('hr'),
           h('div.task-view-done-section', [
             h('div.task-view-done-section-body', [
               h('p', 'Good things happen when you share!'),
               h('ul', [
+                h('li', [
+                  h( TaskShare, { document } )
+                ]),
                 document.hasTweet() ? h('li', [
                   h( 'i.icon.icon-t' ),
-                  h('a.plain-link', {
+                  h('a', {
                     href: document.tweetUrl(),
                   target: '_blank'
                   },
@@ -214,15 +215,12 @@ class TaskView extends DataComponent {
                 ]) : null,
                 h('li', [
                   h( 'i.material-icons', 'image' ),
-                  h('a.plain-link', {
+                  h('a', {
                     href: imageUrl,
                     download: true
                   },
                   ' Download'
                   )
-                ]),
-                h('li', [
-                  h( TaskShare, { document } )
                 ])
               ])
             ])

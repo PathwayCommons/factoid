@@ -33,7 +33,7 @@ const getDocuments = templates => {
         agent = t.name + '@TEXT';
       }
 
-      return agent.toUpperCase();
+      return agent;
     };
 
     // for some datasources id may be in a form like "HGNC:10937"

@@ -124,7 +124,11 @@ class Editor extends DataComponent {
     doc.on('localremove', updateLastEditDate);
 
     doc.on('update', change => {
-      if( _.has( change, 'status' ) ) this.dirty();
+      if( _.has( change, 'status' ) ){
+        return new Promise( resolve => this.setData({
+          done: this.data.document.submitted() || this.data.document.published()
+        }, resolve) );
+      }
     });
 
     doc.on('load', () => {
@@ -248,8 +252,13 @@ class Editor extends DataComponent {
     ;
   }
 
-  done(){
-    return this.data.done;
+  done( done ){
+    if( done === undefined ){
+      return this.data.done;
+    }
+    else {
+      return new Promise( resolve => this.setData({ done }, resolve) );
+    }
   }
 
   onDone( done ){
@@ -531,7 +540,7 @@ class Editor extends DataComponent {
 
     this.fixPageHeight = () => {
       const h = window.innerHeight + 'px';
-   
+
       document.body.style.height = h;
       document.documentElement.style.height = h;
       container.style.height = h;
@@ -552,7 +561,7 @@ class Editor extends DataComponent {
     });
 
     this.fixPageHeight();
-    
+
     this.data.mountDeferred.resolve();
 
     this.onRotate = _.debounce(() => {

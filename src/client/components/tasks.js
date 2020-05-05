@@ -28,7 +28,6 @@ class TaskView extends DataComponent {
     super(props);
 
     this.state = {
-      done: props.document.submitted() || props.document.published(),
       submitting: false
     };
   }
@@ -71,9 +70,10 @@ class TaskView extends DataComponent {
         if( change.status === 'submitted' ){
           this.onSubmit()
             .finally( () => {
-              new Promise( resolve => this.setState({ done: true, submitting: false }, resolve ) )
-              .then( () => this.props.controller.onDone( true ) )
-              .then( () => this.dirty() );
+              new Promise( resolve => this.setState({ submitting: false }, resolve ) )
+              .then( () => this.props.controller.done( true ) )
+              // .then( () => this.dirty() )
+              ;
             });
         }
       }
@@ -101,7 +101,8 @@ class TaskView extends DataComponent {
 
   render(){
     let { document, bus } = this.props;
-    let { done, submitting } = this.state;
+    let { submitting } = this.state;
+    let done = this.props.controller.done();
     let incompleteEles = this.props.document.elements().filter(ele => {
       return !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX;
     });

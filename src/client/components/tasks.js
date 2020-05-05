@@ -22,6 +22,34 @@ let unbindEleEvts = (ele, cb) => {
   });
 };
 
+import { Component } from 'react';
+import { NativeShare, isNativeShareSupported } from './native-share';
+
+export class TaskShare extends Component {
+  constructor( props ){
+    super( props );
+  }
+
+  render(){
+    const { document } = this.props;
+
+    // if( !isNativeShareSupported() ){
+    //   return null;
+    // }
+
+    return h('div.task-view-share', [
+      h( NativeShare, {
+        title: document.citation().title,
+        text: '',
+        url: BASE_URL + document.publicUrl(),
+        // buttonClass: 'plain-link'
+      }, [
+        h('i.material-icons', 'share'),
+        h('span.task-view-share-label', ' Share')
+      ])
+    ]);
+  }
+}
 
 class TaskView extends DataComponent {
   constructor(props){
@@ -71,9 +99,7 @@ class TaskView extends DataComponent {
           this.onSubmit()
             .finally( () => {
               new Promise( resolve => this.setState({ submitting: false }, resolve ) )
-              .then( () => this.props.controller.done( true ) )
-              // .then( () => this.dirty() )
-              ;
+              .then( () => this.props.controller.done( true ) );
             });
         }
       }
@@ -183,7 +209,7 @@ class TaskView extends DataComponent {
                     href: document.tweetUrl(),
                   target: '_blank'
                   },
-                  ' Twitter'
+                  ' View Tweet @biofactoid'
                   )
                 ]) : null,
                 h('li', [
@@ -194,6 +220,9 @@ class TaskView extends DataComponent {
                   },
                   ' Download'
                   )
+                ]),
+                h('li', [
+                  h( TaskShare, { document } )
                 ])
               ])
             ])

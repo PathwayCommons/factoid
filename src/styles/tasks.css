@@ -104,3 +104,13 @@
   font-size: 0.8em;
   text-align: center;
 }
+
+.task-view-share button {
+  border: none;
+  padding: 0;
+}
+
+.task-view-share .task-view-share-label {
+  text-decoration: underline;
+  text-decoration-color: color(var(--activeColor) a(50%));
+}

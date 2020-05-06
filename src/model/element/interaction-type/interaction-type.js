@@ -1,7 +1,8 @@
+import _ from 'lodash';
+
 import { error } from '../../../util';
 import { PARTICIPANT_TYPE } from '../participant-type';
 import { BIOPAX_TEMPLATE_TYPE } from './biopax-type';
-import _ from 'lodash';
 
 const VALUE = 'unset';
 const DISPLAY_VALUE = 'Unset';
@@ -101,6 +102,30 @@ class InteractionType {
 
   toBiopaxTemplate() {
     throw new Error(`Abstract method toBiopaxTemplate() is not overridden for interaction type of ${this.value}`);
+  }
+
+  toSearchTemplate() {
+    let source = this.getSource();
+    let target = this.getTarget();
+
+    let ppts;
+
+    // if directed list the participants in order
+    if ( source && target ) {
+      ppts = [ source, target ];
+    }
+    else {
+      ppts = this.interaction.participants();
+    }
+
+    let templates = ppts.map( p => p.toSearchTemplate() );
+
+    // if there is some participants with invalid template skip the interaction
+    if ( _.includes( templates, null ) ) {
+      return null;
+    }
+
+    return templates;
   }
 
   toString(verbPhrase, post = ''){

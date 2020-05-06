@@ -177,6 +177,20 @@ class Entity extends Element {
 
     return entity;
   }
+
+  toSearchTemplate(){
+    let name = this.name();
+
+    // entries with no name should be skipped
+    if ( !name ) {
+      return null;
+    }
+
+    let template = _.pick(this.association(), ['id', 'namespace', 'dbXrefs']);
+    template.name = name;
+    
+    return template;
+  }
 }
 
 export default Entity;

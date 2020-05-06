@@ -1,10 +1,12 @@
 import fetch from 'node-fetch';
 import _ from 'lodash';
+import { parse as dateParse } from 'date-fns';
 
 import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL } from '../../../../config';
 import logger from '../../../logger';
 import { tryPromise } from '../../../../util';
 import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
+import { fetchPubmed } from './pubmed/fetchPubmed';
 import querystring from 'querystring';
 
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
@@ -19,10 +21,52 @@ const BASE_MODIFICATION_TYPES = ['Sumoylation', 'Desumoylation', 'Hydroxylation'
 const TRANSCRIPTION_TRANSLATION_TYPES = ['IncreaseAmount', 'DecreaseAmount'];
 const BINDING_TYPES = ['Complex'];
 
-const getDocuments = pairs => {
-  const getForPair = pair => {
-    let agent0 = pair[0].toUpperCase();
-    let agent1 = pair[1].toUpperCase();
+const getDocuments = templates => {
+  const getForIntn = intnTemplate => {
+    const getAgent = t => {
+      let agent;
+      let xref = getXref( t );
+      if ( xref ) {
+        agent = sanitizeId(xref.id) + '@' + xref.db;
+      }
+      else {
+        agent = t.name + '@TEXT';
+      }
+
+      return agent;
+    };
+
+    // for some datasources id may be in a form like "HGNC:10937"
+    // in that cases just consider the string coming after ":"
+    const sanitizeId = id => {
+      let arr = id.split(':');
+
+      if ( arr.length == 1 ) {
+        return arr[0];
+      }
+
+      return arr[1];
+    };
+
+    const getXref = t => {
+      let ns = t.namespace;
+      let xref = null;
+
+      if ( ns == 'chebi' ) {
+        xref = {
+          id: t.id,
+          db: ns
+        };
+      }
+      else {
+        xref = _.find( t.dbXrefs, x => x.db.toLowerCase() == 'hgnc' );
+      }
+
+      return xref;
+    };
+
+    let agent0 = getAgent( intnTemplate[0] );
+    let agent1 = getAgent( intnTemplate[1] );
 
     return tryPromise( () => getInteractions(agent0, agent1) )
       .then( intns => _.groupBy( intns, 'pmid' ) );
@@ -36,18 +80,50 @@ const getDocuments = pairs => {
 
   const transform = o => {
     let pmids = Object.keys( o );
-    let arr = pmids.map( pmid => {
-      let elements = o[ pmid ];
-      // prevent duplication of the same interactions in a document
-      elements = _.uniqWith( elements, _.isEqual );
-      elements.forEach( e => delete e.pmid );
-      return { elements, pmid };
-    } );
 
-    return arr;
+    if ( pmids.length == 0 ) {
+      return [];
+    }
+
+    return tryPromise( () => fetchPubmed({ uids: pmids }) )
+      .then( pubmeds => {
+        let articles = pubmeds.PubmedArticleSet;
+        
+        let arr = pmids.map( (pmid, i) => {
+          let pubmed = articles[i].MedlineCitation.Article;
+          let elements = o[ pmid ];
+          // prevent duplication of the same interactions in a document
+          elements = _.uniqWith( elements, _.isEqual );
+          elements.forEach( e => delete e.pmid );
+
+          return { elements, pmid, pubmed };
+        } );
+
+        const getPubTime = doc => {
+            let dateJs = doc.pubmed.Journal.JournalIssue.PubDate;
+            let { Day: day, Year: year, Month: month, MedlineDate: medlineDate } = dateJs;
+
+            if ( medlineDate ) {
+              return new Date( medlineDate );
+            }
+
+            if ( month != null && isNaN( month ) ) {
+                month = dateParse(month, 'MMM', new Date()).getMonth() + 1;
+            }
+
+            // Date class accepts the moth indices starting by 0
+            month = month - 1;
+
+            return new Date( year, month, day ).getTime();
+        };
+
+        arr = _.sortBy( arr, doc => -getPubTime(doc) );
+
+        return arr;
+      } );
   };
 
-  let promises = pairs.map( getForPair );
+  let promises = templates.map( getForIntn );
   return Promise.all( promises )
     .then( res => _.mergeWith( {}, ...res, merger ) )
     .then( transform );
@@ -105,11 +181,14 @@ const getInteractions = (agent0, agent1) => {
 const getStatements = (agent0, agent1) => {
   let query = { format: 'json-js', agent0, agent1 };
   let addr = INDRA_STATEMENTS_URL + '?' + querystring.stringify( query );
-  return (
-    tryPromise( () => fetch(addr) )
-      .then( res => res.json() )
-      .then( js => Object.values(js.statements) )
-  );
+  return tryPromise( () => fetch(addr) )
+    .then( res => res.json() )
+    .then( js => Object.values(js.statements) )
+    .catch( err => {
+      logger.error( `Unable to retrieve the indra staments for the entity pair '${agent0}-${agent1}'` );
+      logger.error( err );
+      throw err;
+    } );
 };
 
 const assembleEnglish = statements => {
@@ -118,13 +197,18 @@ const assembleEnglish = statements => {
     method: 'post',
     body: JSON.stringify({statements}),
     headers: { 'Content-Type': 'application/json' }
+  } )
+  .catch( err => {
+    logger.error( `Unable to assemble english for the indra statements` );
+    logger.error( err );
+    throw err;
   } );
 };
 
 
 export const searchDocuments = opts => {
-  let { pairs } = opts;
-  return tryPromise( () => getDocuments(pairs) )
+  let { templates } = opts;
+  return tryPromise( () => getDocuments(templates) )
     .catch( err => {
       logger.error(`Finding indra documents failed`);
       logger.error(err);

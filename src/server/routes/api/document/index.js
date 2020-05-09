@@ -9,7 +9,9 @@ import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
 import url from 'url';
+import fs from 'fs';
 
+import { exportToZip } from './export';
 import { tryPromise, makeStaticStylesheet, makeCyEles, msgFactory, updateCorrespondence, EmailError, truncateString } from '../../../../util';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
@@ -1443,6 +1445,35 @@ http.get('/text/:id', function( req, res, next ){
     .then( loadDoc )
     .then( doc => doc.toText() )
     .then( txt => res.send( txt ))
+    .catch( next );
+});
+
+http.get('/zip/dl', function( req, res, next ){
+  let filePath = 'download/factoid_bulk.zip';
+
+  const lazyExport = () => {
+    let recreate = true;
+    if ( fs.existsSync( filePath ) ) {
+      const DAY_TO_MS = 86400000;
+
+      let now = Date.now();
+      let fileDate = fs.statSync(filePath).birthtimeMs;
+
+      if ( now - fileDate < DAY_TO_MS ) {
+        recreate = false;
+      }
+    }
+
+    if ( recreate ) {
+      let addr = req.protocol + '://' + req.get('host');
+      return exportToZip(addr, filePath);
+    }
+
+    return Promise.resolve();
+  };
+
+  tryPromise( lazyExport )
+    .then( () => res.download( filePath ))
     .catch( next );
 });
 

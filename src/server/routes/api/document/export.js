@@ -6,7 +6,8 @@ import fs from 'fs';
 import { convertDocumentToBiopax,
         convertDocumentToTxt,
         convertDocumentToJson,
-        convertDocumentToSbgn } from '../../../../util';
+        convertDocumentToSbgn,
+        checkHTTPStatus } from '../../../../util';
 
 const CHUNK_SIZE = 20;
 
@@ -16,6 +17,7 @@ const exportToZip = (baseUrl, zipPath) => {
 
   const processNext = () => {
     return fetch(`${baseUrl}/api/document?limit=${CHUNK_SIZE}&offset=${offset}`)
+      .then( checkHTTPStatus )
       .then( res => res.json() )
       .then( res => {
         offset += res.length;
@@ -37,11 +39,12 @@ const exportToZip = (baseUrl, zipPath) => {
   };
 
   const addToZip = ids => {
-    let promises = ids.map( id => [ convertDocumentToBiopax(id, baseUrl), convertDocumentToTxt(id, baseUrl),
-                                    convertDocumentToJson(id, baseUrl), convertDocumentToSbgn(id, baseUrl) ] );
+    let promises = ids.map( id => [ convertDocumentToBiopax(id, baseUrl),
+                                    convertDocumentToJson(id, baseUrl),
+                                    convertDocumentToSbgn(id, baseUrl) ] );
     promises = _.flatten( promises );
 
-    let fileExts = ['.owl', '.txt', '.json', 'sbgn.xml'];
+    let fileExts = ['.owl', '.json', 'sbgn.xml'];
     let s = fileExts.length;
 
     return Promise.all( promises )

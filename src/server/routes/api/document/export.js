@@ -4,7 +4,6 @@ import _ from 'lodash';
 import fs from 'fs';
 
 import { convertDocumentToBiopax,
-        convertDocumentToTxt,
         convertDocumentToJson,
         convertDocumentToSbgn,
         checkHTTPStatus } from '../../../../util';

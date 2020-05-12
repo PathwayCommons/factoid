@@ -1448,6 +1448,22 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
+/**
+ * @swagger
+ *
+ * /api/document/zip/dl:
+ *   get:
+ *     description: Retrieve a zip file that contains each document in various file formats.
+ *     summary: Retrieve a zip file that contains each document in various file formats.
+ *     tags:
+ *       - Document
+ *     responses:
+ *      '200':
+ *        description: OK
+ *        content:
+ *          application/zip:
+ *             description: Retrieve a zip file that contains each document in various file formats.
+ */
 http.get('/zip/dl', function( req, res, next ){
   let filePath = 'download/factoid_bulk.zip';
 

@@ -9,7 +9,8 @@
   --widgetTransitionDuration: 500ms;
   --widgetHeight: 1.75em;
   --defaultWidgetWidth: 12em;
-  --activeColor: #0169d9;
+  --activeColor: #3996db;
+  --activeColorDark: #b8e0ff; /* for dark bg */
   --smallFontSize: 0.8em;
   --fadedColor: #888;
   --invalidColor: #b53535;

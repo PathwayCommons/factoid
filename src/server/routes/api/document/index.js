@@ -1453,8 +1453,8 @@ http.get('/text/:id', function( req, res, next ){
  *
  * /api/document/zip/dl:
  *   get:
- *     description: Retrieve a zip file that contains each document in various file formats.
- *     summary: Retrieve a zip file that contains each document in various file formats.
+ *     description: Download a single zip file containing every Document represented in JSON, Systems Biology Graphical Notation Markup Language (SBGNML) and Biological Pathway Exchange (BioPAX).
+ *     summary: Zip file of every Document in several file formats.
  *     tags:
  *       - Document
  *     responses:
@@ -1462,7 +1462,7 @@ http.get('/text/:id', function( req, res, next ){
  *        description: OK
  *        content:
  *          application/zip:
- *             description: Retrieve a zip file that contains each document in various file formats.
+ *             description: Download a zip file containing each Document in various file formats.
  */
 http.get('/zip/dl', function( req, res, next ){
   let filePath = 'download/factoid_bulk.zip';

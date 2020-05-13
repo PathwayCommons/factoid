@@ -259,6 +259,51 @@ let getSbgnFromTemplates = templates => {
 /**
  * @swagger
  *
+ * /api/document/zip:
+ *   get:
+ *     description: Download a single zip file containing every Document represented in JSON, Systems Biology Graphical Notation Markup Language (SBGNML) and Biological Pathway Exchange (BioPAX).
+ *     summary: Zip file of every Document in several file formats.
+ *     tags:
+ *       - Document
+ *     responses:
+ *      '200':
+ *        description: OK
+ *        content:
+ *          application/zip:
+ *             description: Download a zip file containing each Document in various file formats.
+ */
+http.get('/zip', function( req, res, next ){
+  let filePath = 'download/factoid_bulk.zip';
+
+  const lazyExport = () => {
+    let recreate = true;
+    if ( fs.existsSync( filePath ) ) {
+      const DAY_TO_MS = 86400000;
+
+      let now = Date.now();
+      let fileDate = fs.statSync(filePath).birthtimeMs;
+
+      if ( now - fileDate < DAY_TO_MS ) {
+        recreate = false;
+      }
+    }
+
+    if ( recreate ) {
+      let addr = req.protocol + '://' + req.get('host');
+      return exportToZip(addr, filePath);
+    }
+
+    return Promise.resolve();
+  };
+
+  tryPromise( lazyExport )
+    .then( () => res.download( filePath ))
+    .catch( next );
+});
+
+/**
+ * @swagger
+ *
  * components:
  *
  *   securitySchemes:
@@ -1445,51 +1490,6 @@ http.get('/text/:id', function( req, res, next ){
     .then( loadDoc )
     .then( doc => doc.toText() )
     .then( txt => res.send( txt ))
-    .catch( next );
-});
-
-/**
- * @swagger
- *
- * /api/document/zip/dl:
- *   get:
- *     description: Download a single zip file containing every Document represented in JSON, Systems Biology Graphical Notation Markup Language (SBGNML) and Biological Pathway Exchange (BioPAX).
- *     summary: Zip file of every Document in several file formats.
- *     tags:
- *       - Document
- *     responses:
- *      '200':
- *        description: OK
- *        content:
- *          application/zip:
- *             description: Download a zip file containing each Document in various file formats.
- */
-http.get('/zip/dl', function( req, res, next ){
-  let filePath = 'download/factoid_bulk.zip';
-
-  const lazyExport = () => {
-    let recreate = true;
-    if ( fs.existsSync( filePath ) ) {
-      const DAY_TO_MS = 86400000;
-
-      let now = Date.now();
-      let fileDate = fs.statSync(filePath).birthtimeMs;
-
-      if ( now - fileDate < DAY_TO_MS ) {
-        recreate = false;
-      }
-    }
-
-    if ( recreate ) {
-      let addr = req.protocol + '://' + req.get('host');
-      return exportToZip(addr, filePath);
-    }
-
-    return Promise.resolve();
-  };
-
-  tryPromise( lazyExport )
-    .then( () => res.download( filePath ))
     .catch( next );
 });
 

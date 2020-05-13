@@ -57,6 +57,7 @@
     "heap": "^0.2.6",
     "hyperscript": "^2.0.2",
     "hyperscript-helpers": "^3.0.2",
+    "jszip": "^3.4.0",
     "leven": "^2.1.0",
     "lodash": "^4.17.15",
     "lru-cache": "^4.1.1",

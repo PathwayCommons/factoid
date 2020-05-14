@@ -1455,14 +1455,27 @@ http.get('/related-papers/:id', function( req, res, next ){
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
     .then( doc => {
-      if ( interactionId ) {
-        let intn = doc.get(interactionId );
-        return [ intn.toSearchTemplate() ];
+      let article = doc.article();
+      if ( !article ) {
+        return null;
       }
 
-      return doc.toSearchTemplates();
+      let templates;
+      if ( interactionId ) {
+        let intn = doc.get( interactionId );
+        templates = [ intn.toSearchTemplate() ];
+      }
+
+      templates = doc.toSearchTemplates();
+
+      return { templates, article };
     } )
-    .then( templates => indra.searchDocuments( { templates } ) )
+    .then( obj => {
+      if ( obj ) {
+        return indra.searchDocuments( obj );
+      }
+      return [];
+    } )
     .then( js => res.json( js ))
     .catch( next );
 });

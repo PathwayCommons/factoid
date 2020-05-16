@@ -1447,6 +1447,10 @@ http.get('/text/:id', function( req, res, next ){
 });
 
 http.get('/related-papers/:id', function( req, res, next ){
+  // 5000000ms correspons to 83.3333333 mins
+  let timout = 5000000;
+  res.setTimeout(timout);
+  
   let id = req.params.id;
   let queryObject = url.parse(req.url, true).query;
   let { interactionId } = queryObject;

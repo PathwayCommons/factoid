@@ -122,8 +122,6 @@ const getDocuments = ( templates, queryArticle ) => {
       } );
 
       documents = _.filter( documents, d => d != null );
-      // TODO: remove after semantic search problem is solved
-      documents = _.slice( documents, 0, 65 );
 
       return fetch( url, {
         method: 'post',
@@ -168,8 +166,7 @@ const getDocuments = ( templates, queryArticle ) => {
             return new Date( year, month, day ).getTime();
         };
 
-        // TODO: remove default 0 when the semantic search problem is solved?
-        const getSemanticScore = doc => _.get( semanticScoreById, [ doc.pmid, 0, 'score' ], 0 );
+        const getSemanticScore = doc => _.get( semanticScoreById, [ doc.pmid, 0, 'score' ] );
 
         const getNegativeScore = ( doc ) => {
           let fcn = SORT_BY_DATE ? getPubTime : getSemanticScore;

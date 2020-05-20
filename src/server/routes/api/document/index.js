@@ -1266,9 +1266,9 @@ http.patch('/status/:id/:secret', function( req, res, next ){
   const handlePublishRequest = async doc => {
     const didPublish = await tryPublish( doc );
     if( didPublish ) {
+      updateRelatedPapers( doc );
       await tryTweetingDoc( doc );
       await sendFollowUpNotification( doc );
-      updateRelatedPapers( doc );
     }
   };
 

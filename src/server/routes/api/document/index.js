@@ -81,6 +81,13 @@ let createSecret = ({ secret }) => {
   );
 };
 
+let createRelatedPapers = ({ papersData, docId }) => {
+  return (
+    tryPromise( () => loadTable('relatedPapers') )
+    .then(({ table, conn }) => table.insert({ papersData, docId }).run(conn))
+  );
+};
+
 let createDoc = ({ docDb, eleDb, id, secret, provided }) => {
   let doc = newDoc({ docDb, eleDb, id, secret, provided });
 
@@ -1261,7 +1268,16 @@ http.patch('/status/:id/:secret', function( req, res, next ){
     if( didPublish ) {
       await tryTweetingDoc( doc );
       await sendFollowUpNotification( doc );
+      updateRelatedPapers( doc );
     }
+  };
+
+  const updateRelatedPapers = doc => {
+    let docId = doc.id();
+    logger.info('Searching the related papers table for', docId);
+    searchRelatedPapers( doc )
+      .then( papersData => createRelatedPapers({ papersData, docId }) )
+      .then( () => logger.info('Related papers table is updated for', docId) );
   };
 
   const updateDocStatus = async doc => {
@@ -1446,6 +1462,24 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
+const searchRelatedPapers = ( doc, interactionId ) => {
+  let article = doc.article();
+  if ( !article ) {
+    return [];
+  }
+
+  let templates;
+  if ( interactionId ) {
+    let intn = doc.get( interactionId );
+    templates = [ intn.toSearchTemplate() ];
+  }
+
+  templates = doc.toSearchTemplates();
+
+  let obj = { templates, article };
+  return indra.searchDocuments( obj );
+};
+
 http.get('/related-papers/:id', function( req, res, next ){
   // 5000000ms correspons to 83.3333333 mins
   let timout = 5000000;
@@ -1458,28 +1492,7 @@ http.get('/related-papers/:id', function( req, res, next ){
   tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
-    .then( doc => {
-      let article = doc.article();
-      if ( !article ) {
-        return null;
-      }
-
-      let templates;
-      if ( interactionId ) {
-        let intn = doc.get( interactionId );
-        templates = [ intn.toSearchTemplate() ];
-      }
-
-      templates = doc.toSearchTemplates();
-
-      return { templates, article };
-    } )
-    .then( obj => {
-      if ( obj ) {
-        return indra.searchDocuments( obj );
-      }
-      return [];
-    } )
+    .then( doc => searchRelatedPapers( doc, interactionId ) )
     .then( js => res.json( js ))
     .catch( next );
 });

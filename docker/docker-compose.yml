@@ -62,8 +62,8 @@ services:
   semantic:
     image: pathwaycommons/semantic-search:${SEMANTIC_SEARCH_IMAGE_TAG:-latest}
     container_name: semantic_container
-    ports:
-      - "${SEMANTIC_PORT:-3083}:8000"
+    expose:
+      - "8000"
 
 volumes:
   dbdata:

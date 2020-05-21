@@ -1274,10 +1274,15 @@ http.patch('/status/:id/:secret', function( req, res, next ){
 
   const updateRelatedPapers = doc => {
     let docId = doc.id();
-    logger.info('Searching the related papers table for', docId);
-    searchRelatedPapers( doc )
-      .then( papersData => createRelatedPapers({ papersData, docId }) )
-      .then( () => logger.info('Related papers table is updated for', docId) );
+    logger.info('Searching the related papers table for document ', docId);
+    try {
+      searchRelatedPapers( doc )
+        .then( papersData => createRelatedPapers({ papersData, docId }) )
+        .then( () => logger.info('Related papers table is updated for document', docId) );
+    } catch ( e ) {
+      logger.error( `Error in uploading related papers for document ${docId}: ${JSON.stringify(e)}` );
+    }
+
   };
 
   const updateDocStatus = async doc => {
@@ -1464,7 +1469,8 @@ http.get('/text/:id', function( req, res, next ){
 
 const searchRelatedPapers = ( doc, interactionId ) => {
   let article = doc.article();
-  if ( !article ) {
+  let abstract = article.MedlineCitation.Article.Abstract;
+  if ( !abstract ) {
     return [];
   }
 
@@ -1473,8 +1479,10 @@ const searchRelatedPapers = ( doc, interactionId ) => {
     let intn = doc.get( interactionId );
     templates = [ intn.toSearchTemplate() ];
   }
+  else {
+    templates = doc.toSearchTemplates();
+  }
 
-  templates = doc.toSearchTemplates();
 
   let obj = { templates, article };
   return indra.searchDocuments( obj );

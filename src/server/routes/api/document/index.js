@@ -1307,7 +1307,7 @@ http.patch('/status/:id/:secret', function( req, res, next ){
     const didPublish = await tryPublish( doc );
     if( didPublish ) {
       await tryTweetingDoc( doc );
-      await sendFollowUpNotification( doc );
+      sendFollowUpNotification( doc );
     }
   };
 

@@ -124,7 +124,11 @@ class Editor extends DataComponent {
     doc.on('localremove', updateLastEditDate);
 
     doc.on('update', change => {
-      if( _.has( change, 'status' ) ) this.dirty();
+      if( _.has( change, 'status' ) ){
+        return new Promise( resolve => this.setData({
+          done: this.data.document.submitted() || this.data.document.published()
+        }, resolve) );
+      }
     });
 
     doc.on('load', () => {
@@ -171,6 +175,7 @@ class Editor extends DataComponent {
       mountDeferred: defer(),
       initted: false,
       showHelp,
+      done: false,
       rmList: {
         els: [],
         ppts: [],
@@ -211,7 +216,11 @@ class Editor extends DataComponent {
       .then( () => doc.synch(true) )
       .then( () => logger.info('Document synch active') )
       .then( () => {
-        this.setData({ initted: true, showHelp: this.data.document.editable() });
+        this.setData({
+          initted: true,
+          showHelp: this.data.document.editable(),
+          done: this.data.document.submitted() || this.data.document.published()
+        });
 
         const title = _.get(this.data.document.citation(), ['title']);
 
@@ -243,8 +252,17 @@ class Editor extends DataComponent {
     ;
   }
 
-  done(){
-    return this.data.document.submitted() || this.data.document.published();
+  done( done ){
+    if( done === undefined ){
+      return this.data.done;
+    }
+    else {
+      return new Promise( resolve => this.setData({ done }, resolve) );
+    }
+  }
+
+  onDone( done ){
+    return new Promise( resolve => this.setData({ done }, resolve) );
   }
 
   editable(){
@@ -522,7 +540,7 @@ class Editor extends DataComponent {
 
     this.fixPageHeight = () => {
       const h = window.innerHeight + 'px';
-   
+
       document.body.style.height = h;
       document.documentElement.style.height = h;
       container.style.height = h;
@@ -543,7 +561,7 @@ class Editor extends DataComponent {
     });
 
     this.fixPageHeight();
-    
+
     this.data.mountDeferred.resolve();
 
     this.onRotate = _.debounce(() => {

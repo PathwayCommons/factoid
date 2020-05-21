@@ -422,6 +422,15 @@ a,
       box-shadow: 0 -2px var(--activeColor) inset;
     }
   }
+
+  &.plain-link-dark {
+    box-shadow: 0 -2px color(var(--activeColorDark) a(50%)) inset;
+    transition: box-shadow var(--widgetTransitionDuration) ease-out;
+
+    &:active {
+      box-shadow: 0 -2px var(--activeColorDark) inset;
+    }
+  }
 }
 
 img {

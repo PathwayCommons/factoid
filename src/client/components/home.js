@@ -380,7 +380,7 @@ class Home extends Component {
   }
 
   render(){
-    const CTA = () => {
+    const CTAPopover = props => {
       return h(Popover, {
         tippy: {
           html: h(RequestForm, {
@@ -390,8 +390,37 @@ class Home extends Component {
           onHidden: () => this.bus.emit('closecta'),
           placement: 'top'
         }
-      }, [
+      }, props.children || []);
+    };
+
+    const CTA = () => {
+      return h(CTAPopover, [
         h('button.home-cta-button.salient-button', 'Get started')
+      ]);
+    };
+
+    const ContactPopover = (props) => {
+      return h(Popover, {
+        tippy: {
+          html: h('div.home-contact-info', [
+            h('p', [
+              'Biofactoid is freely brought to you in collaboration with ',
+              h('a.plain-link', { href: 'https://baderlab.org', target: '_blank' }, 'Bader Lab at the University of Toronto'),
+              ', ',
+              h('a.plain-link', { href: 'http://sanderlab.org', target: '_blank' }, 'Sander Lab at Harvard'),
+              ', and the ',
+              h('a.plain-link', { href: 'https://www.ohsu.edu/people/emek-demir/AFE06DC89ED9AAF1634F77D11CCA24C3', target: '_blank' }, 'Pathway and Omics Lab at the University of Oregon'),
+              '.'
+            ]),
+            h('p', [
+              `Contact us at `,
+              h('a.plain-link', { href: 'mailto:info@biofactoid.org' }, 'info@biofactoid.org'),
+              `.`
+            ])
+          ])
+        }
+      }, [
+        props.children || 'Contact'
       ]);
     };
 
@@ -399,6 +428,19 @@ class Home extends Component {
       h('div..home-section.home-figure-section.home-banner', [
         h('div.home-figure.home-figure-0'),
         h('div.home-figure.home-figure-banner-bg'),
+        h('div.home-nav.home-nav-left.home-nav-top', [
+          h('a.home-nav-link', [
+            h(ContactPopover)
+          ]),
+          h('a.home-nav-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}`, target: '_blank' }, 'Twitter')
+        ]),
+        h('div.home-nav.home-nav-right.home-nav-top', [
+          h('span.home-nav-link', [
+            h(CTAPopover, [
+              h('button.home-mini-cta-button', 'Get started')
+            ])
+          ])
+        ]),
         h('div.home-caption.home-banner-caption', [
           h('div.home-banner-logo', [
             h('h1.home-banner-title', 'Biofactoid')
@@ -410,48 +452,54 @@ class Home extends Component {
           h(Scroller)
         ])
       ]),
-      h('div.home-section.home-figure-section', [
+      h('div.home-section.home-figure-section.home-figure-section-1', [
         h('div.home-figure.home-figure-1'),
-        h('div.home-caption', [
+        h('div.home-caption.home-caption-1', [
+          h('h2', 'How it works'),
           h('p', [
-            `Compose your pathway by adding the key interactions`, h('sup', '*'), ` you researched.  `,
-            `Share so everyone else can explore it and link to your article.`
-          ]),
-          h('p', `Our mission is to integrate published pathway knowledge and make it freely available to researchers.`),
-          h('p.home-figure-footnote', [
-            h('sup', '*'),
-            `Add interactions such as binding, post-translational modification, and transcription.  Add chemicals or genes from human, mouse, rat, S. cervisiae, D. melanogaster, E. coli, C. elegans, D. rerio, and A. thaliana.`
+            `It's quick and easy to compose your pathway by adding the key `,
+            h(Popover, {
+              tippy: {
+                placement: 'bottom',
+                html: h('div.home-info-popover-content', `Add interactions such as binding, post-translational modification, and transcription.  Add chemicals or genes from human, mouse, rat, S. cervisiae, D. melanogaster, E. coli, C. elegans, D. rerio, and A. thaliana.`)
+              }
+            }, [
+              h('span.link-like.plain-link-dark', `interactions`)
+            ]),
+            ` you researched.  `,
+            `Share your digital pathway so everyone else can explore it and link to your article.`
           ])
+        ]),
+        h('div.home-figure-video.home-figure-video-1', [
+          h('video', {
+            src: '/image/sample-editor-screen-fade.mp4',
+            type: 'video/mp4',
+            autoPlay: true,
+            loop: true,
+            muted: true
+          })
         ]),
         h('div.home-cta', [
           h(CTA)
+        ])
+      ]),
+      h('div.home-section.home-figure-section.home-figure-section-2', [
+        h('div.home-figure.home-figure-2'),
+        h('div.home-caption.home-caption-2', [
+          h('h2', 'Your pathway to share and explore'),
+          h('p', [
+            `We create a summary of each pathway, associate it with the article in a public database, and share it so scientists can find and use the information.`
+          ])
         ]),
-
+        h('div.home-figure-fg-2'),
+        h('div.home-cta.home-cta-2', [
+          h(CTA),
+          h('button.home-cta-alt-button', 'Read the paper')
+        ]),
         h('div.home-figure-footer', [
-          h('div.home-nav', [
+          h('div.home-nav.home-nav-bottom', [
             h('a.home-nav-link', [
-              h(Popover, {
-                tippy: {
-                  html: h('div.home-contact-info', [
-                    h('p', [
-                      'Biofactoid is freely brought to you in collaboration with ',
-                      h('a.plain-link', { href: 'https://baderlab.org', target: '_blank' }, 'Bader Lab at the University of Toronto'),
-                      ', ',
-                      h('a.plain-link', { href: 'http://sanderlab.org', target: '_blank' }, 'Sander Lab at Harvard'),
-                      ', and the ',
-                      h('a.plain-link', { href: 'https://www.ohsu.edu/people/emek-demir/AFE06DC89ED9AAF1634F77D11CCA24C3', target: '_blank' }, 'Pathway and Omics Lab at the University of Oregon'),
-                      '.'
-                    ]),
-                    h('p', [
-                      `Contact us at `,
-                      h('a.plain-link', { href: 'mailto:info@biofactoid.org' }, 'info@biofactoid.org'),
-                      `.`
-                    ])
-                  ])
-                }
-              }, [
-                'Contact'
-              ])
+              h(ContactPopover)
             ]),
             h('a.home-nav-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}`, target: '_blank' }, 'Twitter'),
             h('a.home-nav-link', { href: 'https://github.com/PathwayCommons/factoid', target: '_blank' }, 'GitHub')

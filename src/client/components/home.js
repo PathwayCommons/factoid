@@ -476,7 +476,8 @@ class Home extends Component {
             type: 'video/mp4',
             autoPlay: true,
             loop: true,
-            muted: true
+            muted: true,
+            playsInline: true
           })
         ]),
         h('div.home-cta', [

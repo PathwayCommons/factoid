@@ -1275,13 +1275,11 @@ http.patch('/status/:id/:secret', function( req, res, next ){
   const updateRelatedPapers = doc => {
     let docId = doc.id();
     logger.info('Searching the related papers table for document ', docId);
-    try {
-      searchRelatedPapers( doc )
-        .then( papersData => createRelatedPapers({ papersData, docId }) )
-        .then( () => logger.info('Related papers table is updated for document', docId) );
-    } catch ( e ) {
-      logger.error( `Error in uploading related papers for document ${docId}: ${JSON.stringify(e)}` );
-    }
+
+    searchRelatedPapers( doc )
+      .then( papersData => createRelatedPapers({ papersData, docId }) )
+      .then( () => logger.info('Related papers table is updated for document', docId) );
+      .catch( e => logger.error( `Error in uploading related papers for document ${docId}: ${JSON.stringify(e)}` ); )
 
   };
 

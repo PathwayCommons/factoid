@@ -1278,8 +1278,8 @@ http.patch('/status/:id/:secret', function( req, res, next ){
 
     searchRelatedPapers( doc )
       .then( papersData => createRelatedPapers({ papersData, docId }) )
-      .then( () => logger.info('Related papers table is updated for document', docId) );
-      .catch( e => logger.error( `Error in uploading related papers for document ${docId}: ${JSON.stringify(e)}` ); )
+      .then( () => logger.info('Related papers table is updated for document', docId) )
+      .catch( e => logger.error( `Error in uploading related papers for document ${docId}: ${JSON.stringify(e)}` ) );
 
   };
 

@@ -94,12 +94,18 @@ class RequestForm extends Component {
       };
 
       this.setState({ submitting: true, errors: { incompleteForm: false, network: false } });
-      fetch( url, fetchOpts )
+      
+      ( fetch( url, fetchOpts )
         .then( checkStatus )
         .then( response => response.json() )
-        .then( docJSON => new Promise( resolve => this.setState({ done: true, docJSON }, resolve ) ) )
+        .then( docJSON => new Promise( resolve => {
+          window.open(docJSON.privateUrl);
+
+          this.setState({ done: true, docJSON }, resolve );
+        } ) )
         .catch( () => new Promise( resolve => this.setState({ errors: { network: true } }, resolve ) ) )
-        .finally( () => new Promise( resolve => this.setState({ submitting: false }, resolve ) ) );
+        .finally( () => new Promise( resolve => this.setState({ submitting: false }, resolve ) ) )
+      );
     }
   }
 
@@ -111,11 +117,11 @@ class RequestForm extends Component {
 
       return h('div.home-request-form-container', [
         h('div.home-request-form-done', [
-          h( 'a.home-request-form-done-button', { href: privateUrl, target: '_blank', }, 'START BIOFACTOID' ),
+          h( 'a.home-request-form-done-button', { href: privateUrl, target: '_blank', }, 'Start Biofactoid' ),
           h( 'div.home-request-form-done-body', [
             h( doi ? 'a.plain-link': 'span', (doi ? { href: `${DOI_LINK_BASE_URL}${doi}`, target: '_blank'}: {}), `Article: ${articleString}` )
           ]),
-          h( 'div.home-request-form-done-footer', 'An email invitation has also been sent.' )
+          h( 'div.home-request-form-done-footer', `An email has also been sent, which includes your article's private editing link.` )
         ])
       ]);
     }
@@ -142,7 +148,7 @@ class RequestForm extends Component {
     };
 
     return h('div.home-request-form-container', [
-      h('div.home-request-form-description', 'Claim your article'),
+      h('div.home-request-form-description', `Your article's digital pathway`),
       h('i.icon.icon-spinner.home-request-spinner', {
         className: makeClassList({ 'home-request-spinner-shown': this.state.submitting })
       }),
@@ -151,17 +157,18 @@ class RequestForm extends Component {
       }, [
         h('input', {
           type: 'text',
-          placeholder: 'Article title',
+          placeholder: `Article title`,
           onChange: e => this.updateForm({ paperId: e.target.value }),
           value: this.state.paperId
         }),
         h('input', {
           type: 'text',
-          placeholder: 'Email address',
+          placeholder: `Email address`,
           onChange: e => this.updateForm({
             authorEmail: e.target.value
           }),
-          value: this.state.authorEmail
+          value: this.state.authorEmail,
+          spellCheck: false
         }),
         this.props.apiKey ? contextSelector([ EMAIL_CONTEXT_SIGNUP, EMAIL_CONTEXT_JOURNAL ]) : null,
         h('div.home-request-error', {
@@ -170,9 +177,9 @@ class RequestForm extends Component {
         h('div.home-request-error', {
           className: makeClassList({ 'home-request-error-message-shown': this.state.errors.network })
         }, 'Please try again later'),
-        h('button.salient-button.home-request-submit', {
+        h('button.super-salient-button.home-request-submit', {
           onClick: () => this.submitRequest()
-        }, 'Request an invitation')
+        }, 'Create my pathway')
       ])
     ]);
   }

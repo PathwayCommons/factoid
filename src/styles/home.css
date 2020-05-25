@@ -574,8 +574,13 @@
   text-transform: uppercase;
 }
 
-.home-request-form-done-body {
+.home-request-form-done-title {
   color: var(--buttonActiveColor);
+}
+
+.home-request-form-done-info {
+  margin: 0;
+  font-size: 0.8em;
 }
 
 .home-request-form-done-icon {

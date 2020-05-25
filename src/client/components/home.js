@@ -113,14 +113,15 @@ class RequestForm extends Component {
     const { done, docJSON } = this.state;
     if( done && docJSON ){
       const { privateUrl, citation: { doi, title, reference } } = docJSON;
-      const articleString = _.compact([ truncateString( title ), reference ]).join(' ');
+      const displayTitle = truncateString( title );
 
       return h('div.home-request-form-container', [
         h('div.home-request-form-done', [
           h( 'a.home-request-form-done-button', { href: privateUrl, target: '_blank', }, 'Start Biofactoid' ),
-          h( 'div.home-request-form-done-body', [
-            h( doi ? 'a.plain-link': 'span', (doi ? { href: `${DOI_LINK_BASE_URL}${doi}`, target: '_blank'}: {}), `Article: ${articleString}` )
-          ])
+          h( 'div.home-request-form-done-title', [
+            h( doi ? 'a.plain-link': 'span', (doi ? { href: `${DOI_LINK_BASE_URL}${doi}`, target: '_blank'}: {}), displayTitle )
+          ]),
+          reference ? h( 'div.home-request-form-done-info', reference ) : null
         ])
       ]);
     }

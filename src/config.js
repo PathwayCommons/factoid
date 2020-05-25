@@ -59,7 +59,7 @@ export const UNIPROT_LINK_BASE_URL = env('UNIPROT_LINK_BASE_URL', 'http://www.un
 export const CHEBI_LINK_BASE_URL = env('CHEBI_LINK_BASE_URL', 'https://www.ebi.ac.uk/chebi/searchId.do?chebiId=');
 export const PUBCHEM_LINK_BASE_URL = env('PUBCHEM_LINK_BASE_URL', 'https://pubchem.ncbi.nlm.nih.gov/compound/');
 export const NCBI_LINK_BASE_URL = env('NCBI_LINK_BASE_URL', 'https://www.ncbi.nlm.nih.gov/gene/');
-export const PUBMED_LINK_BASE_URL = env('PUBMED_LINK_BASE_URL', 'https://www.ncbi.nlm.nih.gov/pubmed/');
+export const PUBMED_LINK_BASE_URL = env('PUBMED_LINK_BASE_URL', 'https://pubmed.ncbi.nlm.nih.gov/');
 export const DOI_LINK_BASE_URL = env('DOI_LINK_BASE_URL', 'https://www.doi.org/');
 export const GOOGLE_SCHOLAR_BASE_URL = env('GOOGLE_SCHOLAR_BASE_URL', 'https://scholar.google.com/scholar?q=');
 

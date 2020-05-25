@@ -33,6 +33,8 @@ export const LOG_LEVEL = env('LOG_LEVEL', 'info');
 
 export const API_KEY = env('API_KEY', '');
 
+export const METADATA_CRON_SCHEDULE = env('METADATA_CRON_SCHEDULE', '*/10 * * * * *');
+
 // Connect to localhost
 export const SOCKET_HOST = env('SOCKET_HOST', isClient() ? window.location.hostname : 'localhost');
 

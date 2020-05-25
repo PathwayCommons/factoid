@@ -489,17 +489,15 @@
   box-sizing: border-box;
 }
 
-.home-request-form-radioset {
-  margin-top: 0.5em;
-}
-
 .home-request-form-submitting {
   opacity: 0.333;
   pointer-events: none;
 }
 
 .home-request-form-description {
-  margin-bottom: 1em;
+  font-weight: bold;
+  margin: 0;
+  font-size: 1em;
   text-align: center;
 }
 
@@ -519,8 +517,10 @@
   box-sizing: border-box;
 }
 
-.home-request-form-description {
-  font-weight: bold;
+.home-request-form-footer {
+  margin: 0.2em 0.5em 0;
+  color: var(--fadedColor);
+  font-size: 0.8em;
 }
 
 .home-request-submit {
@@ -576,11 +576,6 @@
 
 .home-request-form-done-body {
   color: var(--buttonActiveColor);
-}
-
-.home-request-form-done-footer {
-  color: var(--fadedColor);
-  font-size: 0.8em;
 }
 
 .home-request-form-done-icon {

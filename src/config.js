@@ -33,7 +33,10 @@ export const LOG_LEVEL = env('LOG_LEVEL', 'info');
 
 export const API_KEY = env('API_KEY', '');
 
-export const METADATA_CRON_SCHEDULE = env('METADATA_CRON_SCHEDULE', '50 * * * * *');
+// CRON jobs
+export const CRON_SCHEDULE = env('CRON_SCHEDULE', '50 * * * * *');
+export const DOCUMENT_CRON_UPDATE_PERIOD_DAYS = env('DOCUMENT_CRON_UPDATE_PERIOD_DAYS', 1);
+export const DOCUMENT_CRON_CREATED_AGE_DAYS = env('DOCUMENT_CRON_CREATED_AGE_DAYS', 1);
 
 // Connect to localhost
 export const SOCKET_HOST = env('SOCKET_HOST', isClient() ? window.location.hostname : 'localhost');

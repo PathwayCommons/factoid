@@ -138,7 +138,7 @@ tryPromise( () => {
   const tables = ['element', 'document'];
   return tables.reduce( ( p, name ) => p.then( () => setup( name ) ), Promise.resolve() );
 } ).then( () => {
-  cron.schedule( config.METADATA_CRON_SCHEDULE, () => {
+  cron.schedule( config.CRON_SCHEDULE, () => {
     updateCron();
   });
 } ).then( () => {

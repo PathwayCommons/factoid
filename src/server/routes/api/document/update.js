@@ -1,13 +1,11 @@
 import logger from '../../../logger';
-import { DEMO_SECRET } from '../../../../config';
+import { DEMO_SECRET, DOCUMENT_CRON_UPDATE_PERIOD_DAYS, DOCUMENT_CRON_CREATED_AGE_DAYS } from '../../../../config';
 import { loadTables, loadDoc, fillDocArticle } from  './index';
 
 const HOURS_PER_DAY = 24;
 const MINUTES_PER_HOUR = 60;
 const SECONS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
-const UPDATE_PERIOD_DAYS = 1; // Time between updates
-const CREATED_AGE_DAYS = 1; // docs created this time ago will be selected for update
 
 const daysToMs = d => d * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 const dateInPast = days => {
@@ -24,9 +22,6 @@ const lastUpdateTime = t => {
     mtime = t;
   }
 };
-
-const bumpLastUpdateTime = () => lastUpdateTime( Date.now() );
-const timeSinceLastUpdate = () => Date.now() - lastUpdateTime();
 
 const docsToUpdate = async startDate => {
 
@@ -57,9 +52,10 @@ const docsToUpdate = async startDate => {
 
 const updateArticle = async () => {
   try {
-    const shouldUpdate = lastUpdateTime() == null || timeSinceLastUpdate() > daysToMs( UPDATE_PERIOD_DAYS );
+    const timeSinceLastUpdate = Date.now() - lastUpdateTime();
+    const shouldUpdate = lastUpdateTime() == null || timeSinceLastUpdate > daysToMs( DOCUMENT_CRON_UPDATE_PERIOD_DAYS );
     if ( shouldUpdate ){
-      let startDate = dateInPast( CREATED_AGE_DAYS );
+      let startDate = dateInPast( DOCUMENT_CRON_CREATED_AGE_DAYS );
       const docs = await docsToUpdate( startDate );
 
       for( const doc of docs ){
@@ -67,7 +63,7 @@ const updateArticle = async () => {
         logger.info( `Updating article info for paperId: ${paperId}`);
         await fillDocArticle( doc, paperId );
       }
-      bumpLastUpdateTime();
+      lastUpdateTime( Date.now() );
     }
   } catch ( err ) {
     logger.error(`Error in Article update ${err}`);

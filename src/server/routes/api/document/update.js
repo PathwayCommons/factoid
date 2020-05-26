@@ -1,28 +1,32 @@
-// import _ from 'lodash';
-
 import logger from '../../../logger';
 import { DEMO_SECRET } from '../../../../config';
 import { loadTables, loadDoc, fillDocArticle } from  './index';
-// let mtime = null;
-
-// const lastModTime = t => {
-//   if( !t ){
-//     return mtime;
-//   } else {
-//     mtime = t;
-//   }
-// };
 
 const HOURS_PER_DAY = 24;
 const MINUTES_PER_HOUR = 60;
 const SECONS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
+const UPDATE_PERIOD_DAYS = 1; // Time between updates
+const CREATED_AGE_DAYS = 1; // docs created this time ago will be selected for update
+
+const daysToMs = d => d * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 const dateInPast = days => {
-  const daysToMs = d => d * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONS_PER_MINUTE * MILLISECONDS_PER_SECOND;
-  const now = new Date().getTime();
+  const now = Date.now();
   const offset = daysToMs( days );
   return new Date( now - offset );
 };
+
+let mtime = null; // milliseconds
+const lastUpdateTime = t => {
+  if( !t ){
+    return mtime;
+  } else {
+    mtime = t;
+  }
+};
+
+const bumpLastUpdateTime = () => lastUpdateTime( Date.now() );
+const timeSinceLastUpdate = () => Date.now() - lastUpdateTime();
 
 const docsToUpdate = async startDate => {
 
@@ -50,15 +54,20 @@ const docsToUpdate = async startDate => {
   return Promise.all( dbJSON.map( ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret }) ));
 };
 
-const DAYS_AGO_CREATED = 1;
+
 const updateArticle = async () => {
   try {
-    let startDate = dateInPast( DAYS_AGO_CREATED );
-    const docs = await docsToUpdate( startDate );
-    for( const doc of docs ){
-      const { paperId } = doc.provided();
-      logger.info( `Updating article info for paperId: ${paperId}`);
-      await fillDocArticle( doc, paperId );
+    const shouldUpdate = lastUpdateTime() == null || timeSinceLastUpdate() > daysToMs( UPDATE_PERIOD_DAYS );
+    if ( shouldUpdate ){
+      let startDate = dateInPast( CREATED_AGE_DAYS );
+      const docs = await docsToUpdate( startDate );
+
+      for( const doc of docs ){
+        const { paperId } = doc.provided();
+        logger.info( `Updating article info for paperId: ${paperId}`);
+        await fillDocArticle( doc, paperId );
+      }
+      bumpLastUpdateTime();
     }
   } catch ( err ) {
     logger.error(`Error in Article update ${err}`);
@@ -67,6 +76,7 @@ const updateArticle = async () => {
 
 const update = async () => {
   try {
+    logger.info( `Document update call received`);
     await updateArticle();
   } catch ( err ) {
     logger.error(`Error in Document update ${err}`);

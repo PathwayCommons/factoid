@@ -1,7 +1,7 @@
-import logger from './logger';
+import update from './routes/api/document/update';
 
-const updateCron = () => {
-  logger.info( 'Cron updated' );
+const updateCron = async () => {
+  await update();
 };
 
- export default updateCron;
+export default updateCron;

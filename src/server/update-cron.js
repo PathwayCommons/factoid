@@ -1,7 +1,7 @@
-import update from './routes/api/document/update';
+import docUpdate from './routes/api/document/update';
 
 const updateCron = async () => {
-  await update();
+  await docUpdate();
 };
 
 export default updateCron;

@@ -1,5 +1,14 @@
 # Factoid
 
+Biofactoid [(biofactoid.org)](https://biofactoid.org/), is a web-based system that empowers authors to capture and share machine-readable summaries of molecular-level interactions described in their publications.
+
+## Getting the data
+
+All contributed pathway data is freely available for download at https://biofactoid.org/api/document/zip which contains files for each pathway represented in:
+  - JavaScript Object Notation (JSON). This is the native format for Biofactoid data and contains interaction data, metadata of the record itself, metadata of the corresponding article, and visualisation data (layout and colors as Cytoscape JSON (Franz et al. (2016) Bioinforma. Oxf. Engl., 32, 309–311.)).
+  - [Biological Pathway Exchange (BioPAX)](http://www.biopax.org/) (Demir et al. (2010) Biotechnol., 28, 935–942.) for detailed semantic exchange.
+  - [Systems Biology Graphical Notation Markup Language (SBGNML)](https://sbgn.github.io/), a format that supports biological process visualization (Le Novère et al. Nat. Biotechnol., 27, 735–741. (2009); van Iersel et al. (2012) Bioinforma. Oxf. Engl., 28, 2016–2021.)
+
 ## Required software
 
 - [Node.js](https://nodejs.org/en/) >=10
@@ -44,7 +53,7 @@ Links:
 - `NCBI_LINK_BASE_URL`: base url concatenated to id to generate a linkout
 - `PUBMED_LINK_BASE_URL`: base url concatenated to unique id to generate linkout
 - `DOI_LINK_BASE_URL`: base url concatenated to doi to generate linkout
-- `GOOGLE_SCHOLAR_BASE_URL` : base url concatenated to doi, title, or pmid to generate linkout 
+- `GOOGLE_SCHOLAR_BASE_URL` : base url concatenated to doi, title, or pmid to generate linkout
 
 Demo:
 

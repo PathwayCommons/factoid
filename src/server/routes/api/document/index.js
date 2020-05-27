@@ -40,7 +40,7 @@ import { BASE_URL,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP
  } from '../../../../config';
-import { fetchPubmed } from './pubmed/fetchPubmed';
+
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
@@ -255,12 +255,6 @@ let getSbgnFromTemplates = templates => {
   } )
     .then(handleResponseError);
 };
-
-http.get('/fetchPubmed/', function( req, res, next ){
-  fetchPubmed( { uids: req.query.uids} )
-    .then( r => res.json( r ))
-    .catch( next );
-});
 
 /**
  * @swagger

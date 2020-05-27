@@ -67,11 +67,15 @@ const getDocuments = ( templates, queryArticle ) => {
       return xref;
     };
 
-    let agent0 = getAgent( intnTemplate[0] );
-    let agent1 = getAgent( intnTemplate[1] );
+    let pptTemplates = intnTemplate.ppts;
+    let agent0 = getAgent( pptTemplates[0] );
+    let agent1 = getAgent( pptTemplates[1] );
 
     return tryPromise( () => getInteractions(agent0, agent1) )
-      .then( intns => _.groupBy( intns, 'pmid' ) );
+      .then( intns => {
+        intns.forEach( intn => intn.intnId = intnTemplate.id );
+        return _.groupBy( intns, 'pmid' );
+      } );
   };
 
   const merger = (objValue, srcValue) => {

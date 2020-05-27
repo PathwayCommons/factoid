@@ -118,14 +118,15 @@ class InteractionType {
       ppts = this.interaction.participants();
     }
 
-    let templates = ppts.map( p => p.toSearchTemplate() );
+    let id = this.interaction.id();
+    let pptTemplates = ppts.map( p => p.toSearchTemplate() );
 
     // if there is some participants with invalid template skip the interaction
-    if ( _.includes( templates, null ) ) {
+    if ( _.includes( ppts, null ) ) {
       return null;
     }
 
-    return templates;
+    return { id, ppts: pptTemplates };
   }
 
   toString(verbPhrase, post = ''){

@@ -82,10 +82,37 @@ let createSecret = ({ secret }) => {
 };
 
 let createRelatedPapers = ({ papersData, docId }) => {
-  return (
-    tryPromise( () => loadTable('relatedPapers') )
-    .then(({ table, conn }) => table.insert({ papersData, docId }).run(conn))
-  );
+  return loadTables()
+    .then( ({ docDb, eleDb }) => {
+      let sanitize = o => {
+        delete o.intnId;
+      };
+
+      let els = [];
+      papersData.forEach( paperData => {
+        let pmid = paperData.pmid;
+        let pubmed = paperData.pubmed;
+        paperData.elements.forEach( el => {
+          els.push( _.extend( {}, el, { pmid, pubmed } ) );
+        } );
+      } );
+
+      let elsByIntn = _.groupBy( els, 'intnId' );
+
+      let elPromises = Object.keys( elsByIntn ).map( intnId => {
+        let elPapersData = elsByIntn[ intnId ];
+        elPapersData.forEach( sanitize );
+        return eleDb.table.filter( { id: intnId } )
+          .update( { relatedPapers: elPapersData } )
+          .run( eleDb.conn );
+      } );
+
+      let docPromise = docDb.table.filter( { id: docId } )
+        .update( { relatedPapers: papersData } )
+        .run( docDb.conn );
+
+      return Promise.all( [ docPromise, ...elPromises ] );
+    } );
 };
 
 let createDoc = ({ docDb, eleDb, id, secret, provided }) => {

@@ -97,17 +97,46 @@ let createRelatedPapers = ({ papersData, docId }) => {
         } );
       } );
 
-      let elsByIntn = _.groupBy( els, 'intnId' );
+      let papersByIntn = {};
+      let pubmedByPmid = {};
 
-      let elPromises = Object.keys( elsByIntn ).map( intnId => {
-        let elPapersData = elsByIntn[ intnId ];
-        elPapersData.forEach( sanitize );
-        return eleDb.table.filter( { id: intnId } )
+      papersData.map( paperData => {
+        let { pmid, pubmed, elements } = paperData;
+
+        if ( pubmedByPmid[ pmid ] == undefined ) {
+          pubmedByPmid[ pmid ] = pubmed;
+        }
+
+        elements.forEach( el => {
+          let intnId = el.intnId;
+          if ( papersByIntn[ intnId ] == undefined ) {
+            papersByIntn[ intnId ] = {};
+          }
+
+          if ( papersByIntn[ intnId ][ pmid ] == undefined ) {
+            papersByIntn[ intnId ][ pmid ] = [];
+          }
+
+          sanitize( el );
+          papersByIntn[ intnId ][ pmid ].push( el );
+        } );
+      } );
+
+      let elPromises = Object.keys( papersByIntn ).map( intnId => {
+        let elPapersData = papersByIntn[ intnId ];
+        let pmids = Object.keys( elPapersData );
+
+        elPapersData = pmids.map( pmid => {
+          let pubmed = pubmedByPmid[ pmid ];
+          let elements = elPapersData[ pmid ];
+          return { pmid, pubmed, elements };
+        } );
+        return eleDb.table.get( intnId )
           .update( { relatedPapers: elPapersData } )
           .run( eleDb.conn );
       } );
 
-      let docPromise = docDb.table.filter( { id: docId } )
+      let docPromise = docDb.table.get( docId )
         .update( { relatedPapers: papersData } )
         .run( docDb.conn );
 

@@ -81,67 +81,61 @@ let createSecret = ({ secret }) => {
   );
 };
 
-let createRelatedPapers = ({ papersData, docId }) => {
-  return loadTables()
-    .then( ({ docDb, eleDb }) => {
-      let sanitize = o => {
-        delete o.intnId;
-      };
+let createRelatedPapers = ({ papersData, doc }) => {
+  let sanitize = o => {
+    delete o.intnId;
+  };
 
-      let els = [];
-      papersData.forEach( paperData => {
-        let pmid = paperData.pmid;
-        let pubmed = paperData.pubmed;
-        paperData.elements.forEach( el => {
-          els.push( _.extend( {}, el, { pmid, pubmed } ) );
-        } );
-      } );
-
-      let papersByIntn = {};
-      let pubmedByPmid = {};
-
-      papersData.map( paperData => {
-        let { pmid, pubmed, elements } = paperData;
-
-        if ( pubmedByPmid[ pmid ] == undefined ) {
-          pubmedByPmid[ pmid ] = pubmed;
-        }
-
-        elements.forEach( el => {
-          let intnId = el.intnId;
-          if ( papersByIntn[ intnId ] == undefined ) {
-            papersByIntn[ intnId ] = {};
-          }
-
-          if ( papersByIntn[ intnId ][ pmid ] == undefined ) {
-            papersByIntn[ intnId ][ pmid ] = [];
-          }
-
-          sanitize( el );
-          papersByIntn[ intnId ][ pmid ].push( el );
-        } );
-      } );
-
-      let elPromises = Object.keys( papersByIntn ).map( intnId => {
-        let elPapersData = papersByIntn[ intnId ];
-        let pmids = Object.keys( elPapersData );
-
-        elPapersData = pmids.map( pmid => {
-          let pubmed = pubmedByPmid[ pmid ];
-          let elements = elPapersData[ pmid ];
-          return { pmid, pubmed, elements };
-        } );
-        return eleDb.table.get( intnId )
-          .update( { relatedPapers: elPapersData } )
-          .run( eleDb.conn );
-      } );
-
-      let docPromise = docDb.table.get( docId )
-        .update( { relatedPapers: papersData } )
-        .run( docDb.conn );
-
-      return Promise.all( [ docPromise, ...elPromises ] );
+  let els = [];
+  papersData.forEach( paperData => {
+    let pmid = paperData.pmid;
+    let pubmed = paperData.pubmed;
+    paperData.elements.forEach( el => {
+      els.push( _.extend( {}, el, { pmid, pubmed } ) );
     } );
+  } );
+
+  let papersByIntn = {};
+  let pubmedByPmid = {};
+
+  papersData.map( paperData => {
+    let { pmid, pubmed, elements } = paperData;
+
+    if ( pubmedByPmid[ pmid ] == undefined ) {
+      pubmedByPmid[ pmid ] = pubmed;
+    }
+
+    elements.forEach( el => {
+      let intnId = el.intnId;
+      if ( papersByIntn[ intnId ] == undefined ) {
+        papersByIntn[ intnId ] = {};
+      }
+
+      if ( papersByIntn[ intnId ][ pmid ] == undefined ) {
+        papersByIntn[ intnId ][ pmid ] = [];
+      }
+
+      sanitize( el );
+      papersByIntn[ intnId ][ pmid ].push( el );
+    } );
+  } );
+
+  let elPromises = Object.keys( papersByIntn ).map( intnId => {
+    let elPapersData = papersByIntn[ intnId ];
+    let pmids = Object.keys( elPapersData );
+
+    elPapersData = pmids.map( pmid => {
+      let pubmed = pubmedByPmid[ pmid ];
+      let elements = elPapersData[ pmid ];
+      return { pmid, pubmed, elements };
+    } );
+
+    return doc.get( intnId ).relatedPapers( elPapersData );
+  } );
+
+  let docPromise = doc.relatedPapers( papersData );
+
+  return Promise.all( [ docPromise, ...elPromises ] );
 };
 
 let createDoc = ({ docDb, eleDb, id, secret, provided }) => {
@@ -1333,7 +1327,7 @@ http.patch('/status/:id/:secret', function( req, res, next ){
     logger.info('Searching the related papers table for document ', docId);
 
     searchRelatedPapers( doc )
-      .then( papersData => createRelatedPapers({ papersData, docId }) )
+      .then( papersData => createRelatedPapers({ papersData, doc }) )
       .then( () => logger.info('Related papers table is updated for document', docId) )
       .catch( e => logger.error( `Error in uploading related papers for document ${docId}: ${JSON.stringify(e)}` ) );
 

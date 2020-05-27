@@ -69,8 +69,6 @@ const docsToUpdate = async () => {
  *
  * Update the Document article data
  *
- * @param {Number} createdAgeDays Documents created within this number of days will be selected for update.
- *  If undefined, it will default to DEFAULT_DOCUMENT_CREATED_START_DATE
  */
 const updateArticle = async () => {
   try {

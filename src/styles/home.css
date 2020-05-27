@@ -672,4 +672,8 @@
   .home-nav-top {
     display: none;
   }
+
+  .home-figure-fg-2 {
+    background-size: cover;
+  }
 }

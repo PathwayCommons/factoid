@@ -1,7 +1,9 @@
-import docUpdate from './routes/api/document/update';
+import documentUpdate from './routes/api/document/update';
+
+import { DOCUMENT_CRON_UPDATE_PERIOD_DAYS } from '../config';
 
 const updateCron = async () => {
-  await docUpdate();
+  await documentUpdate( DOCUMENT_CRON_UPDATE_PERIOD_DAYS );
 };
 
 export default updateCron;

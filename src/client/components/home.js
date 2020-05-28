@@ -119,6 +119,7 @@ class RequestForm extends Component {
         h('div.home-request-form-done', [
           h( 'a.home-request-form-done-button', { href: privateUrl, target: '_blank', }, 'Start Biofactoid' ),
           h( 'div.home-request-form-done-title', [
+            h('span', 'Title: ' ),
             h( doi ? 'a.plain-link': 'span', (doi ? { href: `${DOI_LINK_BASE_URL}${doi}`, target: '_blank'}: {}), displayTitle )
           ]),
           reference ? h( 'div.home-request-form-done-info', reference ) : null
@@ -149,7 +150,7 @@ class RequestForm extends Component {
           value: this.state.authorEmail,
           spellCheck: false
         }),
-        h( 'div.home-request-form-footer', `Your article's private editing link is sent to this email. It is never revealed or shared.` ),
+        h( 'div.home-request-form-footer', `A private editing link is sent to your email. Emails are never revealed or shared.` ),
         h('div.home-request-error', {
           className: makeClassList({ 'home-request-error-message-shown': this.state.errors.incompleteForm })
         }, 'Fill out everything above, then try again.'),

@@ -489,17 +489,16 @@
   box-sizing: border-box;
 }
 
-.home-request-form-radioset {
-  margin-top: 0.5em;
-}
-
 .home-request-form-submitting {
   opacity: 0.333;
   pointer-events: none;
 }
 
 .home-request-form-description {
-  margin-bottom: 1em;
+  font-weight: bold;
+  margin: 0;
+  font-size: 1em;
+  text-align: center;
 }
 
 .home-request-form-author {
@@ -518,8 +517,10 @@
   box-sizing: border-box;
 }
 
-.home-request-form-description {
-  font-weight: bold;
+.home-request-form-footer {
+  margin: 0.2em 0.5em 0;
+  color: var(--fadedColor);
+  font-size: 0.8em;
 }
 
 .home-request-submit {
@@ -535,6 +536,7 @@
   padding: 0.25em 0.5em;
   font-size: var(--smallFontSize);
   text-align: center;
+  margin-top: 1em;
 }
 
 .home-request-error-message-shown {
@@ -569,14 +571,15 @@
   text-decoration: none;
   font-size: 1.4em;
   font-weight: bold;
+  text-transform: uppercase;
 }
 
-.home-request-form-done-body {
+.home-request-form-done-title {
   color: var(--buttonActiveColor);
 }
 
-.home-request-form-done-footer {
-  color: var(--fadedColor);
+.home-request-form-done-info {
+  margin: 0;
   font-size: 0.8em;
 }
 

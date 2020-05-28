@@ -6,7 +6,7 @@ import { makeClassList, tryPromise } from '../../util';
 import EventEmitter from 'eventemitter3';
 import { truncateString } from '../../util';
 
-import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME, EMAIL_CONTEXT_JOURNAL, DOI_LINK_BASE_URL } from '../../config';
+import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME, DOI_LINK_BASE_URL } from '../../config';
 
 const checkStatus = response => {
   if ( response.status >= 200 && response.status < 300 ) {
@@ -94,12 +94,18 @@ class RequestForm extends Component {
       };
 
       this.setState({ submitting: true, errors: { incompleteForm: false, network: false } });
-      fetch( url, fetchOpts )
+
+      ( fetch( url, fetchOpts )
         .then( checkStatus )
         .then( response => response.json() )
-        .then( docJSON => new Promise( resolve => this.setState({ done: true, docJSON }, resolve ) ) )
+        .then( docJSON => new Promise( resolve => {
+          window.open(docJSON.privateUrl);
+
+          this.setState({ done: true, docJSON }, resolve );
+        } ) )
         .catch( () => new Promise( resolve => this.setState({ errors: { network: true } }, resolve ) ) )
-        .finally( () => new Promise( resolve => this.setState({ submitting: false }, resolve ) ) );
+        .finally( () => new Promise( resolve => this.setState({ submitting: false }, resolve ) ) )
+      );
     }
   }
 
@@ -107,42 +113,22 @@ class RequestForm extends Component {
     const { done, docJSON } = this.state;
     if( done && docJSON ){
       const { privateUrl, citation: { doi, title, reference } } = docJSON;
-      const articleString = _.compact([ truncateString( title ), reference ]).join(' ');
+      const displayTitle = truncateString( title );
 
       return h('div.home-request-form-container', [
         h('div.home-request-form-done', [
-          h( 'a.home-request-form-done-button', { href: privateUrl, target: '_blank', }, 'START BIOFACTOID' ),
-          h( 'div.home-request-form-done-body', [
-            h( doi ? 'a.plain-link': 'span', (doi ? { href: `${DOI_LINK_BASE_URL}${doi}`, target: '_blank'}: {}), `Article: ${articleString}` )
+          h( 'a.home-request-form-done-button', { href: privateUrl, target: '_blank', }, 'Start Biofactoid' ),
+          h( 'div.home-request-form-done-title', [
+            h('span', 'Title: ' ),
+            h( doi ? 'a.plain-link': 'span', (doi ? { href: `${DOI_LINK_BASE_URL}${doi}`, target: '_blank'}: {}), displayTitle )
           ]),
-          h( 'div.home-request-form-done-footer', 'An email invitation has also been sent.' )
+          reference ? h( 'div.home-request-form-done-info', reference ) : null
         ])
       ]);
     }
 
-    const contextSelector = contexts => {
-      let radios = [];
-      let addType = (typeVal, displayName) => {
-        radios.push(
-          h('input', {
-            type: 'radio',
-            name: `home-request-form-context-${typeVal}`,
-            id: `home-request-form-radio-context-${typeVal}`,
-            value: typeVal,
-            checked: this.state.context === typeVal,
-            onChange: e => this.handleContextChange(e)
-          }),
-          h('label', {
-            htmlFor: `home-request-form-radio-context-${EMAIL_CONTEXT_SIGNUP}`
-          }, displayName)
-        );
-      };
-      contexts.forEach( context => addType( context, _.capitalize( context ) ) );
-      return h( 'div.radioset.home-request-form-radioset', radios );
-    };
-
     return h('div.home-request-form-container', [
-      h('div.home-request-form-description', 'Claim your article'),
+      h('div.home-request-form-description', `Link your article to pathway data`),
       h('i.icon.icon-spinner.home-request-spinner', {
         className: makeClassList({ 'home-request-spinner-shown': this.state.submitting })
       }),
@@ -151,28 +137,29 @@ class RequestForm extends Component {
       }, [
         h('input', {
           type: 'text',
-          placeholder: 'Article title',
+          placeholder: `Article title`,
           onChange: e => this.updateForm({ paperId: e.target.value }),
           value: this.state.paperId
         }),
         h('input', {
           type: 'text',
-          placeholder: 'Email address',
+          placeholder: `Email address`,
           onChange: e => this.updateForm({
             authorEmail: e.target.value
           }),
-          value: this.state.authorEmail
+          value: this.state.authorEmail,
+          spellCheck: false
         }),
-        this.props.apiKey ? contextSelector([ EMAIL_CONTEXT_SIGNUP, EMAIL_CONTEXT_JOURNAL ]) : null,
+        h( 'div.home-request-form-footer', `A private editing link is sent to your email. Emails are never revealed or shared.` ),
         h('div.home-request-error', {
           className: makeClassList({ 'home-request-error-message-shown': this.state.errors.incompleteForm })
         }, 'Fill out everything above, then try again.'),
         h('div.home-request-error', {
           className: makeClassList({ 'home-request-error-message-shown': this.state.errors.network })
         }, 'Please try again later'),
-        h('button.salient-button.home-request-submit', {
+        h('button.super-salient-button.home-request-submit', {
           onClick: () => this.submitRequest()
-        }, 'Request an invitation')
+        }, 'Create my pathway')
       ])
     ]);
   }
@@ -199,7 +186,7 @@ class Scroller extends Component {
 
       this.clearScrollStateDebounced();
     };
-    
+
     this.clearScrollStateDebounced = _.debounce(() => {
       this.setState({ isScrolling: false });
     }, 250);
@@ -384,8 +371,7 @@ class Home extends Component {
       return h(Popover, {
         tippy: {
           html: h(RequestForm, {
-            bus: this.bus,
-            doneMsg: 'Thank you for your request!  We will contact you soon with next steps.'
+            bus: this.bus
           }),
           onHidden: () => this.bus.emit('closecta'),
           placement: 'top'

@@ -39,11 +39,11 @@ const docsToUpdate = async () => {
   // Filter: Exclude by status 'trashed'
   q = q.filter( r.row( 'status' ).ne( DOCUMENT_STATUS_FIELDS.TRASHED ) );
 
-  // Filter: Include when createdDate after startDate
+  // Filter: Include when created less than DOCUMENT_CRON_CREATED_AGE_DAYS days ago
   let startDate = DOCUMENT_CRON_CREATED_AGE_DAYS ? dateFromToday( -1 * DOCUMENT_CRON_CREATED_AGE_DAYS ) : DEFAULT_DOCUMENT_CREATED_START_DATE;
   q = q.filter( r.row( 'createdDate' ).during( startDate, new Date() ) );
 
-  // Filter: Includee when article has missing attributes (doi, pmid)
+  // Filter: Include when article is missing key metadata (doi, pmid)
   q = q.filter(
     r.not(
       r.row( 'article' )( 'PubmedData' )( 'ArticleIdList' ).contains( ArticleId => ArticleId('IdType').eq('doi') )
@@ -94,9 +94,14 @@ const updateArticle = async () => {
  */
 const update = async updatePeriodDays => {
   try {
-    logger.info( `Document update call received`);
-    const timeSinceLastUpdate = Date.now() - lastUpdateTime();
-    const shouldUpdate = lastUpdateTime() == null || timeSinceLastUpdate > daysToMs( updatePeriodDays );
+    let shouldUpdate = false;
+    if( lastUpdateTime() == null ){
+      shouldUpdate = true;
+    } else {
+      const timeSinceLastUpdate = Date.now() - lastUpdateTime();
+      shouldUpdate = timeSinceLastUpdate > daysToMs( updatePeriodDays );
+    }
+
     if ( shouldUpdate ){
       await updateArticle();
     }

@@ -83,6 +83,63 @@ let createSecret = ({ secret }) => {
   );
 };
 
+let createRelatedPapers = ({ papersData, doc }) => {
+  let sanitize = o => {
+    delete o.intnId;
+  };
+
+  let els = [];
+  papersData.forEach( paperData => {
+    let pmid = paperData.pmid;
+    let pubmed = paperData.pubmed;
+    paperData.elements.forEach( el => {
+      els.push( _.extend( {}, el, { pmid, pubmed } ) );
+    } );
+  } );
+
+  let papersByIntn = {};
+  let pubmedByPmid = {};
+
+  papersData.map( paperData => {
+    let { pmid, pubmed, elements } = paperData;
+
+    if ( pubmedByPmid[ pmid ] == undefined ) {
+      pubmedByPmid[ pmid ] = pubmed;
+    }
+
+    elements.forEach( el => {
+      let intnId = el.intnId;
+      if ( papersByIntn[ intnId ] == undefined ) {
+        papersByIntn[ intnId ] = {};
+      }
+
+      if ( papersByIntn[ intnId ][ pmid ] == undefined ) {
+        papersByIntn[ intnId ][ pmid ] = [];
+      }
+
+      sanitize( el );
+      papersByIntn[ intnId ][ pmid ].push( el );
+    } );
+  } );
+
+  let elPromises = Object.keys( papersByIntn ).map( intnId => {
+    let elPapersData = papersByIntn[ intnId ];
+    let pmids = Object.keys( elPapersData );
+
+    elPapersData = pmids.map( pmid => {
+      let pubmed = pubmedByPmid[ pmid ];
+      let elements = elPapersData[ pmid ];
+      return { pmid, pubmed, elements };
+    } );
+
+    return doc.get( intnId ).relatedPapers( elPapersData );
+  } );
+
+  let docPromise = doc.relatedPapers( papersData );
+
+  return Promise.all( [ docPromise, ...elPromises ] );
+};
+
 let createDoc = ({ docDb, eleDb, id, secret, provided }) => {
   let doc = newDoc({ docDb, eleDb, id, secret, provided });
 
@@ -1306,9 +1363,21 @@ http.patch('/status/:id/:secret', function( req, res, next ){
   const handlePublishRequest = async doc => {
     const didPublish = await tryPublish( doc );
     if( didPublish ) {
+      updateRelatedPapers( doc );
       await tryTweetingDoc( doc );
       sendFollowUpNotification( doc );
     }
+  };
+
+  const updateRelatedPapers = doc => {
+    let docId = doc.id();
+    logger.info('Searching the related papers table for document ', docId);
+
+    searchRelatedPapers( doc )
+      .then( papersData => createRelatedPapers({ papersData, doc }) )
+      .then( () => logger.info('Related papers table is updated for document', docId) )
+      .catch( e => logger.error( `Error in uploading related papers for document ${docId}: ${JSON.stringify(e)}` ) );
+
   };
 
   const updateDocStatus = async doc => {
@@ -1493,7 +1562,32 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
+const searchRelatedPapers = ( doc, interactionId ) => {
+  let article = doc.article();
+  let abstract = article.MedlineCitation.Article.Abstract;
+  if ( !abstract ) {
+    return [];
+  }
+
+  let templates;
+  if ( interactionId ) {
+    let intn = doc.get( interactionId );
+    templates = [ intn.toSearchTemplate() ];
+  }
+  else {
+    templates = doc.toSearchTemplates();
+  }
+
+
+  let obj = { templates, article };
+  return indra.searchDocuments( obj );
+};
+
 http.get('/related-papers/:id', function( req, res, next ){
+  // 5000000ms correspons to 83.3333333 mins
+  let timout = 5000000;
+  res.setTimeout(timout);
+  
   let id = req.params.id;
   let queryObject = url.parse(req.url, true).query;
   let { interactionId } = queryObject;
@@ -1501,15 +1595,7 @@ http.get('/related-papers/:id', function( req, res, next ){
   tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
-    .then( doc => {
-      if ( interactionId ) {
-        let intn = doc.get(interactionId );
-        return [ intn.toSearchTemplate() ];
-      }
-
-      return doc.toSearchTemplates();
-    } )
-    .then( templates => indra.searchDocuments( { templates } ) )
+    .then( doc => searchRelatedPapers( doc, interactionId ) )
     .then( js => res.json( js ))
     .catch( next );
 });

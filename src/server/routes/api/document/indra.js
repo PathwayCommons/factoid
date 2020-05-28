@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import _ from 'lodash';
 import { parse as dateParse } from 'date-fns';
 
-import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL } from '../../../../config';
+import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL } from '../../../../config';
 import logger from '../../../logger';
 import { tryPromise } from '../../../../util';
 import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
@@ -10,6 +10,8 @@ import { fetchPubmed } from './pubmed/fetchPubmed';
 import querystring from 'querystring';
 
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
+const MIN_SEMANTIC_SCORE = 0.47;
+const SORT_BY_DATE = false;
 
 const SUB_MODIFICATION_TYPES = ['Phosphorylation', 'Dephosphorylation', 'Dephosphorylation',
   'Deubiquitination', 'Methylation', 'Demethylation'];
@@ -21,7 +23,7 @@ const BASE_MODIFICATION_TYPES = ['Sumoylation', 'Desumoylation', 'Hydroxylation'
 const TRANSCRIPTION_TRANSLATION_TYPES = ['IncreaseAmount', 'DecreaseAmount'];
 const BINDING_TYPES = ['Complex'];
 
-const getDocuments = templates => {
+const getDocuments = ( templates, queryArticle ) => {
   const getForIntn = intnTemplate => {
     const getAgent = t => {
       let agent;
@@ -65,11 +67,15 @@ const getDocuments = templates => {
       return xref;
     };
 
-    let agent0 = getAgent( intnTemplate[0] );
-    let agent1 = getAgent( intnTemplate[1] );
+    let pptTemplates = intnTemplate.ppts;
+    let agent0 = getAgent( pptTemplates[0] );
+    let agent1 = getAgent( pptTemplates[1] );
 
     return tryPromise( () => getInteractions(agent0, agent1) )
-      .then( intns => _.groupBy( intns, 'pmid' ) );
+      .then( intns => {
+        intns.forEach( intn => intn.intnId = intnTemplate.id );
+        return _.groupBy( intns, 'pmid' );
+      } );
   };
 
   const merger = (objValue, srcValue) => {
@@ -85,10 +91,57 @@ const getDocuments = templates => {
       return [];
     }
 
+    const getSemanticScores = pubmeds => {
+      if ( SORT_BY_DATE ) {
+        let semanticScores = null;
+        return { semanticScores, pubmeds };
+      }
+
+      const getAbstract = article => {
+        let abstract = article.MedlineCitation.Article.Abstract;
+        if ( _.isString( abstract ) ) {
+          return abstract;
+        }
+        if ( _.isArray( abstract ) ) {
+          return abstract[ 0 ];
+        }
+        return null;
+      };
+      const getPmid = article => article.PubmedData.ArticleIdList.find( o => o.IdType == 'pubmed' ).id;
+
+      let url = SEMANTIC_SEARCH_BASE_URL;
+      let queryText = getAbstract( queryArticle );
+      let queryUid = getPmid( queryArticle );
+      let query = { uid: queryUid, text: queryText };
+
+      let documents = pubmeds.PubmedArticleSet.map( article => {
+        let text = getAbstract( article );
+        let uid = getPmid( article );
+
+        if ( text == null || uid == null ) {
+          return null;
+        }
+
+        return { text, uid };
+      } );
+
+      documents = _.filter( documents, d => d != null );
+
+      return fetch( url, {
+        method: 'post',
+        body: JSON.stringify({ query, documents }),
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then( res => res.json() )
+      .then( semanticScores => ( { pubmeds, semanticScores } ) );
+    };
+
     return tryPromise( () => fetchPubmed({ uids: pmids }) )
-      .then( pubmeds => {
+      .then( getSemanticScores )
+      .then( ( { pubmeds, semanticScores } ) => {
+        let semanticScoreById = _.groupBy( semanticScores, 'uid' );
         let articles = pubmeds.PubmedArticleSet;
-        
+
         let arr = pmids.map( (pmid, i) => {
           let pubmed = articles[i].MedlineCitation.Article;
           let elements = o[ pmid ];
@@ -117,7 +170,18 @@ const getDocuments = templates => {
             return new Date( year, month, day ).getTime();
         };
 
-        arr = _.sortBy( arr, doc => -getPubTime(doc) );
+        const getSemanticScore = doc => _.get( semanticScoreById, [ doc.pmid, 0, 'score' ] );
+
+        const getNegativeScore = ( doc ) => {
+          let fcn = SORT_BY_DATE ? getPubTime : getSemanticScore;
+          return -fcn( doc );
+        };
+
+        if ( !SORT_BY_DATE ) {
+          arr = arr.filter( doc => getSemanticScore( doc ) > MIN_SEMANTIC_SCORE );
+        }
+
+        arr = _.sortBy( arr, getNegativeScore );
 
         return arr;
       } );
@@ -207,8 +271,8 @@ const assembleEnglish = statements => {
 
 
 export const searchDocuments = opts => {
-  let { templates } = opts;
-  return tryPromise( () => getDocuments(templates) )
+  let { templates, article } = opts;
+  return tryPromise( () => getDocuments(templates, article) )
     .catch( err => {
       logger.error(`Finding indra documents failed`);
       logger.error(err);

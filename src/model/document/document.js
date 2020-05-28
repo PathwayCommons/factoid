@@ -387,6 +387,17 @@ class Document {
     return tryPromise( runLayout ).then( savePositions );
   }
 
+  relatedPapers( papersData ){
+    if( papersData ){
+      let p = this.syncher.update({ 'relatedPapers': papersData });
+      this.emit( 'relatedPapers', papersData );
+      return p;
+    }
+    else if( !papersData ){
+      return this.syncher.get( 'relatedPapers' );
+    }
+  }
+
   status( field ){
     if( field && _.includes( _.values( DOCUMENT_STATUS_FIELDS ), field ) ){
       let p = this.syncher.update({ 'status': field });

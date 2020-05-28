@@ -34,7 +34,7 @@ export const LOG_LEVEL = env('LOG_LEVEL', 'info');
 export const API_KEY = env('API_KEY', '');
 
 // CRON jobs
-export const CRON_SCHEDULE = env('CRON_SCHEDULE', '30 * * * * *');
+export const CRON_SCHEDULE = env('CRON_SCHEDULE', '0 1 * * *');
 export const DOCUMENT_CRON_UPDATE_PERIOD_DAYS = env('DOCUMENT_CRON_UPDATE_PERIOD_DAYS', 1);
 export const DOCUMENT_CRON_CREATED_AGE_DAYS = env('DOCUMENT_CRON_CREATED_AGE_DAYS', undefined);
 

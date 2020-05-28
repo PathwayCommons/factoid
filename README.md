@@ -17,6 +17,12 @@ General:
 - `BASE_URL` : used for email linkouts (e.g. `https://factoid.baderlab.org`)
 - `API_KEY` : used to restrict new document creation (e.g. `8365E63B-9A20-4661-AED8-EDB1296B657F`)
 
+CRON:
+
+- `CRON_SCHEDULE` : second (optional), minute, hour, day of month, month, day of week
+- `DOCUMENT_CRON_UPDATE_PERIOD_DAYS` : The minimum time between successive Document cron update calls
+- `DOCUMENT_CRON_CREATED_AGE_DAYS` : Only Documents created fewer than this many days will be selecte for update. When undefined (default), ignores filtering on creation date.
+
 Database:
 
 - `DB_NAME` : name of the db (default `factoid`)
@@ -44,7 +50,7 @@ Links:
 - `NCBI_LINK_BASE_URL`: base url concatenated to id to generate a linkout
 - `PUBMED_LINK_BASE_URL`: base url concatenated to unique id to generate linkout
 - `DOI_LINK_BASE_URL`: base url concatenated to doi to generate linkout
-- `GOOGLE_SCHOLAR_BASE_URL` : base url concatenated to doi, title, or pmid to generate linkout 
+- `GOOGLE_SCHOLAR_BASE_URL` : base url concatenated to doi, title, or pmid to generate linkout
 
 Demo:
 

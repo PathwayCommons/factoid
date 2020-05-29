@@ -16,6 +16,8 @@ import * as config from '../config';
 import socketio from 'socket.io';
 import db from './db';
 import Syncher from '../model/syncher';
+import cron from 'node-cron';
+import updateCron from './update-cron';
 
 let app = express();
 let server = http.createServer(app);
@@ -135,6 +137,10 @@ tryPromise( () => {
 
   const tables = ['element', 'document'];
   return tables.reduce( ( p, name ) => p.then( () => setup( name ) ), Promise.resolve() );
+} ).then( () => {
+  cron.schedule( config.CRON_SCHEDULE, () => {
+    updateCron();
+  });
 } ).then( () => {
   server.listen(port);
 } );

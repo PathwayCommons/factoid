@@ -26,6 +26,13 @@ General:
 - `BASE_URL` : used for email linkouts (e.g. `https://factoid.baderlab.org`)
 - `API_KEY` : used to restrict new document creation (e.g. `8365E63B-9A20-4661-AED8-EDB1296B657F`)
 
+CRON:
+
+- `CRON_SCHEDULE` : second (optional), minute, hour, day of month, month, day of week
+- `DOCUMENT_CRON_UPDATE_PERIOD_DAYS` : The minimum time between successive Document cron update calls
+- `DOCUMENT_CRON_CREATED_AGE_DAYS` : Only Documents created fewer than this many days will be selecte for update. When undefined (default), ignores filtering on creation date.
+- `DOCUMENT_CRON_REFRESH_ENABLED` : Flag to enable existing Document metadata to be refreshed (e.g. PubMed UID) (default true).
+
 Database:
 
 - `DB_NAME` : name of the db (default `factoid`)

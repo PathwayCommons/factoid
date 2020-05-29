@@ -1601,4 +1601,6 @@ http.get('/related-papers/:id', function( req, res, next ){
 });
 
 export default http;
-export { getDocumentJson }; // allow access so page rendering can get the same data as the rest api
+export { getDocumentJson,
+  loadTables, loadDoc, fillDocArticle
+}; // allow access so page rendering can get the same data as the rest api

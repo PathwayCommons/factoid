@@ -1,5 +1,5 @@
 import logger from '../../../logger';
-import { DEMO_SECRET, DOCUMENT_CRON_CREATED_AGE_DAYS } from '../../../../config';
+import { DEMO_SECRET, DOCUMENT_CRON_CREATED_AGE_DAYS, DOCUMENT_CRON_REFRESH_ENABLED } from '../../../../config';
 import { loadTables, loadDoc, fillDocArticle } from  './index';
 import Document from '../../../../model/document';
 
@@ -43,18 +43,14 @@ const docsToUpdate = async () => {
   let startDate = DOCUMENT_CRON_CREATED_AGE_DAYS ? dateFromToday( -1 * DOCUMENT_CRON_CREATED_AGE_DAYS ) : DEFAULT_DOCUMENT_CREATED_START_DATE;
   q = q.filter( r.row( 'createdDate' ).during( startDate, new Date() ) );
 
-  // Filter: Include when article is missing key metadata (doi, pmid)
-  q = q.filter(
-    r.not(
-      r.row( 'article' )( 'PubmedData' )( 'ArticleIdList' ).contains( ArticleId => ArticleId('IdType').eq('doi') )
-    )
-  );
-
-  q = q.filter(
-    r.not(
-      r.row( 'article' )( 'PubmedData' )( 'ArticleIdList' ).contains( ArticleId => ArticleId('IdType').eq('pmid') )
-    )
-  );
+  // Filter: Include when article is missing metadata (implied vis a vis missing pmid)
+  if( !DOCUMENT_CRON_REFRESH_ENABLED ){
+    q = q.filter(
+      r.not(
+        r.row( 'article' )( 'PubmedData' )( 'ArticleIdList' ).contains( ArticleId => ArticleId('IdType').eq('pmid') )
+      )
+    );
+  }
 
   q = q.orderBy( r.desc( 'createdDate' ) );
   q = q.pluck([ 'id', 'secret' ]);

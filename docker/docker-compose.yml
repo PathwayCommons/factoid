@@ -54,7 +54,7 @@ services:
     container_name: db_container
     ports:
       - "${DB_ADMIN_PORT:-8080}:8080"
-  volumes:
+    volumes:
       - dbdata:/data
   converter:
     image: pathwaycommons/factoid-converters:${FACTOID_CONVERTERS_IMAGE_TAG:-latest}

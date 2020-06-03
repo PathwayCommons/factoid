@@ -159,6 +159,12 @@ class Entity extends Element {
       return null;
     }
 
+    let dbXrefs = assoc.dbXrefs;
+
+    if ( dbXrefs && dbXrefs.length > 0 ) {
+      return dbXrefs[0];
+    }
+
     return {
       id: assoc.id,
       db: assoc.namespace

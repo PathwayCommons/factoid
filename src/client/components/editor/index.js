@@ -123,14 +123,6 @@ class Editor extends DataComponent {
     doc.on('localadd', updateLastEditDate);
     doc.on('localremove', updateLastEditDate);
 
-    doc.on('update', change => {
-      if( _.has( change, 'status' ) ){
-        return new Promise( resolve => this.setData({
-          done: this.data.document.submitted() || this.data.document.published()
-        }, resolve) );
-      }
-    });
-
     doc.on('load', () => {
       doc.interactions().concat( doc.complexes() ).forEach( listenForRmPpt );
 

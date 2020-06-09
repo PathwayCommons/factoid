@@ -206,11 +206,16 @@ const getArticle = MedlineCitation => {
 // <!ATTLIST	NameOfSubstance
 // 		    UI CDATA #REQUIRED >
 // RegistryNumber https://www.nlm.nih.gov/bsd/mms/medlineelements.html#rn
-const getChemical = Chemical => ({
-  RegistryNumber: getElementText( getElementByName( Chemical, 'RegistryNumber' ) ),
-  NameOfSubstance: getElementText( getElementByName( Chemical, 'NameOfSubstance' ) ),
-  UI: getElementAttribute( Chemical, 'UI' )
-});
+const getChemical = Chemical => {
+  const RegistryNumber = getElementText( getElementByName( Chemical, 'RegistryNumber' ) );
+  const NameOfSubstanceElement = getElementByName( Chemical, 'NameOfSubstance' );
+  const NameOfSubstance = {
+    value: getElementText( NameOfSubstanceElement ),
+    UI: getElementAttribute( NameOfSubstanceElement, 'UI' )
+  };
+
+  return { RegistryNumber, NameOfSubstance };
+};
 
 // <!ELEMENT	ChemicalList (Chemical+) >
 const getChemicalList = MedlineCitation => {

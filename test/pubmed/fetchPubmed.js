@@ -253,8 +253,8 @@ describe('fetchPubmed', function(){
               it('Should have optional item with top-level attributes', () => {
                 if( Chemical ){
                   expect( Chemical ).to.have.property( 'RegistryNumber' );
-                  expect( Chemical ).to.have.property( 'NameOfSubstance' );
-                  expect( Chemical ).to.have.property( 'UI' );
+                  expect( Chemical ).to.have.nested.property( 'NameOfSubstance.value' );
+                  expect( Chemical ).to.have.nested.property( 'NameOfSubstance.UI' );
                 }
               });
             });

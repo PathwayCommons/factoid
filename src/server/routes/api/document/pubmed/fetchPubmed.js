@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import xml2js from 'xml2js';
+import convert from 'xml-js';
 import queryString from 'query-string';
 import fetch from 'node-fetch';
 import emailRegex from 'email-regex';
@@ -16,47 +16,60 @@ const DEFAULT_EFETCH_PARAMS = {
   api_key: NCBI_EUTILS_API_KEY
 };
 
-const notNull = o => !_.isNull(o) ;
-
-const getTextField = param => {
-  let text;
-  if ( _.isString( param ) ){
-    text = param;
-  } else if ( _.isObject( param ) ) {
-    text = _.get( param, '_' );
-    const Label = _.get( param, ['$', 'Label'] );
-    if (Label ) text = `${Label}: ${text}`;
-  }
-  return text;
+const getElementByName = ( json, name ) => _.find( _.get( json, ['elements'] ), ['name', name ] ) || null;
+const getElementsByName = ( json, name ) => _.filter( _.get( json, ['elements'] ), ['name', name ] );
+const getElementAttribute = ( json, name ) => _.get( json, [ 'attributes', name ] );
+const getElementText = element => {
+  const textFields = _.get( element, 'elements' ).map( subElement => {
+    if( _.get( subElement, 'type' ) === 'text' ){
+      return _.get( subElement, 'text' ); // Base case
+    } else {
+      return getElementText( subElement  );// Recurse into element
+    }
+  });
+  return textFields.join('');
 };
 
-//<!ELEMENT	AbstractText   (%text; | mml:math | DispFormula)* >
-const getAbstract = Article => _.get( Article, ['Abstract', '0', 'AbstractText'] ).map( getTextField ).join(' ');
+// <!ELEMENT	AbstractText   (%text; | mml:math | DispFormula)* >
+// <!ATTLIST	AbstractText
+// 		    Label CDATA #IMPLIED
+// 		    NlmCategory (BACKGROUND | OBJECTIVE | METHODS | RESULTS | CONCLUSIONS | UNASSIGNED) #IMPLIED >
+const getAbstract = Article => {
+  const Abstract = getElementByName( Article, 'Abstract' );
+  return getElementsByName( Abstract, 'AbstractText' ).map( getElementText ).join(' ');
+};
 
 const hasEmail = token => emailRegex().test( token );
 const getEmail = token => hasEmail( token ) ? token.match( emailRegex() ): null;
-const getAffiliation = AffiliationInfo => {
-  const Affiliation = _.get( AffiliationInfo, ['Affiliation', '0'] );
+
+// <!ELEMENT	Affiliation  (%text;)*>
+const getAffiliation = AffiliationElement => {
+  const Affiliation = getElementText( AffiliationElement );
   const email = getEmail( Affiliation );
   return { Affiliation, email };
 };
 
-const getAffiliationInfo = Author => {
-  const AffiliationInfo = _.get( Author, ['AffiliationInfo'] );
-  return AffiliationInfo ?  AffiliationInfo.map( getAffiliation ): null;
-  //compact all affiliations and emails. todo
+// <!ELEMENT	AffiliationInfo (Affiliation, Identifier*)>
+const getAffiliationInfo = AffiliationInfo => {
+  const Affiliation = getElementByName( AffiliationInfo, 'Affiliation' );
+  return getAffiliation( Affiliation );
 };
 
-const getIdentifier = Author => {
-  return _.get( Author, 'Identifier' ).map( i =>
-    ({
-      id: _.get( i, '_' ),
-      Source: _.get( i, ['$', 'Source'] )
-    })
-  );
+// <!ELEMENT	Identifier (#PCDATA) >
+// <!ATTLIST	Identifier
+// 		    Source CDATA #REQUIRED >
+const getIdentifier = IdentifierElement => {
+  return {
+    id: getElementText( IdentifierElement ),
+    Source: getElementAttribute( IdentifierElement, 'Source' )
+  };
 };
 
-const getNamed = ( Named ) => {
+// <!ELEMENT	Author ( ( ( LastName, ForeName?, Initials?, Suffix? ) | CollectiveName ), Identifier*, AffiliationInfo* ) >
+// <!ATTLIST	Author
+//             ValidYN (Y | N) "Y"
+//             EqualContrib    (Y | N)  #IMPLIED >
+const getNamed = Named => {
   const name = {
     LastName: null,
     ForeName: null,
@@ -64,60 +77,61 @@ const getNamed = ( Named ) => {
     CollectiveName: null
   };
 
-  if ( _.has( Named, 'CollectiveName' ) ){
-    _.set( name, 'CollectiveName', _.get( Named, ['CollectiveName', '0'] ) );
+  if ( getElementByName( Named, 'CollectiveName' ) ){
+    _.set( name, 'CollectiveName', getElementText( getElementByName( Named, 'CollectiveName' ) ) );
 
   } else {
-    _.set( name, 'LastName', _.get( Named, ['LastName', '0'] ) );
+    _.set( name, 'LastName', getElementText( getElementByName( Named, 'LastName' ) ) );
 
-    if ( _.has( Named, ['ForeName'] ) ) {
-      _.set( name, 'ForeName', _.get( Named, ['ForeName', '0'] ) );
+    if ( getElementByName( Named, 'ForeName' ) ) {
+      _.set( name, 'ForeName',  getElementText( getElementByName( Named, 'ForeName' ) ) );
     }
 
-    if( _.has( Named, ['Initials'] ) ){
-      _.set( name, 'Initials', _.get( Named, ['Initials', '0'] ) );
+    if( getElementByName( Named, 'Initials' ) ){
+      _.set( name, 'Initials', getElementText( getElementByName( Named, 'Initials' ) ) );
     }
   }
-  const AffiliationInfo = _.has( Named, 'AffiliationInfo' ) ? getAffiliationInfo( Named ): null;
-  const Identifier = _.has( Named, 'Identifier' ) ? getIdentifier( Named ): null;
+
+  const AffiliationInfo = getElementsByName( Named, 'AffiliationInfo' ).map( getAffiliationInfo );
+  const Identifier = getElementsByName( Named, 'Identifier' ).map( getIdentifier );
+
   return _.assign( {}, name, { AffiliationInfo, Identifier }) ;
 };
 
 //<!ELEMENT	AuthorList (Author+) >
-const getAuthor = AuthorList => {
-  // <!ELEMENT	Author ( ( ( LastName, ForeName?, Initials?, Suffix? ) | CollectiveName ), Identifier*, AffiliationInfo* ) >
-  return _.get( AuthorList, ['Author'] ).map( getNamed );
-};
-
+// <!ATTLIST	AuthorList
+//             CompleteYN (Y | N) "Y"
+//             Type ( authors | editors )  #IMPLIED >
 const getAuthorList = Article => {
-  const AuthorList = _.get( Article, ['AuthorList', '0'] );
-  return AuthorList ? getAuthor( AuthorList ): null;
+  const AuthorList = getElementByName( Article, 'AuthorList' );
+  return getElementsByName( AuthorList, 'Author' ).map( getNamed );
 };
 
 //<!ELEMENT	PubDate ( ( Year, ((Month, Day?) | Season)? ) | MedlineDate ) >
 const getPubDate = JournalIssue => {
   let date;
-  const PubDate = _.get( JournalIssue, ['PubDate', '0'] );
+  const PubDate = getElementByName( JournalIssue, 'PubDate' );
 
-  if( _.has( PubDate, 'MedlineDate' ) ) {
-    date = ({ MedlineDate:  _.get( PubDate, ['MedlineDate', '0'] ) });
+  if( getElementByName( PubDate, 'MedlineDate' ) ) {
+    date = ({ MedlineDate: getElementText( getElementByName( PubDate, 'MedlineDate' ) )});
 
   } else {
-    const Year = _.get( PubDate, ['Year', '0'] );
+    const Year = getElementText(  getElementByName( PubDate, 'Year' ) );
 
-    if( _.has( PubDate, 'Season' ) ) {
-      const Season = _.get( PubDate, ['Season', '0'] );
+    if( getElementByName( PubDate, 'Season' ) ) {
+      // <!ELEMENT	Season (#PCDATA) >
+      const Season = getElementText(  getElementByName( PubDate, 'Season' ) );
       date = ({ Year, Season });
 
     } else {
       let Month = null, Day = null;
 
-      if( _.has( PubDate, ['Month'] ) ){
-        Month = _.get( PubDate, ['Month', '0'] );
+      if( getElementByName( PubDate, 'Month' ) ){
+        Month = getElementText( getElementByName( PubDate, 'Month' ) );
       }
 
-      if( _.has( PubDate, ['Day'] ) ){
-        Day = _.get( PubDate, ['Day', '0'] );
+      if( getElementByName( PubDate, 'Day' ) ){
+        Day = getElementText( getElementByName( PubDate, 'Day' ) );
       }
 
       date = ({ Year, Month, Day });
@@ -126,16 +140,28 @@ const getPubDate = JournalIssue => {
   return date;
 };
 
+//<!ELEMENT	ISSN (#PCDATA) >
+//<!ATTLIST	ISSN
+    // IssnType  (Electronic | Print) #REQUIRED >
+const getISSN = Journal => {
+  const ISSN = getElementByName( Journal, 'ISSN' );
+  const IssnType = getElementAttribute( ISSN, 'IssnType' );
+  const value = getElementText( ISSN );
+  return ({ IssnType, value });
+};
+
 const getJournal = Article => {
   //<!ELEMENT	Journal (ISSN?, JournalIssue, Title?, ISOAbbreviation?)>
-  const Journal = _.get( Article, ['Journal', '0'] );
-  const Title = _.get( Journal, ['Title', '0'], null );
-  const ISSN = _.get( Journal, ['ISSN', '0', '_' ], null );
-  const ISOAbbreviation = _.get( Journal, ['ISOAbbreviation', '0'], null );
+  const Journal = getElementByName( Article, 'Journal' );
+  const Title = getElementByName( Journal, 'Title' ) && getElementText( getElementByName( Journal, 'Title' ) );
+  const ISSN = getElementByName( Journal, 'ISSN' ) ? getISSN( Journal ) : null;
+  const ISOAbbreviation = getElementByName( Journal, 'ISOAbbreviation' ) && getElementText( getElementByName( Journal, 'ISOAbbreviation' ) );
   //<!ELEMENT	JournalIssue (Volume?, Issue?, PubDate) >
-  const JournalIssue = _.get( Journal, ['JournalIssue', '0'] );
-  const Volume = _.get( JournalIssue, ['Volume', '0'], null );
-  const Issue = _.get( JournalIssue, ['Issue', '0'], null );
+  //<!ATTLIST	JournalIssue
+	//    CitedMedium (Internet | Print) #REQUIRED >
+  const JournalIssue = getElementByName( Journal, 'JournalIssue' );
+  const Volume = getElementByName( JournalIssue, 'Volume' ) && getElementText( getElementByName( JournalIssue, 'Volume' ) );
+  const Issue =  getElementByName( JournalIssue, 'Issue' ) && getElementText( getElementByName( JournalIssue, 'Issue' ) );
   const PubDate = getPubDate( JournalIssue );
 
   return {
@@ -154,14 +180,16 @@ const getArticle = MedlineCitation => {
   // <!ELEMENT	Article (Journal,ArticleTitle,((Pagination, ELocationID*) | ELocationID+),
   //                    Abstract?,AuthorList?, Language+, DataBankList?, GrantList?,
   //                    PublicationTypeList, VernacularTitle?, ArticleDate*) >
-  const Article = _.get( MedlineCitation, ['Article', '0'] );
+  // <!ATTLIST	Article
+	// 	    PubModel (Print | Print-Electronic | Electronic | Electronic-Print | Electronic-eCollection) #REQUIRED >
+  const Article = getElementByName( MedlineCitation, 'Article' );
 
   //<!ELEMENT	ArticleTitle   (%text; | mml:math)*>
-  const ArticleTitle = getTextField( _.get( Article, ['ArticleTitle', '0'] ) );
+  const ArticleTitle = getElementText( getElementByName( Article, 'ArticleTitle' ) );
 
   // <!ELEMENT	Abstract (AbstractText+, CopyrightInformation?)>
-  const Abstract = _.has( Article, ['Abstract'] ) ? getAbstract( Article ): null;
-  const AuthorList =  _.has( Article, ['AuthorList'] ) ? getAuthorList( Article ): null;
+  const Abstract = getElementByName( Article, 'Abstract' ) ? getAbstract( Article ): null;
+  const AuthorList =  getElementByName( Article, 'AuthorList' ) ? getAuthorList( Article ): null;
   const Journal = getJournal( Article );
 
   return {
@@ -172,44 +200,73 @@ const getArticle = MedlineCitation => {
   };
 };
 
+// <!ELEMENT	Chemical (RegistryNumber, NameOfSubstance) >
+// <!ELEMENT	RegistryNumber (#PCDATA) >
+// <!ELEMENT	NameOfSubstance (#PCDATA) >
+// <!ATTLIST	NameOfSubstance
+// 		    UI CDATA #REQUIRED >
 // RegistryNumber https://www.nlm.nih.gov/bsd/mms/medlineelements.html#rn
 const getChemical = Chemical => ({
-  RegistryNumber: _.get( Chemical, ['RegistryNumber', '0'] ),
-  NameOfSubstance: _.get( Chemical, ['NameOfSubstance', '0', '_'] ),
-  UI: _.get( Chemical, ['NameOfSubstance', '0', '$', 'UI'] )
+  RegistryNumber: getElementText( getElementByName( Chemical, 'RegistryNumber' ) ),
+  NameOfSubstance: getElementText( getElementByName( Chemical, 'NameOfSubstance' ) ),
+  UI: getElementAttribute( Chemical, 'UI' )
 });
-const getChemicalList = MedlineCitation => _.get( MedlineCitation, ['ChemicalList', '0', 'Chemical'] ).map( getChemical );
+
+// <!ELEMENT	ChemicalList (Chemical+) >
+const getChemicalList = MedlineCitation => {
+  const ChemicalList = getElementByName( MedlineCitation, 'ChemicalList' );
+  return getElementsByName( ChemicalList, 'Chemical' ).map( getChemical );
+};
 
 // <!ELEMENT	KeywordList (Keyword+) >
 // <!ATTLIST	KeywordList
 // 		    Owner (NLM | NLM-AUTO | NASA | PIP | KIE | NOTNLM | HHS) "NLM" >
-const getKeywordList = KeywordList => _.get( KeywordList, ['Keyword'] ).map( Keyword => _.get( Keyword, ['_'] ) );
+const getKeywordList = MedlineCitation => {
+  const KeywordList = getElementByName( MedlineCitation, 'KeywordList' );
+  return getElementsByName( KeywordList, 'Keyword' ).map( getElementText );
+};
 
 // <!ELEMENT	MeshHeading (DescriptorName, QualifierName*)>
+// <!ELEMENT	DescriptorName (#PCDATA) >
+// <!ATTLIST	DescriptorName
+//         MajorTopicYN (Y | N) "N"
+//         Type (Geographic) #IMPLIED
+//          UI CDATA #REQUIRED >
+// <!ELEMENT	QualifierName (#PCDATA) >
+// <!ATTLIST	QualifierName
+//         MajorTopicYN (Y | N) "N"
+//         UI CDATA #REQUIRED >
 const getMeshHeading = MeshHeading => {
-  // <!ELEMENT	DescriptorName (#PCDATA) >
-  // <!ATTLIST	DescriptorName
-  //         MajorTopicYN (Y | N) "N"
-  //         Type (Geographic) #IMPLIED
-  //          UI CDATA #REQUIRED >
-  const DescriptorName = _.get( MeshHeading, ['DescriptorName', '0'] );
-  return ({
-    DescriptorName: _.get( DescriptorName, ['_'] ),
-    ID: _.get( DescriptorName, ['$', 'UI'] ),
-    isMajorTopicYN: _.get( DescriptorName, ['$', 'MajorTopicYN'] ) === 'Y' ? true : false
+  const getIDInfo = info => ({
+    value: getElementText( info ),
+    UI: getElementAttribute( info, 'UI' ),
+    MajorTopicYN: getElementAttribute( info, 'MajorTopicYN' ),
   });
+
+  const DescriptorNameElement = getElementByName( MeshHeading, 'DescriptorName' );
+  const QualifierNameElements = getElementsByName( MeshHeading, 'QualifierName' );
+  const DescriptorName = getIDInfo( DescriptorNameElement );
+  const QualifierName = QualifierNameElements.map( getIDInfo );
+
+  return { DescriptorName, QualifierName };
 };
 
+// <!ELEMENT	MeshHeading (DescriptorName, QualifierName*)>
+// <!ELEMENT	MeshHeadingList (MeshHeading+)>
 const getMeshheadingList = MedlineCitation => {
-  const MeshHeadingList = _.get( MedlineCitation, ['MeshHeadingList', '0', 'MeshHeading'] );
-  return MeshHeadingList.map( getMeshHeading );
+  const MeshHeadingList = getElementByName( MedlineCitation, 'MeshHeadingList' );
+  return getElementsByName( MeshHeadingList, 'MeshHeading' ).map( getMeshHeading );
 };
 
-const getInvestigator = InvestigatorList => _.get( InvestigatorList, ['Investigator'] ).map( getNamed ).map( i => _.omit( i, ['CollectiveName'] ) );
+// <!ELEMENT	InvestigatorList (Investigator+) >
+// <!ELEMENT	Investigator (LastName, ForeName?, Initials?, Suffix?, Identifier*, AffiliationInfo*) >
+// <!ATTLIST	Investigator
+// 		    ValidYN (Y | N) "Y" >
+const getInvestigator = Investigator => _.omit( getNamed( Investigator ), ['CollectiveName'] );
 
 const getInvestigatorList = MedlineCitation => {
-  const InvestigatorList = _.get( MedlineCitation, ['InvestigatorList', '0'] );
-  return InvestigatorList ? getInvestigator( InvestigatorList ): null;
+  const InvestigatorList = getElementByName( MedlineCitation, 'InvestigatorList' );
+  return getElementsByName( InvestigatorList, 'Investigator' ).map( getInvestigator );
 };
 
 const getMedlineCitation = PubmedArticle => {
@@ -219,13 +276,20 @@ const getMedlineCitation = PubmedArticle => {
   //     CommentsCorrectionsList?, GeneSymbolList?, MeshHeadingList?,
   //     NumberOfReferences?, PersonalNameSubjectList?, OtherID*, OtherAbstract*,
   //     KeywordList*, CoiStatement?, SpaceFlightMission*, InvestigatorList?, GeneralNote*)>
-  const MedlineCitation = _.get( PubmedArticle, ['MedlineCitation', '0'] );
+  // <!ATTLIST	MedlineCitation
+	// 	Owner  (NLM | NASA | PIP | KIE | HSR | HMD | NOTNLM) "NLM"
+	// 	Status (Completed | In-Process | PubMed-not-MEDLINE |  In-Data-Review | Publisher |
+	// 	        MEDLINE | OLDMEDLINE) #REQUIRED
+	// 	VersionID CDATA #IMPLIED
+	// 	VersionDate CDATA #IMPLIED
+	// 	IndexingMethod    CDATA  #IMPLIED >
+  const MedlineCitation = getElementByName( PubmedArticle, 'MedlineCitation' );
 
   const Article = getArticle( MedlineCitation );
-  const ChemicalList = _.has( MedlineCitation, ['ChemicalList'] ) ? getChemicalList( MedlineCitation ): null;
-  const KeywordList = _.has( MedlineCitation, ['KeywordList'] ) ? _.flatten( _.get( MedlineCitation, ['KeywordList'] ).map( getKeywordList ) ): null;
-  const MeshheadingList = _.has( MedlineCitation, ['MeshHeadingList'] ) ? getMeshheadingList( MedlineCitation ): null;
-  const InvestigatorList = _.has( MedlineCitation, ['InvestigatorList'] ) ? getInvestigatorList( MedlineCitation ): null;
+  const ChemicalList = getElementByName( MedlineCitation, 'ChemicalList' ) ? getChemicalList( MedlineCitation ): [];
+  const KeywordList = getElementByName( MedlineCitation, 'KeywordList' ) ? getKeywordList( MedlineCitation ): [];
+  const MeshheadingList = getElementByName( MedlineCitation, 'MeshHeadingList' ) ? getMeshheadingList( MedlineCitation ): [];
+  const InvestigatorList = getElementByName( MedlineCitation, 'InvestigatorList' ) ? getInvestigatorList( MedlineCitation ): [];
 
   return {
     Article,
@@ -237,63 +301,81 @@ const getMedlineCitation = PubmedArticle => {
 
 };
 
-//
-const getPubMedPubDate = PubMedPubDateIn => {
-  const PubStatus = _.get( PubMedPubDateIn, ['$', 'PubStatus'] );
-  const Year = _.get( PubMedPubDateIn, ['Year', '0'] );
-  const Month = _.get( PubMedPubDateIn, ['Month', '0'] );
-  const Day = _.get( PubMedPubDateIn, ['Day', '0'] );
+// <!ELEMENT   PubMedPubDate (Year, Month, Day, (Hour, (Minute, Second?)?)?)>
+// <!ATTLIST   PubMedPubDate
+//     	     PubStatus (received | accepted | epublish |
+//                       ppublish | revised | aheadofprint |
+//                       retracted | ecollection | pmc | pmcr | pubmed | pubmedr |
+//                       premedline | medline | medliner | entrez | pmc-release) #REQUIRED >
+const getPubMedPubDate = getPubMedPubDateElement => {
+  const PubStatus = getElementAttribute( getPubMedPubDateElement, 'PubStatus' );
+  const Year = getElementText( getElementByName( getPubMedPubDateElement, 'Year' ) );
+  const Month = getElementText( getElementByName( getPubMedPubDateElement, 'Month' ) );
+  const Day = getElementText( getElementByName( getPubMedPubDateElement, 'Day' ) );
   const PubMedPubDate = { Year, Month, Day };
   return { PubStatus, PubMedPubDate };
 };
 
+// <!ELEMENT	History (PubMedPubDate+) >
 const getHistory = PubmedData => {
-  return _.get( PubmedData, ['History', '0', 'PubMedPubDate' ], [] ).map( getPubMedPubDate );
+  const History = getElementByName( PubmedData, 'History' );
+  return getElementsByName( History, 'PubMedPubDate' ).map( getPubMedPubDate );
 };
 
-const VALID_PMDATA_ID_TYPES = new Set([ 'doi', 'pmc', 'pmcid', 'pubmed' ]);
-const getArticleId = ArticleId => {
-  const IdType = _.get( ArticleId, ['$', 'IdType'] );
-  if ( !VALID_PMDATA_ID_TYPES.has( IdType ) ) return null;
-  return ({
-    IdType,
-    id: _.get( ArticleId, ['_'])
-  });
+// <!ELEMENT	ArticleId (#PCDATA) >
+// <!ATTLIST   ArticleId
+// 	        IdType (doi | pii | pmcpid | pmpid | pmc | mid |
+//                    sici | pubmed | medline | pmcid | pmcbook | bookaccession) "pubmed" >
+const getArticleId = ArticleIdElement => {
+  const IdType = getElementAttribute( ArticleIdElement, 'IdType' );
+  const id = getElementText( ArticleIdElement );
+  return { IdType, id };
 };
-const getArticleIdList = json => _.get( json, ['ArticleIdList', '0', 'ArticleId'] ).map( getArticleId ).filter( notNull );
+
+//  <!ELEMENT	ArticleIdList (ArticleId+)>
+const getArticleIdList = element => {
+  const ArticleIdList = getElementByName( element, 'ArticleIdList' );
+  return getElementsByName( ArticleIdList, 'ArticleId' ).map( getArticleId );
+};
 
 // <!ELEMENT	Reference (Citation, ArticleIdList?) >
-const getReference = Reference => {
-  const Citation = _.get( Reference, ['Citation', '0'] );
-  const ArticleIdList = _.has( Reference, ['ArticleIdList'] ) ? getArticleIdList( Reference ): null;
+// <!ELEMENT	Citation       (%text; | mml:math)*>
+const getReference = ReferenceElement => {
+  const Citation = getElementText( getElementByName( ReferenceElement, 'Citation' ) );
+  const ArticleIdList = getElementByName( ReferenceElement, 'ArticleIdList' ) ? getArticleIdList( ReferenceElement ): null;
   return { Citation, ArticleIdList };
 };
 
 // <!ELEMENT	ReferenceList (Title?, Reference*, ReferenceList*) >
-const getReferenceList = ReferenceList => _.has( ReferenceList, ['Reference'] ) ?  _.get( ReferenceList, ['Reference'] ).map( getReference ): null;
+const getReferenceList = ReferenceListElement => {
+  const Title = getElementByName( ReferenceListElement, 'Title' ) ? getElementText( getElementByName( ReferenceListElement, 'Title' ) ) : null;
+  const Reference = getElementsByName( ReferenceListElement, 'Reference' ).map( getReference );
+  const ReferenceList = getElementsByName( ReferenceListElement, 'ReferenceList' ).map( getReferenceList );
+  return { Title, Reference, ReferenceList };
+};
 
 // <!ELEMENT	PubmedData (History?, PublicationStatus, ArticleIdList, ObjectList?, ReferenceList*) >
-const getPubmedData = PubmedArticle => {  // ? optional;
-  const PubmedData = _.get( PubmedArticle, ['PubmedData', '0' ] );
-  const History = _.has( PubmedData, ['History']) ? getHistory( PubmedData ): null;
+const getPubmedData = PubmedArticle => {
+  const PubmedData = getElementByName( PubmedArticle, 'PubmedData' );
+  const History = getElementByName( PubmedData, 'History' ) ? getHistory( PubmedData ): null;
   const ArticleIdList = getArticleIdList( PubmedData );
-  const ReferenceList = _.has( PubmedData, ['ReferenceList']) ? _.flatten( _.get( PubmedData, ['ReferenceList'] ).map( getReferenceList ) ): null;
+  const ReferenceList = getElementsByName( PubmedData, 'ReferenceList' ).map( getReferenceList );
   return { History, ArticleIdList, ReferenceList };
 };
 
+// <!ELEMENT	PubmedArticle (MedlineCitation, PubmedData?)>
 const getPubmedArticle = PubmedArticle => {
-  // <!ELEMENT	PubmedArticle (MedlineCitation, PubmedData?)>
   const MedlineCitation = getMedlineCitation( PubmedArticle );
-  const PubmedData =  _.has( PubmedArticle, ['PubmedData'] ) ? getPubmedData( PubmedArticle ): null;
+  const PubmedData = getElementByName( PubmedArticle, 'PubmedData' ) ? getPubmedData( PubmedArticle ): null;
   return { MedlineCitation, PubmedData };
 };
 
 const getPubmedArticleSet = json => {
-  const PubmedArticleSet = _.get( json, ['PubmedArticleSet'] );
+  const PubmedArticleSet = getElementByName( json, 'PubmedArticleSet' );
   if( !PubmedArticleSet ) return null;
 
   // <!ELEMENT	PubmedArticleSet ((PubmedArticle | PubmedBookArticle)+, DeleteCitation?) >
-  const PubmedArticle = _.get( PubmedArticleSet, ['PubmedArticle'] );
+  const PubmedArticle = getElementsByName( PubmedArticleSet, 'PubmedArticle' );
   return PubmedArticle ? PubmedArticle.map( getPubmedArticle ): null;
 };
 
@@ -301,12 +383,12 @@ const getPubmedArticleSet = json => {
 const processPubmedResponse = json => {
   const PubmedArticleSet = getPubmedArticleSet( json );
   return { PubmedArticleSet };
-  // return json;
 };
 
-const pubmedDataConverter = async json => processPubmedResponse( json );
+const pubmedDataConverter = json => processPubmedResponse( json );
 const toText = res => res.text();
-const xml2json = async xml => await xml2js.parseStringPromise( xml );
+const xml2jsOpts = {};
+const xml2json = xml => convert.xml2js( xml, xml2jsOpts );
 
 const checkEfetchResult = json => {
   const errorMessage =  _.get( json, ['eFetchResult', 'ERROR'] );

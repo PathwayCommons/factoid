@@ -18,7 +18,7 @@ const NCBI_GENE_TYPE = Object.freeze({
 });
 
 const getNCBIEntityType = typeOfGene => {
-  let keys = Object.keys( ENTITY_TYPE );
+  let keys = Object.keys( NCBI_GENE_TYPE );
   let res = null;
 
   for ( let i = 0; i < keys.length; i++ ) {

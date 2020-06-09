@@ -1354,7 +1354,7 @@ http.patch('/status/:id/:secret', function( req, res, next ){
     if ( !doc.hasTweet() ) {
       try {
         let text = truncateString( doc.toText(), MAX_TWEET_LENGTH ); // TODO?
-        return tweetDoc( doc.id(), doc.secret(), text );
+        return await tweetDoc( doc.id(), doc.secret(), text );
       } catch ( e ) {
         logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow
       }
@@ -1587,7 +1587,7 @@ http.get('/related-papers/:id', function( req, res, next ){
   // 5000000ms correspons to 83.3333333 mins
   let timout = 5000000;
   res.setTimeout(timout);
-  
+
   let id = req.params.id;
   let queryObject = url.parse(req.url, true).query;
   let { interactionId } = queryObject;

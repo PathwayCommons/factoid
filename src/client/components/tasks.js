@@ -95,7 +95,11 @@ class TaskView extends DataComponent {
       if( _.has( change, 'status' ) ){
         if( change.status === 'submitted' ){
           this.onSubmit()
-            .finally( () => {
+            .then( () => {
+              new Promise( resolve => this.setState({ submitting: false }, resolve ) )
+              .then( () => this.props.controller.done( true ) );
+            })
+            .catch( () => {
               new Promise( resolve => this.setState({ submitting: false }, resolve ) )
               .then( () => this.props.controller.done( true ) );
             });

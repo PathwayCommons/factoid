@@ -228,6 +228,8 @@ const fillDocCorrespondence = async ( doc, authorEmail, context ) => {
     await doc.issues({ authorEmail: null });
   } catch ( error ){
     await doc.issues({ authorEmail: { error, message: error.message } });
+    logger.error( `Error filling doc correspondence` );
+    logger.error( error );
   } finally {
     const emails = _.get( doc.correspondence(), 'emails' );
     const data = _.defaults( { authorEmail: address, context, emails }, DEFAULT_CORRESPONDENCE );
@@ -241,6 +243,8 @@ const fillDocArticle = async ( doc, paperId ) => {
     await doc.article( pubmedRecord );
     await doc.issues({ paperId: null });
   } catch ( error ) {
+    logger.error( `Error filling doc article` );
+    logger.error( error );
     const pubmedRecord = createPubmedArticle({ articleTitle: paperId });
     await doc.article( pubmedRecord );
     await doc.issues({ paperId: { error, message: error.message } });

@@ -1,0 +1,130 @@
+<?xml version="1.0" ?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2019//EN" "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_190101.dtd">
+<PubmedArticleSet>
+  <PubmedArticle>
+    <MedlineCitation Status="MEDLINE" Owner="NLM">
+      <PMID Version="1">151222</PMID>
+      <DateCompleted>
+        <Year>1978</Year>
+        <Month>11</Month>
+        <Day>18</Day>
+      </DateCompleted>
+      <DateRevised>
+        <Year>2004</Year>
+        <Month>11</Month>
+        <Day>17</Day>
+      </DateRevised>
+      <Article PubModel="Print">
+        <Journal>
+          <ISSN IssnType="Print">0377-5038</ISSN>
+          <JournalIssue CitedMedium="Print">
+            <Volume>24</Volume>
+            <Issue>3</Issue>
+            <PubDate>
+              <MedlineDate>1978 Jul-Sep</MedlineDate>
+            </PubDate>
+          </JournalIssue>
+          <Title>Morphologie et embryologie</Title>
+          <ISOAbbreviation>Morphol Embryol (Bucur)</ISOAbbreviation>
+        </Journal>
+        <ArticleTitle>Histochemical and histoenzymic researches in coronary sudden death.</ArticleTitle>
+        <Pagination>
+          <MedlinePgn>229-32</MedlinePgn>
+        </Pagination>
+        <Abstract>
+          <AbstractText>Using Lie's technique in order to evidence the fuchsinophilia of the early ischaemic zones and Falck-Hillarp's technique to appreciate the disappearance of the myocardial adrenergic network, the authors followed up the concordance between the precocity of the ischaemia and the frequency of the acidophilia. Studying 54 cases of coronary sudden death by using 100-300 slides in each case, the fuchsinophilic zones were evidenced in 46 per cent of the cases, aspects indicating the morphologic substrate of the sudden death with ectopic ventricular electrical activity centres. The results of fluorescence Falck-Hillarps's technique are the same as those obtained by light microscopy, which is to be preferred in routine practice. Farber-Louvière's microscopic histoenzymic method for succinate-dehydrogenase presents multiple advantages, so that it is preferable to Kollin-Neoral's macroscopic reaction.</AbstractText>
+        </Abstract>
+        <AuthorList CompleteYN="Y">
+          <Author ValidYN="Y">
+            <LastName>Alexandru</LastName>
+            <ForeName>E</ForeName>
+            <Initials>E</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Dobrescu</LastName>
+            <ForeName>G</ForeName>
+            <Initials>G</Initials>
+          </Author>
+        </AuthorList>
+        <Language>eng</Language>
+        <PublicationTypeList>
+          <PublicationType UI="D016428">Journal Article</PublicationType>
+        </PublicationTypeList>
+      </Article>
+      <MedlineJournalInfo>
+        <Country>Romania</Country>
+        <MedlineTA>Morphol Embryol (Bucur)</MedlineTA>
+        <NlmUniqueID>7512183</NlmUniqueID>
+        <ISSNLinking>0377-5038</ISSNLinking>
+      </MedlineJournalInfo>
+      <ChemicalList>
+        <Chemical>
+          <RegistryNumber>0</RegistryNumber>
+          <NameOfSubstance UI="D002395">Catecholamines</NameOfSubstance>
+        </Chemical>
+        <Chemical>
+          <RegistryNumber>EC 1.3.99.1</RegistryNumber>
+          <NameOfSubstance UI="D013385">Succinate Dehydrogenase</NameOfSubstance>
+        </Chemical>
+      </ChemicalList>
+      <CitationSubset>IM</CitationSubset>
+      <MeshHeadingList>
+        <MeshHeading>
+          <DescriptorName UI="D002395" MajorTopicYN="N">Catecholamines</DescriptorName>
+          <QualifierName UI="Q000378" MajorTopicYN="Y">metabolism</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D003327" MajorTopicYN="N">Coronary Disease</DescriptorName>
+          <QualifierName UI="Q000378" MajorTopicYN="Y">metabolism</QualifierName>
+          <QualifierName UI="Q000473" MajorTopicYN="N">pathology</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D003645" MajorTopicYN="N">Death, Sudden</DescriptorName>
+          <QualifierName UI="Q000209" MajorTopicYN="Y">etiology</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D006651" MajorTopicYN="N">Histocytochemistry</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D006801" MajorTopicYN="N">Humans</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D009206" MajorTopicYN="N">Myocardium</DescriptorName>
+          <QualifierName UI="Q000378" MajorTopicYN="Y">metabolism</QualifierName>
+          <QualifierName UI="Q000473" MajorTopicYN="N">pathology</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D013385" MajorTopicYN="N">Succinate Dehydrogenase</DescriptorName>
+          <QualifierName UI="Q000378" MajorTopicYN="Y">metabolism</QualifierName>
+        </MeshHeading>
+      </MeshHeadingList>
+    </MedlineCitation>
+    <PubmedData>
+      <History>
+        <PubMedPubDate PubStatus="pubmed">
+          <Year>1978</Year>
+          <Month>7</Month>
+          <Day>1</Day>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="medline">
+          <Year>1978</Year>
+          <Month>7</Month>
+          <Day>1</Day>
+          <Hour>0</Hour>
+          <Minute>1</Minute>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="entrez">
+          <Year>1978</Year>
+          <Month>7</Month>
+          <Day>1</Day>
+          <Hour>0</Hour>
+          <Minute>0</Minute>
+        </PubMedPubDate>
+      </History>
+      <PublicationStatus>ppublish</PublicationStatus>
+      <ArticleIdList>
+        <ArticleId IdType="pubmed">151222</ArticleId>
+      </ArticleIdList>
+    </PubmedData>
+  </PubmedArticle>
+</PubmedArticleSet>

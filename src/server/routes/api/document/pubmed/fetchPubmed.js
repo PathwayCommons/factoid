@@ -36,7 +36,11 @@ const getElementText = element => {
 // 		    NlmCategory (BACKGROUND | OBJECTIVE | METHODS | RESULTS | CONCLUSIONS | UNASSIGNED) #IMPLIED >
 const getAbstract = Article => {
   const Abstract = getElementByName( Article, 'Abstract' );
-  return getElementsByName( Abstract, 'AbstractText' ).map( getElementText ).join(' ');
+  return getElementsByName( Abstract, 'AbstractText' ).map( AbstractText => {
+    const Label = getElementAttribute( AbstractText, 'Label' );
+    const text = getElementText( AbstractText );
+    return _.compact([ Label, text ]).join(': ');
+  }).join(' ');
 };
 
 const hasEmail = token => emailRegex().test( token );

@@ -135,6 +135,13 @@ class Editor extends DataComponent {
       }
     });
 
+    doc.on('update', change => {
+      if( _.has( change, 'status' ) ){
+        const isDone = this.data.document.submitted() || this.data.document.published();
+        this.done( isDone );
+      }
+    });
+
     let bus = new EventEmitter();
 
     bus.on('drawtoggle', (toggle, type) => this.toggleDrawMode(toggle, type));
@@ -251,10 +258,6 @@ class Editor extends DataComponent {
     else {
       return new Promise( resolve => this.setData({ done }, resolve) );
     }
-  }
-
-  onDone( done ){
-    return new Promise( resolve => this.setData({ done }, resolve) );
   }
 
   editable(){

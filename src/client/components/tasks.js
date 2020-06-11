@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import DataComponent from './data-component';
 import h from 'react-hyperscript';
 import { Component } from 'react';
@@ -74,44 +73,27 @@ class TaskView extends DataComponent {
       this.dirty();
     };
 
-    this.onSubmit = () => {
-      const DOCUMENT_STATUS_FIELDS = Document.statusFields();
-      const id = this.props.document.id();
-      const secret = this.props.document.secret();
-      const params = [
-        { op: 'replace', path: 'status', value: DOCUMENT_STATUS_FIELDS.PUBLISHED }
-      ];
-      const url = `/api/document/status/${id}/${secret}`;
-      return fetch( url, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify( params )
-      });
-    };
-
-    this.onUpdate = change => {
-      if( _.has( change, 'status' ) ){
-        if( change.status === 'submitted' ){
-          this.onSubmit()
-            .then( () => {
-              new Promise( resolve => this.setState({ submitting: false }, resolve ) )
-              .then( () => this.props.controller.done( true ) );
-            })
-            .catch( () => {
-              new Promise( resolve => this.setState({ submitting: false }, resolve ) )
-              .then( () => this.props.controller.done( true ) );
-            });
-        }
-      }
-    };
-
     this.props.document.on('add', this.onAdd);
     this.props.document.on('remove', this.onRemove);
-    this.props.document.on('update', this.onUpdate);
 
     this.props.document.elements().forEach(ele => bindEleEvts(ele, update));
+  }
+
+  tryPublish(){
+    const DOCUMENT_STATUS_FIELDS = Document.statusFields();
+    const id = this.props.document.id();
+    const secret = this.props.document.secret();
+    const params = [
+      { op: 'replace', path: 'status', value: DOCUMENT_STATUS_FIELDS.PUBLISHED }
+    ];
+    const url = `/api/document/status/${id}/${secret}`;
+    return fetch( url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify( params )
+    });
   }
 
   componentWillUnmount(){
@@ -124,7 +106,11 @@ class TaskView extends DataComponent {
 
   submit(){
     new Promise( resolve => this.setState({ submitting: true }, resolve ) )
-      .then( () => this.props.document.submit() );
+      .then( () => this.props.document.submit() )
+      .then( () => this.tryPublish() )
+      .finally( () => {
+        new Promise( resolve => this.setState({ submitting: false }, resolve ) );
+      });
   }
 
   render(){
@@ -160,7 +146,7 @@ class TaskView extends DataComponent {
       return `You have ${numIncompleteEles} incomplete items:`;
     };
 
-    if( !done ){
+    if( !done || submitting ){
       return h('div.task-view', [
         h('i.icon.icon-spinner.task-view-spinner', {
           className: makeClassList({ 'task-view-spinner-shown': submitting })

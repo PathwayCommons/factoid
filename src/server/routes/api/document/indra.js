@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import _ from 'lodash';
 import { parse as dateParse } from 'date-fns';
 
-import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL } from '../../../../config';
+import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL, NO_ABSTRACT_HANDLING } from '../../../../config';
 import logger from '../../../logger';
 import { tryPromise } from '../../../../util';
 import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
@@ -23,7 +23,9 @@ const BASE_MODIFICATION_TYPES = ['Sumoylation', 'Desumoylation', 'Hydroxylation'
 const TRANSCRIPTION_TRANSLATION_TYPES = ['IncreaseAmount', 'DecreaseAmount'];
 const BINDING_TYPES = ['Complex'];
 
-const getDocuments = ( templates, queryArticle ) => {
+let sortByDate = SORT_BY_DATE;
+
+const getDocuments = ( templates, queryDoc ) => {
   const getForIntn = intnTemplate => {
     const getAgent = t => {
       let agent;
@@ -91,27 +93,49 @@ const getDocuments = ( templates, queryArticle ) => {
       return [];
     }
 
+    const handleNoQueryAbastract = doc => {
+      if ( NO_ABSTRACT_HANDLING == 'text' ) {
+        return doc.toText();
+      }
+      else if ( NO_ABSTRACT_HANDLING == 'date' ) {
+        // no need to return a valid abstract since sorting will be based on date
+        sortByDate = true;
+        return null;
+      }
+      else {
+        throw `${NO_ABSTRACT_HANDLING} is not a valid value for NO_ABSTRACT_HANDLING environment variable!`;
+      }
+    };
+
+    const getAbstract = article => {
+      let abstract = article.MedlineCitation.Article.Abstract;
+      if ( _.isString( abstract ) ) {
+        return abstract;
+      }
+      if ( _.isArray( abstract ) ) {
+        return abstract[ 0 ];
+      }
+      return null;
+    };
+
+    const getPmid = article => article.PubmedData.ArticleIdList.find( o => o.IdType == 'pubmed' ).id;
+
     const getSemanticScores = pubmeds => {
-      if ( SORT_BY_DATE ) {
+      if ( sortByDate ) {
         let semanticScores = null;
         return { semanticScores, pubmeds };
       }
 
-      const getAbstract = article => {
-        let abstract = article.MedlineCitation.Article.Abstract;
-        if ( _.isString( abstract ) ) {
-          return abstract;
-        }
-        if ( _.isArray( abstract ) ) {
-          return abstract[ 0 ];
-        }
-        return null;
-      };
-      const getPmid = article => article.PubmedData.ArticleIdList.find( o => o.IdType == 'pubmed' ).id;
+      let queryArticle = queryDoc.article();
+      let queryText = getAbstract( queryArticle );
+
+      if ( queryText == null ) {
+        queryText = handleNoQueryAbastract( queryDoc );
+      }
+
+      let queryUid = getPmid( queryArticle );
 
       let url = SEMANTIC_SEARCH_BASE_URL;
-      let queryText = getAbstract( queryArticle );
-      let queryUid = getPmid( queryArticle );
       let query = { uid: queryUid, text: queryText };
 
       let documents = pubmeds.PubmedArticleSet.map( article => {
@@ -173,11 +197,11 @@ const getDocuments = ( templates, queryArticle ) => {
         const getSemanticScore = doc => _.get( semanticScoreById, [ doc.pmid, 0, 'score' ] );
 
         const getNegativeScore = ( doc ) => {
-          let fcn = SORT_BY_DATE ? getPubTime : getSemanticScore;
+          let fcn = sortByDate ? getPubTime : getSemanticScore;
           return -fcn( doc );
         };
 
-        if ( !SORT_BY_DATE ) {
+        if ( !sortByDate ) {
           arr = arr.filter( doc => getSemanticScore( doc ) > MIN_SEMANTIC_SCORE );
         }
 
@@ -271,8 +295,8 @@ const assembleEnglish = statements => {
 
 
 export const searchDocuments = opts => {
-  let { templates, article } = opts;
-  return tryPromise( () => getDocuments(templates, article) )
+  let { templates, doc } = opts;
+  return tryPromise( () => getDocuments(templates, doc) )
     .catch( err => {
       logger.error(`Finding indra documents failed`);
       logger.error(err);

@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import _ from 'lodash';
 import { parse as dateParse } from 'date-fns';
+import uuid from 'uuid';
 
 import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL, NO_ABSTRACT_HANDLING } from '../../../../config';
 import logger from '../../../logger';
@@ -118,7 +119,17 @@ const getDocuments = ( templates, queryDoc ) => {
       return null;
     };
 
-    const getPmid = article => article.PubmedData.ArticleIdList.find( o => o.IdType == 'pubmed' ).id;
+    const getPmid = article => {
+      let idList = _.get( article, ['PubmedData', 'ArticleIdList'] );
+
+      if ( !idList ) {
+        return null;
+      }
+
+      let pubmedObj = idList.find( o => o.IdType == 'pubmed' );
+
+      return _.get( pubmedObj, 'id', null );
+    };
 
     const getSemanticScores = pubmeds => {
       if ( sortByDate ) {
@@ -133,7 +144,10 @@ const getDocuments = ( templates, queryDoc ) => {
         queryText = handleNoQueryAbastract( queryDoc );
       }
 
-      let queryUid = getPmid( queryArticle );
+      // semantic search api requires uid for query but there is no
+      // use case of it at least for us. Therefore, it must be
+      // fine to generate a random uuid when the pmid is not available.
+      let queryUid = getPmid( queryArticle ) || uuid();
 
       let url = SEMANTIC_SEARCH_BASE_URL;
       let query = { uid: queryUid, text: queryText };

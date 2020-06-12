@@ -144,18 +144,25 @@ const getDocuments = ( templates, queryArticle ) => {
         let dateJs = article.Journal.JournalIssue.PubDate;
         let { Day: day, Year: year, Month: month, MedlineDate: medlineDate } = dateJs;
 
-        if ( medlineDate ) {
-          return new Date( medlineDate );
+        try {
+          if ( medlineDate ) {
+            return new Date( medlineDate ).getTime();
+          }
+
+          if ( month != null && isNaN( month ) ) {
+              month = dateParse(month, 'MMM', new Date()).getMonth() + 1;
+          }
+
+          // Date class accepts the moth indices starting by 0
+          month = month - 1;
+
+          return new Date( year, month, day ).getTime();
         }
-
-        if ( month != null && isNaN( month ) ) {
-            month = dateParse(month, 'MMM', new Date()).getMonth() + 1;
+        catch ( e ) {
+          logger.error( e );
+          // if date could not be parsed return the minimum integer value
+          return Number.MIN_SAFE_INTEGER;
         }
-
-        // Date class accepts the moth indices starting by 0
-        month = month - 1;
-
-        return new Date( year, month, day ).getTime();
     };
 
     const filterByDate = articles => {

@@ -6,7 +6,7 @@ import { makeClassList, tryPromise } from '../../util';
 import EventEmitter from 'eventemitter3';
 import { truncateString } from '../../util';
 
-import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME, DOI_LINK_BASE_URL } from '../../config';
+import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME, DOI_LINK_BASE_URL, BASE_URL, SAMPLE_DOC_ID } from '../../config';
 
 const checkStatus = response => {
   if ( response.status >= 200 && response.status < 300 ) {
@@ -128,7 +128,7 @@ class RequestForm extends Component {
     }
 
     return h('div.home-request-form-container', [
-      h('div.home-request-form-description', `Link your article to pathway data`),
+      h('div.home-request-form-description', `Enter your article information`),
       h('i.icon.icon-spinner.home-request-spinner', {
         className: makeClassList({ 'home-request-spinner-shown': this.state.submitting })
       }),
@@ -150,7 +150,7 @@ class RequestForm extends Component {
           value: this.state.authorEmail,
           spellCheck: false
         }),
-        h( 'div.home-request-form-footer', `A private editing link is sent to your email. Emails are never revealed or shared.` ),
+        h( 'div.home-request-form-footer', `A private editing link will be sent to your email. We will never share your email.` ),
         h('div.home-request-error', {
           className: makeClassList({ 'home-request-error-message-shown': this.state.errors.incompleteForm })
         }, 'Fill out everything above, then try again.'),
@@ -390,7 +390,7 @@ class Home extends Component {
         tippy: {
           html: h('div.home-contact-info', [
             h('p', [
-              'Biofactoid is freely brought to you in collaboration with ',
+              'Biofactoid is free academic project by: ',
               h('a.plain-link', { href: 'https://baderlab.org', target: '_blank' }, 'Bader Lab at the University of Toronto'),
               ', ',
               h('a.plain-link', { href: 'http://sanderlab.org', target: '_blank' }, 'Sander Lab at Harvard'),
@@ -443,7 +443,7 @@ class Home extends Component {
         h('div.home-caption.home-caption-1', [
           h('h2', 'How it works'),
           h('p', [
-            `It's quick and easy to compose your pathway by adding the key `,
+            `It’s quick and easy to share your published results by drawing the key `,
             h(Popover, {
               tippy: {
                 placement: 'bottom',
@@ -452,8 +452,8 @@ class Home extends Component {
             }, [
               h('span.link-like.plain-link-dark', `interactions`)
             ]),
-            ` you researched.  `,
-            `Share your digital pathway so everyone else can explore it and link to your article.`
+            ` in your pathway in Biofactoid.  `,
+            `Your results are automatically made available for others to explore and cite.`
           ])
         ]),
         h('div.home-figure-video.home-figure-video-1', [
@@ -475,7 +475,21 @@ class Home extends Component {
         h('div.home-caption.home-caption-2', [
           h('h2', 'Your pathway to share and explore'),
           h('p', [
-            `We create a summary of each pathway, associate it with the article in a public database, and share it so scientists can find and use the information.`
+            `We `,
+            h(Popover, {
+              tippy: {
+                placement: 'bottom',
+                html: h('div.home-info-popover-content', [
+                  h('span', `Upon submission, pathway data stored in our database is made publically available for researchers to browse and download in bulk. A pathway summary is also shared on our `),
+                  h('a.plain-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}`, target: '_blank' }, 'Twitter feed')
+                ])
+              }
+            }, [
+              h('span.link-like.plain-link-dark', `publish and share`)
+            ]),
+            h('span', ' an interactive '),
+            h('a.plain-link', { href: `${BASE_URL}/document/${SAMPLE_DOC_ID}`, target: '_blank' }, 'graphical abstract'),
+            h('span', ` of your pathway so scientists can find and use the information.`)
           ])
         ]),
         h('div.home-figure-fg-2'),

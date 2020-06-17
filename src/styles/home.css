@@ -354,6 +354,7 @@
 
 .home-figure-2 {
   background-image: url('/image/home-figure-2.jpg');
+  transform: scaleX(-1);
   background-size: cover;
   background-position: 50% 50%;
 }
@@ -380,7 +381,7 @@
 
 .home-figure-fg-2 {
   flex-grow: 1;
-  width: 100%;
+  width: 75%;
   margin-top: -4.5em;
   margin-bottom: -8em;
   background-image: url('/image/home-figure-fg-2.png');
@@ -606,7 +607,7 @@
   height: 4em;
   max-width: 80vw;
   display: inline-block;
-  margin: 0 1em;
+  margin: 0 0.8em;
 }
 
 .home-credit-logo-harvardu {

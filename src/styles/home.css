@@ -599,15 +599,26 @@
 }
 
 .home-credit-logo {
-  background-image: url('/image/uni-logos-bw.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: 50% 50%;
-  width: 18em;
-  height: 3em;
+  width: 4em;
+  height: 4em;
   max-width: 80vw;
   display: inline-block;
   margin: 0 1em;
+}
+
+.home-credit-logo-harvardu {
+  background-image: url('/image/logo_harvardu.png');
+}
+
+.home-credit-logo-ohsu {
+  background-image: url('/image/logo_ohsu.jpg');
+}
+
+.home-credit-logo-utoronto {
+  background-image: url('/image/logo_utoronto.png');
 }
 
 .home-contact-info {

@@ -1,9 +1,10 @@
 import fetch from 'node-fetch';
 import _ from 'lodash';
 import { parse as dateParse } from 'date-fns';
+import uuid from 'uuid';
 import Heap from 'heap';
 
-import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL } from '../../../../config';
+import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL, NO_ABSTRACT_HANDLING } from '../../../../config';
 import logger from '../../../logger';
 import { tryPromise } from '../../../../util';
 import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
@@ -25,7 +26,9 @@ const BASE_MODIFICATION_TYPES = ['Sumoylation', 'Desumoylation', 'Hydroxylation'
 const TRANSCRIPTION_TRANSLATION_TYPES = ['IncreaseAmount', 'DecreaseAmount'];
 const BINDING_TYPES = ['Complex'];
 
-const getDocuments = ( templates, queryArticle ) => {
+let sortByDate = SORT_BY_DATE;
+
+const getDocuments = ( templates, queryDoc ) => {
   const getForIntn = intnTemplate => {
     const getAgent = t => {
       let agent;
@@ -93,29 +96,64 @@ const getDocuments = ( templates, queryArticle ) => {
       return [];
     }
 
-    const getPmid = article => article.PubmedData.ArticleIdList.find( o => o.IdType == 'pubmed' ).id;
+    const handleNoQueryAbastract = doc => {
+      if ( NO_ABSTRACT_HANDLING == 'text' ) {
+        return doc.toText();
+      }
+      else if ( NO_ABSTRACT_HANDLING == 'date' ) {
+        // no need to return a valid abstract since sorting will be based on date
+        sortByDate = true;
+        return null;
+      }
+      else {
+        throw `${NO_ABSTRACT_HANDLING} is not a valid value for NO_ABSTRACT_HANDLING environment variable!`;
+      }
+    };
+
     const getMedlineArticle = article => article.MedlineCitation.Article;
 
+    const getAbstract = article => {
+      let abstract = getMedlineArticle(article).Abstract;
+      if ( _.isString( abstract ) ) {
+        return abstract;
+      }
+      if ( _.isArray( abstract ) ) {
+        return abstract[ 0 ];
+      }
+      return null;
+    };
+
+    const getPmid = article => {
+      let idList = _.get( article, ['PubmedData', 'ArticleIdList'] );
+
+      if ( !idList ) {
+        return null;
+      }
+
+      let pubmedObj = idList.find( o => o.IdType == 'pubmed' );
+
+      return _.get( pubmedObj, 'id', null );
+    };
+
     const getSemanticScores = articles => {
-      if ( SORT_BY_DATE ) {
+      if ( sortByDate ) {
         let semanticScores = null;
         return { semanticScores, articles };
       }
 
-      const getAbstract = article => {
-        let abstract = getMedlineArticle(article).Abstract;
-        if ( _.isString( abstract ) ) {
-          return abstract;
-        }
-        if ( _.isArray( abstract ) ) {
-          return abstract[ 0 ];
-        }
-        return null;
-      };
+      let queryArticle = queryDoc.article();
+      let queryText = getAbstract( queryArticle );
+
+      if ( queryText == null ) {
+        queryText = handleNoQueryAbastract( queryDoc );
+      }
+
+      // semantic search api requires uid for query but there is no
+      // use case of it at least for us. Therefore, it must be
+      // fine to generate a random uuid when the pmid is not available.
+      let queryUid = getPmid( queryArticle ) || uuid();
 
       let url = SEMANTIC_SEARCH_BASE_URL;
-      let queryText = getAbstract( queryArticle );
-      let queryUid = getPmid( queryArticle );
       let query = { uid: queryUid, text: queryText };
 
       let documents = articles.map( article => {
@@ -168,7 +206,7 @@ const getDocuments = ( templates, queryArticle ) => {
     const filterByDate = articles => {
       // if the sort operation wil be based on the semantic search
       // then filter the most current papers before sorting
-      if ( !SORT_BY_DATE && articles.length > SEMANTIC_SEARCH_LIMIT ) {
+      if ( !sortByDate && articles.length > SEMANTIC_SEARCH_LIMIT ) {
         const cmp = ( a, b ) => {
           const getDate = e => getPubTime( getMedlineArticle( e ) );
           return getDate( a ) - getDate( b );
@@ -200,11 +238,11 @@ const getDocuments = ( templates, queryArticle ) => {
         const getSemanticScore = doc => _.get( semanticScoreById, [ doc.pmid, 0, 'score' ] );
 
         const getNegativeScore = ( doc ) => {
-          let fcn = SORT_BY_DATE ? () => getPubTime(doc.pubmed) : getSemanticScore;
+          let fcn = sortByDate ? getPubTime(doc.pubmed) : getSemanticScore;
           return -fcn( doc );
         };
 
-        if ( !SORT_BY_DATE ) {
+        if ( !sortByDate ) {
           arr = arr.filter( doc => getSemanticScore( doc ) > MIN_SEMANTIC_SCORE );
         }
 
@@ -298,8 +336,8 @@ const assembleEnglish = statements => {
 
 
 export const searchDocuments = opts => {
-  let { templates, article } = opts;
-  return tryPromise( () => getDocuments(templates, article) )
+  let { templates, doc } = opts;
+  return tryPromise( () => getDocuments(templates, doc) )
     .catch( err => {
       logger.error(`Finding indra documents failed`);
       logger.error(err);

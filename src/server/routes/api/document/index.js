@@ -1566,12 +1566,6 @@ http.get('/text/:id', function( req, res, next ){
 });
 
 const searchRelatedPapers = ( doc, interactionId ) => {
-  let article = doc.article();
-  let abstract = article.MedlineCitation.Article.Abstract;
-  if ( !abstract ) {
-    return [];
-  }
-
   let templates;
   if ( interactionId ) {
     let intn = doc.get( interactionId );
@@ -1582,7 +1576,7 @@ const searchRelatedPapers = ( doc, interactionId ) => {
   }
 
 
-  let obj = { templates, article };
+  let obj = { templates, doc };
   return indra.searchDocuments( obj );
 };
 

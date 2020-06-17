@@ -480,7 +480,7 @@ class Home extends Component {
               tippy: {
                 placement: 'bottom',
                 html: h('div.home-info-popover-content', [
-                  h('span', `Upon submission, pathway data stored in our database is made publically available for researchers to browse and download in bulk. A pathway summary is also shared on our `),
+                  h('span', `Submitted pathway data is stored in our database and is made publically available for researchers to browse and download. A pathway summary is also shared on our `),
                   h('a.plain-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}`, target: '_blank' }, 'Twitter feed')
                 ])
               }

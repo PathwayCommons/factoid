@@ -69,6 +69,7 @@ const getPubmedArticle = async paperId => {
       let hasMatch = false;
       const PubmedArticle = _.head( PubmedArticleSet );
       const { title, pmid, doi } = getPubmedCitation( PubmedArticle );
+      // Pubmed EFETCH returns lower-cased title, adds trailing period
       const cleanTitle = raw => _.toLower( _.trim( raw , ' .') );
 
       switch ( IdType ) {

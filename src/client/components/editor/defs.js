@@ -1,3 +1,3 @@
-export const newElementPosition = { x: 160, y: 100 };
-export const newElementShift = 60;
-export const newElementMaxShifts = 4;
+export const newElementPosition = { x: 110, y: 120 };
+export const newElementShift = 10;
+export const newElementMaxShifts = 2;

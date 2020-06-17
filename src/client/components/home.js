@@ -2,9 +2,10 @@ import _ from 'lodash';
 import h from 'react-hyperscript';
 import { Component } from 'react';
 import Popover from './popover/popover';
-import { makeClassList, tryPromise } from '../../util';
+import { makeClassList } from '../../util';
 import EventEmitter from 'eventemitter3';
 import { truncateString } from '../../util';
+import { Carousel, CAROUSEL_CONTENT } from './carousel';
 
 import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME, DOI_LINK_BASE_URL } from '../../config';
 
@@ -165,196 +166,6 @@ class RequestForm extends Component {
   }
 }
 
-// N.b. scroller lists any doc in debug mode
-class Scroller extends Component {
-  constructor(props){
-    super(props);
-
-    this.state = {
-      pagerLeftAvailable: false,
-      pagerRightAvailable: false,
-      isScrolling: false,
-      docs: []
-    };
-
-    this.updatePagerAvailabilityDebounced = _.debounce(() => {
-      this.updatePagerAvailability();
-    }, 40);
-
-    this.setScrollState = () => {
-      this.setState({ isScrolling: true });
-
-      this.clearScrollStateDebounced();
-    };
-
-    this.clearScrollStateDebounced = _.debounce(() => {
-      this.setState({ isScrolling: false });
-    }, 250);
-
-    this.onScrollExplore = () => {
-      this.updatePagerAvailabilityDebounced();
-      this.setScrollState();
-    };
-  }
-
-  componentDidMount(){
-    this.refreshDocs().then(() => this.updatePagerAvailabilityDebounced());
-
-    window.addEventListener('resize', this.updatePagerAvailabilityDebounced);
-  }
-
-  componentWillUnmount(){
-    window.removeEventListener('resize', this.updatePagerAvailabilityDebounced);
-  }
-
-  hoverOverDoc(doc){
-    doc.hovered = true;
-
-    this.setState({ dirty: Date.now() });
-  }
-
-  hoverOutDoc(doc){
-    doc.hovered = false;
-
-    this.setState({ dirty: Date.now() });
-  }
-
-  scrollExplore(factor = 1){
-    if( this.exploreDocsContainer ){
-      const container = this.exploreDocsContainer;
-      const padding = parseInt(getComputedStyle(container)['padding-left']);
-      const width = container.clientWidth - 2*padding;
-
-      this.exploreDocsContainer.scrollBy({
-        left: width * factor,
-        behavior: 'smooth'
-      });
-    }
-  }
-
-  scrollExploreLeft(){
-    this.scrollExplore(-1);
-  }
-
-  scrollExploreRight(){
-    this.scrollExplore(1);
-  }
-
-  updatePagerAvailability(){
-    if( this.exploreDocsContainer ){
-      const haveNoDocs = this.state.docs.length === 0;
-      const { scrollLeft, scrollWidth, clientWidth } = this.exploreDocsContainer;
-      const allTheWayLeft = scrollLeft === 0;
-      const allTheWayRight = scrollLeft + clientWidth >= scrollWidth;
-      let leftAvail = !allTheWayLeft && !haveNoDocs;
-      let rightAvail = !allTheWayRight && !haveNoDocs;
-
-      this.setState({
-        pagerLeftAvailable: leftAvail,
-        pagerRightAvailable: rightAvail
-      });
-    }
-  }
-
-  refreshDocs(){
-    const url = `/api/document`;
-
-    const toJson = res => res.json();
-    const update = docs => new Promise(resolve => this.setState({ docs }, () => resolve(docs)));
-    const doFetch = () => fetch(url);
-
-    return tryPromise(doFetch).then(toJson).then(update);
-  }
-
-  render(){
-    const exploreDocEntry = doc => {
-      const { title, authors: { authorList }, reference: journalName } = doc.citation;
-      let authorNames = authorList.map( a => a.name );
-      const id = doc.id;
-      const link = doc.publicUrl;
-      const hovered = doc.hovered;
-
-      if( authorNames.length > 3 ){
-        authorNames = authorNames.slice(0, 3).concat([ '...', authorNames[authorNames.length - 1] ]);
-      }
-
-      return h('div.scroller-doc', {
-        className: makeClassList({
-          'scroller-doc-scrolling': this.state.isScrolling,
-          'scroller-doc-hovered': hovered
-        }),
-        onTouchStart: () => this.hoverOverDoc(doc),
-        onTouchMove: () => this.hoverOutDoc(doc),
-        onTouchEnd: () => this.hoverOutDoc(doc),
-        onMouseOver: () => this.hoverOverDoc(doc),
-        onMouseOut: () => this.hoverOutDoc(doc)
-      }, [
-        h('a', {
-          href: link,
-          target: '_blank',
-          onTouchStart: e => e.preventDefault()
-        }, [
-          h('div.scroller-doc-descr', [
-            h('div.scroller-doc-title', title),
-            h('div.scroller-doc-authors', authorNames.map((name, i) => h(`span.scroller-doc-author.scroller-doc-author-${i}`, name))),
-            h('div.scroller-doc-journal', journalName)
-          ]),
-          h('div.scroller-doc-figure', {
-            style: {
-              backgroundImage: `url('/api/document/${id}.png')`
-            }
-          }),
-          h('div.scroller-doc-journal-banner')
-        ])
-      ]);
-    };
-
-    const docPlaceholders = () => {
-      const numPlaceholders = 20;
-      const placeholders = [];
-
-      for( let i = 0; i < numPlaceholders; i++ ){
-        const p = h('div.scroller-doc.scroller-doc-placeholder');
-
-        placeholders.push(p);
-      }
-
-      return placeholders;
-    };
-
-    const isPublished = doc => doc.status.toLowerCase() === 'published';
-    const docs = this.state.docs.filter(isPublished);
-
-    return h('div.scroller', [
-      h('div.scroller-pager.scroller-pager-left', {
-        className: makeClassList({
-          'scroller-pager-available': this.state.pagerLeftAvailable
-        }),
-        onClick: () => this.scrollExploreLeft()
-      }, [
-        h('i.scroller-pager-icon.material-icons', 'chevron_left')
-      ]),
-      h('div.scroller-pager.scroller-pager-right', {
-        className: makeClassList({
-          'scroller-pager-available': this.state.pagerRightAvailable
-        }),
-        onClick: () => this.scrollExploreRight()
-      }, [
-        h('i.scroller-pager-icon.material-icons', 'chevron_right')
-      ]),
-      h('div.scroller-content', {
-        className: makeClassList({
-          'scroller-content-only-placeholders': docs.length === 0
-        }),
-        onScroll: () => this.onScrollExplore(),
-        ref: el => this.exploreDocsContainer = el
-      }, (docs.length > 0 ? docs.map(exploreDocEntry) : docPlaceholders()).concat([
-        h('div.scroller-doc-spacer')
-      ]))
-    ]);
-  }
-}
-
 class Home extends Component {
   constructor(props){
     super(props);
@@ -435,7 +246,7 @@ class Home extends Component {
         ]),
         h('div.home-explore#home-explore', [
           h('h2', 'Recently shared articles'),
-          h(Scroller)
+          h(Carousel, { content: CAROUSEL_CONTENT.FIGURE })
         ])
       ]),
       h('div.home-section.home-figure-section.home-figure-section-1', [

@@ -9,6 +9,7 @@ import Notification from '../notification';
 import assocDisp from './entity-assoc-display';
 import CancelablePromise from 'p-cancelable';
 import { isComplex, isGGP, ELEMENT_TYPE } from '../../../model/element/element-type';
+import RelatedPapers from '../related-papers';
 
 import {
   focusDomElement, makeClassList, initCache, SingleValueCache,
@@ -513,6 +514,12 @@ class EntityInfo extends DataComponent {
         }
       } else {
         children.push( h('div.entity-info-assoc', allAssoc( assoc, true, false )) );
+
+        children.push( h('div.entity-info-reld-papers-title', `Recommended articles`) );
+        
+        children.push( h('div.entity-info-related-papers', [
+          h(RelatedPapers, { document, papers: s.element.relatedPapers() })
+        ]) );
       }
     } else {
       let placeholder;

@@ -1,0 +1,287 @@
+.carousel {
+  position: relative;
+}
+
+.carousel-content {
+  z-index: 5;
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  display: flex;
+  flex-direction: row;
+  padding: 3em;
+  scroll-padding-left: 3em;
+  padding-right: 3em;
+  box-sizing: border-box;
+  scrollbar-width: none; /* stylelint-disable-line */
+  touch-action: pan-x pan-y;
+  user-select: none;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none;
+  margin-top: -2em;
+  margin-bottom: -2em;
+}
+
+.carousel-content::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-content-only-placeholders {
+  pointer-events: none;
+}
+
+.carousel-doc {
+  background: #fff;
+  color: #000;
+  scroll-snap-align: start;
+  display: block;
+  box-sizing: border-box;
+  min-width: 25%;
+  width: 20em;
+  max-width: 100%;
+  height: 14em;
+  position: relative;
+  border: 2px solid #333;
+  border-radius: 0.25em;
+  touch-action: pan-x pan-y;
+  user-select: none;
+  transform: translate3d(0, 0, 0);
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none;
+  overflow: visible;
+
+  &.carousel-doc-hovered {
+    z-index: 8;
+    background-color: #fff;
+
+    & .carousel-doc-title,
+    & .carousel-doc-authors,
+    & .carousel-doc-journal {
+      text-overflow: inherit;
+      white-space: normal;
+      overflow: inherit;
+      display: block;
+      position: static;
+      color: #000;
+    }
+
+    & .carousel-doc-descr {
+      z-index: 10;
+      top: -3em;
+      bottom: -2.25em;
+      background: linear-gradient(to bottom, #fff 0, #fff 3em, rgba(255, 255, 255, 0) 5em), linear-gradient(to top, #fff 0, #fff 3em, rgba(255, 255, 255, 0) 5em);
+      box-shadow: 0 0 1em rgba(0, 0, 0, 0.5);
+      border-radius: 0.25em;
+    }
+
+    & .carousel-doc-author {
+      display: inline;
+
+      & + .carousel-doc-author::before {
+        content: ', ';
+      }
+
+      &:first-child::after {
+        content: none;
+      }
+    }
+  }
+
+  &:last-child {
+    scroll-snap-align: end;
+  }
+}
+
+.carousel-doc-placeholder {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(255, 255, 255, 1) 100%);
+  background-position: 0 0;
+  animation: shiftBgRight 1000ms infinite;
+}
+
+@media (max-width: 1100px) {
+  .carousel-doc {
+    min-width: 33.333%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 800px) {
+  .carousel-doc {
+    min-width: 50%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+  .carousel-doc {
+    min-width: 100%;
+    max-width: 100%;
+  }
+}
+
+.carousel-doc-spacer {
+  display: block;
+  min-width: 3em;
+  min-height: 100%;
+  scroll-snap-align: end;
+}
+
+.carousel-doc-figure {
+  position: absolute;
+  top: 1.5em;
+  bottom: 2.75em;
+  left: 0;
+  right: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  transition: opacity 250ms ease;
+
+  /* placeholder */
+  background-image: url('/image/example-doc-1.png');
+}
+
+.carousel-doc-descr {
+  padding: 0.25em 0.33em;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  transition-property: top bottom;
+  transition-duration: 128ms;
+  transition-timing-function: ease-in-out;
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 3;
+  background-color: rgba(255, 255, 255, 0);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+
+  & .carousel-doc-title,
+  & .carousel-doc-authors,
+  & .carousel-doc-journal {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    color: #666;
+  }
+}
+
+.carousel-doc-top {
+  /* flex: 1 1 auto; */
+}
+
+.carousel-doc-title {
+  position: relative;
+  font-weight: bold;
+  display: block;
+  color: #000;
+  font-size: 0.9em;
+  flex-grow: 1;
+}
+
+.carousel-doc-abstract {
+  margin: 0.5em 0;
+  overflow: hidden;
+  position: relative;
+  font-size: 0.8em;
+  flex: 1 1;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    height: 3em;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, #fff 0, transparent 100%);
+  }
+}
+
+.carousel-doc-authors {
+  font-size: 0.8em;
+}
+
+.carousel-doc-author:not(:first-child) {
+  display: none;
+}
+
+.carousel-doc-author:first-child {
+  &::after {
+    content: ' et al.';
+  }
+}
+
+.carousel-doc-journal {
+  margin-top: 0.25em;
+  font-style: italic;
+  font-size: 0.8em;
+}
+
+.carousel-pager {
+  width: 3em;
+  bottom: 3em;
+  height: 14em;
+  position: absolute;
+  z-index: 9;
+  background: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 250ms ease;
+  opacity: 0;
+  pointer-events: none;
+  backdrop-filter: blur(1px);
+}
+
+.carousel-pager-available {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.carousel-pager-left {
+  left: 0;
+}
+
+.carousel-pager-right {
+  right: 0;
+}
+
+.carousel-pager-icon {
+  font-size: 3em;
+  text-shadow: 0 0 4px #000;
+}
+
+@media (max-width: 500px) {
+  .carousel-pager {
+    width: 1.5em;
+  }
+
+  .carousel-pager-icon {
+    font-size: 2em;
+  }
+
+  .carousel-content {
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+    scroll-padding-left: 1.5em;
+  }
+
+  .carousel-doc-spacer {
+    min-width: 1.5em;
+  }
+}
+
+.carousel-content-is-abstract {
+  & .carousel-doc-title {
+    flex-grow: unset;
+    text-overflow: inherit;
+    white-space: normal;
+    overflow: inherit;
+  }
+}

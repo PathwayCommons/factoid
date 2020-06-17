@@ -150,7 +150,7 @@ class RequestForm extends Component {
           value: this.state.authorEmail,
           spellCheck: false
         }),
-        h( 'div.home-request-form-footer', `A private editing link will be sent to your email. We will never share your email.` ),
+        h( 'div.home-request-form-footer', `A private editing link will be sent to your email. Email addresses are never shared.` ),
         h('div.home-request-error', {
           className: makeClassList({ 'home-request-error-message-shown': this.state.errors.incompleteForm })
         }, 'Fill out everything above, then try again.'),

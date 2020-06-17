@@ -70,7 +70,12 @@ const getPubmedArticle = async paperId => {
       const PubmedArticle = _.head( PubmedArticleSet );
       const { title, pmid, doi } = getPubmedCitation( PubmedArticle );
       // Pubmed EFETCH returns lower-cased title, adds trailing period
-      const cleanTitle = raw => _.toLower( _.trim( raw , ' .') );
+      const santitize = raw => {
+        const trimmed = _.trim( raw , ' .');
+        const lower = _.toLower( trimmed );
+        const clean = lower.replace(/[\W_]+/g, ' ');
+        return clean;
+      };
 
       switch ( IdType ) {
         case ID_TYPE.DOI:
@@ -80,7 +85,7 @@ const getPubmedArticle = async paperId => {
           if( pmid === paperId ) hasMatch = true;
           break;
         case ID_TYPE.TITLE:
-          if( cleanTitle( title ).includes( cleanTitle( paperId ) ) ) hasMatch = true;
+          if( santitize( title ).includes( santitize( paperId ) ) ) hasMatch = true;
           break;
       }
 

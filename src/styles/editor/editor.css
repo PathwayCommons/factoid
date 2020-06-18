@@ -241,6 +241,7 @@
   flex-direction: row;
   align-content: center;
   justify-content: center;
+  align-items: center;
 
   & i {
     font-size: 1.5em;

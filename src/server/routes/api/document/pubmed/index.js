@@ -64,8 +64,6 @@ const getPubmedArticle = async paperId => {
         uids: [ foundId ]
       });
 
-      if( _.isEmpty( PubmedArticleSet ) ) throw new ArticleIDError( `No PubMed record found '${paperId}'`, paperId );
-
       let hasMatch = false;
       const PubmedArticle = _.head( PubmedArticleSet );
       const { title, pmid, doi } = getPubmedCitation( PubmedArticle );

@@ -73,10 +73,10 @@ export class InfoPanel extends Component {
         h('a.editor-info-link.plain-link', { target: '_blank', href: `${GOOGLE_SCHOLAR_BASE_URL}${doi}` }, 'Google Scholar')
       ] : null),
       h('div.editor-info-main-sections', [
-        abstract ? h('div.editor-info-abstract-section.editor-info-main-section', [
-          h('div.editor-info-section-title', 'Abstract'),
-          h('div.editor-info-abstract-content', abstract)
-        ]) : null,
+        h('div.editor-info-abstract-section.editor-info-main-section', [
+          h('div.editor-info-section-title', abstract ? 'Abstract': 'Summary'),
+          h('div.editor-info-abstract-content', abstract ? abstract : document.toText() )
+        ]),
         // h('div.editor-info-carousel-title', 'Recommended articles'),
         // h('div.editor-info-carousel', [
         //   h(Carousel, { content: CAROUSEL_CONTENT.ABSTRACT })
@@ -87,9 +87,7 @@ export class InfoPanel extends Component {
         // ]),
         h('div.editor-info-related-papers-section.editor-info-main-section', [
           h('div.editor-info-section-title', 'Recommended articles'),
-          h('div.editor-info-related-papers', [
-            h(RelatedPapers, { document, papers: document.relatedPapers() })
-          ])
+          h('div.editor-info-related-papers', [ h(RelatedPapers, { document, papers: document.relatedPapers() }) ])
         ])
       ])
     ]);

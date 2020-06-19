@@ -485,10 +485,10 @@ class Home extends Component {
                 ])
               }
             }, [
-              h('span.link-like.plain-link-dark', `publish and share`)
+              h('span.link-like.plain-link-bright', `publish and share`)
             ]),
             h('span', ' an interactive '),
-            h('a.plain-link', { href: `${BASE_URL}/document/${SAMPLE_DOC_ID}`, target: '_blank' }, 'graphical abstract'),
+            h('a.plain-link-bright', { href: `${BASE_URL}/document/${SAMPLE_DOC_ID}`, target: '_blank' }, 'graphical abstract'),
             h('span', ` of your pathway so scientists can find and use the information.`)
           ])
         ]),

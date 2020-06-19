@@ -35,8 +35,8 @@ const checkEsearchResult = json => {
   return json;
 };
 
-const eSearchPubmed = term => {
-  const params = _.assign( {}, DEFAULT_ESEARCH_PARAMS, { term } );
+const eSearchPubmed = ( term, opts ) => {
+  const params = _.assign( {}, DEFAULT_ESEARCH_PARAMS, { term }, opts );
   const url = EUTILS_SEARCH_URL + '?' + queryString.stringify( params );
   const userAgent = `${process.env.npm_package_name}/${process.env.npm_package_version}`;
   return fetch( url, {
@@ -56,12 +56,13 @@ const eSearchPubmed = term => {
  * Query the PubMed database for matching UIDs.
  *
  * @param { String } q The query term
+ * @param { Object } opts EUTILS ESEARCH options
  * @returns { Object } result The search results from PubMed
  * @returns { Array } result.searchHits A list of PMIDs
  * @returns { Number } result.count The number of searchHits containing PMIDs
  * @returns { String } result.query_key See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
  * @returns { String } result.webenv See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
  */
-const searchPubmed = q => eSearchPubmed( q );
+const searchPubmed = ( q, opts ) => eSearchPubmed( q, opts );
 
 export { searchPubmed, pubmedDataConverter };

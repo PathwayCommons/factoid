@@ -91,7 +91,8 @@ const getDocuments = ( templates, queryDoc ) => {
       getIntns = () => getInteractions(agent);
     }
     else {
-      // TODO htrow?
+      logger.error( `${elType} is not a valid element type!` );
+      getIntns = () => [];
     }
 
     return tryPromise( () => getIntns() )
@@ -194,7 +195,7 @@ const getDocuments = ( templates, queryDoc ) => {
     const filterByDate = articles => {
       // if the sort operation wil be based on the semantic search
       // then filter the most current papers before sorting
-      if ( !sortby && articles.length > SEMANTIC_SEARCH_LIMIT ) {
+      if ( !sortByDate && articles.length > SEMANTIC_SEARCH_LIMIT ) {
         const cmp = ( a, b ) => {
           const getDate = e => getPubTime( getMedlineArticle( e ) );
           return getDate( a ) - getDate( b );
@@ -304,8 +305,15 @@ const getStatements = (agent0, agent1) => {
       )
     .then( js => Object.values(js.statements) )
     .catch( err => {
-      // TODO?
-      logger.error( `Unable to retrieve the indra staments for the entity pair '${agent0}-${agent1}'` );
+      let errStr = 'Unable to retrieve the indra staments for the entity ';
+
+      if ( agent1 ) {
+        errStr += `pair '${agent0}-${agent1}'`;
+      }
+      else {
+        errStr += agent0;
+      }
+      logger.error( errStr );
       logger.error( err );
       throw err;
     } );

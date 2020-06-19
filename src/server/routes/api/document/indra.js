@@ -292,7 +292,7 @@ const getInteractions = (agent0, agent1) => {
 const getStatements = (agent0, agent1) => {
   let query = { format: 'json-js', agent0 };
 
-  // if agent1 parameter is set the query is made for an isInteraction
+  // if agent1 parameter is set the query is made for an interaction
   // else it is made for an entity
   if ( agent1 != null ) {
     query.agent1 = agent1;

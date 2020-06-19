@@ -2,3 +2,20 @@
 @import "./entity-info.css";
 @import "./interaction-info.css";
 @import "./participant-info.css";
+
+.editor-info-panel .interaction-info-summary-text,
+.editor-info-panel .entity-info-name {
+  font-size: 1.5em;
+  font-weight: normal;
+  margin-top: 0;
+  margin-right: 1.125em;
+}
+
+.editor-info-panel .interaction-info,
+.editor-info-panel .entity-info {
+  width: auto;
+  max-width: 100%;
+  max-height: unset;
+  padding: 0;
+  overflow: visible;
+}

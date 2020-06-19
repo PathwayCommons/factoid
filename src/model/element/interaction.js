@@ -221,17 +221,6 @@ class Interaction extends Element {
     return this.syncher.get('association') != null;
   }
 
-  relatedPapers( papersData ){
-    if( papersData ){
-      let p = this.syncher.update({ 'relatedPapers': papersData });
-      this.emit( 'relatedPapers', papersData );
-      return p;
-    }
-    else if( !papersData ){
-      return this.syncher.get( 'relatedPapers' );
-    }
-  }
-
   json(){
     return _.assign( {}, super.json(), _.pick( this.syncher.get(), _.keys(DEFAULTS) ) );
   }

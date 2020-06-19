@@ -194,6 +194,17 @@ class Element {
     }
   }
 
+  relatedPapers( papersData ){
+    if( papersData ){
+      let p = this.syncher.update({ 'relatedPapers': papersData });
+      this.emit( 'relatedPapers', papersData );
+      return p;
+    }
+    else if( !papersData ){
+      return this.syncher.get( 'relatedPapers' );
+    }
+  }
+
   completed(){
     return this.syncher.get('completed');
   }

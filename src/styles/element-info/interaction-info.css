@@ -1,5 +1,16 @@
 .interaction-info {
-  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  padding: 0.25em;
+  min-width: 300px;
+  max-width: calc(100vw - 1.5em);
+  width: 400px;
+  max-height: 80vh;
+  overflow: scroll;
+}
+
+.interaction-info-ro {
+  width: 100vw;
 }
 
 .interaction-info-type-select-label {
@@ -58,4 +69,29 @@ textarea.interaction-info-description {
     display: inline-block;
     height: auto;
   }
+}
+
+.interaction-info-carousel-title {
+  font-weight: bold;
+  margin-top: 1em;
+}
+
+.interaction-info-carousel {
+  margin-left: -0.25em;
+  margin-right: -0.25em;
+
+  & .carousel-doc {
+    border-color: #ccc;
+  }
+
+  & .carousel-pager {
+    background-color: rgba(255, 255, 255, 0.7);
+    color: #000;
+  }
+}
+
+.interaction-info-reld-papers-title {
+  font-weight: bold;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
 }

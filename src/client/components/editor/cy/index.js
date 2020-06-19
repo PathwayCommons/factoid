@@ -11,12 +11,17 @@ import debug from '../../../debug';
 import * as defs from './defs';
 
 function makeCytoscape( opts ){
-  let cy = new Cytoscape({
+  const editable = opts.document.editable();
+  
+  const cy = new Cytoscape({
     container: opts.container,
     style: makeStylesheet( opts.document ),
-    minZoom: defs.minZoom,
+    minZoom: editable? defs.minZoom : 0.01,
     maxZoom: defs.maxZoom,
     zoom: ( defs.minZoom + defs.maxZoom ) / 2,
+    userZoomingEnabled: editable,
+    userPanningEnabled: editable,
+    boxSelectionEnabled: editable,
     elements: [],
     layout: {
       name: 'preset',

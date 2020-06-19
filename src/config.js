@@ -110,3 +110,5 @@ export const DEMO_CAN_BE_SHARED = env('DEMO_CAN_BE_SHARED', false);
 export const DEMO_CAN_BE_SHARED_MULTIPLE_TIMES = env('DEMO_CAN_BE_SHARED_MULTIPLE_TIMES', false);
 export const SAMPLE_DOC_ID = env('SAMPLE_DOC_ID', '5df17c41-acb7-4c42-a37b-fe323688bc64');
 
+export const NO_ABSTRACT_HANDLING = env('NO_ABSTRACT_HANDLING', 'text');
+

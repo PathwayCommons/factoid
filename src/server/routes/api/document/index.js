@@ -1565,11 +1565,11 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
-const searchRelatedPapers = ( doc, interactionId ) => {
+const searchRelatedPapers = ( doc, elId ) => {
   let templates;
-  if ( interactionId ) {
-    let intn = doc.get( interactionId );
-    templates = [ intn.toSearchTemplate() ];
+  if ( elId ) {
+    let el = doc.get( elId );
+    templates = [ el.toSearchTemplate() ];
   }
   else {
     templates = doc.toSearchTemplates();
@@ -1587,12 +1587,12 @@ http.get('/related-papers/:id', function( req, res, next ){
 
   let id = req.params.id;
   let queryObject = url.parse(req.url, true).query;
-  let { interactionId } = queryObject;
+  let { elId } = queryObject;
 
   tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
-    .then( doc => searchRelatedPapers( doc, interactionId ) )
+    .then( doc => searchRelatedPapers( doc, elId ) )
     .then( js => res.json( js ))
     .catch( next );
 });

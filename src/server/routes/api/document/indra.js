@@ -27,10 +27,13 @@ const BASE_MODIFICATION_TYPES = ['Sumoylation', 'Desumoylation', 'Hydroxylation'
 const TRANSCRIPTION_TRANSLATION_TYPES = ['IncreaseAmount', 'DecreaseAmount'];
 const BINDING_TYPES = ['Complex'];
 
+const INTN_STR = 'interaction';
+const ENTITY_STR = 'entity';
+
 let sortByDate = SORT_BY_DATE;
 
 const getDocuments = ( templates, queryDoc ) => {
-  const getForIntn = intnTemplate => {
+  const getForEl = (elTemplate, elType) => {
     const getAgent = t => {
       let agent;
       let xref = getXref( t );
@@ -73,13 +76,27 @@ const getDocuments = ( templates, queryDoc ) => {
       return xref;
     };
 
-    let pptTemplates = intnTemplate.ppts;
-    let agent0 = getAgent( pptTemplates[0] );
-    let agent1 = getAgent( pptTemplates[1] );
 
-    return tryPromise( () => getInteractions(agent0, agent1) )
+    let getIntns;
+
+    if ( elType == INTN_STR ) {
+      let pptTemplates = elTemplate.ppts;
+      let agent0 = getAgent( pptTemplates[0] );
+      let agent1 = getAgent( pptTemplates[1] );
+
+      getIntns = () => getInteractions(agent0, agent1);
+    }
+    else if ( elType == ENTITY_STR ) {
+      let agent = getAgent( elTemplate );
+      getIntns = () => getInteractions(agent);
+    }
+    else {
+      // TODO htrow?
+    }
+
+    return tryPromise( () => getIntns() )
       .then( intns => {
-        intns.forEach( intn => intn.intnId = intnTemplate.id );
+        intns.forEach( intn => intn.intnId = elTemplate.id );
         return _.groupBy( intns, 'pmid' );
       } );
   };
@@ -177,7 +194,7 @@ const getDocuments = ( templates, queryDoc ) => {
     const filterByDate = articles => {
       // if the sort operation wil be based on the semantic search
       // then filter the most current papers before sorting
-      if ( !sortByDate && articles.length > SEMANTIC_SEARCH_LIMIT ) {
+      if ( !sortby && articles.length > SEMANTIC_SEARCH_LIMIT ) {
         const cmp = ( a, b ) => {
           const getDate = e => getPubTime( getMedlineArticle( e ) );
           return getDate( a ) - getDate( b );
@@ -215,7 +232,8 @@ const getDocuments = ( templates, queryDoc ) => {
       } );
   };
 
-  let promises = templates.map( getForIntn );
+  let promises = [ ...templates.intns.map( e => getForEl( e, INTN_STR ) ),
+                    ...templates.entities.map( e => getForEl( e, ENTITY_STR ) ) ];
   return Promise.all( promises )
     .then( res => _.mergeWith( {}, ...res, merger ) )
     .then( transform );
@@ -271,7 +289,14 @@ const getInteractions = (agent0, agent1) => {
 };
 
 const getStatements = (agent0, agent1) => {
-  let query = { format: 'json-js', agent0, agent1 };
+  let query = { format: 'json-js', agent0 };
+
+  // if agent1 parameter is set the query is made for an isInteraction
+  // else it is made for an entity
+  if ( agent1 != null ) {
+    query.agent1 = agent1;
+  }
+
   let addr = INDRA_STATEMENTS_URL + '?' + querystring.stringify( query );
   return tryPromise( () => fetch(addr) )
     .then( res =>
@@ -279,6 +304,7 @@ const getStatements = (agent0, agent1) => {
       )
     .then( js => Object.values(js.statements) )
     .catch( err => {
+      // TODO?
       logger.error( `Unable to retrieve the indra staments for the entity pair '${agent0}-${agent1}'` );
       logger.error( err );
       throw err;

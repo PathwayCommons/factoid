@@ -49,7 +49,7 @@ const getAbbrevAuthorName = author => {
 const getEmail = author => {
   const AffiliationInfo = _.get( author, ['AffiliationInfo'] );
   let email = [];
-  if( !_.isNull( AffiliationInfo ) ) {
+  if( !_.isEmpty( AffiliationInfo ) ) {
     const emails = AffiliationInfo.filter( info => !_.isNull( _.get( info, 'email' ) ) ).map( info => _.get( info, 'email' ) );
     email = _.uniq( _.flatten( emails ) );
   }
@@ -80,7 +80,7 @@ const getAuthorList = AuthorList => {
   return AuthorList.map( Author => {
     return {
       name: getAuthorName( Author ),
-      email: _.head( getEmail( Author ) ),
+      email: _.head( getEmail( Author ) ) || null,
       abbrevName: getAbbrevAuthorName( Author ),
       isCollectiveName: !_.isNull( _.get( Author, 'CollectiveName' ) )
     };

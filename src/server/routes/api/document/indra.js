@@ -10,6 +10,7 @@ import { tryPromise } from '../../../../util';
 import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import querystring from 'querystring';
+import { getPubmedCitation } from '../../../../util/pubmed';
 
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
 const MIN_SEMANTIC_SCORE = 0.47;
@@ -112,53 +113,23 @@ const getDocuments = ( templates, queryDoc ) => {
 
     const getMedlineArticle = article => article.MedlineCitation.Article;
 
-    const getAbstract = article => {
-      let abstract = getMedlineArticle(article).Abstract;
-      if ( _.isString( abstract ) ) {
-        return abstract;
-      }
-      if ( _.isArray( abstract ) ) {
-        return abstract[ 0 ];
-      }
-      return null;
-    };
-
-    const getPmid = article => {
-      let idList = _.get( article, ['PubmedData', 'ArticleIdList'] );
-
-      if ( !idList ) {
-        return null;
-      }
-
-      let pubmedObj = idList.find( o => o.IdType == 'pubmed' );
-
-      return _.get( pubmedObj, 'id', null );
-    };
-
     const getSemanticScores = articles => {
       if ( sortByDate ) {
         let semanticScores = null;
         return { semanticScores, articles };
       }
 
-      let queryArticle = queryDoc.article();
-      let queryText = getAbstract( queryArticle );
+      let { abstract: queryText, pmid: queryUid = uuid() } = queryDoc.citation();
 
       if ( queryText == null ) {
         queryText = handleNoQueryAbastract( queryDoc );
       }
 
-      // semantic search api requires uid for query but there is no
-      // use case of it at least for us. Therefore, it must be
-      // fine to generate a random uuid when the pmid is not available.
-      let queryUid = getPmid( queryArticle ) || uuid();
-
       let url = SEMANTIC_SEARCH_BASE_URL;
       let query = { uid: queryUid, text: queryText };
 
       let documents = articles.map( article => {
-        let text = getAbstract( article );
-        let uid = getPmid( article );
+        const { abstract: text , pmid: uid } = article;
 
         if ( text == null || uid == null ) {
           return null;
@@ -221,31 +192,23 @@ const getDocuments = ( templates, queryDoc ) => {
     return tryPromise( () => fetchPubmed({ uids: pmids }) )
       .then( o => o.PubmedArticleSet )
       .then( filterByDate )
+      .then( articles => articles.map( getPubmedCitation ) )
       .then( getSemanticScores )
       .then( ( { articles, semanticScores } ) => {
         let semanticScoreById = _.groupBy( semanticScores, 'uid' );
         let arr = articles.map( article => {
-          let pubmed = getMedlineArticle( article );
-          let pmid = getPmid( article );
+          const { pmid } = article;
           let elements = o[ pmid ];
           // prevent duplication of the same interactions in a document
           elements = _.uniqWith( elements, _.isEqual );
           elements.forEach( e => delete e.pmid );
 
-          return { elements, pmid, pubmed };
+          return { elements, pmid, pubmed: article };
         } );
 
         const getSemanticScore = doc => _.get( semanticScoreById, [ doc.pmid, 0, 'score' ] );
-
-        const getNegativeScore = ( doc ) => {
-          let fcn = sortByDate ? getPubTime(doc.pubmed) : getSemanticScore;
-          return -fcn( doc );
-        };
-
-        if ( !sortByDate ) {
-          arr = arr.filter( doc => getSemanticScore( doc ) > MIN_SEMANTIC_SCORE );
-        }
-
+        const getNegativeScore = doc => -getSemanticScore( doc );
+        arr = arr.filter( doc => getSemanticScore( doc ) > MIN_SEMANTIC_SCORE );
         arr = _.sortBy( arr, getNegativeScore );
 
         return arr;
@@ -311,7 +274,9 @@ const getStatements = (agent0, agent1) => {
   let query = { format: 'json-js', agent0, agent1 };
   let addr = INDRA_STATEMENTS_URL + '?' + querystring.stringify( query );
   return tryPromise( () => fetch(addr) )
-    .then( res => res.json() )
+    .then( res =>
+      res.json()
+      )
     .then( js => Object.values(js.statements) )
     .catch( err => {
       logger.error( `Unable to retrieve the indra staments for the entity pair '${agent0}-${agent1}'` );

@@ -94,8 +94,8 @@ let link = m => {
   }
 
   let entry = (url, text) => h('a.plain-link.entity-info-linkout', { href: url, target: '_blank' }, [
-    text + ' ',
-    h('i.material-icons', 'open_in_new')
+    text,
+    // h('i.material-icons', 'open_in_new')
   ]);
 
   return h('div.entity-info-section.entity-info-linkouts', [

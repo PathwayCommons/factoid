@@ -1,11 +1,4 @@
 .element-info {
-  display: flex;
-  position: relative;
-  box-sizing: border-box;
-  padding: 0.25em;
-  min-width: 300px;
-  max-width: calc(100vw - 1.5em);
-  width: 400px;
 }
 
 .element-info-message {

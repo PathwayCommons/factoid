@@ -1,14 +1,16 @@
 import fetch from 'node-fetch';
 import _ from 'lodash';
 import { parse as dateParse } from 'date-fns';
+import uuid from 'uuid';
 import Heap from 'heap';
 
-import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL } from '../../../../config';
+import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL, NO_ABSTRACT_HANDLING } from '../../../../config';
 import logger from '../../../logger';
 import { tryPromise } from '../../../../util';
 import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import querystring from 'querystring';
+import { getPubmedCitation } from '../../../../util/pubmed';
 
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
 const MIN_SEMANTIC_SCORE = 0.47;
@@ -25,7 +27,9 @@ const BASE_MODIFICATION_TYPES = ['Sumoylation', 'Desumoylation', 'Hydroxylation'
 const TRANSCRIPTION_TRANSLATION_TYPES = ['IncreaseAmount', 'DecreaseAmount'];
 const BINDING_TYPES = ['Complex'];
 
-const getDocuments = ( templates, queryArticle ) => {
+let sortByDate = SORT_BY_DATE;
+
+const getDocuments = ( templates, queryDoc ) => {
   const getForIntn = intnTemplate => {
     const getAgent = t => {
       let agent;
@@ -93,34 +97,39 @@ const getDocuments = ( templates, queryArticle ) => {
       return [];
     }
 
-    const getPmid = article => article.PubmedData.ArticleIdList.find( o => o.IdType == 'pubmed' ).id;
+    const handleNoQueryAbastract = doc => {
+      if ( NO_ABSTRACT_HANDLING == 'text' ) {
+        return doc.toText();
+      }
+      else if ( NO_ABSTRACT_HANDLING == 'date' ) {
+        // no need to return a valid abstract since sorting will be based on date
+        sortByDate = true;
+        return null;
+      }
+      else {
+        throw `${NO_ABSTRACT_HANDLING} is not a valid value for NO_ABSTRACT_HANDLING environment variable!`;
+      }
+    };
+
     const getMedlineArticle = article => article.MedlineCitation.Article;
 
     const getSemanticScores = articles => {
-      if ( SORT_BY_DATE ) {
+      if ( sortByDate ) {
         let semanticScores = null;
         return { semanticScores, articles };
       }
 
-      const getAbstract = article => {
-        let abstract = getMedlineArticle(article).Abstract;
-        if ( _.isString( abstract ) ) {
-          return abstract;
-        }
-        if ( _.isArray( abstract ) ) {
-          return abstract[ 0 ];
-        }
-        return null;
-      };
+      let { abstract: queryText, pmid: queryUid = uuid() } = queryDoc.citation();
+
+      if ( queryText == null ) {
+        queryText = handleNoQueryAbastract( queryDoc );
+      }
 
       let url = SEMANTIC_SEARCH_BASE_URL;
-      let queryText = getAbstract( queryArticle );
-      let queryUid = getPmid( queryArticle );
       let query = { uid: queryUid, text: queryText };
 
       let documents = articles.map( article => {
-        let text = getAbstract( article );
-        let uid = getPmid( article );
+        const { abstract: text , pmid: uid } = article;
 
         if ( text == null || uid == null ) {
           return null;
@@ -168,7 +177,7 @@ const getDocuments = ( templates, queryArticle ) => {
     const filterByDate = articles => {
       // if the sort operation wil be based on the semantic search
       // then filter the most current papers before sorting
-      if ( !SORT_BY_DATE && articles.length > SEMANTIC_SEARCH_LIMIT ) {
+      if ( !sortByDate && articles.length > SEMANTIC_SEARCH_LIMIT ) {
         const cmp = ( a, b ) => {
           const getDate = e => getPubTime( getMedlineArticle( e ) );
           return getDate( a ) - getDate( b );
@@ -183,31 +192,23 @@ const getDocuments = ( templates, queryArticle ) => {
     return tryPromise( () => fetchPubmed({ uids: pmids }) )
       .then( o => o.PubmedArticleSet )
       .then( filterByDate )
+      .then( articles => articles.map( getPubmedCitation ) )
       .then( getSemanticScores )
       .then( ( { articles, semanticScores } ) => {
         let semanticScoreById = _.groupBy( semanticScores, 'uid' );
         let arr = articles.map( article => {
-          let pubmed = getMedlineArticle( article );
-          let pmid = getPmid( article );
+          const { pmid } = article;
           let elements = o[ pmid ];
           // prevent duplication of the same interactions in a document
           elements = _.uniqWith( elements, _.isEqual );
           elements.forEach( e => delete e.pmid );
 
-          return { elements, pmid, pubmed };
+          return { elements, pmid, pubmed: article };
         } );
 
         const getSemanticScore = doc => _.get( semanticScoreById, [ doc.pmid, 0, 'score' ] );
-
-        const getNegativeScore = ( doc ) => {
-          let fcn = SORT_BY_DATE ? () => getPubTime(doc.pubmed) : getSemanticScore;
-          return -fcn( doc );
-        };
-
-        if ( !SORT_BY_DATE ) {
-          arr = arr.filter( doc => getSemanticScore( doc ) > MIN_SEMANTIC_SCORE );
-        }
-
+        const getNegativeScore = doc => -getSemanticScore( doc );
+        arr = arr.filter( doc => getSemanticScore( doc ) > MIN_SEMANTIC_SCORE );
         arr = _.sortBy( arr, getNegativeScore );
 
         return arr;
@@ -273,7 +274,9 @@ const getStatements = (agent0, agent1) => {
   let query = { format: 'json-js', agent0, agent1 };
   let addr = INDRA_STATEMENTS_URL + '?' + querystring.stringify( query );
   return tryPromise( () => fetch(addr) )
-    .then( res => res.json() )
+    .then( res =>
+      res.json()
+      )
     .then( js => Object.values(js.statements) )
     .catch( err => {
       logger.error( `Unable to retrieve the indra staments for the entity pair '${agent0}-${agent1}'` );
@@ -298,8 +301,8 @@ const assembleEnglish = statements => {
 
 
 export const searchDocuments = opts => {
-  let { templates, article } = opts;
-  return tryPromise( () => getDocuments(templates, article) )
+  let { templates, doc } = opts;
+  return tryPromise( () => getDocuments(templates, doc) )
     .catch( err => {
       logger.error(`Finding indra documents failed`);
       logger.error(err);

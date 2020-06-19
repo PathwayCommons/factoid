@@ -25,6 +25,7 @@ import Submit from './submit';
 import Help from './help';
 import InfoPanel from './info-panel';
 import ExploreShare from './explore-share';
+import * as cyDefs from './cy/defs';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -321,7 +322,7 @@ class Editor extends DataComponent {
       let shift = ( pos, delta ) => ({ x: pos.x + delta.x, y: pos.y + delta.y });
       let shiftSize = defs.newElementShift;
       let shiftI = this.data.newElementShift;
-      let delta = { x: 0, y: shiftSize * shiftI };
+      let delta = { x: shiftSize * shiftI, y: 0 };
       let pos = getPosition( shift( _.clone( defs.newElementPosition ), delta ) );
 
       this.setData({ newElementShift: (shiftI + 1) % defs.newElementMaxShifts });
@@ -502,6 +503,14 @@ class Editor extends DataComponent {
     this.setData({ showHelp: bool });
   }
 
+  unselectAll(){
+    const { cy } = this.data;
+
+    if( cy ){
+      cy.elements().unselect();
+    }
+  }
+
   render(){
     let { document, bus, showHelp } = this.data;
     let controller = this;
@@ -542,7 +551,7 @@ class Editor extends DataComponent {
       window.scrollTo(0, 0);
 
       if( this.data.cy ){
-        this.data.cy.resize().fit();
+        this.data.cy.resize().fit(cyDefs.padding);
       }
     };
 
@@ -563,8 +572,18 @@ class Editor extends DataComponent {
       this.fit();
     }, 250);
 
+    this.closeAllTippies = (event) => {
+      const inTippy = event.target.closest('.tippy-popper') != null;
+  
+      if( !inTippy ){
+        this.data.bus.emit('closetip');
+      }
+    };
+
     keyEmitter.on('escape', this.hideHelp);
     window.addEventListener('orientationchange', this.onRotate);
+    window.document.body.addEventListener('mousedown', this.closeAllTippies, { capture: true, passive: true });
+    document.querySelector('.editor').addEventListener('scroll', this.closeAllTippies, { capture: true, passive: true });
   }
 
   componentWillUnmount(){
@@ -585,7 +604,9 @@ class Editor extends DataComponent {
     this.resetPageHeight();
 
     keyEmitter.removeListener('escape', this.hideHelp);
-    window.removeEventListener('orientationchange', () => this.onRotate);
+    window.removeEventListener('orientationchange', this.onRotate);
+    window.document.body.removeEventListener('mousedown', this.closeAllTippies, { capture: true, passive: true });
+    document.querySelector('.editor').removeEventListener('scroll', this.closeAllTippies, { capture: true, passive: true });
   }
 }
 

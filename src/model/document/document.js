@@ -468,9 +468,10 @@ class Document {
     let articleData = _.get( this.article(), ['PubmedData', 'ArticleIdList', 0]);
     let pubId = articleData.id;
     let pubDb = articleData.IdType;
+    let pathwayName = this.citation().title;
     let publication = { id: pubId, db: pubDb };
 
-    return { interactions, publication };
+    return { interactions, publication, pathwayName};
   }
 
   toSearchTemplates(){

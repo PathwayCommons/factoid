@@ -180,6 +180,7 @@ class Entity extends Element {
 
   toSearchTemplate(){
     let name = this.name();
+    let elId = this.id();
 
     // entries with no name should be skipped
     if ( !name ) {
@@ -188,7 +189,11 @@ class Entity extends Element {
 
     let template = _.pick(this.association(), ['id', 'namespace', 'dbXrefs']);
     template.name = name;
-    
+
+    // the id field represents the id of association there is a need to know the
+    // factoid id of element as well
+    template.elId = elId;
+
     return template;
   }
 }

@@ -97,7 +97,7 @@ let createRelatedPapers = ({ papersData, doc }) => {
     } );
   } );
 
-  let papersByIntn = {};
+  let papersByEl = {};
   let pubmedByPmid = {};
 
   papersData.map( paperData => {
@@ -108,22 +108,22 @@ let createRelatedPapers = ({ papersData, doc }) => {
     }
 
     elements.forEach( el => {
-      let intnId = el.intnId;
-      if ( papersByIntn[ intnId ] == undefined ) {
-        papersByIntn[ intnId ] = {};
+      let elId = el.elId;
+      if ( papersByEl[ elId ] == undefined ) {
+        papersByEl[ elId ] = {};
       }
 
-      if ( papersByIntn[ intnId ][ pmid ] == undefined ) {
-        papersByIntn[ intnId ][ pmid ] = [];
+      if ( papersByEl[ elId ][ pmid ] == undefined ) {
+        papersByEl[ elId ][ pmid ] = [];
       }
 
       sanitize( el );
-      papersByIntn[ intnId ][ pmid ].push( el );
+      papersByEl[ elId ][ pmid ].push( el );
     } );
   } );
 
-  let elPromises = Object.keys( papersByIntn ).map( intnId => {
-    let elPapersData = papersByIntn[ intnId ];
+  let elPromises = Object.keys( papersByEl ).map( elId => {
+    let elPapersData = papersByEl[ elId ];
     let pmids = Object.keys( elPapersData );
 
     elPapersData = pmids.map( pmid => {
@@ -132,7 +132,7 @@ let createRelatedPapers = ({ papersData, doc }) => {
       return { pmid, pubmed, elements };
     } );
 
-    return doc.get( intnId ).relatedPapers( elPapersData );
+    return doc.get( elId ).relatedPapers( elPapersData );
   } );
 
   let docPromise = doc.relatedPapers( papersData );
@@ -1379,7 +1379,7 @@ http.patch('/status/:id/:secret', function( req, res, next ){
     searchRelatedPapers( doc )
       .then( papersData => createRelatedPapers({ papersData, doc }) )
       .then( () => logger.info('Related papers table is updated for document', docId) )
-      .catch( e => logger.error( `Error in uploading related papers for document ${docId}: ${JSON.stringify(e)}` ) );
+      .catch( e => logger.error( `Error in uploading related papers for document ${docId}: ${JSON.stringify(e.message)}` ) );
 
   };
 

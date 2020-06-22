@@ -119,6 +119,12 @@ class InteractionType {
     }
 
     let id = this.interaction.id();
+
+    // For entities id field represents the id of association which is different then
+    // element id. Therefore, we have the elId field as well which has the same value with
+    // the id field for the interactions.
+    let elId = id;
+
     let pptTemplates = ppts.map( p => p.toSearchTemplate() );
 
     // if there is some participants with invalid template skip the interaction
@@ -126,7 +132,7 @@ class InteractionType {
       return null;
     }
 
-    return { id, ppts: pptTemplates };
+    return { id, ppts: pptTemplates, elId };
   }
 
   toString(verbPhrase, post = ''){

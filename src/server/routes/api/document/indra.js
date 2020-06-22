@@ -97,7 +97,7 @@ const getDocuments = ( templates, queryDoc ) => {
 
     return tryPromise( () => getIntns() )
       .then( intns => {
-        intns.forEach( intn => intn.intnId = elTemplate.id );
+        intns.forEach( intn => intn.elId = elTemplate.elId );
         return _.groupBy( intns, 'pmid' );
       } );
   };

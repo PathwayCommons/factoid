@@ -439,7 +439,7 @@ class Document {
     }, _.pick(this.syncher.get(), this.syncher.hasCorrectSecret() ? METADATA_FIELDS: READONLY_METADATA_FIELDS  ));
   }
 
-  toBiopaxTemplates(){
+  toBiopaxIntnTemplates(){
     let interactions = this.interactions();
     let templates = [];
     let getElById = id => this.elementSet.get(id);
@@ -461,6 +461,17 @@ class Document {
     } );
 
     return templates;
+  }
+
+  toBiopaxTemplate(){
+    let interactions = this.toBiopaxIntnTemplates();
+    let articleData = _.get( this.article(), ['PubmedData', 'ArticleIdList', 0]);
+    let pubId = articleData.id;
+    let pubDb = articleData.IdType;
+    let pathwayName = this.citation().title;
+    let publication = { id: pubId, db: pubDb };
+
+    return { interactions, publication, pathwayName};
   }
 
   toSearchTemplates(){

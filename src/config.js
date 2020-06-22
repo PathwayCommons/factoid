@@ -102,12 +102,13 @@ export const TWITTER_ACCESS_TOKEN_SECRET = env('TWITTER_ACCESS_TOKEN_SECRET', 'S
 export const TWITTER_ACCOUNT_NAME = env('TWITTER_ACCOUNT_NAME', 'biofactoid');
 export const MAX_TWEET_LENGTH = env('MAX_TWEET_LENGTH', 150);
 
-// Demo
+// Demo and sample
 export const DEMO_ID = env('DEMO_ID', 'demo');
 export const DEMO_SECRET = env('DEMO_SECRET', 'demo');
 export const DEMO_AUTHOR_EMAIL = env('DEMO_AUTHOR_EMAIL', 'author@example.com');
 export const DEMO_CAN_BE_SHARED = env('DEMO_CAN_BE_SHARED', false);
 export const DEMO_CAN_BE_SHARED_MULTIPLE_TIMES = env('DEMO_CAN_BE_SHARED_MULTIPLE_TIMES', false);
+export const SAMPLE_DOC_ID = env('SAMPLE_DOC_ID', '5df17c41-acb7-4c42-a37b-fe323688bc64');
 
-// Indra
 export const NO_ABSTRACT_HANDLING = env('NO_ABSTRACT_HANDLING', 'text');
+

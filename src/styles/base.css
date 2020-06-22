@@ -431,6 +431,15 @@ a,
       box-shadow: 0 -2px var(--activeColorDark) inset;
     }
   }
+
+  &.plain-link-bright {
+    box-shadow: 0 -2px color(white a(80%)) inset;
+    transition: box-shadow var(--widgetTransitionDuration) ease-out;
+
+    &:active {
+      box-shadow: 0 -2px white inset;
+    }
+  }
 }
 
 img {

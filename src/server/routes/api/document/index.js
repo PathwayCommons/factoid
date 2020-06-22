@@ -228,6 +228,8 @@ const fillDocCorrespondence = async ( doc, authorEmail, context ) => {
     await doc.issues({ authorEmail: null });
   } catch ( error ){
     await doc.issues({ authorEmail: { error, message: error.message } });
+    logger.error( `Error filling doc correspondence` );
+    logger.error( error );
   } finally {
     const emails = _.get( doc.correspondence(), 'emails' );
     const data = _.defaults( { authorEmail: address, context, emails }, DEFAULT_CORRESPONDENCE );
@@ -241,6 +243,8 @@ const fillDocArticle = async ( doc, paperId ) => {
     await doc.article( pubmedRecord );
     await doc.issues({ paperId: null });
   } catch ( error ) {
+    logger.error( `Error filling doc article` );
+    logger.error( error );
     const pubmedRecord = createPubmedArticle({ articleTitle: paperId });
     await doc.article( pubmedRecord );
     await doc.issues({ paperId: { error, message: error.message } });
@@ -1340,8 +1344,7 @@ http.patch('/status/:id/:secret', function( req, res, next ){
     let didPublish = false;
     const hasEles = doc => doc.elements().length > 0;
     const hasIncompleteEles = doc => doc.elements().some( ele => !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX );
-    const hasSubmittedStatus = doc => doc.status() === DOCUMENT_STATUS_FIELDS.SUBMITTED;
-    const isPublishable = doc => hasEles( doc ) && !hasIncompleteEles( doc ) && hasSubmittedStatus( doc );
+    const isPublishable = doc => hasEles( doc ) && !hasIncompleteEles( doc );
     if( isPublishable( doc ) ){
       await doc.publish();
       didPublish = true;
@@ -1354,7 +1357,7 @@ http.patch('/status/:id/:secret', function( req, res, next ){
     if ( !doc.hasTweet() ) {
       try {
         let text = truncateString( doc.toText(), MAX_TWEET_LENGTH ); // TODO?
-        return tweetDoc( doc.id(), doc.secret(), text );
+        return await tweetDoc( doc.id(), doc.secret(), text );
       } catch ( e ) {
         logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow
       }
@@ -1563,12 +1566,6 @@ http.get('/text/:id', function( req, res, next ){
 });
 
 const searchRelatedPapers = ( doc, interactionId ) => {
-  let article = doc.article();
-  let abstract = article.MedlineCitation.Article.Abstract;
-  if ( !abstract ) {
-    return [];
-  }
-
   let templates;
   if ( interactionId ) {
     let intn = doc.get( interactionId );
@@ -1579,7 +1576,7 @@ const searchRelatedPapers = ( doc, interactionId ) => {
   }
 
 
-  let obj = { templates, article };
+  let obj = { templates, doc };
   return indra.searchDocuments( obj );
 };
 
@@ -1587,7 +1584,7 @@ http.get('/related-papers/:id', function( req, res, next ){
   // 5000000ms correspons to 83.3333333 mins
   let timout = 5000000;
   res.setTimeout(timout);
-  
+
   let id = req.params.id;
   let queryObject = url.parse(req.url, true).query;
   let { interactionId } = queryObject;

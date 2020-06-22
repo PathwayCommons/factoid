@@ -415,7 +415,7 @@ a,
   cursor: pointer;
 
   &.plain-link {
-    box-shadow: 0 -1px color(var(--activeColor) a(50%)) inset;
+    box-shadow: 0 -2px color(var(--activeColor) a(50%)) inset;
     transition: box-shadow var(--widgetTransitionDuration) ease-out;
 
     &:active {
@@ -429,6 +429,15 @@ a,
 
     &:active {
       box-shadow: 0 -2px var(--activeColorDark) inset;
+    }
+  }
+
+  &.plain-link-bright {
+    box-shadow: 0 -2px color(white a(80%)) inset;
+    transition: box-shadow var(--widgetTransitionDuration) ease-out;
+
+    &:active {
+      box-shadow: 0 -2px white inset;
     }
   }
 }

@@ -199,7 +199,19 @@ function listenToDoc({ bus, cy, document, controller }){
   let onLoad = function(){
     onAddEles( document.elements() );
 
-    cy.fit( defs.padding );
+    if( document.editable() ){
+      cy.center();
+
+      const ex = cy.extent();
+      const bb = cy.elements().boundingBox();
+
+      if( bb.w > ex.w || bb.h > ex.h ){
+        cy.fit(defs.padding);
+      }
+      
+    } else {
+      cy.fit(defs.padding);
+    }
   };
 
   let refreshNameInCy = function(docEl, el = getCyEl(docEl)){
@@ -588,14 +600,6 @@ function listenToDoc({ bus, cy, document, controller }){
   };
 
   cy.on('taphold', onTapHold);
-
-  cy.on('add', 'edge', e => {
-    let edge = e.target;
-
-    if( edge.connectedNodes(isInteractionNode).selected() ){
-      edge.select();
-    }
-  });
 }
 
 

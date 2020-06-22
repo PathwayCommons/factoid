@@ -59,7 +59,7 @@ export const NCBI_EUTILS_BASE_URL = env('NCBI_EUTILS_BASE_URL', 'https://eutils.
 export const NCBI_EUTILS_API_KEY = env('NCBI_EUTILS_API_KEY', 'b99e10ebe0f90d815a7a99f18403aab08008');
 export const INDRA_DB_BASE_URL = env('INDRA_DB_BASE_URL', 'https://db.indra.bio/latest/');
 export const INDRA_ENGLISH_ASSEMBLER_URL = env('INDRA_ENGLISH_ASSEMBLER_URL', 'http://api.indra.bio:8000/assemblers/english');
-export const SEMANTIC_SEARCH_BASE_URL = env('SEMANTIC_SEARCH_BASE_URL', 'http://127.0.0.1:8000/');
+export const SEMANTIC_SEARCH_BASE_URL = env('SEMANTIC_SEARCH_BASE_URL', 'https://semanticsearch.baderlab.org/');
 
 // Links
 export const UNIPROT_LINK_BASE_URL = env('UNIPROT_LINK_BASE_URL', 'http://www.uniprot.org/uniprot/');
@@ -102,9 +102,13 @@ export const TWITTER_ACCESS_TOKEN_SECRET = env('TWITTER_ACCESS_TOKEN_SECRET', 'S
 export const TWITTER_ACCOUNT_NAME = env('TWITTER_ACCOUNT_NAME', 'biofactoid');
 export const MAX_TWEET_LENGTH = env('MAX_TWEET_LENGTH', 150);
 
-// Demo
+// Demo and sample
 export const DEMO_ID = env('DEMO_ID', 'demo');
 export const DEMO_SECRET = env('DEMO_SECRET', 'demo');
 export const DEMO_AUTHOR_EMAIL = env('DEMO_AUTHOR_EMAIL', 'author@example.com');
 export const DEMO_CAN_BE_SHARED = env('DEMO_CAN_BE_SHARED', false);
 export const DEMO_CAN_BE_SHARED_MULTIPLE_TIMES = env('DEMO_CAN_BE_SHARED_MULTIPLE_TIMES', false);
+export const SAMPLE_DOC_ID = env('SAMPLE_DOC_ID', '5df17c41-acb7-4c42-a37b-fe323688bc64');
+
+export const NO_ABSTRACT_HANDLING = env('NO_ABSTRACT_HANDLING', 'text');
+

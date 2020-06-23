@@ -11,13 +11,11 @@ import {
   MAILJET_TMPLID_REQUEST_ISSUE,
   EMAIL_TYPE_INVITE,
   EMAIL_TYPE_FOLLOWUP,
-  EMAIL_TYPE_REQUEST_ISSUE,
-  EMAIL_CONTEXT_JOURNAL,
-  EMAIL_CONTEXT_SIGNUP
+  EMAIL_TYPE_REQUEST_ISSUE
 } from '../config' ;
 
 const msgFactory = ( emailType, doc ) => {
-  const { authorEmail, context } = doc.correspondence();
+  const { authorEmail } = doc.correspondence();
 
   const {
     title = 'Untitled',
@@ -44,37 +42,19 @@ const msgFactory = ( emailType, doc ) => {
   };
 
   const emailType_invite_config = {
-    [EMAIL_CONTEXT_SIGNUP]: {
-      subject: `Welcome to Biofactoid`,
-      vars: _.assign({
-        main: {
-          title:  `We're ready for you to add your article's pathway`,
-          body: ``,
-          footer: ``
-        },
-        cta: {
-          title: `START BIOFACTOID`,
-          body: `You are contributing for ${citation}`,
-          footer: `You can also begin by pasting the following into your browser ${privateUrl}`
-        }
-      }, { explore } )
-    },
-
-    [EMAIL_CONTEXT_JOURNAL]: {
-      subject: `Connect your article's information with others through Biofactoid`,
-      vars:  _.assign({
-        main: {
-          title: `Let researchers find and explore the key biological interactions in your research article`,
-          body: `Molecular Cell is collaborating with Biofactoid, a website that assists authors in composing a 'digital summary' consisting of key biological interactions (e.g. binding, gene expression, post-translational modification) present in their published research article. Digital records are attributed to authors and associated with an article, providing verification of scientific accuracy. All data is freely shared with the scientific community. Molecular Cell is inviting authors to contribute to Biofactoid. Participation is voluntary; no account is required.`,
-          footer: ``
-        },
-        cta: {
-          title: `START BIOFACTOID`,
-          body: `You are contributing for ${citation}`,
-          footer: `You can also begin by pasting the following into your browser  ${privateUrl}`
-        }
-      }, { explore } )
-    }
+    subject: `Welcome to Biofactoid`,
+    vars: _.assign({
+      main: {
+        title:  `We're ready for you to share your article`,
+        body: ``,
+        footer: ``
+      },
+      cta: {
+        title: `START BIOFACTOID`,
+        body: `You are contributing for ${citation}`,
+        footer: `You can also begin by pasting the following into your browser ${privateUrl}`
+      }
+    }, { explore } )
   };
 
   const DEFAULTS = {
@@ -95,12 +75,11 @@ const msgFactory = ( emailType, doc ) => {
   const data = {};
   switch( emailType ) {
     case EMAIL_TYPE_INVITE:
-      _.set( data, 'subject', _.get( emailType_invite_config, [context, 'subject'] ) );
+      _.set( data, 'subject', _.get( emailType_invite_config, ['subject'] ) );
       _.set( data, ['template', 'id'], MAILJET_TMPLID_INVITE );
       _.set( data, ['template', 'vars'], _.assign({
-        privateUrl,
-        context
-      }, _.get( emailType_invite_config, [context, 'vars'] ) ) );
+        privateUrl
+      }, _.get( emailType_invite_config, ['vars'] ) ) );
       break;
     case EMAIL_TYPE_REQUEST_ISSUE:
       _.set( data, 'subject', `Please re-submit your request to Biofactoid` );

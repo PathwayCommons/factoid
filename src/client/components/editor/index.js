@@ -6,7 +6,7 @@ import io from 'socket.io-client';
 import _ from 'lodash';
 import Mousetrap from 'mousetrap';
 
-import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL, EMAIL_CONTEXT_SIGNUP } from '../../../config';
+import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL } from '../../../config';
 
 import { getId, defer, makeClassList, tryPromise } from '../../../util';
 import Document from '../../../model/document';
@@ -199,8 +199,7 @@ class Editor extends DataComponent {
             },
             body: JSON.stringify({
               paperId: DEMO_ID,
-              authorEmail: DEMO_AUTHOR_EMAIL,
-              context: EMAIL_CONTEXT_SIGNUP
+              authorEmail: DEMO_AUTHOR_EMAIL
             })
           });
           let reloadDoc = () => doc.load();
@@ -574,7 +573,7 @@ class Editor extends DataComponent {
 
     this.closeAllTippies = (event) => {
       const inTippy = event.target.closest('.tippy-popper') != null;
-  
+
       if( !inTippy ){
         this.data.bus.emit('closetip');
       }

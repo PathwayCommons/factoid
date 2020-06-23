@@ -34,8 +34,6 @@ import { BASE_URL,
   MAX_TWEET_LENGTH,
   DEMO_CAN_BE_SHARED,
   DOCUMENT_IMAGE_PADDING,
-  EMAIL_CONTEXT_SIGNUP,
-  EMAIL_CONTEXT_JOURNAL,
   EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP
@@ -165,8 +163,7 @@ let deleteTableRows = async ( apiKey, secret ) => {
 };
 
 const DEFAULT_CORRESPONDENCE = {
-  emails: [],
-  context: EMAIL_CONTEXT_SIGNUP
+  emails: []
 };
 
 /**
@@ -220,8 +217,9 @@ const findEmailAddress = address => {
   }
 };
 
-const fillDocCorrespondence = async ( doc, authorEmail, context ) => {
+const fillDocCorrespondence = async doc => {
   let address = [];
+  const { authorEmail } = doc.provided();
   try {
     address = findEmailAddress( authorEmail );
     if( _.isEmpty( address ) ) throw new EmailError(`Unable to find email for '${authorEmail}'`, authorEmail);
@@ -232,12 +230,13 @@ const fillDocCorrespondence = async ( doc, authorEmail, context ) => {
     logger.error( error );
   } finally {
     const emails = _.get( doc.correspondence(), 'emails' );
-    const data = _.defaults( { authorEmail: address, context, emails }, DEFAULT_CORRESPONDENCE );
+    const data = _.defaults( { authorEmail: address, emails }, DEFAULT_CORRESPONDENCE );
     await doc.correspondence( data );
   }
 };
 
-const fillDocArticle = async ( doc, paperId ) => {
+const fillDocArticle = async doc => {
+  const { paperId } = doc.provided();
   try {
     const pubmedRecord = await getPubmedArticle( paperId );
     await doc.article( pubmedRecord );
@@ -252,9 +251,8 @@ const fillDocArticle = async ( doc, paperId ) => {
 };
 
 const fillDoc = async doc => {
-  const { paperId, authorEmail, context } = doc.provided();
-  await fillDocCorrespondence( doc, authorEmail, context );
-  await fillDocArticle( doc, paperId );
+  await fillDocCorrespondence( doc );
+  await fillDocArticle( doc );
   return doc;
 };
 
@@ -1107,19 +1105,6 @@ const checkApiKey = (apiKey) => {
   }
 };
 
-const checkRequestContext = async provided => {
-  const { apiKey, context } = provided;
-  switch ( context ) {
-    case EMAIL_CONTEXT_JOURNAL:
-      checkApiKey( apiKey );
-      break;
-    case EMAIL_CONTEXT_SIGNUP:
-      break;
-    default:
-      throw new TypeError(`The specified context '${context}' is not recognized`);
-  }
-};
-
 /**
  * @swagger
  *
@@ -1154,17 +1139,12 @@ const tryVerify = async doc => {
 
   if( !doc.verified() ){
     let doVerify = false;
-    const { context } = doc.provided();
 
-    if( context && context === EMAIL_CONTEXT_JOURNAL ){
-      doVerify = true;
+    const { authorEmail } = doc.correspondence();
+    const { authors: { contacts } } = doc.citation();
+    const hasEmail = _.some( contacts, contact => !_.isEmpty( _.intersection( _.get( contact, 'email' ), authorEmail ) ) );
+    if( hasEmail ) doVerify = true;
 
-    } else {
-      const { authorEmail } = doc.correspondence();
-      const { authors: { contacts } } = doc.citation();
-      const hasEmail = _.some( contacts, contact => !_.isEmpty( _.intersection( _.get( contact, 'email' ), authorEmail ) ) );
-      if( hasEmail ) doVerify = true;
-    }
     if( doVerify ) await doc.verified( true );
   }
 
@@ -1191,12 +1171,6 @@ const tryVerify = async doc => {
  *                 type: string
  *               authorEmail:
  *                 type: string
- *               context:
- *                 type: string
- *                 enum:
- *                   - signup
- *                   - journal
- *                 required: true
  *     responses:
  *       '200':
  *         description: ok
@@ -1207,7 +1181,7 @@ const tryVerify = async doc => {
  *               items:
  *                 $ref: '#/components/Document'
  *       '500':
- *         description: The specified 'context' is not recognized
+ *         description: Error
  */
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
@@ -1225,8 +1199,7 @@ http.post('/', function( req, res, next ){
   .then( json => res.json( json ) )
   .then( () => doc );
 
-  checkRequestContext( provided )
-    .then( () => createSecret({ secret }) )
+  tryPromise( () => createSecret({ secret }) )
     .then( loadTables )
     .then( handleDocCreation )
     .then( setRequestStatus )

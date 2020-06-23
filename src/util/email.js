@@ -26,37 +26,6 @@ const msgFactory = ( emailType, doc ) => {
   const publicUrl =  `${BASE_URL}${doc.publicUrl()}`;
   const imageUrl = `${BASE_URL}/api${doc.publicUrl()}.png`;
 
-  const explore = {
-    documents: {
-      first: {
-        src: 'https://biofactoid.org/api/document/7826fd5b-d5af-4f4c-9645-de5264907272.png',
-        publicUrl: 'https://biofactoid.org/document/7826fd5b-d5af-4f4c-9645-de5264907272',
-        citation: 'Ritchie et al. SLC19A1 Is an Importer of the Immunotransmitter cGAMP. Mol. Cell 75 (2019)'
-      },
-      second: {
-        src: 'https://biofactoid.org/api/document/8325ea13-4f53-46f1-a27b-c8c32ae17fa6.png',
-        publicUrl: 'https://biofactoid.org/document/8325ea13-4f53-46f1-a27b-c8c32ae17fa6',
-        citation: `Gruber et al. (2019). HAT1 Coordinates Histone Production and Acetylation via H4 Promoter Binding. Mol. Cell 75.`
-      }
-    }
-  };
-
-  const emailType_invite_config = {
-    subject: `Welcome to Biofactoid`,
-    vars: _.assign({
-      main: {
-        title:  `We're ready for you to share your article`,
-        body: ``,
-        footer: ``
-      },
-      cta: {
-        title: `START BIOFACTOID`,
-        body: `You are contributing for ${citation}`,
-        footer: `You can also begin by pasting the following into your browser ${privateUrl}`
-      }
-    }, { explore } )
-  };
-
   const DEFAULTS = {
     from: {
       name: EMAIL_FROM,
@@ -75,11 +44,9 @@ const msgFactory = ( emailType, doc ) => {
   const data = {};
   switch( emailType ) {
     case EMAIL_TYPE_INVITE:
-      _.set( data, 'subject', _.get( emailType_invite_config, ['subject'] ) );
+      _.set( data, 'subject', 'Welcome to Biofactoid' );
       _.set( data, ['template', 'id'], MAILJET_TMPLID_INVITE );
-      _.set( data, ['template', 'vars'], _.assign({
-        privateUrl
-      }, _.get( emailType_invite_config, ['vars'] ) ) );
+      _.set( data, ['template', 'vars'], _.assign({}, { privateUrl }) );
       break;
     case EMAIL_TYPE_REQUEST_ISSUE:
       _.set( data, 'subject', `Please re-submit your request to Biofactoid` );

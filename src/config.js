@@ -60,6 +60,7 @@ export const NCBI_EUTILS_API_KEY = env('NCBI_EUTILS_API_KEY', 'b99e10ebe0f90d815
 export const INDRA_DB_BASE_URL = env('INDRA_DB_BASE_URL', 'https://db.indra.bio/latest/');
 export const INDRA_ENGLISH_ASSEMBLER_URL = env('INDRA_ENGLISH_ASSEMBLER_URL', 'http://api.indra.bio:8000/assemblers/english');
 export const SEMANTIC_SEARCH_BASE_URL = env('SEMANTIC_SEARCH_BASE_URL', 'https://semanticsearch.baderlab.org/');
+export const NO_ABSTRACT_HANDLING = env('NO_ABSTRACT_HANDLING', 'text');
 
 // Links
 export const UNIPROT_LINK_BASE_URL = env('UNIPROT_LINK_BASE_URL', 'http://www.uniprot.org/uniprot/');
@@ -110,5 +111,5 @@ export const DEMO_CAN_BE_SHARED = env('DEMO_CAN_BE_SHARED', false);
 export const DEMO_CAN_BE_SHARED_MULTIPLE_TIMES = env('DEMO_CAN_BE_SHARED_MULTIPLE_TIMES', false);
 export const SAMPLE_DOC_ID = env('SAMPLE_DOC_ID', '5df17c41-acb7-4c42-a37b-fe323688bc64');
 
-export const NO_ABSTRACT_HANDLING = env('NO_ABSTRACT_HANDLING', 'text');
+
 

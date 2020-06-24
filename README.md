@@ -51,10 +51,6 @@ Services:
 - `GROUNDING_SEARCH_BASE_URL`: url for the [grounding service](https://github.com/PathwayCommons/grounding-search)
 - `NCBI_EUTILS_BASE_URL` : url for the NCBI E-utilities
 - `NCBI_EUTILS_API_KEY` : API key for the NCBI E-utilities
-- `INDRA_DB_BASE_URL` : url for [INDRA (Integrated Network and Dynamical Reasoning Assembler)](https://indralab.github.io/)
-- `INDRA_ENGLISH_ASSEMBLER_URL` : url for service that assembles INDRA statements into models
-- `SEMANTIC_SEARCH_BASE_URL` : url for [semantic-search](https://github.com/PathwayCommons/semantic-search) web service
-- `NO_ABSTRACT_HANDLING` : labels directing how to sort documents missing query text. 'text' (default): autogenerate text from templates; 'date': sort by date and ignore text.
 
 Links:
 
@@ -75,7 +71,6 @@ Demo:
 - `DEMO_TITLE` : the title of the demo doc's article
 - `DEMO_CAN_BE_SHARED` : whether the demo can be shared (default `false`)
 - `DEMO_CAN_BE_SHARED_MULTIPLE_TIMES` : whether the demo can be shared multiple times (normal docs can be shared only once; default `false`)
-- `SAMPLE_DOC_ID` : id for document that is used as homepage example (production)
 
 Sharing:
 
@@ -102,6 +97,8 @@ Email:
 - `MAILJET_TMPLID_INVITE`: vendor email template id for an invitation
 - `MAILJET_TMPLID_FOLLOWUP`: vendor email template id for a follow-up
 - `MAILJET_TMPLID_REQUEST_ISSUE`: vendor email template id for a request error notification
+- `EMAIL_CONTEXT_JOURNAL`: email context variable to indicate entry via journal
+- `EMAIL_CONTEXT_SIGNUP`: email context variable to indicate entry via homepage
 - `EMAIL_TYPE_INVITE`:  name to indicate invite email
 - `EMAIL_TYPE_FOLLOWUP`: name to indicate follow-up email
 - `EMAIL_TYPE_REQUEST_ISSUE`: name to indicate request error email

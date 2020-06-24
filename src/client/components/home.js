@@ -68,7 +68,6 @@ class RequestForm extends Component {
 
   submitRequest(){
     const { paperId, authorEmail } = this.state;
-    const { apiKey } = this.props;
 
     if( !paperId || !authorEmail ){
       this.setState({ errors: { incompleteForm: true } });
@@ -77,8 +76,7 @@ class RequestForm extends Component {
       const url = 'api/document';
       const data = _.assign( {}, {
         paperId: _.trim( paperId ),
-        authorEmail,
-        apiKey
+        authorEmail
       });
       const fetchOpts = {
         method: 'POST',

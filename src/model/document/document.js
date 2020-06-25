@@ -476,8 +476,10 @@ class Document {
 
   toSearchTemplates(){
     let interactions = this.interactions();
-    let templates = interactions.map( i => i.toSearchTemplate() ).filter( t => t != null );
+    let entities = this.entities();
+    const getTemplates = els => els.map( e => e.toSearchTemplate() ).filter( t => t != null );
 
+    let templates = { intns: getTemplates( interactions ), entities: getTemplates( entities ) };
     return templates;
   }
 

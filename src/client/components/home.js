@@ -7,7 +7,7 @@ import EventEmitter from 'eventemitter3';
 import { truncateString } from '../../util';
 import { Carousel, CAROUSEL_CONTENT } from './carousel';
 
-import { EMAIL_CONTEXT_SIGNUP, TWITTER_ACCOUNT_NAME, DOI_LINK_BASE_URL, BASE_URL, SAMPLE_DOC_ID } from '../../config';
+import { TWITTER_ACCOUNT_NAME, DOI_LINK_BASE_URL, BASE_URL, SAMPLE_DOC_ID } from '../../config';
 
 const checkStatus = response => {
   if ( response.status >= 200 && response.status < 300 ) {
@@ -28,7 +28,6 @@ class RequestForm extends Component {
     this.state = {
       paperId: '',
       authorEmail: '',
-      context: this.props.context || EMAIL_CONTEXT_SIGNUP,
       submitting: false,
       done: false,
       docJSON: undefined,
@@ -67,13 +66,8 @@ class RequestForm extends Component {
     this.setState(fields);
   }
 
-  handleContextChange(e){
-    this.setState({ context: e.target.value });
-  }
-
   submitRequest(){
-    const { paperId, authorEmail, context } = this.state;
-    const { apiKey } = this.props;
+    const { paperId, authorEmail } = this.state;
 
     if( !paperId || !authorEmail ){
       this.setState({ errors: { incompleteForm: true } });
@@ -82,9 +76,7 @@ class RequestForm extends Component {
       const url = 'api/document';
       const data = _.assign( {}, {
         paperId: _.trim( paperId ),
-        authorEmail,
-        context,
-        apiKey
+        authorEmail
       });
       const fetchOpts = {
         method: 'POST',

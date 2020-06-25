@@ -70,9 +70,7 @@ const updateArticle = async () => {
   try {
     const docs = await docsToUpdate();
     for( const doc of docs ){
-      const { paperId } = doc.provided();
-      logger.info( `Updating article info for paperId: ${paperId}`);
-      await fillDocArticle( doc, paperId );
+      await fillDocArticle( doc );
     }
     lastUpdateTime( Date.now() );
 

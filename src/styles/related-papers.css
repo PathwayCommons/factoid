@@ -55,8 +55,31 @@
 
 .related-paper-author {
   font-style: italic;
+  margin-bottom: 0.5em;
 }
 
 .related-paper-journal {
   font-style: italic;
+}
+
+.related-papers-empty {
+  display: block;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 0.25em;
+}
+
+.related-papers-empty-icon {
+  font-size: 2em;
+  text-align: center;
+  margin: 0.5em 0;
+  opacity: 0.333;
+}
+
+.related-papers-empty-msg {
+  margin: 1em 0;
+  box-sizing: border-box;
+  padding: 0 1em;
+  color: #888;
+  text-align: center;
 }

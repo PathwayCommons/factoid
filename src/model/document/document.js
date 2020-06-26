@@ -91,6 +91,11 @@ class Document {
         this.emit('submit');
         this.emit('remotesubmit');
       }
+
+      if( changes.relatedPapers ){
+        this.emit('relatedpapers', changes.relatedPapers);
+        this.emit('remoterelatedpapers', changes.relatedPapers);
+      }
     });
 
     if( isServer ) this.syncher.on( 'create', () => this.rwMeta( 'createdDate', new Date() ) );
@@ -390,7 +395,7 @@ class Document {
   relatedPapers( papersData ){
     if( papersData ){
       let p = this.syncher.update({ 'relatedPapers': papersData });
-      this.emit( 'relatedPapers', papersData );
+      this.emit( 'relatedpapers', papersData );
       return p;
     }
     else if( !papersData ){

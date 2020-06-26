@@ -87,7 +87,7 @@ export class InfoPanel extends Component {
         // ]),
         h('div.editor-info-related-papers-section.editor-info-main-section', [
           h('div.editor-info-section-title', 'Recommended articles'),
-          h('div.editor-info-related-papers', [ h(RelatedPapers, { document, papers: document.relatedPapers() }) ])
+          h('div.editor-info-related-papers', [ h(RelatedPapers, { document, source: document }) ])
         ])
       ])
     ]);

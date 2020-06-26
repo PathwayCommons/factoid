@@ -115,10 +115,15 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: inline-block;
 }
 
 .editor-title-info {
   font-size: var(--smallFontSize);
+
+  & div {
+    display: block;
+  }
 }
 
 .editor-task-list-active {

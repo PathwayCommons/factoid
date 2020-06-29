@@ -60,6 +60,8 @@ export const NCBI_EUTILS_API_KEY = env('NCBI_EUTILS_API_KEY', 'b99e10ebe0f90d815
 export const INDRA_DB_BASE_URL = env('INDRA_DB_BASE_URL', 'https://db.indra.bio/latest/');
 export const INDRA_ENGLISH_ASSEMBLER_URL = env('INDRA_ENGLISH_ASSEMBLER_URL', 'http://api.indra.bio:8000/assemblers/english');
 export const SEMANTIC_SEARCH_BASE_URL = env('SEMANTIC_SEARCH_BASE_URL', 'https://semanticsearch.baderlab.org/');
+export const CROSSREF_API_BASE_URL = env('CROSSREF_API_BASE_URL', 'https://api.crossref.org');
+export const PMC_ID_API_URL = env('PMC_ID_API_URL', 'https://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/');
 
 // Links
 export const UNIPROT_LINK_BASE_URL = env('UNIPROT_LINK_BASE_URL', 'http://www.uniprot.org/uniprot/');

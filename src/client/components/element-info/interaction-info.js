@@ -239,7 +239,7 @@ class InteractionInfo extends DataComponent {
         summaryChildren.push( h('div.interaction-info-reld-papers-title', 'Recommended articles') );
         
         summaryChildren.push( h('div.interaction-info-related-papers', [
-          h(RelatedPapers, { document, papers: el.relatedPapers() })
+          h(RelatedPapers, { document, source: el })
         ]) );
       }
 

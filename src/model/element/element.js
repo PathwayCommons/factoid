@@ -56,6 +56,11 @@ class Element {
         this.emit( 'complete', changes.completed, old.completed );
         this.emit( 'remotecomplete', changes.completed, old.completed );
       }
+
+      if( changes.relatedPapers ){
+        this.emit('relatedpapers', changes.relatedPapers);
+        this.emit('remoterelatedpapers', changes.relatedPapers);
+      }
     });
   }
 
@@ -197,7 +202,7 @@ class Element {
   relatedPapers( papersData ){
     if( papersData ){
       let p = this.syncher.update({ 'relatedPapers': papersData });
-      this.emit( 'relatedPapers', papersData );
+      this.emit( 'relatedpapers', papersData );
       return p;
     }
     else if( !papersData ){

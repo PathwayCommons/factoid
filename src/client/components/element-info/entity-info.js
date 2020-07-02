@@ -518,7 +518,7 @@ class EntityInfo extends DataComponent {
         children.push( h('div.entity-info-reld-papers-title', `Recommended articles`) );
         
         children.push( h('div.entity-info-related-papers', [
-          h(RelatedPapers, { document, papers: s.element.relatedPapers() })
+          h(RelatedPapers, { document, source: s.element })
         ]) );
       }
     } else {

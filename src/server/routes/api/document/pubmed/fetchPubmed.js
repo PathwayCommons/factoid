@@ -20,7 +20,7 @@ const getElementByName = ( json, name ) => _.find( _.get( json, ['elements'] ), 
 const getElementsByName = ( json, name ) => _.filter( _.get( json, ['elements'] ), ['name', name ] );
 const getElementAttribute = ( json, name ) => _.get( json, [ 'attributes', name ] );
 const getElementText = element => {
-  const textFields = _.get( element, 'elements' ).map( subElement => {
+  const textFields = _.get( element, 'elements', [] ).map( subElement => {
     if( _.get( subElement, 'type' ) === 'text' ){
       return _.get( subElement, 'text' ); // Base case
     } else {

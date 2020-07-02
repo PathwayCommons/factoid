@@ -27,6 +27,7 @@ services:
       TWITTER_ACCESS_TOKEN_SECRET:
       TWITTER_ACCOUNT_NAME:
       NCBI_EUTILS_API_KEY:
+      NODE_OPTIONS:
   grounding:
     image: pathwaycommons/grounding-search:${GROUNDING_SEARCH_IMAGE_TAG:-latest}
     container_name: grounding_container

@@ -115,6 +115,8 @@ const getDocuments = ( templates, queryDoc ) => {
       return [];
     }
 
+    pmids = pmids.slice(0, 50);
+
     const handleNoQueryAbastract = doc => {
       if ( NO_ABSTRACT_HANDLING == 'text' ) {
         return doc.toText();

@@ -1215,7 +1215,7 @@ http.post('/', function( req, res, next ){
  * @swagger
  *
  * /api/document/email/{id}/{secret}:
- *   patch:
+ *   post:
  *     security:
  *       - ApiKeyAuth: []
  *     description: Send email to author(s) associated with a Document
@@ -1245,7 +1245,7 @@ http.post('/', function( req, res, next ){
  *       '500':
  *         $ref: '#/components/responses/500'
  */
-http.patch('/email/:id/:secret', function( req, res, next ){
+http.post('/email/:id/:secret', function( req, res, next ){
   const { id, secret } = req.params;
   const { apiKey, emailType } = req.query;
   return (
@@ -1259,10 +1259,10 @@ http.patch('/email/:id/:secret', function( req, res, next ){
 /**
  * @swagger
  *
- * /api/document/status/{id}/{secret}:
+ * /api/document/{id}/{secret}:
  *   patch:
- *     description: Update Document status
- *     summary: Update Document status; On publish take action (Tweet, email)
+ *     description: Update Document
+ *     summary: Update Document related to user-provided data (status, article, correspondence)
  *     tags:
  *       - Document
  *     parameters:
@@ -1309,7 +1309,7 @@ http.patch('/email/:id/:secret', function( req, res, next ){
  *       '500':
  *         $ref: '#/components/responses/500'
  */
-http.patch('/status/:id/:secret', function( req, res, next ){
+http.patch('/:id/:secret', function( req, res, next ){
   const { id, secret } = req.params;
 
   // Publish criteria: non-empty; all entities complete
@@ -1356,20 +1356,26 @@ http.patch('/status/:id/:secret', function( req, res, next ){
 
   };
 
-  const updateDocStatus = async doc => {
+  const updateDoc = async doc => {
     const updates = req.body;
     for( const update of updates ){
       const { op, path, value } = update;
-      if( op === 'replace' && path === 'status' ){
-        switch ( value ) {
-          case DOCUMENT_STATUS_FIELDS.PUBLISHED: {
-            await handlePublishRequest( doc );
-            break;
+
+      switch ( path ) {
+        case 'status':
+          if( op === 'replace' && value === DOCUMENT_STATUS_FIELDS.PUBLISHED ) await handlePublishRequest( doc );
+          break;
+        case 'article':
+          if( op === 'replace' ) await fillDocArticle( doc );
+          break;
+        case 'correspondence':
+          if( op === 'replace' ){
+            await fillDocCorrespondence( doc );
+            await tryVerify( doc );
           }
-          default:
-            break;
-        }
+          break;
       }
+
     }
     return doc;
   };
@@ -1377,55 +1383,7 @@ http.patch('/status/:id/:secret', function( req, res, next ){
   return (
     tryPromise( () => loadTables() )
     .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
-    .then( updateDocStatus )
-    .then( getDocJson )
-    .then( json => res.json( json ) )
-    .catch( next )
-  );
-});
-
-/**
- * @swagger
- *
- * /api/document/{id}/{secret}:
- *   patch:
- *     security:
- *       - ApiKeyAuth: []
- *     description: Refresh existing Document metadata
- *     summary: Refresh existing Document metadata
- *     tags:
- *       - Document
- *     parameters:
- *       - name: id
- *         in: path
- *         description: Document id
- *         required: true
- *         type: string
- *       - name: secret
- *         in: path
- *         description: Document secret
- *         required: true
- *         type: string
- *     responses:
- *       '200':
- *         description: ok
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/Document'
- *       '500':
- *         $ref: '#/components/responses/500'
- */
-http.patch('/:id/:secret', function( req, res, next ){
-  const { id, secret } = req.params;
-  const { apiKey } = req.query;
-
-  return (
-    tryPromise( () => checkApiKey( apiKey ) )
-    .then( loadTables )
-    .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
-    .then( fillDoc )
-    .then( tryVerify )
+    .then( updateDoc )
     .then( getDocJson )
     .then( json => res.json( json ) )
     .catch( next )

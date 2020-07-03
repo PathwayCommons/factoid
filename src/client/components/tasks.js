@@ -86,7 +86,7 @@ class TaskView extends DataComponent {
     const params = [
       { op: 'replace', path: 'status', value: DOCUMENT_STATUS_FIELDS.PUBLISHED }
     ];
-    const url = `/api/document/status/${id}/${secret}`;
+    const url = `/api/document/${id}/${secret}`;
     return fetch( url, {
       method: 'PATCH',
       headers: {

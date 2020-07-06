@@ -40,7 +40,7 @@ const sendMail = ( emailType, doc, apiKey ) => {
 
   return fetch( url,
       {
-        method: 'PATCH',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -151,8 +151,8 @@ class DocumentRefreshButtonComponent extends DocumentButtonComponent {
   }
 
   doWork( params ) {
-    const { id, secret, apiKey } = this.props;
-    const url = `/api/document/${id}/${secret}/?${queryString.stringify({ apiKey })}`;
+    const { id, secret } = this.props;
+    const url = `/api/document/${id}/${secret}`;
     return fetch( url, {
       method: 'PATCH',
       headers: {
@@ -166,7 +166,7 @@ class DocumentRefreshButtonComponent extends DocumentButtonComponent {
 class TextEditableComponent extends React.Component {
 
   constructor( props ) {
-    super();
+    super( props );
     this.ESCAPE_KEY = 27;
     this.ENTER_KEY = 13;
     this.state = {
@@ -187,6 +187,7 @@ class TextEditableComponent extends React.Component {
   }
 
   handleSubmit () {
+    const { doc, fieldName, params } = this.props;
     new Promise( resolve => {
       this.setState({
         sending: true,
@@ -194,23 +195,22 @@ class TextEditableComponent extends React.Component {
       }, resolve );
     })
     .then( () => {
-      const { doc } = this.props;
       return doc.provided({
-        [this.props.fieldName]: this.state.editText.trim()
+        [fieldName]: this.state.editText.trim()
       })
        .then( () => doc );
     })
     .then( doc => {
+
       const id = doc.id();
       const secret = doc.secret();
-      const { apiKey } = this.props;
-      const url = `/api/document/${id}/${secret}/?${queryString.stringify({ apiKey })}`;
+      const url = `/api/document/${id}/${secret}`;
       return fetch( url, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify([])
+        body: JSON.stringify( params )
       });
     })
     .finally( () => {
@@ -300,11 +300,13 @@ class DocumentManagementDocumentComponent extends React.Component {
       return h( DocumentRefreshButtonComponent, {
           id: doc.id(),
           secret: doc.secret(),
-          apiKey,
           workingMessage: ' Please wait',
           disableWhen: doc.trashed(),
           buttonKey: doc.id(),
-          params: [],
+          params: [
+            { op: 'replace', path: 'article' },
+            { op: 'replace', path: 'correspondence' }
+          ],
           value: 'refresh',
           title: 'Refresh document data',
           label: h( 'i.material-icons', 'refresh' )
@@ -319,11 +321,8 @@ class DocumentManagementDocumentComponent extends React.Component {
             h( 'i.material-icons.hide-by-default.invalid', {
               className: makeClassList({ 'show': hasIssues( doc ) })
             }, 'warning' ),
-            h( 'i.material-icons.hide-by-default.mute', {
-              className: makeClassList({ 'show': doc.approved() })
-            }, 'thumb_up' ),
             h( 'i.material-icons.hide-by-default.complete', {
-              className: makeClassList({ 'show': doc.submitted() })
+              className: makeClassList({ 'show': doc.submitted() || doc.published() })
             }, 'check_circle' ),
             h( 'i.material-icons.hide-by-default.mute', {
               className: makeClassList({ 'show': doc.trashed() })
@@ -347,7 +346,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             fieldName: 'paperId',
             value: paperId,
             label: h( 'span', `${paperIdIssue.message}` ),
-            apiKey
+            params: [ { op: 'replace', path: 'article' } ]
           })
         ];
 
@@ -377,7 +376,7 @@ class DocumentManagementDocumentComponent extends React.Component {
               fieldName: 'paperId',
               value: paperId,
               label: h('small.mute', `${paperId} `),
-              apiKey
+              params: [ { op: 'replace', path: 'article' } ]
             })
           ];
       }
@@ -446,7 +445,7 @@ class DocumentManagementDocumentComponent extends React.Component {
           fieldName: 'authorEmail',
           value: authorEmail,
           label: h( 'span', element ),
-          apiKey
+          params: [ { op: 'replace', path: 'correspondence' } ]
       });
     };
 
@@ -461,7 +460,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             fieldName: 'authorEmail',
             value: authorEmail,
             label: h( 'span', `${authorEmailIssue.message} `),
-            apiKey
+            params: [ { op: 'replace', path: 'correspondence' } ]
           })
         ]);
 

@@ -2,8 +2,11 @@ import _ from 'lodash';
 import queryString from 'query-string';
 import fetch from 'node-fetch';
 
-import { NCBI_EUTILS_BASE_URL, NCBI_EUTILS_API_KEY, CROSSREF_API_BASE_URL, PMC_ID_API_URL } from '../../../../../config';
+import { NCBI_EUTILS_BASE_URL, NCBI_EUTILS_API_KEY,
+  EMAIL_FROM_ADDR, BASE_URL,
+  CROSSREF_API_BASE_URL, PMC_ID_API_URL } from '../../../../../config';
 import { checkHTTPStatus } from '../../../../../util';
+import { ID_TYPE } from './index';
 
 // const CROSSREF_API_BASE_URL = `https://api.crossref.org`;
 const CROSSREF_WORKS_URL = `${CROSSREF_API_BASE_URL}/works`;
@@ -18,6 +21,18 @@ const DEFAULT_ESEARCH_PARAMS = {
   usehistory: 'y',
   field: undefined,
   api_key: NCBI_EUTILS_API_KEY
+};
+
+const safeFetch = url => {
+  const userAgent = `${process.env.npm_package_name}/${process.env.npm_package_version}`;
+  return fetch( url, {
+    method: 'GET',
+    headers: {
+      'User-Agent': userAgent
+    }
+  })
+  .then( checkHTTPStatus ) // HTTPStatusError
+  .then( response => response.json() );
 };
 
 const pubmedDataConverter = json => {
@@ -41,69 +56,73 @@ const checkEsearchResult = json => {
 const eSearchPubmed = ( term, opts ) => {
   const params = _.assign( {}, DEFAULT_ESEARCH_PARAMS, { term }, opts );
   const url = EUTILS_SEARCH_URL + '?' + queryString.stringify( params );
-  const userAgent = `${process.env.npm_package_name}/${process.env.npm_package_version}`;
-  return fetch( url, {
-    method: 'GET',
-    headers: {
-      'User-Agent': userAgent
-    }
-  })
-  .then( checkHTTPStatus ) // HTTPStatusError
-  .then( response => response.json() )
-  .then( checkEsearchResult ) // Error (programmatic)
-  .then( pubmedDataConverter );
+  return safeFetch( url )
+    .then( checkEsearchResult ) // Error (programmatic)
+    .then( pubmedDataConverter );
 };
 
 /**
- * Search for an article using Crossref and return a Pubmed-style result.
- * 
- * This approach uses Crossref to find the article's DOI.  The DOI is sent to PMC to find a
- * PMID.  If the PMC query fails for any reason, a query to Pubmed Eutils is made using the 
- * DOI as the search term.  For some articles, PMC fails.  For others, Eutils fails.  Using
- * both gives good coverage.
- * 
+ * Search for an article using Pubmed and CrossRef
+ *
+ * This approach uses a multi-stage approach:
+ *   1. Query the PubMed EUTIL service
+ *   2. If no unique hit, query Crossref API works resource component
+ *   3. Send the CrossRef-derived DOI to PMC to map to a PMID
+ *   4. If no PMID, try the Pubmed EUTILS service with DOI
+ *
  * @param {String} term The search term to find the article (e.g. title)
+ * @param {String} IdType One of ID_TYPE
  * @param {Object} opts Pubmed API options
  * @returns {Object} A Pubmed search result object
  */
-const crSearchPubmed = async ( term, opts ) => {
-  const doi = await crSearchForDoi(term);
+const crSearchPubmed = async ( term, IdType, opts ) => {
 
-  const pmid = await getPmidFromDoi(doi);
+  // try PubMed ESEARCH
+  const queryOpts = IdType === ID_TYPE.TITLE ? { field: ID_TYPE.TITLE } : {};
+  const searchResponse = await eSearchPubmed( term, queryOpts );
+  if( searchResponse.count === -1 ){
+    return searchResponse;
 
-  if( pmid ){
-    return {
-      searchHits: [ pmid ],
-      count: 1,
-      query_key: '-1',
-      webenv: 'imitated_pubmed_format_from_crossref_query'
-    };
   } else {
-    return eSearchPubmed(doi, opts);
+    // try looking in CrossRef
+    const { DOI } = await crSearch( term, IdType );
+    const pmid = await getPmidFromDoi( DOI );
+
+    if( pmid ){
+      return {
+        searchHits: [ pmid ],
+        count: 1,
+        query_key: null,
+        webenv: null
+      };
+    } else {
+      // Use the cr doi on PubMed
+      return await eSearchPubmed( DOI, opts );
+    }
   }
 };
 
 /**
- * Search for an article's DOI using Crossref
+ * Search for an article within the Crossref 'works' resource component
+ * See {@link https://github.com/CrossRef/rest-api-doc docs}
  * @async
- * @param {String} term The search term (e.g. article title)
- * @returns {String} The DOI, null if not found
+ * @param {String} term The search term
+ * @param {String} IdType One of ID_TYPE
+ * @returns {Object} The work item (top search hit when IdType !== DOI)
  */
-const crSearchForDoi = async ( term ) => {
-  const params = {
-    'query.bibliographic': term
-  };
+const crSearch = async ( term, IdType ) => {
+  let crUrl, pathToItem;
 
-  const crUrl = CROSSREF_WORKS_URL + '?' + queryString.stringify( params );
+  if( IdType === ID_TYPE.DOI ){
+    crUrl = `${CROSSREF_WORKS_URL}/${term}`;
+    pathToItem = ['message'];
+  } else {
+    crUrl = CROSSREF_WORKS_URL + '?' + queryString.stringify( { 'query.bibliographic': term } );
+    pathToItem = ['message', 'items', 0];
+  }
 
-  const crRes = await fetch(crUrl, {
-    method: 'GET'
-  });
-
-  const crJson = await crRes.json();
-
-  const doi = _.get(crJson, ['message', 'items', 0, 'DOI']);
-
+  const crJson = await safeFetch( crUrl );
+  const doi = _.get( crJson, pathToItem );
   return doi;
 };
 
@@ -113,24 +132,17 @@ const crSearchForDoi = async ( term ) => {
  * @param {String} doi The article's DOI
  * @returns {String} The article's PMID, null if not found (i.e. doesn't exist or pubmed flakes out)
  */
-const getPmidFromDoi = async ( doi ) => {
+const getPmidFromDoi = async doi => {
   const params = {
     format: 'json',
     ids: doi,
-    tool: 'Biofactoid',
-    email: 'info@biofactoid.org'
+    tool: BASE_URL,
+    email: EMAIL_FROM_ADDR
   };
 
   const url = PMC_ID_API_URL + '?' + queryString.stringify( params );
-
-  const res = await fetch(url, {
-    method: 'GET'
-  });
-
-  const json = await res.json();
-
-  let pmid = _.get(json, ['records', 0, 'pmid']);
-
+  const json = await safeFetch( url );
+  let pmid = _.get( json, ['records', 0, 'pmid'] );
   return pmid;
 };
 
@@ -139,6 +151,7 @@ const getPmidFromDoi = async ( doi ) => {
  * Query the PubMed database for matching UIDs.
  *
  * @param { String } q The query term
+ * @param { String } IdType One of ID_TYPE
  * @param { Object } opts EUTILS ESEARCH options
  * @returns { Object } result The search results from PubMed
  * @returns { Array } result.searchHits A list of PMIDs
@@ -146,6 +159,6 @@ const getPmidFromDoi = async ( doi ) => {
  * @returns { String } result.query_key See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
  * @returns { String } result.webenv See {@link https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch|EUTILS docs }
  */
-const searchPubmed = ( q, opts ) => crSearchPubmed( q, opts );
+const searchPubmed = ( q, IdType, opts ) => crSearchPubmed( q, IdType, opts );
 
 export { searchPubmed, pubmedDataConverter };

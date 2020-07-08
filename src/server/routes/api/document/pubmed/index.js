@@ -18,28 +18,25 @@ const ID_TYPE = Object.freeze({
 const doiRegex = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i;
 const digitsRegex = /^[0-9.]+$/;
 
-const getUniqueArticleOrThrow = async ( query, IdType ) => {
-  const queryOpts = IdType === ID_TYPE.TITLE ? { field: ID_TYPE.TITLE } : {};
-  const { searchHits, count } = await searchPubmed( query, queryOpts );
-  if( count === 1 ){
-    return _.first( searchHits );
-  } else {
-    throw new ArticleIDError( `Unrecognized paperId '${query}'`, query );
-  }
-};
-
 const findPubmedId = async paperId => {
-  let IdType = ID_TYPE.TITLE;
-  const isUidLike = digitsRegex.test( paperId );
-  const isDoiLike = doiRegex.test( paperId );
+  try {
+    let IdType = ID_TYPE.TITLE;
+    const isUidLike = digitsRegex.test( paperId );
+    const isDoiLike = doiRegex.test( paperId );
 
-  if( isDoiLike ) {
-    IdType = ID_TYPE.DOI;
-  } else if ( isUidLike ){
-    IdType = ID_TYPE.PMID;
+    if( isDoiLike ) {
+      IdType = ID_TYPE.DOI;
+    } else if ( isUidLike ){
+      IdType = ID_TYPE.PMID;
+    }
+    const { searchHits } = await searchPubmed( paperId, IdType );
+    const foundId = _.head( searchHits );
+    return { IdType, foundId };
+
+  } catch( err ) {
+    logger.error( `Error: ${err.message}`);
+    throw new ArticleIDError( `Unrecognized paperId '${paperId}'`, paperId );
   }
-  const foundId = await getUniqueArticleOrThrow( paperId, IdType );
-  return { IdType, foundId };
 };
 
 /**
@@ -102,4 +99,4 @@ const getPubmedArticle = async paperId => {
   }
 };
 
-export { getPubmedArticle };
+export { getPubmedArticle, ID_TYPE };

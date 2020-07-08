@@ -80,7 +80,7 @@ const crSearchPubmed = async ( term, IdType, opts ) => {
   // try PubMed ESEARCH
   const queryOpts = IdType === ID_TYPE.TITLE ? { field: ID_TYPE.TITLE } : {};
   const searchResponse = await eSearchPubmed( term, queryOpts );
-  if( searchResponse.count === -1 ){
+  if( searchResponse.count === 1 ){
     return searchResponse;
 
   } else {

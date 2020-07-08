@@ -7,14 +7,13 @@ services:
       - db
       - grounding
       - converter
-      - semantic
     ports:
       - "${FACTOID_PORT:-3000}:3000"
     environment:
       BASE_URL:
       GROUNDING_SEARCH_BASE_URL: "http://grounding:3000"
       BIOPAX_CONVERTER_URL: "http://converter:8080/convert/v2/"
-      SEMANTIC_SEARCH_BASE_URL: "http://semantic:8000/"
+      SEMANTIC_SEARCH_BASE_URL:
       DB_HOST: "db"
       API_KEY:
       EMAIL_ENABLED:
@@ -62,11 +61,6 @@ services:
     container_name: converters_container
     ports:
       - "${CONVERTER_PORT:-3082}:8080"
-  semantic:
-    image: pathwaycommons/semantic-search:${SEMANTIC_SEARCH_IMAGE_TAG:-latest}
-    container_name: semantic_container
-    ports:
-      - "${SEMANTIC_PORT:-8000}:8000"
 
 volumes:
   dbdata:

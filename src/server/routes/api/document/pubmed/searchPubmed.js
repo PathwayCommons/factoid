@@ -24,7 +24,7 @@ const DEFAULT_ESEARCH_PARAMS = {
 };
 
 const safeFetch = url => {
-  const userAgent = `${process.env.npm_package_name}/${process.env.npm_package_version}`;
+  const userAgent = `${process.env.npm_package_name}/${process.env.npm_package_version} (${BASE_URL};mailto:${EMAIL_FROM_ADDR})`;
   return fetch( url, {
     method: 'GET',
     headers: {

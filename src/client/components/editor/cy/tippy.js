@@ -184,6 +184,9 @@ export default function({ bus, cy, document }){
     let tippy = tippyjs( ref, _.assign( {}, tippyDefaults, {
       duration: 0,
       placement: 'bottom',
+      flip: true,
+      flipBehavior: ['bottom', 'top', 'right', 'left'],
+      flipOnUpdate: true,
       hideOnClick: false,
       sticky: true,
       livePlacement: true,

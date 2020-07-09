@@ -100,7 +100,7 @@
 }
 
 .editor-title-content {
-  display: inline-block;
+  display: block;
   background: rgba(255, 255, 255, 0.5);
   padding: 0.375em 0.5em;
   border-bottom-left-radius: 0.25em;
@@ -108,6 +108,7 @@
   max-width: calc(100% - 10.5em);
   pointer-events: all;
   line-height: 1.5;
+  margin: 0 auto;
 }
 
 .editor-title-name,
@@ -115,7 +116,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: inline-block;
+  display: block;
 }
 
 .editor-title-info {

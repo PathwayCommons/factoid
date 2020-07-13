@@ -1511,23 +1511,6 @@ const searchRelatedPapers = ( doc, elId ) => {
   return indra.searchDocuments( obj );
 };
 
-http.get('/related-papers/:id', function( req, res, next ){
-  // 5000000ms correspons to 83.3333333 mins
-  let timout = 5000000;
-  res.setTimeout(timout);
-
-  let id = req.params.id;
-  let queryObject = url.parse(req.url, true).query;
-  let { elId } = queryObject;
-
-  tryPromise( loadTables )
-    .then( json => _.assign( {}, json, { id } ) )
-    .then( loadDoc )
-    .then( doc => searchRelatedPapers( doc, elId ) )
-    .then( js => res.json( js ))
-    .catch( next );
-});
-
 export default http;
 export { getDocumentJson,
   loadTables, loadDoc, fillDocArticle

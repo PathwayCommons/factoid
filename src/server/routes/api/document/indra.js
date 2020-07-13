@@ -1,8 +1,8 @@
 import fetch from 'node-fetch';
 import _ from 'lodash';
-import { parse as dateParse } from 'date-fns';
+// import { parse as dateParse } from 'date-fns';
 import uuid from 'uuid';
-import Heap from 'heap';
+// import Heap from 'heap';
 
 import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL, NO_ABSTRACT_HANDLING } from '../../../../config';
 import logger from '../../../logger';
@@ -129,7 +129,7 @@ const getDocuments = ( templates, queryDoc ) => {
       }
     };
 
-    const getMedlineArticle = article => article.MedlineCitation.Article;
+    // const getMedlineArticle = article => article.MedlineCitation.Article;
 
     const getSemanticScores = articles => {
       if ( sortByDate ) {
@@ -167,49 +167,49 @@ const getDocuments = ( templates, queryDoc ) => {
       .then( semanticScores => ( { articles, semanticScores } ) );
     };
 
-    const getPubTime = article => {
-        let dateJs = article.Journal.JournalIssue.PubDate;
-        let { Day: day, Year: year, Month: month, MedlineDate: medlineDate } = dateJs;
+    // const getPubTime = article => {
+    //     let dateJs = article.Journal.JournalIssue.PubDate;
+    //     let { Day: day, Year: year, Month: month, MedlineDate: medlineDate } = dateJs;
 
-        try {
-          if ( medlineDate ) {
-            return new Date( medlineDate ).getTime();
-          }
+    //     try {
+    //       if ( medlineDate ) {
+    //         return new Date( medlineDate ).getTime();
+    //       }
 
-          if ( month != null && isNaN( month ) ) {
-              month = dateParse(month, 'MMM', new Date()).getMonth() + 1;
-          }
+    //       if ( month != null && isNaN( month ) ) {
+    //           month = dateParse(month, 'MMM', new Date()).getMonth() + 1;
+    //       }
 
-          // Date class accepts the moth indices starting by 0
-          month = month - 1;
+    //       // Date class accepts the moth indices starting by 0
+    //       month = month - 1;
 
-          return new Date( year, month, day ).getTime();
-        }
-        catch ( e ) {
-          logger.error( e );
-          // if date could not be parsed return the minimum integer value
-          return Number.MIN_SAFE_INTEGER;
-        }
-    };
+    //       return new Date( year, month, day ).getTime();
+    //     }
+    //     catch ( e ) {
+    //       logger.error( e );
+    //       // if date could not be parsed return the minimum integer value
+    //       return Number.MIN_SAFE_INTEGER;
+    //     }
+    // };
 
-    const filterByDate = articles => {
-      // if the sort operation wil be based on the semantic search
-      // then filter the most current papers before sorting
-      if ( !sortByDate && articles.length > SEMANTIC_SEARCH_LIMIT ) {
-        const cmp = ( a, b ) => {
-          const getDate = e => getPubTime( getMedlineArticle( e ) );
-          return getDate( a ) - getDate( b );
-        };
+    // const filterByDate = articles => {
+    //   // if the sort operation wil be based on the semantic search
+    //   // then filter the most current papers before sorting
+    //   if ( !sortByDate && articles.length > SEMANTIC_SEARCH_LIMIT ) {
+    //     const cmp = ( a, b ) => {
+    //       const getDate = e => getPubTime( getMedlineArticle( e ) );
+    //       return getDate( a ) - getDate( b );
+    //     };
 
-        articles = Heap.nlargest( articles, SEMANTIC_SEARCH_LIMIT, cmp );
-      }
+    //     articles = Heap.nlargest( articles, SEMANTIC_SEARCH_LIMIT, cmp );
+    //   }
 
-      return articles;
-    };
+    //   return articles;
+    // };
 
-    return tryPromise( () => fetchPubmed({ uids: pmids }) )
+    return tryPromise( () => fetchPubmed({ uids: pmids.slice(0, SEMANTIC_SEARCH_LIMIT + 1) }) )
       .then( o => o.PubmedArticleSet )
-      .then( filterByDate )
+      // .then( filterByDate )
       .then( articles => articles.map( getPubmedCitation ) )
       .then( getSemanticScores )
       .then( ( { articles, semanticScores } ) => {

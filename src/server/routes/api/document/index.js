@@ -1528,8 +1528,7 @@ const getRelatedPapers = async doc => {
 
     const indraRes = await indra.searchDocuments({ templates, doc });
     
-    console.log(`GOT RESULT FOR ${el.toString()}`);
-    console.log(indraRes.length);
+    console.log(`GOT RESULT FOR ${el.toString()} ${indraRes.length}`);
     // console.log(indraRes);
 
     if( indraRes && indraRes.length !== 0 ){

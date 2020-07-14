@@ -97,8 +97,20 @@ const getDocuments = ( templates, queryDoc ) => {
 
     return tryPromise( () => getIntns() )
       .then( intns => {
+        let ret;
+
         intns.forEach( intn => intn.elId = elTemplate.elId );
-        return _.groupBy( intns, 'pmid' );
+
+        const filteredIntns = (
+          intns.sort((a, b) => parseInt(b.pmid) - parseInt(a.pmid)) // sort by pmid as proxy for date -- higher pmid = newer
+          .slice(0, SEMANTIC_SEARCH_LIMIT + 1) // limit per-ele pmid count for s.s.
+        );
+
+        console.log(`FILTERED DOWN INITIAL INDRA RESULT FROM ${intns.length} to ${filteredIntns.length} for ${JSON.stringify(elTemplate, null, 2)}`);
+
+        ret = _.groupBy( filteredIntns, 'pmid' );
+
+        return ret;
       } );
   };
 
@@ -207,7 +219,19 @@ const getDocuments = ( templates, queryDoc ) => {
     //   return articles;
     // };
 
-    return tryPromise( () => fetchPubmed({ uids: pmids.slice(0, SEMANTIC_SEARCH_LIMIT + 1) }) )
+    console.log(`HAVE transform() PMID LIST OF SIZE ${pmids.length}`);
+    console.log(pmids);
+
+    // filter again for case of multiple tempaltes in one query (i.e. document)
+    const filteredPmids = (
+      pmids.sort((a, b) => parseInt(b) - parseInt(a)) // higher pmids first
+      .slice(0, SEMANTIC_SEARCH_LIMIT + 1) // limit
+    );
+
+    console.log(`FILTERED transform() PMID LIST OF SIZE ${filteredPmids.length}`);
+    console.log(filteredPmids);
+
+    return tryPromise( () => fetchPubmed({ uids: filteredPmids }) )
       .then( o => o.PubmedArticleSet )
       // .then( filterByDate )
       .then( articles => articles.map( getPubmedCitation ) )

@@ -13,7 +13,9 @@ export const EditorTitle = props => {
   return h('div.editor-title', [
     h('div.editor-title-content', [
       h(doi ? 'a' : 'div', (doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` } : {}), [
-        h('div.editor-title-name' + (doi ? '.plain-link.link-like' : ''), title ),
+        h('div.editor-title-name', [
+          h('span' + (doi ? '.plain-link.link-like' : ''), title)
+        ]),
         h('div.editor-title-info', [
           h('div', abbreviation ),
           h('div', reference )

@@ -13,9 +13,9 @@ import querystring from 'querystring';
 import { getPubmedCitation } from '../../../../util/pubmed';
 
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
-const MIN_SEMANTIC_SCORE = 0.47;
-const SORT_BY_DATE = false;
-const SEMANTIC_SEARCH_LIMIT = 30;
+const MIN_SEMANTIC_SCORE = 0.47; // TODO conf var
+const SORT_BY_DATE = false; // TODO remove
+const SEMANTIC_SEARCH_LIMIT = 30; // TODO conf var
 
 const SUB_MODIFICATION_TYPES = ['Phosphorylation', 'Dephosphorylation', 'Dephosphorylation',
   'Deubiquitination', 'Methylation', 'Demethylation'];
@@ -248,9 +248,11 @@ const getDocuments = ( templates, queryDoc ) => {
           return { elements, pmid, pubmed: article };
         } );
 
+        const queryDocPmid = queryDoc.citation().pmid;
         const getSemanticScore = doc => _.get( semanticScoreById, [ doc.pmid, 0, 'score' ] );
         const getNegativeScore = doc => -getSemanticScore( doc );
-        arr = arr.filter( doc => getSemanticScore( doc ) > MIN_SEMANTIC_SCORE );
+
+        arr = arr.filter( doc => getSemanticScore( doc ) > MIN_SEMANTIC_SCORE && doc.pmid != queryDocPmid );
         arr = _.sortBy( arr, getNegativeScore );
 
         return arr;

@@ -42,6 +42,8 @@ import { BASE_URL,
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
+const MIN_RELATED_PAPERS = 6; // TODO put as conf var
+
 const http = Express.Router();
 
 const snap = cytosnap({
@@ -1531,9 +1533,7 @@ const getRelatedPapers = async doc => {
     console.log(`GOT RESULT FOR ${el.toString()} ${indraRes.length}`);
     // console.log(indraRes);
 
-    if( indraRes && indraRes.length !== 0 ){
-      el.relatedPapers( indraRes );
-    }
+    el.relatedPapers( indraRes || [] );
   };
   
   const getRelPprsForDoc = async doc => {
@@ -1550,12 +1550,27 @@ const getRelatedPapers = async doc => {
     console.log(`GOT RESULT FOR ${doc.id()}`);
     console.log(indraRes.length);
 
-    if( indraRes && indraRes.length !== 0 ){
-      doc.relatedPapers( indraRes );
-    }
+    doc.relatedPapers( indraRes || [] );
   };
 
   await Promise.all([ ...els.map(getRelPprsForEl), getRelPprsForDoc(doc) ]);
+
+  const docPprs = doc.relatedPapers();
+  const getPmid = ppr => ppr.pubmed.pmid;
+
+  await Promise.all( doc.elements().map(async el => {
+    const pprs = el.relatedPapers();
+
+    if( pprs.length > MIN_RELATED_PAPERS ){ return; }
+
+    console.log(`APPENDING RANDOM DOC PAPERS TO ${el.toString()} WITH LENGTH ${pprs.length}`);
+
+    const newPprs = _.uniq( _.concat(pprs, _.shuffle(docPprs)), getPmid );
+
+    console.log(`NEW PAPERS FOR ${el.toString()} WITH LENGTH ${newPprs.length}`);
+
+    await el.relatedPapers(newPprs);
+  }) );
 
   console.log('DONE GETTING RELATED PAPERS');
 };

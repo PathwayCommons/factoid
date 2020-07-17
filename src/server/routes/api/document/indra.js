@@ -4,7 +4,8 @@ import _ from 'lodash';
 import uuid from 'uuid';
 // import Heap from 'heap';
 
-import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL, NO_ABSTRACT_HANDLING } from '../../../../config';
+import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL, NO_ABSTRACT_HANDLING,
+          MIN_SEMANTIC_SCORE, SEMANTIC_SEARCH_LIMIT } from '../../../../config';
 import logger from '../../../logger';
 import { tryPromise } from '../../../../util';
 import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
@@ -13,9 +14,7 @@ import querystring from 'querystring';
 import { getPubmedCitation } from '../../../../util/pubmed';
 
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
-const MIN_SEMANTIC_SCORE = 0.47; // TODO conf var
 const SORT_BY_DATE = false; // TODO remove
-const SEMANTIC_SEARCH_LIMIT = 30; // TODO conf var
 
 const SUB_MODIFICATION_TYPES = ['Phosphorylation', 'Dephosphorylation', 'Dephosphorylation',
   'Deubiquitination', 'Methylation', 'Demethylation'];

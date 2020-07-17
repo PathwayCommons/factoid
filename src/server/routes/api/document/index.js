@@ -36,13 +36,12 @@ import { BASE_URL,
   DOCUMENT_IMAGE_PADDING,
   EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
-  EMAIL_TYPE_FOLLOWUP
+  EMAIL_TYPE_FOLLOWUP,
+  MIN_RELATED_PAPERS
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
-
-const MIN_RELATED_PAPERS = 6; // TODO put as conf var
 
 const http = Express.Router();
 

@@ -253,7 +253,7 @@ Notes:
 Factoid depends on services whose software we maintain.
 
 - GitHub
-  - [grounding-search](github.com/PathwayCommons/grounding-search): Disambiguate bio-entities via full-text search
+  - [grounding-search](https://github.com/PathwayCommons/grounding-search): Disambiguate bio-entities via full-text search
   - [semantic-search](github.com/PathwayCommons/semantic-search): Rank texts based on similiarity
   - [factoid-converters](https://github.com/PathwayCommons/factoid-converters): Convert Factoid model JSON to standard languages (BioPAX and SBGN-PD)
 - DockerHub
@@ -262,4 +262,3 @@ Factoid depends on services whose software we maintain.
   - [semantic-search](hub.docker.com/repository/docker/pathwaycommons/semantic-search)
   - [factoid-converters](hub.docker.com/repository/docker/pathwaycommons/factoid-converters)
   - [rethinkdb-docker](hub.docker.com/repository/docker/pathwaycommons/rethinkdb-docker): RethinkDB-based image with dependencies for database administration (i.e. dump and restore).
-

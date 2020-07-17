@@ -260,5 +260,5 @@ Factoid depends on services whose software we maintain.
   - [factoid](https://hub.docker.com/r/pathwaycommons/factoid)
   - [grounding-search](https://hub.docker.com/r/pathwaycommons/grounding-search)
   - [semantic-search](https://hub.docker.com/repository/docker/pathwaycommons/semantic-search)
-  - [factoid-converters](hub.docker.com/repository/docker/pathwaycommons/factoid-converters)
+  - [factoid-converters](https://hub.docker.com/repository/docker/pathwaycommons/factoid-converters)
   - [rethinkdb-docker](https://hub.docker.com/repository/docker/pathwaycommons/rethinkdb-docker): RethinkDB-based image with dependencies for database administration (i.e. dump and restore).

@@ -257,7 +257,7 @@ Factoid depends on services whose software we maintain.
   - [semantic-search](https://github.com/PathwayCommons/semantic-search): Rank texts based on similiarity
   - [factoid-converters](https://github.com/PathwayCommons/factoid-converters): Convert Factoid model JSON to standard languages (BioPAX and SBGN-PD)
 - DockerHub
-  - [factoid](hub.docker.com/r/pathwaycommons/factoid)
+  - [factoid](https://hub.docker.com/r/pathwaycommons/factoid)
   - [grounding-search](hub.docker.com/r/pathwaycommons/grounding-search)
   - [semantic-search](hub.docker.com/repository/docker/pathwaycommons/semantic-search)
   - [factoid-converters](hub.docker.com/repository/docker/pathwaycommons/factoid-converters)

@@ -254,7 +254,7 @@ Factoid depends on services whose software we maintain.
 
 - GitHub
   - [grounding-search](https://github.com/PathwayCommons/grounding-search): Disambiguate bio-entities via full-text search
-  - [semantic-search](github.com/PathwayCommons/semantic-search): Rank texts based on similiarity
+  - [semantic-search](https://github.com/PathwayCommons/semantic-search): Rank texts based on similiarity
   - [factoid-converters](https://github.com/PathwayCommons/factoid-converters): Convert Factoid model JSON to standard languages (BioPAX and SBGN-PD)
 - DockerHub
   - [factoid](hub.docker.com/r/pathwaycommons/factoid)

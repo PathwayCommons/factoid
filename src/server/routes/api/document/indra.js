@@ -106,8 +106,6 @@ const getDocuments = ( templates, queryDoc ) => {
           .slice(0, SEMANTIC_SEARCH_LIMIT + 1) // limit per-ele pmid count for s.s.
         );
 
-        console.log(`FILTERED DOWN INITIAL INDRA RESULT FROM ${intns.length} to ${filteredIntns.length} for ${JSON.stringify(elTemplate, null, 2)}`);
-
         ret = _.groupBy( filteredIntns, 'pmid' );
 
         return ret;
@@ -179,57 +177,11 @@ const getDocuments = ( templates, queryDoc ) => {
       .then( semanticScores => ( { articles, semanticScores } ) );
     };
 
-    // const getPubTime = article => {
-    //     let dateJs = article.Journal.JournalIssue.PubDate;
-    //     let { Day: day, Year: year, Month: month, MedlineDate: medlineDate } = dateJs;
-
-    //     try {
-    //       if ( medlineDate ) {
-    //         return new Date( medlineDate ).getTime();
-    //       }
-
-    //       if ( month != null && isNaN( month ) ) {
-    //           month = dateParse(month, 'MMM', new Date()).getMonth() + 1;
-    //       }
-
-    //       // Date class accepts the moth indices starting by 0
-    //       month = month - 1;
-
-    //       return new Date( year, month, day ).getTime();
-    //     }
-    //     catch ( e ) {
-    //       logger.error( e );
-    //       // if date could not be parsed return the minimum integer value
-    //       return Number.MIN_SAFE_INTEGER;
-    //     }
-    // };
-
-    // const filterByDate = articles => {
-    //   // if the sort operation wil be based on the semantic search
-    //   // then filter the most current papers before sorting
-    //   if ( !sortByDate && articles.length > SEMANTIC_SEARCH_LIMIT ) {
-    //     const cmp = ( a, b ) => {
-    //       const getDate = e => getPubTime( getMedlineArticle( e ) );
-    //       return getDate( a ) - getDate( b );
-    //     };
-
-    //     articles = Heap.nlargest( articles, SEMANTIC_SEARCH_LIMIT, cmp );
-    //   }
-
-    //   return articles;
-    // };
-
-    console.log(`HAVE transform() PMID LIST OF SIZE ${pmids.length}`);
-    console.log(pmids);
-
     // filter again for case of multiple tempaltes in one query (i.e. document)
     const filteredPmids = (
       pmids.sort((a, b) => parseInt(b) - parseInt(a)) // higher pmids first
       .slice(0, SEMANTIC_SEARCH_LIMIT + 1) // limit
     );
-
-    console.log(`FILTERED transform() PMID LIST OF SIZE ${filteredPmids.length}`);
-    console.log(filteredPmids);
 
     return tryPromise( () => fetchPubmed({ uids: filteredPmids }) )
       .then( o => o.PubmedArticleSet )

@@ -1497,21 +1497,6 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
-// const searchRelatedPapers = ( doc, elId ) => {
-//   let templates;
-//   if ( elId ) {
-//     let el = doc.get( elId );
-//     templates = [ el.toSearchTemplate() ];
-//   }
-//   else {
-//     templates = doc.toSearchTemplates();
-//   }
-
-
-//   let obj = { templates, doc };
-//   return indra.searchDocuments( obj );
-// };
-
 const getRelatedPapers = async doc => {
   const els = doc.elements();
 
@@ -1520,35 +1505,23 @@ const getRelatedPapers = async doc => {
   const getRelPprsForEl = async el => {
     const template = toTemplate(el);
 
-    console.log(`GOT TEMPLATE FOR ${el.toString()}`);
-    console.log(template);
-
     const templates = {
       intns: el.isInteraction() ? [ template ] : [],
       entities: el.isEntity() ? [ template ] : []
     };
 
     const indraRes = await indra.searchDocuments({ templates, doc });
-    
-    console.log(`GOT RESULT FOR ${el.toString()} ${indraRes.length}`);
-    // console.log(indraRes);
 
     el.relatedPapers( indraRes || [] );
   };
-  
+
   const getRelPprsForDoc = async doc => {
     const templates = {
       intns: doc.interactions().map(toTemplate),
       entities: doc.entities().map(toTemplate)
     };
 
-    console.log(`GOT TEMPLATEs FOR DOC ${doc.id()}`);
-    console.log(templates);
-
     const indraRes = await indra.searchDocuments({ templates, doc });
-
-    console.log(`GOT RESULT FOR ${doc.id()}`);
-    console.log(indraRes.length);
 
     doc.relatedPapers( indraRes || [] );
   };
@@ -1563,16 +1536,10 @@ const getRelatedPapers = async doc => {
 
     if( pprs.length > MIN_RELATED_PAPERS ){ return; }
 
-    console.log(`APPENDING RANDOM DOC PAPERS TO ${el.toString()} WITH LENGTH ${pprs.length}`);
-
     const newPprs = _.uniq( _.concat(pprs, _.shuffle(docPprs)), getPmid );
-
-    console.log(`NEW PAPERS FOR ${el.toString()} WITH LENGTH ${newPprs.length}`);
 
     await el.relatedPapers(newPprs);
   }) );
-
-  console.log('DONE GETTING RELATED PAPERS');
 };
 
 export default http;

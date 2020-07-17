@@ -101,7 +101,8 @@ const getDocuments = ( templates, queryDoc ) => {
         intns.forEach( intn => intn.elId = elTemplate.elId );
 
         const filteredIntns = (
-          intns.sort((a, b) => parseInt(b.pmid) - parseInt(a.pmid)) // sort by pmid as proxy for date -- higher pmid = newer
+          _.uniqBy( intns, 'pmid' )
+          .sort((a, b) => parseInt(b.pmid) - parseInt(a.pmid)) // sort by pmid as proxy for date -- higher pmid = newer
           .slice(0, SEMANTIC_SEARCH_LIMIT + 1) // limit per-ele pmid count for s.s.
         );
 

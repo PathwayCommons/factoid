@@ -258,7 +258,7 @@ Factoid depends on services whose software we maintain.
   - [factoid-converters](https://github.com/PathwayCommons/factoid-converters): Convert Factoid model JSON to standard languages (BioPAX and SBGN-PD)
 - DockerHub
   - [factoid](https://hub.docker.com/r/pathwaycommons/factoid)
-  - [grounding-search](hub.docker.com/r/pathwaycommons/grounding-search)
+  - [grounding-search](https://hub.docker.com/r/pathwaycommons/grounding-search)
   - [semantic-search](hub.docker.com/repository/docker/pathwaycommons/semantic-search)
   - [factoid-converters](hub.docker.com/repository/docker/pathwaycommons/factoid-converters)
   - [rethinkdb-docker](hub.docker.com/repository/docker/pathwaycommons/rethinkdb-docker): RethinkDB-based image with dependencies for database administration (i.e. dump and restore).

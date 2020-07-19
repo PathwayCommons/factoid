@@ -1,10 +1,11 @@
 import fetch from 'node-fetch';
 import _ from 'lodash';
-import { parse as dateParse } from 'date-fns';
+// import { parse as dateParse } from 'date-fns';
 import uuid from 'uuid';
-import Heap from 'heap';
+// import Heap from 'heap';
 
-import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL, NO_ABSTRACT_HANDLING } from '../../../../config';
+import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL, NO_ABSTRACT_HANDLING,
+          MIN_SEMANTIC_SCORE, SEMANTIC_SEARCH_LIMIT } from '../../../../config';
 import logger from '../../../logger';
 import { tryPromise } from '../../../../util';
 import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
@@ -13,9 +14,7 @@ import querystring from 'querystring';
 import { getPubmedCitation } from '../../../../util/pubmed';
 
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
-const MIN_SEMANTIC_SCORE = 0.47;
-const SORT_BY_DATE = false;
-const SEMANTIC_SEARCH_LIMIT = 30;
+const SORT_BY_DATE = false; // TODO remove
 
 const SUB_MODIFICATION_TYPES = ['Phosphorylation', 'Dephosphorylation', 'Dephosphorylation',
   'Deubiquitination', 'Methylation', 'Demethylation'];
@@ -97,8 +96,19 @@ const getDocuments = ( templates, queryDoc ) => {
 
     return tryPromise( () => getIntns() )
       .then( intns => {
+        let ret;
+
         intns.forEach( intn => intn.elId = elTemplate.elId );
-        return _.groupBy( intns, 'pmid' );
+
+        const filteredIntns = (
+          _.uniqBy( intns, 'pmid' )
+          .sort((a, b) => parseInt(b.pmid) - parseInt(a.pmid)) // sort by pmid as proxy for date -- higher pmid = newer
+          .slice(0, SEMANTIC_SEARCH_LIMIT + 1) // limit per-ele pmid count for s.s.
+        );
+
+        ret = _.groupBy( filteredIntns, 'pmid' );
+
+        return ret;
       } );
   };
 
@@ -129,7 +139,7 @@ const getDocuments = ( templates, queryDoc ) => {
       }
     };
 
-    const getMedlineArticle = article => article.MedlineCitation.Article;
+    // const getMedlineArticle = article => article.MedlineCitation.Article;
 
     const getSemanticScores = articles => {
       if ( sortByDate ) {
@@ -167,49 +177,15 @@ const getDocuments = ( templates, queryDoc ) => {
       .then( semanticScores => ( { articles, semanticScores } ) );
     };
 
-    const getPubTime = article => {
-        let dateJs = article.Journal.JournalIssue.PubDate;
-        let { Day: day, Year: year, Month: month, MedlineDate: medlineDate } = dateJs;
+    // filter again for case of multiple tempaltes in one query (i.e. document)
+    const filteredPmids = (
+      pmids.sort((a, b) => parseInt(b) - parseInt(a)) // higher pmids first
+      .slice(0, SEMANTIC_SEARCH_LIMIT + 1) // limit
+    );
 
-        try {
-          if ( medlineDate ) {
-            return new Date( medlineDate ).getTime();
-          }
-
-          if ( month != null && isNaN( month ) ) {
-              month = dateParse(month, 'MMM', new Date()).getMonth() + 1;
-          }
-
-          // Date class accepts the moth indices starting by 0
-          month = month - 1;
-
-          return new Date( year, month, day ).getTime();
-        }
-        catch ( e ) {
-          logger.error( e );
-          // if date could not be parsed return the minimum integer value
-          return Number.MIN_SAFE_INTEGER;
-        }
-    };
-
-    const filterByDate = articles => {
-      // if the sort operation wil be based on the semantic search
-      // then filter the most current papers before sorting
-      if ( !sortByDate && articles.length > SEMANTIC_SEARCH_LIMIT ) {
-        const cmp = ( a, b ) => {
-          const getDate = e => getPubTime( getMedlineArticle( e ) );
-          return getDate( a ) - getDate( b );
-        };
-
-        articles = Heap.nlargest( articles, SEMANTIC_SEARCH_LIMIT, cmp );
-      }
-
-      return articles;
-    };
-
-    return tryPromise( () => fetchPubmed({ uids: pmids }) )
+    return tryPromise( () => fetchPubmed({ uids: filteredPmids }) )
       .then( o => o.PubmedArticleSet )
-      .then( filterByDate )
+      // .then( filterByDate )
       .then( articles => articles.map( getPubmedCitation ) )
       .then( getSemanticScores )
       .then( ( { articles, semanticScores } ) => {
@@ -224,9 +200,11 @@ const getDocuments = ( templates, queryDoc ) => {
           return { elements, pmid, pubmed: article };
         } );
 
+        const queryDocPmid = queryDoc.citation().pmid;
         const getSemanticScore = doc => _.get( semanticScoreById, [ doc.pmid, 0, 'score' ] );
         const getNegativeScore = doc => -getSemanticScore( doc );
-        arr = arr.filter( doc => getSemanticScore( doc ) > MIN_SEMANTIC_SCORE );
+
+        arr = arr.filter( doc => getSemanticScore( doc ) > MIN_SEMANTIC_SCORE && doc.pmid != queryDocPmid );
         arr = _.sortBy( arr, getNegativeScore );
 
         return arr;

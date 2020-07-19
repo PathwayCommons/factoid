@@ -108,5 +108,8 @@ export const DEMO_CAN_BE_SHARED = env('DEMO_CAN_BE_SHARED', false);
 export const DEMO_CAN_BE_SHARED_MULTIPLE_TIMES = env('DEMO_CAN_BE_SHARED_MULTIPLE_TIMES', false);
 export const SAMPLE_DOC_ID = env('SAMPLE_DOC_ID', '5df17c41-acb7-4c42-a37b-fe323688bc64');
 
+// related papers
 export const NO_ABSTRACT_HANDLING = env('NO_ABSTRACT_HANDLING', 'text');
-
+export const MIN_SEMANTIC_SCORE = env('MIN_SEMANTIC_SCORE', 0.47);
+export const SEMANTIC_SEARCH_LIMIT = env('SEMANTIC_SEARCH_LIMIT', 30);
+export const MIN_RELATED_PAPERS = env('MIN_RELATED_PAPERS', 6);

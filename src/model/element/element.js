@@ -129,6 +129,10 @@ class Element {
     return name != null && name != '';
   }
 
+  toString(){
+    return this.name();
+  }
+
   reposition( newPos = {} ){
     let synched = this.syncher;
 

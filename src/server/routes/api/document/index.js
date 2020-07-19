@@ -8,7 +8,7 @@ import cytosnap from 'cytosnap';
 import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
-import url from 'url';
+// import url from 'url';
 import fs from 'fs';
 
 import { exportToZip } from './export';
@@ -36,7 +36,8 @@ import { BASE_URL,
   DOCUMENT_IMAGE_PADDING,
   EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
-  EMAIL_TYPE_FOLLOWUP
+  EMAIL_TYPE_FOLLOWUP,
+  MIN_RELATED_PAPERS
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
@@ -81,62 +82,62 @@ let createSecret = ({ secret }) => {
   );
 };
 
-let createRelatedPapers = ({ papersData, doc }) => {
-  let sanitize = o => {
-    delete o.intnId;
-  };
+// let createRelatedPapers = ({ papersData, doc }) => {
+//   let sanitize = o => {
+//     delete o.intnId;
+//   };
 
-  let els = [];
-  papersData.forEach( paperData => {
-    let pmid = paperData.pmid;
-    let pubmed = paperData.pubmed;
-    paperData.elements.forEach( el => {
-      els.push( _.extend( {}, el, { pmid, pubmed } ) );
-    } );
-  } );
+//   let els = [];
+//   papersData.forEach( paperData => {
+//     let pmid = paperData.pmid;
+//     let pubmed = paperData.pubmed;
+//     paperData.elements.forEach( el => {
+//       els.push( _.extend( {}, el, { pmid, pubmed } ) );
+//     } );
+//   } );
 
-  let papersByEl = {};
-  let pubmedByPmid = {};
+//   let papersByEl = {};
+//   let pubmedByPmid = {};
 
-  papersData.map( paperData => {
-    let { pmid, pubmed, elements } = paperData;
+//   papersData.map( paperData => {
+//     let { pmid, pubmed, elements } = paperData;
 
-    if ( pubmedByPmid[ pmid ] == undefined ) {
-      pubmedByPmid[ pmid ] = pubmed;
-    }
+//     if ( pubmedByPmid[ pmid ] == undefined ) {
+//       pubmedByPmid[ pmid ] = pubmed;
+//     }
 
-    elements.forEach( el => {
-      let elId = el.elId;
-      if ( papersByEl[ elId ] == undefined ) {
-        papersByEl[ elId ] = {};
-      }
+//     elements.forEach( el => {
+//       let elId = el.elId;
+//       if ( papersByEl[ elId ] == undefined ) {
+//         papersByEl[ elId ] = {};
+//       }
 
-      if ( papersByEl[ elId ][ pmid ] == undefined ) {
-        papersByEl[ elId ][ pmid ] = [];
-      }
+//       if ( papersByEl[ elId ][ pmid ] == undefined ) {
+//         papersByEl[ elId ][ pmid ] = [];
+//       }
 
-      sanitize( el );
-      papersByEl[ elId ][ pmid ].push( el );
-    } );
-  } );
+//       sanitize( el );
+//       papersByEl[ elId ][ pmid ].push( el );
+//     } );
+//   } );
 
-  let elPromises = Object.keys( papersByEl ).map( elId => {
-    let elPapersData = papersByEl[ elId ];
-    let pmids = Object.keys( elPapersData );
+//   let elPromises = Object.keys( papersByEl ).map( elId => {
+//     let elPapersData = papersByEl[ elId ];
+//     let pmids = Object.keys( elPapersData );
 
-    elPapersData = pmids.map( pmid => {
-      let pubmed = pubmedByPmid[ pmid ];
-      let elements = elPapersData[ pmid ];
-      return { pmid, pubmed, elements };
-    } );
+//     elPapersData = pmids.map( pmid => {
+//       let pubmed = pubmedByPmid[ pmid ];
+//       let elements = elPapersData[ pmid ];
+//       return { pmid, pubmed, elements };
+//     } );
 
-    return doc.get( elId ).relatedPapers( elPapersData );
-  } );
+//     return doc.get( elId ).relatedPapers( elPapersData );
+//   } );
 
-  let docPromise = doc.relatedPapers( papersData );
+//   let docPromise = doc.relatedPapers( papersData );
 
-  return Promise.all( [ docPromise, ...elPromises ] );
-};
+//   return Promise.all( [ docPromise, ...elPromises ] );
+// };
 
 let createDoc = ({ docDb, eleDb, id, secret, provided }) => {
   let doc = newDoc({ docDb, eleDb, id, secret, provided });
@@ -1349,8 +1350,7 @@ http.patch('/:id/:secret', function( req, res, next ){
     let docId = doc.id();
     logger.info('Searching the related papers table for document ', docId);
 
-    searchRelatedPapers( doc )
-      .then( papersData => createRelatedPapers({ papersData, doc }) )
+    getRelatedPapers( doc )
       .then( () => logger.info('Related papers table is updated for document', docId) )
       .catch( e => logger.error( `Error in uploading related papers for document ${docId}: ${JSON.stringify(e.message)}` ) );
 
@@ -1496,37 +1496,50 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
-const searchRelatedPapers = ( doc, elId ) => {
-  let templates;
-  if ( elId ) {
-    let el = doc.get( elId );
-    templates = [ el.toSearchTemplate() ];
-  }
-  else {
-    templates = doc.toSearchTemplates();
-  }
+const getRelatedPapers = async doc => {
+  const els = doc.elements();
 
+  const toTemplate = el => el.toSearchTemplate();
 
-  let obj = { templates, doc };
-  return indra.searchDocuments( obj );
+  const getRelPprsForEl = async el => {
+    const template = toTemplate(el);
+
+    const templates = {
+      intns: el.isInteraction() ? [ template ] : [],
+      entities: el.isEntity() ? [ template ] : []
+    };
+
+    const indraRes = await indra.searchDocuments({ templates, doc });
+
+    el.relatedPapers( indraRes || [] );
+  };
+
+  const getRelPprsForDoc = async doc => {
+    const templates = {
+      intns: doc.interactions().map(toTemplate),
+      entities: doc.entities().map(toTemplate)
+    };
+
+    const indraRes = await indra.searchDocuments({ templates, doc });
+
+    doc.relatedPapers( indraRes || [] );
+  };
+
+  await Promise.all([ ...els.map(getRelPprsForEl), getRelPprsForDoc(doc) ]);
+
+  const docPprs = doc.relatedPapers();
+  const getPmid = ppr => ppr.pubmed.pmid;
+
+  await Promise.all( doc.elements().map(async el => {
+    const pprs = el.relatedPapers();
+
+    if( pprs.length > MIN_RELATED_PAPERS ){ return; }
+
+    const newPprs = _.uniq( _.concat(pprs, _.shuffle(docPprs)), getPmid );
+
+    await el.relatedPapers(newPprs);
+  }) );
 };
-
-http.get('/related-papers/:id', function( req, res, next ){
-  // 5000000ms correspons to 83.3333333 mins
-  let timout = 5000000;
-  res.setTimeout(timout);
-
-  let id = req.params.id;
-  let queryObject = url.parse(req.url, true).query;
-  let { elId } = queryObject;
-
-  tryPromise( loadTables )
-    .then( json => _.assign( {}, json, { id } ) )
-    .then( loadDoc )
-    .then( doc => searchRelatedPapers( doc, elId ) )
-    .then( js => res.json( js ))
-    .catch( next );
-});
 
 export default http;
 export { getDocumentJson,

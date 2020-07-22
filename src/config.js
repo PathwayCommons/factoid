@@ -33,6 +33,11 @@ export const LOG_LEVEL = env('LOG_LEVEL', 'info');
 
 export const API_KEY = env('API_KEY', '');
 
+// AppSignal
+export const APPSIGNAL_PUSH_API_KEY = env('APPSIGNAL_PUSH_API_KEY', '');
+export const APPSIGNAL_APP_NAME = env('APPSIGNAL_APP_NAME', 'Biofactoid');
+export const APPSIGNAL_APP_ENV = env('APPSIGNAL_APP_ENV', 'development');
+
 // CRON jobs
 export const CRON_SCHEDULE = env('CRON_SCHEDULE', '0 1 * * *');
 export const DOCUMENT_CRON_UPDATE_PERIOD_DAYS = env('DOCUMENT_CRON_UPDATE_PERIOD_DAYS', 7);

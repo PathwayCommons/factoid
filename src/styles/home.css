@@ -30,6 +30,11 @@
   }
 }
 
+.home-cta-2 .home-cta-button {
+  background-color: #000;
+  color: #fff;
+}
+
 .home-mini-cta-button {
   border-color: #fff;
   color: #fff;
@@ -45,7 +50,8 @@
 
 .home-cta-alt-button {
   background-color: transparent;
-  color: #fff;
+  border-color: #000;
+  color: #000;
   border-width: 2px;
 
   &:active {
@@ -53,6 +59,11 @@
     color: #eee;
     border-color: #eee;
   }
+}
+
+.home-cta-2 {
+  padding: 1em 0 0;
+  background: none;
 }
 
 .home-cta-2 > * {
@@ -132,10 +143,11 @@
 }
 
 .home-figure-2 {
-  background-image: url('/image/home-figure-2.jpg');
-  transform: scaleX(-1);
-  background-size: cover;
-  background-position: 50% 50%;
+  background-color: rgba(237, 220, 196, 0.2);
+  background-image: url('/image/home-figure-2.png');
+  background-size: auto 70%;
+  background-repeat: no-repeat;
+  background-position: 50% 80%;
 }
 
 .home-figure-video {
@@ -158,18 +170,6 @@
   }
 }
 
-.home-figure-fg-2 {
-  flex-grow: 1;
-  width: 75%;
-  margin-top: -4.5em;
-  margin-bottom: -8em;
-  background-image: url('/image/home-figure-fg-2.png');
-  background-size: contain;
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-  z-index: -1;
-}
-
 .home-caption {
   width: 100%;
   font-size: 1.25em;
@@ -182,7 +182,8 @@
 }
 
 .home-caption-2 {
-  background: linear-gradient(to bottom, rgba(74, 95, 110, 0.7) 0%, rgba(104, 141, 168, 0.4) 80%, rgba(0, 0, 0, 0) 100%);
+  padding-bottom: 1.25em;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9) 0%, rgba(90, 90, 90, 0.8) 70%, rgba(237, 220, 196, 0.1) 100%);
 }
 
 .home-figure-footnote {
@@ -466,7 +467,9 @@
     display: none;
   }
 
-  .home-figure-fg-2 {
-    background-size: cover;
+  .home-figure-2 {
+    background-image: url('/image/home-figure-2-slim.png');
+    background-size: 95% auto;
+    background-position: 50% 80%;
   }
 }

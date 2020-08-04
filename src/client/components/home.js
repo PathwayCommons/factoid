@@ -7,7 +7,7 @@ import EventEmitter from 'eventemitter3';
 import { truncateString } from '../../util';
 import { Carousel, CAROUSEL_CONTENT } from './carousel';
 
-import { TWITTER_ACCOUNT_NAME, DOI_LINK_BASE_URL, BASE_URL, SAMPLE_DOC_ID } from '../../config';
+import { TWITTER_ACCOUNT_NAME, DOI_LINK_BASE_URL } from '../../config';
 
 const checkStatus = response => {
   if ( response.status >= 200 && response.status < 300 ) {
@@ -244,7 +244,7 @@ class Home extends Component {
       h('div.home-section.home-figure-section.home-figure-section-1', [
         h('div.home-figure.home-figure-1'),
         h('div.home-caption.home-caption-1', [
-          h('h2', 'How it works'),
+          h('h2', 'Authors: Add your article'),
           h('p', [
             `It’s quick and easy to share your published results by drawing the key `,
             h(Popover, {
@@ -276,7 +276,7 @@ class Home extends Component {
       h('div.home-section.home-figure-section.home-figure-section-2', [
         h('div.home-figure.home-figure-2'),
         h('div.home-caption.home-caption-2', [
-          h('h2', 'Your pathway to share and explore'),
+          h('h2', 'Researchers: Yours to explore'),
           h('p', [
             `We `,
             h(Popover, {
@@ -290,29 +290,27 @@ class Home extends Component {
             }, [
               h('span.link-like.plain-link-bright', `publish and share`)
             ]),
-            h('span', ' an interactive '),
-            h('a.plain-link-bright', { href: `${BASE_URL}/document/${SAMPLE_DOC_ID}`, target: '_blank' }, 'graphical abstract'),
-            h('span', ` of your pathway so scientists can find and use the information.`)
+            h('span', ' an interactive graphical abstract of your pathway so scientists can find and use the information.')
           ])
         ]),
-        h('div.home-figure-fg-2'),
-        h('div.home-cta.home-cta-2', [
-          h(CTA),
-          h('button.home-cta-alt-button', 'Read the paper')
-        ]),
-        h('div.home-figure-footer', [
-          h('div.home-nav.home-nav-bottom', [
-            h('a.home-nav-link', [
-              h(ContactPopover)
-            ]),
-            h('a.home-nav-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}`, target: '_blank' }, 'Twitter'),
-            h('a.home-nav-link', { href: 'https://github.com/PathwayCommons/factoid', target: '_blank' }, 'GitHub')
+        h('div.home-figure-fg-2')
+      ]),
+      h('div.home-cta.home-cta-2', [
+        h(CTA),
+        h('button.home-cta-alt-button', 'Read the paper')
+      ]),
+      h('div.home-figure-footer', [
+        h('div.home-nav.home-nav-bottom', [
+          h('a.home-nav-link', [
+            h(ContactPopover)
           ]),
-          h('div.home-credit-logos', [
-            h('a', { href: 'https://www.harvard.edu/', target: '_blank' }, [ h('i.home-credit-logo.home-credit-logo-harvardu') ]),
-            h('a', { href: 'https://www.ohsu.edu/', target: '_blank' }, [ h('i.home-credit-logo.home-credit-logo-ohsu') ]),
-            h('a', { href: 'https://www.utoronto.ca/', target: '_blank' }, [ h('i.home-credit-logo.home-credit-logo-utoronto') ])
-          ])
+          h('a.home-nav-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}`, target: '_blank' }, 'Twitter'),
+          h('a.home-nav-link', { href: 'https://github.com/PathwayCommons/factoid', target: '_blank' }, 'GitHub')
+        ]),
+        h('div.home-credit-logos', [
+          h('a', { href: 'https://www.harvard.edu/', target: '_blank' }, [ h('i.home-credit-logo.home-credit-logo-harvardu') ]),
+          h('a', { href: 'https://www.ohsu.edu/', target: '_blank' }, [ h('i.home-credit-logo.home-credit-logo-ohsu') ]),
+          h('a', { href: 'https://www.utoronto.ca/', target: '_blank' }, [ h('i.home-credit-logo.home-credit-logo-utoronto') ])
         ])
       ])
     ]);

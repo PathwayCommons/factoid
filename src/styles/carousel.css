@@ -68,9 +68,9 @@
 
     & .carousel-doc-descr {
       z-index: 10;
-      top: -3em;
-      bottom: -2.25em;
-      background: linear-gradient(to bottom, #fff 0, #fff 3em, rgba(255, 255, 255, 0) 5em), linear-gradient(to top, #fff 0, #fff 3em, rgba(255, 255, 255, 0) 5em);
+      top: -3.5em;
+      bottom: -3em;
+      background: linear-gradient(to bottom, #fff 0, #fff 3.5em, rgba(255, 255, 255, 0) 5em), linear-gradient(to top, #fff 0, #fff 3.1em, rgba(255, 255, 255, 0) 3.1em);
       box-shadow: 0 0 1em rgba(0, 0, 0, 0.5);
       border-radius: 0.25em;
     }
@@ -85,6 +85,10 @@
       &:first-child::after {
         content: none;
       }
+    }
+
+    & .carousel-doc-footer {
+      display: initial;
     }
   }
 
@@ -129,8 +133,8 @@
 
 .carousel-doc-figure {
   position: absolute;
-  top: 1.5em;
-  bottom: 2.75em;
+  top: 3.5em;
+  bottom: 0;
   left: 0;
   right: 0;
   background-size: contain;
@@ -180,7 +184,7 @@
   display: block;
   color: #000;
   font-size: 0.9em;
-  flex-grow: 1;
+  padding-bottom: 0.1em;
 }
 
 .carousel-doc-abstract {
@@ -203,6 +207,7 @@
 
 .carousel-doc-authors {
   font-size: 0.8em;
+  flex-grow: 1;
 }
 
 .carousel-doc-author:not(:first-child) {
@@ -217,8 +222,18 @@
 
 .carousel-doc-journal {
   margin-top: 0.25em;
-  font-style: italic;
+  font-size: 1.1em;
+}
+
+.carousel-doc-footer {
+  display: none;
   font-size: 0.8em;
+  color: #666;
+}
+
+.carousel-doc-datestamp {
+  margin-top: 0.5em;
+  text-align: right;
 }
 
 .carousel-pager {

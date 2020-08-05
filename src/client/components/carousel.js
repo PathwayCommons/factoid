@@ -2,6 +2,7 @@ import { tryPromise, makeClassList } from '../../util';
 import h from 'react-hyperscript';
 import { Component } from 'react';
 import _ from 'lodash';
+import { formatDistanceToNow } from 'date-fns';
 
 export const CAROUSEL_CONTENT = {
   FIGURE: 'figure',
@@ -22,7 +23,7 @@ export class Carousel extends Component {
         const url = `/api/document`;
         const doFetch = () => fetch(url);
         const toJson = res => res.json();
-  
+
         return tryPromise(doFetch).then(toJson);
       })
     };
@@ -106,7 +107,7 @@ export class Carousel extends Component {
     }
   }
 
-  refreshDocs(){    
+  refreshDocs(){
     const update = docs => new Promise(resolve => this.setState({ docs }, () => resolve(docs)));
 
     return this.state.refresh().then(update);
@@ -129,7 +130,7 @@ export class Carousel extends Component {
       // abstract = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
 
       if( authorNames.length > 3 ){
-        authorNames = authorNames.slice(0, 3).concat([ '...', authorNames[authorNames.length - 1] ]);
+        authorNames = authorNames.slice(0, 2).concat([ '...', authorNames[authorNames.length - 1] ]);
       }
 
       if( content === CAROUSEL_CONTENT.ABSTRACT ){
@@ -159,10 +160,14 @@ export class Carousel extends Component {
           onTouchStart: e => e.preventDefault()
         }, [
           h('div.carousel-doc-descr', [
+            h('div.carousel-doc-journal', journalName),
             h('div.carousel-doc-title', title),
-            abstractDiv,
             h('div.carousel-doc-authors', authorNames.map((name, i) => h(`span.carousel-doc-author.carousel-doc-author-${i}`, name))),
-            h('div.carousel-doc-journal', journalName)
+            abstractDiv,
+            h('div.carousel-doc-footer', [
+              h('div.carousel-doc-text', doc.text),
+              h('div.carousel-doc-datestamp', formatDistanceToNow( new Date( doc.lastEditedDate ), { addSuffix: true } ))
+            ]),
           ]),
           figureDiv,
           h('div.carousel-doc-journal-banner')

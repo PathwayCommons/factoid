@@ -70,7 +70,7 @@
       z-index: 10;
       top: -3.5em;
       bottom: -3em;
-      background: linear-gradient(to bottom, #fff 0, #fff 3.5em, rgba(255, 255, 255, 0) 5em), linear-gradient(to top, #fff 0, #fff 3em, rgba(255, 255, 255, 0) 3em);
+      background: linear-gradient(to bottom, #fff 0, #fff 3.5em, rgba(255, 255, 255, 0) 5em), linear-gradient(to top, #fff 0, #fff 3.1em, rgba(255, 255, 255, 0) 3.1em);
       box-shadow: 0 0 1em rgba(0, 0, 0, 0.5);
       border-radius: 0.25em;
     }

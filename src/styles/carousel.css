@@ -134,7 +134,7 @@
 .carousel-doc-figure {
   position: absolute;
   top: 3.5em;
-  bottom: 0em;
+  bottom: 0;
   left: 0;
   right: 0;
   background-size: contain;

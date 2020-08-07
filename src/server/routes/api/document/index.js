@@ -1526,9 +1526,7 @@ const getRelatedPapers = async doc => {
   };
 
   const getRelPprsForEls = async ( i = 0 ) => {
-    console.log('get els for ', i)
     if ( i == els.length ) {
-      console.log('resolve');
       return Promise.resolve();
     }
 

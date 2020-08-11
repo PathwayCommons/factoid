@@ -36,6 +36,7 @@ services:
       - index
     environment:
       ELASTICSEARCH_HOST: "index:9200"
+      NCBI_EUTILS_API_KEY:
   indexer:
     image: pathwaycommons/grounding-search:${GROUNDING_SEARCH_IMAGE_TAG:-latest}
     container_name: indexer_container

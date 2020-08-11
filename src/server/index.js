@@ -18,10 +18,17 @@ import db from './db';
 import Syncher from '../model/syncher';
 import cron from 'node-cron';
 import updateCron from './update-cron';
+import { Appsignal } from '@appsignal/nodejs';
+import { expressMiddleware as asExpressMiddleware, expressErrorHandler as asExpressErrorHandler } from '@appsignal/express';
 
 let app = express();
 let server = http.createServer(app);
 let io = socketio(server);
+
+const appsignal = new Appsignal({
+  active: true,
+  name: 'Biofactoid'
+});
 
 // make sure cytoscape layouts are registered for server-side use
 regCyLayouts();
@@ -53,6 +60,9 @@ app.use(morgan('dev', {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+app.use(asExpressMiddleware(appsignal)); // must be after all other use() but just before routes
+
 app.use(express.static(path.join(__dirname, '../..', 'public')));
 
 // define http routes
@@ -94,6 +104,8 @@ app.use(function(err, req, res) {
   }
 
 });
+
+app.use(asExpressErrorHandler(appsignal)); // must be after all other use()
 
 
 let port = normalizePort(config.PORT);

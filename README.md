@@ -109,6 +109,12 @@ Email:
 - `EMAIL_SUBJECT_FOLLOWUP`: subject text for follow-up email
 - `EMAIL_SUBJECT_REQUEST_ISSUE`: subject text for request error email
 
+AppSignal:
+
+- `APPSIGNAL_PUSH_API_KEY` : AppSignal API key
+- `APPSIGNAL_APP_NAME` : name of this app (e.g. 'Biofactoid')
+- `APPSIGNAL_APP_ENV` : used to indicate which instance is running (e.g 'master', 'production', 'unstable') 
+
 The following environment variables should always be set in production instances:
 
 - `NODE_ENV` : set to `production`
@@ -124,6 +130,8 @@ The following environment variables should always be set in production instances
 - `SMTP_HOST`: Mailjet host name
 - `SMTP_USER`: Mailjet account credentials
 - `SMTP_PASSWORD`: Mailjet password credentials
+- `APPSIGNAL_PUSH_API_KEY` : AppSignal API key
+- `APPSIGNAL_APP_ENV` : used to indicate which instance is running (e.g 'master', 'production', 'unstable') 
 
 ## Run targets
 

@@ -1525,7 +1525,17 @@ const getRelatedPapers = async doc => {
     doc.relatedPapers( indraRes || [] );
   };
 
-  await Promise.all([ ...els.map(getRelPprsForEl), getRelPprsForDoc(doc) ]);
+  const getRelPprsForEls = async ( i = 0 ) => {
+    if ( i == els.length ) {
+      return Promise.resolve();
+    }
+
+    await getRelPprsForEl( els[i] );
+    await getRelPprsForEls( i + 1 );
+  };
+
+  await getRelPprsForEls();
+  await getRelPprsForDoc(doc);
 
   const docPprs = doc.relatedPapers();
   const getPmid = ppr => ppr.pubmed.pmid;

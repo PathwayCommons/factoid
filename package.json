@@ -30,6 +30,8 @@
     "ci": "run-s test lint"
   },
   "dependencies": {
+    "@appsignal/express": "^0.5.1",
+    "@appsignal/nodejs": "^0.5.1",
     "animejs": "^2.0.2",
     "body-parser": "^1.15.1",
     "clipboard": "^1.7.1",

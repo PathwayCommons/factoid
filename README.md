@@ -65,6 +65,7 @@ Links:
 - `PUBMED_LINK_BASE_URL`: base url concatenated to unique id to generate linkout
 - `DOI_LINK_BASE_URL`: base url concatenated to doi to generate linkout
 - `GOOGLE_SCHOLAR_BASE_URL` : base url concatenated to doi, title, or pmid to generate linkout
+- `IDENTIFIERS_ORG_ID_BASE_URL` : base url concatenated to collection id_prefix:id (i.e. prefix:accession)
 
 Demo:
 
@@ -113,7 +114,7 @@ AppSignal:
 
 - `APPSIGNAL_PUSH_API_KEY` : AppSignal API key
 - `APPSIGNAL_APP_NAME` : name of this app (e.g. 'Biofactoid')
-- `APPSIGNAL_APP_ENV` : used to indicate which instance is running (e.g 'master', 'production', 'unstable') 
+- `APPSIGNAL_APP_ENV` : used to indicate which instance is running (e.g 'master', 'production', 'unstable')
 
 The following environment variables should always be set in production instances:
 
@@ -131,7 +132,7 @@ The following environment variables should always be set in production instances
 - `SMTP_USER`: Mailjet account credentials
 - `SMTP_PASSWORD`: Mailjet password credentials
 - `APPSIGNAL_PUSH_API_KEY` : AppSignal API key
-- `APPSIGNAL_APP_ENV` : used to indicate which instance is running (e.g 'master', 'production', 'unstable') 
+- `APPSIGNAL_APP_ENV` : used to indicate which instance is running (e.g 'master', 'production', 'unstable')
 
 ## Run targets
 

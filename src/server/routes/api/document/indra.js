@@ -31,13 +31,20 @@ const ENTITY_STR = 'entity';
 
 let sortByDate = SORT_BY_DATE;
 
+// MIRIAM registry names https://registry.identifiers.org/registry/
+const DB_NAMES = Object.freeze({
+  DB_NAME_HGNC: 'HGNC',
+  DB_NAME_CHEBI: 'ChEBI'
+});
+
+// See https://indra.readthedocs.io/en/latest/modules/statements.html for database formats
 const getDocuments = ( templates, queryDoc ) => {
   const getForEl = (elTemplate, elType) => {
     const getAgent = t => {
       let agent;
       let xref = getXref( t );
       if ( xref ) {
-        agent = sanitizeId(xref.id) + '@' + xref.db;
+        agent = sanitizeId(xref.id) + '@' + xref.db.toUpperCase();
       }
       else {
         agent = t.name + '@TEXT';
@@ -59,17 +66,17 @@ const getDocuments = ( templates, queryDoc ) => {
     };
 
     const getXref = t => {
-      let ns = t.namespace;
+      let name = t.dbName;
       let xref = null;
 
-      if ( ns == 'chebi' ) {
+      if ( name == DB_NAMES.DB_NAME_CHEBI ) {
         xref = {
           id: t.id,
-          db: ns
+          db: name
         };
       }
       else {
-        xref = _.find( t.dbXrefs, x => x.db.toLowerCase() == 'hgnc' );
+        xref = _.find( t.dbXrefs, ['db', DB_NAMES.DB_NAME_HGNC] );
       }
 
       return xref;

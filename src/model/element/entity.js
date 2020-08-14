@@ -174,7 +174,7 @@ class Entity extends Element {
 
     return {
       id: assoc.id,
-      db: assoc.namespace
+      db: assoc.dbName
     };
   }
 
@@ -202,7 +202,7 @@ class Entity extends Element {
       return null;
     }
 
-    let template = _.pick(this.association(), ['id', 'namespace', 'dbXrefs']);
+    let template = _.pick(this.association(), ['id', 'namespace', 'dbName', 'dbXrefs']);
     template.name = name;
 
     // the id field represents the id of association there is a need to know the

@@ -18,7 +18,7 @@ import Document from '../../../../model/document';
 import db from '../../../db';
 import logger from '../../../logger';
 import { getPubmedArticle } from './pubmed';
-import { createPubmedArticle } from '../../../../util/pubmed';
+import { createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
 import * as indra from './indra';
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
@@ -37,10 +37,13 @@ import { BASE_URL,
   EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP,
-  MIN_RELATED_PAPERS
+  MIN_RELATED_PAPERS,
+  SEMANTIC_SEARCH_LIMIT
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
+import { db2pubmed } from './pubmed/linkPubmed';
+import { fetchPubmed } from './pubmed/fetchPubmed';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
 const http = Express.Router();
@@ -1515,18 +1518,24 @@ const getRelatedPapers = async doc => {
   };
 
   const getRelPprsForDoc = async doc => {
-    const templates = {
-      intns: doc.interactions().map(toTemplate),
-      entities: doc.entities().map(toTemplate)
-    };
+    let papers = [];
+    const getUid = result => _.get( result, 'uid' );
+    const { pmid } = doc.citation();
+    if( pmid ){
+      const pmids = await db2pubmed({ uids: [pmid] });
+      let rankedDocs = await indra.semanticSearch({ query: pmid, documents: pmids });
+      const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
+      const { PubmedArticleSet } = await fetchPubmed({ uids });
+      papers = PubmedArticleSet
+        .map( getPubmedCitation )
+        .map( pubmed => ({ pmid, pubmed }) );
+    }
 
-    const indraRes = await indra.searchDocuments({ templates, doc });
-
-    doc.relatedPapers( indraRes || [] );
+    doc.relatedPapers( papers );
   };
-  
-  await Promise.all([ ...els.map(getRelPprsForEl) ]);
+
   await getRelPprsForDoc(doc);
+  await Promise.all([ ...els.map(getRelPprsForEl) ]);
 
   const docPprs = doc.relatedPapers();
   const getPmid = ppr => ppr.pubmed.pmid;

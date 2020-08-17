@@ -1511,7 +1511,7 @@ const getRelPprsForDoc = async doc => {
     const { PubmedArticleSet } = await fetchPubmed({ uids });
     papers = PubmedArticleSet
       .map( getPubmedCitation )
-      .map( pubmed => ({ pmid, pubmed }) );
+      .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
   }
 
   doc.relatedPapers( papers );

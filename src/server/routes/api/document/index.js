@@ -257,6 +257,7 @@ const fillDocArticle = async doc => {
 const fillDoc = async doc => {
   await fillDocCorrespondence( doc );
   await fillDocArticle( doc );
+  getRelPprsForDoc( doc );
   return doc;
 };
 
@@ -1499,6 +1500,23 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
+const getRelPprsForDoc = async doc => {
+  let papers = [];
+  const getUid = result => _.get( result, 'uid' );
+  const { pmid } = doc.citation();
+  if( pmid ){
+    const pmids = await db2pubmed({ uids: [pmid] });
+    let rankedDocs = await indra.semanticSearch({ query: pmid, documents: pmids });
+    const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
+    const { PubmedArticleSet } = await fetchPubmed({ uids });
+    papers = PubmedArticleSet
+      .map( getPubmedCitation )
+      .map( pubmed => ({ pmid, pubmed }) );
+  }
+
+  doc.relatedPapers( papers );
+};
+
 const getRelatedPapers = async doc => {
   const els = doc.elements();
 
@@ -1517,24 +1535,6 @@ const getRelatedPapers = async doc => {
     el.relatedPapers( indraRes || [] );
   };
 
-  const getRelPprsForDoc = async doc => {
-    let papers = [];
-    const getUid = result => _.get( result, 'uid' );
-    const { pmid } = doc.citation();
-    if( pmid ){
-      const pmids = await db2pubmed({ uids: [pmid] });
-      let rankedDocs = await indra.semanticSearch({ query: pmid, documents: pmids });
-      const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
-      const { PubmedArticleSet } = await fetchPubmed({ uids });
-      papers = PubmedArticleSet
-        .map( getPubmedCitation )
-        .map( pubmed => ({ pmid, pubmed }) );
-    }
-
-    doc.relatedPapers( papers );
-  };
-
-  await getRelPprsForDoc(doc);
   await Promise.all([ ...els.map(getRelPprsForEl) ]);
 
   const docPprs = doc.relatedPapers();

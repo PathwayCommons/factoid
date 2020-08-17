@@ -31,6 +31,15 @@ const ENTITY_STR = 'entity';
 
 let sortByDate = SORT_BY_DATE;
 
+const semanticSearch = params => {
+  return fetch( SEMANTIC_SEARCH_BASE_URL, {
+    method: 'POST',
+    body: JSON.stringify( params ),
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then( res => res.json() );
+};
+
 const getDocuments = ( templates, queryDoc ) => {
   const getForEl = (elTemplate, elType) => {
     const getAgent = t => {
@@ -153,7 +162,7 @@ const getDocuments = ( templates, queryDoc ) => {
         queryText = handleNoQueryAbastract( queryDoc );
       }
 
-      let url = SEMANTIC_SEARCH_BASE_URL;
+      // let url = SEMANTIC_SEARCH_BASE_URL;
       let query = { uid: queryUid, text: queryText };
 
       let documents = articles.map( article => {
@@ -168,13 +177,8 @@ const getDocuments = ( templates, queryDoc ) => {
 
       documents = _.filter( documents, d => d != null );
 
-      return fetch( url, {
-        method: 'post',
-        body: JSON.stringify({ query, documents }),
-        headers: { 'Content-Type': 'application/json' }
-      })
-      .then( res => res.json() )
-      .then( semanticScores => ( { articles, semanticScores } ) );
+      return semanticSearch({ query, documents })
+        .then( semanticScores => ( { articles, semanticScores } ) );
     };
 
     // filter again for case of multiple tempaltes in one query (i.e. document)
@@ -312,7 +316,7 @@ const assembleEnglish = statements => {
 };
 
 
-export const searchDocuments = opts => {
+const searchDocuments = opts => {
   let { templates, doc } = opts;
   return tryPromise( () => getDocuments(templates, doc) )
     .catch( err => {
@@ -322,3 +326,5 @@ export const searchDocuments = opts => {
       throw err;
     } );
 };
+
+export { searchDocuments, semanticSearch };

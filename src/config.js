@@ -74,6 +74,7 @@ export const NCBI_LINK_BASE_URL = env('NCBI_LINK_BASE_URL', 'https://www.ncbi.nl
 export const PUBMED_LINK_BASE_URL = env('PUBMED_LINK_BASE_URL', 'https://pubmed.ncbi.nlm.nih.gov/');
 export const DOI_LINK_BASE_URL = env('DOI_LINK_BASE_URL', 'https://www.doi.org/');
 export const GOOGLE_SCHOLAR_BASE_URL = env('GOOGLE_SCHOLAR_BASE_URL', 'https://scholar.google.com/scholar?q=');
+export const IDENTIFIERS_ORG_ID_BASE_URL = env('IDENTIFIERS_ORG_ID_BASE_URL', '	https://identifiers.org/');
 
 // Email
 export const EMAIL_ENABLED = env('EMAIL_ENABLED', false);

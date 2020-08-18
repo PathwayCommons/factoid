@@ -68,7 +68,7 @@ echo "Replaced workspace"
 
 # start the server in a screen session
 echo "Starting new screen session..."
-screen -d -m -S $JOB_NAME bash -c "npm run start 2>&1 | tee ~/$JOB_NAME.screen.log"
+screen -d -m -S $JOB_NAME bash -c "npm run ${START_SCRIPT:-start} 2>&1 | tee ~/$JOB_NAME.screen.log"
 echo "New screen session started"
 
 # delete the old workspace files

@@ -31,7 +31,6 @@ const ENTITY_STR = 'entity';
 
 let sortByDate = SORT_BY_DATE;
 
-<<<<<<< HEAD
 const semanticSearch = params => {
   return fetch( SEMANTIC_SEARCH_BASE_URL, {
     method: 'POST',
@@ -41,7 +40,6 @@ const semanticSearch = params => {
   .then( res => res.json() );
 };
 
-=======
 // MIRIAM registry names https://registry.identifiers.org/registry/
 const DB_NAMES = Object.freeze({
   DB_NAME_HGNC: 'HGNC',
@@ -49,7 +47,6 @@ const DB_NAMES = Object.freeze({
 });
 
 // See https://indra.readthedocs.io/en/latest/modules/statements.html for database formats
->>>>>>> unstable
 const getDocuments = ( templates, queryDoc ) => {
   const getForEl = (elTemplate, elType) => {
     const getAgent = t => {

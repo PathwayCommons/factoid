@@ -429,7 +429,9 @@ class EntityInfo extends DataComponent {
 
       if( refineEditableGgp ){
         let isPerfectNameMatch = m => m.distance === 0;
-        let orgMatches = s.matches.filter(isPerfectNameMatch);
+        let isChemicalMatch = m => m.type == 'chemical';
+        let isOrgMatch = m => isPerfectNameMatch(m) && !isChemicalMatch(m);
+        let orgMatches = s.matches.filter(isOrgMatch);
         let orgToMatches = new Map();
         const selectedIndex = _.findIndex(orgMatches, match => match.id === m.id && match.namespace === m.namespace);
 

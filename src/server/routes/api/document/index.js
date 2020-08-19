@@ -18,7 +18,7 @@ import Document from '../../../../model/document';
 import db from '../../../db';
 import logger from '../../../logger';
 import { getPubmedArticle } from './pubmed';
-import { createPubmedArticle } from '../../../../util/pubmed';
+import { createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
 import * as indra from './indra';
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
@@ -37,10 +37,13 @@ import { BASE_URL,
   EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP,
-  MIN_RELATED_PAPERS
+  MIN_RELATED_PAPERS,
+  SEMANTIC_SEARCH_LIMIT
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
+import { db2pubmed } from './pubmed/linkPubmed';
+import { fetchPubmed } from './pubmed/fetchPubmed';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
 const http = Express.Router();
@@ -254,6 +257,7 @@ const fillDocArticle = async doc => {
 const fillDoc = async doc => {
   await fillDocCorrespondence( doc );
   await fillDocArticle( doc );
+  getRelPprsForDoc( doc );
   return doc;
 };
 
@@ -1496,6 +1500,23 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
+const getRelPprsForDoc = async doc => {
+  let papers = [];
+  const getUid = result => _.get( result, 'uid' );
+  const { pmid } = doc.citation();
+  if( pmid ){
+    const pmids = await db2pubmed({ uids: [pmid] });
+    let rankedDocs = await indra.semanticSearch({ query: pmid, documents: pmids });
+    const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
+    const { PubmedArticleSet } = await fetchPubmed({ uids });
+    papers = PubmedArticleSet
+      .map( getPubmedCitation )
+      .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
+  }
+
+  doc.relatedPapers( papers );
+};
+
 const getRelatedPapers = async doc => {
   const els = doc.elements();
 
@@ -1514,19 +1535,7 @@ const getRelatedPapers = async doc => {
     el.relatedPapers( indraRes || [] );
   };
 
-  const getRelPprsForDoc = async doc => {
-    const templates = {
-      intns: doc.interactions().map(toTemplate),
-      entities: doc.entities().map(toTemplate)
-    };
-
-    const indraRes = await indra.searchDocuments({ templates, doc });
-
-    doc.relatedPapers( indraRes || [] );
-  };
-  
   await Promise.all([ ...els.map(getRelPprsForEl) ]);
-  await getRelPprsForDoc(doc);
 
   const docPprs = doc.relatedPapers();
   const getPmid = ppr => ppr.pubmed.pmid;

@@ -39,23 +39,27 @@ let rna = protein;
 
 let chemical = (m, searchTerms) => {
   return [
-    h('div.entity-info-section', [
-      h('span.entity-info-title', 'Formulae'),
-      ...m.formulae.map( formula => h(Formula, { formula }) )
-    ]),
-    h('div.entity-info-section', [
-      h('span.entity-info-title', 'Mass'),
-      h('span', m.mass)
-    ]),
-    h('div.entity-info-section', [
-      h('span.entity-info-title', 'Charge'),
-      h('span', m.charge)
-    ]),
+    m.summary ? h('div.entity-info-section', [
+      h('span.entity-info-title', 'Summary'),
+      h('span', m.summary)
+    ]): null,
+    // h('div.entity-info-section', [
+    //   h('span.entity-info-title', 'Mass'),
+    //   h('span', m.mass)
+    // ]),
+    // h('div.entity-info-section', [
+    //   h('span.entity-info-title', 'Charge'),
+    //   h('span', m.charge)
+    // ]),
     h('div.entity-info-section', !m.shortSynonyms ? [] : [
       h('span.entity-info-title', 'Synonyms'),
       ...m.shortSynonyms.map( name => h('span.entity-info-alt-name', [
         h(Highlighter, { text: name, terms: searchTerms })
       ]))
+    ]),
+    h('div.entity-info-section', [
+      h('span.entity-info-title', 'Formulae'),
+      ...m.formulae.map( formula => h(Formula, { formula }) )
     ])
   ];
 };

@@ -587,6 +587,7 @@ class Editor extends DataComponent {
 
   componentWillUnmount(){
     let { cy, document, bus } = this.data;
+    let editorDiv = window.document.querySelector('.editor');
 
     bus.emit('destroytip');
 
@@ -605,7 +606,10 @@ class Editor extends DataComponent {
     keyEmitter.removeListener('escape', this.hideHelp);
     window.removeEventListener('orientationchange', this.onRotate);
     window.document.body.removeEventListener('mousedown', this.closeAllTippies, { capture: true, passive: true });
-    document.querySelector('.editor').removeEventListener('scroll', this.closeAllTippies, { capture: true, passive: true });
+
+    if( editorDiv ){
+      editorDiv.removeEventListener('scroll', this.closeAllTippies, { capture: true, passive: true });
+    }
   }
 }
 

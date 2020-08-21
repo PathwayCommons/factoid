@@ -1,5 +1,6 @@
 import InteractionType from './interaction-type';
 import { BIOPAX_TEMPLATE_TYPE, BIOPAX_CONTROL_TYPE } from './biopax-type';
+import _ from 'lodash';
 
 const VALUE = 'interaction';
 const DISPLAY_VALUE = 'Other';
@@ -18,8 +19,8 @@ class Interaction extends InteractionType {
     return Interaction.isAllowedForInteraction(this.interaction);
   }
 
-  toBiopaxTemplate(){
-    if ( !this.validatePpts() ){
+  toBiopaxTemplate( transform ){
+    if ( !this.validatePpts( transform ) ){
       return this.makeInvalidBiopaxTemplate();
     }
 
@@ -39,6 +40,13 @@ class Interaction extends InteractionType {
     let target = this.getTarget();
     //ensure participants order is always [source,target] if defined
     let participants = (source && target) ? [source, target] : this.interaction.participants();
+    participants = _.uniqBy( participants.map( transform ), p => p.id() );
+
+    // if only one participant is remained after the transformation skip the interaction
+    if ( participants.length == 1 ) {
+      return null;
+    }
+
     template.participants = participants.map( participant => participant.toBiopaxTemplate() );
 
     return template;

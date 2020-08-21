@@ -57,6 +57,21 @@ class Complex extends Entity {
     return this.elementSet.create();
   }
 
+  name( newName ){
+    if( newName !== undefined ){
+      return this.rename( newName );
+    } else {
+      let name;
+      if( this.named() ){
+        name = super.name();
+      } else {
+        const participantNames = this.participants().map( p => p.name() ).join(':');
+        name = `Complex (${participantNames})`;
+      }
+      return name;
+    }
+  }
+
   synch( enable ){
     return tryPromise( () => {
       return super.synch( enable );

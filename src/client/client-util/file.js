@@ -1,6 +1,7 @@
 import FileSaver from 'file-saver';
 import _ from 'lodash';
-import { tryPromise } from '../../util';
+import { tryPromise, convertDocumentToBiopax, convertDocumentToTxt,
+        convertDocumentToSbgn } from '../../util';
 
 function exportContentToFile(content, fileName, ext){
   // if filename does not end with the extension append extension to the file name
@@ -18,26 +19,22 @@ function exportDocumentToBiopax(docId, fileName){
       docId = docId.id();
   }
 
-  let makeRequest = () => fetch(`/api/document/biopax/${docId}`);
-
   fileName = fileName || docId;
 
-  tryPromise( makeRequest ).then( result => result.text() )
+  tryPromise( () => convertDocumentToBiopax(docId) )
           .then( content => exportContentToFile(content, fileName, '.owl') );
 }
 
 function exportDocumentToSbgn(docId, fileName){
   // in case document itself is given instead of document id
   if( !_.isString(docId) ){
-    docId = docId.id();
+      docId = docId.id();
   }
-
-  let makeRequest = () => fetch(`/api/document/sbgn/${docId}`);
 
   fileName = fileName || docId;
 
-  tryPromise( makeRequest ).then( result => result.text() )
-    .then( content => exportContentToFile(content, fileName, '.sbgn.xml') );
+  tryPromise( () => convertDocumentToSbgn(docId) )
+          .then( content => exportContentToFile(content, fileName, '.sbgn.xml') );
 }
 
 function exportDocumentToTxt(docId, fileName){
@@ -46,11 +43,9 @@ function exportDocumentToTxt(docId, fileName){
       docId = docId.id();
   }
 
-  let makeRequest = () => fetch(`/api/document/text/${docId}`);
-
   fileName = fileName || docId;
 
-  tryPromise( makeRequest ).then( result => result.text() )
+  tryPromise( () => convertDocumentToTxt(docId) )
           .then( content => exportContentToFile(content, fileName, '.txt') );
 }
 

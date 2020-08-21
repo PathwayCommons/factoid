@@ -56,6 +56,11 @@ class Element {
         this.emit( 'complete', changes.completed, old.completed );
         this.emit( 'remotecomplete', changes.completed, old.completed );
       }
+
+      if( changes.relatedPapers ){
+        this.emit('relatedpapers', changes.relatedPapers);
+        this.emit('remoterelatedpapers', changes.relatedPapers);
+      }
     });
   }
 
@@ -122,6 +127,10 @@ class Element {
     let name = this.syncher.get('name');
 
     return name != null && name != '';
+  }
+
+  toString(){
+    return this.name();
   }
 
   reposition( newPos = {} ){
@@ -191,6 +200,17 @@ class Element {
       return update;
     } else {
       return Promise.resolve();
+    }
+  }
+
+  relatedPapers( papersData ){
+    if( papersData ){
+      let p = this.syncher.update({ 'relatedPapers': papersData });
+      this.emit( 'relatedpapers', papersData );
+      return p;
+    }
+    else if( !papersData ){
+      return this.syncher.get( 'relatedPapers' );
     }
   }
 

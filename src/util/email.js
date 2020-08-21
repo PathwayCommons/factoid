@@ -11,20 +11,20 @@ import {
   MAILJET_TMPLID_REQUEST_ISSUE,
   EMAIL_TYPE_INVITE,
   EMAIL_TYPE_FOLLOWUP,
-  EMAIL_TYPE_REQUEST_ISSUE,
-  EMAIL_SUBJECT_INVITE,
-  EMAIL_SUBJECT_FOLLOWUP,
-  EMAIL_SUBJECT_REQUEST_ISSUE
+  EMAIL_TYPE_REQUEST_ISSUE
 } from '../config' ;
 
-
 const msgFactory = ( emailType, doc ) => {
-  const { authorEmail, context } = doc.correspondence();
+  const { authorEmail } = doc.correspondence();
 
   const {
     title = 'Untitled',
     reference = ''
   } = doc.citation();
+  const citation = _.compact([title, reference]).join(' ');
+  const privateUrl = `${BASE_URL}${doc.privateUrl()}`;
+  const publicUrl =  `${BASE_URL}${doc.publicUrl()}`;
+  const imageUrl = `${BASE_URL}/api${doc.publicUrl()}.png`;
 
   const DEFAULTS = {
     from: {
@@ -36,7 +36,7 @@ const msgFactory = ( emailType, doc ) => {
       vendor: EMAIL_VENDOR_MAILJET,
       vars: {
         baseUrl: BASE_URL,
-        citation: _.compact([title, reference]).join(' ')
+        citation
       }
     }
   };
@@ -44,25 +44,22 @@ const msgFactory = ( emailType, doc ) => {
   const data = {};
   switch( emailType ) {
     case EMAIL_TYPE_INVITE:
-      _.set( data, 'subject', EMAIL_SUBJECT_INVITE );
+      _.set( data, 'subject', 'Welcome to Biofactoid' );
       _.set( data, ['template', 'id'], MAILJET_TMPLID_INVITE );
-      _.set( data, ['template', 'vars'], {
-        privateUrl: `${BASE_URL}${doc.privateUrl()}`,
-        context
-      });
+      _.set( data, ['template', 'vars'], _.assign({}, { privateUrl }) );
       break;
     case EMAIL_TYPE_REQUEST_ISSUE:
-      _.set( data, 'subject', EMAIL_SUBJECT_REQUEST_ISSUE );
+      _.set( data, 'subject', `Please re-submit your request to Biofactoid` );
       _.set( data, ['template', 'id'], MAILJET_TMPLID_REQUEST_ISSUE );
       break;
     case EMAIL_TYPE_FOLLOWUP:
-      _.set( data, 'subject', EMAIL_SUBJECT_FOLLOWUP );
+      _.set( data, 'subject', `Thank you for sharing your research with Biofactoid` );
       _.set( data, ['template', 'id'], MAILJET_TMPLID_FOLLOWUP );
       _.set( data, ['template', 'vars'], {
-        publicUrl: `${BASE_URL}${doc.publicUrl()}`,
+        publicUrl,
         hasTweet: `${doc.hasTweet()}`,
         tweetUrl: doc.tweetUrl(),
-        imageUrl: `${BASE_URL}/api${doc.publicUrl()}.png`,
+        imageUrl,
       });
       break;
     default:

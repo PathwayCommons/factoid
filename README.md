@@ -1,5 +1,14 @@
 # Factoid
 
+Biofactoid [(biofactoid.org)](https://biofactoid.org/), is a web-based system that empowers authors to capture and share machine-readable summaries of molecular-level interactions described in their publications.
+
+## Getting the data
+
+All contributed pathway data is freely available for download at https://biofactoid.org/api/document/zip which contains files for each pathway represented in:
+  - JavaScript Object Notation (JSON). This is the native format for Biofactoid data and contains interaction data, metadata of the record itself, metadata of the corresponding article, and visualisation data (layout and colors as Cytoscape JSON (Franz et al. (2016) Bioinforma. Oxf. Engl., 32, 309–311.)).
+  - [Biological Pathway Exchange (BioPAX)](http://www.biopax.org/) (Demir et al. (2010) Biotechnol., 28, 935–942.) for detailed semantic exchange.
+  - [Systems Biology Graphical Notation Markup Language (SBGNML)](https://sbgn.github.io/), a format that supports biological process visualization (Le Novère et al. Nat. Biotechnol., 27, 735–741. (2009); van Iersel et al. (2012) Bioinforma. Oxf. Engl., 28, 2016–2021.)
+
 ## Required software
 
 - [Node.js](https://nodejs.org/en/) >=10
@@ -16,6 +25,13 @@ General:
 - `LOG_LEVEL` : minimum log level; one of `info` (default), `warn`, `error`
 - `BASE_URL` : used for email linkouts (e.g. `https://factoid.baderlab.org`)
 - `API_KEY` : used to restrict new document creation (e.g. `8365E63B-9A20-4661-AED8-EDB1296B657F`)
+
+CRON:
+
+- `CRON_SCHEDULE` : second (optional), minute, hour, day of month, month, day of week
+- `DOCUMENT_CRON_UPDATE_PERIOD_DAYS` : The minimum time between successive Document cron update calls
+- `DOCUMENT_CRON_CREATED_AGE_DAYS` : Only Documents created fewer than this many days will be selecte for update. When undefined (default), ignores filtering on creation date.
+- `DOCUMENT_CRON_REFRESH_ENABLED` : Flag to enable existing Document metadata to be refreshed (e.g. PubMed UID) (default true).
 
 Database:
 
@@ -35,6 +51,10 @@ Services:
 - `GROUNDING_SEARCH_BASE_URL`: url for the [grounding service](https://github.com/PathwayCommons/grounding-search)
 - `NCBI_EUTILS_BASE_URL` : url for the NCBI E-utilities
 - `NCBI_EUTILS_API_KEY` : API key for the NCBI E-utilities
+- `INDRA_DB_BASE_URL` : url for [INDRA (Integrated Network and Dynamical Reasoning Assembler)](https://indralab.github.io/)
+- `INDRA_ENGLISH_ASSEMBLER_URL` : url for service that assembles INDRA statements into models
+- `SEMANTIC_SEARCH_BASE_URL` : url for [semantic-search](https://github.com/PathwayCommons/semantic-search) web service
+- `NO_ABSTRACT_HANDLING` : labels directing how to sort documents missing query text. 'text' (default): autogenerate text from templates; 'date': sort by date and ignore text.
 
 Links:
 
@@ -44,6 +64,8 @@ Links:
 - `NCBI_LINK_BASE_URL`: base url concatenated to id to generate a linkout
 - `PUBMED_LINK_BASE_URL`: base url concatenated to unique id to generate linkout
 - `DOI_LINK_BASE_URL`: base url concatenated to doi to generate linkout
+- `GOOGLE_SCHOLAR_BASE_URL` : base url concatenated to doi, title, or pmid to generate linkout
+- `IDENTIFIERS_ORG_ID_BASE_URL` : base url concatenated to collection id_prefix:id (i.e. prefix:accession)
 
 Demo:
 
@@ -54,6 +76,7 @@ Demo:
 - `DEMO_TITLE` : the title of the demo doc's article
 - `DEMO_CAN_BE_SHARED` : whether the demo can be shared (default `false`)
 - `DEMO_CAN_BE_SHARED_MULTIPLE_TIMES` : whether the demo can be shared multiple times (normal docs can be shared only once; default `false`)
+- `SAMPLE_DOC_ID` : id for document that is used as homepage example (production)
 
 Sharing:
 
@@ -80,14 +103,18 @@ Email:
 - `MAILJET_TMPLID_INVITE`: vendor email template id for an invitation
 - `MAILJET_TMPLID_FOLLOWUP`: vendor email template id for a follow-up
 - `MAILJET_TMPLID_REQUEST_ISSUE`: vendor email template id for a request error notification
-- `EMAIL_CONTEXT_JOURNAL`: email context variable to indicate entry via journal
-- `EMAIL_CONTEXT_SIGNUP`: email context variable to indicate entry via homepage
 - `EMAIL_TYPE_INVITE`:  name to indicate invite email
 - `EMAIL_TYPE_FOLLOWUP`: name to indicate follow-up email
 - `EMAIL_TYPE_REQUEST_ISSUE`: name to indicate request error email
 - `EMAIL_SUBJECT_INVITE`: subject text for invitation email
 - `EMAIL_SUBJECT_FOLLOWUP`: subject text for follow-up email
 - `EMAIL_SUBJECT_REQUEST_ISSUE`: subject text for request error email
+
+AppSignal:
+
+- `APPSIGNAL_PUSH_API_KEY` : AppSignal API key
+- `APPSIGNAL_APP_NAME` : name of this app (e.g. 'Biofactoid')
+- `APPSIGNAL_APP_ENV` : used to indicate which instance is running (e.g 'master', 'production', 'unstable')
 
 The following environment variables should always be set in production instances:
 
@@ -104,6 +131,8 @@ The following environment variables should always be set in production instances
 - `SMTP_HOST`: Mailjet host name
 - `SMTP_USER`: Mailjet account credentials
 - `SMTP_PASSWORD`: Mailjet password credentials
+- `APPSIGNAL_PUSH_API_KEY` : AppSignal API key
+- `APPSIGNAL_APP_ENV` : used to indicate which instance is running (e.g 'master', 'production', 'unstable')
 
 ## Run targets
 
@@ -227,3 +256,18 @@ Notes:
   1. For a breaking API change, run `npm version major.`
   1. For a specific version number (e.g. 1.2.3), run `npm version 1.2.3`.
 1. Push the release: `git push origin --tags`
+
+## Related software
+
+Factoid depends on services whose software we maintain.
+
+- GitHub
+  - [grounding-search](https://github.com/PathwayCommons/grounding-search): Disambiguate bio-entities via full-text search
+  - [semantic-search](https://github.com/PathwayCommons/semantic-search): Rank texts based on similiarity
+  - [factoid-converters](https://github.com/PathwayCommons/factoid-converters): Convert Factoid model JSON to standard languages (BioPAX and SBGN-PD)
+- DockerHub
+  - [factoid](https://hub.docker.com/r/pathwaycommons/factoid)
+  - [grounding-search](https://hub.docker.com/r/pathwaycommons/grounding-search)
+  - [semantic-search](https://hub.docker.com/repository/docker/pathwaycommons/semantic-search)
+  - [factoid-converters](https://hub.docker.com/repository/docker/pathwaycommons/factoid-converters)
+  - [rethinkdb-docker](https://hub.docker.com/repository/docker/pathwaycommons/rethinkdb-docker): RethinkDB-based image with dependencies for database administration (i.e. dump and restore).

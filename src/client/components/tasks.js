@@ -1,10 +1,12 @@
-import _ from 'lodash';
 import DataComponent from './data-component';
 import h from 'react-hyperscript';
+import { Component } from 'react';
 
-import { BASE_URL } from '../../config';
 import Document from '../../model/document';
 import { ENTITY_TYPE } from '../../model/element/entity-type';
+import { BASE_URL } from '../../config';
+import { makeClassList } from '../../util';
+import { NativeShare, isNativeShareSupported } from './native-share';
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
 
@@ -21,13 +23,37 @@ let unbindEleEvts = (ele, cb) => {
   });
 };
 
+export class TaskShare extends Component {
+  constructor( props ){
+    super( props );
+  }
+
+  render(){
+    const { document } = this.props;
+
+    if( !isNativeShareSupported() ){
+      return null;
+    }
+
+    return h('div.task-view-share', [
+      h( NativeShare, {
+        title: document.citation().title,
+        text: '',
+        url: BASE_URL + document.publicUrl()
+      }, [
+        h('i.material-icons', 'share'),
+        h('span', ' Share')
+      ])
+    ]);
+  }
+}
 
 class TaskView extends DataComponent {
   constructor(props){
     super(props);
 
     this.state = {
-      submitted: false
+      submitting: false
     };
   }
 
@@ -47,35 +73,27 @@ class TaskView extends DataComponent {
       this.dirty();
     };
 
-    this.onSubmit = () => {
-      const DOCUMENT_STATUS_FIELDS = Document.statusFields();
-      const id = this.props.document.id();
-      const secret = this.props.document.secret();
-      const params = [
-        { op: 'replace', path: 'status', value: DOCUMENT_STATUS_FIELDS.PUBLISHED }
-      ];
-      const url = `/api/document/status/${id}/${secret}`;
-      return fetch( url, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify( params )
-      });
-    };
-
-    this.onUpdate = change => {
-      if( _.has( change, 'status' ) ){
-        if( change.status === 'submitted' ) this.onSubmit();
-        this.dirty();
-      }
-    };
-
     this.props.document.on('add', this.onAdd);
     this.props.document.on('remove', this.onRemove);
-    this.props.document.on('update', this.onUpdate);
 
     this.props.document.elements().forEach(ele => bindEleEvts(ele, update));
+  }
+
+  tryPublish(){
+    const DOCUMENT_STATUS_FIELDS = Document.statusFields();
+    const id = this.props.document.id();
+    const secret = this.props.document.secret();
+    const params = [
+      { op: 'replace', path: 'status', value: DOCUMENT_STATUS_FIELDS.PUBLISHED }
+    ];
+    const url = `/api/document/${id}/${secret}`;
+    return fetch( url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify( params )
+    });
   }
 
   componentWillUnmount(){
@@ -87,12 +105,18 @@ class TaskView extends DataComponent {
   }
 
   submit(){
-    return this.props.document.submit();
+    new Promise( resolve => this.setState({ submitting: true }, resolve ) )
+      .then( () => this.props.document.submit() )
+      .then( () => this.tryPublish() )
+      .finally( () => {
+        new Promise( resolve => this.setState({ submitting: false }, resolve ) );
+      });
   }
 
   render(){
     let { document, bus } = this.props;
-    let done = document.submitted() || document.published();
+    let { submitting } = this.state;
+    let done = this.props.controller.done();
     let incompleteEles = this.props.document.elements().filter(ele => {
       return !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX;
     });
@@ -122,38 +146,70 @@ class TaskView extends DataComponent {
       return `You have ${numIncompleteEles} incomplete items:`;
     };
 
-    if( !done ){
+    if( !done || submitting ){
       return h('div.task-view', [
-        incompleteEles.length > 0 ? h('div.task-view-header', tasksMsg()) : null,
-        incompleteEles.length > 0 ? h('div.task-view-items', [
-          h('ul', ntfns.map( ({ msg, ele }) => h('li', [
-            h('a.plain-link', {
-              onClick: () => bus.emit('opentip', ele)
-            }, msg)
-          ]) ))
-        ]) : null,
-        h('div.task-view-confirm', 'Are you sure you want to submit?'),
-        h('div.task-view-confirm-button-area', [
-          h('button.salient-button.task-view-confirm-button', {
-            disabled: document.trashed(),
-            onClick: () => this.submit()
-          }, 'Yes, submit')
+        h('i.icon.icon-spinner.task-view-spinner', {
+          className: makeClassList({ 'task-view-spinner-shown': submitting })
+        }),
+        h('div.task-view-submit',{
+          className: makeClassList({ 'task-view-submitting': submitting })
+        }, [
+          incompleteEles.length > 0 ? h('div.task-view-header', tasksMsg()) : null,
+          incompleteEles.length > 0 ? h('div.task-view-items', [
+            h('ul', ntfns.map( ({ msg, ele }) => h('li', [
+              h('a.plain-link', {
+                onClick: () => bus.emit('opentip', ele)
+              }, msg)
+            ]) ))
+          ]) : null,
+          h('div.task-view-confirm', 'Are you sure you want to submit?'),
+          h('div.task-view-confirm-button-area', [
+            h('button.salient-button.task-view-confirm-button', {
+              disabled: document.trashed(),
+              onClick: () => this.submit()
+            }, 'Yes, submit')
+          ])
         ])
       ]);
     } else {
-      return h('div.task-view.done', [
+      const publicUrl =  `${BASE_URL}${document.publicUrl()}`;
+      const imageUrl = `${BASE_URL}/api${document.publicUrl()}.png`;
+      return h('div.task-view', [
         h('div.task-view-done', [
-          h('div.task-view-done-symbol', [
-            h('i.material-icons', 'check_circle_outline' ),
+          h('div.task-view-done-title', 'Thank you!' ),
+          h('div.task-view-done-section', [
+            h('div.task-view-done-section-body', [
+              h('p', 'Your paper is now linked to many others and shared for everyone to explore.'),
+              h( 'a.task-view-done-button', { href: publicUrl, target: '_blank', }, 'Explore' )
+            ]),
+            h('div.task-view-done-section-footer', [
+              h('p', `Explore link: ${publicUrl}`)
+            ])
           ]),
-          h('div.task-view-done-caption', [
-            h('h1.task-view-done-caption-title', 'Success!' ),
-            h('p.task-view-done-caption-body', 'Check for a confirmation email' ),
-            h('p.task-view-done-caption-footer', [
-              h('a.plain-link', {
-                target: '_blank',
-                href: BASE_URL
-              },'Contribute another' )
+          h('hr'),
+          h('div.task-view-done-section', [
+            h('div.task-view-done-section-body', [
+              h('p', 'Good things happen when you share!'),
+              h('div.task-view-done-section-body-row', [
+                document.hasTweet() ? h('div.task-view-done-section-body-row-item', [
+                  h( 'i.icon.icon-t' ),
+                  h('a.task-view-done-icon-label', {
+                    href: document.tweetUrl(),
+                  target: '_blank'
+                  },
+                  'Tweet'
+                  )
+                ]) : null,
+                h('div.task-view-done-section-body-row-item', [
+                  h( 'i.material-icons', 'image' ),
+                  h('a.task-view-done-icon-label', {
+                    href: imageUrl,
+                    download: true
+                  },
+                  'Download'
+                  )
+                ])
+              ])
             ])
           ])
         ])

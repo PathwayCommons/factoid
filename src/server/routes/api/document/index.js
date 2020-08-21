@@ -8,14 +8,18 @@ import cytosnap from 'cytosnap';
 import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
+// import url from 'url';
+import fs from 'fs';
 
+import { exportToZip } from './export';
 import { tryPromise, makeStaticStylesheet, makeCyEles, msgFactory, updateCorrespondence, EmailError, truncateString } from '../../../../util';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
 import db from '../../../db';
 import logger from '../../../logger';
 import { getPubmedArticle } from './pubmed';
-import { createPubmedArticle } from '../../../../util/pubmed';
+import { createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
+import * as indra from './indra';
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
   API_KEY,
@@ -30,14 +34,16 @@ import { BASE_URL,
   MAX_TWEET_LENGTH,
   DEMO_CAN_BE_SHARED,
   DOCUMENT_IMAGE_PADDING,
-  EMAIL_CONTEXT_SIGNUP,
-  EMAIL_CONTEXT_JOURNAL,
   EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
-  EMAIL_TYPE_FOLLOWUP
+  EMAIL_TYPE_FOLLOWUP,
+  MIN_RELATED_PAPERS,
+  SEMANTIC_SEARCH_LIMIT
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
+import { db2pubmed } from './pubmed/linkPubmed';
+import { fetchPubmed } from './pubmed/fetchPubmed';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
 const http = Express.Router();
@@ -79,6 +85,63 @@ let createSecret = ({ secret }) => {
   );
 };
 
+// let createRelatedPapers = ({ papersData, doc }) => {
+//   let sanitize = o => {
+//     delete o.intnId;
+//   };
+
+//   let els = [];
+//   papersData.forEach( paperData => {
+//     let pmid = paperData.pmid;
+//     let pubmed = paperData.pubmed;
+//     paperData.elements.forEach( el => {
+//       els.push( _.extend( {}, el, { pmid, pubmed } ) );
+//     } );
+//   } );
+
+//   let papersByEl = {};
+//   let pubmedByPmid = {};
+
+//   papersData.map( paperData => {
+//     let { pmid, pubmed, elements } = paperData;
+
+//     if ( pubmedByPmid[ pmid ] == undefined ) {
+//       pubmedByPmid[ pmid ] = pubmed;
+//     }
+
+//     elements.forEach( el => {
+//       let elId = el.elId;
+//       if ( papersByEl[ elId ] == undefined ) {
+//         papersByEl[ elId ] = {};
+//       }
+
+//       if ( papersByEl[ elId ][ pmid ] == undefined ) {
+//         papersByEl[ elId ][ pmid ] = [];
+//       }
+
+//       sanitize( el );
+//       papersByEl[ elId ][ pmid ].push( el );
+//     } );
+//   } );
+
+//   let elPromises = Object.keys( papersByEl ).map( elId => {
+//     let elPapersData = papersByEl[ elId ];
+//     let pmids = Object.keys( elPapersData );
+
+//     elPapersData = pmids.map( pmid => {
+//       let pubmed = pubmedByPmid[ pmid ];
+//       let elements = elPapersData[ pmid ];
+//       return { pmid, pubmed, elements };
+//     } );
+
+//     return doc.get( elId ).relatedPapers( elPapersData );
+//   } );
+
+//   let docPromise = doc.relatedPapers( papersData );
+
+//   return Promise.all( [ docPromise, ...elPromises ] );
+// };
+
 let createDoc = ({ docDb, eleDb, id, secret, provided }) => {
   let doc = newDoc({ docDb, eleDb, id, secret, provided });
 
@@ -104,8 +167,7 @@ let deleteTableRows = async ( apiKey, secret ) => {
 };
 
 const DEFAULT_CORRESPONDENCE = {
-  emails: [],
-  context: EMAIL_CONTEXT_SIGNUP
+  emails: []
 };
 
 /**
@@ -159,37 +221,44 @@ const findEmailAddress = address => {
   }
 };
 
-const fillDocCorrespondence = async ( doc, authorEmail, context ) => {
+const fillDocCorrespondence = async doc => {
   let address = [];
+  const { authorEmail } = doc.provided();
   try {
     address = findEmailAddress( authorEmail );
     if( _.isEmpty( address ) ) throw new EmailError(`Unable to find email for '${authorEmail}'`, authorEmail);
     await doc.issues({ authorEmail: null });
   } catch ( error ){
     await doc.issues({ authorEmail: { error, message: error.message } });
+    logger.error( `Error filling doc correspondence` );
+    logger.error( error );
   } finally {
     const emails = _.get( doc.correspondence(), 'emails' );
-    const data = _.defaults( { authorEmail: address, context, emails }, DEFAULT_CORRESPONDENCE );
+    const data = _.defaults( { authorEmail: address, emails }, DEFAULT_CORRESPONDENCE );
     await doc.correspondence( data );
   }
 };
 
-const fillDocArticle = async ( doc, paperId ) => {
+const fillDocArticle = async doc => {
+  const { paperId } = doc.provided();
   try {
     const pubmedRecord = await getPubmedArticle( paperId );
     await doc.article( pubmedRecord );
     await doc.issues({ paperId: null });
   } catch ( error ) {
+    logger.error( `Error filling doc article` );
+    logger.error( error );
     const pubmedRecord = createPubmedArticle({ articleTitle: paperId });
     await doc.article( pubmedRecord );
     await doc.issues({ paperId: { error, message: error.message } });
+  } finally {
+    getRelPprsForDoc( doc );
   }
 };
 
 const fillDoc = async doc => {
-  const { paperId, authorEmail, context } = doc.provided();
-  await fillDocCorrespondence( doc, authorEmail, context );
-  await fillDocArticle( doc, paperId );
+  await fillDocCorrespondence( doc );
+  await fillDocArticle( doc );
   return doc;
 };
 
@@ -252,17 +321,456 @@ let getSbgnFromTemplates = templates => {
     .then(handleResponseError);
 };
 
-// get all docs
-// - offset: pagination offset
-// - limit: pagination size limit
-// - apiKey: to authorise secret access
-// - status: include docs bearing valid Document 'status'
-// - ids: only get the docs for the specified comma-separated list of ids (disables pagination)
+/**
+ * @swagger
+ *
+ * /api/document/zip:
+ *   get:
+ *     description: Download a single zip file containing every Document represented in JSON, Systems Biology Graphical Notation Markup Language (SBGNML) and Biological Pathway Exchange (BioPAX).
+ *     summary: Zip file of every Document in several file formats.
+ *     tags:
+ *       - Document
+ *     responses:
+ *      '200':
+ *        description: OK
+ *        content:
+ *          application/zip:
+ *             description: Download a zip file containing each Document in various file formats.
+ */
+http.get('/zip', function( req, res, next ){
+  let filePath = 'download/factoid_bulk.zip';
+
+  const lazyExport = () => {
+    let recreate = true;
+    if ( fs.existsSync( filePath ) ) {
+      const DAY_TO_MS = 86400000;
+
+      let now = Date.now();
+      let fileDate = fs.statSync(filePath).birthtimeMs;
+
+      if ( now - fileDate < DAY_TO_MS ) {
+        recreate = false;
+      }
+    }
+
+    if ( recreate ) {
+      let addr = req.protocol + '://' + req.get('host');
+      return exportToZip(addr, filePath);
+    }
+
+    return Promise.resolve();
+  };
+
+  tryPromise( lazyExport )
+    .then( () => res.download( filePath ))
+    .catch( next );
+});
+
+/**
+ * @swagger
+ *
+ * components:
+ *
+ *   securitySchemes:
+ *     ApiKeyAuth:
+ *       type: apiKey
+ *       description: API key to authorize requests.
+ *       in: query
+ *       name: apiKey
+ *
+ *   emailType:
+ *     type: string
+ *     enum:
+ *       - invite
+ *       - followUp
+ *       - requestIssue
+ *
+ *   entry:
+ *     properties:
+ *       id:
+ *         type: string
+ *       group:
+ *         type: string
+ *         enum:
+ *           - negative
+ *           - positive
+ *
+ *   entity-association:
+ *     properties:
+ *       id:
+ *         type: string
+ *
+ *   Entity:
+ *     properties:
+ *       id:
+ *         type: string
+ *       secret:
+ *         type: string
+ *       position:
+ *         type: object
+ *         properties:
+ *           x:
+ *             type: number
+ *           y:
+ *             type: number
+ *       description:
+ *         type: string
+ *       name:
+ *         type: string
+ *       'type':
+ *         type: string
+ *         enum:
+ *           - chemical
+ *           - ggp
+ *           - DNA
+ *           - RNA
+ *           - protein
+ *           - complex
+ *       completed:
+ *         type: boolean
+ *       association:
+ *         type: object
+ *         description: Specific to data provider
+ *
+ *   Interaction:
+ *     properties:
+ *       id:
+ *         type: string
+ *       secret:
+ *         type: string
+ *       position:
+ *         type: object
+ *         properties:
+ *           x:
+ *             type: number
+ *           y:
+ *             type: number
+ *       description:
+ *         type: string
+ *       name:
+ *         type: string
+ *       'type':
+ *         type: string
+ *         enum:
+ *           - binding
+ *           - transcription-translation
+ *           - modification
+ *           - phosphorylation
+ *           - (de)phosphorylation
+ *           - ubiquitination
+ *           - (de)ubiquitination
+ *           - methlyation
+ *           - (de)methlyation
+ *           - interaction
+ *       completed:
+ *         type: boolean
+ *       association:
+ *         type: string
+ *         enum:
+ *           - binding
+ *           - transcription-translation
+ *           - modification
+ *           - phosphorylation
+ *           - (de)phosphorylation
+ *           - ubiquitination
+ *           - (de)ubiquitination
+ *           - methlyation
+ *           - (de)methlyation
+ *           - interaction
+ *       entries:
+ *         type: array
+ *         items:
+ *           $ref: '#/components/entry'
+ *
+ *   Organism:
+ *     properties:
+ *       id:
+ *         type: string
+ *       name:
+ *         type: string
+ *
+ *   Affiliation:
+ *     properties:
+ *       Affiliation:
+ *         type: string
+ *       email:
+ *         type: array
+ *         items:
+ *           type: string
+ *
+ *   Author:
+ *     properties:
+ *       AffiliationInfo:
+ *         type: array
+ *         items:
+ *           $ref: '#/components/Affiliation'
+ *       LastName:
+ *         type: string
+ *       ForeName:
+ *         type: string
+ *       Initials:
+ *         type: string
+ *       CollectiveName:
+ *         type: string
+ *
+ *   ArticleId:
+ *     properties:
+ *       IdType:
+ *         type: string
+ *       id:
+ *         type: string
+ *
+ *   ArticleIdList:
+ *     type: array
+ *     items:
+ *       $ref: '#/components/ArticleId'
+ *
+ *   Journal:
+ *     properties:
+ *       ISOAbbreviation:
+ *         type: string
+ *       ISSN:
+ *         type: string
+ *       Title:
+ *         type: string
+ *       JournalIssue:
+ *         type: object
+ *         properties:
+ *           Issue:
+ *             type: string
+ *           PubDate:
+ *             type: object
+ *             properties:
+ *               Year:
+ *                 type: string
+ *               Month:
+ *                 type: string
+ *               Day:
+ *                 type: string
+ *               Season:
+ *                 type: string
+ *               MedlineDate:
+ *                 type: string
+ *           Volume:
+ *             type: string
+ *
+ *   citation:
+ *     properties:
+ *       title:
+ *         type: string
+ *       authors:
+ *         type: object
+ *         properties:
+ *           abbreviation:
+ *             type: string
+ *           contacts:
+ *             type: array
+ *             items:
+ *               type: string
+ *               description: Email
+ *           authorList:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                 abbrevName:
+ *                   type: string
+ *                 isCollectiveName:
+ *                   type: boolean
+ *       reference:
+ *         type: string
+ *       abstract:
+ *         type: string
+ *       pmid:
+ *         type: string
+ *       doi:
+ *         type: string
+ *
+ *   article:
+ *     properties:
+ *       MedlineCitation:
+ *         type: object
+ *         properties:
+ *           Article:
+ *             type: object
+ *             properties:
+ *               Abstract:
+ *                 type: string
+ *               ArticleTitle:
+ *                 type: string
+ *               AuthorList:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/Author'
+ *               Journal:
+ *                 $ref: '#/components/Journal'
+ *           ChemicalList:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 NameOfSubstance:
+ *                   type: String
+ *                 RegistryNumber:
+ *                   type: String
+ *                 UI:
+ *                   type: String
+ *           InvestigatorList:
+ *             type: array
+ *             items:
+ *               $ref: '#/components/Author'
+ *           KeywordList:
+ *             type: array
+ *             items:
+ *               type: string
+ *           MeshheadingList:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 DescriptorName:
+ *                   type: string
+ *                 isMajorTopicYN:
+ *                   type: boolean
+ *                 UI:
+ *                   type: String
+ *       PubmedData:
+ *         type: object
+ *         properties:
+ *           ArticleIdList:
+ *              $ref: '#/components/ArticleIdList'
+ *           History:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 PubStatus:
+ *                   type: string
+ *                 PubMedPubDate:
+ *                   type: object
+ *                   properties:
+ *                     Year:
+ *                       type: string
+ *                     Month:
+ *                       type: string
+ *                     Day:
+ *                       type: string
+ *           ReferenceList:
+ *             type: object
+ *             properties:
+ *               ArticleIdList:
+ *                 $ref: '#/components/ArticleIdList'
+ *               Citation:
+ *                 type: string
+ *
+ *   status:
+ *     type: string
+ *     enum:
+ *       - requested
+ *       - approved
+ *       - submitted
+ *       - published
+ *       - trashed
+ *
+ *   Document:
+ *     properties:
+ *       id:
+ *         type: string
+ *       secret:
+ *         type: string
+ *       organisms:
+ *         type: array
+ *         items:
+ *           type: string
+ *           description: Organism ID
+ *       elements:
+ *         type: array
+ *         items:
+ *           anyOf:
+ *             - $ref: '#/components/Entity'
+ *             - $ref: '#/components/Interaction'
+ *       publicUrl:
+ *         type: string
+ *       privateUrl:
+ *         type: string
+ *       citation:
+ *         $ref: '#/components/citation'
+ *       article:
+ *         $ref: '#/components/article'
+ *       createdDate:
+ *         type: string
+ *       lastEditedDate:
+ *         type: string
+ *       status:
+ *         type: string
+ *       verified:
+ *         type: boolean
+ *
+ *   responses:
+ *     '200':
+ *       description: Success
+ *     '500':
+ *       description: Error
+ *     'Bad ID':
+ *       description: No response from database for ID
+ */
+
+/**
+ * @swagger
+ *
+ * /api/document:
+ *   get:
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Retrieve Documents
+ *     summary: Filter and retrieve a list of paginated Documents
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: limit
+ *         in: query
+ *         description: Pagination size limit
+ *         required: false
+ *         type: number
+ *         allowEmptyValue: true
+ *       - name: offset
+ *         in: query
+ *         description: Pagination start index
+ *         required: false
+ *         type: number
+ *         allowEmptyValue: true
+ *       - name: ids
+ *         in: query
+ *         description: Document IDs (comma-delimited)
+ *         summary: Accepts a comma-separated list of doc ids. Disables pagination when used.
+ *         required: false
+ *         schema:
+ *           type: string
+ *         allowEmptyValue: true
+ *       - name: status
+ *         in: query
+ *         description: Documents status
+ *         summary: Accepts one of the pre-defined statuses
+ *         required: false
+ *         schema:
+ *           $ref: '#/components/status'
+ *         allowEmptyValue: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/Document'
+ */
 http.get('/', function( req, res, next ){
-  let { limit, offset, apiKey } = Object.assign({
-    limit: 50,
-    offset: 0
-  }, req.query);
+  let limit = _.toInteger( _.get( req.query, 'limit', 50 ) );
+  let offset = _.toInteger( _.get( req.query, 'offset', 0 ) );
+  let apiKey = _.get( req.query, 'apiKey' );
 
   let ids = req.query.ids ? req.query.ids.split(/\s*,\s*/) : null;
 
@@ -285,6 +793,7 @@ http.get('/', function( req, res, next ){
       let { table, conn, rethink: r } = t;
       let q = table;
 
+      q = q.filter(r.row('secret').ne(DEMO_SECRET));
       q = q.orderBy(r.desc('createdDate'));
 
       if( ids ){ // doc id must be in specified id list
@@ -314,10 +823,7 @@ http.get('/', function( req, res, next ){
         q = q.filter( byStatus );
       }
 
-      q = ( q
-        .filter(r.row('secret').ne(DEMO_SECRET))
-        .pluck(['id', 'secret'])
-      );
+      q = q.pluck(['id', 'secret']);
 
       return q.run(conn);
     })
@@ -407,7 +913,31 @@ const imageCache = new LRUCache({
   max: DOCUMENT_IMAGE_CACHE_SIZE
 });
 
-// get doc figure as png image
+/**
+ * @swagger
+ *
+ * /api/document/{id}.png:
+ *   get:
+ *     description: Retrieve a PNG of the Document's interactions
+ *     summary: Retrieve an image displaying Document interactions
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           image/png:
+ *             type: string
+ *             format: binary
+ *       '500':
+ *         $ref: '#/components/responses/Bad ID'
+ */
 http.get('/(:id).png', function( req, res, next ){
   const id = req.params.id;
 
@@ -461,7 +991,45 @@ const tweetDoc = ( id, secret, text ) => {
   );
 };
 
-// tweet a document as a card with a caption (text)
+/**
+ * @swagger
+ *
+ * /api/document/{id}/tweet:
+ *   post:
+ *     description: Tweet a Document as a card provided text serving as the caption
+ *     summary: Tweet a Document as a card
+ *     tags:
+ *       - Document
+*     parameters:
+ *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
+ *         in: path
+ *         required: true
+ *     requestBody:
+ *       description: Data used in creating Tweet
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               secret:
+ *                 type: string
+ *                 description: Document secret
+ *               text:
+ *                 type: string
+ *                 description: Text to be included in Tweet body
+ *                 default: The auto-generated text output (see text/{id})
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       '500':
+ *         description: Error
+ */
 http.post('/:id/tweet', function( req, res, next ){
   const id = req.params.id;
   const { text, secret } = _.assign({ text: '', secret: 'read-only-no-secret-specified' }, req.body);
@@ -471,6 +1039,29 @@ http.post('/:id/tweet', function( req, res, next ){
     .catch( next );
 });
 
+
+/**
+ * @swagger
+ *
+ * /api/document/api-key-verify:
+ *   get:
+ *     description: Verify an API key
+ *     summary: Verify an API key by the HTTP status
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: apiKey
+ *         in: query
+ *         description: API key
+ *         required: true
+ *         type: string
+ *         allowEmptyValue: true
+ *     responses:
+ *       '200':
+ *         $ref: '#/components/responses/200'
+ *       '500':
+ *         description: Invalid API key
+ */
 http.get('/api-key-verify', function( req, res, next ){
   let apiKey = req.query.apiKey;
 
@@ -480,7 +1071,31 @@ http.get('/api-key-verify', function( req, res, next ){
   );
 });
 
-// get existing doc as json
+/**
+ * @swagger
+ *
+ * /api/document/{id}:
+ *   get:
+ *     description: Retrieve a single Document by ID
+ *     summary: Retrieve a single Document by ID
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/Document'
+ *       '500':
+ *         $ref: '#/components/responses/Bad ID'
+ */
 http.get('/:id', function( req, res, next ){
   let id = req.params.id;
 
@@ -496,22 +1111,32 @@ const checkApiKey = (apiKey) => {
   }
 };
 
-const checkRequestContext = async provided => {
-  const { apiKey, context } = provided;
-  switch ( context ) {
-    case EMAIL_CONTEXT_JOURNAL:
-      checkApiKey( apiKey );
-      break;
-    case EMAIL_CONTEXT_SIGNUP:
-      break;
-    default:
-      throw new TypeError(`The specified context '${context}' is not recognized`);
-  }
-};
-
+/**
+ * @swagger
+ *
+ * /api/document/{secret}:
+ *   delete:
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Delete an existing Document
+ *     summary: Delete an existing Document
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: secret
+ *         in: path
+ *         description: Document secret
+ *         required: true
+ *         type: string
+ *     responses:
+ *       '200':
+ *         $ref: '#/components/responses/200'
+ *       '500':
+ *         $ref: '#/components/responses/500'
+ */
 http.delete('/:secret', function(req, res, next){
   let secret = req.params.secret;
-  let { apiKey } = req.body;
+  let { apiKey } = req.query;
   deleteTableRows( apiKey, secret ).then( () => res.end() ).catch( next );
 });
 
@@ -520,24 +1145,50 @@ const tryVerify = async doc => {
 
   if( !doc.verified() ){
     let doVerify = false;
-    const { context } = doc.provided();
 
-    if( context && context === EMAIL_CONTEXT_JOURNAL ){
-      doVerify = true;
+    const { authorEmail } = doc.correspondence();
+    const { authors: { contacts } } = doc.citation();
+    const hasEmail = _.some( contacts, contact => !_.isEmpty( _.intersection( _.get( contact, 'email' ), authorEmail ) ) );
+    if( hasEmail ) doVerify = true;
 
-    } else {
-      const { authorEmail } = doc.correspondence();
-      const { authors: { contacts } } = doc.citation();
-      const hasEmail = _.some( contacts, contact => !_.isEmpty( _.intersection( _.get( contact, 'email' ), authorEmail ) ) );
-      if( hasEmail ) doVerify = true;
-    }
     if( doVerify ) await doc.verified( true );
   }
 
   return doc;
 };
 
-// create new doc
+/**
+ * @swagger
+ *
+ * /api/document:
+ *   post:
+ *     description: Create a Document
+ *     summary: Create a Document
+ *     tags:
+ *       - Document
+ *     requestBody:
+ *       description: Data to create a Document
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               paperId:
+ *                 type: string
+ *               authorEmail:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/Document'
+ *       '500':
+ *         description: Error
+ */
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
   const { paperId } = provided;
@@ -554,8 +1205,7 @@ http.post('/', function( req, res, next ){
   .then( json => res.json( json ) )
   .then( () => doc );
 
-  checkRequestContext( provided )
-    .then( () => createSecret({ secret }) )
+  tryPromise( () => createSecret({ secret }) )
     .then( loadTables )
     .then( handleDocCreation )
     .then( setRequestStatus )
@@ -567,8 +1217,41 @@ http.post('/', function( req, res, next ){
     .catch( next );
 });
 
-// Email
-http.patch('/email/:id/:secret', function( req, res, next ){
+/**
+ * @swagger
+ *
+ * /api/document/email/{id}/{secret}:
+ *   post:
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Send email to author(s) associated with a Document
+ *     summary: Send email to author(s) associated with a Document
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: Document id
+ *         required: true
+ *         type: string
+ *       - name: secret
+ *         in: path
+ *         description: Document secret
+ *         required: true
+ *         type: string
+ *       - name: emailType
+ *         in: query
+ *         description: Type of email
+ *         required: true
+ *         schema:
+ *           $ref: '#/components/emailType'
+ *     responses:
+ *       '200':
+ *         $ref: '#/components/responses/200'
+ *       '500':
+ *         $ref: '#/components/responses/500'
+ */
+http.post('/email/:id/:secret', function( req, res, next ){
   const { id, secret } = req.params;
   const { apiKey, emailType } = req.query;
   return (
@@ -579,8 +1262,60 @@ http.patch('/email/:id/:secret', function( req, res, next ){
   );
 });
 
-// Update document status
-http.patch('/status/:id/:secret', function( req, res, next ){
+/**
+ * @swagger
+ *
+ * /api/document/{id}/{secret}:
+ *   patch:
+ *     description: Update Document
+ *     summary: Update Document related to user-provided data (status, article, correspondence)
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: Document id
+ *         required: true
+ *         type: string
+ *       - name: secret
+ *         in: path
+ *         description: Document secret
+ *         required: true
+ *         type: string
+ *     requestBody:
+ *       description: Data to update status
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 op:
+ *                   type: string
+ *                   enum:
+ *                     - replace
+ *                   required: true
+ *                 path:
+ *                   type: string
+ *                   enum:
+ *                     - status
+ *                   required: true
+ *                 value:
+ *                   $ref: '#/components/status'
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/Document'
+ *       '500':
+ *         $ref: '#/components/responses/500'
+ */
+http.patch('/:id/:secret', function( req, res, next ){
   const { id, secret } = req.params;
 
   // Publish criteria: non-empty; all entities complete
@@ -588,8 +1323,7 @@ http.patch('/status/:id/:secret', function( req, res, next ){
     let didPublish = false;
     const hasEles = doc => doc.elements().length > 0;
     const hasIncompleteEles = doc => doc.elements().some( ele => !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX );
-    const hasSubmittedStatus = doc => doc.status() === DOCUMENT_STATUS_FIELDS.SUBMITTED;
-    const isPublishable = doc => hasEles( doc ) && !hasIncompleteEles( doc ) && hasSubmittedStatus( doc );
+    const isPublishable = doc => hasEles( doc ) && !hasIncompleteEles( doc );
     if( isPublishable( doc ) ){
       await doc.publish();
       didPublish = true;
@@ -602,7 +1336,7 @@ http.patch('/status/:id/:secret', function( req, res, next ){
     if ( !doc.hasTweet() ) {
       try {
         let text = truncateString( doc.toText(), MAX_TWEET_LENGTH ); // TODO?
-        return tweetDoc( doc.id(), doc.secret(), text );
+        return await tweetDoc( doc.id(), doc.secret(), text );
       } catch ( e ) {
         logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow
       }
@@ -611,25 +1345,42 @@ http.patch('/status/:id/:secret', function( req, res, next ){
   const handlePublishRequest = async doc => {
     const didPublish = await tryPublish( doc );
     if( didPublish ) {
+      updateRelatedPapers( doc );
       await tryTweetingDoc( doc );
-      await sendFollowUpNotification( doc );
+      sendFollowUpNotification( doc );
     }
   };
 
-  const updateDocStatus = async doc => {
+  const updateRelatedPapers = doc => {
+    let docId = doc.id();
+    logger.info('Searching the related papers table for document ', docId);
+
+    getRelatedPapers( doc )
+      .then( () => logger.info('Related papers table is updated for document', docId) )
+      .catch( e => logger.error( `Error in uploading related papers for document ${docId}: ${JSON.stringify(e.message)}` ) );
+
+  };
+
+  const updateDoc = async doc => {
     const updates = req.body;
     for( const update of updates ){
       const { op, path, value } = update;
-      if( op === 'replace' && path === 'status' ){
-        switch ( value ) {
-          case DOCUMENT_STATUS_FIELDS.PUBLISHED: {
-            await handlePublishRequest( doc );
-            break;
+
+      switch ( path ) {
+        case 'status':
+          if( op === 'replace' && value === DOCUMENT_STATUS_FIELDS.PUBLISHED ) await handlePublishRequest( doc );
+          break;
+        case 'article':
+          if( op === 'replace' ) await fillDocArticle( doc );
+          break;
+        case 'correspondence':
+          if( op === 'replace' ){
+            await fillDocCorrespondence( doc );
+            await tryVerify( doc );
           }
-          default:
-            break;
-        }
+          break;
       }
+
     }
     return doc;
   };
@@ -637,54 +1388,109 @@ http.patch('/status/:id/:secret', function( req, res, next ){
   return (
     tryPromise( () => loadTables() )
     .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
-    .then( updateDocStatus )
+    .then( updateDoc )
     .then( getDocJson )
     .then( json => res.json( json ) )
     .catch( next )
   );
 });
 
-// Refresh the document data
-http.patch('/:id/:secret', function( req, res, next ){
-  const { id, secret } = req.params;
-  const { apiKey } = req.query;
-
-  return (
-    tryPromise( () => checkApiKey( apiKey ) )
-    .then( loadTables )
-    .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
-    .then( fillDoc )
-    .then( tryVerify )
-    .then( getDocJson )
-    .then( json => res.json( json ) )
-    .catch( next )
-  );
-});
-
+/**
+ * @swagger
+ *
+ * /api/document/biopax/{id}:
+ *   get:
+ *     description: Retrieve a single Document in BioPAX format
+ *     summary: Retrieve a single Document in BioPAX format
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/vnd.biopax.rdf+xml:
+ *             description: Retrieve Document in BioPAX format (http://www.biopax.org/)
+ *       '500':
+ *         $ref: '#/components/responses/Bad ID'
+ */
 http.get('/biopax/:id', function( req, res, next ){
   let id = req.params.id;
   tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
-    .then( doc => doc.toBiopaxTemplates() )
+    .then( doc => doc.toBiopaxTemplate() )
     .then( getBiopaxFromTemplates )
     .then( result => result.text() )
     .then( owl => res.send( owl ))
     .catch( next );
 });
 
+/**
+ * @swagger
+ *
+ * /api/document/sbgn/{id}:
+ *   get:
+ *     description: Retrieve a single Document in SBGN-ML format
+ *     summary: Retrieve a single Document in SBGN-ML format
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/xml:
+ *             description: Retrieve Document in SBGN-ML format (https://github.com/sbgn/sbgn/wiki/SBGN_ML)
+ *       '500':
+ *         $ref: '#/components/responses/Bad ID'
+ */
 http.get('/sbgn/:id', function( req, res, next ){
   let id = req.params.id;
   tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
-    .then( doc => doc.toBiopaxTemplates() )
+    .then( doc => doc.toBiopaxTemplate() )
     .then( getSbgnFromTemplates )
     .then( result => result.text() )
     .then( xml => res.send( xml ))
     .catch( next );
 });
 
+/**
+ * @swagger
+ *
+ * /api/document/text/{id}:
+ *   get:
+ *     description: Retrieve plain english description of a Document's interactions
+ *     summary:  Retrieve plain english description of a Document's interactions
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: id
+ *         description: Document ID
+ *         summary: Document ID
+ *         in: path
+ *         required: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           text/plain:
+ *             description: Retrieve plain english description of a Document's interactions
+ *       '500':
+ *         $ref: '#/components/responses/Bad ID'
+ */
 http.get('/text/:id', function( req, res, next ){
   let id = req.params.id;
   tryPromise( loadTables )
@@ -695,5 +1501,58 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
+const getRelPprsForDoc = async doc => {
+  let papers = [];
+  const getUid = result => _.get( result, 'uid' );
+  const { pmid } = doc.citation();
+  if( pmid ){
+    const pmids = await db2pubmed({ uids: [pmid] });
+    let rankedDocs = await indra.semanticSearch({ query: pmid, documents: pmids });
+    const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
+    const { PubmedArticleSet } = await fetchPubmed({ uids });
+    papers = PubmedArticleSet
+      .map( getPubmedCitation )
+      .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
+  }
+
+  doc.relatedPapers( papers );
+};
+
+const getRelatedPapers = async doc => {
+  const els = doc.elements();
+
+  const toTemplate = el => el.toSearchTemplate();
+
+  const getRelPprsForEl = async el => {
+    const template = toTemplate(el);
+
+    const templates = {
+      intns: el.isInteraction() ? [ template ] : [],
+      entities: el.isEntity() ? [ template ] : []
+    };
+
+    const indraRes = await indra.searchDocuments({ templates, doc });
+
+    el.relatedPapers( indraRes || [] );
+  };
+
+  await Promise.all([ ...els.map(getRelPprsForEl) ]);
+
+  const docPprs = doc.relatedPapers();
+  const getPmid = ppr => ppr.pubmed.pmid;
+
+  await Promise.all( doc.elements().map(async el => {
+    const pprs = el.relatedPapers();
+
+    if( pprs.length > MIN_RELATED_PAPERS ){ return; }
+
+    const newPprs = _.uniq( _.concat(pprs, _.shuffle(docPprs)), getPmid );
+
+    await el.relatedPapers(newPprs);
+  }) );
+};
+
 export default http;
-export { getDocumentJson }; // allow access so page rendering can get the same data as the rest api
+export { getDocumentJson,
+  loadTables, loadDoc, fillDocArticle
+}; // allow access so page rendering can get the same data as the rest api

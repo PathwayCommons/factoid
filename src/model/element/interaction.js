@@ -225,8 +225,12 @@ class Interaction extends Element {
     return _.assign( {}, super.json(), _.pick( this.syncher.get(), _.keys(DEFAULTS) ) );
   }
 
-  toBiopaxTemplate(){
-    return this.association().toBiopaxTemplate();
+  toBiopaxTemplate( transform ){
+    return this.association().toBiopaxTemplate( transform );
+  }
+
+  toSearchTemplate(){
+    return this.association().toSearchTemplate();
   }
 
   toString(){

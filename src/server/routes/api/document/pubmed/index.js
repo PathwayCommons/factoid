@@ -1,90 +1,80 @@
 import _ from 'lodash';
-import { URL } from 'url';
 import { fetchPubmed } from './fetchPubmed';
 import demoPubmedArticle from './demoPubmedArticle';
 import { searchPubmed } from './searchPubmed';
 import logger from '../../../../logger';
-import { ArticleIDError } from '../../../../../util/pubmed';
+import { ArticleIDError, getPubmedCitation } from '../../../../../util/pubmed';
 import {
-  PUBMED_LINK_BASE_URL,
   DEMO_ID
 } from '../../../../../config';
 
-const digitsRegex = /^[0-9.]+$/;
+const ID_TYPE = Object.freeze({
+  DOI: 'doi',
+  PMID: 'uid',
+  TITLE: 'title'
+});
 
-/**
- * findPubmedId
- *
- * Try to extract out a PMID from the input, which can be:
- *   1. number (including period(s))
- *   2. PubMed url, such as an article path (/123345) or search (e.g. /?term=title)
- *   3. a text query (e.g. title)
- * Will throw an 'ArticleIDError' if 1 and 2 do not apply and a PubMed search does
- * not return a unique result. This function is necessary because it polyfills
- * capabilities in EUTILS that are through  the PubMed website.
- *
- * @param {string} paperId the description of an article
- * @returns {string} the candidate uid
- * @throws {ArticleIDError} if it cannot identify a non-emptu, unique record
- */
-const findPubmedId = async paperId => {
+const paperId2Type = paperId => {
+  // 99.3% of CrossRef DOIs (https://www.crossref.org/blog/dois-and-matching-regular-expressions/)
+  const doiRegex = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i;
+  const digitsRegex = /^[0-9.]+$/;
 
-  let id;
-  const getUniqueIdOrThrow = async query => {
-    const { searchHits, count } = await searchPubmed( query );
-    if( count === 1 ){
-      return _.first( searchHits );
-    } else {
-      throw new ArticleIDError( `Unrecognized paperId '${paperId}'`, paperId );
-    }
-  };
+  let IdType = ID_TYPE.TITLE;
   const isUidLike = digitsRegex.test( paperId );
+  const isDoiLike = doiRegex.test( paperId );
 
-  if( isUidLike ){
-    // Case: a bunch of digits, periods
-    id = paperId;
-
-  } else {
-    if ( !_.isString( paperId )  ) throw new ArticleIDError( `Missing paperId`, paperId );
-    const isPubMedUrlLike = paperId.startsWith( PUBMED_LINK_BASE_URL );
-
-    if( isPubMedUrlLike ) {
-      // Case: URL, look for path or exact search term
-      const pubmedUrl = new URL( PUBMED_LINK_BASE_URL );
-      const paperIdUrl = new URL( paperId );
-      const isSameHost = paperIdUrl.hostname === pubmedUrl.hostname;
-      const pathUidMatchResult = paperIdUrl.pathname.match( /^\/pubmed\/([0-9.]+)$/ );
-
-      if( isSameHost && !_.isNull( pathUidMatchResult ) ){
-        id = pathUidMatchResult[1];
-
-      } else {
-        const paperIdUrlSearchTerm = paperIdUrl.searchParams.get('term');
-
-        if( isSameHost && paperIdUrlSearchTerm ) {
-          id = await getUniqueIdOrThrow( paperIdUrlSearchTerm );
-        }
-      }
-
-    } else {
-      //Last bucket - do a search (title, doi, ...)
-      id = await getUniqueIdOrThrow( paperId );
-    }
+  if( isDoiLike ) {
+    IdType = ID_TYPE.DOI;
+  } else if ( isUidLike ){
+    IdType = ID_TYPE.PMID;
   }
 
-  return id;
+  return IdType;
+};
+
+const findMatchingPubmedArticle = async ( paperId, IdType, uids ) => {
+  let PubmedArticle;
+  // Pubmed EFETCH returns lower-cased title, adds trailing period
+  const santitize = raw => {
+    const trimmed = _.trim( raw , ' .');
+    const lower = _.toLower( trimmed );
+    const clean = lower.replace(/[\W_]+/g, ' ');
+    return clean;
+  };
+
+  // Try to match: Could be responsibility of user in future
+  const articleMatchesPaperId = article => {
+    const { title, pmid, doi } = getPubmedCitation( article );
+    let hasMatch = false;
+    switch ( IdType ) {
+      case ID_TYPE.DOI:
+        if( doi === paperId ) hasMatch = true;
+        break;
+      case ID_TYPE.PMID:
+        if( pmid === paperId ) hasMatch = true;
+        break;
+      case ID_TYPE.TITLE:
+        if( santitize( title ).includes( santitize( paperId ) ) ) hasMatch = true;
+        break;
+    }
+    return hasMatch;
+  };
+
+  if( uids.length ){
+    const { PubmedArticleSet } = await fetchPubmed({ uids });
+    PubmedArticle = PubmedArticleSet.find( articleMatchesPaperId );
+  }
+  return PubmedArticle;
 };
 
 /**
  * getPubmedRecord
  *
- * Retrieve a single PubmedArticle. Shall interpret an input as either:
- *   - A number (with optional period)
- *   - A url
- *     - with an PubMed article path e.g. 'https://www.ncbi.nlm.nih.gov/pubmed/123456'
- *     - with an PubMed search query.g. 'https://www.ncbi.nlm.nih.gov/pubmed/?term=123456'
- *     - A search returning a unique PubMed ID
- *
+ * Retrieve a single PubmedArticle. Shall interpret an input as:
+ *   1. Digital Object Identifier (doi)
+ *   2. PubMed UID (pmid)
+ *   3. The exact article title
+ *   4. Keyword 'demo'
  * @param {string} paperId Contains or references a single PubMed uid (see above). If 'demo' return canned demo data.
  * @return {Object} The unique PubMedArticle (see [NLM DTD]{@link https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_190101.dtd} )
  */
@@ -94,21 +84,20 @@ const getPubmedArticle = async paperId => {
 
   } else {
     try {
-      const candidateId = await findPubmedId( paperId );
-      const { PubmedArticleSet } = await fetchPubmed({
-        uids: [ candidateId ]
-      });
+      const IdType = paperId2Type( paperId );
+      const fieldOpts = IdType === ID_TYPE.TITLE ? { field: ID_TYPE.TITLE } : {};
+      const { searchHits } = await searchPubmed( paperId, fieldOpts );
+      const PubmedArticle = await findMatchingPubmedArticle( paperId, IdType, searchHits );
 
-      if( !_.isEmpty( PubmedArticleSet ) ){
-        return _.head( PubmedArticleSet );
+      if( PubmedArticle ){
+        return PubmedArticle;
       } else {
-        throw new ArticleIDError( `No PubMed record found '${paperId}'`, paperId );
+        throw new Error(`Unable to retrieve a PubmedArticle for '${paperId}`);
       }
-    } catch ( e ) {
-      // Error types to note: ArticleIDError, HTTPStatusError, FetchError
-      logger.error( `Unable to retrieve a PubmedArticle for '${paperId}'` );
-      logger.error( `${e.name}: ${e.message}` );
-      throw e;
+
+    } catch( err ) {
+      logger.error( `${err.name}: ${err.message}` );
+      throw new ArticleIDError( `Unrecognized paperId '${paperId}'`, paperId );
     }
   }
 };

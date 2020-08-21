@@ -33,6 +33,17 @@ export const LOG_LEVEL = env('LOG_LEVEL', 'info');
 
 export const API_KEY = env('API_KEY', '');
 
+// AppSignal
+export const APPSIGNAL_PUSH_API_KEY = env('APPSIGNAL_PUSH_API_KEY', '');
+export const APPSIGNAL_APP_NAME = env('APPSIGNAL_APP_NAME', 'Biofactoid');
+export const APPSIGNAL_APP_ENV = env('APPSIGNAL_APP_ENV', 'development');
+
+// CRON jobs
+export const CRON_SCHEDULE = env('CRON_SCHEDULE', '0 1 * * *');
+export const DOCUMENT_CRON_UPDATE_PERIOD_DAYS = env('DOCUMENT_CRON_UPDATE_PERIOD_DAYS', 7);
+export const DOCUMENT_CRON_CREATED_AGE_DAYS = env('DOCUMENT_CRON_CREATED_AGE_DAYS', undefined);
+export const DOCUMENT_CRON_REFRESH_ENABLED = env('DOCUMENT_CRON_REFRESH_ENABLED', true);
+
 // Connect to localhost
 export const SOCKET_HOST = env('SOCKET_HOST', isClient() ? window.location.hostname : 'localhost');
 
@@ -51,14 +62,19 @@ export const BIOPAX_CONVERTER_URL = env('BIOPAX_CONVERTER_URL', 'https://biopax.
 export const GROUNDING_SEARCH_BASE_URL = env('GROUNDING_SEARCH_BASE_URL', 'https://grounding.baderlab.org');
 export const NCBI_EUTILS_BASE_URL = env('NCBI_EUTILS_BASE_URL', 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/');
 export const NCBI_EUTILS_API_KEY = env('NCBI_EUTILS_API_KEY', 'b99e10ebe0f90d815a7a99f18403aab08008');
+export const INDRA_DB_BASE_URL = env('INDRA_DB_BASE_URL', 'https://db.indra.bio/latest/');
+export const INDRA_ENGLISH_ASSEMBLER_URL = env('INDRA_ENGLISH_ASSEMBLER_URL', 'http://api.indra.bio:8000/assemblers/english');
+export const SEMANTIC_SEARCH_BASE_URL = env('SEMANTIC_SEARCH_BASE_URL', 'https://semanticsearch.baderlab.org/');
 
 // Links
 export const UNIPROT_LINK_BASE_URL = env('UNIPROT_LINK_BASE_URL', 'http://www.uniprot.org/uniprot/');
 export const CHEBI_LINK_BASE_URL = env('CHEBI_LINK_BASE_URL', 'https://www.ebi.ac.uk/chebi/searchId.do?chebiId=');
 export const PUBCHEM_LINK_BASE_URL = env('PUBCHEM_LINK_BASE_URL', 'https://pubchem.ncbi.nlm.nih.gov/compound/');
 export const NCBI_LINK_BASE_URL = env('NCBI_LINK_BASE_URL', 'https://www.ncbi.nlm.nih.gov/gene/');
-export const PUBMED_LINK_BASE_URL = env('PUBMED_LINK_BASE_URL', 'https://www.ncbi.nlm.nih.gov/pubmed/');
+export const PUBMED_LINK_BASE_URL = env('PUBMED_LINK_BASE_URL', 'https://pubmed.ncbi.nlm.nih.gov/');
 export const DOI_LINK_BASE_URL = env('DOI_LINK_BASE_URL', 'https://www.doi.org/');
+export const GOOGLE_SCHOLAR_BASE_URL = env('GOOGLE_SCHOLAR_BASE_URL', 'https://scholar.google.com/scholar?q=');
+export const IDENTIFIERS_ORG_ID_BASE_URL = env('IDENTIFIERS_ORG_ID_BASE_URL', '	https://identifiers.org/');
 
 // Email
 export const EMAIL_ENABLED = env('EMAIL_ENABLED', false);
@@ -70,17 +86,12 @@ export const SMTP_USER = env('SMTP_USER', 'user');
 export const SMTP_PASSWORD = env('SMTP_PASSWORD', 'password');
 
 export const EMAIL_VENDOR_MAILJET = env('EMAIL_VENDOR_MAILJET', 'Mailjet');
-export const MAILJET_TMPLID_INVITE = env('MAILJET_TMPLID_INVITE', '1005099');
+export const MAILJET_TMPLID_INVITE = env('MAILJET_TMPLID_INVITE', '1330760');
 export const MAILJET_TMPLID_FOLLOWUP = env('MAILJET_TMPLID_FOLLOWUP', '988309');
 export const MAILJET_TMPLID_REQUEST_ISSUE = env('MAILJET_TMPLID_REQUEST_ISSUE', '1202251');
-export const EMAIL_CONTEXT_JOURNAL = env('EMAIL_CONTEXT_JOURNAL', 'journal');
-export const EMAIL_CONTEXT_SIGNUP = env('EMAIL_CONTEXT_SIGNUP', 'signup');
 export const EMAIL_TYPE_INVITE = env('EMAIL_TYPE_INVITE', 'invite');
 export const EMAIL_TYPE_FOLLOWUP = env('EMAIL_TYPE_FOLLOWUP', 'followUp');
 export const EMAIL_TYPE_REQUEST_ISSUE = env('EMAIL_TYPE_REQUEST_ISSUE', 'requestIssue');
-export const EMAIL_SUBJECT_INVITE = env('EMAIL_SUBJECT_INVITE', 'Your invitation to Biofactoid is ready');
-export const EMAIL_SUBJECT_FOLLOWUP = env('EMAIL_SUBJECT_FOLLOWUP', 'Thank you for sharing your research with Biofactoid');
-export const EMAIL_SUBJECT_REQUEST_ISSUE = env('EMAIL_SUBJECT_REQUEST_ISSUE', 'Please re-submit your request to Biofactoid');
 export const EMAIL_ADDRESS_INFO = env('EMAIL_ADDRESS_INFO', 'info@biofactoid.org');
 
 // Sharing
@@ -95,9 +106,16 @@ export const TWITTER_ACCESS_TOKEN_SECRET = env('TWITTER_ACCESS_TOKEN_SECRET', 'S
 export const TWITTER_ACCOUNT_NAME = env('TWITTER_ACCOUNT_NAME', 'biofactoid');
 export const MAX_TWEET_LENGTH = env('MAX_TWEET_LENGTH', 150);
 
-// Demo
+// Demo and sample
 export const DEMO_ID = env('DEMO_ID', 'demo');
 export const DEMO_SECRET = env('DEMO_SECRET', 'demo');
 export const DEMO_AUTHOR_EMAIL = env('DEMO_AUTHOR_EMAIL', 'author@example.com');
 export const DEMO_CAN_BE_SHARED = env('DEMO_CAN_BE_SHARED', false);
 export const DEMO_CAN_BE_SHARED_MULTIPLE_TIMES = env('DEMO_CAN_BE_SHARED_MULTIPLE_TIMES', false);
+export const SAMPLE_DOC_ID = env('SAMPLE_DOC_ID', '5df17c41-acb7-4c42-a37b-fe323688bc64');
+
+// related papers
+export const NO_ABSTRACT_HANDLING = env('NO_ABSTRACT_HANDLING', 'text');
+export const MIN_SEMANTIC_SCORE = env('MIN_SEMANTIC_SCORE', 0.47);
+export const SEMANTIC_SEARCH_LIMIT = env('SEMANTIC_SEARCH_LIMIT', 30);
+export const MIN_RELATED_PAPERS = env('MIN_RELATED_PAPERS', 6);

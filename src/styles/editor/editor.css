@@ -1,12 +1,14 @@
 .editor {
+  left: 0;
+  top: 0;
   height: 100%;
   width: 100%;
-  position: absolute;
+  position: fixed;
   opacity: 0.01;
   transition-duration: 300ms;
   transition-property: opacity;
   transition-timing-function: ease-out;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .editor-initted {
@@ -16,7 +18,7 @@
 .editor-buttons,
 .editor-main-menu {
   box-sizing: border-box;
-  position: absolute;
+  position: fixed;
   left: 0;
   z-index: 1;
   display: inline-flex;
@@ -37,10 +39,14 @@
 
 .editor-submit {
   position: absolute;
-  right: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
   box-sizing: border-box;
   z-index: 1;
   padding: 0.75em 0.5em;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 0.25em;
 }
 
 .editor-submit-button {
@@ -94,7 +100,7 @@
 }
 
 .editor-title-content {
-  display: inline-block;
+  display: block;
   background: rgba(255, 255, 255, 0.5);
   padding: 0.375em 0.5em;
   border-bottom-left-radius: 0.25em;
@@ -102,6 +108,7 @@
   max-width: calc(100% - 10.5em);
   pointer-events: all;
   line-height: 1.5;
+  margin: 0 auto;
 }
 
 .editor-title-name,
@@ -109,10 +116,15 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: block;
 }
 
 .editor-title-info {
   font-size: var(--smallFontSize);
+
+  & div {
+    display: block;
+  }
 }
 
 .editor-task-list-active {
@@ -126,16 +138,9 @@
   z-index: 0;
   position: absolute;
   left: 0;
+  right: 0;
+  bottom: 0;
   top: 0;
-  width: 100%;
-  height: 100%;
-  transform: translate3d(0, 0, 0);
-  transition: transform 200ms ease-out;
-}
-
-.editor-graph-shifted {
-  transform: translate3d(-21.5em, 0, 0);
-  transition: transform 200ms ease-out;
 }
 
 .editor-menu-content {
@@ -178,4 +183,184 @@
   border: 2px solid;
   border-radius: 15px;
   text-align: center;
+}
+
+.editor-info-panel {
+  position: absolute;
+  box-sizing: border-box;
+  padding: 0.5em;
+  overflow: visible;
+  z-index: 3;
+  box-shadow: 0 0 2em 4px rgba(0, 0, 0, 0.25);
+  background: #fff;
+  top: 50%;
+  bottom: auto;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1500px;
+  width: auto;
+  height: auto;
+  min-height: 50%;
+}
+
+.editor-info-panel-selected-el {
+  background: linear-gradient(to bottom, hsla(212, 85%, 90%, 1) 0, #fff 6em, #fff 0);
+}
+
+.editor-info-panel-selected-ent {
+  & .entity-info {
+    width: auto;
+  }
+}
+
+.editor-read-only .editor-graph {
+  right: 0;
+  bottom: 50%;
+}
+
+.editor-explore-share {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0.5em;
+  border-bottom-left-radius: 0.25em;
+
+  & .native-share-icon {
+    font-size: 1.5em;
+  }
+}
+
+.editor-explore-share-twitter {
+  position: fixed;
+  left: 0;
+  top: 2.75em;
+  width: 2.25em;
+  height: 2.25em;
+  margin: 0.5em;
+  padding: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+
+  & i {
+    font-size: 1.5em;
+  }
+}
+
+.editor-info-section-title {
+  font-weight: bold;
+  margin: 0.5em 0;
+}
+
+.editor-info-carousel-title {
+  font-weight: bold;
+}
+
+.editor-info-carousel {
+  margin-right: -0.5em;
+  margin-left: -0.5em;
+  padding-bottom: 1.5em;
+
+  & .carousel-doc {
+    border-color: #ccc;
+  }
+
+  & .carousel-pager {
+    background-color: rgba(255, 255, 255, 0.7);
+    color: #000;
+  }
+
+  & .carousel-pager-icon {
+    text-shadow: 0 0 4px #fff;
+  }
+}
+
+.editor-info-main-section + .editor-info-main-section {
+  margin-top: 2em;
+}
+
+.editor-info-title {
+  font-size: 1.5em;
+}
+
+.editor-info-authors {
+  margin: 0.5em 0;
+}
+
+.editor-info-author + .editor-info-author {
+  &::before {
+    content: ', ';
+  }
+}
+
+.editor-info-links {
+  margin: 1.5em 0;
+  line-height: 1.4;
+}
+
+.editor-info-link {
+  display: inline-block;
+  margin-right: 1em;
+}
+
+.editor-info-abstract-content {
+  line-height: 1.5;
+}
+
+.editor-info-panel-close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 3em;
+  height: 3em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #666;
+  z-index: 10;
+}
+
+.editor-info-panel-close-icon {
+  font-size: 3em;
+}
+
+@media (min-width: 1000px) {
+  .editor-info-panel {
+    padding: 1em;
+  }
+
+  .editor-info-main-sections {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+  }
+
+  .editor-info-main-section,
+  .editor-info-main-section + .editor-info-main-section {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .editor-info-main-sections .related-papers {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .editor-info-abstract-section {
+    width: 50%;
+    box-sizing: border-box;
+    padding-right: 2em;
+  }
+
+  .editor-info-related-papers-section {
+    flex: 1 1;
+  }
 }

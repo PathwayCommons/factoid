@@ -2,16 +2,21 @@ import _ from 'lodash';
 import fs from 'fs';
 import path from 'path';
 import { expect } from 'chai';
+import convert from 'xml-js';
 
 import { pubmedDataConverter } from '../../src/server/routes/api/document/pubmed/fetchPubmed';
 
 const TEST_PUBMED_DATA = new Map([
+  ['151222', 'pmid_151222.xml'], // MedlineDate
   ['9417067', 'pmid_9417067.xml'],
-  ['29440426', 'pmid_29440426.xml'],
+  ['29440426', 'pmid_29440426.xml'], // PubMedData
   ['30078747', 'pmid_30078747.xml'], // InvestigatorList
-  ['30115697', 'pmid_30115697.xml'], // HTML markup in AbstractText; ORCIDs
+  ['30115697', 'pmid_30115697.xml'], // Markup; Identifier
   ['31511694', 'pmid_31511694.xml']
 ]);
+
+const xml2jsOpts = {};
+const xmljs = xml => convert.xml2js( xml, xml2jsOpts );
 
 describe('fetchPubmed', function(){
 
@@ -21,13 +26,14 @@ describe('fetchPubmed', function(){
 
       let pubmedInfo;
 
-      before( async () => {
-        const xml = fs.readFileSync( path.resolve( __dirname, xmlfile ) );
-        pubmedInfo = await pubmedDataConverter( xml );
+      before( () => {
+        const xml = fs.readFileSync( path.resolve( __dirname, xmlfile ), 'utf8' );
+        const json = xmljs( xml );
+        pubmedInfo = pubmedDataConverter( json );
+        // console.log( JSON.stringify( pubmedInfo,null, 2 ));
       });
 
-      after( () => {
-      });
+      after( () => {} );
 
       it('Should return a result', () => {
         expect( pubmedInfo ).to.exist;
@@ -103,9 +109,56 @@ describe('fetchPubmed', function(){
                   expect( JournalIssue ).to.have.property( 'Issue' );
                   expect( JournalIssue ).to.have.property( 'PubDate' );
                 });
+
+                describe( 'PubDate', () => {
+
+                  let PubDate;
+                  before( () => {
+                    PubDate = _.get( JournalIssue, 'PubDate' );
+                  });
+
+
+                  it('Should possess a correct PubDate', () => {
+                    if( _.has( PubDate, ['MedlineDate'] ) ) {
+                      expect( PubDate ).to.have.property( 'MedlineDate' );
+
+                    } else {
+                      expect( PubDate ).to.have.property( 'Year' );
+                      if( _.has( PubDate, ['Season'] ) ) {
+                        expect( PubDate ).to.have.property( 'Season' );
+                      }
+
+                      if( _.has( PubDate, ['Month'] ) ) {
+                        expect( PubDate ).to.have.property( 'Month' );
+                      }
+
+                      if( _.has( PubDate, ['Day'] ) ) {
+                        expect( PubDate ).to.have.property( 'Day' );
+                      }
+
+                    }
+                  });
+
+                });
+
               });
 
-            });
+              describe( 'ISSN', () => {
+
+                let ISSN;
+                before( () => {
+                  ISSN = _.get( Journal, 'ISSN' );
+                });
+
+                if( ISSN != null ){
+                  it('Should possess top-level attributes', () => {
+                    expect( ISSN ).to.have.property( 'IssnType' );
+                    expect( ISSN ).to.have.property( 'value' );
+                  });
+                }
+              });
+
+            }); // Journal
 
             describe( 'Abstract', () => {
 
@@ -129,7 +182,7 @@ describe('fetchPubmed', function(){
               });
 
               it('Should consist of multiple items', () => {
-                expect( AuthorList.length ).to.be.at.least( 1 );
+                expect( AuthorList.length ).not.to.equal( 1 );
               });
 
 
@@ -147,8 +200,10 @@ describe('fetchPubmed', function(){
                   expect( Author ).to.have.nested.property( 'CollectiveName' );
                   expect( Author ).to.have.property( 'AffiliationInfo' );
                   expect( Author ).to.have.property( 'Identifier' );
-                  expect( Author ).to.have.nested.property( 'AffiliationInfo[0].Affiliation' );
-                  expect( Author ).to.have.nested.property( 'AffiliationInfo[0].email' );
+                  if( !_.isEmpty( _.get( Author, 'AffiliationInfo' ) ) ){
+                    expect( Author ).to.have.nested.property( 'AffiliationInfo[0].Affiliation' );
+                    expect( Author ).to.have.nested.property( 'AffiliationInfo[0].email' );
+                  }
                 });
 
                 describe( 'Identifier', () => {
@@ -159,18 +214,18 @@ describe('fetchPubmed', function(){
                   });
 
                   it('Should have item with top-level attributes', () => {
-                    if(Identifier){
-                      expect( Identifier ).to.have.property( 'Source' );
-                      expect( Identifier ).to.have.property( 'id' );
+                    if( !_.isEmpty( Identifier ) ){
+                      expect( Identifier ).to.have.property( 'Identifier[0].Source' );
+                      expect( Identifier ).to.have.property( 'Identifier[0].id' );
                     }
                   });
 
                 });//Identifier
 
-
               }); // Author
 
-            });
+            }); //AuthorList
+
           }); //Article
 
           describe( 'ChemicalList', () => {
@@ -184,8 +239,8 @@ describe('fetchPubmed', function(){
               expect( MedlineCitation ).to.have.nested.property( 'ChemicalList' );
             });
 
-            it('Should consist of one item or null', () => {
-              expect( ChemicalList === null || Array.isArray( ChemicalList ) ).to.be.true;
+            it('Should consist of one item or empty', () => {
+              expect( Array.isArray( ChemicalList ) ).to.be.true;
             });
 
             describe( 'Chemical', () => {
@@ -198,8 +253,8 @@ describe('fetchPubmed', function(){
               it('Should have optional item with top-level attributes', () => {
                 if( Chemical ){
                   expect( Chemical ).to.have.property( 'RegistryNumber' );
-                  expect( Chemical ).to.have.property( 'NameOfSubstance' );
-                  expect( Chemical ).to.have.property( 'UI' );
+                  expect( Chemical ).to.have.nested.property( 'NameOfSubstance.value' );
+                  expect( Chemical ).to.have.nested.property( 'NameOfSubstance.UI' );
                 }
               });
             });
@@ -217,8 +272,8 @@ describe('fetchPubmed', function(){
               expect( MedlineCitation ).to.have.nested.property( 'KeywordList' );
             });
 
-            it('Should consist of multiple items or null', () => {
-              expect( KeywordList === null || Array.isArray( KeywordList ) ).to.be.true;
+            it('Should consist of multiple items or empty', () => {
+              expect( Array.isArray( KeywordList ) ).to.be.true;
             });
 
           });//KeywordList
@@ -235,19 +290,25 @@ describe('fetchPubmed', function(){
               expect( MedlineCitation ).to.have.nested.property( 'MeshheadingList' );
             });
 
-            it('Should consist of multiple items or null', () => {
-              expect( MeshheadingList === null || Array.isArray( MeshheadingList ) ).to.be.true;
+            it('Should consist of multiple items or empty', () => {
+              expect( Array.isArray( MeshheadingList ) ).to.be.true;
             });
 
             it('Should have item with top-level attributes', () => {
-              if( MeshheadingList !== null ){
-                expect( MeshheadingList ).to.have.nested.property( '[0].DescriptorName' );
-                expect( MeshheadingList ).to.have.nested.property( '[0].ID' );
-                expect( MeshheadingList ).to.have.nested.property( '[0].isMajorTopicYN' );
+              if( !_.isEmpty( MeshheadingList ) ){
+                expect( MeshheadingList ).to.have.nested.property( '[0].DescriptorName.value' );
+                expect( MeshheadingList ).to.have.nested.property( '[0].DescriptorName.UI' );
+                expect( MeshheadingList ).to.have.nested.property( '[0].DescriptorName.MajorTopicYN' );
+
+                if( !_.isEmpty( MeshheadingList[0].QualifierName ) ){
+                  expect( MeshheadingList ).to.have.nested.property( '[0].QualifierName[0].value' );
+                  expect( MeshheadingList ).to.have.nested.property( '[0].QualifierName[0].MajorTopicYN' );
+                  expect( MeshheadingList ).to.have.nested.property( '[0].QualifierName[0].UI' );
+                }
               }
             });
 
-          });//KeywordList
+          });//MeshheadingList
 
           describe( 'InvestigatorList', () => {
 
@@ -281,9 +342,9 @@ describe('fetchPubmed', function(){
                 }
               });
 
-            });//InvestigatorList
+            }); // Investigator
 
-          });//KeywordList
+          }); // InvestigatorList
 
         });//MedlineCitation
 
@@ -311,12 +372,12 @@ describe('fetchPubmed', function(){
               History = _.get( PubmedData, 'History' );
             });
 
-            it('Should consist of multiple items or null', () => {
-              expect( History === null || Array.isArray( History ) ).to.be.true;
+            it('Should consist of multiple items or none', () => {
+              expect( Array.isArray( History ) ).to.be.true;
             });
 
             it('Should contain items with top-level attributes', () => {
-              if( History !== null ){
+              if( !_.isEmpty( History ) ){
                 expect( History ).to.have.nested.property( '[0].PubStatus' );
                 expect( History ).to.have.nested.property( '[0].PubMedPubDate' );
               }
@@ -336,7 +397,7 @@ describe('fetchPubmed', function(){
             });
 
             it('Should consist of multiple items', () => {
-              expect( ArticleIdList.length ).to.be.at.least( 1 );
+              expect( ArticleIdList.length ).not.to.equal( 0 );
             });
 
             it('Should contain items with top-level attributes', () => {
@@ -353,14 +414,11 @@ describe('fetchPubmed', function(){
               ReferenceList = _.get( PubmedData, 'ReferenceList' );
             });
 
-            it('Should consist of multiple items', () => {
-              if ( ReferenceList !== null ) expect( ReferenceList.length ).to.be.at.least( 1 );
-            });
-
             it('Should contain items with top-level attributes', () => {
-              if ( ReferenceList !== null ) {
-                expect( ReferenceList[0] ).to.have.property( 'Citation' );
-                expect( ReferenceList[0] ).to.have.property( 'ArticleIdList' );
+              if ( !_.isEmpty( ReferenceList ) ) {
+                expect( ReferenceList[0] ).to.have.property( 'Title' );
+                expect( ReferenceList[0] ).to.have.property( 'Reference' );
+                expect( ReferenceList[0] ).to.have.property( 'ReferenceList' );
               }
             });
 
@@ -372,7 +430,6 @@ describe('fetchPubmed', function(){
 
     });//fetchArticleSet
 
-  }; // TEST_PUBMED_DATA cases
+  } // TEST_PUBMED_DATA cases
 
 }); // fetchPubmed
-

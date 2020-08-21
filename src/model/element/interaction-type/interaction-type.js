@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { error } from '../../../util';
 import { PARTICIPANT_TYPE } from '../participant-type';
 import { BIOPAX_TEMPLATE_TYPE } from './biopax-type';
@@ -102,6 +104,37 @@ class InteractionType {
     throw new Error(`Abstract method toBiopaxTemplate() is not overridden for interaction type of ${this.value}`);
   }
 
+  toSearchTemplate() {
+    let source = this.getSource();
+    let target = this.getTarget();
+
+    let ppts;
+
+    // if directed list the participants in order
+    if ( source && target ) {
+      ppts = [ source, target ];
+    }
+    else {
+      ppts = this.interaction.participants();
+    }
+
+    let id = this.interaction.id();
+
+    // For entities id field represents the id of association which is different then
+    // element id. Therefore, we have the elId field as well which has the same value with
+    // the id field for the interactions.
+    let elId = id;
+
+    let pptTemplates = ppts.map( p => p.toSearchTemplate() );
+
+    // if there is some participants with invalid template skip the interaction
+    if ( _.includes( ppts, null ) ) {
+      return null;
+    }
+
+    return { id, ppts: pptTemplates, elId };
+  }
+
   toString(verbPhrase, post = ''){
     let src, tgt;
 
@@ -125,13 +158,14 @@ class InteractionType {
     let srcName = src.name() || '(?)';
     let tgtName = tgt.name() || '(?)';
 
-    return `${srcName} ${verbPhrase} ${tgtName} ${post}`;
+    return _.compact([srcName, verbPhrase, tgtName, post]).join(' ');
   }
 
-  validatePpts(){
+  validatePpts( transform = _.identity ){
     let intn = this.interaction;
-    let pptAssocsAllowed = () => this.constructor.isAllowedForInteraction(intn);
+    let pptAssocsAllowed = () => this.constructor.isAllowedForInteraction(intn, transform);
     let pptTypeAllowed = () => {
+      // transform function should not be called here since we need the sign of original participants
       let pptType = (
         intn.participants()
         .map(ppt => intn.participantType(ppt))
@@ -141,7 +175,6 @@ class InteractionType {
 
       return this.allowedParticipantTypes().some(type => type.value === pptType.value);
     };
-
     return pptAssocsAllowed() && pptTypeAllowed();
   }
 

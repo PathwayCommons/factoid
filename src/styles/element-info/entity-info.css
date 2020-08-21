@@ -1,5 +1,10 @@
 .entity-info {
-  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  padding: 0.25em;
+  min-width: 300px;
+  max-width: calc(100vw - 1.5em);
+  width: 400px;
 }
 
 .entity-info-name-input {
@@ -207,4 +212,10 @@ button.entity-info-edit {
 
 .entity-info-organism-dropdown {
   width: 20em;
+}
+
+.entity-info-reld-papers-title {
+  margin-top: 1.5em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
 }

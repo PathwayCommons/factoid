@@ -1,6 +1,7 @@
 import Element from './element';
 import _ from 'lodash';
 import { tryPromise } from '../../util';
+import { ENTITY_TYPE, getNCBIEntityType } from './entity-type';
 
 const TYPE = 'entity';
 
@@ -99,6 +100,13 @@ class Entity extends Element {
   }
 
   associate( def ){
+    // ncbi provides typeOfGene property. Therefore, for the ncbi genes
+    // obtain the entity type from typeOfGene property if it is available
+    if ( def.namespace == 'ncbi' && def.typeOfGene != null ) {
+      def.type = getNCBIEntityType( def.typeOfGene );
+      delete def.typeOfGene;
+    }
+
     let changes = {
       association: def
     };
@@ -158,9 +166,15 @@ class Entity extends Element {
       return null;
     }
 
+    let dbXrefs = assoc.dbXrefs;
+
+    if ( dbXrefs && dbXrefs.length > 0 ) {
+      return dbXrefs[0];
+    }
+
     return {
       id: assoc.id,
-      db: assoc.namespace
+      db: assoc.dbName
     };
   }
 
@@ -168,8 +182,34 @@ class Entity extends Element {
     let type = this.type();
     let name = this.name() || '';
     let xref = this.getBiopaxXref();
+    let orgId = _.get( this.association(), ['organism'] );
+    let organism = { id: orgId, db: 'taxonomy' };
+    let entity = { type, name, xref, organism };
 
-    return { type, name, xref };
+    if ( type == ENTITY_TYPE.COMPLEX ) {
+      entity.components = this.participants().map( p => p.toBiopaxTemplate() );
+    }
+
+    return entity;
+  }
+
+  toSearchTemplate(){
+    let name = this.name();
+    let elId = this.id();
+
+    // entries with no name should be skipped
+    if ( !name ) {
+      return null;
+    }
+
+    let template = _.pick(this.association(), ['id', 'namespace', 'dbName', 'dbXrefs']);
+    template.name = name;
+
+    // the id field represents the id of association there is a need to know the
+    // factoid id of element as well
+    template.elId = elId;
+
+    return template;
   }
 }
 

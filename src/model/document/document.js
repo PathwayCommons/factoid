@@ -91,6 +91,11 @@ class Document {
         this.emit('submit');
         this.emit('remotesubmit');
       }
+
+      if( changes.relatedPapers ){
+        this.emit('relatedpapers', changes.relatedPapers);
+        this.emit('remoterelatedpapers', changes.relatedPapers);
+      }
     });
 
     if( isServer ) this.syncher.on( 'create', () => this.rwMeta( 'createdDate', new Date() ) );
@@ -387,6 +392,17 @@ class Document {
     return tryPromise( runLayout ).then( savePositions );
   }
 
+  relatedPapers( papersData ){
+    if( papersData ){
+      let p = this.syncher.update({ 'relatedPapers': papersData });
+      this.emit( 'relatedpapers', papersData );
+      return p;
+    }
+    else if( !papersData ){
+      return this.syncher.get( 'relatedPapers' );
+    }
+  }
+
   status( field ){
     if( field && _.includes( _.values( DOCUMENT_STATUS_FIELDS ), field ) ){
       let p = this.syncher.update({ 'status': field });
@@ -424,21 +440,52 @@ class Document {
       elements: this.elements().map( toJson ),
       publicUrl: this.publicUrl(),
       privateUrl: this.privateUrl(),
-      citation: this.citation()
+      citation: this.citation(),
+      text: this.toText(),
     }, _.pick(this.syncher.get(), this.syncher.hasCorrectSecret() ? METADATA_FIELDS: READONLY_METADATA_FIELDS  ));
   }
 
-  toBiopaxTemplates(){
+  toBiopaxIntnTemplates(){
     let interactions = this.interactions();
     let templates = [];
+    let getElById = id => this.elementSet.get(id);
+    let transform = el => {
+      let parentId = el.getParentId();
+
+      if ( parentId == null ) {
+        return el;
+      }
+
+      return getElById( parentId );
+    };
 
     interactions.forEach( intn => {
-      let template = intn.toBiopaxTemplate();
-      if (template !== null){
+      let template = intn.toBiopaxTemplate( transform );
+      if (template != null){
         templates.push(template);
       }
     } );
 
+    return templates;
+  }
+
+  toBiopaxTemplate(){
+    let interactions = this.toBiopaxIntnTemplates();
+    let articleData = _.get( this.article(), ['PubmedData', 'ArticleIdList', 0]);
+    let pubId = articleData.id;
+    let pubDb = articleData.IdType;
+    let pathwayName = this.citation().title;
+    let publication = { id: pubId, db: pubDb };
+
+    return { interactions, publication, pathwayName};
+  }
+
+  toSearchTemplates(){
+    let interactions = this.interactions();
+    let entities = this.entities();
+    const getTemplates = els => els.map( e => e.toSearchTemplate() ).filter( t => t != null );
+
+    let templates = { intns: getTemplates( interactions ), entities: getTemplates( entities ) };
     return templates;
   }
 

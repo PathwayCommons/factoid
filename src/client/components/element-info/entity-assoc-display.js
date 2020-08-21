@@ -3,7 +3,7 @@ import Highlighter from '../highlighter';
 import Formula from './chemical-formula';
 import Tooltip from '../popover/tooltip';
 
-const { UNIPROT_LINK_BASE_URL, PUBCHEM_LINK_BASE_URL, NCBI_LINK_BASE_URL, CHEBI_LINK_BASE_URL } = require('../../../config');
+const { IDENTIFIERS_ORG_ID_BASE_URL } = require('../../../config');
 
 let protein = (m, searchTerms, includeOrganism = true) => {
   return [
@@ -39,23 +39,27 @@ let rna = protein;
 
 let chemical = (m, searchTerms) => {
   return [
-    h('div.entity-info-section', [
-      h('span.entity-info-title', 'Formulae'),
-      ...m.formulae.map( formula => h(Formula, { formula }) )
-    ]),
-    h('div.entity-info-section', [
-      h('span.entity-info-title', 'Mass'),
-      h('span', m.mass)
-    ]),
-    h('div.entity-info-section', [
-      h('span.entity-info-title', 'Charge'),
-      h('span', m.charge)
-    ]),
+    m.summary ? h('div.entity-info-section', [
+      h('span.entity-info-title', 'Summary'),
+      h('span', m.summary)
+    ]): null,
+    // h('div.entity-info-section', [
+    //   h('span.entity-info-title', 'Mass'),
+    //   h('span', m.mass)
+    // ]),
+    // h('div.entity-info-section', [
+    //   h('span.entity-info-title', 'Charge'),
+    //   h('span', m.charge)
+    // ]),
     h('div.entity-info-section', !m.shortSynonyms ? [] : [
       h('span.entity-info-title', 'Synonyms'),
       ...m.shortSynonyms.map( name => h('span.entity-info-alt-name', [
         h(Highlighter, { text: name, terms: searchTerms })
       ]))
+    ]),
+    h('div.entity-info-section', [
+      h('span.entity-info-title', 'Formulae'),
+      ...m.formulae.map( formula => h(Formula, { formula }) )
     ])
   ];
 };
@@ -72,35 +76,16 @@ let complex = (m) => {
 };
 
 let link = m => {
-  let url, nsName;
-
-  switch( m.namespace ){
-    case 'uniprot':
-      url = UNIPROT_LINK_BASE_URL + m.id;
-      nsName = 'UniProt';
-      break;
-    case 'pubchem':
-      url = PUBCHEM_LINK_BASE_URL + m.id;
-      nsName = 'PubChem';
-      break;
-    case 'chebi':
-      url = CHEBI_LINK_BASE_URL + m.id;
-      nsName = 'CHEBI';
-      break;
-    case 'ncbi':
-      url = NCBI_LINK_BASE_URL + m.id;
-      nsName = 'NCBI';
-      break;
-  }
-
+  let label = m.dbName;
+  let url = `${IDENTIFIERS_ORG_ID_BASE_URL}${m.dbPrefix}:${m.id}`;
   let entry = (url, text) => h('a.plain-link.entity-info-linkout', { href: url, target: '_blank' }, [
-    text + ' ',
-    h('i.material-icons', 'open_in_new')
+    text,
+    // h('i.material-icons', 'open_in_new')
   ]);
 
   return h('div.entity-info-section.entity-info-linkouts', [
     h('span.entity-info-title', 'More information'),
-    entry(url, nsName)
+    entry(url, label)
   ]);
 };
 

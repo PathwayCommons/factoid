@@ -9,6 +9,7 @@ import Notification from '../notification';
 import assocDisp from './entity-assoc-display';
 import CancelablePromise from 'p-cancelable';
 import { isComplex, isGGP, ELEMENT_TYPE } from '../../../model/element/element-type';
+import RelatedPapers from '../related-papers';
 
 import {
   focusDomElement, makeClassList, initCache, SingleValueCache,
@@ -428,7 +429,9 @@ class EntityInfo extends DataComponent {
 
       if( refineEditableGgp ){
         let isPerfectNameMatch = m => m.distance === 0;
-        let orgMatches = s.matches.filter(isPerfectNameMatch);
+        let isChemicalMatch = m => m.type == 'chemical';
+        let isOrgMatch = m => isPerfectNameMatch(m) && !isChemicalMatch(m);
+        let orgMatches = s.matches.filter(isOrgMatch);
         let orgToMatches = new Map();
         const selectedIndex = _.findIndex(orgMatches, match => match.id === m.id && match.namespace === m.namespace);
 
@@ -513,6 +516,12 @@ class EntityInfo extends DataComponent {
         }
       } else {
         children.push( h('div.entity-info-assoc', allAssoc( assoc, true, false )) );
+
+        children.push( h('div.entity-info-reld-papers-title', `Recommended articles`) );
+        
+        children.push( h('div.entity-info-related-papers', [
+          h(RelatedPapers, { document, source: s.element })
+        ]) );
       }
     } else {
       let placeholder;
@@ -528,7 +537,7 @@ class EntityInfo extends DataComponent {
           h('input.input-round.entity-info-name-input', {
             type: 'text',
             placeholder,
-            value: s.name,
+            value: s.element.named() ? s.name : '',
             spellCheck: false,
             onChange: evt => this.rename( evt.target.value ),
             onKeyDown: evt => {

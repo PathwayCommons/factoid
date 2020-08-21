@@ -30,6 +30,8 @@
     "ci": "run-s test lint"
   },
   "dependencies": {
+    "@appsignal/express": "^0.5.1",
+    "@appsignal/nodejs": "^0.5.1",
     "animejs": "^2.0.2",
     "body-parser": "^1.15.1",
     "clipboard": "^1.7.1",
@@ -57,11 +59,13 @@
     "heap": "^0.2.6",
     "hyperscript": "^2.0.2",
     "hyperscript-helpers": "^3.0.2",
+    "jszip": "^3.4.0",
     "leven": "^2.1.0",
     "lodash": "^4.17.15",
     "lru-cache": "^4.1.1",
     "morgan": "^1.9.1",
     "mousetrap": "^1.6.1",
+    "node-cron": "^2.0.3",
     "node-fetch": "^2.1.1",
     "nodemailer": "^4.6.8",
     "normalize.css": "^5.0.0",
@@ -79,13 +83,14 @@
     "soap": "^0.25.0",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.1.1",
+    "swagger-jsdoc": "^4.0.0",
+    "swagger-ui-express": "^4.1.4",
     "tippy.js": "^2.6.0",
     "twitter": "^1.7.1",
     "uuid": "^2.0.2",
     "whatwg-fetch": "^2.0.3",
     "winston": "^2.3.1",
-    "xml-js": "^1.6.2",
-    "xml2js": "^0.4.22"
+    "xml-js": "^1.6.2"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
@@ -120,5 +125,5 @@
   "engines": {
     "node": ">=10.0.0"
   },
-  "version": "0.8.0"
+  "version": "0.9.0"
 }

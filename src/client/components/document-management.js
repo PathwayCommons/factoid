@@ -11,7 +11,6 @@ import Document from '../../model/document';
 import { tryPromise } from '../../util';
 import Popover from './popover/popover';
 import { checkHTTPStatus } from '../../util';
-import { EMAIL_CONTEXT_JOURNAL } from '../../config';
 import { RequestForm } from './home';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -152,7 +151,6 @@ class DocumentManagement extends DirtyComponent {
         tippy: {
           html: h( RequestForm, {
             apiKey,
-            context: EMAIL_CONTEXT_JOURNAL,
             doneMsg: 'Request submitted.',
             bus: this.bus
           }),

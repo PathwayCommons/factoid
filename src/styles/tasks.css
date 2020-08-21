@@ -1,11 +1,32 @@
 .task-view {
-  width: 300px;
+  box-sizing: border-box;
   padding: 0.25em 0.33em;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  max-width: 25em;
+}
 
-  &.done {
-    width: 250px;
-    padding: 0;
-  }
+.task-view-spinner {
+  font-size: 2em;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -0.5em;
+  margin-top: -0.5em;
+  display: none;
+}
+
+.task-view-spinner-shown {
+  display: block;
+}
+
+.task-view-submit {
+  box-sizing: border-box;
+}
+
+.task-view-submitting {
+  opacity: 0.333;
+  pointer-events: none;
 }
 
 .task-view-items {
@@ -24,37 +45,70 @@
   text-align: right;
 }
 
-.task-view-done,
-.task-view-done-caption {
+.task-view-done {
+  text-align: center;
+
+  & p {
+    margin: 0.5em 0;
+  }
+}
+
+.task-view-done-title {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.task-view-done-section-body {
+  & p {
+    font-size: 0.95em;
+    line-height: 1.3em;
+  }
+}
+
+.task-view-done-section-body-row {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-flow: row wrap;
+  justify-content: space-evenly;
   align-items: center;
+
+  & .task-view-done-section-row-item {
+    margin: 1em;
+  }
 }
 
-.task-view-done-caption {
-  position: relative;
-  top: -1em;
+.task-view-done hr {
+  width: 90%;
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.task-view-done-caption h1,
-p {
-  margin: 0.1em auto;
+.task-view-done-button {
+  text-transform: uppercase;
+  display: inline-block;
+  border-radius: var(--widgetBorderRadius);
+  background-color: var(--brandColor);
+  color: var(--buttonActiveColor);
+  padding: 0.1em 0;
+  text-decoration: none;
+  font-size: 1.5em;
+  font-weight: bold;
+  width: 65%;
 }
 
-.task-view-done-caption-body {
-  font-size: 0.9em;
+.task-view-done-icon-label {
+  margin-left: 0.2em;
 }
 
-.task-view-done-caption-footer {
-  margin-top: 0.3em;
-  font-size: 0.8em;
+.task-view-done-section-footer {
   color: var(--fadedColor);
+  font-size: 0.8em;
+  text-align: center;
 }
 
-.task-view-done-symbol i {
-  font-size: 5em;
-  text-align: right;
-  color: var(--completeColor);
+.task-view-share {
+  & button {
+    padding: 0;
+  }
 }
 

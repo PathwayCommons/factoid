@@ -5,6 +5,8 @@
 @import "./base.css";
 @import "./custom-icons.css";
 @import "./popover";
+@import "./carousel.css";
+@import "./related-papers.css";
 @import "./react-tabs.css";
 @import "./init-app.css";
 @import "./app.css";
@@ -20,4 +22,5 @@
 @import "./tasks.css";
 @import "./main-menu.css";
 @import "./copy-field.css";
-@import "./share.css";
+@import "./twitter-share.css";
+@import "./native-share.css";

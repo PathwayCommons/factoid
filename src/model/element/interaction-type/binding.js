@@ -1,7 +1,7 @@
 import InteractionType from './interaction-type';
 import { PARTICIPANT_TYPE } from '../participant-type';
-import { ENTITY_TYPE } from '../entity-type';
 import { BIOPAX_TEMPLATE_TYPE } from './biopax-type';
+import _ from 'lodash';
 
 const VALUE = 'binding';
 const DISPLAY_VALUE = 'Binding';
@@ -30,18 +30,23 @@ class Binding extends InteractionType {
   }
 
   static isAllowedForInteraction( intn ){
+    // TODO: is complex okay?
     let ppts = intn.participants();
-    let isProtein = ent => ent.type() === ENTITY_TYPE.PROTEIN;
-
-    return ppts.length === 2 && ppts.every( isProtein );
+    return ppts.length === 2;
   }
 
-  toBiopaxTemplate(){
+  toBiopaxTemplate( transform ){
     if ( !this.validatePpts() ){
       return this.makeInvalidBiopaxTemplate();
     }
 
-    let participants = this.interaction.participants();
+    let participants = _.uniqBy(this.interaction.participants().map( transform ), p => p.id() );
+
+    // if only one participant is remained after the transformation skip the interaction
+    if ( participants.length == 1 ) {
+      return null;
+    }
+
     let participantTemplates = participants.map( participant => participant.toBiopaxTemplate() );
 
     return {

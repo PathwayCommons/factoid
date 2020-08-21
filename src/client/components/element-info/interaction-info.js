@@ -9,6 +9,8 @@ import uuid from 'uuid';
 import Progression from './progression';
 import EventEmitter from 'eventemitter3';
 import { INTERACTION_TYPES, INTERACTION_TYPE } from '../../../model/element/interaction-type';
+// import { Carousel, CAROUSEL_CONTENT } from '../carousel';
+import RelatedPapers from '../related-papers';
 
 let stageCache = new WeakMap();
 
@@ -210,6 +212,7 @@ class InteractionInfo extends DataComponent {
 
     if( stage === STAGES.COMPLETED || !doc.editable() ){
       let showEditButton = doc.editable();
+      let showRelatedPapers = !doc.editable();
       let assoc = el.association();
       let summaryChildren = [];
 
@@ -223,6 +226,20 @@ class InteractionInfo extends DataComponent {
           h('button.salient-button', {
             onClick: () => progression.goToStage( ORDERED_STAGES[1] )
           }, `Select a different type than "${assoc.displayValue}"`)
+        ]) );
+      }
+
+      if( showRelatedPapers ){
+        // summaryChildren.push( h('div.interaction-info-carousel-title', 'Recommended articles') );
+
+        // summaryChildren.push( h('div.interaction-info-carousel', [
+        //   h(Carousel, { content: CAROUSEL_CONTENT.ABSTRACT })
+        // ]) );
+
+        summaryChildren.push( h('div.interaction-info-reld-papers-title', 'Recommended articles') );
+        
+        summaryChildren.push( h('div.interaction-info-related-papers', [
+          h(RelatedPapers, { document, source: el })
         ]) );
       }
 
@@ -269,7 +286,7 @@ class InteractionInfo extends DataComponent {
       children.push( h('div.interaction-info-assoc-radioset', radiosetChildren) );
     }
 
-    return h('div.interaction-info', children);
+    return h('div.interaction-info' + (!doc.editable() ? '.interaction-info-ro' : '' ), children);
   }
 }
 

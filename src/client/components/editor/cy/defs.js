@@ -1,8 +1,8 @@
 import * as clientDefs from '../../../defs';
 
-export const padding = 50;
-export const minZoom = 0.5;
-export const maxZoom = 3;
+export const padding = 20;
+export const minZoom = 1.2;
+export const maxZoom = 2.75;
 export const layoutAnimationDuration = clientDefs.updateDelay * 2/3;
 export const layoutAnimationEasing = 'ease-in-out-quint'; // spring(500, 35)
 export const positionDebounceTime = clientDefs.updateDelay;

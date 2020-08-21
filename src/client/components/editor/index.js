@@ -6,13 +6,11 @@ import io from 'socket.io-client';
 import _ from 'lodash';
 import Mousetrap from 'mousetrap';
 
-import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL, EMAIL_CONTEXT_SIGNUP, DOI_LINK_BASE_URL } from '../../../config';
+import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL } from '../../../config';
 
 import { getId, defer, makeClassList, tryPromise } from '../../../util';
 import Document from '../../../model/document';
 import { PARTICIPANT_TYPE } from '../../../model/element/participant-type';
-
-import Popover from '../popover/popover';
 
 import logger from '../../logger';
 import debug from '../../debug';
@@ -22,7 +20,12 @@ import * as defs from './defs';
 import EditorButtons from './buttons';
 import MainMenu from '../main-menu';
 import UndoRemove from './undo-remove';
-import { TaskView } from '../tasks';
+import EditorTitle from './title';
+import Submit from './submit';
+import Help from './help';
+import InfoPanel from './info-panel';
+import ExploreShare from './explore-share';
+import * as cyDefs from './cy/defs';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -121,10 +124,6 @@ class Editor extends DataComponent {
     doc.on('localadd', updateLastEditDate);
     doc.on('localremove', updateLastEditDate);
 
-    doc.on('update', change => {
-      if( _.has( change, 'status' ) ) this.dirty();
-    });
-
     doc.on('load', () => {
       doc.interactions().concat( doc.complexes() ).forEach( listenForRmPpt );
 
@@ -134,6 +133,13 @@ class Editor extends DataComponent {
       if( _.find(docs,  docData) == null ){
         docs.push(docData);
         localStorage.setItem('documents', JSON.stringify(docs));
+      }
+    });
+
+    doc.on('update', change => {
+      if( _.has( change, 'status' ) ){
+        const isDone = this.data.document.submitted() || this.data.document.published();
+        this.done( isDone );
       }
     });
 
@@ -169,6 +175,7 @@ class Editor extends DataComponent {
       mountDeferred: defer(),
       initted: false,
       showHelp,
+      done: false,
       rmList: {
         els: [],
         ppts: [],
@@ -192,8 +199,7 @@ class Editor extends DataComponent {
             },
             body: JSON.stringify({
               paperId: DEMO_ID,
-              authorEmail: DEMO_AUTHOR_EMAIL,
-              context: EMAIL_CONTEXT_SIGNUP
+              authorEmail: DEMO_AUTHOR_EMAIL
             })
           });
           let reloadDoc = () => doc.load();
@@ -209,7 +215,11 @@ class Editor extends DataComponent {
       .then( () => doc.synch(true) )
       .then( () => logger.info('Document synch active') )
       .then( () => {
-        this.setData({ initted: true, showHelp: this.data.document.editable() });
+        this.setData({
+          initted: true,
+          showHelp: this.data.document.editable(),
+          done: this.data.document.submitted() || this.data.document.published()
+        });
 
         const title = _.get(this.data.document.citation(), ['title']);
 
@@ -241,8 +251,13 @@ class Editor extends DataComponent {
     ;
   }
 
-  done(){
-    return this.data.document.submitted() || this.data.document.published();
+  done( done ){
+    if( done === undefined ){
+      return this.data.done;
+    }
+    else {
+      return new Promise( resolve => this.setData({ done }, resolve) );
+    }
   }
 
   editable(){
@@ -306,7 +321,7 @@ class Editor extends DataComponent {
       let shift = ( pos, delta ) => ({ x: pos.x + delta.x, y: pos.y + delta.y });
       let shiftSize = defs.newElementShift;
       let shiftI = this.data.newElementShift;
-      let delta = { x: 0, y: shiftSize * shiftI };
+      let delta = { x: shiftSize * shiftI, y: 0 };
       let pos = getPosition( shift( _.clone( defs.newElementPosition ), delta ) );
 
       this.setData({ newElementShift: (shiftI + 1) % defs.newElementMaxShifts });
@@ -487,107 +502,92 @@ class Editor extends DataComponent {
     this.setData({ showHelp: bool });
   }
 
+  unselectAll(){
+    const { cy } = this.data;
+
+    if( cy ){
+      cy.elements().unselect();
+    }
+  }
+
   render(){
     let { document, bus, showHelp } = this.data;
     let controller = this;
     let { history } = this.props;
 
-    const { authors: { abbreviation }, title = 'Unnamed document', reference, doi } = document.citation();
-
     let editorContent = this.data.initted ? [
-      h('div.editor-title', [
-        h('div.editor-title-content', [
-          h(doi ? 'a' : 'div', (doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` } : {}), [
-            h('div.editor-title-name' + (doi ? '.plain-link.link-like' : ''), title ),
-            h('div.editor-title-info', [
-              h('div', abbreviation ),
-              h('div', reference )
-            ])
-          ])
-        ])
-      ]),
+      h(EditorTitle, { citation: document.citation(), document }),
       h('div.editor-main-menu', [
         h(MainMenu, { bus, document, history })
       ]),
-      this.editable() ? h('div.editor-submit', [
-        h(Popover, { tippy: { html: h(TaskView, { document, bus } ) } }, [
-          h('button.editor-submit-button', {
-            disabled: document.trashed(),
-            className: makeClassList({
-              'super-salient-button': true,
-              'submitted': this.done()
-            })
-          }, this.done() ?  'Submitted' : 'Submit')
-        ])
-      ]) : null,
+      h(ExploreShare, { document, bus, controller }),
+      h(Submit, { document, bus, controller }),
       h(EditorButtons, { className: 'editor-buttons', controller, document, bus, history }),
       h(UndoRemove, { controller, document, bus }),
       h('div.editor-graph#editor-graph'),
-      h('div.editor-help-background', {
-        className: makeClassList({
-          'editor-help-background-shown': showHelp
-        }),
-        onClick: () => this.toggleHelp()
-      }),
-      h('div.editor-help', {
-        className: makeClassList({
-          'editor-help-shown': showHelp
-        })
-      }, [
-        h('div.editor-help-box', [
-          h('div.editor-help-close-icon', {
-            onClick: () => this.toggleHelp()
-          }, [
-            h('i.material-icons', 'close')
-          ]),
-          h('div.editor-help-title', 'Welcome'),
-          h('div.editor-scroll-box', [
-            h('div.editor-help-copy', `
-              In just a few simple steps you'll compose a pathway containing the key biological interactions described in your article.
-            `),
-            h('div.editor-help-cells', [
-              h('div.editor-help-cell', [
-                h('img.editor-help-img', { src: '/image/welcome-aboard-1.svg' }),
-                h('div.editor-help-caption', `1. Add your genes and chemicals`)
-              ]),
-              h('div.editor-help-cell', [
-                h('img.editor-help-img', { src: '/image/welcome-aboard-2.svg' }),
-                h('div.editor-help-caption', `2. Connect those that interact`)
-              ]),
-              h('div.editor-help-cell', [
-                h('img.editor-help-img', { src: '/image/welcome-aboard-3.svg' }),
-                h('div.editor-help-caption', `3. For complexes, drag items together`)
-              ]),
-              h('div.editor-help-cell', [
-                h('img.editor-help-img', { src: '/image/welcome-aboard-4.svg' }),
-                h('div.editor-help-caption', `4. Submit to finish`)
-              ])
-            ])
-          ]),
-          h('div.editor-help-close', [
-            h('button.editor-help-close-button.active-button', {
-              onClick: () => this.toggleHelp()
-            }, `OK, let's start`)
-          ])
-        ])
-      ])
+      h(Help, { controller, showHelp, document }),
+      h(InfoPanel, { controller, bus, document, history })
     ] : [];
 
     return h('div.editor', {
       className: makeClassList({
-        'editor-initted': this.data.initted
+        'editor-initted': this.data.initted,
+        'editor-editable': document.editable(),
+        'editor-read-only': !document.editable()
       })
     }, editorContent);
   }
 
   componentDidMount(){
+    const container = document.querySelector('.editor');
+
+    this.fixPageHeight = () => {
+      const h = window.innerHeight + 'px';
+
+      document.body.style.height = h;
+      document.documentElement.style.height = h;
+      container.style.height = h;
+      window.scrollTo(0, 0);
+
+      if( this.data.cy ){
+        this.data.cy.resize().fit(cyDefs.padding);
+      }
+    };
+
+    this.resetPageHeight = () => {
+      document.body.removeAttribute('style');
+      document.documentElement.removeAttribute('style');
+    };
+
+    window.addEventListener('resize', () => {
+      this.fixPageHeight();
+    });
+
+    this.fixPageHeight();
+
     this.data.mountDeferred.resolve();
 
+    this.onRotate = _.debounce(() => {
+      this.fit();
+    }, 250);
+
+    this.closeAllTippies = (event) => {
+      const inTippy = event.target.closest('.tippy-popper') != null;
+
+      if( !inTippy ){
+        this.data.bus.emit('closetip');
+      }
+    };
+
     keyEmitter.on('escape', this.hideHelp);
+    window.addEventListener('orientationchange', this.onRotate);
+    window.document.body.addEventListener('mousedown', this.closeAllTippies, { capture: true, passive: true });
+    document.querySelector('.editor').addEventListener('scroll', this.closeAllTippies, { capture: true, passive: true });
   }
 
   componentWillUnmount(){
     let { cy, document, bus } = this.data;
+    let editorDiv = window.document.querySelector('.editor');
 
     bus.emit('destroytip');
 
@@ -600,7 +600,16 @@ class Editor extends DataComponent {
     bus.removeAllListeners();
     clearTimeout( this.rmAvailTimeout );
 
+    window.removeEventListener('resize', this.fixPageHeight);
+    this.resetPageHeight();
+
     keyEmitter.removeListener('escape', this.hideHelp);
+    window.removeEventListener('orientationchange', this.onRotate);
+    window.document.body.removeEventListener('mousedown', this.closeAllTippies, { capture: true, passive: true });
+
+    if( editorDiv ){
+      editorDiv.removeEventListener('scroll', this.closeAllTippies, { capture: true, passive: true });
+    }
   }
 }
 

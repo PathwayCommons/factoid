@@ -199,18 +199,53 @@ function listenToDoc({ bus, cy, document, controller }){
   let onLoad = function(){
     onAddEles( document.elements() );
 
-    cy.fit( defs.padding );
+    if( document.editable() ){
+      cy.center();
+
+      const ex = cy.extent();
+      const bb = cy.elements().boundingBox();
+
+      if( bb.w > ex.w || bb.h > ex.h ){
+        cy.fit(defs.padding);
+      }
+      
+    } else {
+      cy.fit(defs.padding);
+    }
+  };
+
+  let refreshNameInCy = function(docEl, el = getCyEl(docEl)){
+    el.data( 'name', docEl.name() );
+  };
+
+  let refreshComplexNameInCy = function(childDocEl, complex){
+    if( childDocEl ){
+      const childNode = getCyEl(childDocEl);
+      const elIsInComplex = childNode.isChild();
+
+      if( elIsInComplex ){
+        if( complex === undefined ){
+          complex = getDocEl(childNode.parent());
+        }
+
+        refreshNameInCy(complex);
+      }
+    } else {
+      refreshNameInCy(complex);
+    }
   };
 
   let onDocRename = function(){
     onDoc( this, function( docEl, el ){
-      el.data( 'name', docEl.name() );
+      refreshNameInCy(docEl, el);
+      refreshComplexNameInCy(docEl);
     } );
   };
 
-  let onRenameDebounce = function( docEl, name ){
+  let onRenameDebounce = function( docEl ){
     onDoc( docEl, function( docEl, el ){
-      el.data( 'name', name );
+      refreshNameInCy(docEl, el);
+      refreshComplexNameInCy(docEl);
     } );
   };
 
@@ -288,9 +323,13 @@ function listenToDoc({ bus, cy, document, controller }){
     } );
   };
 
-  let onDocAddPpt = function( /*docPpt*/ ){
-    onDoc( this, function( /*docIntn, el*/ ){
-      // disabled for binary interactions
+  // could be add for complex or interaction
+  let onDocAddPpt = function( /*addedDocEl*/ ){
+    onDoc( this, function( intnOrComplex /*, addedEl*/ ){
+      if( intnOrComplex.isComplex() ){
+
+        refreshNameInCy(intnOrComplex);
+      }
     } );
   };
 
@@ -299,8 +338,11 @@ function listenToDoc({ bus, cy, document, controller }){
       if ( docEl.isInteraction() || docEl.isComplex() ) {
         onRmPpt( docPpt, docEl );
       }
-      if ( docEl.isInteraction() ) {
-        updateIntnArity( docEl );
+
+      if( docEl.isComplex() ){
+        const complex = docEl;
+
+        refreshComplexNameInCy(null, complex);
       }
     } );
   };
@@ -558,14 +600,6 @@ function listenToDoc({ bus, cy, document, controller }){
   };
 
   cy.on('taphold', onTapHold);
-
-  cy.on('add', 'edge', e => {
-    let edge = e.target;
-
-    if( edge.connectedNodes(isInteractionNode).selected() ){
-      edge.select();
-    }
-  });
 }
 
 

@@ -251,13 +251,14 @@ const fillDocArticle = async doc => {
     const pubmedRecord = createPubmedArticle({ articleTitle: paperId });
     await doc.article( pubmedRecord );
     await doc.issues({ paperId: { error, message: error.message } });
+  } finally {
+    getRelPprsForDoc( doc );
   }
 };
 
 const fillDoc = async doc => {
   await fillDocCorrespondence( doc );
   await fillDocArticle( doc );
-  getRelPprsForDoc( doc );
   return doc;
 };
 

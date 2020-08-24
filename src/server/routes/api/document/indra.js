@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import FetchRetry from 'fetch-retry';
 import _ from 'lodash';
 // import { parse as dateParse } from 'date-fns';
 import uuid from 'uuid';
@@ -30,6 +31,12 @@ const INTN_STR = 'interaction';
 const ENTITY_STR = 'entity';
 
 let sortByDate = SORT_BY_DATE;
+
+const fetchRetry = FetchRetry(fetch);
+const fetchRetryUrl = url => {
+  return fetchRetry(url, { retries: 3, retryDelay: 1000 });
+};
+
 
 const semanticSearch = params => {
   return fetch( SEMANTIC_SEARCH_BASE_URL, {
@@ -288,7 +295,7 @@ const getStatements = (agent0, agent1) => {
   }
 
   let addr = INDRA_STATEMENTS_URL + '?' + querystring.stringify( query );
-  return tryPromise( () => fetch(addr) )
+  return tryPromise( () => fetchRetryUrl(addr) )
     .then( res =>
       res.json()
       )
@@ -310,7 +317,7 @@ const getStatements = (agent0, agent1) => {
 
 const assembleEnglish = statements => {
   let addr = INDRA_ENGLISH_ASSEMBLER_URL;
-  return fetch( addr, {
+  return fetchRetryUrl( addr, {
     method: 'post',
     body: JSON.stringify({statements}),
     headers: { 'Content-Type': 'application/json' }

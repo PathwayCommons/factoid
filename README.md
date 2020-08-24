@@ -153,24 +153,24 @@ The following environment variables should always be set in production instances
 
 Dockerized system has been successfully deployed on:
   - Ubuntu 16.04.5 LTS (GNU/Linux 4.4.0-145-generic x86_64)
-    - Docker version 18.09.6
-    - docker-compose version 1.24.0
+    - Docker version 19.03.12
+    - docker-compose version 1.26.2
   - OSX 10.15.1 (Catalina)
-    - Docker version 19.03.5
-    - docker-compose version 1.24.1
+    - Docker version 19.03.12
+    - docker-compose version 1.26.2
 
 ### Docker Compose
 
 In the directory containing the `docker-compose.yml` file, execute:
 
 ```sh
-docker-compose run -d
+docker-compose up -d
 ```
 
 Monitor stdout of the system:
 
 ```sh
-docker-compose logs -f -t
+docker-compose logs -ft
 ```
 
 Stop and remove services:
@@ -178,19 +178,10 @@ Stop and remove services:
 docker-compose down
 ```
 
-Restarting after the app services have been stopped (index exists):
-```sh
-docker-compose up -d webapp grounding db index
-```
-
-
 #### Notes
 
 - Environment variables:
   - Docker Compose will draw environment variables from the shell or from an `.env` file in the same directory. Please see private [remote](https://github.com/BaderLab/sysadmin/blob/master/websites/factoid.md) for production-level file settings.
-
-- Indexing service:
-  - The `indexer` service will download sources files and index. The time required for this will vary depending on the system and ranges from tens of minutes (OSX 10.14.5 (Mojave), MacBook Pro (Retina, 15-inch, Mid 2015). 2.8 GHz Intel Core i7) up to many hours (Ubuntu 16.04.5 LTS, Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz).
 
 - Database service:
   - Do not restart a stopped container. Rather, remove and run anew.

@@ -183,7 +183,12 @@ class Entity extends Element {
     let name = this.name() || '';
     let xref = this.getBiopaxXref();
     let orgId = _.get( this.association(), ['organism'] );
-    let organism = { id: orgId, db: 'taxonomy' };
+    let organism = null;
+
+    if ( orgId ) {
+      organism = { id: orgId, db: 'taxonomy' };
+    }
+    
     let entity = { type, name, xref, organism };
 
     if ( type == ENTITY_TYPE.COMPLEX ) {

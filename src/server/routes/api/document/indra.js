@@ -33,8 +33,9 @@ const ENTITY_STR = 'entity';
 let sortByDate = SORT_BY_DATE;
 
 const fetchRetry = FetchRetry(fetch);
-const fetchRetryUrl = url => {
-  return fetchRetry(url, { retries: 3, retryDelay: 1000 });
+const fetchRetryUrl = (url, opts) => {
+  let retryOpts = { retries: 3, retryDelay: 1000 };
+  return fetchRetry(url, _.extend( opts, retryOpts ));
 };
 
 

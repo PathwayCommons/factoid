@@ -9,8 +9,13 @@ import { convertDocumentToBiopax,
         checkHTTPStatus } from '../../../../util';
 
 const CHUNK_SIZE = 20;
+const EXPORT_TYPES = Object.freeze({
+  'JS': 'js',
+  'BP': 'bp',
+  'SBGN': 'sbgn'
+});
 
-const exportToZip = (baseUrl, zipPath) => {
+const exportToZip = (baseUrl, zipPath, types) => {
   let offset = 0;
   let zip = new JSZip();
 
@@ -38,12 +43,29 @@ const exportToZip = (baseUrl, zipPath) => {
   };
 
   const addToZip = ids => {
-    let promises = ids.map( id => [ convertDocumentToBiopax(id, baseUrl),
-                                    convertDocumentToJson(id, baseUrl),
-                                    convertDocumentToSbgn(id, baseUrl) ] );
+    let typeToConverter = {
+      [EXPORT_TYPES.JSON]: convertDocumentToJson,
+      [EXPORT_TYPES.BP]: convertDocumentToBiopax,
+      [EXPORT_TYPES.SBGN]: convertDocumentToSbgn
+    };
+
+    let typeToExt = {
+      [EXPORT_TYPES.JSON]: '.json',
+      [EXPORT_TYPES.BP]: '.owl',
+      [EXPORT_TYPES.SBGN]: '.sbgn.xml'
+    };
+
+    // convert to each type by default
+    if ( !types ) {
+      types = Object.keys( typeToConverter );
+    }
+
+    const idToFiles = id => types.map( t => typeToConverter[ t ]( id, baseUrl ) );
+
+    let promises = ids.map( idToFiles );
     promises = _.flatten( promises );
 
-    let fileExts = ['.owl', '.json', 'sbgn.xml'];
+    let fileExts = types.map( t => typeToExt[ t ] );
     let s = fileExts.length;
 
     return Promise.all( promises )
@@ -61,4 +83,4 @@ const exportToZip = (baseUrl, zipPath) => {
   return processNext();
 };
 
-export { exportToZip };
+export { exportToZip, EXPORT_TYPES };

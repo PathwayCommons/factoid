@@ -366,6 +366,22 @@ http.get('/zip', function( req, res, next ){
     .catch( next );
 });
 
+/**
+ * @swagger
+ *
+ * /api/document/zip/biopax:
+ *   get:
+ *     description: Download a single zip file containing every Document represented in Biological Pathway Exchange (BioPAX).
+ *     summary: Zip file of every Document represented as BioPAX in owl file format.
+ *     tags:
+ *       - Document
+ *     responses:
+ *      '200':
+ *        description: OK
+ *        content:
+ *          application/zip:
+ *             description: Download a zip file containing each Document represented as BioPAX in owl file format.
+ */
 http.get('/zip/biopax', function( req, res, next ){
   let filePath = 'download/factoid_biopax.zip';
 

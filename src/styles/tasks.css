@@ -50,12 +50,13 @@
 
   & p {
     margin: 0.5em 0;
+    color: #555;
   }
 }
 
 .task-view-done-title {
-  font-size: 1.2em;
-  font-weight: bold;
+  font-size: 1.25em;
+  color: #000;
 }
 
 .task-view-done-section-body {
@@ -86,14 +87,20 @@
 .task-view-done-button {
   text-transform: uppercase;
   display: inline-block;
-  border-radius: var(--widgetBorderRadius);
   background-color: var(--brandColor);
-  color: var(--buttonActiveColor);
-  padding: 0.1em 0;
+  color: #fff;
+  padding: 0.5em 2em;
+  height: auto;
   text-decoration: none;
-  font-size: 1.5em;
-  font-weight: bold;
-  width: 65%;
+  border-radius: 4em;
+  width: 12em;
+  box-sizing: border-box;
+  transition-property: background-color;
+  transition-duration: 500ms;
+
+  &:active {
+    background-color: var(--brandColorDark);
+  }
 }
 
 .task-view-done-icon-label {

@@ -220,11 +220,11 @@ class Home extends Component {
       }, props.children || []);
     };
 
-    const CTA = () => {
-      return h(CTAPopover, [
-        h('button.home-cta-button.salient-button', 'Get started')
-      ]);
-    };
+    // const CTA = () => {
+    //   return h(CTAPopover, [
+    //     h('button.home-cta-button.salient-button', 'Get started')
+    //   ]);
+    // };
 
     const ContactPopover = (props) => {
       return h(Popover, {

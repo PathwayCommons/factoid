@@ -239,9 +239,6 @@
     color: var(--brandColor);
     font-size: 2.5em;
     margin-top: 0;
-    /* background: -webkit-linear-gradient(270deg, var(--brandColor) 0%, var(--brandColor) 80%, var(--brandColorSuperDark) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent; */
   }
 
   & h3 {

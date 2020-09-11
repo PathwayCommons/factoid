@@ -426,6 +426,7 @@ class EntityInfo extends DataComponent {
       }
 
       let organism = null;
+      let disambiguation = null;
 
       if( refineEditableGgp ){
         let isPerfectNameMatch = m => m.distance === 0;
@@ -434,6 +435,7 @@ class EntityInfo extends DataComponent {
         let orgMatches = s.matches.filter(isOrgMatch);
         let orgToMatches = new Map();
         const selectedIndex = _.findIndex(orgMatches, match => match.id === m.id && match.namespace === m.namespace);
+        const selectedOrg = assoc ? assoc.organism : null;
 
         orgMatches.forEach(om => {
           let org = om.organism;
@@ -450,14 +452,18 @@ class EntityInfo extends DataComponent {
         });
 
         const getSelectDisplay = (om, includeName = false) => {
-          const matches = orgToMatches.get(om.organism) || [];
-          let count = matches.length;
+          // const matches = orgToMatches.get(om.organism) || [];
+          // let count = matches.length;
 
-          if( count > 1 || includeName ){
+          if( includeName ){
             return `${om.organismName} (${om.name})`;
           } else {
             return `${om.organismName}`;
           }
+        };
+
+        const getDisamtDisplay = (om) => {
+          return `${om.name} : ` + om.synonyms.slice(0, 3).join(', ');
         };
 
         organism = h('div.entity-info-section.entity-info-organism-refinement', [
@@ -477,6 +483,13 @@ class EntityInfo extends DataComponent {
             }
           }, orgMatches.map((om, index) => {
             const value = index;
+            const orgMatches = orgToMatches.get(om.organism);
+            const multOrgMatches = orgMatches.length > 1;
+            const isFirstOrgMatch = orgMatches[0].id === om.id && orgMatches[0].namespace === om.namespace;
+
+            if( multOrgMatches && !isFirstOrgMatch ){
+              return null;
+            }
 
             return h('option', { value }, getSelectDisplay(om));
           }).concat([
@@ -484,13 +497,45 @@ class EntityInfo extends DataComponent {
             h('option', { value: -2 }, 'Other')
           ]))
         ]);
+
+        if( assoc && selectedOrg ){
+          const ambigGrs = orgToMatches.get(selectedOrg);
+          const needDisam = ambigGrs && ambigGrs.length > 1;
+
+          if( needDisam ){
+            disambiguation = h('div.entity-info-section.entity-info-organism-refinement', [
+              h('span.entity-info-title', 'Which' + (s.name ? ` ${s.name}` : '') + ''),
+              h('select.entity-info-organism-dropdown', {
+                defaultValue: selectedIndex,
+                onChange: e => {
+                  const val = e.target.value;
+                  const index = parseInt(val);
+                  const om = orgMatches[index];
+    
+                  if( om ){
+                    this.associate(om);
+                  } else {
+                    this.enableManualMatchMode();
+                  }
+                }
+              }, ambigGrs.map((om, index) => {
+                const value = index;
+    
+                return h('option', { value }, getDisamtDisplay(om));
+              }).concat([
+                selectedIndex < 0 ? h('option', { value: -1 }, getSelectDisplay(m, true)) : null,
+                h('option', { value: -2 }, 'Other')
+              ]))
+            ]);
+          }
+        }
       }
 
       let body = assocDisp[ m.type ]( m, searchTerms, !showRefinement );
 
       let post = [];
 
-      return _.concat( pre, subtype, organism, body, post );
+      return _.concat( pre, subtype, organism, disambiguation, body, post );
     };
 
     let allAssoc = (m, complete = false, showRefinement = false) => _.concat(

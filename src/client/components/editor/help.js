@@ -29,7 +29,7 @@ export const Help = props => {
         h('div.editor-help-title', 'Welcome'),
         h('div.editor-scroll-box', [
           h('div.editor-help-copy', `
-            In just a few simple steps you'll compose a pathway containing the key biological interactions described in your article.
+            In just a few simple steps you'll compose a profile containing the key biological interactions described in your article.
           `),
           h('div.editor-help-cells', [
             h('div.editor-help-cell', [

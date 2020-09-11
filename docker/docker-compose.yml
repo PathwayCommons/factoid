@@ -1,7 +1,8 @@
-version: "3.4"
+version: "3.8"
 services:
   webapp:
     image: pathwaycommons/factoid:${FACTOID_IMAGE_TAG:-latest}
+    restart: on-failure
     container_name: webapp_container
     depends_on:
       - db
@@ -29,6 +30,7 @@ services:
       NODE_OPTIONS:
   grounding:
     image: pathwaycommons/grounding-search:${GROUNDING_SEARCH_IMAGE_TAG:-latest}
+    restart: on-failure
     container_name: grounding_container
     ports:
       - "${GROUNDING_PORT:-3011}:3000"
@@ -40,11 +42,13 @@ services:
     command: ["./wait-for-elasticsearch.sh", "index:9200", "npm", "run", "boot"]
   index:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.7.2
+    restart: on-failure
     container_name: index_container
     volumes:
       - indata:/usr/share/elasticsearch/data
   db:
     image: pathwaycommons/rethinkdb-docker:${RETHINKDB_IMAGE_TAG:-latest}
+    restart: on-failure
     container_name: db_container
     ports:
       - "${DB_ADMIN_PORT:-8080}:8080"
@@ -52,6 +56,7 @@ services:
       - dbdata:/data
   converter:
     image: pathwaycommons/factoid-converters:${FACTOID_CONVERTERS_IMAGE_TAG:-latest}
+    restart: on-failure
     container_name: converters_container
     ports:
       - "${CONVERTER_PORT:-3082}:8080"

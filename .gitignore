@@ -7,4 +7,5 @@ npm-debug.log
 *.log
 /.idea/
 *.iml
-/download/
+/download/*
+!/download/README

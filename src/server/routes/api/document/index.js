@@ -11,7 +11,7 @@ import emailRegex from 'email-regex';
 // import url from 'url';
 import fs from 'fs';
 
-import { exportToZip } from './export';
+import { exportToZip, EXPORT_TYPES } from './export';
 import { tryPromise, makeStaticStylesheet, makeCyEles, msgFactory, updateCorrespondence, EmailError, truncateString } from '../../../../util';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
@@ -356,6 +356,51 @@ http.get('/zip', function( req, res, next ){
     if ( recreate ) {
       let addr = req.protocol + '://' + req.get('host');
       return exportToZip(addr, filePath);
+    }
+
+    return Promise.resolve();
+  };
+
+  tryPromise( lazyExport )
+    .then( () => res.download( filePath ))
+    .catch( next );
+});
+
+/**
+ * @swagger
+ *
+ * /api/document/zip/biopax:
+ *   get:
+ *     description: Download a single zip file containing every Document represented in Biological Pathway Exchange (BioPAX).
+ *     summary: Zip file of every Document represented as BioPAX in owl file format.
+ *     tags:
+ *       - Document
+ *     responses:
+ *      '200':
+ *        description: OK
+ *        content:
+ *          application/zip:
+ *             description: Download a zip file containing each Document represented as BioPAX in owl file format.
+ */
+http.get('/zip/biopax', function( req, res, next ){
+  let filePath = 'download/factoid_biopax.zip';
+
+  const lazyExport = () => {
+    let recreate = true;
+    if ( fs.existsSync( filePath ) ) {
+      const DAY_TO_MS = 86400000;
+
+      let now = Date.now();
+      let fileDate = fs.statSync(filePath).birthtimeMs;
+
+      if ( now - fileDate < DAY_TO_MS ) {
+        recreate = false;
+      }
+    }
+
+    if ( recreate ) {
+      let addr = req.protocol + '://' + req.get('host');
+      return exportToZip(addr, filePath, [ EXPORT_TYPES.BP ]);
     }
 
     return Promise.resolve();

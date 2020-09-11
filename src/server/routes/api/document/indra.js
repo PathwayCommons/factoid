@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import FetchRetry from 'fetch-retry';
 import _ from 'lodash';
 // import { parse as dateParse } from 'date-fns';
 import uuid from 'uuid';
@@ -16,6 +17,9 @@ import { getPubmedCitation } from '../../../../util/pubmed';
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
 const SORT_BY_DATE = false; // TODO remove
 
+const FETCH_RETRIES = 3;
+const FETCH_RETRY_DELAY = 3000;
+
 const SUB_MODIFICATION_TYPES = ['Phosphorylation', 'Dephosphorylation', 'Dephosphorylation',
   'Deubiquitination', 'Methylation', 'Demethylation'];
 const BASE_MODIFICATION_TYPES = ['Sumoylation', 'Desumoylation', 'Hydroxylation', 'Dehydroxylation',
@@ -30,6 +34,28 @@ const INTN_STR = 'interaction';
 const ENTITY_STR = 'entity';
 
 let sortByDate = SORT_BY_DATE;
+
+const fetchRetry = FetchRetry(fetch);
+const fetchRetryUrl = ( url, opts ) => {
+  let retryOpts = {
+    retryDelay: FETCH_RETRY_DELAY,
+    retryOn: function( attempt, error, response ) {
+      // retry on any network error, or 4xx or 5xx status codes
+      const { statusText, status, ok } = response;
+      if ( attempt < FETCH_RETRIES && !ok ) {
+        logger.error(`Error for ${url}`);
+        logger.error(`${status}: ${statusText}`);
+        logger.info(`Retrying, attempt ${attempt + 1}`);
+        return true;
+      } else {
+        return false;
+      }
+    }
+  };
+
+  return fetchRetry(url, _.extend( opts, retryOpts ));
+};
+
 
 const semanticSearch = params => {
   return fetch( SEMANTIC_SEARCH_BASE_URL, {
@@ -288,7 +314,7 @@ const getStatements = (agent0, agent1) => {
   }
 
   let addr = INDRA_STATEMENTS_URL + '?' + querystring.stringify( query );
-  return tryPromise( () => fetch(addr) )
+  return tryPromise( () => fetchRetryUrl(addr) )
     .then( res =>
       res.json()
       )
@@ -310,7 +336,7 @@ const getStatements = (agent0, agent1) => {
 
 const assembleEnglish = statements => {
   let addr = INDRA_ENGLISH_ASSEMBLER_URL;
-  return fetch( addr, {
+  return fetchRetryUrl( addr, {
     method: 'post',
     body: JSON.stringify({statements}),
     headers: { 'Content-Type': 'application/json' }

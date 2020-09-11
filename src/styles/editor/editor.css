@@ -50,6 +50,9 @@
 }
 
 .editor-submit-button {
+  font-weight: normal;
+  text-transform: uppercase;
+
   &.submitted {
     background-color: var(--completeColor);
   }

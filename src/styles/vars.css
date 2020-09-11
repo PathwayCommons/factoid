@@ -15,7 +15,8 @@
   --fadedColor: #888;
   --invalidColor: #b53535;
   --completeColor: #38af58;
-  --brandColor: #ffd479;
-  --brandColorDark: #e9bf63;
-  --brandColorLight: #ffd57973;
+  --brandColor: #fabb2d;
+  --brandColorDark: #cc9b2a;
+  --brandColorSuperDark: #af8728;
+  --brandColorLight: #fac751;
 }

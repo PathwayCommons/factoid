@@ -42,7 +42,7 @@
   max-width: 100%;
   height: 14em;
   position: relative;
-  border: 2px solid #333;
+  border: 2px solid #e0e0e0;
   border-radius: 0.25em;
   touch-action: pan-x pan-y;
   user-select: none;
@@ -50,6 +50,11 @@
   -webkit-touch-callout: none !important;
   -webkit-user-select: none;
   overflow: visible;
+
+  & .carousel-doc-journal,
+  & .carousel-doc-authors {
+    color: #666;
+  }
 
   &.carousel-doc-hovered {
     z-index: 8;
@@ -66,9 +71,20 @@
       color: #000;
     }
 
+    & .carousel-doc-journal,
+    & .carousel-doc-authors {
+      color: #666;
+    }
+
+    & .carousel-doc-title,
+    & .carousel-doc-journal,
+    & .carousel-doc-author {
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+
     & .carousel-doc-descr {
       z-index: 10;
-      top: -3.5em;
+      top: -3em;
       bottom: -3em;
       background: linear-gradient(to bottom, #fff 0, #fff 3.5em, rgba(255, 255, 255, 0) 5em), linear-gradient(to top, #fff 0, #fff 3.1em, rgba(255, 255, 255, 0) 3.1em);
       box-shadow: 0 0 1em rgba(0, 0, 0, 0.5);
@@ -98,7 +114,7 @@
 }
 
 .carousel-doc-placeholder {
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(255, 255, 255, 1) 100%);
+  background-image: linear-gradient(to right, #fff 0%, #f0f0f0 50%, #fff 100%);
   background-position: 0 0;
   animation: shiftBgRight 1000ms infinite;
 }
@@ -242,9 +258,9 @@
   height: 14em;
   position: absolute;
   z-index: 9;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.5);
   cursor: pointer;
-  color: #fff;
+  color: #000;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -252,6 +268,7 @@
   opacity: 0;
   pointer-events: none;
   backdrop-filter: blur(1px);
+  user-select: none;
 }
 
 .carousel-pager-available {
@@ -269,7 +286,7 @@
 
 .carousel-pager-icon {
   font-size: 3em;
-  text-shadow: 0 0 4px #000;
+  text-shadow: 0 0 4px #fff;
 }
 
 @media (max-width: 500px) {

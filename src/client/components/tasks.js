@@ -182,9 +182,9 @@ class TaskView extends DataComponent {
               h('p', 'Your paper is now linked to many others and shared for everyone to explore.'),
               h( 'a.task-view-done-button', { href: publicUrl, target: '_blank', }, 'Explore' )
             ]),
-            h('div.task-view-done-section-footer', [
-              h('p', `Explore link: ${publicUrl}`)
-            ])
+            // h('div.task-view-done-section-footer', [
+            //   h('p', `Explore link: ${publicUrl}`)
+            // ])
           ]),
           h('hr'),
           h('div.task-view-done-section', [

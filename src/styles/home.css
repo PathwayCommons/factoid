@@ -108,6 +108,8 @@
     margin: 0;
     font-weight: normal;
     padding-left: 2.4em;
+    position: relative;
+    bottom: -0.66em;
   }
 }
 
@@ -198,13 +200,14 @@
   animation-delay: 1000ms;
 
   /* preload images */
-  &::after {
-    content: ' ';
-    width: 1px;
-    height: 1px;
+  &::before {
+    content: 'preload';
+    width: 10px;
+    height: 10px;
     opacity: 0.01;
     background-color: red;
     position: absolute;
+    background-size: cover;
     background-image: url('/image/phone-explore-1.png'), url('/image/phone-explore-2.png'), url('/image/phone-explore-3.png');
   }
 }
@@ -262,13 +265,11 @@
 
 .home-figure-section {
   height: 100vh;
-  min-height: 24em;
-  max-height: 1000px;
+  min-height: 24em !important;
+  max-height: 800px !important;
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
 }
 
 .home-figure {
@@ -302,9 +303,8 @@
 
 .home-intro {
   margin: auto 1em;
-  align-self: center;
+  width: calc(100% - 2em);
   box-sizing: border-box;
-  position: relative;
 }
 
 .home-intro-title {
@@ -352,45 +352,40 @@
 .home-intro-figure-sm-alt {
   position: absolute;
   right: 1em;
-  top: 5em;
+  top: 3.75em;
   bottom: 20em;
   width: calc(50% - 2em);
   box-sizing: border-box;
   max-height: 24em;
-  background-image: url('/image/banner-puzzle-missing.jpg');
-  background-size: cover;
+  background-image: url('/image/banner.png');
+  background-size: contain;
   background-repeat: no-repeat;
   background-position: 50% 50%;
   border-radius: 0.5em;
-  animation-name: home-intro-figure-crossfade;
-  animation-fill-mode: forwards;
-  animation-duration: 500ms;
-  animation-iteration-count: 1;
-  animation-timing-function: ease-out;
-  animation-delay: 1000ms;
-  cursor: pointer;
 
-  /* preload images */
-  &::after {
-    content: ' ';
-    background-image: url('/image/banner-puzzle.jpg') url('/image/banner-puzzle-missing.jpg');
+  /* cursor: pointer;
+  transition-property: background-image;
+  transition-duration: 250ms;
+  transition-timing-function: ease-out; */
+
+  /* preload images
+  &::before {
+    content: 'preload';
+    background-image: url('/image/banner-puzzle.jpg'), url('/image/banner-puzzle-missing.jpg');
     background-color: red;
     position: absolute;
-    width: 1px;
-    height: 1px;
-    opacity: 0.001;
-  }
+    background-size: cover;
+    width: 10px;
+    height: 10px;
+    opacity: 0.01;
+  } */
 
-  &:active,
-  &.active {
+  /* &.active {
     background-image: url('/image/banner-puzzle-missing.jpg');
-    animation: none;
-    animation-fill-mode: backwards;
-  }
+  } */
 }
 
 .home-intro-figure-sm-alt {
-  background-image: url('/image/banner-puzzle-missing.jpg');
   position: static;
   width: calc(100% - 2em);
   height: 20em;
@@ -400,7 +395,7 @@
   left: auto;
   bottom: auto;
   right: auto;
-  animation-delay: 1500ms;
+  animation-delay: 1000ms;
 }
 
 .home-intro-figure-sm-alt-section {
@@ -584,23 +579,21 @@
 }
 
 .home-nav {
-  text-align: center;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  height: 2em;
-  margin-top: 1em;
   width: 100%;
   box-sizing: border-box;
+  padding: 1em;
+  position: relative;
 }
 
 .home-nav-left {
-  margin-left: 1em;
+  display: block;
 }
 
 .home-nav-right {
-  margin-right: 1em;
+  position: absolute;
+  right: 1em;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .home-nav-link {
@@ -724,23 +717,19 @@
   ..home-intro-figure-sm-alt-section {
     display: block;
   }
-}
-
-@media (max-width: 400px) {
-  .home-explore {
-    margin-bottom: 7.5em;
-  }
-
-  .home-caption,
-  .home-banner-tagline,
-  .home-explore h2 {
-    font-size: 1em;
-  }
 
   .home-explore h2 {
     padding-left: 0;
     text-align: center;
-    font-weight: bold;
+    position: relative;
+    bottom: -0.75em;
+  }
+}
+
+@media (max-width: 400px) {
+  .home-explore h2 {
+    padding-left: 0;
+    text-align: center;
     position: relative;
     bottom: -0.75em;
   }
@@ -751,5 +740,33 @@
 
   .home-intro-figure-sm-alt-section {
     display: block;
+  }
+
+  .home-nav-link {
+    & + .home-nav-link {
+      margin-left: 1.5em;
+    }
+  }
+}
+
+@media (max-width: 320px) {
+  .home-figure-section {
+    height: auto !important;
+    max-height: auto !important;
+  }
+
+  .home-fluid-section-copy h2 {
+    font-size: 2em;
+  }
+}
+
+@media (max-height: 500px) {
+  .home-figure-section {
+    height: auto !important;
+    max-height: auto !important;
+  }
+
+  .home-fluid-section-copy h2 {
+    font-size: 2em;
   }
 }

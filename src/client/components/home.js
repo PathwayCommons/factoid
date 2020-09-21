@@ -171,29 +171,63 @@ class Home extends Component {
     const smFigure = document.querySelector('.home-intro-figure-sm-alt');
     const lgFigure = document.querySelector('.home-intro-figure');
 
-    const makeScrollObs = (figure, threshold = 1) => new IntersectionObserver((entries) => {
-      if(entries[0].isIntersecting === true)
-        figure.classList.add('active');
+    // const makeScrollObs = (figure, threshold = 1) => new IntersectionObserver((entries) => {
+    //   const entry = entries[0];
 
-        setTimeout(() => {
-          figure.classList.remove('active');
-        }, 16);
-    }, { threshold: [threshold] });
+    //   if( entry.isIntersecting)
+    //     figure.classList.add('active');
+
+    //     if( this.figTo ){
+    //       clearTimeout(this.figTo);
+    //     }
+
+    //     this.figTo = setTimeout(() => {
+    //       figure.classList.remove('active');
+    //     }, 500);
+    // }, { threshold: [threshold] });
+
+    this.onFigClick = e => {
+      e.target.classList.add('active');
+
+      if( this.figTo ){
+        clearTimeout(this.figTo);
+      }
+
+      this.figTo = setTimeout(() => {
+        e.target.classList.remove('active');
+      }, 500);
+    };
 
     if( smFigure ){
-      this.smFigureObs = makeScrollObs(smFigure, 0);
-      this.smFigureObs.observe(smFigure);
+      // this.smFigureObs = makeScrollObs(smFigure, 0);
+      // this.smFigureObs.observe(smFigure);
+
+      smFigure.addEventListener('mousedown', this.onFigClick);
+      smFigure.addEventListener('touchstart', this.onFigClick);
     }
 
     if( lgFigure ){
-      this.lgFigureObs = makeScrollObs(lgFigure, 0);
-      this.lgFigureObs.observe(lgFigure);
+      // this.lgFigureObs = makeScrollObs(lgFigure, 0);
+      // this.lgFigureObs.observe(lgFigure);
+
+      lgFigure.addEventListener('mousedown', this.onFigClick);
+      lgFigure.addEventListener('touchstart', this.onFigClick);
     }
 
     const vid = document.querySelector('.home-fluid-section-laptop-content video');
     
     if( vid ){
       vid.playbackRate = 2;
+    }
+
+    const banner = document.querySelector('.home-banner');
+
+    if( banner ){
+      this.updateBannerH = () => {
+        banner.style.height = `${window.innerHeight}px`;
+      };
+
+      this.updateBannerH();
     }
   }
 
@@ -205,6 +239,8 @@ class Home extends Component {
     if( this.lsFigureObs ){
       this.lgFigureObs.unobserve();
     }
+
+    
   }
 
   render(){
@@ -252,7 +288,7 @@ class Home extends Component {
     };
 
     return h('div.home', [
-      h('div..home-section.home-figure-section.home-banner', [
+      h('div.home-section.home-figure-section.home-banner', [
         h('div.home-nav', [
           h('div.home-nav-left', [
             h('div.home-nav-logo')
@@ -303,7 +339,7 @@ class Home extends Component {
           h('h2', `Authors`),
           h('h3', `Simple yet powerful `),
           h('p', [
-            `Biofactoid uses advanced technology to make profiling your article a snap. Just draw your `,
+            `Biofactoid uses advanced technology to make creating your article profile a snap. Just draw your `,
             h(Popover, {
               tippy: {
                 placement: 'bottom',
@@ -348,7 +384,7 @@ class Home extends Component {
             h('div.home-fluid-section-laptop-frame'),
             h('div.home-fluid-section-laptop-content', [
               h('video', {
-                src: '/image/sample-editor-screen-fade-to-white.mp4',
+                src: '/image/sample-editor-screen-ras-raf.mp4',
                 type: 'video/mp4',
                 autoPlay: true,
                 loop: true,
@@ -477,78 +513,6 @@ class Home extends Component {
           h('a', { href: 'https://www.utoronto.ca/', target: '_blank' }, [ h('i.home-credit-logo.home-credit-logo-utoronto') ])
         ])
       ])
-      // h('div.home-section.home-figure-section.home-figure-section-1', [
-      //   h('div.home-figure.home-figure-1'),
-      //   h('div.home-caption.home-caption-1', [
-      //     h('h2', 'Authors: Add your article'),
-      //     h('p', [
-      //       `It’s quick and easy to share your published results by drawing the key `,
-      //       h(Popover, {
-      //         tippy: {
-      //           placement: 'bottom',
-      //           html: h('div.home-info-popover-content', `Add interactions such as binding, post-translational modification, and transcription.  Add chemicals or genes from human, mouse, rat, S. cervisiae, D. melanogaster, E. coli, C. elegans, D. rerio, and A. thaliana.`)
-      //         }
-      //       }, [
-      //         h('span.link-like.plain-link-dark', `interactions`)
-      //       ]),
-      //       ` in your pathway in Biofactoid.  `,
-      //       `Your results are automatically made available for others to explore and cite.`
-      //     ])
-      //   ]),
-      //   h('div.home-figure-video.home-figure-video-1', [
-      //     h('video', {
-      //       src: '/image/sample-editor-screen-fade.mp4',
-      //       type: 'video/mp4',
-      //       autoPlay: true,
-      //       loop: true,
-      //       muted: true,
-      //       playsInline: true
-      //     })
-      //   ]),
-      //   h('div.home-cta', [
-      //     h(CTA)
-      //   ])
-      // ]),
-      // h('div.home-section.home-figure-section.home-figure-section-2', [
-      //   h('div.home-figure.home-figure-2'),
-      //   h('div.home-caption.home-caption-2', [
-      //     h('h2', 'Researchers: Yours to explore'),
-      //     h('p', [
-      //       `We `,
-      //       h(Popover, {
-      //         tippy: {
-      //           placement: 'bottom',
-      //           html: h('div.home-info-popover-content', [
-      //             h('span', `Submitted pathway data is stored in our database and is made publically available for researchers to browse and download. A pathway summary is also shared on our `),
-      //             h('a.plain-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}`, target: '_blank' }, 'Twitter feed')
-      //           ])
-      //         }
-      //       }, [
-      //         h('span.link-like.plain-link-bright', `publish and share`)
-      //       ]),
-      //       h('span', ' an interactive graphical abstract of your pathway so scientists can find and use the information.')
-      //     ])
-      //   ]),
-      //   h('div.home-figure-fg-2')
-      // ]),
-      // h('div.home-cta.home-cta-2', [
-      //   h(CTA),
-      //   h('button.home-cta-alt-button', 'Read the paper')
-      // ]),
-      // h('div.home-figure-footer', [
-      //   h('div.home-nav.home-nav-bottom', [
-      //     h('a.home-nav-link', [
-      //       h(ContactPopover)
-      //     ]),
-      //     h('a.home-nav-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}`, target: '_blank' }, 'Twitter'),
-      //     h('a.home-nav-link', { href: 'https://github.com/PathwayCommons/factoid', target: '_blank' }, 'GitHub')
-      //   ]),
-      //   h('div.home-credit-logos', [
-      //     h('a', { href: 'https://www.harvard.edu/', target: '_blank' }, [ h('i.home-credit-logo.home-credit-logo-harvardu') ]),
-      //     h('a', { href: 'https://www.ohsu.edu/', target: '_blank' }, [ h('i.home-credit-logo.home-credit-logo-ohsu') ]),
-      //     h('a', { href: 'https://www.utoronto.ca/', target: '_blank' }, [ h('i.home-credit-logo.home-credit-logo-utoronto') ])
-      //   ])
-      // ])
     ]);
   }
 }

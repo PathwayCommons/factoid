@@ -850,8 +850,6 @@ http.get('/', function( req, res, next ){
         }
 
         q = q.filter( joinedExpr );
-      } else {
-        q = q.skip(offset).limit(limit);
       }
 
       if( status ){
@@ -866,6 +864,10 @@ http.get('/', function( req, res, next ){
         });
 
         q = q.filter( byStatus );
+      }
+
+      if( !ids ){
+        q = q.skip(offset).limit(limit);
       }
 
       q = q.pluck(['id', 'secret']);

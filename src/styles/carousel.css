@@ -264,16 +264,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 250ms ease;
-  opacity: 0;
+  transition-property: opacity, border-top, border-bottom;
+  transition-duration: 250ms;
+  opacity: 0.25;
   pointer-events: none;
   backdrop-filter: blur(1px);
   user-select: none;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-top: 2px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
 }
 
 .carousel-pager-available {
   opacity: 1;
   pointer-events: all;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
 }
 
 .carousel-pager-left {

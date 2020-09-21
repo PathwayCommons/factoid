@@ -343,7 +343,7 @@ class Home extends Component {
             h(Popover, {
               tippy: {
                 placement: 'bottom',
-                html: h('div.home-info-popover-content', `Add interactions such as binding, post-translational modification, and transcription.  Add chemicals or genes from human, mouse, rat, S. cervisiae, D. melanogaster, E. coli, C. elegans, D. rerio, and A. thaliana.`)
+                html: h('div.home-info-popover-content', `Add interactions such as binding, post-translational modification, and transcription.  Add chemicals or genes from human, mouse, SARS-CoV-2, rat, S. cervisiae, D. melanogaster, E. coli, C. elegans, D. rerio, and A. thaliana.`)
               }
             }, [
               h('span.link-like.plain-link', `interactions`)

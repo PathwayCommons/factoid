@@ -20,6 +20,7 @@ const MAX_FIXED_SYNONYMS = 5;
 const MAX_SYNONYMS_SHOWN = 10;
 
 let associationCache = new WeakMap();
+let chosenTypeCache = new WeakMap();
 let nameNotificationCache = new SingleValueCache();
 let assocNotificationCache = new SingleValueCache();
 
@@ -34,6 +35,8 @@ class EntityInfo extends DataComponent {
     let nameNotification = initCache( nameNotificationCache, el, new Notification({ active: true }) );
 
     let assocNotification = initCache( assocNotificationCache, el, new Notification({ active: true }) );
+
+    let chosenType = initCache( chosenTypeCache, el, null );
 
     this.debouncedUpdateMatches = _.debounce( (name, postStep = _.nop) => {
       this.updateMatches(name).then(postStep);
@@ -53,6 +56,7 @@ class EntityInfo extends DataComponent {
     this.data = {
       element: el,
       name: el.name(),
+      chosenType,
       oldName: el.name(),
       matches: assoc.matches,
       gettingMoreMatches: false,
@@ -130,6 +134,14 @@ class EntityInfo extends DataComponent {
   associate( match ){
     let s = this.data;
     let el = s.element;
+
+    if( s.chosenType && match.type !== 'chemical' ){
+      match = Object.assign({}, match, {
+        type: s.chosenType
+      });
+
+      delete match.typeOfGene; // n.b. the model overrides via this field
+    }
 
     el.associate( match );
     el.complete();
@@ -398,10 +410,14 @@ class EntityInfo extends DataComponent {
               name: 'entity-info-subtype-radio',
               id: `entity-info-subtype-radio-${typeVal}`,
               value: typeVal,
-              defaultChecked: typeVal === m.type,
+              checked: typeVal === m.type,
               onChange: e => {
                 let newlySelectedType = e.target.value;
                 let newMatch = Object.assign({}, m, { type: newlySelectedType });
+
+                this.setData({ chosenType: newlySelectedType });
+
+                chosenTypeCache.set(s.element, newlySelectedType);
 
                 this.associate(newMatch);
               }
@@ -434,8 +450,6 @@ class EntityInfo extends DataComponent {
         let isOrgMatch = m => isPerfectNameMatch(m) && !isChemicalMatch(m);
         let orgMatches = s.matches.filter(isOrgMatch);
         let orgToMatches = new Map();
-        const selectedIndex = _.findIndex(orgMatches, match => match.id === m.id && match.namespace === m.namespace);
-        const selectedOrg = assoc ? assoc.organism : null;
 
         orgMatches.forEach(om => {
           let org = om.organism;
@@ -451,6 +465,11 @@ class EntityInfo extends DataComponent {
           arr.push(om);
         });
 
+        orgMatches = _.sortBy(orgMatches, m => m.organismName);
+
+        const selectedIndex = _.findIndex(orgMatches, match => match.id === m.id && match.namespace === m.namespace);
+        const selectedOrg = assoc ? assoc.organism : null;
+
         const getSelectDisplay = (om, includeName = false) => {
           // const matches = orgToMatches.get(om.organism) || [];
           // let count = matches.length;
@@ -463,7 +482,9 @@ class EntityInfo extends DataComponent {
         };
 
         const getDisamtDisplay = (om) => {
-          return `${om.name} : ` + om.synonyms.slice(0, 3).join(', ');
+          const sortedSyns = _.sortBy(om.synonyms, syn => stringDistanceMetric(syn, s.name));
+
+          return `${om.name} : ` + sortedSyns.slice(0, 3).join(', ');
         };
 
         organism = h('div.entity-info-section.entity-info-organism-refinement', [
@@ -503,14 +524,16 @@ class EntityInfo extends DataComponent {
           const needDisam = ambigGrs && ambigGrs.length > 1;
 
           if( needDisam ){
+            const selectedAmIndex = _.findIndex(ambigGrs, match => match.id === m.id && match.namespace === m.namespace);
+
             disambiguation = h('div.entity-info-section.entity-info-organism-refinement', [
               h('span.entity-info-title', 'Which' + (s.name ? ` ${s.name}` : '') + ''),
               h('select.entity-info-organism-dropdown', {
-                defaultValue: selectedIndex,
+                defaultValue: selectedAmIndex,
                 onChange: e => {
                   const val = e.target.value;
                   const index = parseInt(val);
-                  const om = orgMatches[index];
+                  const om = ambigGrs[index];
     
                   if( om ){
                     this.associate(om);

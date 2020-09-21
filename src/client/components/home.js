@@ -215,7 +215,7 @@ class Home extends Component {
     }
 
     const vid = document.querySelector('.home-fluid-section-laptop-content video');
-    
+
     if( vid ){
       vid.playbackRate = 2;
     }
@@ -240,7 +240,7 @@ class Home extends Component {
       this.lgFigureObs.unobserve();
     }
 
-    
+
   }
 
   render(){
@@ -307,7 +307,7 @@ class Home extends Component {
             h(Popover, {
               tippy: {
                 placement: 'bottom',
-                html: h('div.home-info-popover-content', `Supported interactions include binding, post-translational modification, and transcription.  Chemicals and genes from human, mouse, rat, S. cervisiae, D. melanogaster, E. coli, C. elegans, D. rerio, and A. thaliana are supported.`)
+                html: h('div.home-info-popover-content', `Supported interactions include binding, post-translational modification, and transcription.  Chemicals and genes from human, mouse, SARS-CoV-2, rat, S. cervisiae, D. melanogaster, E. coli, C. elegans, D. rerio, and A. thaliana are supported.`)
               }
             }, [
               h('span.link-like.plain-link', `molecular interactions`)

@@ -3,7 +3,7 @@ export const editAnimationDuration = 600;
 export const editAnimationEasing = 'linear';
 export const editAnimationColor = 'rgba(255, 255, 0, 0.5)';
 export const editAnimationWhite = 'rgba(255, 255, 255, 0.5)';
-export const associationSearchLimit = 10;
+export const associationSearchLimit = 30;
 export const tippyTopZIndex = 10001;
 export const tippyDefaults = {
   theme: 'light',

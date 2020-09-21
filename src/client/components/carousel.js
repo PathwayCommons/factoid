@@ -3,6 +3,7 @@ import h from 'react-hyperscript';
 import { Component } from 'react';
 import _ from 'lodash';
 import { formatDistanceToNow } from 'date-fns';
+import queryString from 'query-string';
 
 export const CAROUSEL_CONTENT = {
   FIGURE: 'figure',
@@ -21,9 +22,13 @@ export class Carousel extends Component {
       content: props.content,
       refresh: props.refresh || (() => { // get all docs from service by default
         const url = `/api/document`;
-        const doFetch = () => fetch(url);
+        const params = queryString.stringify({
+          status: ['published', 'submitted'].join(','),
+          limit: 20
+        });
+        const doFetch = () => fetch(`${url}?${params}`);
         const toJson = res => res.json();
-
+        
         return tryPromise(doFetch).then(toJson);
       })
     };
@@ -166,7 +171,7 @@ export class Carousel extends Component {
             abstractDiv,
             h('div.carousel-doc-footer', [
               h('div.carousel-doc-text', doc.text),
-              h('div.carousel-doc-datestamp', formatDistanceToNow( new Date( doc.lastEditedDate ), { addSuffix: true } ))
+              h('div.carousel-doc-datestamp', formatDistanceToNow( new Date( doc.lastEditedDate || 0 ), { addSuffix: true } ))
             ]),
           ]),
           figureDiv,
@@ -188,8 +193,8 @@ export class Carousel extends Component {
       return placeholders;
     };
 
-    const isPublished = doc => doc.status.toLowerCase() === 'published';
-    const docs = this.state.docs.filter(isPublished);
+    const docs = this.state.docs;
+
 
     return h('div.carousel', {
       className: makeClassList({

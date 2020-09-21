@@ -471,13 +471,16 @@ class Document {
 
   toBiopaxTemplate(){
     let interactions = this.toBiopaxIntnTemplates();
-    let articleData = _.get( this.article(), ['PubmedData', 'ArticleIdList', 0]);
-    let pubId = articleData.id;
-    let pubDb = articleData.IdType;
-    let pathwayName = this.citation().title;
-    let publication = { id: pubId, db: pubDb };
+    let citation = this.citation();
+    let pathwayName = citation.title;
+    let pmid = citation.pmid;
 
-    return { interactions, publication, pathwayName};
+    let template = { interactions, pathwayName};
+    if ( pmid ) {
+      template.publication = { id: pmid, db: 'pubmed' };
+    }
+
+    return template;
   }
 
   toSearchTemplates(){

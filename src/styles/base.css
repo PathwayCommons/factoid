@@ -151,7 +151,7 @@ button.button-toggle {
 
 select {
   width: var(--defaultWidgetWidth);
-  padding-right: 1em;
+  padding-right: 2em;
   background-image: url('./image/fa-angle-down.svg');
   background-position: 100% 50%;
   background-position: calc(100% - 0.5em) 50%;

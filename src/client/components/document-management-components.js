@@ -305,7 +305,8 @@ class DocumentManagementDocumentComponent extends React.Component {
           buttonKey: doc.id(),
           params: [
             { op: 'replace', path: 'article' },
-            { op: 'replace', path: 'correspondence' }
+            { op: 'replace', path: 'correspondence' },
+            { op: 'replace', path: 'relatedPapers' }
           ],
           value: 'refresh',
           title: 'Refresh document data',

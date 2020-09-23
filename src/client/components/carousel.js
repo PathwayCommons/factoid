@@ -23,12 +23,12 @@ export class Carousel extends Component {
       refresh: props.refresh || (() => { // get all docs from service by default
         const url = `/api/document`;
         const params = queryString.stringify({
-          status: ['published', 'submitted'].join(','),
+          status: ['published'].join(','),
           limit: 20
         });
         const doFetch = () => fetch(`${url}?${params}`);
         const toJson = res => res.json();
-        
+
         return tryPromise(doFetch).then(toJson);
       })
     };
@@ -171,7 +171,7 @@ export class Carousel extends Component {
             abstractDiv,
             h('div.carousel-doc-footer', [
               h('div.carousel-doc-text', doc.text),
-              h('div.carousel-doc-datestamp', formatDistanceToNow( new Date( doc.lastEditedDate || 0 ), { addSuffix: true } ))
+              h('div.carousel-doc-datestamp', doc.lastEditedDate ? formatDistanceToNow( new Date( doc.lastEditedDate ), { addSuffix: true } ) : null )
             ]),
           ]),
           figureDiv,

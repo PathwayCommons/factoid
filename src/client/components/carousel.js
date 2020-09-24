@@ -171,7 +171,7 @@ export class Carousel extends Component {
             abstractDiv,
             h('div.carousel-doc-footer', [
               h('div.carousel-doc-text', doc.text),
-              h('div.carousel-doc-datestamp', doc.lastEditedDate ? formatDistanceToNow( new Date( doc.lastEditedDate ), { addSuffix: true } ) : null )
+              h('div.carousel-doc-datestamp', formatDistanceToNow( new Date( doc.lastEditedDate || 0 ), { addSuffix: true } ))
             ]),
           ]),
           figureDiv,

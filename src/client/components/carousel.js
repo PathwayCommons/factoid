@@ -23,12 +23,12 @@ export class Carousel extends Component {
       refresh: props.refresh || (() => { // get all docs from service by default
         const url = `/api/document`;
         const params = queryString.stringify({
-          status: ['published', 'submitted'].join(','),
+          status: ['published'].join(','),
           limit: 20
         });
         const doFetch = () => fetch(`${url}?${params}`);
         const toJson = res => res.json();
-        
+
         return tryPromise(doFetch).then(toJson);
       })
     };

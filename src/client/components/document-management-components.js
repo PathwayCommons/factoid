@@ -528,12 +528,13 @@ class DocumentManagementDocumentComponent extends React.Component {
     const getDocumentStats = doc => {
       const created = toPeriodOrDate( doc.createdDate() );
       const edited = toPeriodOrDate( doc.lastEditedDate() );
+      let isEdited = doc.lastEditedDate() !== doc.createdDate();
       return h( 'div.document-management-document-section.meta', [
           h( 'small.document-management-document-section-items.pull-right', [
             getDocumentStatus( doc ),
             getRefreshDocDataButton( doc ),
             h( 'div.mute', { key: 'created' }, `Created ${created}` ),
-            h( 'div.mute', { key: 'edited' }, edited ? `Edited ${edited}`: 'Not edited' )
+            h( 'div.mute', { key: 'edited' }, isEdited ? `Edited ${edited}`: 'Not edited' )
           ])
         ]);
     };

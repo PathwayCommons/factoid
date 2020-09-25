@@ -26,7 +26,7 @@ const exportToZip = (baseUrl, zipPath, types) => {
       .then( res => {
         offset += res.length;
         if ( res.length > 0 ) {
-          const includedStatuses = ['submitted', 'published'];
+          const includedStatuses = ['published'];
           const shouldInclude = doc => _.includes(includedStatuses, doc.status);
           let ids = res.filter( shouldInclude ).map( doc => doc.id );
           return addToZip( ids ).then( processNext );

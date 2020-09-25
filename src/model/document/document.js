@@ -98,7 +98,11 @@ class Document {
       }
     });
 
-    if( isServer ) this.syncher.on( 'create', () => this.rwMeta( 'createdDate', new Date() ) );
+    if( isServer ) this.syncher.on( 'create', () => {
+      const createdDate = new Date();
+      this.rwMeta( 'createdDate', createdDate );
+      this.rwMeta( 'lastEditedDate', createdDate );
+    });
   }
 
   filled(){

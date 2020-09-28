@@ -118,10 +118,6 @@ class DocumentManagement extends DirtyComponent {
       .catch( () => {} );
   }
 
-  handleApproveRequest( doc ){
-    doc.approve();
-  }
-
   handleStatusChange( e ){
     const { value, checked } = e.target;
     const status = this.state.status.slice();

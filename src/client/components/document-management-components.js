@@ -323,7 +323,7 @@ class DocumentManagementDocumentComponent extends React.Component {
               className: makeClassList({ 'show': hasIssues( doc ) })
             }, 'warning' ),
             h( 'i.material-icons.hide-by-default.complete', {
-              className: makeClassList({ 'show': doc.submitted() || doc.published() })
+              className: makeClassList({ 'show': doc.submitted() || doc.isPublic() })
             }, 'check_circle' ),
             h( 'i.material-icons.hide-by-default.mute', {
               className: makeClassList({ 'show': doc.trashed() })
@@ -477,7 +477,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             buttonKey: EMAIL_TYPE_INVITE,
             value: EMAIL_TYPE_INVITE,
             label: _.capitalize( EMAIL_TYPE_INVITE ),
-            disableWhen: doc.requested() || doc.trashed()
+            disableWhen: doc.initiated() || doc.trashed()
           }),
           h( DocumentEmailButtonComponent, {
             params: { doc, apiKey },
@@ -485,7 +485,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             buttonKey: EMAIL_TYPE_FOLLOWUP,
             value: EMAIL_TYPE_FOLLOWUP,
             label: _.upperFirst( EMAIL_TYPE_FOLLOWUP.replace(/([A-Z])/g, (match, letter) => '-' + letter) ),
-            disableWhen: doc.requested() || doc.trashed()
+            disableWhen: doc.initiated() || doc.trashed()
           })
         ]);
       }

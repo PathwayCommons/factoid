@@ -711,10 +711,9 @@ http.get('/zip/biopax', function( req, res, next ){
  *   status:
  *     type: string
  *     enum:
- *       - requested
- *       - approved
+ *       - initiated
  *       - submitted
- *       - published
+ *       - public
  *       - trashed
  *
  *   Document:
@@ -1240,8 +1239,7 @@ http.post('/', function( req, res, next ){
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
 
-  const setRequestStatus = doc => tryPromise( () => doc.request() ).then( () => doc );
-  const setApprovedStatus = doc => tryPromise( () => doc.approve() ).then( () => doc );
+  const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
   const handleDocCreation = async ({ docDb, eleDb }) => {
     if( id === DEMO_ID ) await deleteTableRows( API_KEY, secret );
     return await createDoc({ docDb, eleDb, id, secret, provided });
@@ -1253,9 +1251,8 @@ http.post('/', function( req, res, next ){
   tryPromise( () => createSecret({ secret }) )
     .then( loadTables )
     .then( handleDocCreation )
-    .then( setRequestStatus )
+    .then( setStatus )
     .then( fillDoc )
-    .then( setApprovedStatus )
     .then( tryVerify )
     .then( sendJSONResponse )
     .then( updateRelatedPapers )
@@ -1364,17 +1361,13 @@ http.post('/email/:id/:secret', function( req, res, next ){
 http.patch('/:id/:secret', function( req, res, next ){
   const { id, secret } = req.params;
 
-  // Publish criteria: non-empty; all entities complete
-  const tryPublish = async doc => {
-    let didPublish = false;
+  // Public criteria: non-empty; all entities complete
+  const tryMakePublic = async doc => {
     const hasEles = doc => doc.elements().length > 0;
     const hasIncompleteEles = doc => doc.elements().some( ele => !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX );
-    const isPublishable = doc => hasEles( doc ) && !hasIncompleteEles( doc );
-    if( isPublishable( doc ) ){
-      await doc.publish();
-      didPublish = true;
-    }
-    return didPublish;
+    const shouldMakePublic = doc => hasEles( doc ) && !hasIncompleteEles( doc );
+    if( shouldMakePublic( doc ) ) await doc.makePublic();
+    return;
   };
 
   const sendFollowUpNotification = async doc => await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
@@ -1388,9 +1381,9 @@ http.patch('/:id/:secret', function( req, res, next ){
       }
     }
   };
-  const handlePublishRequest = async doc => {
-    const didPublish = await tryPublish( doc );
-    if( didPublish ) {
+  const handleMakePublicRequest = async doc => {
+    await tryMakePublic( doc );
+    if( doc.isPublic() ) {
       updateRelatedPapers( doc );
       await tryTweetingDoc( doc );
       sendFollowUpNotification( doc );
@@ -1404,7 +1397,7 @@ http.patch('/:id/:secret', function( req, res, next ){
 
       switch ( path ) {
         case 'status':
-          if( op === 'replace' && value === DOCUMENT_STATUS_FIELDS.PUBLISHED ) await handlePublishRequest( doc );
+          if( op === 'replace' && value === DOCUMENT_STATUS_FIELDS.PUBLIC ) await handleMakePublicRequest( doc );
           break;
         case 'article':
           if( op === 'replace' ) await fillDocArticle( doc );

@@ -44,6 +44,7 @@ import { BASE_URL,
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
 import { db2pubmed } from './pubmed/linkPubmed';
 import { fetchPubmed } from './pubmed/fetchPubmed';
+import { generateSitemap } from '../../../sitemap';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
 const http = Express.Router();
@@ -362,6 +363,58 @@ http.get('/zip', function( req, res, next ){
   tryPromise( lazyExport )
     .then( () => res.download( filePath ))
     .catch( next );
+});
+
+/**
+ * @swagger
+ *
+ * /api/document/sitemap:
+ *   get:
+ *     security:
+ *       - ApiKeyAuth: []
+ *     summary: Write a sitemap.xml to static directory.
+ *     description: A sitemap.xml is written containing public documents information
+ *     tags:
+ *       - Document
+ *     responses:
+ *      '200':
+ *        description: OK
+ */
+http.get('/sitemap', function( req, res, next ) {
+  let apiKey = _.get( req.query, 'apiKey' );
+  let status = DOCUMENT_STATUS_FIELDS.PUBLISHED; //see https://github.com/PathwayCommons/factoid/pull/844
+  let tables;
+
+  return (
+    tryPromise( () => checkApiKey( apiKey ) )
+    .then( () => loadTables() )
+    .then( tbls => {
+      tables = tbls;
+      return tables;
+    })
+    .then( tables => {
+      let t = tables.docDb;
+      let { table, conn, rethink: r } = t;
+      let q = table;
+
+      q = q.filter( r.row( 'status' ).eq( status ) );
+      q = q.orderBy( r.desc( 'createdDate' ) );
+      q = q.pluck( ['id', 'secret'] );
+      return q.run( conn );
+    })
+    .then( cursor => cursor.toArray() )
+    .then( res => {
+      return Promise.all( res.map( docDbJson => {
+        let { id } = docDbJson;
+        let docOpts = _.assign( {}, tables, { id } );
+        return loadDoc( docOpts ).then( getDocJson );
+      }));
+    } )
+    .then( generateSitemap )
+    .then( () => res.end() )
+    .catch( next )
+  );
+
 });
 
 /**

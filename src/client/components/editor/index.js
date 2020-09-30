@@ -138,7 +138,7 @@ class Editor extends DataComponent {
 
     doc.on('update', change => {
       if( _.has( change, 'status' ) ){
-        const isDone = this.data.document.submitted() || this.data.document.published();
+        const isDone = this.data.document.submitted() || this.data.document.isPublic();
         this.done( isDone );
       }
     });
@@ -218,7 +218,7 @@ class Editor extends DataComponent {
         this.setData({
           initted: true,
           showHelp: this.data.document.editable(),
-          done: this.data.document.submitted() || this.data.document.published()
+          done: this.data.document.submitted() || this.data.document.isPublic()
         });
 
         const title = _.get(this.data.document.citation(), ['title']);

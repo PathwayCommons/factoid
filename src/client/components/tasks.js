@@ -84,7 +84,7 @@ class TaskView extends DataComponent {
     const id = this.props.document.id();
     const secret = this.props.document.secret();
     const params = [
-      { op: 'replace', path: 'status', value: DOCUMENT_STATUS_FIELDS.PUBLISHED }
+      { op: 'replace', path: 'status', value: DOCUMENT_STATUS_FIELDS.PUBLIC }
     ];
     const url = `/api/document/${id}/${secret}`;
     return fetch( url, {

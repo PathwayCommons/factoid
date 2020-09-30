@@ -20,10 +20,9 @@ const DEFAULTS = Object.freeze({
 const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'status', 'verified' ];
 const READONLY_METADATA_FIELDS = _.difference( METADATA_FIELDS, ['provided', 'correspondence'] );
 const DOCUMENT_STATUS_FIELDS = Object.freeze({
-  REQUESTED: 'requested',
-  APPROVED: 'approved',
+  INITIATED: 'initiated',
   SUBMITTED: 'submitted',
-  PUBLISHED: 'published',
+  PUBLIC: 'public',
   TRASHED: 'trashed'
 });
 
@@ -419,14 +418,12 @@ class Document {
   }
 
   static statusFields(){ return DOCUMENT_STATUS_FIELDS; }
-  request(){ return this.status( DOCUMENT_STATUS_FIELDS.REQUESTED ); }
-  requested(){ return this.status() === DOCUMENT_STATUS_FIELDS.REQUESTED ? true : false; }
-  approve(){ return this.status( DOCUMENT_STATUS_FIELDS.APPROVED ); }
-  approved(){ return this.status() === DOCUMENT_STATUS_FIELDS.APPROVED ? true : false; }
+  initiate(){ return this.status( DOCUMENT_STATUS_FIELDS.INITIATED ); }
+  initiated(){ return this.status() === DOCUMENT_STATUS_FIELDS.INITIATED ? true : false; }
   submit(){ return this.status( DOCUMENT_STATUS_FIELDS.SUBMITTED ); }
   submitted(){ return this.status() === DOCUMENT_STATUS_FIELDS.SUBMITTED ? true : false; }
-  publish(){ return this.status( DOCUMENT_STATUS_FIELDS.PUBLISHED ); }
-  published(){ return this.status() === DOCUMENT_STATUS_FIELDS.PUBLISHED ? true : false; }
+  makePublic(){ return this.status( DOCUMENT_STATUS_FIELDS.PUBLIC ); }
+  isPublic(){ return this.status() === DOCUMENT_STATUS_FIELDS.PUBLIC ? true : false; }
   trash(){ return this.status( DOCUMENT_STATUS_FIELDS.TRASHED ); }
   trashed(){ return this.status() === DOCUMENT_STATUS_FIELDS.TRASHED ? true : false; }
 

@@ -5,6 +5,8 @@ import _ from 'lodash';
 import { formatDistanceToNow } from 'date-fns';
 import queryString from 'query-string';
 
+import Document from '../../model/document';
+
 export const CAROUSEL_CONTENT = {
   FIGURE: 'figure',
   ABSTRACT: 'abstract'
@@ -13,6 +15,8 @@ export const CAROUSEL_CONTENT = {
 export class Carousel extends Component {
   constructor(props){
     super(props);
+
+    const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
     this.state = {
       pagerLeftAvailable: false,
@@ -23,7 +27,7 @@ export class Carousel extends Component {
       refresh: props.refresh || (() => { // get all docs from service by default
         const url = `/api/document`;
         const params = queryString.stringify({
-          status: ['published'].join(','),
+          status: [DOCUMENT_STATUS_FIELDS.PUBLIC].join(','),
           limit: 20
         });
         const doFetch = () => fetch(`${url}?${params}`);

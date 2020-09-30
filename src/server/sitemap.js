@@ -1,9 +1,7 @@
 import _ from 'lodash';
-import fs from 'fs';
-import path from 'path';
 import convert from 'xml-js';
 
-import logger from './logger';
+// import logger from './logger';
 import { BASE_URL } from '../config';
 
 const xmlJSopts = { compact: false, ignoreComment: true, spaces: 2 };
@@ -69,6 +67,9 @@ class Sitemap {
       appendChild( urlset, url );
     });
 
+    const baseURL = eltFactory( 'url' );
+    appendChild( baseURL, eltFactory( 'loc', {}, `${BASE_URL}/` ) );
+    appendChild( urlset, baseURL );
   }
 
   toXML() {
@@ -83,35 +84,17 @@ class Sitemap {
 
 }
 
+/**
+ * docs2Sitemap
+ * Generate a sitemap consisting of the document public URLs
+ *
+ * @param { Object } docs The array of documents
+ */
 const docs2Sitemap = docs => {
   const sitemap = new Sitemap( docs );
   return sitemap.xml;
 };
 
-/**
- * generateSitemap
- * Write a sitemap consisting of the document public URLs to static folder
- *
- * @param { Object } docs The array of documents
- */
-const generateSitemap = docs => {
-  const filename = path.join( __dirname, '../..', 'public', 'sitemap.xml' );
-  const sitemap = docs2Sitemap( docs );
-
-  return new Promise( ( resolve, reject ) => {
-    fs.writeFile( filename, sitemap, err => {
-      if ( err ) {
-        logger.error( `Error creating sitemap.xml: ${err}` );
-        reject( err );
-      } else {
-        logger.info( `sitemap.xml created` );
-        resolve();
-      }
-    });
-  });
-};
-
 export {
-  docs2Sitemap,
-  generateSitemap
+  docs2Sitemap
 };

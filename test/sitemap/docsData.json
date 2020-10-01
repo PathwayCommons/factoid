@@ -1,0 +1,2041 @@
+[
+  {
+    "id":"7af64ad2-64a5-466e-b42d-acf259c3883d",
+    "secret":"d64e213d-cc9e-4ffc-9e53-c6df88a24a46",
+    "organisms":[
+      "9606"
+    ],
+    "elements":[
+      {
+        "id":"f2b71c93-5a3d-47a9-8bf0-3a7219a91427",
+        "secret":"d64e213d-cc9e-4ffc-9e53-c6df88a24a46",
+        "position":{
+          "x":55.69620253164557,
+          "y":60.75949367088607
+        },
+        "name":"SAV1",
+        "description":"",
+        "type":"protein",
+        "completed":true,
+        "association":{
+          "combinedOrganismIndex":1,
+          "dbName":"NCBI Gene",
+          "dbPrefix":"ncbigene",
+          "dbXrefs":[
+            {
+              "db":"MIM",
+              "id":"607203"
+            },
+            {
+              "db":"HGNC",
+              "id":"HGNC:17795"
+            },
+            {
+              "db":"Ensembl",
+              "id":"ENSG00000151748"
+            }
+          ],
+          "defaultOrganismIndex":1,
+          "distance":0,
+          "esScore":11.06899,
+          "id":"60485",
+          "name":"SAV1",
+          "nameDistance":0,
+          "namespace":"ncbi",
+          "organism":"9606",
+          "organismIndex":0,
+          "organismName":"Homo sapiens",
+          "overallDistance":100000,
+          "shortSynonyms":[
+            "SAV",
+            "WW45",
+            "WWP4",
+            "protein salvador homolog 1",
+            "1700040G09Rik",
+            "45 kDa WW domain protein",
+            "WW domain-containing adaptor 45",
+            "hWW45",
+            "salvador homolog 1",
+            "salvador family WW domain containing protein 1"
+          ],
+          "synonyms":[
+            "SAV",
+            "WW45",
+            "WWP4",
+            "protein salvador homolog 1",
+            "1700040G09Rik",
+            "45 kDa WW domain protein",
+            "WW domain-containing adaptor 45",
+            "hWW45",
+            "salvador homolog 1",
+            "salvador family WW domain containing protein 1"
+          ],
+          "type":"protein"
+        }
+      },
+      {
+        "id":"1b641ecf-56f7-4685-bb5d-ee8a08419b60",
+        "secret":"d64e213d-cc9e-4ffc-9e53-c6df88a24a46",
+        "position":{
+          "x":252.1518987341772,
+          "y":178.73417721518987
+        },
+        "name":"MST",
+        "description":"",
+        "type":"protein",
+        "completed":true,
+        "association":{
+          "combinedOrganismIndex":0,
+          "dbName":"NCBI Gene",
+          "dbPrefix":"ncbigene",
+          "dbXrefs":[
+            {
+              "db":"MIM",
+              "id":"617619"
+            },
+            {
+              "db":"HGNC",
+              "id":"HGNC:29678"
+            },
+            {
+              "db":"Ensembl",
+              "id":"ENSG00000125459"
+            }
+          ],
+          "defaultOrganismIndex":1,
+          "distance":0,
+          "esScore":9.39411,
+          "id":"55154",
+          "name":"MSTO1",
+          "nameDistance":0.33333333333333337,
+          "namespace":"ncbi",
+          "organism":"9606",
+          "organismIndex":0,
+          "organismName":"Homo sapiens",
+          "overallDistance":33,
+          "shortSynonyms":[
+            "LST005",
+            "MMYAT",
+            "MST",
+            "protein misato homolog 1",
+            "misato 1, mitochondrial distribution and morphology regulator",
+            "misato homolog 1",
+            "misato mitochondrial distribution and morphology regulator 1"
+          ],
+          "synonyms":[
+            "LST005",
+            "MMYAT",
+            "MST",
+            "protein misato homolog 1",
+            "misato 1, mitochondrial distribution and morphology regulator",
+            "misato homolog 1",
+            "misato mitochondrial distribution and morphology regulator 1"
+          ],
+          "type":"protein"
+        }
+      },
+      {
+        "id":"b716e080-adb7-429a-a061-fc306db343bf",
+        "secret":"d64e213d-cc9e-4ffc-9e53-c6df88a24a46",
+        "position":{
+          "x":55.69620253164557,
+          "y":60.75949367088607
+        },
+        "name":"",
+        "description":"",
+        "type":"binding",
+        "completed":true,
+        "association":"binding",
+        "entries":[
+          {
+            "group":null,
+            "id":"f2b71c93-5a3d-47a9-8bf0-3a7219a91427"
+          },
+          {
+            "group":"unsigned",
+            "id":"1b641ecf-56f7-4685-bb5d-ee8a08419b60"
+          }
+        ]
+      }
+    ],
+    "publicUrl":"/document/7af64ad2-64a5-466e-b42d-acf259c3883d",
+    "privateUrl":"/document/7af64ad2-64a5-466e-b42d-acf259c3883d/d64e213d-cc9e-4ffc-9e53-c6df88a24a46",
+    "citation":{
+      "title":"A WW Tandem-Mediated Dimerization Mode of SAV1 Essential for Hippo Signaling.",
+      "authors":{
+        "abbreviation":"Zhijie Lin, Ruiling Xie, Kunliang Guan, Mingjie Zhang",
+        "contacts":[
+          {
+            "name":"Mingjie Zhang",
+            "email":[
+              "mzhang@ust.hk"
+            ]
+          }
+        ],
+        "authorList":[
+          {
+            "name":"Zhijie Lin",
+            "email":null,
+            "abbrevName":"Lin Z",
+            "isCollectiveName":false
+          },
+          {
+            "name":"Ruiling Xie",
+            "email":null,
+            "abbrevName":"Xie R",
+            "isCollectiveName":false
+          },
+          {
+            "name":"Kunliang Guan",
+            "email":null,
+            "abbrevName":"Guan K",
+            "isCollectiveName":false
+          },
+          {
+            "name":"Mingjie Zhang",
+            "email":"mzhang@ust.hk",
+            "abbrevName":"Zhang M",
+            "isCollectiveName":false
+          }
+        ]
+      },
+      "reference":"Cell Rep 32 (2020)",
+      "abstract":"The canonical mammalian Hippo pathway contains a core kinase signaling cascade requiring upstream MST to form a stable complex with SAV1 in order to phosphorylate the downstream LATS/MOB complex. Though SAV1 dimerization is essential for the trans-activation of MST, the molecular mechanism underlying SAV1 dimerization is unclear. Here, we discover that the SAV1 WW tandem containing a short Pro-rich extension immediately following the WW tandem (termed as \"WW12ex\") forms a highly stable homodimer. The crystal structure of SAV1 WW12ex reveals that the Pro-rich extension of one subunit binds to both WW domains from the other subunit. Thus, SAV1 WW12ex forms a domain-swapped dimer instead of a WW2 homodimerization-mediated dimer. The WW12ex-mediated dimerization of SAV1 is required for the MST/SAV1 complex assembly and MST kinase activation. Finally, we show that several cancer-related SAV1 variants disrupt SAV1 dimer formation, and thus, these mutations may impair the tumor-suppression activity of SAV1.",
+      "pmid":"32905778",
+      "doi":"10.1016/j.celrep.2020.108118"
+    },
+    "text":"SAV1 binds with MST.",
+    "provided":{
+      "authorEmail":"jvwong@gmail.com",
+      "paperId":"A WW Tandem-Mediated Dimerization Mode of SAV1 Essential for Hippo Signaling"
+    },
+    "article":{
+      "MedlineCitation":{
+        "Article":{
+          "Abstract":"The canonical mammalian Hippo pathway contains a core kinase signaling cascade requiring upstream MST to form a stable complex with SAV1 in order to phosphorylate the downstream LATS/MOB complex. Though SAV1 dimerization is essential for the trans-activation of MST, the molecular mechanism underlying SAV1 dimerization is unclear. Here, we discover that the SAV1 WW tandem containing a short Pro-rich extension immediately following the WW tandem (termed as \"WW12ex\") forms a highly stable homodimer. The crystal structure of SAV1 WW12ex reveals that the Pro-rich extension of one subunit binds to both WW domains from the other subunit. Thus, SAV1 WW12ex forms a domain-swapped dimer instead of a WW2 homodimerization-mediated dimer. The WW12ex-mediated dimerization of SAV1 is required for the MST/SAV1 complex assembly and MST kinase activation. Finally, we show that several cancer-related SAV1 variants disrupt SAV1 dimer formation, and thus, these mutations may impair the tumor-suppression activity of SAV1.",
+          "ArticleTitle":"A WW Tandem-Mediated Dimerization Mode of SAV1 Essential for Hippo Signaling.",
+          "AuthorList":[
+            {
+              "AffiliationInfo":[
+                {
+                  "Affiliation":"Division of Life Science, State Key Laboratory of Molecular Neuroscience, Hong Kong University of Science and Technology, Clear Water Bay, Kowloon, Hong Kong, China.",
+                  "email":null
+                }
+              ],
+              "CollectiveName":null,
+              "ForeName":"Zhijie",
+              "Identifier":[
+
+              ],
+              "Initials":"Z",
+              "LastName":"Lin"
+            },
+            {
+              "AffiliationInfo":[
+                {
+                  "Affiliation":"Department of Pharmacology and Moores Cancer Center, University of California, San Diego, La Jolla, CA 92093, USA; Department of Otolaryngology, Head & Neck Surgery, Peking University First Hospital, Beijing 100034, China.",
+                  "email":null
+                }
+              ],
+              "CollectiveName":null,
+              "ForeName":"Ruiling",
+              "Identifier":[
+
+              ],
+              "Initials":"R",
+              "LastName":"Xie"
+            },
+            {
+              "AffiliationInfo":[
+                {
+                  "Affiliation":"Department of Pharmacology and Moores Cancer Center, University of California, San Diego, La Jolla, CA 92093, USA.",
+                  "email":null
+                }
+              ],
+              "CollectiveName":null,
+              "ForeName":"Kunliang",
+              "Identifier":[
+
+              ],
+              "Initials":"K",
+              "LastName":"Guan"
+            },
+            {
+              "AffiliationInfo":[
+                {
+                  "Affiliation":"Division of Life Science, State Key Laboratory of Molecular Neuroscience, Hong Kong University of Science and Technology, Clear Water Bay, Kowloon, Hong Kong, China; Center of Systems Biology and Human Health, Hong Kong University of Science and Technology, Clear Water Bay, Kowloon, Hong Kong, China. Electronic address: mzhang@ust.hk.",
+                  "email":[
+                    "mzhang@ust.hk"
+                  ]
+                }
+              ],
+              "CollectiveName":null,
+              "ForeName":"Mingjie",
+              "Identifier":[
+
+              ],
+              "Initials":"M",
+              "LastName":"Zhang"
+            }
+          ],
+          "Journal":{
+            "ISOAbbreviation":"Cell Rep",
+            "ISSN":{
+              "IssnType":"Electronic",
+              "value":"2211-1247"
+            },
+            "JournalIssue":{
+              "Issue":"10",
+              "PubDate":{
+                "Day":"08",
+                "Month":"Sep",
+                "Year":"2020"
+              },
+              "Volume":"32"
+            },
+            "Title":"Cell reports"
+          }
+        },
+        "ChemicalList":[
+
+        ],
+        "InvestigatorList":[
+
+        ],
+        "KeywordList":[
+          "Hippo pathway",
+          "MST1",
+          "MST2",
+          "SAV1",
+          "WW domain",
+          "domain swapping",
+          "supramodule",
+          "tandem domains"
+        ],
+        "MeshheadingList":[
+
+        ]
+      },
+      "PubmedData":{
+        "ArticleIdList":[
+          {
+            "IdType":"pubmed",
+            "id":"32905778"
+          },
+          {
+            "IdType":"pii",
+            "id":"S2211-1247(20)31107-4"
+          },
+          {
+            "IdType":"doi",
+            "id":"10.1016/j.celrep.2020.108118"
+          },
+          {
+            "IdType":"pmc",
+            "id":"PMC7494017"
+          },
+          {
+            "IdType":"mid",
+            "id":"NIHMS1627868"
+          }
+        ],
+        "History":[
+          {
+            "PubMedPubDate":{
+              "Day":"29",
+              "Month":"03",
+              "Year":"2020"
+            },
+            "PubStatus":"received"
+          },
+          {
+            "PubMedPubDate":{
+              "Day":"27",
+              "Month":"06",
+              "Year":"2020"
+            },
+            "PubStatus":"revised"
+          },
+          {
+            "PubMedPubDate":{
+              "Day":"17",
+              "Month":"08",
+              "Year":"2020"
+            },
+            "PubStatus":"accepted"
+          },
+          {
+            "PubMedPubDate":{
+              "Day":"9",
+              "Month":"9",
+              "Year":"2020"
+            },
+            "PubStatus":"entrez"
+          },
+          {
+            "PubMedPubDate":{
+              "Day":"10",
+              "Month":"9",
+              "Year":"2020"
+            },
+            "PubStatus":"pubmed"
+          },
+          {
+            "PubMedPubDate":{
+              "Day":"10",
+              "Month":"9",
+              "Year":"2020"
+            },
+            "PubStatus":"medline"
+          }
+        ],
+        "ReferenceList":[
+          {
+            "Reference":[
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"26459179"
+                  }
+                ],
+                "Citation":"Clin Cancer Res. 2016 Mar 1;22(5):1256-64"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"29154163"
+                  }
+                ],
+                "Citation":"Curr Opin Cell Biol. 2018 Apr;51:22-32"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"31486770"
+                  }
+                ],
+                "Citation":"Elife. 2019 Sep 05;8:"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"20937913"
+                  }
+                ],
+                "Citation":"Proc Natl Acad Sci U S A. 2010 Oct 26;107(43):18404-9"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"29519817"
+                  }
+                ],
+                "Citation":"J Biol Chem. 2018 Apr 13;293(15):5532-5543"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"27268910"
+                  }
+                ],
+                "Citation":"Trends Cell Biol. 2016 Sep;26(9):694-704"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"20383002"
+                  }
+                ],
+                "Citation":"Acta Crystallogr D Biol Crystallogr. 2010 Apr;66(Pt 4):486-501"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"30784589"
+                  }
+                ],
+                "Citation":"Cell Rep. 2019 Feb 19;26(8):2064-2077.e7"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"27912098"
+                  }
+                ],
+                "Citation":"Mol Cell. 2016 Dec 1;64(5):993-1008"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"16930133"
+                  }
+                ],
+                "Citation":"FEBS J. 2006 Sep;273(18):4264-76"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"29067766"
+                  }
+                ],
+                "Citation":"Protein Sci. 2018 Jan;27(1):293-315"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"27604489"
+                  }
+                ],
+                "Citation":"Cancer Discov. 2016 Nov;6(11):1258-1266"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"29063833"
+                  }
+                ],
+                "Citation":"Elife. 2017 Oct 24;6:"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"14502295"
+                  }
+                ],
+                "Citation":"Nat Cell Biol. 2003 Oct;5(10):921-7"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"20951342"
+                  }
+                ],
+                "Citation":"Dev Cell. 2010 Oct 19;19(4):491-505"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"30910359"
+                  }
+                ],
+                "Citation":"Biochem Biophys Res Commun. 2019 May 7;512(3):591-597"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"22863277"
+                  }
+                ],
+                "Citation":"Cell. 2012 Aug 17;150(4):780-91"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"30266805"
+                  }
+                ],
+                "Citation":"J Biol Chem. 2018 Nov 23;293(47):18230-18241"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"27747589"
+                  }
+                ],
+                "Citation":"Tumour Biol. 2016 Oct 17;:"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"27754618"
+                  }
+                ],
+                "Citation":"Methods Enzymol. 1997;276:307-26"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"24126142"
+                  }
+                ],
+                "Citation":"Mol Cell Proteomics. 2014 Jan;13(1):119-31"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"17686488"
+                  }
+                ],
+                "Citation":"J Mol Biol. 2007 Sep 28;372(4):970-980"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"30944303"
+                  }
+                ],
+                "Citation":"Nat Commun. 2019 Apr 3;10(1):1515"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"22201747"
+                  }
+                ],
+                "Citation":"Front Biosci (Landmark Ed). 2012 Jan 01;17:331-48"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"21678419"
+                  }
+                ],
+                "Citation":"J Cell Physiol. 2012 Feb;227(2):839-49"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"11495720"
+                  }
+                ],
+                "Citation":"Cell Signal. 2001 Sep;13(9):625-32"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"26108669"
+                  }
+                ],
+                "Citation":"Genes Dev. 2015 Jul 1;29(13):1416-31"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"26544935"
+                  }
+                ],
+                "Citation":"Cell. 2015 Nov 5;163(4):811-28"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"16855301"
+                  }
+                ],
+                "Citation":"Acta Crystallogr D Biol Crystallogr. 2006 Aug;62(Pt 8):859-66"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"22884261"
+                  }
+                ],
+                "Citation":"Chem Biol. 2012 Aug 24;19(8):955-62"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"20124702"
+                  }
+                ],
+                "Citation":"Acta Crystallogr D Biol Crystallogr. 2010 Feb;66(Pt 2):213-21"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"20159598"
+                  }
+                ],
+                "Citation":"Dev Cell. 2010 Feb 16;18(2):288-99"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"30546055"
+                  }
+                ],
+                "Citation":"Nat Rev Mol Cell Biol. 2019 Apr;20(4):211-226"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"24114784"
+                  }
+                ],
+                "Citation":"Science. 2013 Nov 8;342(6159):737-40"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"11163176"
+                  }
+                ],
+                "Citation":"Cell. 2000 Dec 22;103(7):1001-4"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"24366813"
+                  }
+                ],
+                "Citation":"Mol Syst Biol. 2013 Dec 22;9:713"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"12202036"
+                  }
+                ],
+                "Citation":"Cell. 2002 Aug 23;110(4):467-78"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"28618450"
+                  }
+                ],
+                "Citation":"Cell Prolif. 2017 Aug;50(4):"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"17239860"
+                  }
+                ],
+                "Citation":"FEBS Lett. 2007 Feb 6;581(3):462-8"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"22185343"
+                  }
+                ],
+                "Citation":"BMC Cancer. 2011 Dec 20;11:523"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"31782549"
+                  }
+                ],
+                "Citation":"EMBO J. 2020 Jan 2;39(1):e102406"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"19461840"
+                  }
+                ],
+                "Citation":"J Appl Crystallogr. 2007 Aug 1;40(Pt 4):658-674"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"30566373"
+                  }
+                ],
+                "Citation":"Annu Rev Biochem. 2019 Jun 20;88:577-604"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"10769203"
+                  }
+                ],
+                "Citation":"J Cell Sci. 2000 May;113 ( Pt 10):1717-26"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"31386861"
+                  }
+                ],
+                "Citation":"Dev Cell. 2019 Aug 5;50(3):264-282"
+              }
+            ],
+            "ReferenceList":[
+
+            ],
+            "Title":null
+          }
+        ]
+      }
+    },
+    "correspondence":{},
+    "createdDate":"2020-09-28T20:19:12.202Z",
+    "lastEditedDate":"2020-09-28T20:19:27.063Z",
+    "status":"published",
+    "verified":false
+  },
+  {
+    "id":"13a08fd5-0299-47c3-be94-0efc0f878a90",
+    "secret":"af3fa44e-5f29-4858-920d-4328bf66353a",
+    "organisms":[
+      "9606"
+    ],
+    "elements":[
+      {
+        "id":"44e0e10a-6b46-45db-950a-b04fa79fc67f",
+        "secret":"af3fa44e-5f29-4858-920d-4328bf66353a",
+        "position":{
+          "x":55.69620253164557,
+          "y":60.75949367088607
+        },
+        "name":"cFos",
+        "description":"",
+        "type":"protein",
+        "completed":true,
+        "association":{
+          "charge":0,
+          "combinedOrganismIndex":0,
+          "dbName":"NCBI Gene",
+          "dbPrefix":"ncbigene",
+          "dbXrefs":[
+            {
+              "db":"MIM",
+              "id":"164810"
+            },
+            {
+              "db":"HGNC",
+              "id":"HGNC:3796"
+            },
+            {
+              "db":"Ensembl",
+              "id":"ENSG00000170345"
+            }
+          ],
+          "defaultOrganismIndex":1,
+          "distance":0,
+          "esScore":10.860497,
+          "formulae":[
+            "C4H5N3O"
+          ],
+          "id":"2353",
+          "inchi":"InChI=1S/C4H5N3O/c5-3-1-2-6-4(8)7-3/h1-2H,(H3,5,6,7,8)",
+          "inchiKey":"OPTASPLRGRRNAP-UHFFFAOYSA-N",
+          "mass":111.10212,
+          "monoisotopicMass":111.04326,
+          "name":"FOS",
+          "nameDistance":0.19999999999999996,
+          "namespace":"ncbi",
+          "organism":"9606",
+          "organismIndex":0,
+          "organismName":"Homo sapiens",
+          "overallDistance":20,
+          "shortSynonyms":[
+            "AP-1",
+            "C-FOS",
+            "p55",
+            "proto-oncogene c-Fos",
+            "FBJ murine osteosarcoma viral (v-fos) oncogene homolog (oncogene FOS)",
+            "cellular oncogene c-fos",
+            "Fos proto-oncogene, AP-1 trancription factor subunit",
+            "Fos proto-oncogene, AP-1 transcription factor subunit",
+            "FBJ murine osteosarcoma viral oncogene homolog",
+            "activator protein 1"
+          ],
+          "summary":"An aminopyrimidine that is pyrimidin-2-one having the amino group located at position 4.",
+          "synonyms":[
+            "AP-1",
+            "C-FOS",
+            "p55",
+            "proto-oncogene c-Fos",
+            "FBJ murine osteosarcoma viral (v-fos) oncogene homolog (oncogene FOS)",
+            "FBJ murine osteosarcoma viral oncogene homolog",
+            "Fos proto-oncogene, AP-1 trancription factor subunit",
+            "G0/G1 switch regulatory protein 7",
+            "activator protein 1",
+            "cellular oncogene c-fos",
+            "Fos proto-oncogene, AP-1 transcription factor subunit"
+          ],
+          "type":"protein"
+        }
+      },
+      {
+        "id":"32054b17-edb9-4cf7-8b45-df8b880cfaee",
+        "secret":"af3fa44e-5f29-4858-920d-4328bf66353a",
+        "position":{
+          "x":166.83544303797467,
+          "y":-53.41772151898735
+        },
+        "name":"AP-1",
+        "description":"",
+        "type":"protein",
+        "completed":true,
+        "association":{
+          "combinedOrganismIndex":0,
+          "dbName":"NCBI Gene",
+          "dbPrefix":"ncbigene",
+          "dbXrefs":[
+            {
+              "db":"MIM",
+              "id":"164810"
+            },
+            {
+              "db":"HGNC",
+              "id":"HGNC:3796"
+            },
+            {
+              "db":"Ensembl",
+              "id":"ENSG00000170345"
+            }
+          ],
+          "defaultOrganismIndex":1,
+          "distance":0,
+          "esScore":10.860497,
+          "id":"2353",
+          "name":"FOS",
+          "nameDistance":1,
+          "namespace":"ncbi",
+          "organism":"9606",
+          "organismIndex":0,
+          "organismName":"Homo sapiens",
+          "overallDistance":100,
+          "shortSynonyms":[
+            "AP-1",
+            "C-FOS",
+            "p55",
+            "proto-oncogene c-Fos",
+            "FBJ murine osteosarcoma viral (v-fos) oncogene homolog (oncogene FOS)",
+            "Fos proto-oncogene, AP-1 trancription factor subunit",
+            "Fos proto-oncogene, AP-1 transcription factor subunit",
+            "G0/G1 switch regulatory protein 7",
+            "FBJ murine osteosarcoma viral oncogene homolog",
+            "cellular oncogene c-fos"
+          ],
+          "synonyms":[
+            "AP-1",
+            "C-FOS",
+            "p55",
+            "proto-oncogene c-Fos",
+            "FBJ murine osteosarcoma viral (v-fos) oncogene homolog (oncogene FOS)",
+            "FBJ murine osteosarcoma viral oncogene homolog",
+            "Fos proto-oncogene, AP-1 trancription factor subunit",
+            "G0/G1 switch regulatory protein 7",
+            "activator protein 1",
+            "cellular oncogene c-fos",
+            "Fos proto-oncogene, AP-1 transcription factor subunit"
+          ],
+          "type":"protein"
+        }
+      },
+      {
+        "id":"547b826d-9eb6-4e8e-aaee-f2fab5dade11",
+        "secret":"af3fa44e-5f29-4858-920d-4328bf66353a",
+        "position":{
+          "x":-380.50632911392404,
+          "y":-174.9367088607595
+        },
+        "name":"",
+        "description":"",
+        "type":"binding",
+        "completed":true,
+        "association":"binding",
+        "entries":[
+          {
+            "group":null,
+            "id":"44e0e10a-6b46-45db-950a-b04fa79fc67f"
+          },
+          {
+            "group":"unsigned",
+            "id":"32054b17-edb9-4cf7-8b45-df8b880cfaee"
+          }
+        ]
+      }
+    ],
+    "publicUrl":"/document/13a08fd5-0299-47c3-be94-0efc0f878a90",
+    "privateUrl":"/document/13a08fd5-0299-47c3-be94-0efc0f878a90/af3fa44e-5f29-4858-920d-4328bf66353a",
+    "citation":{
+      "title":"Induction of AP-1 by YAP/TAZ contributes to cell proliferation and organ growth.",
+      "authors":{
+        "abbreviation":"Ja Hyun Koo, Steven W Plouffe, Zhipeng Meng, ..., Kun-Liang Guan",
+        "contacts":[
+
+        ],
+        "authorList":[
+          {
+            "name":"Ja Hyun Koo",
+            "email":null,
+            "abbrevName":"Koo JH",
+            "isCollectiveName":false
+          },
+          {
+            "name":"Steven W Plouffe",
+            "email":null,
+            "abbrevName":"Plouffe SW",
+            "isCollectiveName":false
+          },
+          {
+            "name":"Zhipeng Meng",
+            "email":null,
+            "abbrevName":"Meng Z",
+            "isCollectiveName":false
+          },
+          {
+            "name":"Da-Hye Lee",
+            "email":null,
+            "abbrevName":"Lee DH",
+            "isCollectiveName":false
+          },
+          {
+            "name":"Di Yang",
+            "email":null,
+            "abbrevName":"Yang D",
+            "isCollectiveName":false
+          },
+          {
+            "name":"Dae-Sik Lim",
+            "email":null,
+            "abbrevName":"Lim DS",
+            "isCollectiveName":false
+          },
+          {
+            "name":"Cun-Yu Wang",
+            "email":null,
+            "abbrevName":"Wang CY",
+            "isCollectiveName":false
+          },
+          {
+            "name":"Kun-Liang Guan",
+            "email":null,
+            "abbrevName":"Guan KL",
+            "isCollectiveName":false
+          }
+        ]
+      },
+      "reference":"Genes Dev. 34 (2020)",
+      "abstract":"Yes-associated protein (YAP) and its homolog transcriptional coactivator with PDZ-binding motif (TAZ) are key effectors of the Hippo pathway to control cell growth and organ size, of which dysregulation yields to tumorigenesis or hypertrophy. Upon activation, YAP/TAZ translocate into the nucleus and bind to TEAD transcription factors to promote transcriptional programs for proliferation or cell specification. Immediate early genes, represented by AP-1 complex, are rapidly induced and control later-phase transcriptional program to play key roles in tumorigenesis and organ maintenance. Here, we report that YAP/TAZ directly promote FOS transcription that in turn contributes to the biological function of YAP/TAZ. YAP/TAZ bind to the promoter region of FOS to stimulate its transcription. Deletion of YAP/TAZ blocks the induction of immediate early genes in response to mitogenic stimuli. FOS induction contributes to expression of YAP/TAZ downstream target genes. Genetic deletion or chemical inhibition of AP-1 suppresses growth of YAP-driven cancer cells, such as Lats1/2-deficient cancer cells as well as Gαq/11 mutated uveal melanoma. Furthermore, AP-1 inhibition almost completely abrogates the hepatomegaly induced by YAP overexpression. Our findings reveal a feed-forward interplay between immediate early transcription of AP-1 and Hippo pathway function.",
+      "pmid":"31831627",
+      "doi":"10.1101/gad.331546.119"
+    },
+    "text":"cFos binds with AP-1.",
+    "provided":{
+      "authorEmail":"jvwong@gmail.com",
+      "paperId":"31831627"
+    },
+    "article":{
+      "MedlineCitation":{
+        "Article":{
+          "Abstract":"Yes-associated protein (YAP) and its homolog transcriptional coactivator with PDZ-binding motif (TAZ) are key effectors of the Hippo pathway to control cell growth and organ size, of which dysregulation yields to tumorigenesis or hypertrophy. Upon activation, YAP/TAZ translocate into the nucleus and bind to TEAD transcription factors to promote transcriptional programs for proliferation or cell specification. Immediate early genes, represented by AP-1 complex, are rapidly induced and control later-phase transcriptional program to play key roles in tumorigenesis and organ maintenance. Here, we report that YAP/TAZ directly promote FOS transcription that in turn contributes to the biological function of YAP/TAZ. YAP/TAZ bind to the promoter region of FOS to stimulate its transcription. Deletion of YAP/TAZ blocks the induction of immediate early genes in response to mitogenic stimuli. FOS induction contributes to expression of YAP/TAZ downstream target genes. Genetic deletion or chemical inhibition of AP-1 suppresses growth of YAP-driven cancer cells, such as Lats1/2-deficient cancer cells as well as Gαq/11 mutated uveal melanoma. Furthermore, AP-1 inhibition almost completely abrogates the hepatomegaly induced by YAP overexpression. Our findings reveal a feed-forward interplay between immediate early transcription of AP-1 and Hippo pathway function.",
+          "ArticleTitle":"Induction of AP-1 by YAP/TAZ contributes to cell proliferation and organ growth.",
+          "AuthorList":[
+            {
+              "AffiliationInfo":[
+                {
+                  "Affiliation":"Department of Pharmacology, Moores Cancer Center, University of California at San Diego, La Jolla, California 92093, USA.",
+                  "email":null
+                }
+              ],
+              "CollectiveName":null,
+              "ForeName":"Ja Hyun",
+              "Identifier":[
+                {
+                  "Source":"ORCID",
+                  "id":"0000-0001-5738-1105"
+                }
+              ],
+              "Initials":"JH",
+              "LastName":"Koo"
+            },
+            {
+              "AffiliationInfo":[
+                {
+                  "Affiliation":"Department of Pharmacology, Moores Cancer Center, University of California at San Diego, La Jolla, California 92093, USA.",
+                  "email":null
+                }
+              ],
+              "CollectiveName":null,
+              "ForeName":"Steven W",
+              "Identifier":[
+                {
+                  "Source":"ORCID",
+                  "id":"0000-0002-6411-3130"
+                }
+              ],
+              "Initials":"SW",
+              "LastName":"Plouffe"
+            },
+            {
+              "AffiliationInfo":[
+                {
+                  "Affiliation":"Department of Pharmacology, Moores Cancer Center, University of California at San Diego, La Jolla, California 92093, USA.",
+                  "email":null
+                }
+              ],
+              "CollectiveName":null,
+              "ForeName":"Zhipeng",
+              "Identifier":[
+
+              ],
+              "Initials":"Z",
+              "LastName":"Meng"
+            },
+            {
+              "AffiliationInfo":[
+                {
+                  "Affiliation":"National Creative Research Initiatives Center for Cell Division and Differentiation, Department of Biological Science, Korea Advanced Institute of Science and Technology, Daejeon 34141, Republic of Korea.",
+                  "email":null
+                }
+              ],
+              "CollectiveName":null,
+              "ForeName":"Da-Hye",
+              "Identifier":[
+                {
+                  "Source":"ORCID",
+                  "id":"0000-0003-0580-9573"
+                }
+              ],
+              "Initials":"DH",
+              "LastName":"Lee"
+            },
+            {
+              "AffiliationInfo":[
+                {
+                  "Affiliation":"Department of Pharmacology, Moores Cancer Center, University of California at San Diego, La Jolla, California 92093, USA.",
+                  "email":null
+                }
+              ],
+              "CollectiveName":null,
+              "ForeName":"Di",
+              "Identifier":[
+
+              ],
+              "Initials":"D",
+              "LastName":"Yang"
+            },
+            {
+              "AffiliationInfo":[
+                {
+                  "Affiliation":"National Creative Research Initiatives Center for Cell Division and Differentiation, Department of Biological Science, Korea Advanced Institute of Science and Technology, Daejeon 34141, Republic of Korea.",
+                  "email":null
+                }
+              ],
+              "CollectiveName":null,
+              "ForeName":"Dae-Sik",
+              "Identifier":[
+
+              ],
+              "Initials":"DS",
+              "LastName":"Lim"
+            },
+            {
+              "AffiliationInfo":[
+                {
+                  "Affiliation":"Division of Oral Biology and Medicine, University of California at Los Angeles, Los Angeles, California 90095, USA.",
+                  "email":null
+                }
+              ],
+              "CollectiveName":null,
+              "ForeName":"Cun-Yu",
+              "Identifier":[
+
+              ],
+              "Initials":"CY",
+              "LastName":"Wang"
+            },
+            {
+              "AffiliationInfo":[
+                {
+                  "Affiliation":"Department of Pharmacology, Moores Cancer Center, University of California at San Diego, La Jolla, California 92093, USA.",
+                  "email":null
+                }
+              ],
+              "CollectiveName":null,
+              "ForeName":"Kun-Liang",
+              "Identifier":[
+                {
+                  "Source":"ORCID",
+                  "id":"0000-0003-1892-0174"
+                }
+              ],
+              "Initials":"KL",
+              "LastName":"Guan"
+            }
+          ],
+          "Journal":{
+            "ISOAbbreviation":"Genes Dev.",
+            "ISSN":{
+              "IssnType":"Electronic",
+              "value":"1549-5477"
+            },
+            "JournalIssue":{
+              "Issue":"1-2",
+              "PubDate":{
+                "Day":"01",
+                "Month":"01",
+                "Year":"2020"
+              },
+              "Volume":"34"
+            },
+            "Title":"Genes & development"
+          }
+        },
+        "ChemicalList":[
+          {
+            "NameOfSubstance":{
+              "UI":"D048868",
+              "value":"Adaptor Proteins, Signal Transducing"
+            },
+            "RegistryNumber":"0"
+          },
+          {
+            "NameOfSubstance":{
+              "UI":"D008934",
+              "value":"Mitogens"
+            },
+            "RegistryNumber":"0"
+          },
+          {
+            "NameOfSubstance":{
+              "UI":"D015534",
+              "value":"Trans-Activators"
+            },
+            "RegistryNumber":"0"
+          },
+          {
+            "NameOfSubstance":{
+              "UI":"D018808",
+              "value":"Transcription Factor AP-1"
+            },
+            "RegistryNumber":"0"
+          },
+          {
+            "NameOfSubstance":{
+              "UI":"D014157",
+              "value":"Transcription Factors"
+            },
+            "RegistryNumber":"0"
+          },
+          {
+            "NameOfSubstance":{
+              "UI":"C551991",
+              "value":"WWTR1 protein, human"
+            },
+            "RegistryNumber":"0"
+          },
+          {
+            "NameOfSubstance":{
+              "UI":"C088374",
+              "value":"YAP1 (Yes-associated) protein, human"
+            },
+            "RegistryNumber":"0"
+          }
+        ],
+        "InvestigatorList":[
+
+        ],
+        "KeywordList":[
+          "Hippo",
+          "bilirubin",
+          "c-fos",
+          "cancer",
+          "hepatomegaly",
+          "liver"
+        ],
+        "MeshheadingList":[
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D048868",
+              "value":"Adaptor Proteins, Signal Transducing"
+            },
+            "QualifierName":[
+              {
+                "MajorTopicYN":"Y",
+                "UI":"Q000378",
+                "value":"metabolism"
+              }
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D000818",
+              "value":"Animals"
+            },
+            "QualifierName":[
+
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D045744",
+              "value":"Cell Line, Tumor"
+            },
+            "QualifierName":[
+
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D049109",
+              "value":"Cell Proliferation"
+            },
+            "QualifierName":[
+              {
+                "MajorTopicYN":"N",
+                "UI":"Q000235",
+                "value":"genetics"
+              }
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D017353",
+              "value":"Gene Deletion"
+            },
+            "QualifierName":[
+
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"Y",
+              "UI":"D015972",
+              "value":"Gene Expression Regulation, Neoplastic"
+            },
+            "QualifierName":[
+              {
+                "MajorTopicYN":"N",
+                "UI":"Q000187",
+                "value":"drug effects"
+              }
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D016762",
+              "value":"Genes, fos"
+            },
+            "QualifierName":[
+              {
+                "MajorTopicYN":"N",
+                "UI":"Q000235",
+                "value":"genetics"
+              }
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D057809",
+              "value":"HEK293 Cells"
+            },
+            "QualifierName":[
+
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D006801",
+              "value":"Humans"
+            },
+            "QualifierName":[
+
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D008099",
+              "value":"Liver"
+            },
+            "QualifierName":[
+              {
+                "MajorTopicYN":"N",
+                "UI":"Q000378",
+                "value":"metabolism"
+              }
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D008545",
+              "value":"Melanoma"
+            },
+            "QualifierName":[
+              {
+                "MajorTopicYN":"N",
+                "UI":"Q000503",
+                "value":"physiopathology"
+              }
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D051379",
+              "value":"Mice"
+            },
+            "QualifierName":[
+
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D008934",
+              "value":"Mitogens"
+            },
+            "QualifierName":[
+              {
+                "MajorTopicYN":"N",
+                "UI":"Q000494",
+                "value":"pharmacology"
+              }
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D009929",
+              "value":"Organ Size"
+            },
+            "QualifierName":[
+              {
+                "MajorTopicYN":"N",
+                "UI":"Q000235",
+                "value":"genetics"
+              }
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D011401",
+              "value":"Promoter Regions, Genetic"
+            },
+            "QualifierName":[
+              {
+                "MajorTopicYN":"N",
+                "UI":"Q000235",
+                "value":"genetics"
+              }
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D015534",
+              "value":"Trans-Activators"
+            },
+            "QualifierName":[
+              {
+                "MajorTopicYN":"Y",
+                "UI":"Q000378",
+                "value":"metabolism"
+              }
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D018808",
+              "value":"Transcription Factor AP-1"
+            },
+            "QualifierName":[
+              {
+                "MajorTopicYN":"Y",
+                "UI":"Q000235",
+                "value":"genetics"
+              },
+              {
+                "MajorTopicYN":"Y",
+                "UI":"Q000378",
+                "value":"metabolism"
+              }
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D014157",
+              "value":"Transcription Factors"
+            },
+            "QualifierName":[
+              {
+                "MajorTopicYN":"Y",
+                "UI":"Q000378",
+                "value":"metabolism"
+              }
+            ]
+          },
+          {
+            "DescriptorName":{
+              "MajorTopicYN":"N",
+              "UI":"D014604",
+              "value":"Uveal Neoplasms"
+            },
+            "QualifierName":[
+              {
+                "MajorTopicYN":"N",
+                "UI":"Q000503",
+                "value":"physiopathology"
+              }
+            ]
+          }
+        ]
+      },
+      "PubmedData":{
+        "ArticleIdList":[
+          {
+            "IdType":"pubmed",
+            "id":"31831627"
+          },
+          {
+            "IdType":"pii",
+            "id":"gad.331546.119"
+          },
+          {
+            "IdType":"doi",
+            "id":"10.1101/gad.331546.119"
+          },
+          {
+            "IdType":"pmc",
+            "id":"PMC6938666"
+          }
+        ],
+        "History":[
+          {
+            "PubMedPubDate":{
+              "Day":"07",
+              "Month":"08",
+              "Year":"2019"
+            },
+            "PubStatus":"received"
+          },
+          {
+            "PubMedPubDate":{
+              "Day":"12",
+              "Month":"11",
+              "Year":"2019"
+            },
+            "PubStatus":"accepted"
+          },
+          {
+            "PubMedPubDate":{
+              "Day":"14",
+              "Month":"12",
+              "Year":"2019"
+            },
+            "PubStatus":"pubmed"
+          },
+          {
+            "PubMedPubDate":{
+              "Day":"12",
+              "Month":"2",
+              "Year":"2020"
+            },
+            "PubStatus":"medline"
+          },
+          {
+            "PubMedPubDate":{
+              "Day":"14",
+              "Month":"12",
+              "Year":"2019"
+            },
+            "PubStatus":"entrez"
+          }
+        ],
+        "ReferenceList":[
+          {
+            "Reference":[
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"24882516"
+                  }
+                ],
+                "Citation":"Cancer Cell. 2014 Jun 16;25(6):822-30"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"26258633"
+                  }
+                ],
+                "Citation":"Nat Cell Biol. 2015 Sep;17(9):1218-27"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"20404163"
+                  }
+                ],
+                "Citation":"Proc Natl Acad Sci U S A. 2010 May 4;107(18):8248-53"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"30531839"
+                  }
+                ],
+                "Citation":"Oncogene. 2019 Apr;38(14):2595-2610"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"26437443"
+                  }
+                ],
+                "Citation":"Nat Commun. 2015 Oct 05;6:8357"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"17974916"
+                  }
+                ],
+                "Citation":"Genes Dev. 2007 Nov 1;21(21):2747-61"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"26544935"
+                  }
+                ],
+                "Citation":"Cell. 2015 Nov 5;163(4):811-28"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"17050279"
+                  }
+                ],
+                "Citation":"Curr Eye Res. 2006 Oct;31(10):875-83"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"20675406"
+                  }
+                ],
+                "Citation":"Genes Dev. 2010 Aug 15;24(16):1718-30"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"27358050"
+                  }
+                ],
+                "Citation":"Nat Commun. 2016 Jun 30;7:11961"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"26109050"
+                  }
+                ],
+                "Citation":"Genes Dev. 2015 Jun 15;29(12):1271-84"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"28356389"
+                  }
+                ],
+                "Citation":"J Exp Med. 2017 May 1;214(5):1387-1409"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"21083380"
+                  }
+                ],
+                "Citation":"N Engl J Med. 2010 Dec 2;363(23):2191-9"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"22863277"
+                  }
+                ],
+                "Citation":"Cell. 2012 Aug 17;150(4):780-91"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"26832411"
+                  }
+                ],
+                "Citation":"Cell Rep. 2016 Feb 9;14(5):1169-1180"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"9082986"
+                  }
+                ],
+                "Citation":"Science. 1997 Apr 4;276(5309):60-6"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"25026211"
+                  }
+                ],
+                "Citation":"Cancer Cell. 2014 Jul 14;26(1):48-60"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"28810145"
+                  }
+                ],
+                "Citation":"Cancer Cell. 2017 Aug 14;32(2):204-220.e15"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"20080598"
+                  }
+                ],
+                "Citation":"Proc Natl Acad Sci U S A. 2010 Jan 26;107(4):1431-6"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"26439301"
+                  }
+                ],
+                "Citation":"Mol Cell. 2015 Oct 15;60(2):328-37"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"29802201"
+                  }
+                ],
+                "Citation":"J Biol Chem. 2018 Jul 13;293(28):11230-11240"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"25592648"
+                  }
+                ],
+                "Citation":"Nat Rev Cancer. 2015 Feb;15(2):73-79"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"20080689"
+                  }
+                ],
+                "Citation":"Proc Natl Acad Sci U S A. 2010 Jan 26;107(4):1437-42"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"19078957"
+                  }
+                ],
+                "Citation":"Nature. 2009 Jan 29;457(7229):599-602"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"7791782"
+                  }
+                ],
+                "Citation":"Mol Cell Biol. 1995 Jul;15(7):3748-58"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"19274049"
+                  }
+                ],
+                "Citation":"Nat Rev Genet. 2009 Apr;10(4):252-63"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"12076863"
+                  }
+                ],
+                "Citation":"J Hepatol. 2002 Jul;37(1):63-71"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"18587386"
+                  }
+                ],
+                "Citation":"Nat Biotechnol. 2008 Jul;26(7):817-23"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"12732141"
+                  }
+                ],
+                "Citation":"Cell. 2003 May 2;113(3):329-42"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"1898992"
+                  }
+                ],
+                "Citation":"Science. 1991 Jan 11;251(4990):189-92"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"17889654"
+                  }
+                ],
+                "Citation":"Cell. 2007 Sep 21;130(6):1120-33"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"20048001"
+                  }
+                ],
+                "Citation":"Genes Dev. 2010 Jan 1;24(1):72-85"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"19878874"
+                  }
+                ],
+                "Citation":"Cancer Cell. 2009 Nov 6;16(5):425-38"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"21543584"
+                  }
+                ],
+                "Citation":"J Leukoc Biol. 2011 Oct;90(4):643-51"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"16025496"
+                  }
+                ],
+                "Citation":"Hepatology. 2005 Aug;42(2):481-9"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"25100531"
+                  }
+                ],
+                "Citation":"Nat Med. 2014 Aug;20(8):857-69"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"14668816"
+                  }
+                ],
+                "Citation":"Nat Rev Cancer. 2003 Nov;3(11):859-68"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"25287865"
+                  }
+                ],
+                "Citation":"Physiol Rev. 2014 Oct;94(4):1287-312"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"18579750"
+                  }
+                ],
+                "Citation":"Genes Dev. 2008 Jul 15;22(14):1962-71"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"9872747"
+                  }
+                ],
+                "Citation":"Science. 1999 Jan 1;283(5398):83-7"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"1883198"
+                  }
+                ],
+                "Citation":"Annu Rev Biochem. 1991;60:281-319"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"7936655"
+                  }
+                ],
+                "Citation":"Oncogene. 1994 Nov;9(11):3305-11"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"26611634"
+                  }
+                ],
+                "Citation":"Cell Res. 2015 Dec;25(12):1299-313"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"21245096"
+                  }
+                ],
+                "Citation":"Cancer Res. 2011 Feb 1;71(3):873-83"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"30050119"
+                  }
+                ],
+                "Citation":"Nat Cell Biol. 2018 Aug;20(8):888-899"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"17980593"
+                  }
+                ],
+                "Citation":"Curr Biol. 2007 Dec 4;17(23):2054-60"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"20643348"
+                  }
+                ],
+                "Citation":"Dev Cell. 2010 Jul 20;19(1):27-38"
+              },
+              {
+                "ArticleIdList":[
+                  {
+                    "IdType":"pubmed",
+                    "id":"28752853"
+                  }
+                ],
+                "Citation":"Nat Cell Biol. 2017 Jul 28;19(8):996-1002"
+              }
+            ],
+            "ReferenceList":[
+
+            ],
+            "Title":null
+          }
+        ]
+      }
+    },
+    "correspondence":{},
+    "createdDate":"2020-09-24T15:46:32.170Z",
+    "lastEditedDate":"2020-09-28T20:18:18.196Z",
+    "status":"published",
+    "verified":false
+  }
+]

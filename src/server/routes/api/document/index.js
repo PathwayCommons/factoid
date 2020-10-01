@@ -44,6 +44,7 @@ import { BASE_URL,
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
 import { db2pubmed } from './pubmed/linkPubmed';
 import { fetchPubmed } from './pubmed/fetchPubmed';
+import { docs2Sitemap } from '../../../sitemap';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
 const http = Express.Router();
@@ -317,6 +318,44 @@ let getSbgnFromTemplates = templates => {
       'Accept':'application/xml' }
   } )
     .then(handleResponseError);
+};
+
+/**
+ * generateSitemap
+ * Create sitemap xml data for documents with PUBLIC status
+ *
+ * @return an sitemap conforming to [sitemaps.org]{@link https://www.sitemaps.org/protocol.html}
+ */
+const generateSitemap = () => {
+  let status = DOCUMENT_STATUS_FIELDS.PUBLIC;
+  let tables;
+
+  return (
+    tryPromise( () => loadTables() )
+    .then( tbls => {
+      tables = tbls;
+      return tables;
+    })
+    .then( tables => {
+      let t = tables.docDb;
+      let { table, conn, rethink: r } = t;
+      let q = table;
+
+      q = q.filter( r.row( 'status' ).eq( status ) );
+      q = q.orderBy( r.desc( 'createdDate' ) );
+      q = q.pluck( ['id', 'secret'] );
+      return q.run( conn );
+    })
+    .then( cursor => cursor.toArray() )
+    .then( res => {
+      return Promise.all( res.map( docDbJson => {
+        let { id } = docDbJson;
+        let docOpts = _.assign( {}, tables, { id } );
+        return loadDoc( docOpts ).then( getDocJson );
+      }));
+    } )
+    .then( docs2Sitemap )
+  );
 };
 
 /**
@@ -1618,5 +1657,6 @@ const getRelatedPapersForNetwork = async doc => {
 
 export default http;
 export { getDocumentJson,
-  loadTables, loadDoc, fillDocArticle, updateRelatedPapers
+  loadTables, loadDoc, fillDocArticle, updateRelatedPapers,
+  generateSitemap
 }; // allow access so page rendering can get the same data as the rest api

@@ -4,10 +4,26 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
-    <meta name="description" content="Biofactoid is an app that captures the content of biological papers." />
-    <meta name="keywords" content="mentena, app, bio, biology, paper, academic, academia, publish, peer, review, data" />
+    <meta name="keywords" content="biofactoid, app, bio, biology, paper, academic, academia, publish, peer, review, data, summary, digital, profile, connect, connected" />
+    <meta name="robots" content="all" />
 
     <% if(typeof document !== typeof undefined && typeof TWITTER_ACCOUNT_NAME !== typeof undefined && typeof BASE_URL !== typeof undefined){ %>
+      <title><%= document.citation.title %> : Biofactoid</title>
+      <meta name="description" content="<%= document.text.replace(/\n/g, ' ') %> : <%= document.citation.title %>" />
+      <meta name="author" content="<%- document.citation.authors.authorList.map(author => `${author.name}`).join(', ') %>">
+      <script type="application/ld+json">
+      {
+        "@context" : "http://schema.org",
+        "@type" : "Article",
+        "name" : "<%= document.citation.title %>",
+        "headline" : "<%= document.citation.title %>",
+        "author" : [<%- document.citation.authors.authorList.map(author => `{ "@type": "Person", "name": "${author.name}" }`).join(', ') %>],
+        "datePublished" : "<%= document.createdDate.toISOString().substring(0, 10) %>",
+        "image" : "<%= BASE_URL %>/api/document/<%= document.id %>.png",
+        "articleBody" : "<%= document.citation.abstract %>",
+        "url" : "<%= BASE_URL %>/document/<%= document.id %>"
+      }
+      </script>
       <meta name="twitter:card" content="summary_large_image">
       <meta name="twitter:site" content="@<%= TWITTER_ACCOUNT_NAME %>">
       <meta name="twitter:creator" content="@<%= TWITTER_ACCOUNT_NAME %>">
@@ -15,11 +31,13 @@
       <meta name="twitter:description" content="<%= document.citation.reference %>">
       <meta name="twitter:image" content="<%= BASE_URL %>/api/document/<%= document.id %>.png">
     <% } else if( typeof TWITTER_ACCOUNT_NAME !== typeof undefined && typeof BASE_URL !== typeof undefined ) { %>
+      <title>Biofactoid : Create a digital profile of your article's scientific discoveries and connect it to related biological research</title>
+      <meta name="description" content="Biofactoid creates a digital profile of scientific discoveries in an article and connects it to related research." />
       <meta name="twitter:card" content="summary_large_image">
       <meta name="twitter:site" content="@<%= TWITTER_ACCOUNT_NAME %>">
       <meta name="twitter:creator" content="@<%= TWITTER_ACCOUNT_NAME %>">
-      <meta name="twitter:title" content="Biofactoid:  An academic collaboration to capture and explore pathways">
-      <meta name="twitter:description" content="Create and share a digital summary of your article’s pathway.">
+      <meta name="twitter:title" content="Biofactoid">
+      <meta name="twitter:description" content="Create a digital profile of your article's scientific discoveries and connect it to related biological research.">
       <meta name="twitter:image" content="<%= BASE_URL %>/image/card-banner.jpg">
     <% } %>
 
@@ -45,8 +63,6 @@
 
     <script defer src="/deps.js"></script>
     <script defer src="/bundle.js"></script>
-
-    <title>Biofactoid</title>
   </head>
 
   <body class="app">

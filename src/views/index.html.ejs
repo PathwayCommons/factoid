@@ -16,7 +16,7 @@
         "@context" : "http://schema.org",
         "@type" : "Article",
         "name" : "<%= document.citation.title %>",
-        "author" : [<%- document.citation.authors.authorList.map(author => `{ "@type": "Person", "name": ${author.name} }`).join(', ') %>],
+        "author" : [<%- document.citation.authors.authorList.map(author => `{ "@type": "Person", "name": "${author.name}" }`).join(', ') %>],
         "datePublished" : "<%= document.createdDate.toISOString().substring(0, 10) %>",
         "image" : "<%= BASE_URL %>/api/document/<%= document.id %>.png",
         "articleBody" : "<%= document.citation.abstract %>",

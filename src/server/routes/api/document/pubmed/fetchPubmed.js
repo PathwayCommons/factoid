@@ -180,6 +180,16 @@ const getJournal = Article => {
   };
 };
 
+const getPublicationType = Article => {
+  const PublicationTypeList = getElementByName( Article, 'PublicationTypeList' );
+  const PublicationType = getElementsByName( PublicationTypeList, 'PublicationType' );
+  return PublicationType.map( elt => {
+    const UI = getElementAttribute( elt, 'UI' );
+    const value = getElementText( elt );
+    return { UI, value };
+  });
+};
+
 const getArticle = MedlineCitation => {
   // <!ELEMENT	Article (Journal,ArticleTitle,((Pagination, ELocationID*) | ELocationID+),
   //                    Abstract?,AuthorList?, Language+, DataBankList?, GrantList?,
@@ -196,11 +206,18 @@ const getArticle = MedlineCitation => {
   const AuthorList =  getElementByName( Article, 'AuthorList' ) ? getAuthorList( Article ): null;
   const Journal = getJournal( Article );
 
+  // <!ELEMENT	PublicationType (#PCDATA) >
+  // <!ATTLIST	PublicationType
+  // 		    UI CDATA #REQUIRED >
+  // <!ELEMENT	PublicationTypeList (PublicationType+) >
+  const PublicationTypeList = getPublicationType( Article );
+
   return {
     Journal,
     ArticleTitle,
     Abstract,
-    AuthorList
+    AuthorList,
+    PublicationTypeList
   };
 };
 

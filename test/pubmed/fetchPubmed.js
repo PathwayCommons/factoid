@@ -226,6 +226,22 @@ describe('fetchPubmed', function(){
 
             }); //AuthorList
 
+            describe( 'PublicationTypeList', () => {
+
+              let PublicationTypeList;
+              before( () => {
+                PublicationTypeList = _.get( Article, 'PublicationTypeList' );
+              });
+
+              it('Should be a list of UI/text objects', () => {
+                expect( PublicationTypeList ).to.be.an.instanceof(Array);
+                PublicationTypeList.forEach( PublicationType => {
+                  expect( PublicationType ).to.have.property('UI');
+                  expect( PublicationType ).to.have.property('value');
+                });
+              });
+            });
+
           }); //Article
 
           describe( 'ChemicalList', () => {

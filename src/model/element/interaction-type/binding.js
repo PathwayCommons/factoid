@@ -56,7 +56,11 @@ class Binding extends InteractionType {
   }
 
   toString(){
-    return super.toString('binds with');
+    if( this.isNegative() || this.isPositive() ){
+      return super.toString(null, 'via binding');
+    } else {
+      return super.toString('binds with');
+    }
   }
 
   static get value(){ return VALUE; }

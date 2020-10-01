@@ -14,6 +14,10 @@ const ID_TYPE = Object.freeze({
   TITLE: 'title'
 });
 
+const pubTypeToExclude = [
+  { UI: 'D016425', value: 'Published Erratum' }
+];
+
 const paperId2Type = paperId => {
   // 99.3% of CrossRef DOIs (https://www.crossref.org/blog/dois-and-matching-regular-expressions/)
   const doiRegex = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i;
@@ -44,18 +48,23 @@ const findMatchingPubmedArticle = async ( paperId, IdType, uids ) => {
 
   // Try to match: Could be responsibility of user in future
   const articleMatchesPaperId = article => {
-    const { title, pmid, doi } = getPubmedCitation( article );
+    const { title, pmid, doi, pubTypes } = getPubmedCitation( article );
     let hasMatch = false;
-    switch ( IdType ) {
-      case ID_TYPE.DOI:
-        if( doi === paperId ) hasMatch = true;
-        break;
-      case ID_TYPE.PMID:
-        if( pmid === paperId ) hasMatch = true;
-        break;
-      case ID_TYPE.TITLE:
-        if( santitize( title ).includes( santitize( paperId ) ) ) hasMatch = true;
-        break;
+
+    // Ignore if this article contains an invalid PublicationType entry
+    const isValidType = _.isEmpty( _.intersectionBy( pubTypes, pubTypeToExclude, 'UI' ) );
+    if( isValidType ){
+      switch ( IdType ) {
+        case ID_TYPE.DOI:
+          if( doi === paperId ) hasMatch = true;
+          break;
+        case ID_TYPE.PMID:
+          if( pmid === paperId ) hasMatch = true;
+          break;
+        case ID_TYPE.TITLE:
+          if( santitize( title ).includes( santitize( paperId ) ) ) hasMatch = true;
+          break;
+      }
     }
     return hasMatch;
   };

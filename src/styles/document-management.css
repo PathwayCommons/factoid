@@ -133,3 +133,33 @@
     margin-bottom: 0;
   }
 }
+
+.document-management-footer .document-management-paginator {
+  display: table;
+  margin: 1em auto;
+}
+
+.document-management-footer .document-management-paginator ul {
+  list-style: none;
+}
+
+.document-management-footer .document-management-paginator li {
+  margin: auto 1em;
+  display: inline;
+  text-decoration: underline;
+
+  &.disabled {
+    color: var(--widgetDisabledBorderColor);
+    text-decoration: none;
+    pointer-events: none;
+  }
+
+  &.selected {
+    text-decoration: none;
+    background-color: var(--widgetDisabledTextColor);
+    padding: 0.3em 0.5em;
+    margin: auto 0.5em;
+    pointer-events: none;
+  }
+}
+

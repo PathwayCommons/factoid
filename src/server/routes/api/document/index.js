@@ -821,7 +821,7 @@ http.get('/', function( req, res, next ){
     status = _.compact( req.query.status.split(/\s*,\s*/) );
   }
 
-  let tables;
+  let tables, total;
 
   return (
     tryPromise( () => loadTables() )
@@ -834,6 +834,7 @@ http.get('/', function( req, res, next ){
       let t = tables.docDb;
       let { table, conn, rethink: r } = t;
       let q = table;
+      let count;
 
       q = q.filter(r.row('secret').ne(DEMO_SECRET));
       q = q.orderBy(r.desc('createdDate'));
@@ -863,15 +864,23 @@ http.get('/', function( req, res, next ){
         q = q.filter( byStatus );
       }
 
+      count = q.count();
+
       if( !ids ){
         q = q.skip(offset).limit(limit);
       }
 
       q = q.pluck(['id', 'secret']);
 
-      return q.run(conn);
+      return Promise.all([
+        count.run( conn ),
+        q.run( conn )
+      ]);
     })
-    .then( cursor => cursor.toArray() )
+    .then( ([ count, cursor ]) => {
+      total = count;
+      return cursor.toArray();
+    })
     .then( res => {
       try {
         checkApiKey(apiKey);
@@ -890,7 +899,10 @@ http.get('/', function( req, res, next ){
         return loadDoc(docOpts).then(getDocJson);
       }));
     } )
-    .then( results => res.json( results ) )
+    .then( results => {
+      res.set({ 'X-Document-Count': total });
+      res.json( results );
+    })
     .catch( next )
   );
 });

@@ -305,7 +305,8 @@ class DocumentManagementDocumentComponent extends React.Component {
           buttonKey: doc.id(),
           params: [
             { op: 'replace', path: 'article' },
-            { op: 'replace', path: 'correspondence' }
+            { op: 'replace', path: 'correspondence' },
+            { op: 'replace', path: 'relatedPapers' }
           ],
           value: 'refresh',
           title: 'Refresh document data',
@@ -322,7 +323,7 @@ class DocumentManagementDocumentComponent extends React.Component {
               className: makeClassList({ 'show': hasIssues( doc ) })
             }, 'warning' ),
             h( 'i.material-icons.hide-by-default.complete', {
-              className: makeClassList({ 'show': doc.submitted() || doc.published() })
+              className: makeClassList({ 'show': doc.submitted() || doc.isPublic() })
             }, 'check_circle' ),
             h( 'i.material-icons.hide-by-default.mute', {
               className: makeClassList({ 'show': doc.trashed() })
@@ -476,7 +477,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             buttonKey: EMAIL_TYPE_INVITE,
             value: EMAIL_TYPE_INVITE,
             label: _.capitalize( EMAIL_TYPE_INVITE ),
-            disableWhen: doc.requested() || doc.trashed()
+            disableWhen: doc.initiated() || doc.trashed()
           }),
           h( DocumentEmailButtonComponent, {
             params: { doc, apiKey },
@@ -484,7 +485,7 @@ class DocumentManagementDocumentComponent extends React.Component {
             buttonKey: EMAIL_TYPE_FOLLOWUP,
             value: EMAIL_TYPE_FOLLOWUP,
             label: _.upperFirst( EMAIL_TYPE_FOLLOWUP.replace(/([A-Z])/g, (match, letter) => '-' + letter) ),
-            disableWhen: doc.requested() || doc.trashed()
+            disableWhen: doc.initiated() || doc.trashed()
           })
         ]);
       }
@@ -527,12 +528,13 @@ class DocumentManagementDocumentComponent extends React.Component {
     const getDocumentStats = doc => {
       const created = toPeriodOrDate( doc.createdDate() );
       const edited = toPeriodOrDate( doc.lastEditedDate() );
+      let isEdited = doc.lastEditedDate() !== doc.createdDate();
       return h( 'div.document-management-document-section.meta', [
           h( 'small.document-management-document-section-items.pull-right', [
             getDocumentStatus( doc ),
             getRefreshDocDataButton( doc ),
             h( 'div.mute', { key: 'created' }, `Created ${created}` ),
-            h( 'div.mute', { key: 'edited' }, edited ? `Edited ${edited}`: 'Not edited' )
+            h( 'div.mute', { key: 'edited' }, isEdited ? `Edited ${edited}`: 'Not edited' )
           ])
         ]);
     };

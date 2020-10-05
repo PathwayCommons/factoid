@@ -1,6 +1,6 @@
 import logger from '../../../logger';
 import { DEMO_SECRET, DOCUMENT_CRON_CREATED_AGE_DAYS, DOCUMENT_CRON_REFRESH_ENABLED } from '../../../../config';
-import { loadTables, loadDoc, fillDocArticle } from  './index';
+import { loadTables, loadDoc, fillDocArticle, updateRelatedPapers } from  './index';
 import Document from '../../../../model/document';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -71,6 +71,7 @@ const updateArticle = async () => {
     const docs = await docsToUpdate();
     for( const doc of docs ){
       await fillDocArticle( doc );
+      await updateRelatedPapers( doc );
     }
     lastUpdateTime( Date.now() );
 

@@ -44,6 +44,7 @@ import { BASE_URL,
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
 import { db2pubmed } from './pubmed/linkPubmed';
 import { fetchPubmed } from './pubmed/fetchPubmed';
+import { docs2Sitemap } from '../../../sitemap';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
 const http = Express.Router();
@@ -251,8 +252,6 @@ const fillDocArticle = async doc => {
     const pubmedRecord = createPubmedArticle({ articleTitle: paperId });
     await doc.article( pubmedRecord );
     await doc.issues({ paperId: { error, message: error.message } });
-  } finally {
-    getRelPprsForDoc( doc );
   }
 };
 
@@ -319,6 +318,44 @@ let getSbgnFromTemplates = templates => {
       'Accept':'application/xml' }
   } )
     .then(handleResponseError);
+};
+
+/**
+ * generateSitemap
+ * Create sitemap xml data for documents with PUBLIC status
+ *
+ * @return an sitemap conforming to [sitemaps.org]{@link https://www.sitemaps.org/protocol.html}
+ */
+const generateSitemap = () => {
+  let status = DOCUMENT_STATUS_FIELDS.PUBLIC;
+  let tables;
+
+  return (
+    tryPromise( () => loadTables() )
+    .then( tbls => {
+      tables = tbls;
+      return tables;
+    })
+    .then( tables => {
+      let t = tables.docDb;
+      let { table, conn, rethink: r } = t;
+      let q = table;
+
+      q = q.filter( r.row( 'status' ).eq( status ) );
+      q = q.orderBy( r.desc( 'createdDate' ) );
+      q = q.pluck( ['id', 'secret'] );
+      return q.run( conn );
+    })
+    .then( cursor => cursor.toArray() )
+    .then( res => {
+      return Promise.all( res.map( docDbJson => {
+        let { id } = docDbJson;
+        let docOpts = _.assign( {}, tables, { id } );
+        return loadDoc( docOpts ).then( getDocJson );
+      }));
+    } )
+    .then( docs2Sitemap )
+  );
 };
 
 /**
@@ -713,10 +750,9 @@ http.get('/zip/biopax', function( req, res, next ){
  *   status:
  *     type: string
  *     enum:
- *       - requested
- *       - approved
+ *       - initiated
  *       - submitted
- *       - published
+ *       - public
  *       - trashed
  *
  *   Document:
@@ -824,7 +860,7 @@ http.get('/', function( req, res, next ){
     status = _.compact( req.query.status.split(/\s*,\s*/) );
   }
 
-  let tables;
+  let tables, total;
 
   return (
     tryPromise( () => loadTables() )
@@ -837,6 +873,7 @@ http.get('/', function( req, res, next ){
       let t = tables.docDb;
       let { table, conn, rethink: r } = t;
       let q = table;
+      let count;
 
       q = q.filter(r.row('secret').ne(DEMO_SECRET));
       q = q.orderBy(r.desc('createdDate'));
@@ -866,15 +903,23 @@ http.get('/', function( req, res, next ){
         q = q.filter( byStatus );
       }
 
+      count = q.count();
+
       if( !ids ){
         q = q.skip(offset).limit(limit);
       }
 
       q = q.pluck(['id', 'secret']);
 
-      return q.run(conn);
+      return Promise.all([
+        count.run( conn ),
+        q.run( conn )
+      ]);
     })
-    .then( cursor => cursor.toArray() )
+    .then( ([ count, cursor ]) => {
+      total = count;
+      return cursor.toArray();
+    })
     .then( res => {
       try {
         checkApiKey(apiKey);
@@ -893,7 +938,10 @@ http.get('/', function( req, res, next ){
         return loadDoc(docOpts).then(getDocJson);
       }));
     } )
-    .then( results => res.json( results ) )
+    .then( results => {
+      res.set({ 'X-Document-Count': total });
+      res.json( results );
+    })
     .catch( next )
   );
 });
@@ -1242,8 +1290,7 @@ http.post('/', function( req, res, next ){
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
 
-  const setRequestStatus = doc => tryPromise( () => doc.request() ).then( () => doc );
-  const setApprovedStatus = doc => tryPromise( () => doc.approve() ).then( () => doc );
+  const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
   const handleDocCreation = async ({ docDb, eleDb }) => {
     if( id === DEMO_ID ) await deleteTableRows( API_KEY, secret );
     return await createDoc({ docDb, eleDb, id, secret, provided });
@@ -1255,11 +1302,11 @@ http.post('/', function( req, res, next ){
   tryPromise( () => createSecret({ secret }) )
     .then( loadTables )
     .then( handleDocCreation )
-    .then( setRequestStatus )
+    .then( setStatus )
     .then( fillDoc )
-    .then( setApprovedStatus )
     .then( tryVerify )
     .then( sendJSONResponse )
+    .then( updateRelatedPapers )
     .then( sendInviteNotification )
     .catch( next );
 });
@@ -1365,17 +1412,13 @@ http.post('/email/:id/:secret', function( req, res, next ){
 http.patch('/:id/:secret', function( req, res, next ){
   const { id, secret } = req.params;
 
-  // Publish criteria: non-empty; all entities complete
-  const tryPublish = async doc => {
-    let didPublish = false;
+  // Public criteria: non-empty; all entities complete
+  const tryMakePublic = async doc => {
     const hasEles = doc => doc.elements().length > 0;
     const hasIncompleteEles = doc => doc.elements().some( ele => !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX );
-    const isPublishable = doc => hasEles( doc ) && !hasIncompleteEles( doc );
-    if( isPublishable( doc ) ){
-      await doc.publish();
-      didPublish = true;
-    }
-    return didPublish;
+    const shouldMakePublic = doc => hasEles( doc ) && !hasIncompleteEles( doc );
+    if( shouldMakePublic( doc ) ) await doc.makePublic();
+    return;
   };
 
   const sendFollowUpNotification = async doc => await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
@@ -1389,23 +1432,13 @@ http.patch('/:id/:secret', function( req, res, next ){
       }
     }
   };
-  const handlePublishRequest = async doc => {
-    const didPublish = await tryPublish( doc );
-    if( didPublish ) {
+  const handleMakePublicRequest = async doc => {
+    await tryMakePublic( doc );
+    if( doc.isPublic() ) {
       updateRelatedPapers( doc );
       await tryTweetingDoc( doc );
       sendFollowUpNotification( doc );
     }
-  };
-
-  const updateRelatedPapers = doc => {
-    let docId = doc.id();
-    logger.info('Searching the related papers table for document ', docId);
-
-    getRelatedPapers( doc )
-      .then( () => logger.info('Related papers table is updated for document', docId) )
-      .catch( e => logger.error( `Error in uploading related papers for document ${docId}: ${JSON.stringify(e.message)}` ) );
-
   };
 
   const updateDoc = async doc => {
@@ -1415,7 +1448,7 @@ http.patch('/:id/:secret', function( req, res, next ){
 
       switch ( path ) {
         case 'status':
-          if( op === 'replace' && value === DOCUMENT_STATUS_FIELDS.PUBLISHED ) await handlePublishRequest( doc );
+          if( op === 'replace' && value === DOCUMENT_STATUS_FIELDS.PUBLIC ) await handleMakePublicRequest( doc );
           break;
         case 'article':
           if( op === 'replace' ) await fillDocArticle( doc );
@@ -1424,6 +1457,11 @@ http.patch('/:id/:secret', function( req, res, next ){
           if( op === 'replace' ){
             await fillDocCorrespondence( doc );
             await tryVerify( doc );
+          }
+          break;
+        case 'relatedPapers':
+          if( op === 'replace' ){
+            await updateRelatedPapers( doc );
           }
           break;
       }
@@ -1548,58 +1586,89 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
-const getRelPprsForDoc = async doc => {
-  let papers = [];
-  const getUid = result => _.get( result, 'uid' );
-  const { pmid } = doc.citation();
-  if( pmid ){
-    const pmids = await db2pubmed({ uids: [pmid] });
-    let rankedDocs = await indra.semanticSearch({ query: pmid, documents: pmids });
-    const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
-    const { PubmedArticleSet } = await fetchPubmed({ uids });
-    papers = PubmedArticleSet
-      .map( getPubmedCitation )
-      .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
-  }
-
-  doc.relatedPapers( papers );
+const updateRelatedPapers = async doc => {
+  await getRelPprsForDoc( doc );
+  await getRelatedPapersForNetwork( doc );
+  return doc;
 };
 
-const getRelatedPapers = async doc => {
-  const els = doc.elements();
+const getRelPprsForDoc = async doc => {
+  let papers = [];
 
-  const toTemplate = el => el.toSearchTemplate();
+  try {
+    logger.info(`Updating document-level related papers for doc ${doc.id()}`);
+    const getUid = result => _.get( result, 'uid' );
+    const { pmid } = doc.citation();
 
-  const getRelPprsForEl = async el => {
-    const template = toTemplate(el);
+    if( pmid ){
+      const pmids = await db2pubmed({ uids: [pmid] });
+      let rankedDocs = await indra.semanticSearch({ query: pmid, documents: pmids });
+      const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
+      const { PubmedArticleSet } = await fetchPubmed({ uids });
+      papers = PubmedArticleSet
+        .map( getPubmedCitation )
+        .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
+    }
 
-    const templates = {
-      intns: el.isInteraction() ? [ template ] : [],
-      entities: el.isEntity() ? [ template ] : []
+    doc.relatedPapers( papers );
+    logger.info(`Finished updating document-level related papers`);
+    return doc;
+
+  } catch ( err ){
+    logger.error(`Error getRelPprsForDoc: ${err.message}`);
+    doc.relatedPapers( papers );
+    return doc;
+  }
+
+};
+
+const getRelatedPapersForNetwork = async doc => {
+
+  try {
+    logger.info(`Updating network-level related papers for doc ${doc.id()}`);
+    const els = doc.elements();
+
+    const toTemplate = el => el.toSearchTemplate();
+
+    const getRelPprsForEl = async el => {
+      const template = toTemplate(el);
+
+      const templates = {
+        intns: el.isInteraction() ? [ template ] : [],
+        entities: el.isEntity() ? [ template ] : []
+      };
+
+      const indraRes = await indra.searchDocuments({ templates, doc });
+
+      el.relatedPapers( indraRes || [] );
     };
 
-    const indraRes = await indra.searchDocuments({ templates, doc });
+    await Promise.all([ ...els.map(getRelPprsForEl) ]);
 
-    el.relatedPapers( indraRes || [] );
-  };
+    const docPprs = doc.relatedPapers();
+    const getPmid = ppr => ppr.pubmed.pmid;
 
-  await Promise.all([ ...els.map(getRelPprsForEl) ]);
+    await Promise.all( doc.elements().map(async el => {
+      const pprs = el.relatedPapers();
 
-  const docPprs = doc.relatedPapers();
-  const getPmid = ppr => ppr.pubmed.pmid;
+      if( pprs.length > MIN_RELATED_PAPERS ){ return; }
 
-  await Promise.all( doc.elements().map(async el => {
-    const pprs = el.relatedPapers();
+      const newPprs = _.uniq( _.concat(pprs, _.shuffle(docPprs)), getPmid );
 
-    if( pprs.length > MIN_RELATED_PAPERS ){ return; }
+      await el.relatedPapers(newPprs);
+    }) );
+    logger.info(`Finished updating network-level related papers for doc`);
+    return doc;
 
-    const newPprs = _.uniq( _.concat(pprs, _.shuffle(docPprs)), getPmid );
+  } catch ( err ) {
+    logger.error(`Error in getRelatedPapersForNetwork ${err.message}`);
+    return doc;
+  }
 
-    await el.relatedPapers(newPprs);
-  }) );
 };
 
 export default http;
 export { getDocumentJson,
-  loadTables, loadDoc, fillDocArticle
+  loadTables, loadDoc, fillDocArticle, updateRelatedPapers,
+  generateSitemap
 }; // allow access so page rendering can get the same data as the rest api

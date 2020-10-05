@@ -150,6 +150,7 @@ const getArticleId = ( PubmedArticle, IdType ) => _.get( _.find( _.get( PubmedAr
  * @return {String} result.reference (<ISOAbbreviation> | <Title>) <Year>; <Volume>
  * @return {String} result.pmid
  * @return {String} result.doi
+ * @return {String} result.pubTypes
  */
 const getPubmedCitation = PubmedArticle => {
   const Article = _.get( PubmedArticle, ['MedlineCitation','Article'] ); //required
@@ -162,8 +163,9 @@ const getPubmedCitation = PubmedArticle => {
   const abstract = _.get( Article, 'Abstract', null );
   const pmid = getArticleId( PubmedArticle, 'pubmed' );
   const doi = getArticleId( PubmedArticle, 'doi' );
+  const pubTypes = _.get( Article, 'PublicationTypeList' ); //required
 
-  return { title, authors, reference, abstract, pmid, doi };
+  return { title, authors, reference, abstract, pmid, doi, pubTypes };
 };
 
 /**

@@ -3,6 +3,7 @@ import h from 'react-hyperscript';
 import queryString from 'query-string';
 import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
+import ReactPaginate from 'react-paginate';
 
 import { DocumentManagementDocumentComponent } from './document-management-components';
 import logger from '../logger';
@@ -59,7 +60,10 @@ class DocumentManagement extends DirtyComponent {
       validApiKey: false,
       apiKeyError: null,
       docs: [],
-      status
+      status,
+      pageCount: 0,
+      limit: 10,
+      offset: 0
     };
 
     this.bus = new EventEmitter();
@@ -83,8 +87,8 @@ class DocumentManagement extends DirtyComponent {
   }
 
   getUrlParams(){
-    const { apiKey, status } = this.state;
-    return queryString.stringify( { apiKey, status: status.join(',') } );
+    const { apiKey, status, limit, offset } = this.state;
+    return queryString.stringify( { apiKey, status: status.join(','), limit, offset } );
   }
 
   updateUrlParams(){
@@ -97,7 +101,11 @@ class DocumentManagement extends DirtyComponent {
     const params = this.getUrlParams();
 
     return fetch(`${url}?${params}`)
-      .then( res => res.json() )
+      .then( res => {
+        const total = res.headers.get('X-Document-Count');
+        const pageCount = Math.ceil( total / this.state.limit );
+        return new Promise( resolve => this.setState( { pageCount }, resolve( res.json() ) ) );
+      })
       .then( docJSON => toDocs( docJSON, this.docSocket, this.eleSocket ) )
       .then( docs => {
         docs.forEach( doc => doc.on( 'update', () => this.dirty() ) );
@@ -118,10 +126,6 @@ class DocumentManagement extends DirtyComponent {
       .catch( () => {} );
   }
 
-  handleApproveRequest( doc ){
-    doc.approve();
-  }
-
   handleStatusChange( e ){
     const { value, checked } = e.target;
     const status = this.state.status.slice();
@@ -138,6 +142,12 @@ class DocumentManagement extends DirtyComponent {
 
     docs.elements().forEach( el => el.removeAllListeners() );
     docs.removeAllListeners();
+  }
+
+  handlePageClick( data ) {
+    const { selected } = data;
+    const offset = selected * this.state.limit;
+    new Promise( resolve => this.setState( { offset }, () => this.getDocs().then( resolve ) ) );
   }
 
   render(){
@@ -226,10 +236,23 @@ class DocumentManagement extends DirtyComponent {
 
     let body = validApiKey ? documentContainer: apiKeyForm;
 
+    const footer = h('div.document-management-footer', [
+      h( 'div.document-management-paginator', [
+        h( ReactPaginate, {
+          pageCount: this.state.pageCount,
+          marginPagesDisplayed: 1,
+          pageRangeDisplayed: 2,
+          onPageChange: data => this.handlePageClick( data )
+        })
+      ])
+    ]);
+
+
     return h('div.document-management.page-content', [
       h('div.document-management-content', [
         header,
-        body
+        body,
+        footer
       ])
     ]);
   }

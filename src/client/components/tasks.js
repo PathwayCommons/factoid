@@ -8,7 +8,7 @@ import { BASE_URL } from '../../config';
 import { makeClassList } from '../../util';
 import { NativeShare, isNativeShareSupported } from './native-share';
 
-const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
+const eleEvts = [ 'rename', 'complete', 'uncomplete', 'associate' ];
 
 let bindEleEvts = (ele, cb) => {
   eleEvts.forEach(evt => {
@@ -117,33 +117,81 @@ class TaskView extends DataComponent {
     let { document, bus } = this.props;
     let { submitting } = this.state;
     let done = this.props.controller.done();
-    let incompleteEles = this.props.document.elements().filter(ele => {
-      return !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX;
-    });
 
-    let ntfns = incompleteEles.map(ele => {
-      let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + (ele.completed() ? '' : '') }`;
-      let innerMsg = entMsg(ele);
+    const createTask = ( message, infos ) => {
+      return h('div.task-view-list', [
+        h('div.task-view-header', message),
+        h('div.task-view-items', [
+          h('ul', infos.map( ({ msg, ele }) => h('li', [
+            h('a.plain-link', {
+              onClick: () => bus.emit('opentip', ele)
+            }, msg)
+          ]) ))
+        ])
+      ]);
+    };
 
-      if( ele.isInteraction() ){
-        let participants = ele.participants();
-        innerMsg = `the interaction between ${participants.map(entMsg).join(' and ')}`;
-      }
+    let incompleteTasks = () => {
+      let incompleteEles = this.props.document.elements().filter(ele => {
+        return !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX;
+      });
 
-      return { ele, msg: innerMsg };
-    });
+      let taskItemInfos = incompleteEles.map(ele => {
+        let entMsg = ele => `${ele.name() === '' ? 'No name provided' : ele.name() + (ele.completed() ? '' : '') }`;
+        let innerMsg = entMsg(ele);
 
-    let tasksMsg = () => {
-      let numIncompleteEles = incompleteEles.length > 50 ? '50+' : incompleteEles.length;
-      if( numIncompleteEles === 0 ){
-        return `You have no outstanding tasks left`;
-      }
+        if( ele.isInteraction() ){
+          let participants = ele.participants();
+          innerMsg = `the interaction between ${participants.map(entMsg).join(' and ')}`;
+        }
 
-      if( numIncompleteEles === 1 ){
-        return `You have 1 incomplete item:`;
-      }
+        return { ele, msg: innerMsg };
+      });
 
-      return `You have ${numIncompleteEles} incomplete items:`;
+      let hasTasks = incompleteEles.length > 0;
+      let tasksMsg = () => {
+        let numIncompleteEles = incompleteEles.length > 50 ? '50+' : incompleteEles.length;
+        if( numIncompleteEles === 0 ){
+          return `You have no outstanding tasks left`;
+        }
+
+        if( numIncompleteEles === 1 ){
+          return `You have 1 incomplete item:`;
+        }
+
+        return `You have ${numIncompleteEles} incomplete items:`;
+      };
+      let message = tasksMsg();
+
+      return hasTasks ? createTask( message, taskItemInfos ) : null;
+    };
+
+    let irregularOrgTasks = () => {
+      let taskItemEntities = document.irregularOrganismEntities();
+      let numTaskItemEntities = taskItemEntities.length;
+      let hasTasks = numTaskItemEntities > 0;
+      let taskMsg = `Genes from different organisms:`;
+
+      let getTaskInfo = ele => {
+        let entMsg = ele => `${ele.name()} is from ${ele.organism().name()}`;
+        let innerMsg = entMsg(ele);
+        return { ele, msg: innerMsg };
+      };
+
+      let taskItemInfos = taskItemEntities.map( getTaskInfo );
+
+      return hasTasks ? createTask( taskMsg, taskItemInfos ): null;
+    };
+
+
+    let taskList = () => {
+      let tasks = [ irregularOrgTasks(), incompleteTasks() ];
+      let hasTasks = tasks.some( task => task != null );
+      return hasTasks ? h('div.task-view-task-list', [
+        h('div.task-view-task-list-title', 'Warnings'),
+        ...tasks,
+        h('hr')
+      ]): null;
     };
 
     if( !done || submitting ){
@@ -154,14 +202,7 @@ class TaskView extends DataComponent {
         h('div.task-view-submit',{
           className: makeClassList({ 'task-view-submitting': submitting })
         }, [
-          incompleteEles.length > 0 ? h('div.task-view-header', tasksMsg()) : null,
-          incompleteEles.length > 0 ? h('div.task-view-items', [
-            h('ul', ntfns.map( ({ msg, ele }) => h('li', [
-              h('a.plain-link', {
-                onClick: () => bus.emit('opentip', ele)
-              }, msg)
-            ]) ))
-          ]) : null,
+          taskList(),
           h('div.task-view-confirm', 'Are you sure you want to submit?'),
           h('div.task-view-confirm-button-area', [
             h('button.salient-button.task-view-confirm-button', {

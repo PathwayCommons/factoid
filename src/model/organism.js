@@ -42,6 +42,10 @@ class Organism {
     };
   }
 
+  same(other){
+    return this.id() === other.id();
+  }
+
   static fromName( name ){
     return organisms.find( org => nameMatches( org.name(), name ) ) || Organism.OTHER;
   }

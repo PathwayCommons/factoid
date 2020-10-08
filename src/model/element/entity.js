@@ -2,6 +2,7 @@ import Element from './element';
 import _ from 'lodash';
 import { tryPromise } from '../../util';
 import { ENTITY_TYPE, getNCBIEntityType } from './entity-type';
+import Organism from '../organism';
 
 const TYPE = 'entity';
 
@@ -153,6 +154,14 @@ class Entity extends Element {
     this.emit('localunassociate', oldDef);
 
     return update;
+  }
+
+  organism(){
+    const assoc = this.association();
+
+    if( !assoc ){ return null; } //  no org
+
+    return Organism.fromId(assoc.organism);
   }
 
   json(){

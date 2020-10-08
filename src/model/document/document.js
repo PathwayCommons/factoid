@@ -9,6 +9,7 @@ import Cytoscape from 'cytoscape';
 import { TWITTER_ACCOUNT_NAME } from '../../config';
 import { getPubmedCitation } from '../../util/pubmed';
 import { isServer } from '../../util/';
+import Organism from '../organism';
 
 const DEFAULTS = Object.freeze({
   // data
@@ -321,6 +322,33 @@ class Document {
         return Promise.resolve();
       }
     }
+  }
+
+  commonOrganism(){
+    const orgs = this.organisms();
+    const counts = this.organismCounts();
+    const getCount = org => counts.get(org) || 0;
+    const sortedOrgs = _.sortBy(orgs, o => -getCount(o));
+
+    if( sortedOrgs.length === 0 ){ return null; }
+
+    return Organism.fromId(sortedOrgs[0]);
+  }
+
+  irregularOrganismEntities(){
+    const comOrg = this.commonOrganism();
+
+    const isIrreg = ent => {
+      const entOrg = ent.organism();
+
+      if( entOrg == null ){ return false; } // e.g. chemical
+
+      return !entOrg.same(comOrg);
+    };
+
+    if( comOrg == null ){ return []; } // no common org => no irreg ents
+
+    return this.entities().filter(isIrreg);
   }
 
   add( el ){

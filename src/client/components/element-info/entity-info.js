@@ -10,6 +10,7 @@ import assocDisp from './entity-assoc-display';
 import CancelablePromise from 'p-cancelable';
 import { isComplex, isGGP, ELEMENT_TYPE } from '../../../model/element/element-type';
 import RelatedPapers from '../related-papers';
+import Organism from '../../../model/organism';
 
 import {
   focusDomElement, makeClassList, initCache, SingleValueCache,
@@ -383,11 +384,10 @@ class EntityInfo extends DataComponent {
         nameChildren.push( matchName() );
       }
 
-      if( complete && m.name.toLowerCase() !== s.name.toLowerCase() ){
+      if( m.organism != null ){
         nameChildren.push(
-          h('br'),
-          h('span', '('),
-          matchName(),
+          h('span', ' ('),
+          Organism.fromId(m.organism).name(),
           h('span', ')')
         );
       }

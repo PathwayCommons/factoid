@@ -1056,11 +1056,8 @@ http.get('/(:id).png', function( req, res, next ){
 
       if( canUseCache ){
         res.send(cache.img);
-        console.log('cache hit')
       } else {
         const cache = await fillCache(doc, lastEditedDate);
-
-        console.log('cache miss')
 
         res.send(cache.img);
       }

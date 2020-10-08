@@ -170,7 +170,7 @@ class TaskView extends DataComponent {
       let taskItemEntities = document.irregularOrganismEntities();
       let numTaskItemEntities = taskItemEntities.length;
       let hasTasks = numTaskItemEntities > 0;
-      let taskMsg = `Genes from different organisms:`;
+      let taskMsg = `You added genes from organisms other than ${document.commonOrganism().name()}:`;
 
       let getTaskInfo = ele => {
         let entMsg = ele => `${ele.name()} is from ${ele.organism().name()}`;

@@ -114,7 +114,7 @@ class TaskView extends DataComponent {
   }
 
   render(){
-    let { document, bus } = this.props;
+    let { document, bus, emitter } = this.props;
     let { submitting } = this.state;
     let done = this.props.controller.done();
 
@@ -167,22 +167,27 @@ class TaskView extends DataComponent {
     };
 
     let irregularOrgTasks = () => {
+      let tasks = null;
       let taskItemEntities = document.irregularOrganismEntities();
       let numTaskItemEntities = taskItemEntities.length;
       let hasTasks = numTaskItemEntities > 0;
-      let taskMsg = `You added genes from organisms other than ${document.commonOrganism().name()}:`;
 
-      let getTaskInfo = ele => {
-        let entMsg = ele => `${ele.name()} [${ele.organism().name()}]`;
-        let innerMsg = entMsg(ele);
-        return { ele, msg: innerMsg };
-      };
 
-      let taskItemInfos = taskItemEntities.map( getTaskInfo );
+      if ( hasTasks ) {
+        let taskMsg = `You added genes from organisms other than ${document.commonOrganism().name()}:`;
 
-      return hasTasks ? createTask( taskMsg, taskItemInfos ): null;
+        let getTaskInfo = ele => {
+          let entMsg = ele => `${ele.name()} [${ele.organism().name()}]`;
+          let innerMsg = entMsg(ele);
+          return { ele, msg: innerMsg };
+        };
+
+        let taskItemInfos = taskItemEntities.map( getTaskInfo );
+        tasks = createTask( taskMsg, taskItemInfos );
+      }
+
+      return tasks;
     };
-
 
     let taskList = () => {
       let tasks = [ irregularOrgTasks(), incompleteTasks() ];
@@ -194,6 +199,35 @@ class TaskView extends DataComponent {
       ]): null;
     };
 
+    // Minimal criteria: > 0 elements
+    let confirm = () => {
+      let taskMsg = 'Are you sure you want to submit?';
+      const entities = document.entities();
+      let hasEntity = entities.length;
+
+      const close = () => emitter.emit('close');
+
+      if( !hasEntity ) taskMsg = h('div.task-view-confirm-warning', [
+        h('div','Please draw your interactions then submit.'),
+        h('a.plain-link', {
+          onClick: () => {
+            bus.emit('togglehelp');
+            close();
+          }
+        },'Show me how.')
+      ]);
+
+      return h('div.task-view-confirm', [
+        h('div.task-view-confirm-message', [ taskMsg ]),
+        h('div.task-view-confirm-button-area', [
+          h('button.salient-button.task-view-confirm-button', {
+            disabled: document.trashed() || !hasEntity,
+            onClick: () => this.submit()
+          }, 'Yes, submit')
+        ])
+      ]);
+    };
+
     if( !done || submitting ){
       return h('div.task-view', [
         h('i.icon.icon-spinner.task-view-spinner', {
@@ -203,13 +237,7 @@ class TaskView extends DataComponent {
           className: makeClassList({ 'task-view-submitting': submitting })
         }, [
           taskList(),
-          h('div.task-view-confirm', 'Are you sure you want to submit?'),
-          h('div.task-view-confirm-button-area', [
-            h('button.salient-button.task-view-confirm-button', {
-              disabled: document.trashed(),
-              onClick: () => this.submit()
-            }, 'Yes, submit')
-          ])
+          confirm()
         ])
       ]);
     } else {

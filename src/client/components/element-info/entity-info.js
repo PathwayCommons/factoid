@@ -192,7 +192,7 @@ class EntityInfo extends DataComponent {
       name: name,
       limit: s.limit,
       offset: offset,
-      organismCounts: doc.organismCountsJson()
+      organismCounts: doc.organismCountsJson(el) // exclude el from org count (avoids mid typing biases)
     };
 
     if( s.updatePromise ){

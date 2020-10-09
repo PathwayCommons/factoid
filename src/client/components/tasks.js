@@ -173,7 +173,7 @@ class TaskView extends DataComponent {
       let taskMsg = `You added genes from organisms other than ${document.commonOrganism().name()}:`;
 
       let getTaskInfo = ele => {
-        let entMsg = ele => `${ele.name()} is from ${ele.organism().name()}`;
+        let entMsg = ele => `${ele.name()} [${ele.organism().name()}]`;
         let innerMsg = entMsg(ele);
         return { ele, msg: innerMsg };
       };

@@ -242,10 +242,11 @@ class Document {
   }
 
   // mention count for all organisms (toggle + ent mentions)
-  organismCounts(){
+  organismCounts(excludedEnt){
     let cnt = new Map(); // org => mention count
     let addToCount = org => cnt.set( org, !cnt.has(org) ? 1 : cnt.get(org) + 1 );
     let entIsAssocd = ent => ent.associated();
+    let entIsNotExcluded = ent => excludedEnt == null || !ent.same(excludedEnt);
     let getOrgIdForEnt = ent => _.get( ent.association(), ['organism'] );
 
     this.toggledOrganisms().forEach( addToCount );
@@ -253,6 +254,7 @@ class Document {
     (
       this.entities()
       .filter( entIsAssocd )
+      .filter( entIsNotExcluded )
       .map( getOrgIdForEnt )
       .filter( isNonNil ) // may be an entity w/o org
       .forEach( addToCount )
@@ -261,10 +263,10 @@ class Document {
     return cnt;
   }
 
-  organismCountsJson(){
+  organismCountsJson(excludedEnt){
     let json = {};
 
-    for( let [org, count] of this.organismCounts() ){
+    for( let [org, count] of this.organismCounts(excludedEnt) ){
       json[ org ] = count;
     }
 

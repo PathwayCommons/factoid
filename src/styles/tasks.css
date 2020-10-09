@@ -29,20 +29,32 @@
   pointer-events: none;
 }
 
-.task-view-items {
-  margin-left: 1em;
+.task-view-task-list .task-view-task-list-title {
+  margin-bottom: 0.5em;
+  text-align: center;
+}
 
-  & li {
-    margin: 0;
-  }
+.task-view-list {
+  margin-bottom: 1em;
+  color: #555;
+  font-size: 0.95em;
+}
+
+.task-view-items ul {
+  margin-top: 0.2em;
+}
+
+.task-view-items li {
+  margin: 0;
 }
 
 .task-view-confirm {
-  margin-bottom: 1em;
+  color: #000;
 }
 
 .task-view-confirm-button-area {
   text-align: right;
+  margin: 0.5em auto 0.2em;
 }
 
 .task-view-done {
@@ -77,7 +89,7 @@
   }
 }
 
-.task-view-done hr {
+.task-view hr {
   width: 90%;
   border: 0;
   height: 0;

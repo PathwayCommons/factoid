@@ -159,7 +159,7 @@ class Entity extends Element {
   organism(){
     const assoc = this.association();
 
-    if( !assoc ){ return null; } //  no org
+    if( !assoc || !assoc.organism ){ return null; } //  no org
 
     return Organism.fromId(assoc.organism);
   }
@@ -197,7 +197,7 @@ class Entity extends Element {
     if ( orgId ) {
       organism = { id: orgId, db: 'taxonomy' };
     }
-    
+
     let entity = { type, name, xref, organism };
 
     if ( type == ENTITY_TYPE.COMPLEX ) {

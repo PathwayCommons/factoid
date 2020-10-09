@@ -202,29 +202,29 @@ class TaskView extends DataComponent {
     // Minimal criteria: > 0 elements
     let confirm = () => {
       let taskMsg = 'Are you sure you want to submit?';
+      let taskButton = h('button.salient-button', {
+        disabled: document.trashed(),
+        onClick: () => this.submit()
+      }, 'Yes, submit');
+
       const entities = document.entities();
       let hasEntity = entities.length;
 
       const close = () => emitter.emit('close');
 
-      if( !hasEntity ) taskMsg = h('div.task-view-confirm-warning', [
-        h('div','Please draw your interactions then submit.'),
-        h('a.plain-link', {
-          onClick: () => {
-            bus.emit('togglehelp');
-            close();
-          }
-        },'Show me how.')
-      ]);
+      if( !hasEntity ){
+        taskMsg = 'Please draw your interactions then submit.';
+        taskButton = h('button.salient-button', {
+            onClick: () => {
+              bus.emit('togglehelp');
+              close();
+            }
+          }, 'Show me how');
+      }
 
       return h('div.task-view-confirm', [
         h('div.task-view-confirm-message', [ taskMsg ]),
-        h('div.task-view-confirm-button-area', [
-          h('button.salient-button.task-view-confirm-button', {
-            disabled: document.trashed() || !hasEntity,
-            onClick: () => this.submit()
-          }, 'Yes, submit')
-        ])
+        h('div.task-view-confirm-button-area', [ taskButton ])
       ]);
     };
 

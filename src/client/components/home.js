@@ -19,6 +19,145 @@ const checkStatus = response => {
   }
 };
 
+class RequestBiopaxForm extends Component {
+  constructor(props){
+    super(props);
+
+    this.bus = this.props.bus;
+
+    this.state = {
+      submitting: false,
+      url: undefined,
+      done: false,
+      errors: {
+        incompleteForm: false,
+        network: false
+      }
+    };
+
+    this.onCloseCTA = () => this.reset();
+  }
+
+  reset(){
+    this.setState({
+      submitting: false,
+      url: undefined,
+      done: false,
+      errors: {
+        incompleteForm: false,
+        network: false
+      }
+    });
+  }
+
+  componentDidMount(){
+    this.bus.on('closecta', this.onCloseCTA);
+  }
+
+  componentWillUnmount(){
+    this.bus.removeListener('closecta', this.onCloseCTA);
+  }
+
+  updateForm(fields){
+    this.setState(fields);
+  }
+
+  submitRequest(){
+    const { url } = this.state;
+
+    if( !url ){
+      this.setState({ errors: { incompleteForm: true } });
+    }
+    else{
+      console.log('body is', JSON.stringify({url}));
+      const fetchOpts = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({url})
+      };
+
+      this.setState({ submitting: true, errors: { incompleteForm: false, network: false } });
+      const apiUrl = 'api/document/bp2json';
+      ( fetch( apiUrl, fetchOpts )
+        .then( checkStatus )
+        .then( response => response.json() )
+        .then( docsJSON => new Promise( resolve => {
+          let pmids = Object.keys( docsJSON );
+          pmids = _.slice(pmids, 6, 11);
+          console.log(pmids);
+          // TODO: which email address?
+          let authorEmail = 'pc@gmail.com';
+          let promises = pmids.map( pmid => {
+            let docJSON = docsJSON[ pmid ];
+            const data = _.assign( {}, {
+              paperId: _.trim( pmid ),
+              authorEmail,
+              elements: docJSON,
+              performLayout: true
+            });
+
+            const apiUrl = 'api/document';
+            const fetchOpts = {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify( data )
+            };
+            //  TODO: errors?
+            return fetch( apiUrl, fetchOpts ).then( checkStatus );
+          } );
+
+          Promise.all( promises ).then( () => this.setState({ done: true }, resolve ) );
+        } ) )
+        .catch( () => new Promise( resolve => this.setState({ errors: { network: true } }, resolve ) ) )
+        .finally( () => new Promise( resolve => this.setState({ submitting: false }, resolve ) ) )
+      );
+    }
+  }
+
+  render(){
+    const { done } = this.state;
+    if( done ){
+      return h('div.home-request-form-container', [
+        h('div.home-request-form-done', [
+          h( 'div.home-request-form-done-title', [
+            h('span', 'Articles are created from the biopax file!' )
+          ])
+        ])
+      ]);
+    }
+
+    return h('div.home-request-form-container', [
+      h('div.home-request-form-description', `Enter Biopax file url`),
+      h('i.icon.icon-spinner.home-request-spinner', {
+        className: makeClassList({ 'home-request-spinner-shown': this.state.submitting })
+      }),
+      h('div.home-request-form', {
+        className: makeClassList({ 'home-request-form-submitting': this.state.submitting })
+      }, [
+        h('input', {
+          type: 'text',
+          placeholder: `Biopax url`,
+          onChange: e => this.updateForm({ url: e.target.value }),
+          value: this.state.url
+        }),
+        h('div.home-request-error', {
+          className: makeClassList({ 'home-request-error-message-shown': this.state.errors.incompleteForm })
+        }, 'Fill out everything above, then try again.'),
+        h('div.home-request-error', {
+          className: makeClassList({ 'home-request-error-message-shown': this.state.errors.network })
+        }, 'Please try again later'),
+        h('button.super-salient-button.home-request-submit', {
+          onClick: () => this.submitRequest()
+        }, 'Create articles')
+      ])
+    ]);
+  }
+}
+
 class RequestForm extends Component {
   constructor(props){
     super(props);
@@ -517,4 +656,4 @@ class Home extends Component {
   }
 }
 
-export { Home as default, RequestForm };
+export { Home as default, RequestForm, RequestBiopaxForm };

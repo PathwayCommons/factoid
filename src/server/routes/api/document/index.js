@@ -8,7 +8,6 @@ import cytosnap from 'cytosnap';
 import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
-// import url from 'url';
 import fs from 'fs';
 
 import { exportToZip, EXPORT_TYPES } from './export';
@@ -305,6 +304,18 @@ let getBiopaxFromTemplates = templates => {
     headers: {
       'Content-Type': 'application/json',
       'Accept':'application/vnd.biopax.rdf+xml' }
+  } )
+  .then(handleResponseError);
+};
+
+let getJsonFromBiopaxUrl = url => {
+  // console.log('getJsonFromBiopax', body);
+  return fetch( BIOPAX_CONVERTER_URL + 'biopax-url-to-json', {
+    method: 'POST',
+    body: url,
+    headers: {
+      'Content-Type': 'text/plain',
+      'Accept':'application/json' }
   } )
   .then(handleResponseError);
 };
@@ -1286,7 +1297,7 @@ const tryVerify = async doc => {
  */
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
-  const { paperId } = provided;
+  const { paperId, elements, performLayout } = provided;
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
 
@@ -1294,6 +1305,14 @@ http.post('/', function( req, res, next ){
   const handleDocCreation = async ({ docDb, eleDb }) => {
     if( id === DEMO_ID ) await deleteTableRows( API_KEY, secret );
     return await createDoc({ docDb, eleDb, id, secret, provided });
+  };
+  const addEls = doc => tryPromise( () => doc.fromJson( { elements } ) ).then( () => doc );
+  const handleLayout = doc => {
+    if ( performLayout ) {
+      return tryPromise( () => doc.applyLayout() ).then( () => doc );
+    }
+
+    return doc;
   };
   const sendJSONResponse = doc => tryPromise( () => doc.json() )
   .then( json => res.json( json ) )
@@ -1305,6 +1324,8 @@ http.post('/', function( req, res, next ){
     .then( setStatus )
     .then( fillDoc )
     .then( tryVerify )
+    .then( addEls )
+    .then( handleLayout )
     .then( sendJSONResponse )
     .then( updateRelatedPapers )
     .then( sendInviteNotification )
@@ -1583,6 +1604,15 @@ http.get('/text/:id', function( req, res, next ){
     .then( loadDoc )
     .then( doc => doc.toText() )
     .then( txt => res.send( txt ))
+    .catch( next );
+});
+
+http.post('/bp2json', function( req, res, next ){
+  const provided = _.assign( {}, req.body );
+  const { url } = provided;
+  tryPromise( () => getJsonFromBiopaxUrl( url ) )
+    .then( r => r.json() )
+    .then( js => res.json( js ) )
     .catch( next );
 });
 

@@ -78,7 +78,8 @@
 
     & .carousel-doc-title,
     & .carousel-doc-journal,
-    & .carousel-doc-author {
+    & .carousel-doc-author,
+    & .carousel-doc-text {
       background-color: rgba(255, 255, 255, 0.8);
     }
 

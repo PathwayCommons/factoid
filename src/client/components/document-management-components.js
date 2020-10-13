@@ -476,16 +476,14 @@ class DocumentManagementDocumentComponent extends React.Component {
             workingMessage: 'Sending...',
             buttonKey: EMAIL_TYPE_INVITE,
             value: EMAIL_TYPE_INVITE,
-            label: _.capitalize( EMAIL_TYPE_INVITE ),
-            disableWhen: doc.initiated() || doc.trashed()
+            label: _.capitalize( EMAIL_TYPE_INVITE )
           }),
           h( DocumentEmailButtonComponent, {
             params: { doc, apiKey },
             workingMessage: 'Sending...',
             buttonKey: EMAIL_TYPE_FOLLOWUP,
             value: EMAIL_TYPE_FOLLOWUP,
-            label: _.upperFirst( EMAIL_TYPE_FOLLOWUP.replace(/([A-Z])/g, (match, letter) => '-' + letter) ),
-            disableWhen: doc.initiated() || doc.trashed()
+            label: _.upperFirst( EMAIL_TYPE_FOLLOWUP.replace(/([A-Z])/g, (match, letter) => '-' + letter) )
           })
         ]);
       }

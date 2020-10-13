@@ -9,7 +9,7 @@ import { DocumentManagementDocumentComponent } from './document-management-compo
 import logger from '../logger';
 import DirtyComponent from './dirty-component';
 import Document from '../../model/document';
-import { tryPromise } from '../../util';
+import { makeClassList, tryPromise } from '../../util';
 import Popover from './popover/popover';
 import { checkHTTPStatus } from '../../util';
 import { RequestForm } from './home';
@@ -63,7 +63,8 @@ class DocumentManagement extends DirtyComponent {
       status,
       pageCount: 0,
       limit: 10,
-      offset: 0
+      offset: 0,
+      isLoading: false
     };
 
     this.bus = new EventEmitter();
@@ -100,6 +101,8 @@ class DocumentManagement extends DirtyComponent {
     const url = '/api/document';
     const params = this.getUrlParams();
 
+    this.setState({ isLoading: true });
+
     return fetch(`${url}?${params}`)
       .then( res => {
         const total = res.headers.get('X-Document-Count');
@@ -112,7 +115,10 @@ class DocumentManagement extends DirtyComponent {
         return docs;
       })
       .then( docs => new Promise( resolve => this.setState( { docs }, resolve ) ) )
-      .then( () => this.updateUrlParams() );
+      .then( () => this.updateUrlParams() )
+      .finally( () => {
+        new Promise( resolve => this.setState( { isLoading: false }, resolve ) );
+      });
   }
 
   handleApiKeyFormChange( apiKey ) {
@@ -151,7 +157,7 @@ class DocumentManagement extends DirtyComponent {
   }
 
   render(){
-    let { docs, apiKey, status, validApiKey } = this.state;
+    let { docs, apiKey, status, validApiKey, isLoading } = this.state;
     const header = h('div.page-content-title', [
       h('h1', 'Document management panel')
     ]);
@@ -228,15 +234,22 @@ class DocumentManagement extends DirtyComponent {
       })
     );
 
-    const documentContainer = h( 'div.document-management-document-container', [
-      documentMenu,
-      documentList
-    ]);
-
+    const documentContainer = h( 'div.document-management-document-container',
+      [
+        h('i.icon.icon-spinner.document-management-spinner', {
+          className: makeClassList({ 'document-management-hidden': !isLoading })
+        }),
+        h('div', {
+          className: makeClassList({ 'document-management-hidden': isLoading })
+        }, [documentMenu, documentList])
+      ]
+    );
 
     let body = validApiKey ? documentContainer: apiKeyForm;
 
-    const footer = h('div.document-management-footer', [
+    const footer = h('div.document-management-footer', {
+      className: makeClassList({ 'document-management-hidden': isLoading })
+    }, [
       h( 'div.document-management-paginator', [
         h( ReactPaginate, {
           pageCount: this.state.pageCount,

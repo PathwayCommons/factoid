@@ -959,18 +959,18 @@ const getDocumentJson = id => {
   );
 };
 
-const getDocumentImageBuffer = id => {
+const getDoc = id => {
+  return ( tryPromise( loadTables )
+    .then( json => _.assign( {}, json, { id } ) )
+    .then( loadDoc )
+  );
+};
+
+const getDocumentImageBuffer = doc => {
   const cyStylesheet = makeStaticStylesheet();
   const imageWidth = DOCUMENT_IMAGE_WIDTH;
   const imageHeight = DOCUMENT_IMAGE_HEIGHT;
   const imagePadding = DOCUMENT_IMAGE_PADDING;
-
-  const getDoc = id => {
-    return ( tryPromise( loadTables )
-      .then( json => _.assign( {}, json, { id } ) )
-      .then( loadDoc )
-    );
-  };
 
   const getElesJson = doc => {
     return makeCyEles(doc.elements());
@@ -997,7 +997,7 @@ const getDocumentImageBuffer = id => {
 
   const convertToBuffer = base64 => Buffer.from(base64, 'base64');
 
-  return ( tryPromise(() => getDoc(id))
+  return ( tryPromise(() => doc)
     .then(getElesJson)
     .then(getPngImage)
     .then(convertToBuffer)
@@ -1038,21 +1038,35 @@ http.get('/(:id).png', function( req, res, next ){
 
   res.setHeader('content-type', 'image/png');
 
-  if( imageCache.has(id) ){
-    const img = imageCache.get(id);
+  const fillCache = async (doc, lastEditedDate) => {
+    const img = await getDocumentImageBuffer(doc);
+    const cache = { img, lastEditedDate };
 
-    res.send(img);
-  } else {
-    ( tryPromise(() => getDocumentImageBuffer(id))
-      .then(buffer => {
-        imageCache.set(id, buffer);
+    imageCache.set(id, cache);
 
-        return buffer;
-      })
-      .then(buffer => res.send(buffer))
-      .catch( next )
-    );
-  }
+    return cache;
+  };
+
+  const main = async () => {
+    try {
+      const doc = await getDoc(id);
+      const lastEditedDate = '' + doc.lastEditedDate();
+      const cache = imageCache.get(id);
+      const canUseCache = imageCache.has(id) && cache.lastEditedDate === lastEditedDate;
+
+      if( canUseCache ){
+        res.send(cache.img);
+      } else {
+        const cache = await fillCache(doc, lastEditedDate);
+
+        res.send(cache.img);
+      }
+    } catch(err){
+      next(err);
+    }
+  };
+
+  main();
 });
 
 // tweet a document as a card with a caption (text)

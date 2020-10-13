@@ -8,7 +8,7 @@ import { BASE_URL } from '../../config';
 import { makeClassList } from '../../util';
 import { NativeShare, isNativeShareSupported } from './native-share';
 
-const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
+const eleEvts = [ 'rename', 'complete', 'uncomplete', 'associate' ];
 
 let bindEleEvts = (ele, cb) => {
   eleEvts.forEach(evt => {
@@ -114,36 +114,118 @@ class TaskView extends DataComponent {
   }
 
   render(){
-    let { document, bus } = this.props;
+    let { document, bus, emitter } = this.props;
     let { submitting } = this.state;
     let done = this.props.controller.done();
-    let incompleteEles = this.props.document.elements().filter(ele => {
-      return !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX;
-    });
 
-    let ntfns = incompleteEles.map(ele => {
-      let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + (ele.completed() ? '' : '') }`;
-      let innerMsg = entMsg(ele);
+    const createTask = ( message, infos ) => {
+      return h('div.task-view-list', [
+        h('div.task-view-header', message),
+        h('div.task-view-items', [
+          h('ul', infos.map( ({ msg, ele }) => h('li', [
+            h('a.plain-link', {
+              onClick: () => bus.emit('opentip', ele)
+            }, msg)
+          ]) ))
+        ])
+      ]);
+    };
 
-      if( ele.isInteraction() ){
-        let participants = ele.participants();
-        innerMsg = `the interaction between ${participants.map(entMsg).join(' and ')}`;
+    let incompleteTasks = () => {
+      let incompleteEles = this.props.document.elements().filter(ele => {
+        return !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX;
+      });
+
+      let taskItemInfos = incompleteEles.map(ele => {
+        let entMsg = ele => `${ele.name() === '' ? 'No name provided' : ele.name() + (ele.completed() ? '' : '') }`;
+        let innerMsg = entMsg(ele);
+
+        if( ele.isInteraction() ){
+          let participants = ele.participants();
+          innerMsg = `the interaction between ${participants.map(entMsg).join(' and ')}`;
+        }
+
+        return { ele, msg: innerMsg };
+      });
+
+      let hasTasks = incompleteEles.length > 0;
+      let tasksMsg = () => {
+        let numIncompleteEles = incompleteEles.length > 50 ? '50+' : incompleteEles.length;
+        if( numIncompleteEles === 0 ){
+          return `You have no outstanding tasks left`;
+        }
+
+        if( numIncompleteEles === 1 ){
+          return `You have 1 incomplete item:`;
+        }
+
+        return `You have ${numIncompleteEles} incomplete items:`;
+      };
+      let message = tasksMsg();
+
+      return hasTasks ? createTask( message, taskItemInfos ) : null;
+    };
+
+    let irregularOrgTasks = () => {
+      let tasks = null;
+      let taskItemEntities = document.irregularOrganismEntities();
+      let numTaskItemEntities = taskItemEntities.length;
+      let hasTasks = numTaskItemEntities > 0;
+
+
+      if ( hasTasks ) {
+        let taskMsg = `You added genes from organisms other than ${document.commonOrganism().name()}:`;
+
+        let getTaskInfo = ele => {
+          let entMsg = ele => `${ele.name()} [${ele.organism().name()}]`;
+          let innerMsg = entMsg(ele);
+          return { ele, msg: innerMsg };
+        };
+
+        let taskItemInfos = taskItemEntities.map( getTaskInfo );
+        tasks = createTask( taskMsg, taskItemInfos );
       }
 
-      return { ele, msg: innerMsg };
-    });
+      return tasks;
+    };
 
-    let tasksMsg = () => {
-      let numIncompleteEles = incompleteEles.length > 50 ? '50+' : incompleteEles.length;
-      if( numIncompleteEles === 0 ){
-        return `You have no outstanding tasks left`;
+    let taskList = () => {
+      let tasks = [ irregularOrgTasks(), incompleteTasks() ];
+      let hasTasks = tasks.some( task => task != null );
+      return hasTasks ? h('div.task-view-task-list', [
+        h('div.task-view-task-list-title', 'Warnings'),
+        ...tasks,
+        h('hr')
+      ]): null;
+    };
+
+    // Minimal criteria: > 0 elements
+    let confirm = () => {
+      let taskMsg = 'Are you sure you want to submit?';
+      let taskButton = h('button.salient-button', {
+        disabled: document.trashed(),
+        onClick: () => this.submit()
+      }, 'Yes, submit');
+
+      const entities = document.entities();
+      let hasEntity = entities.length;
+
+      const close = () => emitter.emit('close');
+
+      if( !hasEntity ){
+        taskMsg = 'Please draw your interactions then submit.';
+        taskButton = h('button.salient-button', {
+            onClick: () => {
+              bus.emit('togglehelp');
+              close();
+            }
+          }, 'Show me how');
       }
 
-      if( numIncompleteEles === 1 ){
-        return `You have 1 incomplete item:`;
-      }
-
-      return `You have ${numIncompleteEles} incomplete items:`;
+      return h('div.task-view-confirm', [
+        h('div.task-view-confirm-message', [ taskMsg ]),
+        h('div.task-view-confirm-button-area', [ taskButton ])
+      ]);
     };
 
     if( !done || submitting ){
@@ -154,21 +236,8 @@ class TaskView extends DataComponent {
         h('div.task-view-submit',{
           className: makeClassList({ 'task-view-submitting': submitting })
         }, [
-          incompleteEles.length > 0 ? h('div.task-view-header', tasksMsg()) : null,
-          incompleteEles.length > 0 ? h('div.task-view-items', [
-            h('ul', ntfns.map( ({ msg, ele }) => h('li', [
-              h('a.plain-link', {
-                onClick: () => bus.emit('opentip', ele)
-              }, msg)
-            ]) ))
-          ]) : null,
-          h('div.task-view-confirm', 'Are you sure you want to submit?'),
-          h('div.task-view-confirm-button-area', [
-            h('button.salient-button.task-view-confirm-button', {
-              disabled: document.trashed(),
-              onClick: () => this.submit()
-            }, 'Yes, submit')
-          ])
+          taskList(),
+          confirm()
         ])
       ]);
     } else {

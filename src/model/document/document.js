@@ -9,6 +9,7 @@ import Cytoscape from 'cytoscape';
 import { TWITTER_ACCOUNT_NAME } from '../../config';
 import { getPubmedCitation } from '../../util/pubmed';
 import { isServer } from '../../util/';
+import Organism from '../organism';
 
 const DEFAULTS = Object.freeze({
   // data
@@ -241,10 +242,11 @@ class Document {
   }
 
   // mention count for all organisms (toggle + ent mentions)
-  organismCounts(){
+  organismCounts(excludedEnt){
     let cnt = new Map(); // org => mention count
     let addToCount = org => cnt.set( org, !cnt.has(org) ? 1 : cnt.get(org) + 1 );
     let entIsAssocd = ent => ent.associated();
+    let entIsNotExcluded = ent => excludedEnt == null || !ent.same(excludedEnt);
     let getOrgIdForEnt = ent => _.get( ent.association(), ['organism'] );
 
     this.toggledOrganisms().forEach( addToCount );
@@ -252,6 +254,7 @@ class Document {
     (
       this.entities()
       .filter( entIsAssocd )
+      .filter( entIsNotExcluded )
       .map( getOrgIdForEnt )
       .filter( isNonNil ) // may be an entity w/o org
       .forEach( addToCount )
@@ -260,10 +263,10 @@ class Document {
     return cnt;
   }
 
-  organismCountsJson(){
+  organismCountsJson(excludedEnt){
     let json = {};
 
-    for( let [org, count] of this.organismCounts() ){
+    for( let [org, count] of this.organismCounts(excludedEnt) ){
       json[ org ] = count;
     }
 
@@ -321,6 +324,33 @@ class Document {
         return Promise.resolve();
       }
     }
+  }
+
+  commonOrganism(){
+    const orgs = this.organisms();
+    const counts = this.organismCounts();
+    const getCount = org => counts.get(org) || 0;
+    const sortedOrgs = _.sortBy(orgs, o => -getCount(o));
+
+    if( sortedOrgs.length === 0 ){ return null; }
+
+    return Organism.fromId(sortedOrgs[0]);
+  }
+
+  irregularOrganismEntities(){
+    const comOrg = this.commonOrganism();
+
+    const isIrreg = ent => {
+      const entOrg = ent.organism();
+
+      if( entOrg == null ){ return false; } // e.g. chemical
+
+      return !entOrg.same(comOrg);
+    };
+
+    if( comOrg == null ){ return []; } // no common org => no irreg ents
+
+    return this.entities().filter(isIrreg);
   }
 
   add( el ){

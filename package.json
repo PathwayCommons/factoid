@@ -82,6 +82,7 @@
     "react-router-dom": "^4.0.0",
     "rethinkdb": "^2.3.2",
     "serve-favicon": "^2.3.0",
+    "smoothscroll-polyfill": "^0.4.4",
     "soap": "^0.25.0",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.1.1",
@@ -128,5 +129,5 @@
   "engines": {
     "node": ">=10.0.0"
   },
-  "version": "0.11.0"
+  "version": "0.12.1"
 }

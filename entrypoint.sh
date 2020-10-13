@@ -1,3 +1,3 @@
 #!/bin/bash
-google-chrome-unstable &
+google-chrome-stable &
 cd /home/appuser/app && npm run start

@@ -1,3 +1,3 @@
 // TODO: es6 import
-require('babel-polyfill');
-require('whatwg-fetch');
+import babelPoly from 'babel-polyfill'; // eslint-disable-line
+import fetchPoly from 'whatwg-fetch'; // eslint-disable-line

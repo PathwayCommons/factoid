@@ -1325,7 +1325,6 @@ http.post('/', function( req, res, next ){
   const handleElGroundings = doc => {
     const perform = () => {
       let entities = doc.entities();
-      let intns = doc.interactions();
 
       let entityPromises = entities.map( entity => {
         let name = entity.name();

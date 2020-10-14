@@ -1342,9 +1342,7 @@ http.post('/', function( req, res, next ){
         } );
       } );
 
-      let intnPromises = intns.map( intn => intn.associate( 'interaction' ) );
-
-      return Promise.all( [ ...entityPromises, ...intnPromises ] );
+      return Promise.all( entityPromises );
     };
 
     if ( groundEls ){

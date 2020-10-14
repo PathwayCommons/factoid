@@ -71,7 +71,6 @@ class RequestBiopaxForm extends Component {
       this.setState({ errors: { incompleteForm: true } });
     }
     else{
-      console.log('body is', JSON.stringify({url}));
       const fetchOpts = {
         method: 'POST',
         headers: {
@@ -96,7 +95,8 @@ class RequestBiopaxForm extends Component {
               paperId: _.trim( pmid ),
               authorEmail,
               elements: docJSON,
-              performLayout: true
+              performLayout: true,
+              groundEls: true
             });
 
             const apiUrl = 'api/document';
@@ -107,7 +107,7 @@ class RequestBiopaxForm extends Component {
               },
               body: JSON.stringify( data )
             };
-            //  TODO: errors?
+
             return fetch( apiUrl, fetchOpts ).then( checkStatus );
           } );
 

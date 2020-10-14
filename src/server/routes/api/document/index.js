@@ -19,6 +19,7 @@ import logger from '../../../logger';
 import { getPubmedArticle } from './pubmed';
 import { createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
 import * as indra from './indra';
+import { search as searchGrounding } from '../element-association/grounding-search';
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
   API_KEY,
@@ -1297,7 +1298,7 @@ const tryVerify = async doc => {
  */
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
-  const { paperId, elements, performLayout, submit } = provided;
+  const { paperId, elements, performLayout, submit, groundEls } = provided;
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
 
@@ -1315,12 +1316,43 @@ http.post('/', function( req, res, next ){
     return doc;
   };
   const handleSubmission = doc => {
-    if ( handleSubmission ) {
+    if ( submit ) {
       return tryPromise( () => doc.submit() ).then( () => doc );
     }
 
     return doc;
-  }
+  };
+  const handleElGroundings = doc => {
+    const perform = () => {
+      let entities = doc.entities();
+      let intns = doc.interactions();
+
+      let entityPromises = entities.map( entity => {
+        let name = entity.name();
+        let opts = {
+          limit: 1,
+          offset: 0,
+          name
+        };
+
+        return searchGrounding( opts ).then( res => {
+          if( res && res.length > 0 ) {
+            return entity.associate( res[0] );
+          }
+        } );
+      } );
+
+      let intnPromises = intns.map( intn => intn.associate( 'interaction' ) );
+
+      return Promise.all( [ ...entityPromises, ...intnPromises ] );
+    };
+
+    if ( groundEls ){
+      return tryPromise( () => perform() ).then( () => doc );
+    }
+
+    return doc;
+  };
   const sendJSONResponse = doc => tryPromise( () => doc.json() )
   .then( json => res.json( json ) )
   .then( () => doc );
@@ -1332,6 +1364,7 @@ http.post('/', function( req, res, next ){
     .then( fillDoc )
     .then( tryVerify )
     .then( addEls )
+    .then( handleElGroundings )
     .then( handleLayout )
     .then( handleSubmission )
     .then( sendJSONResponse )

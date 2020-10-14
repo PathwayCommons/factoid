@@ -26,6 +26,7 @@ class RequestBiopaxForm extends Component {
     this.bus = this.props.bus;
 
     this.state = {
+      readJson: false,
       submitting: false,
       url: undefined,
       done: false,
@@ -40,6 +41,7 @@ class RequestBiopaxForm extends Component {
 
   reset(){
     this.setState({
+      readJson: false,
       submitting: false,
       url: undefined,
       done: false,
@@ -84,9 +86,8 @@ class RequestBiopaxForm extends Component {
         .then( checkStatus )
         .then( response => response.json() )
         .then( docsJSON => new Promise( resolve => {
+          this.setState({readJson: true});
           let pmids = Object.keys( docsJSON );
-          pmids = _.slice(pmids, 6, 11);
-          console.log(pmids);
           // TODO: which email address?
           let authorEmail = 'pc@gmail.com';
           let promises = pmids.map( pmid => {
@@ -110,10 +111,24 @@ class RequestBiopaxForm extends Component {
             return fetch( apiUrl, fetchOpts ).then( checkStatus );
           } );
 
-          Promise.all( promises ).then( () => this.setState({ done: true }, resolve ) );
+          let chunks = _.chunk( promises, 20 );
+
+          const handleChunk = i => {
+            if ( i == chunks.length ){
+              return Promise.resolve();
+            }
+            return Promise.all( chunks[ i ] ).then( () => handleChunk( i + 1 ) );
+          };
+
+          handleChunk( 0 ).then( () => this.setState({ done: true }, resolve ) );
         } ) )
-        .catch( () => new Promise( resolve => this.setState({ errors: { network: true } }, resolve ) ) )
-        .finally( () => new Promise( resolve => this.setState({ submitting: false }, resolve ) ) )
+        .catch( () => {
+          const { readJson } = this.state;
+          if ( readJson ) {
+              return new Promise( resolve => this.setState({ errors: { network: true } }, resolve ) );
+          }
+        } )
+        .finally( () => new Promise( resolve => this.setState({ submitting: false, readJson: false }, resolve ) ) )
       );
     }
   }

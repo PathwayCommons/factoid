@@ -1297,7 +1297,7 @@ const tryVerify = async doc => {
  */
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
-  const { paperId, elements, performLayout } = provided;
+  const { paperId, elements, performLayout, submit } = provided;
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
 
@@ -1314,6 +1314,13 @@ http.post('/', function( req, res, next ){
 
     return doc;
   };
+  const handleSubmission = doc => {
+    if ( handleSubmission ) {
+      return tryPromise( () => doc.submit() ).then( () => doc );
+    }
+
+    return doc;
+  }
   const sendJSONResponse = doc => tryPromise( () => doc.json() )
   .then( json => res.json( json ) )
   .then( () => doc );
@@ -1326,6 +1333,7 @@ http.post('/', function( req, res, next ){
     .then( tryVerify )
     .then( addEls )
     .then( handleLayout )
+    .then( handleSubmission )
     .then( sendJSONResponse )
     .then( updateRelatedPapers )
     .then( sendInviteNotification )

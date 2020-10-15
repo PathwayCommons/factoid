@@ -1337,7 +1337,7 @@ http.post('/', function( req, res, next ){
 
         return searchGrounding( opts ).then( res => {
           if( res && res.length > 0 ) {
-            return entity.associate( res[0] ).then( entity.complete() );
+            return entity.associate( res[0] ).then( () => entity.complete() );
           }
         } );
       } );

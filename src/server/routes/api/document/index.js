@@ -1325,6 +1325,7 @@ http.post('/', function( req, res, next ){
   const handleElGroundings = doc => {
     const perform = () => {
       let entities = doc.entities();
+      let intns = doc.interactions();
 
       let entityPromises = entities.map( entity => {
         let name = entity.name();
@@ -1336,12 +1337,14 @@ http.post('/', function( req, res, next ){
 
         return searchGrounding( opts ).then( res => {
           if( res && res.length > 0 ) {
-            return entity.associate( res[0] );
+            return entity.associate( res[0] ).then( entity.complete() );
           }
         } );
       } );
 
-      return Promise.all( entityPromises );
+      let intnPromises = intns.map( intn => intn.complete() );
+
+      return Promise.all( [ ...entityPromises, ...intnPromises ] );
     };
 
     if ( groundEls ){

@@ -88,7 +88,7 @@ class RequestBiopaxForm extends Component {
           this.setState({readJson: true});
           let pmids = Object.keys( docsJSON );
           // TODO: which email address?
-          let authorEmail = 'pc@gmail.com';
+          let authorEmail = 'pc@biofactoid.com';
           let promises = pmids.map( pmid => {
             let docJSON = docsJSON[ pmid ];
             const data = _.assign( {}, {

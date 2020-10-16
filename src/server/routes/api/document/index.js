@@ -1298,13 +1298,10 @@ const tryVerify = async doc => {
  */
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
-  const { paperId, elements, performLayout, submit, groundEls, email } = provided;
+  const { paperId, elements, performLayout, submit, groundEls } = provided;
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
-
-  if ( _.isNil( email ) ) {
-    email = true;
-  }
+  const email = _.get( provided, 'email', true );
 
   const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
   const handleDocCreation = async ({ docDb, eleDb }) => {
@@ -1361,9 +1358,9 @@ http.post('/', function( req, res, next ){
     if ( email ) {
       return sendInviteNotification( doc ).then( () => doc );
     }
-
+    
     return doc;
-  }
+  };
   const sendJSONResponse = doc => tryPromise( () => doc.json() )
   .then( json => res.json( json ) )
   .then( () => doc );

@@ -97,7 +97,8 @@ class RequestBiopaxForm extends Component {
               elements: docJSON,
               performLayout: true,
               groundEls: true,
-              submit: true
+              submit: true,
+              email: false
             });
 
             const apiUrl = 'api/document';

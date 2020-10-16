@@ -1302,6 +1302,7 @@ http.post('/', function( req, res, next ){
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
   const email = _.get( provided, 'email', true );
+  const fromAdmin = _.get( provided, 'fromAdmin', true );
 
   const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
   const handleDocCreation = async ({ docDb, eleDb }) => {
@@ -1361,6 +1362,14 @@ http.post('/', function( req, res, next ){
     
     return doc;
   };
+  const handleDocSource = doc => {
+    let fcn = () => doc.setAsPcDoc();
+    if ( fromAdmin ){
+      fcn = () => doc.setAsAdminDoc();
+    }
+
+    return fcn().then( () => doc );
+  };
   const sendJSONResponse = doc => tryPromise( () => doc.json() )
   .then( json => res.json( json ) )
   .then( () => doc );
@@ -1374,6 +1383,7 @@ http.post('/', function( req, res, next ){
     .then( addEls )
     .then( handleElGroundings )
     .then( handleLayout )
+    .then( handleDocSource )
     .then( handleSubmission )
     .then( sendJSONResponse )
     .then( updateRelatedPapers )

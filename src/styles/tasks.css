@@ -31,10 +31,10 @@
 
 .task-view-task-list .task-view-task-list-title {
   margin-bottom: 0.5em;
-  text-align: center;
 }
 
 .task-view-list {
+  margin-left: 1em;
   margin-bottom: 1em;
   color: #555;
   font-size: 0.95em;

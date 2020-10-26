@@ -193,7 +193,7 @@ class TaskView extends DataComponent {
       let tasks = [ irregularOrgTasks(), incompleteTasks() ];
       let hasTasks = tasks.some( task => task != null );
       return hasTasks ? h('div.task-view-task-list', [
-        h('div.task-view-task-list-title', 'Can you double-check the following?'),
+        h('div.task-view-task-list-title', 'Could you double-check the following?'),
         ...tasks,
         h('hr')
       ]): null;

@@ -32,10 +32,12 @@ class TextEditableComponent extends Component {
     this.ENTER_KEY = 13;
     this.placeholderText = props.placeholder || 'Click to edit';
     this.defaultValue = props.value || this.placeholderText;
+    const defaultAutofocus = props.autofocus || false;
     this.state = {
       editText: this.defaultValue,
       savedText: this.defaultValue,
-      editing: false
+      editing: defaultAutofocus,
+      autofocus: defaultAutofocus
     };
   }
 
@@ -92,9 +94,9 @@ class TextEditableComponent extends Component {
     }
   }
 
-  // handleFocus ( e ) {
-  //   e.target.select();
-  // }
+  handleFocus ( e ) {
+    e.target.select();
+  }
 
   render() {
     const { label, className } = this.props;
@@ -119,9 +121,9 @@ class TextEditableComponent extends Component {
           'editing': editing,
           'placeholder': displayValue == this.placeholderText
         }),
-        autofocus: false,
+        autofocus: true,
         value: displayValue,
-        // ref: c => this.focusInput( c ),
+        ref: c => this.focusInput( c ),
         onClick: this.handleEdit(),
         onChange: e => this.handleChange( e ),
         // onFocus: e => this.handleFocus( e ),
@@ -401,6 +403,7 @@ class TaskView extends DataComponent {
                 label: 'Name',
                 value: _.get( provided, 'name' ),
                 placeholder: 'Click to edit',
+                autofocus: true,
                 cb: name => document.provided({ name })
               })
             ])

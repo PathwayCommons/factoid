@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import DataComponent from './data-component';
 import h from 'react-hyperscript';
 import { Component } from 'react';
@@ -22,6 +23,115 @@ let unbindEleEvts = (ele, cb) => {
     ele.removeListener(evt, cb);
   });
 };
+
+class TextEditableComponent extends Component {
+
+  constructor( props ) {
+    super( props );
+    this.ESCAPE_KEY = 27;
+    this.ENTER_KEY = 13;
+    this.placeholderText = props.placeholder || 'Click to edit';
+    this.defaultValue = props.value || this.placeholderText;
+    this.state = {
+      editText: this.defaultValue,
+      savedText: this.defaultValue,
+      editing: false
+    };
+  }
+
+  handleEdit () {
+    return () => this.setState({
+      editing: !this.state.editing
+    });
+  }
+
+  handleChange ( e ) {
+    this.setState({ editText: e.target.value });
+  }
+
+  handleSubmit ( e ) {
+    const { cb } = this.props;
+    const newValue = e.target.value && e.target.value.trim();
+    return new Promise( resolve => {
+      this.setState({
+        editing: false,
+        savedText: newValue,
+      }, resolve( newValue ) );
+    })
+    .then( cb )
+    .catch( () => {} );
+  }
+
+  reset() {
+    const { savedText } = this.state;
+    this.setState({
+      editText: savedText,
+      editing: false
+    });
+  }
+
+  focusInput( c ) {
+    if ( c ) c.focus();
+  }
+
+  handleKeyDown ( e ) {
+    const { keyCode } = e;
+    if ( keyCode  === this.ESCAPE_KEY ) {
+      this.reset();
+    } else if ( keyCode === this.ENTER_KEY ) {
+      if( e.target.value !== this.placeholderText ) {
+        this.handleSubmit( e );
+      }
+      e.target.blur();
+    }
+  }
+
+  handleBlur ( e ) {
+    if( e.target.value !== this.placeholderText ) {
+      this.handleSubmit( e );
+    }
+  }
+
+  // handleFocus ( e ) {
+  //   e.target.select();
+  // }
+
+  render() {
+    const { label, className } = this.props;
+    const { editText, editing } = this.state;
+    let displayValue;
+    const isPlaceholderText = editText == this.placeholderText;
+    if( editing ){
+      displayValue = isPlaceholderText ? '' : editText;
+    } else {
+      displayValue = editText || this.placeholderText;
+    }
+
+    return h('div.text-editable', className, [
+      h('label', {
+        htmlFor: `text-editable-${label}`
+      }, [
+        label
+      ]),
+      h('input', {
+        type: 'text',
+        className: makeClassList({
+          'editing': editing,
+          'placeholder': displayValue == this.placeholderText
+        }),
+        autoFocus: true,
+        value: displayValue,
+        onClick: this.handleEdit(),
+        onChange: e => this.handleChange( e ),
+        // onFocus: e => this.handleFocus( e ),
+        onBlur: e => this.handleBlur( e ),
+        onKeyDown: e => this.handleKeyDown( e ),
+        id: `text-editable-${label}`,
+      })
+    ]);
+  }
+}
+
 
 export class TaskShare extends Component {
   constructor( props ){
@@ -243,6 +353,7 @@ class TaskView extends DataComponent {
     } else {
       const publicUrl =  `${BASE_URL}${document.publicUrl()}`;
       const imageUrl = `${BASE_URL}/api${document.publicUrl()}.png`;
+      const provided = document.provided();
       return h('div.task-view', [
         h('div.task-view-done', [
           h('div.task-view-done-title', 'Thank you!' ),
@@ -279,6 +390,18 @@ class TaskView extends DataComponent {
                   )
                 ])
               ])
+            ])
+          ]),
+          h('hr'),
+          h('div.task-view-done-section', [
+            h('div.task-view-done-section-body', [
+              h('p', 'Optional info'),
+              h( TextEditableComponent, {
+                label: 'Name',
+                value: _.get( provided, 'name' ),
+                placeholder: 'Click to edit',
+                cb: name => document.provided({ name })
+              })
             ])
           ])
         ])

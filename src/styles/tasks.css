@@ -131,3 +131,33 @@
   }
 }
 
+.text-editable {
+  text-align: left;
+  height: 2em;
+}
+
+.text-editable input[type="text"] {
+  border: none;
+}
+
+.text-editable input[type="text"]:hover {
+  transition: none;
+  border: 1px solid var(--widgetDisabledBorderColor);
+}
+
+.text-editable input[type="text"].editing {
+  border: thin solid var(--brandColor);
+}
+
+.text-editable input[type="text"].placeholder {
+  color: var(--fadedColor);
+}
+
+.text-editable label {
+  display: inline-block;
+  margin: auto 0.5em;
+}
+
+.text-editable label::after {
+  content: ':';
+}

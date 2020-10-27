@@ -146,7 +146,7 @@
 }
 
 .text-editable input[type="text"].editing {
-  border: thin solid var(--brandColor);
+  border: 2px solid var(--brandColor);
 }
 
 .text-editable input[type="text"].placeholder {

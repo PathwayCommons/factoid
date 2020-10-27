@@ -119,8 +119,9 @@ class TextEditableComponent extends Component {
           'editing': editing,
           'placeholder': displayValue == this.placeholderText
         }),
-        autoFocus: true,
+        autofocus: false,
         value: displayValue,
+        // ref: c => this.focusInput( c ),
         onClick: this.handleEdit(),
         onChange: e => this.handleChange( e ),
         // onFocus: e => this.handleFocus( e ),

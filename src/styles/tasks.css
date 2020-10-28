@@ -145,7 +145,7 @@
   border: 1px solid var(--widgetDisabledBorderColor);
 }
 
-.text-editable input[type="text"].editing {
+.text-editable input[type="text"]:focus {
   border: 2px solid var(--brandColor);
 }
 

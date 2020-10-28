@@ -2,6 +2,7 @@ import _ from 'lodash';
 import DataComponent from './data-component';
 import h from 'react-hyperscript';
 import { Component } from 'react';
+import React from 'react';
 
 import Document from '../../model/document';
 import { ENTITY_TYPE } from '../../model/element/entity-type';
@@ -28,35 +29,25 @@ class TextEditableComponent extends Component {
 
   constructor( props ) {
     super( props );
-    this.ESCAPE_KEY = 27;
-    this.ENTER_KEY = 13;
+    this.textInput = React.createRef();
     this.placeholderText = props.placeholder || 'Click to edit';
     this.defaultValue = props.value || this.placeholderText;
-    const defaultAutofocus = props.autofocus || false;
     this.state = {
       editText: this.defaultValue,
       savedText: this.defaultValue,
-      editing: defaultAutofocus,
-      autofocus: defaultAutofocus
     };
-  }
-
-  handleEdit () {
-    return () => this.setState({
-      editing: !this.state.editing
-    });
   }
 
   handleChange ( e ) {
     this.setState({ editText: e.target.value });
   }
 
-  handleSubmit ( e ) {
+  handleSubmit () {
+    const { editText } = this.state;
     const { cb } = this.props;
-    const newValue = e.target.value && e.target.value.trim();
+    const newValue = editText && editText.trim();
     return new Promise( resolve => {
       this.setState({
-        editing: false,
         savedText: newValue,
       }, resolve( newValue ) );
     })
@@ -67,47 +58,50 @@ class TextEditableComponent extends Component {
   reset() {
     const { savedText } = this.state;
     this.setState({
-      editText: savedText,
-      editing: false
+      editText: savedText
     });
   }
 
-  focusInput( c ) {
-    if ( c ) c.focus();
-  }
-
-  handleKeyDown ( e ) {
-    const { keyCode } = e;
-    if ( keyCode  === this.ESCAPE_KEY ) {
-      this.reset();
-    } else if ( keyCode === this.ENTER_KEY ) {
-      if( e.target.value !== this.placeholderText ) {
-        this.handleSubmit( e );
-      }
-      e.target.blur();
+  componentDidMount() {
+    const { autofocus } = this.props;
+    if( autofocus ){
+      this.textInput.current.focus();
+      this.textInput.current.select();
     }
   }
 
-  handleBlur ( e ) {
-    if( e.target.value !== this.placeholderText ) {
+  handleKeyDown ( e ) {
+    if ( e.key === 'Escape' ) {
+      this.reset();
+      this.textInput.current.blur();
+    } else if ( e.key === 'Enter' ) {
+      this.textInput.current.blur();
       this.handleSubmit( e );
     }
   }
 
-  handleFocus ( e ) {
-    e.target.select();
+  handleBlur () {
+    const { editText } = this.state;
+    const isPlaceholderText = editText == this.placeholderText;
+    if( !editText ){
+      this.setState({ editText: this.placeholderText });
+    } else if ( !isPlaceholderText ) {
+      this.handleSubmit();
+    }
+  }
+
+  handleFocus ( ) {
+    const { editText } = this.state;
+    const isPlaceholderText = editText == this.placeholderText;
+    if( isPlaceholderText ){
+      this.setState({ editText: '' });
+    }
+    this.textInput.current.select();
   }
 
   render() {
     const { label, className } = this.props;
-    const { editText, editing } = this.state;
-    let displayValue;
-    const isPlaceholderText = editText == this.placeholderText;
-    if( editing ){
-      displayValue = isPlaceholderText ? '' : editText;
-    } else {
-      displayValue = editText || this.placeholderText;
-    }
+    const { editText } = this.state;
 
     return h('div.text-editable', className, [
       h('label', {
@@ -118,15 +112,12 @@ class TextEditableComponent extends Component {
       h('input', {
         type: 'text',
         className: makeClassList({
-          'editing': editing,
-          'placeholder': displayValue == this.placeholderText
+          'placeholder': editText == this.placeholderText
         }),
-        autofocus: true,
-        value: displayValue,
-        ref: c => this.focusInput( c ),
-        onClick: this.handleEdit(),
+        value: editText,
+        ref: this.textInput,
         onChange: e => this.handleChange( e ),
-        // onFocus: e => this.handleFocus( e ),
+        onFocus: e => this.handleFocus( e ),
         onBlur: e => this.handleBlur( e ),
         onKeyDown: e => this.handleKeyDown( e ),
         id: `text-editable-${label}`,

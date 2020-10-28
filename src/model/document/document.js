@@ -436,6 +436,10 @@ class Document {
     }
   }
 
+  relatedPapersNotified(newVal){
+    return !!this.rwMeta('relatedPapersNotified', newVal);
+  }
+
   status( field ){
     if( field && _.includes( _.values( DOCUMENT_STATUS_FIELDS ), field ) ){
       let p = this.syncher.update({ 'status': field });

@@ -92,6 +92,7 @@ export const MAILJET_TMPLID_REQUEST_ISSUE = env('MAILJET_TMPLID_REQUEST_ISSUE', 
 export const EMAIL_TYPE_INVITE = env('EMAIL_TYPE_INVITE', 'invite');
 export const EMAIL_TYPE_FOLLOWUP = env('EMAIL_TYPE_FOLLOWUP', 'followUp');
 export const EMAIL_TYPE_REQUEST_ISSUE = env('EMAIL_TYPE_REQUEST_ISSUE', 'requestIssue');
+export const EMAIL_TYPE_REL_PPR_NOTIFICATION = env('EMAIL_TYPE_REL_PPR_NOTIFICATION', 'relatedPaperNotification');
 export const EMAIL_ADDRESS_INFO = env('EMAIL_ADDRESS_INFO', 'info@biofactoid.org');
 
 // Sharing

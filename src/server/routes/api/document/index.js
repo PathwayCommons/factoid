@@ -38,7 +38,8 @@ import { BASE_URL,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP,
   MIN_RELATED_PAPERS,
-  SEMANTIC_SEARCH_LIMIT
+  SEMANTIC_SEARCH_LIMIT,
+  EMAIL_TYPE_REL_PPR_NOTIFICATION
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
@@ -1220,6 +1221,59 @@ const checkApiKey = (apiKey) => {
   }
 };
 
+// TODO RPN
+const getNovelInteractions = async doc => { // eslint-disable-line
+  return [];
+};
+
+const emailRelatedPaperAuthors = async doc => {
+  const getContact = paper => _.get(paper, ['pubmed', 'authors', 'contacts', 0]);
+
+  const hasContact = paper => getContact(paper) != null;
+
+  const sendEmail = async (paper, novelIntns) => {
+    const contact = getContact(paper);
+    const email = contact.email[0];
+    const name = contact.name;
+
+    // TODO RPN enable to prevent duplicate sending
+    // doc.relatedPapersNotified(true);
+
+    const mailOpts =  await msgFactory(EMAIL_TYPE_REL_PPR_NOTIFICATION, doc, {
+      to: 'maxkfranz@gmail.com', // send to one of us for testing
+      // to: email, // TODO RPN use author email
+      name,
+      paper,
+      novelIntns
+    }); 
+
+    // TODO RPN send email via mailjet
+    // const info =  await sendMail(mailOpts);
+
+    logger.info(`Related paper notification email for doc ${doc.id()} sent to ${name} at ${email} with ${novelIntns.length} novel interactions`);
+  };
+
+  // TODO RPN use semantic search score etc. in future
+  // just send to all for now, as we already have a small cutoff at 30
+  const paperIsGoodFit = async paper => true; // eslint-disable-line
+
+  const getSendablePapers = async papers => {
+    const isGoodFit = await Promise.all(papers.map(paperIsGoodFit));
+
+    return papers.filter((paper, i) => isGoodFit[i] && hasContact(paper));
+  };
+
+  const novelIntns = await getNovelInteractions(doc);
+
+  const papers = await getSendablePapers(doc.relatedPapers());
+  
+  logger.info(`Sending related paper notifications for doc ${doc.id()} with ${papers.length} papers`);
+
+  await Promise.all(papers.map(async paper => sendEmail(paper, novelIntns)));
+
+  logger.info(`Related paper notifications complete for ${papers.length} emails`);
+};
+
 /**
  * @swagger
  *
@@ -1603,6 +1657,11 @@ http.get('/text/:id', function( req, res, next ){
 const updateRelatedPapers = async doc => {
   await getRelPprsForDoc( doc );
   await getRelatedPapersForNetwork( doc );
+
+  if( !doc.relatedPapersNotified() ){
+    await emailRelatedPaperAuthors(doc);
+  }
+  
   return doc;
 };
 

@@ -30,11 +30,11 @@ class TextEditableComponent extends Component {
   constructor( props ) {
     super( props );
     this.textInput = React.createRef();
-    this.placeholderText = props.placeholder || 'Click to edit';
+    this.placeholderText = props.placeholder || '';
     this.defaultValue = props.value || this.placeholderText;
     this.state = {
       editText: this.defaultValue,
-      savedText: this.defaultValue,
+      savedText: this.defaultValue
     };
   }
 
@@ -82,17 +82,18 @@ class TextEditableComponent extends Component {
 
   handleBlur () {
     const { editText } = this.state;
-    const isPlaceholderText = editText == this.placeholderText;
-    if( !editText ){
-      this.setState({ editText: this.placeholderText });
-    } else if ( !isPlaceholderText ) {
+    const isPlaceholderText = editText === this.placeholderText;
+
+    if ( !this.placeholderText || !isPlaceholderText ) {
       this.handleSubmit();
+    } else if( this.placeholderText && !editText ){
+      this.setState({ editText: this.placeholderText });
     }
   }
 
   handleFocus ( ) {
     const { editText } = this.state;
-    const isPlaceholderText = editText == this.placeholderText;
+    const isPlaceholderText = !!this.placeholderText && editText === this.placeholderText;
     if( isPlaceholderText ){
       this.setState({ editText: '' });
     }
@@ -391,9 +392,8 @@ class TaskView extends DataComponent {
             h('div.task-view-done-section-body', [
               h('p', 'Optional info'),
               h( TextEditableComponent, {
-                label: 'Name',
+                label: 'Name:',
                 value: _.get( provided, 'name' ),
-                placeholder: 'Click to edit',
                 autofocus: true,
                 cb: name => document.provided({ name })
               })

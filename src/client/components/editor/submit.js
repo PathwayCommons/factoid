@@ -19,7 +19,8 @@ export const Submit = props => {
   return h('div.editor-submit', [
     h(Popover, {
       tippy: {
-        html: h(TaskView, { document, bus, controller, emitter } )
+        html: h(TaskView, { document, bus, controller, emitter } ),
+        sticky: true
       }
     }, [
       h('button.editor-submit-button', {

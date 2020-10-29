@@ -1,6 +1,8 @@
+import _ from 'lodash';
 import DataComponent from './data-component';
 import h from 'react-hyperscript';
 import { Component } from 'react';
+import React from 'react';
 
 import Document from '../../model/document';
 import { ENTITY_TYPE } from '../../model/element/entity-type';
@@ -22,6 +24,122 @@ let unbindEleEvts = (ele, cb) => {
     ele.removeListener(evt, cb);
   });
 };
+
+class TextEditableComponent extends Component {
+
+  constructor( props ) {
+    super( props );
+    this.textInput = React.createRef();
+    this.placeholderText = props.placeholder || '';
+    this.defaultValue = props.value || this.placeholderText;
+    this.state = {
+      editText: this.defaultValue,
+      submittedText: this.defaultValue,
+      submitted: !!props.value || false
+    };
+    this.wait = props.autosubmit || 0;
+    this.debounceSubmit = _.debounce( this.handleSubmit.bind( this ), this.wait );
+  }
+
+  handleChange ( e ) {
+    this.setState({
+      submitted: false,
+      editText: e.target.value
+    });
+    if( this.props.autosubmit ) this.debounceSubmit();
+  }
+
+  handleSubmit () {
+    const { editText } = this.state;
+    const { cb } = this.props;
+    const newValue = editText && editText.trim();
+    return new Promise( resolve => {
+      this.setState({
+        submittedText: newValue,
+        submitted: !!newValue
+      }, resolve( newValue ) );
+    })
+    .then( cb )
+    .catch( () => {} );
+  }
+
+  reset() {
+    const { submittedText } = this.state;
+    this.setState({
+      editText: submittedText
+    });
+  }
+
+  componentDidMount() {
+    const { autofocus } = this.props;
+    if( autofocus ){
+      this.textInput.current.focus();
+      this.textInput.current.select();
+    }
+  }
+
+  handleKeyDown ( e ) {
+    if ( e.key === 'Escape' ) {
+      this.reset();
+      this.textInput.current.blur();
+    } else if ( e.key === 'Enter' ) {
+      this.textInput.current.blur();
+      this.handleSubmit( e );
+    }
+  }
+
+  handleBlur () {
+    const { editText } = this.state;
+    const isPlaceholderText = editText === this.placeholderText;
+
+    if ( !isPlaceholderText || !this.placeholderText ) {
+      this.handleSubmit();
+    }
+
+    if( this.placeholderText && !editText ){
+      this.setState({ editText: this.placeholderText });
+    }
+  }
+
+  handleFocus ( ) {
+    const { editText } = this.state;
+    const isPlaceholderText = !!this.placeholderText && editText === this.placeholderText;
+    if( isPlaceholderText ){
+      this.setState({ editText: '' });
+    }
+    this.textInput.current.select();
+  }
+
+  render() {
+    const { label, className } = this.props;
+    const { editText, submitted } = this.state;
+
+    return h('div.text-editable', className, [
+      h('label', {
+        htmlFor: `text-editable-${label}`
+      }, [
+        label
+      ]),
+      h('input', {
+        type: 'text',
+        className: makeClassList({
+          'placeholder': editText == this.placeholderText
+        }),
+        value: editText,
+        ref: this.textInput,
+        onChange: e => this.handleChange( e ),
+        onFocus: e => this.handleFocus( e ),
+        onBlur: e => this.handleBlur( e ),
+        onKeyDown: e => this.handleKeyDown( e ),
+        id: `text-editable-${label}`,
+      }),
+      h( 'i.material-icons', {
+        className: makeClassList({ 'show': submitted })
+      }, 'check_circle_outline' )
+    ]);
+  }
+}
+
 
 export class TaskShare extends Component {
   constructor( props ){
@@ -243,6 +361,7 @@ class TaskView extends DataComponent {
     } else {
       const publicUrl =  `${BASE_URL}${document.publicUrl()}`;
       const imageUrl = `${BASE_URL}/api${document.publicUrl()}.png`;
+      const provided = document.provided();
       return h('div.task-view', [
         h('div.task-view-done', [
           h('div.task-view-done-title', 'Thank you!' ),
@@ -280,6 +399,20 @@ class TaskView extends DataComponent {
                 ])
               ])
             ])
+          ]),
+          h('hr'),
+          h('div.task-view-done-section', [
+            h('div.task-view-done-section-body', [
+              h('p', 'Optional info'),
+              h( TextEditableComponent, {
+                label: 'Name:',
+                value: _.get( provided, 'name' ),
+                autofocus: true,
+                placeholder: '',
+                autosubmit: 1000,
+                cb: name => document.provided({ name })
+              })
+            ])
           ])
         ])
       ]);
@@ -288,4 +421,4 @@ class TaskView extends DataComponent {
 }
 
 
-export { TaskView };
+export { TaskView, TextEditableComponent };

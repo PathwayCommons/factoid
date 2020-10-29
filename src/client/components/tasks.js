@@ -34,19 +34,19 @@ class TextEditableComponent extends Component {
     this.defaultValue = props.value || this.placeholderText;
     this.state = {
       editText: this.defaultValue,
-      savedText: this.defaultValue,
-      saved: !!props.value || false
+      submittedText: this.defaultValue,
+      submitted: !!props.value || false
     };
-    this.wait = 1000;
-    this.delayedSubmit = _.debounce( this.handleSubmit.bind( this ), this.wait );
+    this.wait = props.autosubmit || 0;
+    this.debounceSubmit = _.debounce( this.handleSubmit.bind( this ), this.wait );
   }
 
   handleChange ( e ) {
     this.setState({
-      saved: false,
+      submitted: false,
       editText: e.target.value
     });
-    this.delayedSubmit();
+    if( this.props.autosubmit ) this.debounceSubmit();
   }
 
   handleSubmit () {
@@ -55,8 +55,8 @@ class TextEditableComponent extends Component {
     const newValue = editText && editText.trim();
     return new Promise( resolve => {
       this.setState({
-        savedText: newValue,
-        saved: !!newValue
+        submittedText: newValue,
+        submitted: !!newValue
       }, resolve( newValue ) );
     })
     .then( cb )
@@ -64,9 +64,9 @@ class TextEditableComponent extends Component {
   }
 
   reset() {
-    const { savedText } = this.state;
+    const { submittedText } = this.state;
     this.setState({
-      editText: savedText
+      editText: submittedText
     });
   }
 
@@ -92,9 +92,11 @@ class TextEditableComponent extends Component {
     const { editText } = this.state;
     const isPlaceholderText = editText === this.placeholderText;
 
-    if ( !this.placeholderText || !isPlaceholderText ) {
+    if ( !isPlaceholderText || !this.placeholderText ) {
       this.handleSubmit();
-    } else if( this.placeholderText && !editText ){
+    }
+
+    if( this.placeholderText && !editText ){
       this.setState({ editText: this.placeholderText });
     }
   }
@@ -110,7 +112,7 @@ class TextEditableComponent extends Component {
 
   render() {
     const { label, className } = this.props;
-    const { editText, saved } = this.state;
+    const { editText, submitted } = this.state;
 
     return h('div.text-editable', className, [
       h('label', {
@@ -132,8 +134,8 @@ class TextEditableComponent extends Component {
         id: `text-editable-${label}`,
       }),
       h( 'i.material-icons', {
-        className: makeClassList({ 'show': saved })
-      }, 'check_circle' )
+        className: makeClassList({ 'show': submitted })
+      }, 'check_circle_outline' )
     ]);
   }
 }
@@ -406,6 +408,8 @@ class TaskView extends DataComponent {
                 label: 'Name:',
                 value: _.get( provided, 'name' ),
                 autofocus: true,
+                placeholder: '',
+                autosubmit: 1000,
                 cb: name => document.provided({ name })
               })
             ])
@@ -417,4 +421,4 @@ class TaskView extends DataComponent {
 }
 
 
-export { TaskView };
+export { TaskView, TextEditableComponent };

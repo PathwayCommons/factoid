@@ -136,6 +136,10 @@
   height: 2em;
 }
 
+.text-editable input[type="text"] {
+  transition: none;
+}
+
 .text-editable input[type="text"]:focus {
   border: 2px solid var(--brandColor);
 }

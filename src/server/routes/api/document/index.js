@@ -19,7 +19,7 @@ import logger from '../../../logger';
 import { getPubmedArticle } from './pubmed';
 import { createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
 import * as indra from './indra';
-import { search as searchGrounding } from '../element-association/grounding-search';
+import { searchByXref } from '../element-association/grounding-search';
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
   API_KEY,
@@ -310,7 +310,6 @@ let getBiopaxFromTemplates = templates => {
 };
 
 let getJsonFromBiopaxUrl = url => {
-  // console.log('getJsonFromBiopax', body);
   return fetch( BIOPAX_CONVERTER_URL + 'biopax-url-to-json', {
     method: 'POST',
     body: url,
@@ -1304,6 +1303,14 @@ http.post('/', function( req, res, next ){
   const email = _.get( provided, 'email', true );
   const fromAdmin = _.get( provided, 'fromAdmin', true );
 
+  const elToUniprotId = {};
+  elements.forEach( el => {
+    let uniprotId = el.uniprotId;
+    if ( uniprotId ) {
+      elToUniprotId[ el.id ] = uniprotId;
+    }
+  } );
+
   const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
   const handleDocCreation = async ({ docDb, eleDb }) => {
     if( id === DEMO_ID ) await deleteTableRows( API_KEY, secret );
@@ -1330,17 +1337,17 @@ http.post('/', function( req, res, next ){
       let intns = doc.interactions();
 
       let entityPromises = entities.map( entity => {
-        let name = entity.name();
-        let opts = {
-          limit: 1,
-          offset: 0,
-          name
-        };
+        let uniprotId = elToUniprotId[entity.id()];
+        if ( !uniprotId ) {
+          return Promise.resolve();
+        }
 
-        return searchGrounding( opts ).then( res => {
-          if( res && res.length > 0 ) {
-            return entity.associate( res[0] ).then( () => entity.complete() );
+        return searchByXref( 'uniprot', uniprotId ).then( res => {
+          if( res ) {
+            return entity.associate( res ).then( () => entity.complete() );
           }
+
+          return Promise.resolve();
         } );
       } );
 

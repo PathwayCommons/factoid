@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import _ from 'lodash';
 
 import { GROUNDING_SEARCH_BASE_URL } from '../../../../config';
 import logger from '../../../logger';
@@ -53,4 +54,19 @@ const search = opts => {
     } );
 };
 
-export { get, search };
+const searchByXref = ( db, id ) => {
+  return get( { id, namespace: db } )
+    .then( res => {
+      let dbXref = _.find( res.dbXrefs, xref => xref.db == 'GeneID' );
+      return _.get( dbXref, 'id', null );
+    } )
+    .then( id => {
+      if ( id == null ) {
+        return Promise.resolve( null );
+      }
+
+      return get( { id, namespace: 'ncbi' } );
+    } );
+};
+
+export { get, search, searchByXref };

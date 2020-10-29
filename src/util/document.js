@@ -6,7 +6,9 @@ import { checkHTTPStatus } from './fetch';
 function convertDocumentToBiopax(docId, baseUrl = '') {
   let SERVER_URL = baseUrl + `/api/document/biopax/${docId}`;
   let makeRequest = () => fetch(SERVER_URL);
-  return tryPromise( makeRequest ).then( result => result.text() );
+  return tryPromise( makeRequest )
+    .then( checkHTTPStatus )
+    .then( result => result.text() );
 }
 
 function convertDocumentToTxt(docId, baseUrl = '') {

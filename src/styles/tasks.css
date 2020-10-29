@@ -148,3 +148,12 @@
   display: inline-block;
   margin: auto 0.5em;
 }
+
+.text-editable i {
+  visibility: hidden;
+}
+
+.text-editable i.show {
+  margin: auto 0.5em;
+  visibility: initial;
+}

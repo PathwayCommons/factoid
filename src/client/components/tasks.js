@@ -34,12 +34,19 @@ class TextEditableComponent extends Component {
     this.defaultValue = props.value || this.placeholderText;
     this.state = {
       editText: this.defaultValue,
-      savedText: this.defaultValue
+      savedText: this.defaultValue,
+      saved: !!props.value || false
     };
+    this.wait = 1000;
+    this.delayedSubmit = _.debounce( this.handleSubmit.bind( this ), this.wait );
   }
 
   handleChange ( e ) {
-    this.setState({ editText: e.target.value });
+    this.setState({
+      saved: false,
+      editText: e.target.value
+    });
+    this.delayedSubmit();
   }
 
   handleSubmit () {
@@ -49,6 +56,7 @@ class TextEditableComponent extends Component {
     return new Promise( resolve => {
       this.setState({
         savedText: newValue,
+        saved: !!newValue
       }, resolve( newValue ) );
     })
     .then( cb )
@@ -102,7 +110,7 @@ class TextEditableComponent extends Component {
 
   render() {
     const { label, className } = this.props;
-    const { editText } = this.state;
+    const { editText, saved } = this.state;
 
     return h('div.text-editable', className, [
       h('label', {
@@ -122,7 +130,10 @@ class TextEditableComponent extends Component {
         onBlur: e => this.handleBlur( e ),
         onKeyDown: e => this.handleKeyDown( e ),
         id: `text-editable-${label}`,
-      })
+      }),
+      h( 'i.material-icons', {
+        className: makeClassList({ 'show': saved })
+      }, 'check_circle' )
     ]);
   }
 }

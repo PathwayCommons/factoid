@@ -251,6 +251,7 @@
 .carousel-doc-datestamp {
   margin-top: 0.5em;
   text-align: right;
+  display: none;
 }
 
 .carousel-pager {

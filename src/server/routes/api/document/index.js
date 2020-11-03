@@ -9,6 +9,7 @@ import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
 import fs from 'fs';
+import { URLSearchParams } from  'url';
 
 import { exportToZip, EXPORT_TYPES } from './export';
 import { tryPromise, makeStaticStylesheet, makeCyEles, msgFactory, updateCorrespondence, EmailError, truncateString } from '../../../../util';
@@ -19,7 +20,7 @@ import logger from '../../../logger';
 import { getPubmedArticle } from './pubmed';
 import { createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
 import * as indra from './indra';
-import { searchByXref } from '../element-association/grounding-search';
+import { get as groundingSearchGet } from '../element-association/grounding-search';
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
   API_KEY,
@@ -38,7 +39,9 @@ import { BASE_URL,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP,
   MIN_RELATED_PAPERS,
-  SEMANTIC_SEARCH_LIMIT
+  SEMANTIC_SEARCH_LIMIT,
+  NCBI_EUTILS_BASE_URL,
+  PC_URL
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
@@ -307,6 +310,86 @@ let getBiopaxFromTemplates = templates => {
       'Accept':'application/vnd.biopax.rdf+xml' }
   } )
   .then(handleResponseError);
+};
+
+let getNcbiIdfromRefSeqId = id => {
+  const params = new URLSearchParams();
+  params.append('id', id);
+  params.append('cmd', 'neighbor');
+  params.append('retmode', 'json');
+  params.append('db', 'gene');
+  params.append('dbfrom', 'nuccore');
+  params.append('linkname', 'nuccore_gene');
+
+  return fetch( NCBI_EUTILS_BASE_URL + 'elink.fcgi', {
+    'method': 'POST',
+    'headers': {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    'body': params
+  } )
+  .then(handleResponseError)
+  .then( res => res.json() )
+  .then( js => _.get( js, ['ids', 0] ) );
+};
+
+let getNcbiIdfromHgncSymbol = symbol => {
+  return fetch( PC_URL + 'api/enrichment/validation', {
+    'method': 'POST',
+    'headers': {
+      'Content-Type': 'application/json'
+    },
+    'body': JSON.stringify({
+      'query': [ symbol ],
+      'namespace': 'ncbigene'
+    })
+  } )
+  .then(handleResponseError)
+  .then( res => res.json() )
+  .then( js => {
+    let obj = _.get( js, 'alias' );
+
+    if ( obj ) {
+      return obj[symbol];
+    }
+
+    return null;
+  } );
+};
+
+let getNcbiIdFromUniprotId = id => {
+  let namespace = 'uniprot';
+  return groundingSearchGet( { id, namespace } )
+    .then( res => {
+      let dbXref = _.find( res.dbXrefs, xref => xref.db == 'GeneID' );
+      return _.get( dbXref, 'id', null );
+    } );
+};
+
+let searchByXref = ( xref ) => {
+  let { db, id } = xref;
+  let getNcbiId;
+  if ( db == 'uniprot' ) {
+    getNcbiId = getNcbiIdFromUniprotId;
+  }
+  else if ( db == 'refseq' ) {
+    getNcbiId = getNcbiIdfromRefSeqId;
+  }
+  else if ( db == 'hgnc symbol' ) {
+    getNcbiId = getNcbiIdfromHgncSymbol;
+  }
+
+  if ( getNcbiId != null ) {
+    return getNcbiId( id ).then( ncbiId => {
+      if ( ncbiId == null ) {
+        return Promise.resolve( null );
+      }
+
+      return groundingSearchGet( { id: ncbiId, namespace: 'ncbi' } );
+    } );
+  }
+
+  return null;
 };
 
 let getJsonFromBiopaxUrl = url => {
@@ -1303,11 +1386,11 @@ http.post('/', function( req, res, next ){
   const email = _.get( provided, 'email', true );
   const fromAdmin = _.get( provided, 'fromAdmin', true );
 
-  const elToUniprotId = {};
+  const elToXref = {};
   elements.forEach( el => {
-    let uniprotId = el.uniprotId;
-    if ( uniprotId ) {
-      elToUniprotId[ el.id ] = uniprotId;
+    let xref = el._xref;
+    if ( xref ) {
+      elToXref[ el.id ] = xref;
     }
   } );
 
@@ -1337,12 +1420,12 @@ http.post('/', function( req, res, next ){
       let intns = doc.interactions();
 
       let entityPromises = entities.map( entity => {
-        let uniprotId = elToUniprotId[entity.id()];
-        if ( !uniprotId ) {
+        let xref = elToXref[entity.id()];
+        if ( !xref ) {
           return Promise.resolve();
         }
 
-        return searchByXref( 'uniprot', uniprotId ).then( res => {
+        return searchByXref( xref ).then( res => {
           if( res ) {
             return entity.associate( res ).then( () => entity.complete() );
           }

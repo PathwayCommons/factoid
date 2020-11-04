@@ -1,5 +1,6 @@
 {
   "name": "factoid",
+  "license": "MIT",
   "private": true,
   "browserslist": "edge >=12, firefox >=40, chrome >=40, safari 9",
   "scripts": {

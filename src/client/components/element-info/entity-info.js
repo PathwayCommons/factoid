@@ -486,37 +486,41 @@ class EntityInfo extends DataComponent {
           return `${om.name} : ` + sortedSyns.slice(0, 3).join(', ');
         };
 
-        organism = h('div.entity-info-section.entity-info-organism-refinement', [
-          h('span.entity-info-title', 'Organism'),
-          h('select.entity-info-organism-dropdown', {
-            value: `${m.namespace}:${m.id}`,
-            onChange: e => {
-              const val = e.target.value;
-              const [ns, id] = val.split(':');
-              const om = s.matches.find(match => match.namespace === ns && match.id === id);
+        if( orgMatches.length > 1 ){
+          organism = h('div.entity-info-section.entity-info-organism-refinement', [
+            h('span.entity-info-title', 'Organism'),
+            h('select.entity-info-organism-dropdown', {
+              value: `${m.namespace}:${m.id}`,
+              onChange: e => {
+                const val = e.target.value;
+                const [ns, id] = val.split(':');
+                const om = s.matches.find(match => match.namespace === ns && match.id === id);
 
-              if( om ){
-                this.associate(om);
-              } else {
-                this.enableManualMatchMode();
+                if( om ){
+                  this.associate(om);
+                } else {
+                  this.enableManualMatchMode();
+                }
               }
-            }
-          }, orgMatches.map((om) => {
-            const value = `${om.namespace}:${om.id}`;
-            const orgMatches = orgToMatches.get(om.organism);
-            const multOrgMatches = orgMatches.length > 1;
-            const isFirstOrgMatch = orgMatches[0].id === om.id && orgMatches[0].namespace === om.namespace;
+            }, orgMatches.map((om) => {
+              const value = `${om.namespace}:${om.id}`;
+              const orgMatches = orgToMatches.get(om.organism);
+              const multOrgMatches = orgMatches.length > 1;
+              const isFirstOrgMatch = orgMatches[0].id === om.id && orgMatches[0].namespace === om.namespace;
 
-            if( multOrgMatches && !isFirstOrgMatch ){
-              return null;
-            }
+              if( multOrgMatches && !isFirstOrgMatch ){
+                return null;
+              }
 
-            return h('option', { value }, getSelectDisplay(om));
-          }).concat([
-            // selectedIndex < 0 ? h('option', { value: -1 }, getSelectDisplay(m, true)) : null,
-            h('option', { value: -2 }, 'Other')
-          ]))
-        ]);
+              return h('option', { value }, getSelectDisplay(om));
+            }).concat([
+              // selectedIndex < 0 ? h('option', { value: -1 }, getSelectDisplay(m, true)) : null,
+              h('option', { value: -2 }, 'Other')
+            ]))
+          ]);
+        } else {
+          organism = null;
+        }
 
         if( assoc && selectedOrg ){
           const ambigGrs = orgToMatches.get(selectedOrg);

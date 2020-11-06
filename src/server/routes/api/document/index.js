@@ -1265,7 +1265,7 @@ const emailRelatedPaperAuthors = async doc => {
 
   const novelIntns = await getNovelInteractions(doc);
 
-  const papers = await getSendablePapers(doc.relatedPapers());
+  const papers = await getSendablePapers(doc.referencedPapers());
 
   logger.info(`Sending related paper notifications for doc ${doc.id()} with ${papers.length} papers`);
 

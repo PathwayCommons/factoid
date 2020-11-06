@@ -436,6 +436,17 @@ class Document {
     }
   }
 
+  referencedPapers( papersData ){
+    if( papersData ){
+      let p = this.syncher.update({ 'referencedPapers': papersData });
+      this.emit( 'referencedPapers', papersData );
+      return p;
+    }
+    else if( !papersData ){
+      return this.syncher.get( 'referencedPapers' );
+    }
+  }
+
   relatedPapersNotified(newVal){
     return !!this.rwMeta('relatedPapersNotified', newVal);
   }

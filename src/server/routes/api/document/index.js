@@ -43,7 +43,7 @@ import { BASE_URL,
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
-import { db2pubmed } from './pubmed/linkPubmed';
+import { eLink, elink2UidList } from './pubmed/linkPubmed';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import { docs2Sitemap } from '../../../sitemap';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -1245,7 +1245,7 @@ const emailRelatedPaperAuthors = async doc => {
       name,
       paper,
       novelIntns
-    }); 
+    });
 
     // TODO RPN send email via mailjet
     // const info =  await sendMail(mailOpts);
@@ -1266,7 +1266,7 @@ const emailRelatedPaperAuthors = async doc => {
   const novelIntns = await getNovelInteractions(doc);
 
   const papers = await getSendablePapers(doc.relatedPapers());
-  
+
   logger.info(`Sending related paper notifications for doc ${doc.id()} with ${papers.length} papers`);
 
   await Promise.all(papers.map(async paper => sendEmail(paper, novelIntns)));
@@ -1661,12 +1661,13 @@ const updateRelatedPapers = async doc => {
   if( !doc.relatedPapersNotified() ){
     await emailRelatedPaperAuthors(doc);
   }
-  
+
   return doc;
 };
 
 const getRelPprsForDoc = async doc => {
   let papers = [];
+  let referencedPapers = [];
 
   try {
     logger.info(`Updating document-level related papers for doc ${doc.id()}`);
@@ -1674,16 +1675,29 @@ const getRelPprsForDoc = async doc => {
     const { pmid } = doc.citation();
 
     if( pmid ){
-      const pmids = await db2pubmed({ uids: [pmid] });
-      let rankedDocs = await indra.semanticSearch({ query: pmid, documents: pmids });
+      const elinkResponse = await eLink( { id: [pmid] } );
+
+      // For .relatedPapers
+      const documents = elink2UidList( elinkResponse );
+      let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
       const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
-      const { PubmedArticleSet } = await fetchPubmed({ uids });
-      papers = PubmedArticleSet
+      const relatedPapersResponse = await fetchPubmed({ uids });
+      papers = _.get( relatedPapersResponse, 'PubmedArticleSet', [] )
         .map( getPubmedCitation )
         .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
+
+      // For .referencedPapers
+      const referencedPaperUids = elink2UidList( elinkResponse, ['pubmed_pubmed_refs'], 100 );
+      if( referencedPaperUids.length ){
+        const referencedPapersResponse = await fetchPubmed({ uids: referencedPaperUids });
+        referencedPapers = _.get( referencedPapersResponse, 'PubmedArticleSet', [] )
+          .map( getPubmedCitation )
+          .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
+      }
     }
 
     doc.relatedPapers( papers );
+    doc.referencedPapers( referencedPapers );
     logger.info(`Finished updating document-level related papers`);
     return doc;
 

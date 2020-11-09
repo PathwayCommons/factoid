@@ -555,7 +555,7 @@ class EntityInfo extends DataComponent {
         }
       }
 
-      let body = assocDisp[ m.type ]( m, searchTerms, !showRefinement );
+      let body = assocDisp[ m.type ]( m, searchTerms, false );
 
       let post = [];
 

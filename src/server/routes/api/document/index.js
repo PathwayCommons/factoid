@@ -34,6 +34,7 @@ import { BASE_URL,
   MAX_TWEET_LENGTH,
   DEMO_CAN_BE_SHARED,
   DOCUMENT_IMAGE_PADDING,
+  EMAIL_ADMIN_ADDR,
   EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP,
@@ -1240,7 +1241,7 @@ const emailRelatedPaperAuthors = async doc => {
     // doc.relatedPapersNotified(true);
 
     const mailOpts =  await msgFactory(EMAIL_TYPE_REL_PPR_NOTIFICATION, doc, {
-      to: 'maxkfranz@gmail.com', // send to one of us for testing
+      to: EMAIL_ADMIN_ADDR, // send to one of us for testing
       // to: email, // TODO RPN use author email
       name,
       paper,

@@ -80,6 +80,7 @@ export const IDENTIFIERS_ORG_ID_BASE_URL = env('IDENTIFIERS_ORG_ID_BASE_URL', '	
 export const EMAIL_ENABLED = env('EMAIL_ENABLED', false);
 export const EMAIL_FROM = env('EMAIL_FROM', 'Biofactoid');
 export const EMAIL_FROM_ADDR = env('EMAIL_FROM_ADDR', 'support@biofactoid.org');
+export const EMAIL_ADMIN_ADDR = env('EMAIL_ADMIN_ADDR', 'support@biofactoid.org');
 export const SMTP_PORT = env('SMTP_PORT', 587);
 export const SMTP_HOST = env('SMTP_HOST', 'localhost');
 export const SMTP_USER = env('SMTP_USER', 'user');

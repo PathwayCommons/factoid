@@ -180,7 +180,6 @@ class Interaction extends Element {
   setNovel( novel ) {
     let currVal = this.isNovel();
     if ( currVal == novel ) {
-      console.log( 'old val, new val', currVal, newVal );
       return Promise.resolve();
     }
 

@@ -1726,9 +1726,16 @@ const getRelatedPapersForNetwork = async doc => {
         entities: el.isEntity() ? [ template ] : []
       };
 
-      const indraRes = await indra.searchDocuments({ templates, doc });
+      let indraRes = await indra.searchDocuments({ templates, doc });
+      indraRes = indraRes || [];
 
-      el.relatedPapers( indraRes || [] );
+      if ( el.isInteraction() ) {
+        if ( indraRes.length == 0 ) {
+          el.setNovel( true );
+        }
+      }
+
+      el.relatedPapers( indraRes );
     };
 
     await Promise.all([ ...els.map(getRelPprsForEl) ]);

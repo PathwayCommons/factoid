@@ -177,6 +177,22 @@ class Interaction extends Element {
     return this.participantsOf( type, (t1, t2) => t1 !== t2 );
   }
 
+  setNovel( novel ) {
+    let currVal = this.isNovel();
+    if ( currVal == novel ) {
+      console.log( 'old val, new val', currVal, newVal );
+      return Promise.resolve();
+    }
+
+    let update = this.update({
+      novel
+    });
+
+    this.emit( 'novel', novel, currVal );
+
+    return update;
+  }
+
   associate( interactionType ){
     let type = makeAssociation( interactionType, this );
     let oldType = makeAssociation( this.syncher.get('association'), this );
@@ -219,6 +235,10 @@ class Interaction extends Element {
 
   associated(){
     return this.syncher.get('association') != null;
+  }
+
+  isNovel(){
+    return this.syncher.get('novel') == true;
   }
 
   json(){

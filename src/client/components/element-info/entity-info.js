@@ -657,7 +657,7 @@ class EntityInfo extends DataComponent {
                   this.disableManualMatchMode();
                   this.associate( m );
                 }
-              }, targetFromAssoc( m, isCurrentMatch ).concat( isCurrentMatch ? h('span.entity-info-match-current-indicator', 'Current match') : null )),
+              }, targetFromAssoc( m, isCurrentMatch ).concat( isCurrentMatch ? h('span.entity-info-match-current-indicator', 'Selected') : null )),
               assocDisp.link( m )
             ]);
           }),

@@ -35,6 +35,7 @@ import { BASE_URL,
   DEMO_CAN_BE_SHARED,
   DOCUMENT_IMAGE_PADDING,
   EMAIL_ADMIN_ADDR,
+  EMAIL_RELPPRS_CONTACT,
   EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP,
@@ -1234,22 +1235,21 @@ const emailRelatedPaperAuthors = async doc => {
 
   const sendEmail = async (paper, novelIntns) => {
     const contact = getContact(paper);
-    const email = contact.email[0];
+    const email = EMAIL_RELPPRS_CONTACT ? contact.email[0] : EMAIL_ADMIN_ADDR;
     const name = contact.name;
 
     // TODO RPN enable to prevent duplicate sending
     // doc.relatedPapersNotified(true);
 
     const mailOpts =  await msgFactory(EMAIL_TYPE_REL_PPR_NOTIFICATION, doc, {
-      to: EMAIL_ADMIN_ADDR, // send to one of us for testing
-      // to: email, // TODO RPN use author email
+      to: EMAIL_RELPPRS_CONTACT ? email : EMAIL_ADMIN_ADDR, //must explicitly turn off
       name,
       paper,
       novelIntns
     });
 
-    // TODO RPN send email via mailjet
-    // const info =  await sendMail(mailOpts);
+    // Sending blocked by default, otherwise set EMAIL_ENABLED=true
+    await sendMail(mailOpts);
 
     logger.info(`Related paper notification email for doc ${doc.id()} sent to ${name} at ${email} with ${novelIntns.length} novel interactions`);
   };
@@ -1490,7 +1490,16 @@ http.patch('/:id/:secret', function( req, res, next ){
     return;
   };
 
-  const sendFollowUpNotification = async doc => await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
+  const sendFollowUpNotification = async doc => {
+    await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
+    if( !doc.relatedPapersNotified() ) await emailRelatedPaperAuthors( doc );
+  };
+
+  const onDocPublic = async doc => {
+    await updateRelatedPapers( doc );
+    await sendFollowUpNotification( doc );
+  };
+
   const tryTweetingDoc = async doc => {
     if ( !doc.hasTweet() ) {
       try {
@@ -1504,9 +1513,8 @@ http.patch('/:id/:secret', function( req, res, next ){
   const handleMakePublicRequest = async doc => {
     await tryMakePublic( doc );
     if( doc.isPublic() ) {
-      updateRelatedPapers( doc );
       await tryTweetingDoc( doc );
-      sendFollowUpNotification( doc );
+      onDocPublic( doc );
     }
   };
 
@@ -1658,11 +1666,6 @@ http.get('/text/:id', function( req, res, next ){
 const updateRelatedPapers = async doc => {
   await getRelPprsForDoc( doc );
   await getRelatedPapersForNetwork( doc );
-
-  if( !doc.relatedPapersNotified() ){
-    await emailRelatedPaperAuthors(doc);
-  }
-
   return doc;
 };
 

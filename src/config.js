@@ -78,6 +78,7 @@ export const IDENTIFIERS_ORG_ID_BASE_URL = env('IDENTIFIERS_ORG_ID_BASE_URL', '	
 
 // Email
 export const EMAIL_ENABLED = env('EMAIL_ENABLED', false);
+export const EMAIL_RELPPRS_CONTACT = env('EMAIL_RELPPRS_CONTACT', true);
 export const EMAIL_FROM = env('EMAIL_FROM', 'Biofactoid');
 export const EMAIL_FROM_ADDR = env('EMAIL_FROM_ADDR', 'support@biofactoid.org');
 export const EMAIL_ADMIN_ADDR = env('EMAIL_ADMIN_ADDR', 'support@biofactoid.org');

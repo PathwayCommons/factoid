@@ -25,6 +25,8 @@ let chosenTypeCache = new WeakMap();
 let nameNotificationCache = new SingleValueCache();
 let assocNotificationCache = new SingleValueCache();
 
+const isSameGrounding = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
+
 class EntityInfo extends DataComponent {
   constructor( props ){
     super( props );
@@ -450,6 +452,7 @@ class EntityInfo extends DataComponent {
         let isOrgMatch = m => isPerfectNameMatch(m) && !isChemicalMatch(m);
         let orgMatches = s.matches.filter(isOrgMatch);
         let orgToMatches = new Map();
+        let orgDropDownMatches = [];
 
         orgMatches.forEach(om => {
           let org = om.organism;
@@ -465,9 +468,24 @@ class EntityInfo extends DataComponent {
           arr.push(om);
         });
 
-        orgMatches = _.sortBy(orgMatches, m => m.organismName);
-
+        const orgIds = Array.from(orgToMatches.keys());
         const selectedOrg = assoc ? assoc.organism : null;
+
+        orgIds.forEach(orgId => {
+          const oms = orgToMatches.get(orgId);
+          let om = oms[0]; // first by default
+
+          // use the selected grounding as the top-level org dropdown id, if possible
+          oms.forEach(omi => {
+            if( assoc && isSameGrounding(omi, assoc) ){
+              om = omi;
+            }
+          });
+
+          orgDropDownMatches.push(om);
+        });
+
+        orgDropDownMatches = _.sortBy(orgDropDownMatches, m => m.organismName);
 
         const getSelectDisplay = (om, includeName = false) => {
           // const matches = orgToMatches.get(om.organism) || [];
@@ -502,15 +520,8 @@ class EntityInfo extends DataComponent {
                   this.enableManualMatchMode();
                 }
               }
-            }, orgMatches.map((om) => {
+            }, orgDropDownMatches.map((om) => {
               const value = `${om.namespace}:${om.id}`;
-              const orgMatches = orgToMatches.get(om.organism);
-              const multOrgMatches = orgMatches.length > 1;
-              const isFirstOrgMatch = orgMatches[0].id === om.id && orgMatches[0].namespace === om.namespace;
-
-              if( multOrgMatches && !isFirstOrgMatch ){
-                return null;
-              }
 
               return h('option', { value }, getSelectDisplay(om));
             }).concat([

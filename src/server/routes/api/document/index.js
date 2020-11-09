@@ -1539,6 +1539,7 @@ http.patch('/:id/:secret', function( req, res, next ){
         case 'relatedPapers':
           if( op === 'replace' ){
             await updateRelatedPapers( doc );
+            if( !doc.relatedPapersNotified() ) await emailRelatedPaperAuthors( doc );
           }
           break;
       }

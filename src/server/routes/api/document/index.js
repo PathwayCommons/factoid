@@ -12,7 +12,8 @@ import emailRegex from 'email-regex';
 import fs from 'fs';
 
 import { exportToZip, EXPORT_TYPES } from './export';
-import { tryPromise, makeStaticStylesheet, makeCyEles, msgFactory, updateCorrespondence, EmailError, truncateString } from '../../../../util';
+import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
+import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
 import db from '../../../db';

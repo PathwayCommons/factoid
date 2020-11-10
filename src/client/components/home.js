@@ -2,7 +2,7 @@ import _ from 'lodash';
 import h from 'react-hyperscript';
 import { Component } from 'react';
 import Popover from './popover/popover';
-import { makeClassList } from '../../util';
+import { makeClassList } from '../dom';
 import EventEmitter from 'eventemitter3';
 import { truncateString } from '../../util';
 import { Carousel, CAROUSEL_CONTENT } from './carousel';

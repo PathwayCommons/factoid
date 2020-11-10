@@ -3,7 +3,8 @@ import Router from './router';
 import ReactDom from 'react-dom';
 import h from 'react-hyperscript';
 import hh from 'hyperscript';
-import { $, regCyExts } from '../util';
+import { regCyExts } from '../util';
+import { $ } from './dom';
 import smoothscroll from 'smoothscroll-polyfill';
  
 smoothscroll.polyfill(); // enable smooth scroll on safari

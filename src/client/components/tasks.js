@@ -7,7 +7,7 @@ import React from 'react';
 import Document from '../../model/document';
 import { ENTITY_TYPE } from '../../model/element/entity-type';
 import { BASE_URL } from '../../config';
-import { makeClassList } from '../../util';
+import { makeClassList } from '../dom';
 import { NativeShare, isNativeShareSupported } from './native-share';
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete', 'associate' ];

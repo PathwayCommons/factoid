@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
-import { tryPromise } from './promise';
-import { checkHTTPStatus } from './fetch';
+import { tryPromise } from '../util/promise';
+import { checkHTTPStatus } from '../util/fetch';
 
 function convertDocumentToBiopax(docId, baseUrl = '') {
   let SERVER_URL = baseUrl + `/api/document/biopax/${docId}`;

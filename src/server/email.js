@@ -1,8 +1,8 @@
 /** N.b. this can only be run on the server */
 
 import _ from 'lodash';
-import { tryPromise } from './promise';
-import logger from '../server/logger';
+import { tryPromise } from '../util/promise';
+import logger from './logger';
 
 import {
   BASE_URL,

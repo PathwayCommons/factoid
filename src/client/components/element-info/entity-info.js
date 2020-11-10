@@ -12,8 +12,10 @@ import { isComplex, isGGP, ELEMENT_TYPE } from '../../../model/element/element-t
 import RelatedPapers from '../related-papers';
 import Organism from '../../../model/organism';
 
+import { makeClassList, focusDomElement } from '../../dom';
+
 import {
-  focusDomElement, makeClassList, initCache, SingleValueCache,
+  initCache, SingleValueCache,
   makeCancelable, stringDistanceMetric
 } from '../../../util';
 

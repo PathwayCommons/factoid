@@ -2,7 +2,7 @@ import EventEmitter from 'eventemitter3';
 
 import { TaskView } from '../tasks';
 import Popover from '../popover/popover';
-import { makeClassList } from '../../../util';
+import { makeClassList } from '../../dom';
 import h from 'react-hyperscript';
 
 export const Submit = props => {

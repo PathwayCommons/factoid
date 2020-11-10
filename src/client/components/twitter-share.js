@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import TextareaAutosize from 'react-autosize-textarea';
 
-import { focusDomElement, makeClassList } from '../../util';
+import { focusDomElement, makeClassList } from '../dom';
 import { TWITTER_ACCOUNT_NAME, MAX_TWEET_LENGTH, DEMO_CAN_BE_SHARED, DEMO_ID, DEMO_CAN_BE_SHARED_MULTIPLE_TIMES } from '../../config';
 
 class TwitterShare extends DataComponent {

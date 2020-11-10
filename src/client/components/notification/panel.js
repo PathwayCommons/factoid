@@ -2,7 +2,7 @@ import DataComponent from '../data-component';
 import h from 'react-hyperscript';
 
 import InlineNotification from './inline';
-import { makeClassList } from '../../../util';
+import { makeClassList } from '../../dom';
 
 // WIP
 class NotificationPanel extends DataComponent {

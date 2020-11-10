@@ -25,6 +25,8 @@ let chosenTypeCache = new WeakMap();
 let nameNotificationCache = new SingleValueCache();
 let assocNotificationCache = new SingleValueCache();
 
+const isSameGrounding = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
+
 class EntityInfo extends DataComponent {
   constructor( props ){
     super( props );
@@ -450,6 +452,7 @@ class EntityInfo extends DataComponent {
         let isOrgMatch = m => isPerfectNameMatch(m) && !isChemicalMatch(m);
         let orgMatches = s.matches.filter(isOrgMatch);
         let orgToMatches = new Map();
+        let orgDropDownMatches = [];
 
         orgMatches.forEach(om => {
           let org = om.organism;
@@ -465,9 +468,24 @@ class EntityInfo extends DataComponent {
           arr.push(om);
         });
 
-        orgMatches = _.sortBy(orgMatches, m => m.organismName);
-
+        const orgIds = Array.from(orgToMatches.keys());
         const selectedOrg = assoc ? assoc.organism : null;
+
+        orgIds.forEach(orgId => {
+          const oms = orgToMatches.get(orgId);
+          let om = oms[0]; // first by default
+
+          // use the selected grounding as the top-level org dropdown id, if possible
+          oms.forEach(omi => {
+            if( assoc && isSameGrounding(omi, assoc) ){
+              om = omi;
+            }
+          });
+
+          orgDropDownMatches.push(om);
+        });
+
+        orgDropDownMatches = _.sortBy(orgDropDownMatches, m => m.organismName);
 
         const getSelectDisplay = (om, includeName = false) => {
           // const matches = orgToMatches.get(om.organism) || [];
@@ -486,37 +504,34 @@ class EntityInfo extends DataComponent {
           return `${om.name} : ` + sortedSyns.slice(0, 3).join(', ');
         };
 
-        organism = h('div.entity-info-section.entity-info-organism-refinement', [
-          h('span.entity-info-title', 'Organism'),
-          h('select.entity-info-organism-dropdown', {
-            value: `${m.namespace}:${m.id}`,
-            onChange: e => {
-              const val = e.target.value;
-              const [ns, id] = val.split(':');
-              const om = s.matches.find(match => match.namespace === ns && match.id === id);
+        if( orgMatches.length > 1 ){
+          organism = h('div.entity-info-section.entity-info-organism-refinement', [
+            h('span.entity-info-title', 'Organism'),
+            h('select.entity-info-organism-dropdown', {
+              value: `${m.namespace}:${m.id}`,
+              onChange: e => {
+                const val = e.target.value;
+                const [ns, id] = val.split(':');
+                const om = s.matches.find(match => match.namespace === ns && match.id === id);
 
-              if( om ){
-                this.associate(om);
-              } else {
-                this.enableManualMatchMode();
+                if( om ){
+                  this.associate(om);
+                } else {
+                  this.enableManualMatchMode();
+                }
               }
-            }
-          }, orgMatches.map((om) => {
-            const value = `${om.namespace}:${om.id}`;
-            const orgMatches = orgToMatches.get(om.organism);
-            const multOrgMatches = orgMatches.length > 1;
-            const isFirstOrgMatch = orgMatches[0].id === om.id && orgMatches[0].namespace === om.namespace;
+            }, orgDropDownMatches.map((om) => {
+              const value = `${om.namespace}:${om.id}`;
 
-            if( multOrgMatches && !isFirstOrgMatch ){
-              return null;
-            }
-
-            return h('option', { value }, getSelectDisplay(om));
-          }).concat([
-            // selectedIndex < 0 ? h('option', { value: -1 }, getSelectDisplay(m, true)) : null,
-            h('option', { value: -2 }, 'Other')
-          ]))
-        ]);
+              return h('option', { value }, getSelectDisplay(om));
+            }).concat([
+              // selectedIndex < 0 ? h('option', { value: -1 }, getSelectDisplay(m, true)) : null,
+              h('option', { value: -2 }, 'Other')
+            ]))
+          ]);
+        } else {
+          organism = null;
+        }
 
         if( assoc && selectedOrg ){
           const ambigGrs = orgToMatches.get(selectedOrg);
@@ -551,7 +566,7 @@ class EntityInfo extends DataComponent {
         }
       }
 
-      let body = assocDisp[ m.type ]( m, searchTerms, !showRefinement );
+      let body = assocDisp[ m.type ]( m, searchTerms, false );
 
       let post = [];
 
@@ -653,7 +668,7 @@ class EntityInfo extends DataComponent {
                   this.disableManualMatchMode();
                   this.associate( m );
                 }
-              }, targetFromAssoc( m, isCurrentMatch ).concat( isCurrentMatch ? h('span.entity-info-match-current-indicator', 'Current match') : null )),
+              }, targetFromAssoc( m, isCurrentMatch ).concat( isCurrentMatch ? h('span.entity-info-match-current-indicator', 'Selected') : null )),
               assocDisp.link( m )
             ]);
           }),

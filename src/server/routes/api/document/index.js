@@ -1238,8 +1238,8 @@ const emailRelatedPaperAuthors = async doc => {
     const email = EMAIL_RELPPRS_CONTACT ? contact.email[0] : EMAIL_ADMIN_ADDR;
     const name = contact.name;
 
-    // TODO RPN enable to prevent duplicate sending
-    // doc.relatedPapersNotified(true);
+    // prevent duplicate sending
+    doc.relatedPapersNotified(true);
 
     const mailOpts =  await msgFactory(EMAIL_TYPE_REL_PPR_NOTIFICATION, doc, {
       to: EMAIL_RELPPRS_CONTACT ? email : EMAIL_ADMIN_ADDR, //must explicitly turn off

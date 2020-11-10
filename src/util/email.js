@@ -15,7 +15,8 @@ import {
   EMAIL_TYPE_INVITE,
   EMAIL_TYPE_FOLLOWUP,
   EMAIL_TYPE_REQUEST_ISSUE,
-  EMAIL_TYPE_REL_PPR_NOTIFICATION
+  EMAIL_TYPE_REL_PPR_NOTIFICATION,
+  MAILJET_TMPLID_REL_PPR
 } from '../config' ;
 
 const msgFactory = ( emailType, doc, info = {} ) => {
@@ -69,15 +70,16 @@ const msgFactory = ( emailType, doc, info = {} ) => {
       break;
     case EMAIL_TYPE_REL_PPR_NOTIFICATION:
       _.set( data, ['to'], _.get(info, ['to']) );
-      _.set( data, ['template', 'vars'], { // TODO RPN this may need to be reconfigured; also need an existing mj template
+      _.set( data, ['template', 'id'], MAILJET_TMPLID_REL_PPR );
+      _.set( data, ['template', 'vars'], { // TODO RPN this may need to be reconfigured
         publicUrl,
-        name: info.name, // of related paper
+        name: info.name, // of author of related paper
         authorsAbbreviation, // of factoid
         paperTitle: _.get(info.paper, ['pubmed', 'title']),
         hasNovelInteraction: info.novelIntns.length > 0,
         novelInteraction: info.novelIntns.length > 0 ? info.novelIntns[0].toString() : ''
       });
-      logger.info(`Sending email with template (excl. defaults)`, data); // TODO RPN remove
+      logger.info(`Sending related papers email with template (excl. defaults)`, data); // TODO RPN remove
       break;
   }
 

@@ -1,7 +1,7 @@
 import DirtyComponent from '../dirty-component';
 import h from 'react-hyperscript';
 import NotificationBase from './base';
-import { makeClassList } from '../../../util';
+import { makeClassList } from '../../dom';
 
 class CornerNotification extends DirtyComponent {
   constructor(props){

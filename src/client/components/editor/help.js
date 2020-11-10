@@ -1,5 +1,5 @@
 import h from 'react-hyperscript';
-import { makeClassList } from '../../../util';
+import { makeClassList } from '../../dom';
 
 export const Help = props => {
   const { showHelp, controller, document } = props;

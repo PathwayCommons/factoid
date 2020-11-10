@@ -8,8 +8,9 @@ import Document from '../../../../model/document';
 
 import { convertDocumentToBiopax,
         convertDocumentToJson,
-        convertDocumentToSbgn,
-        checkHTTPStatus } from '../../../../util';
+        convertDocumentToSbgn } from '../../../document-util';
+
+import { checkHTTPStatus } from '../../../../util';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 const CHUNK_SIZE = 20;

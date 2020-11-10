@@ -2,7 +2,7 @@ import h from 'react-hyperscript';
 import { Component } from 'react';
 import { DOI_LINK_BASE_URL, PUBMED_LINK_BASE_URL, GOOGLE_SCHOLAR_BASE_URL } from '../../../config';
 // import { Carousel, CAROUSEL_CONTENT } from '../carousel';
-import { makeClassList } from '../../../util';
+import { makeClassList } from '../../dom';
 import ElementInfo from '../element-info/element-info';
 import RelatedPapers from '../related-papers';
 

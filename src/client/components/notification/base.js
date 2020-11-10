@@ -1,6 +1,6 @@
 import DirtyComponent from '../dirty-component';
 import h from 'react-hyperscript';
-import { makeClassList } from '../../../util';
+import { makeClassList } from '../../dom';
 
 /**
  * A base component for notifications.  A concrete component should contain a NotifcationBase.

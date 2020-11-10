@@ -9,7 +9,8 @@ import { DocumentManagementDocumentComponent } from './document-management-compo
 import logger from '../logger';
 import DirtyComponent from './dirty-component';
 import Document from '../../model/document';
-import { makeClassList, tryPromise } from '../../util';
+import { tryPromise } from '../../util';
+import { makeClassList } from '../dom';
 import Popover from './popover/popover';
 import { checkHTTPStatus } from '../../util';
 import { RequestForm } from './home';

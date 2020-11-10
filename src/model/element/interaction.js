@@ -22,6 +22,7 @@ const makeAssociation = ( type, intn ) => {
 const DEFAULTS = Object.freeze({
   type: TYPE,
   association: INTERACTION_TYPE.INTERACTION.value,
+  novel: false,
   entries: [] // used by elementSet
 });
 
@@ -177,6 +178,21 @@ class Interaction extends Element {
     return this.participantsOf( type, (t1, t2) => t1 !== t2 );
   }
 
+  setNovel( novel ) {
+    let currVal = this.isNovel();
+    if ( currVal == novel ) {
+      return Promise.resolve();
+    }
+
+    let update = this.update({
+      novel
+    });
+
+    this.emit( 'novel', novel, currVal );
+
+    return update;
+  }
+
   associate( interactionType ){
     let type = makeAssociation( interactionType, this );
     let oldType = makeAssociation( this.syncher.get('association'), this );
@@ -219,6 +235,10 @@ class Interaction extends Element {
 
   associated(){
     return this.syncher.get('association') != null;
+  }
+
+  isNovel(){
+    return this.syncher.get('novel') == true;
   }
 
   json(){

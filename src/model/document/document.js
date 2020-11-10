@@ -436,6 +436,21 @@ class Document {
     }
   }
 
+  referencedPapers( papersData ){
+    if( papersData ){
+      let p = this.syncher.update({ 'referencedPapers': papersData });
+      this.emit( 'referencedPapers', papersData );
+      return p;
+    }
+    else if( !papersData ){
+      return this.syncher.get( 'referencedPapers' );
+    }
+  }
+
+  relatedPapersNotified(newVal){
+    return !!this.rwMeta('relatedPapersNotified', newVal);
+  }
+
   status( field ){
     if( field && _.includes( _.values( DOCUMENT_STATUS_FIELDS ), field ) ){
       let p = this.syncher.update({ 'status': field });

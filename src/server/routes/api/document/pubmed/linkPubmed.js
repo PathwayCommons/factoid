@@ -20,8 +20,17 @@ const DEFAULT_ELINK_PARAMS = {
   linkname: undefined
 };
 
-const data2UidList = ( json, maxPerLink ) => {
-  const { ids, linksetdbs = [] } =  _.get( json, ['linksets', '0'] );
+/**
+ * elink2UidList
+ * Retrieve PubMed uids from the ELINK response
+ * @param {Object} json The ELINK response
+ * @param {Object} linknames The list linknames to consider
+ * @param {number} maxPerLink Take this top number of uids for any one subset (dbfrom_db_subset)
+ * @return {Object} The array of PubMed uids
+ */
+const elink2UidList = ( json, linknames, maxPerLink = DEFAULT_MAX_PER_LINK ) => {
+  let { ids, linksetdbs = [] } =  _.get( json, ['linksets', '0'] );
+  if( linknames ) linksetdbs = linksetdbs.filter( linksetdb => _.includes( linknames, linksetdb.linkname ) );
   const links =  linksetdbs.map( linksetdb => _.take( _.get( linksetdb, ['links'] ), maxPerLink ) );
   let uids = _.flatten( links );
   uids = _.uniq( uids ); // Remove redundancy
@@ -50,20 +59,4 @@ const eLink = opts => {
   .then( response => response.json() );
 };
 
-/**
- * db2pubmed
- * Retrieve PubMed uids for one or more uids from the source database
- * @param {Object} uids Array of strings that represent PubMed uids
- * @param {string} dbfrom The database (e.g. gene, protein) from which the uids are derived
- * @param {string} reldate Restrict to uids to those with Publication Date within the last n days
- * @param {string} term Text query used to limit the set of unique identifiers (UIDs) returned, similar to the search string you would put into an Entrez database’s web interface.
- * @param {number} maxPerLink Take this top number of uids for any one subset (dbfrom_db_subset)
- * @return {Object} The array of PubMed uids
- */
-const db2pubmed = ({ uids, db, reldate, term, maxPerLink = DEFAULT_MAX_PER_LINK }) => {
-  const id = uids.join(',');
-  return  eLink( { id, dbfrom: db, reldate, term } )
-    .then( data => data2UidList( data, maxPerLink ) );
-};
-
-export { eLink, db2pubmed };
+export { eLink, elink2UidList };

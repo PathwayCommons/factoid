@@ -34,15 +34,18 @@ import { BASE_URL,
   MAX_TWEET_LENGTH,
   DEMO_CAN_BE_SHARED,
   DOCUMENT_IMAGE_PADDING,
+  EMAIL_ADMIN_ADDR,
+  EMAIL_RELPPRS_CONTACT,
   EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP,
   MIN_RELATED_PAPERS,
-  SEMANTIC_SEARCH_LIMIT
+  SEMANTIC_SEARCH_LIMIT,
+  EMAIL_TYPE_REL_PPR_NOTIFICATION
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
-import { db2pubmed } from './pubmed/linkPubmed';
+import { eLink, elink2UidList } from './pubmed/linkPubmed';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import { docs2Sitemap } from '../../../sitemap';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -1220,6 +1223,60 @@ const checkApiKey = (apiKey) => {
   }
 };
 
+const getNovelInteractions = async doc => {
+  // n.b. will be empty if we haven't yet queried for related papers
+  return doc.interactions().filter(intn => intn.isNovel());
+};
+
+const emailRelatedPaperAuthors = async doc => {
+  if( doc.relatedPapersNotified() ){ return; } // bail out if already notified
+
+  const getContact = paper => _.get(paper, ['pubmed', 'authors', 'contacts', 0]);
+
+  const hasContact = paper => getContact(paper) != null;
+
+  const sendEmail = async (paper, novelIntns) => {
+    const contact = getContact(paper);
+    const email = EMAIL_RELPPRS_CONTACT ? contact.email[0] : EMAIL_ADMIN_ADDR;
+    const name = contact.name;
+
+    // prevent duplicate sending
+    doc.relatedPapersNotified(true);
+
+    const mailOpts =  await msgFactory(EMAIL_TYPE_REL_PPR_NOTIFICATION, doc, {
+      to: EMAIL_RELPPRS_CONTACT ? email : EMAIL_ADMIN_ADDR, //must explicitly turn off
+      name,
+      paper,
+      novelIntns
+    });
+
+    // Sending blocked by default, otherwise set EMAIL_ENABLED=true
+    await sendMail(mailOpts);
+
+    logger.info(`Related paper notification email for doc ${doc.id()} sent to ${name} at ${email} with ${novelIntns.length} novel interactions`);
+  };
+
+  // TODO RPN use semantic search score etc. in future
+  // just send to all for now, as we already have a small cutoff at 30
+  const paperIsGoodFit = async paper => true; // eslint-disable-line
+
+  const getSendablePapers = async papers => {
+    const isGoodFit = await Promise.all(papers.map(paperIsGoodFit));
+
+    return papers.filter((paper, i) => isGoodFit[i] && hasContact(paper));
+  };
+
+  const novelIntns = await getNovelInteractions(doc);
+
+  const papers = await getSendablePapers(doc.referencedPapers());
+
+  logger.info(`Sending related paper notifications for doc ${doc.id()} with ${papers.length} papers`);
+
+  await Promise.all(papers.map(async paper => sendEmail(paper, novelIntns)));
+
+  logger.info(`Related paper notifications complete for ${papers.length} emails`);
+};
+
 /**
  * @swagger
  *
@@ -1435,7 +1492,16 @@ http.patch('/:id/:secret', function( req, res, next ){
     return;
   };
 
-  const sendFollowUpNotification = async doc => await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
+  const sendFollowUpNotification = async doc => {
+    await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
+    await emailRelatedPaperAuthors( doc );
+  };
+
+  const onDocPublic = async doc => {
+    await updateRelatedPapers( doc );
+    await sendFollowUpNotification( doc );
+  };
+
   const tryTweetingDoc = async doc => {
     if ( !doc.hasTweet() ) {
       try {
@@ -1449,9 +1515,8 @@ http.patch('/:id/:secret', function( req, res, next ){
   const handleMakePublicRequest = async doc => {
     await tryMakePublic( doc );
     if( doc.isPublic() ) {
-      updateRelatedPapers( doc );
       await tryTweetingDoc( doc );
-      sendFollowUpNotification( doc );
+      onDocPublic( doc );
     }
   };
 
@@ -1476,6 +1541,7 @@ http.patch('/:id/:secret', function( req, res, next ){
         case 'relatedPapers':
           if( op === 'replace' ){
             await updateRelatedPapers( doc );
+            await emailRelatedPaperAuthors( doc );
           }
           break;
       }
@@ -1608,6 +1674,7 @@ const updateRelatedPapers = async doc => {
 
 const getRelPprsForDoc = async doc => {
   let papers = [];
+  let referencedPapers = [];
 
   try {
     logger.info(`Updating document-level related papers for doc ${doc.id()}`);
@@ -1615,16 +1682,29 @@ const getRelPprsForDoc = async doc => {
     const { pmid } = doc.citation();
 
     if( pmid ){
-      const pmids = await db2pubmed({ uids: [pmid] });
-      let rankedDocs = await indra.semanticSearch({ query: pmid, documents: pmids });
+      const elinkResponse = await eLink( { id: [pmid] } );
+
+      // For .relatedPapers
+      const documents = elink2UidList( elinkResponse );
+      let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
       const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
-      const { PubmedArticleSet } = await fetchPubmed({ uids });
-      papers = PubmedArticleSet
+      const relatedPapersResponse = await fetchPubmed({ uids });
+      papers = _.get( relatedPapersResponse, 'PubmedArticleSet', [] )
         .map( getPubmedCitation )
         .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
+
+      // For .referencedPapers
+      const referencedPaperUids = elink2UidList( elinkResponse, ['pubmed_pubmed_refs'], 100 );
+      if( referencedPaperUids.length ){
+        const referencedPapersResponse = await fetchPubmed({ uids: referencedPaperUids });
+        referencedPapers = _.get( referencedPapersResponse, 'PubmedArticleSet', [] )
+          .map( getPubmedCitation )
+          .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
+      }
     }
 
     doc.relatedPapers( papers );
+    doc.referencedPapers( referencedPapers );
     logger.info(`Finished updating document-level related papers`);
     return doc;
 
@@ -1652,9 +1732,16 @@ const getRelatedPapersForNetwork = async doc => {
         entities: el.isEntity() ? [ template ] : []
       };
 
-      const indraRes = await indra.searchDocuments({ templates, doc });
+      let indraRes = await indra.searchDocuments({ templates, doc });
+      indraRes = indraRes || [];
 
-      el.relatedPapers( indraRes || [] );
+      if ( el.isInteraction() ) {
+        if ( indraRes.length == 0 ) {
+          el.setNovel( true );
+        }
+      }
+
+      el.relatedPapers( indraRes );
     };
 
     await Promise.all([ ...els.map(getRelPprsForEl) ]);

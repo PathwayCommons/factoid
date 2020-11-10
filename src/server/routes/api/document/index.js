@@ -1223,12 +1223,14 @@ const checkApiKey = (apiKey) => {
   }
 };
 
-// TODO RPN
-const getNovelInteractions = async doc => { // eslint-disable-line
-  return [];
+const getNovelInteractions = async doc => {
+  // n.b. will be empty if we haven't yet queried for related papers
+  return doc.interactions().filter(intn => intn.isNovel());
 };
 
 const emailRelatedPaperAuthors = async doc => {
+  if( doc.relatedPapersNotified() ){ return; } // bail out if already notified
+
   const getContact = paper => _.get(paper, ['pubmed', 'authors', 'contacts', 0]);
 
   const hasContact = paper => getContact(paper) != null;
@@ -1492,7 +1494,7 @@ http.patch('/:id/:secret', function( req, res, next ){
 
   const sendFollowUpNotification = async doc => {
     await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
-    if( !doc.relatedPapersNotified() ) await emailRelatedPaperAuthors( doc );
+    await emailRelatedPaperAuthors( doc );
   };
 
   const onDocPublic = async doc => {
@@ -1539,7 +1541,7 @@ http.patch('/:id/:secret', function( req, res, next ){
         case 'relatedPapers':
           if( op === 'replace' ){
             await updateRelatedPapers( doc );
-            if( !doc.relatedPapersNotified() ) await emailRelatedPaperAuthors( doc );
+            await emailRelatedPaperAuthors( doc );
           }
           break;
       }

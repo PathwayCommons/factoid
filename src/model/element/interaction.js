@@ -22,6 +22,7 @@ const makeAssociation = ( type, intn ) => {
 const DEFAULTS = Object.freeze({
   type: TYPE,
   association: INTERACTION_TYPE.INTERACTION.value,
+  novel: false,
   entries: [] // used by elementSet
 });
 

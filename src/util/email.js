@@ -1,5 +1,8 @@
+/** N.b. this can only be run on the server */
+
 import _ from 'lodash';
 import { tryPromise } from './promise';
+import logger from '../server/logger';
 
 import {
   BASE_URL,
@@ -74,7 +77,7 @@ const msgFactory = ( emailType, doc, info = {} ) => {
         hasNovelInteraction: info.novelIntns.length > 0,
         novelInteraction: info.novelIntns.length > 0 ? info.novelIntns[0].toString() : ''
       });
-      console.log(`Sending email with template (excl. defaults)`, data); // TODO RPN remove
+      logger.info(`Sending email with template (excl. defaults)`, data); // TODO RPN remove
       break;
   }
 

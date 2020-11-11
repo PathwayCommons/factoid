@@ -3,6 +3,7 @@
 import _ from 'lodash';
 import { tryPromise } from '../util/promise';
 import logger from './logger';
+import { stripFinalPeriod } from '../util';
 
 import {
   BASE_URL,
@@ -31,6 +32,7 @@ const msgFactory = ( emailType, doc, info = {} ) => {
   const publicUrl =  `${BASE_URL}${doc.publicUrl()}`;
   const imageUrl = `${BASE_URL}/api${doc.publicUrl()}.png`;
   const authorsAbbreviation = _.get(doc.citation(), ['authors', 'abbreviation']);
+  const firstAuthorEtAl = _.get(doc.citation(), ['authors', 'authorList', 0, 'name']) + ' et al.';
 
   const DEFAULTS = {
     from: {
@@ -75,7 +77,8 @@ const msgFactory = ( emailType, doc, info = {} ) => {
         publicUrl,
         name: info.name, // of author of related paper
         authorsAbbreviation, // of factoid
-        paperTitle: _.get(info.paper, ['pubmed', 'title']),
+        firstAuthorEtAl, // of factoid
+        paperTitle: stripFinalPeriod(_.get(info.paper, ['pubmed', 'title'])),
         hasNovelInteraction: info.novelIntns.length > 0,
         novelInteraction: info.novelIntns.length > 0 ? info.novelIntns[0].toString() : ''
       });

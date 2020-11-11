@@ -75,7 +75,8 @@ const getEmail = author => {
 const getContact = author => {
   const email = getEmail( author );
   const name = getAuthorName( author );
-  return { name, email };
+  const { ForeName, LastName } = getAuthorNameParts( author );
+  return { name, email, ForeName, LastName };
 };
 
 // Always show the last author

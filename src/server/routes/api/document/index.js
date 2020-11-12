@@ -1274,7 +1274,7 @@ const emailRelatedPaperAuthors = async doc => {
     return isWithinInterval( paperDate, { start: dateYearsAgo, end: dateNow } );
   };
 
-  const paperIsGoodFit = async paper => notReviewPaper( paper ) && publishedNYearsAgo( paper );
+  const paperIsGoodFit = async paper => publishedNYearsAgo( paper ) && notReviewPaper( paper );
 
   const byPaperDate = (a, b) => {
     const getISODate = p => _.get( p, ['pubmed', 'ISODate'] );

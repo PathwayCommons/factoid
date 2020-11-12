@@ -135,7 +135,9 @@ const toISODate = ( year, month, day ) => {
 };
 
 const getPubDate = JournalIssue => {
-  let year, month, day,
+  let year= null,
+  month = null,
+  day = null,
   ISODate = null;
 
   const PubDate = _.get( JournalIssue, ['PubDate'] );

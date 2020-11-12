@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { parse as dateParse } from 'date-fns';
 
 const NUM_AUTHORS_SHOWING = 4;
 
@@ -111,28 +112,51 @@ const getJournalNameString = Journal => {
   return name;
 };
 
-const getPubDateYear = JournalIssue => {
-  const hasMedlineDate = _.has( JournalIssue, ['PubDate', 'MedlineDate'] );
-  const hasPubYear = !_.isNil( _.get( JournalIssue, ['PubDate', 'Year'] ) );
-  let year;
+const toISODate = ( year, month, day ) => {
+  let dateString = `${year}`;
+  let formatString = 'yyyy';
 
-  if( hasMedlineDate ){
-    year = _.get( JournalIssue, ['PubDate', 'MedlineDate'] );
-  } else if ( hasPubYear ) {
-    year = _.get( JournalIssue, ['PubDate', 'Year'] );
-  } else {
-    year = '';
+  if( month ){
+    dateString += ` ${month}`;
+
+    if( /^[0-9]{2}$/.test( month ) ){
+      formatString += ` MM`;
+    } else {
+      formatString += ` LLL`;
+    }
   }
 
-  return year && `(${year})`;
+  if( day ){
+    formatString += ` dd`;
+    dateString += ` ${day}`;
+  }
+  const ISODate = dateParse( dateString, formatString, new Date() );
+  return ISODate;
+};
+
+const getPubDate = JournalIssue => {
+  let year, month, day,
+  ISODate = null;
+
+  const PubDate = _.get( JournalIssue, ['PubDate'] );
+  const hasMedlineDate = _.has( PubDate, ['MedlineDate'] );
+
+  if( !hasMedlineDate ){
+    year = _.get( PubDate, ['Year'], null );
+    month = _.get( PubDate, ['Month'], null );
+    day = _.get( PubDate, ['Day'], null );
+    ISODate = toISODate( year, month, day );
+  }
+
+  return { year, month, day, ISODate };
 };
 
 const getReferenceString = Journal => {
   const journalName = getJournalNameString( Journal );
   const JournalIssue = _.get( Journal, ['JournalIssue'] );
   const journalVolume = !_.isNil( _.get( JournalIssue, ['Volume'] ) ) ? _.get( JournalIssue, ['Volume'] ): ''; //optional
-  const pubDateYear = getPubDateYear( JournalIssue );
-  return _.compact( [ journalName, journalVolume, pubDateYear ] ).join(' ') || null;
+  const { year } = getPubDate( JournalIssue );
+  return _.compact( [ journalName, journalVolume, year ] ).join(' ') || null;
 };
 
 const getArticleId = ( PubmedArticle, IdType ) => _.get( _.find( _.get( PubmedArticle, ['PubmedData', 'ArticleIdList'], [] ), [ 'IdType', IdType ] ), 'id', null );
@@ -151,6 +175,7 @@ const getArticleId = ( PubmedArticle, IdType ) => _.get( _.find( _.get( PubmedAr
  * @return {String} result.pmid
  * @return {String} result.doi
  * @return {String} result.pubTypes
+ * @return {String} result.ISODate ({ year, month, day })
  */
 const getPubmedCitation = PubmedArticle => {
   const Article = _.get( PubmedArticle, ['MedlineCitation','Article'] ); //required
@@ -164,8 +189,9 @@ const getPubmedCitation = PubmedArticle => {
   const pmid = getArticleId( PubmedArticle, 'pubmed' );
   const doi = getArticleId( PubmedArticle, 'doi' );
   const pubTypes = _.get( Article, 'PublicationTypeList' ); //required
+  const { ISODate } = getPubDate( _.get( Article, ['Journal', 'JournalIssue'] ) );
 
-  return { title, authors, reference, abstract, pmid, doi, pubTypes };
+  return { title, authors, reference, abstract, pmid, doi, pubTypes, ISODate };
 };
 
 /**

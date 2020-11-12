@@ -1239,7 +1239,7 @@ const emailRelatedPaperAuthors = async doc => {
   const sendEmail = async (paper, novelIntns) => {
     const contact = getContact(paper);
     const email = EMAIL_RELPPRS_CONTACT ? contact.email[0] : EMAIL_ADMIN_ADDR;
-    const name = contact.name;
+    const name = contact.ForeName;
 
     // prevent duplicate sending
     doc.relatedPapersNotified(true);

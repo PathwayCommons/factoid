@@ -46,6 +46,22 @@ const getAbbrevAuthorName = author => {
   return name;
 };
 
+const getAuthorNameParts = author => {
+  let ForeName = null;
+  let LastName = null;
+  const collectiveName = _.get( author, 'CollectiveName' );
+  const isPerson = _.isNull( collectiveName );
+  if( isPerson ){
+    LastName = _.get( author, 'LastName' ); // required
+    ForeName = _.get( author, 'ForeName' ); // required
+    if( ForeName != null ){
+      // Only take the first token (could be 'name initial')
+      ForeName = ForeName.split(' ')[0];
+    }
+  }
+  return { ForeName, LastName };
+};
+
 const getEmail = author => {
   const AffiliationInfo = _.get( author, ['AffiliationInfo'] );
   let email = [];
@@ -59,7 +75,8 @@ const getEmail = author => {
 const getContact = author => {
   const email = getEmail( author );
   const name = getAuthorName( author );
-  return { name, email };
+  const { ForeName, LastName } = getAuthorNameParts( author );
+  return { name, email, ForeName, LastName };
 };
 
 // Always show the last author
@@ -78,8 +95,11 @@ const getContacts = AuthorList => AuthorList.map( getContact ).filter( contact =
 
 const getAuthorList = AuthorList => {
   return AuthorList.map( Author => {
+    const { ForeName, LastName } = getAuthorNameParts( Author );
     return {
       name: getAuthorName( Author ),
+      ForeName,
+      LastName,
       email: _.head( getEmail( Author ) ) || null,
       abbrevName: getAbbrevAuthorName( Author ),
       isCollectiveName: !_.isNull( _.get( Author, 'CollectiveName' ) )

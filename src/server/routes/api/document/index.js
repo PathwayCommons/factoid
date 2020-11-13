@@ -1,5 +1,5 @@
 // TODO swagger comment & docs
-
+import isWithinInterval from 'date-fns/isWithinInterval';
 import Express from 'express';
 import _ from 'lodash';
 import uuid from 'uuid';
@@ -1231,6 +1231,7 @@ const getNovelInteractions = async doc => {
 
 const emailRelatedPaperAuthors = async doc => {
   if( doc.relatedPapersNotified() ){ return; } // bail out if already notified
+  const MAX_AGE_PAPER_YEARS = 5;
 
   const getContact = paper => _.get(paper, ['pubmed', 'authors', 'contacts', 0]);
 
@@ -1259,12 +1260,30 @@ const emailRelatedPaperAuthors = async doc => {
 
   // TODO RPN use semantic search score etc. in future
   // just send to all for now, as we already have a small cutoff at 30
-  const paperIsGoodFit = async paper => true; // eslint-disable-line
+  const notReviewPaper = async paper => {
+    const reviewTypeUI = 'D016454';
+    const pubTypes = _.get( paper, ['pubmed', 'pubTypes'] );
+    const notReview = !_.find( pubTypes, ['UI', reviewTypeUI] );
+    return notReview;
+  };
+
+  const publishedNYearsAgo = ( paper, years = MAX_AGE_PAPER_YEARS ) => {
+    const dateNow = new Date();
+    const dateYearsAgo = ( new Date() ).setFullYear( dateNow.getFullYear() - years );
+    const paperDate = new Date( _.get( paper, ['pubmed', 'ISODate'] ) );
+    return isWithinInterval( paperDate, { start: dateYearsAgo, end: dateNow } );
+  };
+
+  const paperIsGoodFit = async paper => publishedNYearsAgo( paper ) && notReviewPaper( paper );
+
+  const byPaperDate = (a, b) => {
+    const getISODate = p => _.get( p, ['pubmed', 'ISODate'] );
+    return new Date( getISODate( a ) ) - new Date( getISODate( b ) );
+  };
 
   const getSendablePapers = async papers => {
     const isGoodFit = await Promise.all(papers.map(paperIsGoodFit));
-
-    return papers.filter((paper, i) => isGoodFit[i] && hasContact(paper));
+    return papers.filter((paper, i) => isGoodFit[i] && hasContact(paper)).sort( byPaperDate );
   };
 
   const novelIntns = await getNovelInteractions(doc);

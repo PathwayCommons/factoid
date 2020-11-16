@@ -1,5 +1,9 @@
+/** N.b. this can only be run on the server */
+
 import _ from 'lodash';
-import { tryPromise } from './promise';
+import { tryPromise } from '../util/promise';
+import logger from './logger';
+import { stripFinalPeriod } from '../util';
 
 import {
   BASE_URL,
@@ -11,10 +15,12 @@ import {
   MAILJET_TMPLID_REQUEST_ISSUE,
   EMAIL_TYPE_INVITE,
   EMAIL_TYPE_FOLLOWUP,
-  EMAIL_TYPE_REQUEST_ISSUE
+  EMAIL_TYPE_REQUEST_ISSUE,
+  EMAIL_TYPE_REL_PPR_NOTIFICATION,
+  MAILJET_TMPLID_REL_PPR
 } from '../config' ;
 
-const msgFactory = ( emailType, doc ) => {
+const msgFactory = ( emailType, doc, info = {} ) => {
   const { authorEmail } = doc.correspondence();
 
   const {
@@ -25,6 +31,8 @@ const msgFactory = ( emailType, doc ) => {
   const privateUrl = `${BASE_URL}${doc.privateUrl()}`;
   const publicUrl =  `${BASE_URL}${doc.publicUrl()}`;
   const imageUrl = `${BASE_URL}/api${doc.publicUrl()}.png`;
+  const authorsAbbreviation = _.get(doc.citation(), ['authors', 'abbreviation']);
+  const firstAuthorEtAl = _.get(doc.citation(), ['authors', 'authorList', 0, 'name']) + ' et al.';
 
   const DEFAULTS = {
     from: {
@@ -62,7 +70,20 @@ const msgFactory = ( emailType, doc ) => {
         imageUrl,
       });
       break;
-    default:
+    case EMAIL_TYPE_REL_PPR_NOTIFICATION:
+      _.set( data, ['to'], _.get(info, ['to']) );
+      _.set( data, ['template', 'id'], MAILJET_TMPLID_REL_PPR );
+      _.set( data, ['template', 'vars'], { // TODO RPN this may need to be reconfigured
+        publicUrl,
+        name: info.name, // of author of related paper
+        authorsAbbreviation, // of factoid
+        firstAuthorEtAl, // of factoid
+        paperTitle: stripFinalPeriod(_.get(info.paper, ['pubmed', 'title'])),
+        hasNovelInteraction: info.novelIntns.length > 0,
+        novelInteraction: info.novelIntns.length > 0 ? info.novelIntns[0].toString() : ''
+      });
+      logger.info(`Sending related papers email with template (excl. defaults)`, data); // TODO RPN remove
+      break;
   }
 
   const mailOpts = _.defaultsDeep( data, DEFAULTS );

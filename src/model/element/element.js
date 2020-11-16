@@ -94,6 +94,10 @@ class Element {
     return this.syncher.get('id');
   }
 
+  same(otherEle){
+    return this.id() === otherEle.id();
+  }
+
   secret(){
     return this.syncher.get('secret');
   }

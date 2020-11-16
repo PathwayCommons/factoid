@@ -6,10 +6,8 @@ import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
 import queryString from 'query-string';
 
 import Document from '../../model/document';
-import {
-  tryPromise,
-  makeClassList
-} from '../../util';
+import { tryPromise } from '../../util';
+import { makeClassList } from '../dom';
 import logger from '../logger';
 import DirtyComponent from './dirty-component';
 import {
@@ -476,16 +474,14 @@ class DocumentManagementDocumentComponent extends React.Component {
             workingMessage: 'Sending...',
             buttonKey: EMAIL_TYPE_INVITE,
             value: EMAIL_TYPE_INVITE,
-            label: _.capitalize( EMAIL_TYPE_INVITE ),
-            disableWhen: doc.initiated() || doc.trashed()
+            label: _.capitalize( EMAIL_TYPE_INVITE )
           }),
           h( DocumentEmailButtonComponent, {
             params: { doc, apiKey },
             workingMessage: 'Sending...',
             buttonKey: EMAIL_TYPE_FOLLOWUP,
             value: EMAIL_TYPE_FOLLOWUP,
-            label: _.upperFirst( EMAIL_TYPE_FOLLOWUP.replace(/([A-Z])/g, (match, letter) => '-' + letter) ),
-            disableWhen: doc.initiated() || doc.trashed()
+            label: _.upperFirst( EMAIL_TYPE_FOLLOWUP.replace(/([A-Z])/g, (match, letter) => '-' + letter) )
           })
         ]);
       }

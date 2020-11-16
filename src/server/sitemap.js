@@ -4,6 +4,7 @@ import convert from 'xml-js';
 // import logger from './logger';
 import { BASE_URL } from '../config';
 
+const newlineRegex = /(\r\n|\n|\r)/gm;
 const xmlJSopts = { compact: false, ignoreComment: true, spaces: 2 };
 
 // https://www.sitemaps.org/protocol.html
@@ -24,7 +25,8 @@ class Sitemap {
           type: 'element',
           name: 'urlset',
           attributes: {
-            xmlns: 'http://www.sitemaps.org/schemas/sitemap/0.9'
+            'xmlns': 'http://www.sitemaps.org/schemas/sitemap/0.9',
+            'xmlns:image': 'http://www.google.com/schemas/sitemap-image/1.1'
           },
           elements: []
         }
@@ -54,6 +56,15 @@ class Sitemap {
       elements.push( elt );
     };
 
+    const getImageElt = doc => {
+      const imageElt = eltFactory( 'image:image' );
+      const imageLocElt = eltFactory( 'image:loc', {}, `${BASE_URL}/api${doc.publicUrl}.png` );
+      const imageTitleElt = eltFactory( 'image:title', {}, _.get( doc, ['citation', 'title'] ) );
+      const imageCaptionElt = eltFactory( 'image:caption', {}, _.get( doc, 'text', '' ).replace( newlineRegex, ' ' ) );
+      [ imageLocElt, imageTitleElt, imageCaptionElt ].forEach( elt => appendChild( imageElt, elt ) );
+      return imageElt;
+    };
+
     const urlset = getElementByName( this.sitemapJSON, 'urlset' );
 
     this.docs.forEach( doc => {
@@ -62,8 +73,9 @@ class Sitemap {
       const lastmod = eltFactory( 'lastmod', {}, `${doc.lastEditedDate}` );
       const changefreq = eltFactory( 'changefreq', {}, this.changefreq );
       const priority = eltFactory( 'priority', {}, this.priority );
+      const image = getImageElt( doc );
 
-      [ loc, lastmod, changefreq, priority ].forEach( elt => appendChild( url, elt ) );
+      [ loc, lastmod, changefreq, priority, image ].forEach( elt => appendChild( url, elt ) );
       appendChild( urlset, url );
     });
 

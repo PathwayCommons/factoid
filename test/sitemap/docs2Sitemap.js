@@ -33,9 +33,7 @@ describe('docs2Sitemap - Element: <urlset>', function(){
 
     before( () => {
       urls = etree.findall('./url');
-      docUrls = _.filter( urls, url =>{
-        url.findtext('./loc') !== `${BASE_URL}/`;
-      });
+      docUrls = _.filter( urls, url => url.findtext('./loc') !== `${BASE_URL}/` );
     });
 
     it('Should have the correct number of <url> children', () => {
@@ -67,6 +65,23 @@ describe('docs2Sitemap - Element: <urlset>', function(){
       });
       expect( hasBaseUrl ).to.be.true;
     }); // homepage
+
+    //https://support.google.com/webmasters/answer/178636?hl=en&ref_topic=2370565
+    it('Should have the correct <image:image>', () => {
+      docUrls.forEach( url => {
+        const imageLocText = url.findtext('./image:image/image:loc');
+        const hasDocLoc = docsDataJSON.some( docJSON => imageLocText && imageLocText.includes( docJSON.id ) );
+        expect( hasDocLoc ).to.be.true;
+
+        const imageTitleText = url.findtext('./image:image/image:title');
+        const hasDocTitle = docsDataJSON.some( docJSON => docJSON.citation.title === imageTitleText );
+        expect( hasDocTitle ).to.be.true;
+
+        const imageCaptionText = url.findtext('./image:image/image:caption');
+        const hasDocCaption = docsDataJSON.some( docJSON => docJSON.text === imageCaptionText );
+        expect( hasDocCaption ).to.be.true;
+      });
+    }); // image:image
 
   }); // url
 

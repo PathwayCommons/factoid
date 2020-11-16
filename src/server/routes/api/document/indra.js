@@ -17,8 +17,9 @@ import { getPubmedCitation } from '../../../../util/pubmed';
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
 const SORT_BY_DATE = false; // TODO remove
 
-const FETCH_RETRIES = 3;
+const FETCH_RETRIES = 20;
 const FETCH_RETRY_DELAY = 3000;
+const FETCH_RETRY_DELAY_DELTA = 1000;
 
 const SUB_MODIFICATION_TYPES = ['Phosphorylation', 'Dephosphorylation', 'Dephosphorylation',
   'Deubiquitination', 'Methylation', 'Demethylation'];
@@ -38,7 +39,7 @@ let sortByDate = SORT_BY_DATE;
 const fetchRetry = FetchRetry(fetch);
 const fetchRetryUrl = ( url, opts ) => {
   let retryOpts = {
-    retryDelay: FETCH_RETRY_DELAY,
+    retryDelay: FETCH_RETRY_DELAY + Math.round(Math.random() * FETCH_RETRY_DELAY_DELTA),
     retryOn: function( attempt, error, response ) {
       // retry on any network error, or 4xx or 5xx status codes
       const { statusText, status, ok } = response;

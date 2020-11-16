@@ -1,5 +1,5 @@
 // TODO swagger comment & docs
-
+import isWithinInterval from 'date-fns/isWithinInterval';
 import Express from 'express';
 import _ from 'lodash';
 import uuid from 'uuid';
@@ -12,7 +12,8 @@ import fs from 'fs';
 import { URLSearchParams } from  'url';
 
 import { exportToZip, EXPORT_TYPES } from './export';
-import { tryPromise, makeStaticStylesheet, makeCyEles, msgFactory, updateCorrespondence, EmailError, truncateString } from '../../../../util';
+import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
+import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
 import db from '../../../db';
@@ -35,17 +36,20 @@ import { BASE_URL,
   MAX_TWEET_LENGTH,
   DEMO_CAN_BE_SHARED,
   DOCUMENT_IMAGE_PADDING,
+  EMAIL_ADMIN_ADDR,
+  EMAIL_RELPPRS_CONTACT,
   EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP,
   MIN_RELATED_PAPERS,
   SEMANTIC_SEARCH_LIMIT,
   NCBI_EUTILS_BASE_URL,
-  PC_URL
+  PC_URL,
+  EMAIL_TYPE_REL_PPR_NOTIFICATION
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
-import { db2pubmed } from './pubmed/linkPubmed';
+import { eLink, elink2UidList } from './pubmed/linkPubmed';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import { docs2Sitemap } from '../../../sitemap';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -1053,18 +1057,18 @@ const getDocumentJson = id => {
   );
 };
 
-const getDocumentImageBuffer = id => {
+const getDoc = id => {
+  return ( tryPromise( loadTables )
+    .then( json => _.assign( {}, json, { id } ) )
+    .then( loadDoc )
+  );
+};
+
+const getDocumentImageBuffer = doc => {
   const cyStylesheet = makeStaticStylesheet();
   const imageWidth = DOCUMENT_IMAGE_WIDTH;
   const imageHeight = DOCUMENT_IMAGE_HEIGHT;
   const imagePadding = DOCUMENT_IMAGE_PADDING;
-
-  const getDoc = id => {
-    return ( tryPromise( loadTables )
-      .then( json => _.assign( {}, json, { id } ) )
-      .then( loadDoc )
-    );
-  };
 
   const getElesJson = doc => {
     return makeCyEles(doc.elements());
@@ -1091,7 +1095,7 @@ const getDocumentImageBuffer = id => {
 
   const convertToBuffer = base64 => Buffer.from(base64, 'base64');
 
-  return ( tryPromise(() => getDoc(id))
+  return ( tryPromise(() => doc)
     .then(getElesJson)
     .then(getPngImage)
     .then(convertToBuffer)
@@ -1132,21 +1136,35 @@ http.get('/(:id).png', function( req, res, next ){
 
   res.setHeader('content-type', 'image/png');
 
-  if( imageCache.has(id) ){
-    const img = imageCache.get(id);
+  const fillCache = async (doc, lastEditedDate) => {
+    const img = await getDocumentImageBuffer(doc);
+    const cache = { img, lastEditedDate };
 
-    res.send(img);
-  } else {
-    ( tryPromise(() => getDocumentImageBuffer(id))
-      .then(buffer => {
-        imageCache.set(id, buffer);
+    imageCache.set(id, cache);
 
-        return buffer;
-      })
-      .then(buffer => res.send(buffer))
-      .catch( next )
-    );
-  }
+    return cache;
+  };
+
+  const main = async () => {
+    try {
+      const doc = await getDoc(id);
+      const lastEditedDate = '' + doc.lastEditedDate();
+      const cache = imageCache.get(id);
+      const canUseCache = imageCache.has(id) && cache.lastEditedDate === lastEditedDate;
+
+      if( canUseCache ){
+        res.send(cache.img);
+      } else {
+        const cache = await fillCache(doc, lastEditedDate);
+
+        res.send(cache.img);
+      }
+    } catch(err){
+      next(err);
+    }
+  };
+
+  main();
 });
 
 // tweet a document as a card with a caption (text)
@@ -1298,6 +1316,79 @@ const checkApiKey = (apiKey) => {
   if( API_KEY && apiKey != API_KEY ){
     throw new Error(`The specified API key '${apiKey}' is incorrect`);
   }
+};
+
+const getNovelInteractions = async doc => {
+  // n.b. will be empty if we haven't yet queried for related papers
+  return doc.interactions().filter(intn => intn.isNovel());
+};
+
+const emailRelatedPaperAuthors = async doc => {
+  if( doc.relatedPapersNotified() ){ return; } // bail out if already notified
+  const MAX_AGE_PAPER_YEARS = 5;
+
+  const getContact = paper => _.get(paper, ['pubmed', 'authors', 'contacts', 0]);
+
+  const hasContact = paper => getContact(paper) != null;
+
+  const sendEmail = async (paper, novelIntns) => {
+    const contact = getContact(paper);
+    const email = EMAIL_RELPPRS_CONTACT ? contact.email[0] : EMAIL_ADMIN_ADDR;
+    const name = contact.ForeName;
+
+    // prevent duplicate sending
+    doc.relatedPapersNotified(true);
+
+    const mailOpts =  await msgFactory(EMAIL_TYPE_REL_PPR_NOTIFICATION, doc, {
+      to: EMAIL_RELPPRS_CONTACT ? email : EMAIL_ADMIN_ADDR, //must explicitly turn off
+      name,
+      paper,
+      novelIntns
+    });
+
+    // Sending blocked by default, otherwise set EMAIL_ENABLED=true
+    await sendMail(mailOpts);
+
+    logger.info(`Related paper notification email for doc ${doc.id()} sent to ${name} at ${email} with ${novelIntns.length} novel interactions`);
+  };
+
+  // TODO RPN use semantic search score etc. in future
+  // just send to all for now, as we already have a small cutoff at 30
+  const notReviewPaper = async paper => {
+    const reviewTypeUI = 'D016454';
+    const pubTypes = _.get( paper, ['pubmed', 'pubTypes'] );
+    const notReview = !_.find( pubTypes, ['UI', reviewTypeUI] );
+    return notReview;
+  };
+
+  const publishedNYearsAgo = ( paper, years = MAX_AGE_PAPER_YEARS ) => {
+    const dateNow = new Date();
+    const dateYearsAgo = ( new Date() ).setFullYear( dateNow.getFullYear() - years );
+    const paperDate = new Date( _.get( paper, ['pubmed', 'ISODate'] ) );
+    return isWithinInterval( paperDate, { start: dateYearsAgo, end: dateNow } );
+  };
+
+  const paperIsGoodFit = async paper => publishedNYearsAgo( paper ) && notReviewPaper( paper );
+
+  const byPaperDate = (a, b) => {
+    const getISODate = p => _.get( p, ['pubmed', 'ISODate'] );
+    return new Date( getISODate( a ) ) - new Date( getISODate( b ) );
+  };
+
+  const getSendablePapers = async papers => {
+    const isGoodFit = await Promise.all(papers.map(paperIsGoodFit));
+    return papers.filter((paper, i) => isGoodFit[i] && hasContact(paper)).sort( byPaperDate );
+  };
+
+  const novelIntns = await getNovelInteractions(doc);
+
+  const papers = await getSendablePapers(doc.referencedPapers());
+
+  logger.info(`Sending related paper notifications for doc ${doc.id()} with ${papers.length} papers`);
+
+  await Promise.all(papers.map(async paper => sendEmail(paper, novelIntns)));
+
+  logger.info(`Related paper notifications complete for ${papers.length} emails`);
 };
 
 /**
@@ -1591,7 +1682,16 @@ http.patch('/:id/:secret', function( req, res, next ){
     return;
   };
 
-  const sendFollowUpNotification = async doc => await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
+  const sendFollowUpNotification = async doc => {
+    await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
+    await emailRelatedPaperAuthors( doc );
+  };
+
+  const onDocPublic = async doc => {
+    await updateRelatedPapers( doc );
+    await sendFollowUpNotification( doc );
+  };
+
   const tryTweetingDoc = async doc => {
     if ( !doc.hasTweet() ) {
       try {
@@ -1605,9 +1705,8 @@ http.patch('/:id/:secret', function( req, res, next ){
   const handleMakePublicRequest = async doc => {
     await tryMakePublic( doc );
     if( doc.isPublic() ) {
-      updateRelatedPapers( doc );
       await tryTweetingDoc( doc );
-      sendFollowUpNotification( doc );
+      onDocPublic( doc );
     }
   };
 
@@ -1632,6 +1731,7 @@ http.patch('/:id/:secret', function( req, res, next ){
         case 'relatedPapers':
           if( op === 'replace' ){
             await updateRelatedPapers( doc );
+            await emailRelatedPaperAuthors( doc );
           }
           break;
       }
@@ -1773,6 +1873,7 @@ const updateRelatedPapers = async doc => {
 
 const getRelPprsForDoc = async doc => {
   let papers = [];
+  let referencedPapers = [];
 
   try {
     logger.info(`Updating document-level related papers for doc ${doc.id()}`);
@@ -1780,16 +1881,29 @@ const getRelPprsForDoc = async doc => {
     const { pmid } = doc.citation();
 
     if( pmid ){
-      const pmids = await db2pubmed({ uids: [pmid] });
-      let rankedDocs = await indra.semanticSearch({ query: pmid, documents: pmids });
+      const elinkResponse = await eLink( { id: [pmid] } );
+
+      // For .relatedPapers
+      const documents = elink2UidList( elinkResponse );
+      let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
       const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
-      const { PubmedArticleSet } = await fetchPubmed({ uids });
-      papers = PubmedArticleSet
+      const relatedPapersResponse = await fetchPubmed({ uids });
+      papers = _.get( relatedPapersResponse, 'PubmedArticleSet', [] )
         .map( getPubmedCitation )
         .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
+
+      // For .referencedPapers
+      const referencedPaperUids = elink2UidList( elinkResponse, ['pubmed_pubmed_refs'], 100 );
+      if( referencedPaperUids.length ){
+        const referencedPapersResponse = await fetchPubmed({ uids: referencedPaperUids });
+        referencedPapers = _.get( referencedPapersResponse, 'PubmedArticleSet', [] )
+          .map( getPubmedCitation )
+          .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
+      }
     }
 
     doc.relatedPapers( papers );
+    doc.referencedPapers( referencedPapers );
     logger.info(`Finished updating document-level related papers`);
     return doc;
 
@@ -1817,9 +1931,16 @@ const getRelatedPapersForNetwork = async doc => {
         entities: el.isEntity() ? [ template ] : []
       };
 
-      const indraRes = await indra.searchDocuments({ templates, doc });
+      let indraRes = await indra.searchDocuments({ templates, doc });
+      indraRes = indraRes || [];
 
-      el.relatedPapers( indraRes || [] );
+      if ( el.isInteraction() ) {
+        if ( indraRes.length == 0 ) {
+          el.setNovel( true );
+        }
+      }
+
+      el.relatedPapers( indraRes );
     };
 
     await Promise.all([ ...els.map(getRelPprsForEl) ]);

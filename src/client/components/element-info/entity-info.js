@@ -10,9 +10,12 @@ import assocDisp from './entity-assoc-display';
 import CancelablePromise from 'p-cancelable';
 import { isComplex, isGGP, ELEMENT_TYPE } from '../../../model/element/element-type';
 import RelatedPapers from '../related-papers';
+import Organism from '../../../model/organism';
+
+import { makeClassList, focusDomElement } from '../../dom';
 
 import {
-  focusDomElement, makeClassList, initCache, SingleValueCache,
+  initCache, SingleValueCache,
   makeCancelable, stringDistanceMetric
 } from '../../../util';
 
@@ -23,6 +26,8 @@ let associationCache = new WeakMap();
 let chosenTypeCache = new WeakMap();
 let nameNotificationCache = new SingleValueCache();
 let assocNotificationCache = new SingleValueCache();
+
+const isSameGrounding = (g1, g2) => g1.namespace === g2.namespace && g1.id === g2.id;
 
 class EntityInfo extends DataComponent {
   constructor( props ){
@@ -191,7 +196,7 @@ class EntityInfo extends DataComponent {
       name: name,
       limit: s.limit,
       offset: offset,
-      organismCounts: doc.organismCountsJson()
+      organismCounts: doc.organismCountsJson(el) // exclude el from org count (avoids mid typing biases)
     };
 
     if( s.updatePromise ){
@@ -383,11 +388,10 @@ class EntityInfo extends DataComponent {
         nameChildren.push( matchName() );
       }
 
-      if( complete && m.name.toLowerCase() !== s.name.toLowerCase() ){
+      if( m.organism != null ){
         nameChildren.push(
-          h('br'),
-          h('span', '('),
-          matchName(),
+          h('span', ' ('),
+          Organism.fromId(m.organism).name(),
           h('span', ')')
         );
       }
@@ -450,6 +454,7 @@ class EntityInfo extends DataComponent {
         let isOrgMatch = m => isPerfectNameMatch(m) && !isChemicalMatch(m);
         let orgMatches = s.matches.filter(isOrgMatch);
         let orgToMatches = new Map();
+        let orgDropDownMatches = [];
 
         orgMatches.forEach(om => {
           let org = om.organism;
@@ -465,10 +470,24 @@ class EntityInfo extends DataComponent {
           arr.push(om);
         });
 
-        orgMatches = _.sortBy(orgMatches, m => m.organismName);
-
-        const selectedIndex = _.findIndex(orgMatches, match => match.id === m.id && match.namespace === m.namespace);
+        const orgIds = Array.from(orgToMatches.keys());
         const selectedOrg = assoc ? assoc.organism : null;
+
+        orgIds.forEach(orgId => {
+          const oms = orgToMatches.get(orgId);
+          let om = oms[0]; // first by default
+
+          // use the selected grounding as the top-level org dropdown id, if possible
+          oms.forEach(omi => {
+            if( assoc && isSameGrounding(omi, assoc) ){
+              om = omi;
+            }
+          });
+
+          orgDropDownMatches.push(om);
+        });
+
+        orgDropDownMatches = _.sortBy(orgDropDownMatches, m => m.organismName);
 
         const getSelectDisplay = (om, includeName = false) => {
           // const matches = orgToMatches.get(om.organism) || [];
@@ -487,53 +506,48 @@ class EntityInfo extends DataComponent {
           return `${om.name} : ` + sortedSyns.slice(0, 3).join(', ');
         };
 
-        organism = h('div.entity-info-section.entity-info-organism-refinement', [
-          h('span.entity-info-title', 'Organism'),
-          h('select.entity-info-organism-dropdown', {
-            defaultValue: selectedIndex,
-            onChange: e => {
-              const val = e.target.value;
-              const index = parseInt(val);
-              const om = orgMatches[index];
+        if( orgMatches.length > 1 ){
+          organism = h('div.entity-info-section.entity-info-organism-refinement', [
+            h('span.entity-info-title', 'Organism'),
+            h('select.entity-info-organism-dropdown', {
+              value: `${m.namespace}:${m.id}`,
+              onChange: e => {
+                const val = e.target.value;
+                const [ns, id] = val.split(':');
+                const om = s.matches.find(match => match.namespace === ns && match.id === id);
 
-              if( om ){
-                this.associate(om);
-              } else {
-                this.enableManualMatchMode();
+                if( om ){
+                  this.associate(om);
+                } else {
+                  this.enableManualMatchMode();
+                }
               }
-            }
-          }, orgMatches.map((om, index) => {
-            const value = index;
-            const orgMatches = orgToMatches.get(om.organism);
-            const multOrgMatches = orgMatches.length > 1;
-            const isFirstOrgMatch = orgMatches[0].id === om.id && orgMatches[0].namespace === om.namespace;
+            }, orgDropDownMatches.map((om) => {
+              const value = `${om.namespace}:${om.id}`;
 
-            if( multOrgMatches && !isFirstOrgMatch ){
-              return null;
-            }
-
-            return h('option', { value }, getSelectDisplay(om));
-          }).concat([
-            selectedIndex < 0 ? h('option', { value: -1 }, getSelectDisplay(m, true)) : null,
-            h('option', { value: -2 }, 'Other')
-          ]))
-        ]);
+              return h('option', { value }, getSelectDisplay(om));
+            }).concat([
+              // selectedIndex < 0 ? h('option', { value: -1 }, getSelectDisplay(m, true)) : null,
+              h('option', { value: -2 }, 'Other')
+            ]))
+          ]);
+        } else {
+          organism = null;
+        }
 
         if( assoc && selectedOrg ){
           const ambigGrs = orgToMatches.get(selectedOrg);
           const needDisam = ambigGrs && ambigGrs.length > 1;
 
           if( needDisam ){
-            const selectedAmIndex = _.findIndex(ambigGrs, match => match.id === m.id && match.namespace === m.namespace);
-
             disambiguation = h('div.entity-info-section.entity-info-organism-refinement', [
               h('span.entity-info-title', 'Which' + (s.name ? ` ${s.name}` : '') + ''),
               h('select.entity-info-organism-dropdown', {
-                defaultValue: selectedAmIndex,
+                value: `${m.namespace}:${m.id}`,
                 onChange: e => {
                   const val = e.target.value;
-                  const index = parseInt(val);
-                  const om = ambigGrs[index];
+                  const [ns, id] = val.split(':');
+                  const om = s.matches.find(om => om.namespace === ns && om.id === id);
     
                   if( om ){
                     this.associate(om);
@@ -541,20 +555,20 @@ class EntityInfo extends DataComponent {
                     this.enableManualMatchMode();
                   }
                 }
-              }, ambigGrs.map((om, index) => {
-                const value = index;
+              }, ambigGrs.map((om) => {
+                const value = `${om.namespace}:${om.id}`;
     
                 return h('option', { value }, getDisamtDisplay(om));
               }).concat([
-                selectedIndex < 0 ? h('option', { value: -1 }, getSelectDisplay(m, true)) : null,
-                h('option', { value: -2 }, 'Other')
+                // selectedIndex < 0 ? h('option', { value: -1 }, getSelectDisplay(m, true)) : null,
+                h('option', { value: 'other:other' }, 'Other')
               ]))
             ]);
           }
         }
       }
 
-      let body = assocDisp[ m.type ]( m, searchTerms, !showRefinement );
+      let body = assocDisp[ m.type ]( m, searchTerms, false );
 
       let post = [];
 
@@ -656,7 +670,7 @@ class EntityInfo extends DataComponent {
                   this.disableManualMatchMode();
                   this.associate( m );
                 }
-              }, targetFromAssoc( m, isCurrentMatch ).concat( isCurrentMatch ? h('span.entity-info-match-current-indicator', 'Current match') : null )),
+              }, targetFromAssoc( m, isCurrentMatch ).concat( isCurrentMatch ? h('span.entity-info-match-current-indicator', 'Selected') : null )),
               assocDisp.link( m )
             ]);
           }),

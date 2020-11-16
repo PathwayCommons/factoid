@@ -2,7 +2,7 @@ import Modification from './modification';
 
 const VALUE = 'deubiquitination';
 const DISPLAY_VALUE = 'Deubiquitination';
-const EFFECT = 'deubiquitination';
+const EFFECT = 'deubiquitinated';
 
 class Deubiquitination extends Modification {
   constructor( intn ){

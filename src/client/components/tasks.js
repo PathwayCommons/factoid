@@ -1,14 +1,16 @@
+import _ from 'lodash';
 import DataComponent from './data-component';
 import h from 'react-hyperscript';
 import { Component } from 'react';
+import React from 'react';
 
 import Document from '../../model/document';
 import { ENTITY_TYPE } from '../../model/element/entity-type';
 import { BASE_URL } from '../../config';
-import { makeClassList } from '../../util';
+import { makeClassList } from '../dom';
 import { NativeShare, isNativeShareSupported } from './native-share';
 
-const eleEvts = [ 'rename', 'complete', 'uncomplete' ];
+const eleEvts = [ 'rename', 'complete', 'uncomplete', 'associate' ];
 
 let bindEleEvts = (ele, cb) => {
   eleEvts.forEach(evt => {
@@ -22,6 +24,122 @@ let unbindEleEvts = (ele, cb) => {
     ele.removeListener(evt, cb);
   });
 };
+
+class TextEditableComponent extends Component {
+
+  constructor( props ) {
+    super( props );
+    this.textInput = React.createRef();
+    this.placeholderText = props.placeholder || '';
+    this.defaultValue = props.value || this.placeholderText;
+    this.state = {
+      editText: this.defaultValue,
+      submittedText: this.defaultValue,
+      submitted: !!props.value || false
+    };
+    this.wait = props.autosubmit || 0;
+    this.debounceSubmit = _.debounce( this.handleSubmit.bind( this ), this.wait );
+  }
+
+  handleChange ( e ) {
+    this.setState({
+      submitted: false,
+      editText: e.target.value
+    });
+    if( this.props.autosubmit ) this.debounceSubmit();
+  }
+
+  handleSubmit () {
+    const { editText } = this.state;
+    const { cb } = this.props;
+    const newValue = editText && editText.trim();
+    return new Promise( resolve => {
+      this.setState({
+        submittedText: newValue,
+        submitted: !!newValue
+      }, resolve( newValue ) );
+    })
+    .then( cb )
+    .catch( () => {} );
+  }
+
+  reset() {
+    const { submittedText } = this.state;
+    this.setState({
+      editText: submittedText
+    });
+  }
+
+  componentDidMount() {
+    const { autofocus } = this.props;
+    if( autofocus ){
+      this.textInput.current.focus();
+      this.textInput.current.select();
+    }
+  }
+
+  handleKeyDown ( e ) {
+    if ( e.key === 'Escape' ) {
+      this.reset();
+      this.textInput.current.blur();
+    } else if ( e.key === 'Enter' ) {
+      this.textInput.current.blur();
+      this.handleSubmit( e );
+    }
+  }
+
+  handleBlur () {
+    const { editText } = this.state;
+    const isPlaceholderText = editText === this.placeholderText;
+
+    if ( !isPlaceholderText || !this.placeholderText ) {
+      this.handleSubmit();
+    }
+
+    if( this.placeholderText && !editText ){
+      this.setState({ editText: this.placeholderText });
+    }
+  }
+
+  handleFocus ( ) {
+    const { editText } = this.state;
+    const isPlaceholderText = !!this.placeholderText && editText === this.placeholderText;
+    if( isPlaceholderText ){
+      this.setState({ editText: '' });
+    }
+    this.textInput.current.select();
+  }
+
+  render() {
+    const { label, className } = this.props;
+    const { editText, submitted } = this.state;
+
+    return h('div.text-editable', className, [
+      h('label', {
+        htmlFor: `text-editable-${label}`
+      }, [
+        label
+      ]),
+      h('input', {
+        type: 'text',
+        className: makeClassList({
+          'placeholder': editText == this.placeholderText
+        }),
+        value: editText,
+        ref: this.textInput,
+        onChange: e => this.handleChange( e ),
+        onFocus: e => this.handleFocus( e ),
+        onBlur: e => this.handleBlur( e ),
+        onKeyDown: e => this.handleKeyDown( e ),
+        id: `text-editable-${label}`,
+      }),
+      h( 'i.material-icons', {
+        className: makeClassList({ 'show': submitted })
+      }, 'check_circle_outline' )
+    ]);
+  }
+}
+
 
 export class TaskShare extends Component {
   constructor( props ){
@@ -114,36 +232,118 @@ class TaskView extends DataComponent {
   }
 
   render(){
-    let { document, bus } = this.props;
+    let { document, bus, emitter } = this.props;
     let { submitting } = this.state;
     let done = this.props.controller.done();
-    let incompleteEles = this.props.document.elements().filter(ele => {
-      return !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX;
-    });
 
-    let ntfns = incompleteEles.map(ele => {
-      let entMsg = ele => `${ele.name() === '' ? 'unnamed entity' : ele.name() + (ele.completed() ? '' : '') }`;
-      let innerMsg = entMsg(ele);
+    const createTask = ( message, infos ) => {
+      return h('div.task-view-list', [
+        h('div.task-view-header', message),
+        h('div.task-view-items', [
+          h('ul', infos.map( ({ msg, ele }) => h('li', [
+            h('a.plain-link', {
+              onClick: () => bus.emit('opentip', ele)
+            }, msg)
+          ]) ))
+        ])
+      ]);
+    };
 
-      if( ele.isInteraction() ){
-        let participants = ele.participants();
-        innerMsg = `the interaction between ${participants.map(entMsg).join(' and ')}`;
+    let incompleteTasks = () => {
+      let incompleteEles = this.props.document.elements().filter(ele => {
+        return !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX;
+      });
+
+      let taskItemInfos = incompleteEles.map(ele => {
+        let entMsg = ele => `${ele.name() === '' ? 'No name provided' : ele.name() + (ele.completed() ? '' : '') }`;
+        let innerMsg = entMsg(ele);
+
+        if( ele.isInteraction() ){
+          let participants = ele.participants();
+          innerMsg = `the interaction between ${participants.map(entMsg).join(' and ')}`;
+        }
+
+        return { ele, msg: innerMsg };
+      });
+
+      let hasTasks = incompleteEles.length > 0;
+      let tasksMsg = () => {
+        let numIncompleteEles = incompleteEles.length > 50 ? '50+' : incompleteEles.length;
+        if( numIncompleteEles === 0 ){
+          return `You have no outstanding tasks left`;
+        }
+
+        if( numIncompleteEles === 1 ){
+          return `You have 1 incomplete item:`;
+        }
+
+        return `You have ${numIncompleteEles} incomplete items:`;
+      };
+      let message = tasksMsg();
+
+      return hasTasks ? createTask( message, taskItemInfos ) : null;
+    };
+
+    let irregularOrgTasks = () => {
+      let tasks = null;
+      let taskItemEntities = document.irregularOrganismEntities();
+      let numTaskItemEntities = taskItemEntities.length;
+      let hasTasks = numTaskItemEntities > 0;
+
+
+      if ( hasTasks ) {
+        let taskMsg = `You added genes from organisms other than ${document.commonOrganism().name()}:`;
+
+        let getTaskInfo = ele => {
+          let entMsg = ele => `${ele.name()} [${ele.organism().name()}]`;
+          let innerMsg = entMsg(ele);
+          return { ele, msg: innerMsg };
+        };
+
+        let taskItemInfos = taskItemEntities.map( getTaskInfo );
+        tasks = createTask( taskMsg, taskItemInfos );
       }
 
-      return { ele, msg: innerMsg };
-    });
+      return tasks;
+    };
 
-    let tasksMsg = () => {
-      let numIncompleteEles = incompleteEles.length > 50 ? '50+' : incompleteEles.length;
-      if( numIncompleteEles === 0 ){
-        return `You have no outstanding tasks left`;
+    let taskList = () => {
+      let tasks = [ irregularOrgTasks(), incompleteTasks() ];
+      let hasTasks = tasks.some( task => task != null );
+      return hasTasks ? h('div.task-view-task-list', [
+        h('div.task-view-task-list-title', 'Could you double-check the following?'),
+        ...tasks,
+        h('hr')
+      ]): null;
+    };
+
+    // Minimal criteria: > 0 elements
+    let confirm = () => {
+      let taskMsg = 'Are you sure you want to submit?';
+      let taskButton = h('button.salient-button', {
+        disabled: document.trashed(),
+        onClick: () => this.submit()
+      }, 'Yes, submit');
+
+      const entities = document.entities();
+      let hasEntity = entities.length;
+
+      const close = () => emitter.emit('close');
+
+      if( !hasEntity ){
+        taskMsg = 'Please draw your interactions then submit.';
+        taskButton = h('button.salient-button', {
+            onClick: () => {
+              bus.emit('togglehelp');
+              close();
+            }
+          }, 'Show me how');
       }
 
-      if( numIncompleteEles === 1 ){
-        return `You have 1 incomplete item:`;
-      }
-
-      return `You have ${numIncompleteEles} incomplete items:`;
+      return h('div.task-view-confirm', [
+        h('div.task-view-confirm-message', [ taskMsg ]),
+        h('div.task-view-confirm-button-area', [ taskButton ])
+      ]);
     };
 
     if( !done || submitting ){
@@ -154,26 +354,14 @@ class TaskView extends DataComponent {
         h('div.task-view-submit',{
           className: makeClassList({ 'task-view-submitting': submitting })
         }, [
-          incompleteEles.length > 0 ? h('div.task-view-header', tasksMsg()) : null,
-          incompleteEles.length > 0 ? h('div.task-view-items', [
-            h('ul', ntfns.map( ({ msg, ele }) => h('li', [
-              h('a.plain-link', {
-                onClick: () => bus.emit('opentip', ele)
-              }, msg)
-            ]) ))
-          ]) : null,
-          h('div.task-view-confirm', 'Are you sure you want to submit?'),
-          h('div.task-view-confirm-button-area', [
-            h('button.salient-button.task-view-confirm-button', {
-              disabled: document.trashed(),
-              onClick: () => this.submit()
-            }, 'Yes, submit')
-          ])
+          taskList(),
+          confirm()
         ])
       ]);
     } else {
       const publicUrl =  `${BASE_URL}${document.publicUrl()}`;
       const imageUrl = `${BASE_URL}/api${document.publicUrl()}.png`;
+      const provided = document.provided();
       return h('div.task-view', [
         h('div.task-view-done', [
           h('div.task-view-done-title', 'Thank you!' ),
@@ -211,6 +399,20 @@ class TaskView extends DataComponent {
                 ])
               ])
             ])
+          ]),
+          h('hr'),
+          h('div.task-view-done-section', [
+            h('div.task-view-done-section-body', [
+              h('p', 'Optional info'),
+              h( TextEditableComponent, {
+                label: 'Name:',
+                value: _.get( provided, 'name' ),
+                autofocus: true,
+                placeholder: '',
+                autosubmit: 1000,
+                cb: name => document.provided({ name })
+              })
+            ])
           ])
         ])
       ]);
@@ -219,4 +421,4 @@ class TaskView extends DataComponent {
 }
 
 
-export { TaskView };
+export { TaskView, TextEditableComponent };

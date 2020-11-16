@@ -2,6 +2,7 @@ import Element from './element';
 import _ from 'lodash';
 import { tryPromise } from '../../util';
 import { ENTITY_TYPE, getNCBIEntityType } from './entity-type';
+import Organism from '../organism';
 
 const TYPE = 'entity';
 
@@ -155,6 +156,14 @@ class Entity extends Element {
     return update;
   }
 
+  organism(){
+    const assoc = this.association();
+
+    if( !assoc || !assoc.organism ){ return null; } //  no org
+
+    return Organism.fromId(assoc.organism);
+  }
+
   json(){
     return _.assign( {}, super.json(), _.pick( this.syncher.get(), _.keys(DEFAULTS) ) );
   }
@@ -188,7 +197,7 @@ class Entity extends Element {
     if ( orgId ) {
       organism = { id: orgId, db: 'taxonomy' };
     }
-    
+
     let entity = { type, name, xref, organism };
 
     if ( type == ENTITY_TYPE.COMPLEX ) {

@@ -1471,7 +1471,7 @@ const tryVerify = async doc => {
  */
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
-  const { paperId, elements, performLayout, submit, groundEls } = provided;
+  const { paperId, elements=[], performLayout, submit, groundEls } = provided;
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
   const email = _.get( provided, 'email', true );

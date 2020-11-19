@@ -28,6 +28,7 @@ services:
       TWITTER_ACCOUNT_NAME:
       NCBI_EUTILS_API_KEY:
       NODE_OPTIONS:
+      EMAIL_RELPPRS_CONTACT:
   grounding:
     image: pathwaycommons/grounding-search:${GROUNDING_SEARCH_IMAGE_TAG:-latest}
     restart: on-failure

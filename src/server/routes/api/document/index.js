@@ -1666,7 +1666,18 @@ http.get('/biopax/:id', function( req, res, next ){
           .then( () => updateGrounding( _.get( ppts, 1 ) ) );
       } );
 
-      return Promise.all( promises ).then( () => template );
+      let chunks = _.chunk( promises, 10 );
+
+      const handleChunk = i => {
+        if ( i == chunks.length ) {
+          return Promise.resolve();
+        }
+
+        return Promise.all( chunks[i] ).then( () => handleChunk( i + 1 ) );
+      };
+
+      return handleChunk( 0 )
+        .then( () => template );
     } )
     .then( getBiopaxFromTemplates )
     .then( result => result.text() )

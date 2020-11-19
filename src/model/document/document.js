@@ -26,6 +26,10 @@ const DOCUMENT_STATUS_FIELDS = Object.freeze({
   PUBLIC: 'public',
   TRASHED: 'trashed'
 });
+const DOCUMENT_SOURCE_FIELDS = Object.freeze({
+  ADMIN: 'admin',
+  PC: 'pc'
+});
 
 /**
 A document that contains a set of biological elements (i.e. entities and interactions).
@@ -462,6 +466,17 @@ class Document {
     }
   }
 
+  source( field ){
+    if( field && _.includes( _.values( DOCUMENT_SOURCE_FIELDS ), field ) ){
+      let p = this.syncher.update({ 'source': field });
+      this.emit( 'source', field );
+      return p;
+
+    } else if( !field ){
+      return this.syncher.get( 'source' );
+    }
+  }
+
   static statusFields(){ return DOCUMENT_STATUS_FIELDS; }
   initiate(){ return this.status( DOCUMENT_STATUS_FIELDS.INITIATED ); }
   initiated(){ return this.status() === DOCUMENT_STATUS_FIELDS.INITIATED ? true : false; }
@@ -471,6 +486,12 @@ class Document {
   isPublic(){ return this.status() === DOCUMENT_STATUS_FIELDS.PUBLIC ? true : false; }
   trash(){ return this.status( DOCUMENT_STATUS_FIELDS.TRASHED ); }
   trashed(){ return this.status() === DOCUMENT_STATUS_FIELDS.TRASHED ? true : false; }
+
+  static sourceFields(){ return DOCUMENT_SOURCE_FIELDS; }
+  fromAdmin(){ return this.source() === DOCUMENT_SOURCE_FIELDS.ADMIN; }
+  fromPc(){ return this.source() === DOCUMENT_SOURCE_FIELDS.PC; }
+  setAsAdminDoc(){ return this.source( DOCUMENT_SOURCE_FIELDS.ADMIN ); }
+  setAsPcDoc(){ return this.source( DOCUMENT_SOURCE_FIELDS.PC ); }
 
   verified(newVal){
     return this.rwMeta('verified', newVal);

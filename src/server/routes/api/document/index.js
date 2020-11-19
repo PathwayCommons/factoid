@@ -8,8 +8,8 @@ import cytosnap from 'cytosnap';
 import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
-// import url from 'url';
 import fs from 'fs';
+import { URLSearchParams } from  'url';
 
 import { exportToZip, EXPORT_TYPES } from './export';
 import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
@@ -21,6 +21,7 @@ import logger from '../../../logger';
 import { getPubmedArticle } from './pubmed';
 import { createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
 import * as indra from './indra';
+import { get as groundingSearchGet } from '../element-association/grounding-search';
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
   API_KEY,
@@ -42,6 +43,8 @@ import { BASE_URL,
   EMAIL_TYPE_FOLLOWUP,
   MIN_RELATED_PAPERS,
   SEMANTIC_SEARCH_LIMIT,
+  NCBI_EUTILS_BASE_URL,
+  PC_URL,
   EMAIL_TYPE_REL_PPR_NOTIFICATION
  } from '../../../../config';
 
@@ -309,6 +312,97 @@ let getBiopaxFromTemplates = templates => {
     headers: {
       'Content-Type': 'application/json',
       'Accept':'application/vnd.biopax.rdf+xml' }
+  } )
+  .then(handleResponseError);
+};
+
+let getNcbiIdfromRefSeqId = id => {
+  const params = new URLSearchParams();
+  params.append('id', id);
+  params.append('cmd', 'neighbor');
+  params.append('retmode', 'json');
+  params.append('db', 'gene');
+  params.append('dbfrom', 'nuccore');
+  params.append('linkname', 'nuccore_gene');
+
+  return fetch( NCBI_EUTILS_BASE_URL + 'elink.fcgi', {
+    'method': 'POST',
+    'headers': {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    'body': params
+  } )
+  .then(handleResponseError)
+  .then( res => res.json() )
+  .then( js => _.get( js, ['ids', 0] ) );
+};
+
+let getNcbiIdfromHgncSymbol = symbol => {
+  return fetch( PC_URL + 'api/enrichment/validation', {
+    'method': 'POST',
+    'headers': {
+      'Content-Type': 'application/json'
+    },
+    'body': JSON.stringify({
+      'query': [ symbol ],
+      'namespace': 'ncbigene'
+    })
+  } )
+  .then(handleResponseError)
+  .then( res => res.json() )
+  .then( js => {
+    let obj = _.get( js, 'alias' );
+
+    if ( obj ) {
+      return obj[symbol];
+    }
+
+    return null;
+  } );
+};
+
+let getNcbiIdFromUniprotId = id => {
+  let namespace = 'uniprot';
+  return groundingSearchGet( { id, namespace } )
+    .then( res => {
+      let dbXref = _.find( res.dbXrefs, xref => xref.db == 'GeneID' );
+      return _.get( dbXref, 'id', null );
+    } );
+};
+
+let searchByXref = ( xref ) => {
+  let { db, id } = xref;
+  let getNcbiId;
+  if ( db == 'uniprot' ) {
+    getNcbiId = getNcbiIdFromUniprotId;
+  }
+  else if ( db == 'refseq' ) {
+    getNcbiId = getNcbiIdfromRefSeqId;
+  }
+  else if ( db == 'hgnc symbol' ) {
+    getNcbiId = getNcbiIdfromHgncSymbol;
+  }
+
+  if ( getNcbiId != null ) {
+    return getNcbiId( id ).then( ncbiId => {
+      if ( ncbiId == null ) {
+        return Promise.resolve( null );
+      }
+
+      return groundingSearchGet( { id: ncbiId, namespace: 'ncbi' } );
+    } );
+  }
+
+  return null;
+};
+
+let getJsonFromBiopaxUrl = url => {
+  return fetch( BIOPAX_CONVERTER_URL + 'biopax-url-to-json', {
+    method: 'POST',
+    body: url,
+    headers: {
+      'Content-Type': 'text/plain',
+      'Accept':'application/json' }
   } )
   .then(handleResponseError);
 };
@@ -1377,14 +1471,85 @@ const tryVerify = async doc => {
  */
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
-  const { paperId } = provided;
+  const { paperId, elements=[], performLayout, submit, groundEls } = provided;
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
+  const email = _.get( provided, 'email', true );
+  const fromAdmin = _.get( provided, 'fromAdmin', true );
+
+  const elToXref = {};
+  elements.forEach( el => {
+    let xref = el._xref;
+    if ( xref ) {
+      elToXref[ el.id ] = xref;
+    }
+  } );
 
   const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
   const handleDocCreation = async ({ docDb, eleDb }) => {
     if( id === DEMO_ID ) await deleteTableRows( API_KEY, secret );
     return await createDoc({ docDb, eleDb, id, secret, provided });
+  };
+  const addEls = doc => tryPromise( () => doc.fromJson( { elements } ) ).then( () => doc );
+  const handleLayout = doc => {
+    if ( performLayout ) {
+      return tryPromise( () => doc.applyLayout() ).then( () => doc );
+    }
+
+    return doc;
+  };
+  const handleSubmission = doc => {
+    if ( submit ) {
+      return tryPromise( () => doc.submit() ).then( () => doc );
+    }
+
+    return doc;
+  };
+  const handleElGroundings = doc => {
+    const perform = () => {
+      let entities = doc.entities();
+      let intns = doc.interactions();
+
+      let entityPromises = entities.map( entity => {
+        let xref = elToXref[entity.id()];
+        if ( !xref ) {
+          return Promise.resolve();
+        }
+
+        return searchByXref( xref ).then( res => {
+          if( res ) {
+            return entity.associate( res ).then( () => entity.complete() );
+          }
+
+          return Promise.resolve();
+        } );
+      } );
+
+      let intnPromises = intns.map( intn => intn.complete() );
+
+      return Promise.all( [ ...entityPromises, ...intnPromises ] );
+    };
+
+    if ( groundEls ){
+      return tryPromise( () => perform() ).then( () => doc );
+    }
+
+    return doc;
+  };
+  const handleInviteNotification = doc => {
+    if ( email ) {
+      return sendInviteNotification( doc ).then( () => doc );
+    }
+    
+    return doc;
+  };
+  const handleDocSource = doc => {
+    let fcn = () => doc.setAsPcDoc();
+    if ( fromAdmin ){
+      fcn = () => doc.setAsAdminDoc();
+    }
+
+    return fcn().then( () => doc );
   };
   const sendJSONResponse = doc => tryPromise( () => doc.json() )
   .then( json => res.json( json ) )
@@ -1396,9 +1561,14 @@ http.post('/', function( req, res, next ){
     .then( setStatus )
     .then( fillDoc )
     .then( tryVerify )
+    .then( addEls )
+    .then( handleElGroundings )
+    .then( handleLayout )
+    .then( handleDocSource )
+    .then( handleSubmission )
     .then( sendJSONResponse )
     .then( updateRelatedPapers )
-    .then( sendInviteNotification )
+    .then( handleInviteNotification )
     .catch( next );
 });
 
@@ -1683,6 +1853,15 @@ http.get('/text/:id', function( req, res, next ){
     .then( loadDoc )
     .then( doc => doc.toText() )
     .then( txt => res.send( txt ))
+    .catch( next );
+});
+
+http.post('/bp2json', function( req, res, next ){
+  const provided = _.assign( {}, req.body );
+  const { url } = provided;
+  tryPromise( () => getJsonFromBiopaxUrl( url ) )
+    .then( r => r.json() )
+    .then( js => res.json( js ) )
     .catch( next );
 });
 

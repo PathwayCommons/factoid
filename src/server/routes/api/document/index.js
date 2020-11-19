@@ -489,6 +489,10 @@ http.get('/zip/biopax', function( req, res, next ){
   let filePath = 'download/factoid_biopax.zip';
   let idMapping = _.get( queryObject, 'idMapping' ) == 'true';
 
+  if ( idMapping ) {
+    filePath = 'download/factoid_biopax_with_id_mapping.zip';
+  }
+
   const lazyExport = () => {
     let recreate = true;
     if ( fs.existsSync( filePath ) ) {

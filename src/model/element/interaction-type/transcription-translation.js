@@ -48,9 +48,9 @@ class TranscriptionTranslation extends InteractionType {
     return validSrcTypes.includes( sourceType ) && validTgtTypes.includes( targetType );
   }
 
-  toBiopaxTemplate( transform ){
+  toBiopaxTemplate( transform, omitDbXref ){
     if ( !this.validatePpts() ){
-      return this.makeInvalidBiopaxTemplate();
+      return this.makeInvalidBiopaxTemplate( omitDbXref );
     }
 
     //src, tgt shouldn't be null at this point (barring bug)
@@ -64,8 +64,8 @@ class TranscriptionTranslation extends InteractionType {
       return null;
     }
 
-    let srcTemplate = src.toBiopaxTemplate();
-    let tgtTemplate = tgt.toBiopaxTemplate();
+    let srcTemplate = src.toBiopaxTemplate( omitDbXref );
+    let tgtTemplate = tgt.toBiopaxTemplate( omitDbXref );
 
     let template = {
       type: BIOPAX_TEMPLATE_TYPE.EXPRESSION_REGULATION,

@@ -8,7 +8,7 @@ import cytosnap from 'cytosnap';
 import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
-// import url from 'url';
+import url from 'url';
 import fs from 'fs';
 
 import { exportToZip, EXPORT_TYPES } from './export';
@@ -23,6 +23,7 @@ import { createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed'
 import * as indra from './indra';
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
+  GROUNDING_SEARCH_BASE_URL,
   API_KEY,
   DEMO_ID,
   DEMO_SECRET,
@@ -424,7 +425,9 @@ http.get('/zip', function( req, res, next ){
  *             description: Download a zip file containing each Document represented as BioPAX in owl file format.
  */
 http.get('/zip/biopax', function( req, res, next ){
+  const queryObject = url.parse( req.url, true ).query;
   let filePath = 'download/factoid_biopax.zip';
+  let idMapping = _.get( queryObject, 'idMapping' ) == 'true';
 
   const lazyExport = () => {
     let recreate = true;
@@ -441,7 +444,7 @@ http.get('/zip/biopax', function( req, res, next ){
 
     if ( recreate ) {
       let addr = req.protocol + '://' + req.get('host');
-      return exportToZip(addr, filePath, [ EXPORT_TYPES.BP ]);
+      return exportToZip(addr, filePath, [ EXPORT_TYPES.BP ], idMapping);
     }
 
     return Promise.resolve();
@@ -1606,10 +1609,65 @@ http.patch('/:id/:secret', function( req, res, next ){
  */
 http.get('/biopax/:id', function( req, res, next ){
   let id = req.params.id;
+  const queryObject = url.parse( req.url, true ).query;
+  let idMapping = _.get( queryObject, 'idMapping' ) == 'true';
+  let omitDbXref = true;
   tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
-    .then( doc => doc.toBiopaxTemplate() )
+    .then( doc => doc.toBiopaxTemplate( omitDbXref ) )
+    .then( template => {
+      if ( !idMapping ) {
+        return template;
+      }
+
+      const updateGrounding = entityTemplate => {
+        if ( entityTemplate == null ) {
+          return Promise.resolve();
+        }
+
+        let xref = entityTemplate.xref;
+        let { db, id } = xref;
+
+        if ( db !== 'NCBI Gene' ){
+          return Promise.resolve();
+        }
+
+        const opts = {
+          id: [
+            id
+          ],
+          dbfrom: 'ncbigene',
+          dbto: 'uniprot'
+        };
+
+        return fetch( GROUNDING_SEARCH_BASE_URL + '/map', {
+          method: 'POST',
+          body: JSON.stringify( opts ),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        } )
+        .then( res => res.json() )
+        .then( res => {
+          let dbXref = _.get( res, [ 0, 'dbXrefs', 0 ] );
+          if ( dbXref ) {
+            xref.id = dbXref.id;
+            xref.db = dbXref.db;
+          }
+        } );
+      };
+      let intnTemplates = template.interactions;
+      let promises = intnTemplates.map( intnTemplate => {
+        let ppts = intnTemplate.participants;
+        return updateGrounding( intnTemplate.controller )
+          .then( () => updateGrounding( intnTemplate.source ) )
+          .then( () => updateGrounding( _.get( ppts, 0 ) ) )
+          .then( () => updateGrounding( _.get( ppts, 1 ) ) );
+      } );
+
+      return Promise.all( promises ).then( () => template );
+    } )
     .then( getBiopaxFromTemplates )
     .then( result => result.text() )
     .then( owl => res.send( owl ))

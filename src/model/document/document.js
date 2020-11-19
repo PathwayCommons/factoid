@@ -491,7 +491,7 @@ class Document {
     }, _.pick(this.syncher.get(), this.syncher.hasCorrectSecret() ? METADATA_FIELDS: READONLY_METADATA_FIELDS  ));
   }
 
-  toBiopaxIntnTemplates(){
+  toBiopaxIntnTemplates( omitDbXref ){
     let interactions = this.interactions();
     let templates = [];
     let getElById = id => this.elementSet.get(id);
@@ -506,7 +506,7 @@ class Document {
     };
 
     interactions.forEach( intn => {
-      let template = intn.toBiopaxTemplate( transform );
+      let template = intn.toBiopaxTemplate( transform, omitDbXref );
       if (template != null){
         templates.push(template);
       }
@@ -515,8 +515,8 @@ class Document {
     return templates;
   }
 
-  toBiopaxTemplate(){
-    let interactions = this.toBiopaxIntnTemplates();
+  toBiopaxTemplate( omitDbXref ){
+    let interactions = this.toBiopaxIntnTemplates( omitDbXref );
     let citation = this.citation();
     let pathwayName = citation.title;
     let pmid = citation.pmid;

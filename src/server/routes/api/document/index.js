@@ -176,6 +176,66 @@ const DEFAULT_CORRESPONDENCE = {
   emails: []
 };
 
+const mapToUniprotIds = docTemplate => {
+  const updateGrounding = entityTemplate => {
+    if ( entityTemplate == null ) {
+      return Promise.resolve();
+    }
+
+    let xref = entityTemplate.xref;
+    let { db, id } = xref;
+
+    if ( db !== 'NCBI Gene' ){
+      return Promise.resolve();
+    }
+
+    const opts = {
+      id: [
+        id
+      ],
+      dbfrom: 'ncbigene',
+      dbto: 'uniprot'
+    };
+
+    return fetch( GROUNDING_SEARCH_BASE_URL + '/map', {
+      method: 'POST',
+      body: JSON.stringify( opts ),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    } )
+    .then( res => res.json() )
+    .then( res => {
+      let dbXref = _.get( res, [ 0, 'dbXrefs', 0 ] );
+      if ( dbXref ) {
+        xref.id = dbXref.id;
+        xref.db = dbXref.db;
+      }
+    } );
+  };
+  let intnTemplates = docTemplate.interactions;
+  let promises = intnTemplates.map( intnTemplate => {
+    let ppts = intnTemplate.participants;
+    return updateGrounding( intnTemplate.controller )
+      .then( () => updateGrounding( intnTemplate.source ) )
+      .then( () => updateGrounding( _.get( ppts, 0 ) ) )
+      .then( () => updateGrounding( _.get( ppts, 1 ) ) );
+  } );
+
+  let chunks = _.chunk( promises, 10 );
+
+  const handleChunk = i => {
+    if ( i == chunks.length ) {
+      return Promise.resolve();
+    }
+
+    return Promise.all( chunks[i] ).then( () => handleChunk( i + 1 ) );
+  };
+
+  return handleChunk( 0 )
+    .then( () => docTemplate );
+};
+
 /**
  * findEmailAddress
  *
@@ -1621,63 +1681,7 @@ http.get('/biopax/:id', function( req, res, next ){
         return template;
       }
 
-      const updateGrounding = entityTemplate => {
-        if ( entityTemplate == null ) {
-          return Promise.resolve();
-        }
-
-        let xref = entityTemplate.xref;
-        let { db, id } = xref;
-
-        if ( db !== 'NCBI Gene' ){
-          return Promise.resolve();
-        }
-
-        const opts = {
-          id: [
-            id
-          ],
-          dbfrom: 'ncbigene',
-          dbto: 'uniprot'
-        };
-
-        return fetch( GROUNDING_SEARCH_BASE_URL + '/map', {
-          method: 'POST',
-          body: JSON.stringify( opts ),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        } )
-        .then( res => res.json() )
-        .then( res => {
-          let dbXref = _.get( res, [ 0, 'dbXrefs', 0 ] );
-          if ( dbXref ) {
-            xref.id = dbXref.id;
-            xref.db = dbXref.db;
-          }
-        } );
-      };
-      let intnTemplates = template.interactions;
-      let promises = intnTemplates.map( intnTemplate => {
-        let ppts = intnTemplate.participants;
-        return updateGrounding( intnTemplate.controller )
-          .then( () => updateGrounding( intnTemplate.source ) )
-          .then( () => updateGrounding( _.get( ppts, 0 ) ) )
-          .then( () => updateGrounding( _.get( ppts, 1 ) ) );
-      } );
-
-      let chunks = _.chunk( promises, 10 );
-
-      const handleChunk = i => {
-        if ( i == chunks.length ) {
-          return Promise.resolve();
-        }
-
-        return Promise.all( chunks[i] ).then( () => handleChunk( i + 1 ) );
-      };
-
-      return handleChunk( 0 )
-        .then( () => template );
+      return mapToUniprotIds( template );
     } )
     .then( getBiopaxFromTemplates )
     .then( result => result.text() )

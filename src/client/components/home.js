@@ -637,21 +637,10 @@ class Home extends Component {
           ]),
           h('p.home-cta-p.home-cta-p-persistent', [
             // TODO use this one with link:
-            // h('a', [
-            //   h('button.home-cta-alt-button', 'Read our paper')
-            // ]),
-            //
-            // TODO remove coming soon...
-            h(Popover, {
-              tippy: {
-                placement: 'bottom',
-                html: h('div.home-info-popover-content', `Coming soon!`)
-              }
-            }, [
+            h('a', { href: 'https://osf.io/zep3x/', target: '_blank' },
+            [
               h('button.home-cta-alt-button', 'Read our paper')
             ]),
-            // END remove coming soon
-            //
             h('a', {
               href: `mailto:${EMAIL_ADDRESS_INFO}`
             }, [

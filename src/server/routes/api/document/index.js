@@ -572,6 +572,10 @@ http.get('/zip', function( req, res, next ){
  *     summary: Zip file of every Document represented as BioPAX in owl file format.
  *     tags:
  *       - Document
+ *     parameters:
+ *       - name: idMapping
+ *         in: query
+ *         description: Whether to mao ncbi ids to uniprot ids in biopax conversion
  *     responses:
  *      '200':
  *        description: OK
@@ -1833,6 +1837,9 @@ http.patch('/:id/:secret', function( req, res, next ){
  *         summary: Document ID
  *         in: path
  *         required: true
+ *       - name: idMapping
+ *         in: query
+ *         description: Whether to mao ncbi ids to uniprot ids in biopax conversion
  *     responses:
  *       '200':
  *         description: ok

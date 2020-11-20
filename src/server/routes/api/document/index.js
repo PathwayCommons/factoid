@@ -183,9 +183,9 @@ const mapToUniprotIds = docTemplate => {
     }
 
     let xref = entityTemplate.xref;
-    let { db, id } = xref;
+    let { id, dbPrefix } = xref;
 
-    if ( db !== 'NCBI Gene' ){
+    if ( dbPrefix !== 'ncbigene' ){
       return Promise.resolve();
     }
 
@@ -193,7 +193,7 @@ const mapToUniprotIds = docTemplate => {
       id: [
         id
       ],
-      dbfrom: 'ncbigene',
+      dbfrom: dbPrefix,
       dbto: 'uniprot'
     };
 

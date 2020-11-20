@@ -181,10 +181,16 @@ class Entity extends Element {
       return dbXrefs[0];
     }
 
-    return {
+    let bpXref = {
       id: assoc.id,
       db: assoc.dbName
     };
+
+    if ( omitDbXref ) {
+      bpXref.dbPrefix = assoc.dbPrefix;
+    }
+
+    return bpXref;
   }
 
   toBiopaxTemplate( omitDbXref ){

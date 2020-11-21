@@ -8,7 +8,8 @@ import Mousetrap from 'mousetrap';
 
 import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL } from '../../../config';
 
-import { getId, defer, makeClassList, tryPromise } from '../../../util';
+import { makeClassList } from '../../dom';
+import { getId, defer, tryPromise } from '../../../util';
 import Document from '../../../model/document';
 import { PARTICIPANT_TYPE } from '../../../model/element/participant-type';
 

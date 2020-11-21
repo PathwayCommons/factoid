@@ -1,6 +1,6 @@
 import Tooltip from '../popover/tooltip';
 import h from 'react-hyperscript';
-import { makeClassList } from '../../../util';
+import { makeClassList } from '../../dom';
 
 export default ({ progression }) => {
   let { STAGES } = progression;

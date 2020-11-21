@@ -1,5 +1,4 @@
-# v10 is the latest LTS
-FROM node:10.15.3
+FROM node:12.19.0
 
 # Allow user configuration of variable at build-time using --build-arg flag
 # See src/client-env-vars.json

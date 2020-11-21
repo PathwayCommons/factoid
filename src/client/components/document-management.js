@@ -9,10 +9,11 @@ import { DocumentManagementDocumentComponent } from './document-management-compo
 import logger from '../logger';
 import DirtyComponent from './dirty-component';
 import Document from '../../model/document';
-import { makeClassList, tryPromise } from '../../util';
+import { tryPromise } from '../../util';
+import { makeClassList } from '../dom';
 import Popover from './popover/popover';
 import { checkHTTPStatus } from '../../util';
-import { RequestForm } from './home';
+import { RequestForm, RequestBiopaxForm } from './home';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 const DEFAULT_STATUS_FIELDS = _.pull( _.values( DOCUMENT_STATUS_FIELDS ), DOCUMENT_STATUS_FIELDS.TRASHED );
@@ -162,6 +163,10 @@ class DocumentManagement extends DirtyComponent {
       h('h1', 'Document management panel')
     ]);
 
+    const getAddButtons = () => {
+      return h('small', [getAddDoc(), getAddBiopax()]);
+    };
+
     const getAddDoc = () => {
       return h( Popover, {
         tippy: {
@@ -175,6 +180,22 @@ class DocumentManagement extends DirtyComponent {
         }
       }, [
         h('button', [ h( 'i.material-icons', 'add' ) ])
+      ]);
+    };
+
+    const getAddBiopax = () => {
+      return h( Popover, {
+        tippy: {
+          html: h( RequestBiopaxForm, {
+            apiKey,
+            doneMsg: 'Request submitted.',
+            bus: this.bus
+          }),
+          onHidden: () => this.bus.emit( 'closecta' ),
+          placement: 'top'
+        }
+      }, [
+        h('button', [ h( 'i.material-icons', 'attach_file' ) ])
       ]);
     };
 
@@ -220,7 +241,7 @@ class DocumentManagement extends DirtyComponent {
 
     const documentMenu = h('div.document-management-document-control-menu', [
       h( 'div.document-management-document-control-menu-item', [getDocStatusFilter()]),
-      h( 'div.document-management-document-control-menu-item', [getAddDoc()])
+      h( 'div.document-management-document-control-menu-item', [getAddButtons()] )
     ]);
 
     const documentList = h( 'ul', orderByCreatedDate( docs ).map( doc => {

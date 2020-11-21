@@ -59,7 +59,7 @@ export const DB_CERT = env('DB_CERT', undefined);  // path to a certificate (cer
 export const PC_URL = env('PC_URL', 'https://apps.pathwaycommons.org/');
 export const REACH_URL = env('REACH_URL', 'http://reach.baderlab.org/api/uploadFile');
 export const BIOPAX_CONVERTER_URL = env('BIOPAX_CONVERTER_URL', 'https://biopax.baderlab.org/convert/v2/');
-export const GROUNDING_SEARCH_BASE_URL = env('GROUNDING_SEARCH_BASE_URL', 'https://grounding.baderlab.org');
+export const GROUNDING_SEARCH_BASE_URL = env('GROUNDING_SEARCH_BASE_URL', 'https://master.grounding.baderlab.org');
 export const NCBI_EUTILS_BASE_URL = env('NCBI_EUTILS_BASE_URL', 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/');
 export const NCBI_EUTILS_API_KEY = env('NCBI_EUTILS_API_KEY', 'b99e10ebe0f90d815a7a99f18403aab08008');
 export const INDRA_DB_BASE_URL = env('INDRA_DB_BASE_URL', 'https://db.indra.bio/latest/');
@@ -78,8 +78,10 @@ export const IDENTIFIERS_ORG_ID_BASE_URL = env('IDENTIFIERS_ORG_ID_BASE_URL', '	
 
 // Email
 export const EMAIL_ENABLED = env('EMAIL_ENABLED', false);
+export const EMAIL_RELPPRS_CONTACT = env('EMAIL_RELPPRS_CONTACT', true);
 export const EMAIL_FROM = env('EMAIL_FROM', 'Biofactoid');
 export const EMAIL_FROM_ADDR = env('EMAIL_FROM_ADDR', 'support@biofactoid.org');
+export const EMAIL_ADMIN_ADDR = env('EMAIL_ADMIN_ADDR', 'support@biofactoid.org');
 export const SMTP_PORT = env('SMTP_PORT', 587);
 export const SMTP_HOST = env('SMTP_HOST', 'localhost');
 export const SMTP_USER = env('SMTP_USER', 'user');
@@ -89,9 +91,11 @@ export const EMAIL_VENDOR_MAILJET = env('EMAIL_VENDOR_MAILJET', 'Mailjet');
 export const MAILJET_TMPLID_INVITE = env('MAILJET_TMPLID_INVITE', '1330760');
 export const MAILJET_TMPLID_FOLLOWUP = env('MAILJET_TMPLID_FOLLOWUP', '988309');
 export const MAILJET_TMPLID_REQUEST_ISSUE = env('MAILJET_TMPLID_REQUEST_ISSUE', '1202251');
+export const MAILJET_TMPLID_REL_PPR = env('MAILJET_TMPLID_REL_PPR', '1871553');
 export const EMAIL_TYPE_INVITE = env('EMAIL_TYPE_INVITE', 'invite');
 export const EMAIL_TYPE_FOLLOWUP = env('EMAIL_TYPE_FOLLOWUP', 'followUp');
 export const EMAIL_TYPE_REQUEST_ISSUE = env('EMAIL_TYPE_REQUEST_ISSUE', 'requestIssue');
+export const EMAIL_TYPE_REL_PPR_NOTIFICATION = env('EMAIL_TYPE_REL_PPR_NOTIFICATION', 'relatedPaperNotification');
 export const EMAIL_ADDRESS_INFO = env('EMAIL_ADDRESS_INFO', 'info@biofactoid.org');
 
 // Sharing

@@ -22,4 +22,12 @@ const truncateString = ( text, maxChars = 150, texOverflow = '...' ) => {
   return text.length > maxChars ? `${text.slice( 0, maxChars )}${texOverflow}` : text;
 };
 
-export { stringDistanceMetric, longestCommonPrefixLength, truncateString };
+const stripFinalPeriod = text => {
+  if( text[text.length - 1] === '.' ){
+    text = text.substring(0, text.length - 1);
+  }
+
+  return text;
+};
+
+export { stringDistanceMetric, longestCommonPrefixLength, truncateString, stripFinalPeriod };

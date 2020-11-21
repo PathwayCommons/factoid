@@ -2,19 +2,21 @@ import fetch from 'node-fetch';
 import JSZip from 'jszip';
 import _ from 'lodash';
 import fs from 'fs';
+import logger from '../../../logger';
 
 import Document from '../../../../model/document';
 
 import { convertDocumentToBiopax,
         convertDocumentToJson,
-        convertDocumentToSbgn,
-        checkHTTPStatus } from '../../../../util';
+        convertDocumentToSbgn } from '../../../document-util';
+
+import { checkHTTPStatus } from '../../../../util';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 const CHUNK_SIZE = 20;
 const EXPORT_TYPES = Object.freeze({
-  'JS': 'js',
-  'BP': 'bp',
+  'JS': 'json',
+  'BP': 'biopax',
   'SBGN': 'sbgn'
 });
 
@@ -65,7 +67,13 @@ const exportToZip = (baseUrl, zipPath, types) => {
       types = Object.keys( typeToConverter );
     }
 
-    const idToFiles = id => types.map( t => typeToConverter[ t ]( id, baseUrl ) );
+    const idToFiles = id => types.map( t => {
+      return typeToConverter[ t ]( id, baseUrl )
+              .catch( () => {
+                logger.error(`Error in export: cannot convert the document ${id} into ${t}`);
+                return null;
+              } );
+    } );
 
     let promises = ids.map( idToFiles );
     promises = _.flatten( promises );
@@ -76,11 +84,13 @@ const exportToZip = (baseUrl, zipPath, types) => {
     return Promise.all( promises )
       .then( contents => {
         contents.forEach( ( content, i ) => {
-          let id = ids[ Math.floor( i / s ) ];
-          let ext = fileExts[ i % s ];
-          let fileName = id + ext;
+          if ( content != null ) {
+            let id = ids[ Math.floor( i / s ) ];
+            let ext = fileExts[ i % s ];
+            let fileName = id + ext;
 
-          zip.file( fileName, content );
+            zip.file( fileName, content );
+          }
         } );
       } );
   };

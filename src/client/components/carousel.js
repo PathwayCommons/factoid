@@ -1,9 +1,10 @@
-import { tryPromise, makeClassList } from '../../util';
+import { tryPromise } from '../../util';
 import h from 'react-hyperscript';
 import { Component } from 'react';
 import _ from 'lodash';
 import { formatDistanceToNow } from 'date-fns';
 import queryString from 'query-string';
+import { makeClassList } from '../dom';
 
 import Document from '../../model/document';
 

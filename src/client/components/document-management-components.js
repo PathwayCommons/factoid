@@ -6,10 +6,8 @@ import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
 import queryString from 'query-string';
 
 import Document from '../../model/document';
-import {
-  tryPromise,
-  makeClassList
-} from '../../util';
+import { tryPromise } from '../../util';
+import { makeClassList } from '../dom';
 import logger from '../logger';
 import DirtyComponent from './dirty-component';
 import {

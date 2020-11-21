@@ -1,5 +1,5 @@
 // TODO swagger comment & docs
-
+import isWithinInterval from 'date-fns/isWithinInterval';
 import Express from 'express';
 import _ from 'lodash';
 import uuid from 'uuid';
@@ -8,11 +8,12 @@ import cytosnap from 'cytosnap';
 import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
-// import url from 'url';
 import fs from 'fs';
+import { URLSearchParams } from  'url';
 
 import { exportToZip, EXPORT_TYPES } from './export';
-import { tryPromise, makeStaticStylesheet, makeCyEles, msgFactory, updateCorrespondence, EmailError, truncateString } from '../../../../util';
+import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
+import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
 import db from '../../../db';
@@ -20,6 +21,7 @@ import logger from '../../../logger';
 import { getPubmedArticle } from './pubmed';
 import { createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
 import * as indra from './indra';
+import { get as groundingSearchGet } from '../element-association/grounding-search';
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
   API_KEY,
@@ -34,15 +36,20 @@ import { BASE_URL,
   MAX_TWEET_LENGTH,
   DEMO_CAN_BE_SHARED,
   DOCUMENT_IMAGE_PADDING,
+  EMAIL_ADMIN_ADDR,
+  EMAIL_RELPPRS_CONTACT,
   EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP,
   MIN_RELATED_PAPERS,
-  SEMANTIC_SEARCH_LIMIT
+  SEMANTIC_SEARCH_LIMIT,
+  NCBI_EUTILS_BASE_URL,
+  PC_URL,
+  EMAIL_TYPE_REL_PPR_NOTIFICATION
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
-import { db2pubmed } from './pubmed/linkPubmed';
+import { eLink, elink2UidList } from './pubmed/linkPubmed';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import { docs2Sitemap } from '../../../sitemap';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -305,6 +312,97 @@ let getBiopaxFromTemplates = templates => {
     headers: {
       'Content-Type': 'application/json',
       'Accept':'application/vnd.biopax.rdf+xml' }
+  } )
+  .then(handleResponseError);
+};
+
+let getNcbiIdfromRefSeqId = id => {
+  const params = new URLSearchParams();
+  params.append('id', id);
+  params.append('cmd', 'neighbor');
+  params.append('retmode', 'json');
+  params.append('db', 'gene');
+  params.append('dbfrom', 'nuccore');
+  params.append('linkname', 'nuccore_gene');
+
+  return fetch( NCBI_EUTILS_BASE_URL + 'elink.fcgi', {
+    'method': 'POST',
+    'headers': {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    'body': params
+  } )
+  .then(handleResponseError)
+  .then( res => res.json() )
+  .then( js => _.get( js, ['ids', 0] ) );
+};
+
+let getNcbiIdfromHgncSymbol = symbol => {
+  return fetch( PC_URL + 'api/enrichment/validation', {
+    'method': 'POST',
+    'headers': {
+      'Content-Type': 'application/json'
+    },
+    'body': JSON.stringify({
+      'query': [ symbol ],
+      'namespace': 'ncbigene'
+    })
+  } )
+  .then(handleResponseError)
+  .then( res => res.json() )
+  .then( js => {
+    let obj = _.get( js, 'alias' );
+
+    if ( obj ) {
+      return obj[symbol];
+    }
+
+    return null;
+  } );
+};
+
+let getNcbiIdFromUniprotId = id => {
+  let namespace = 'uniprot';
+  return groundingSearchGet( { id, namespace } )
+    .then( res => {
+      let dbXref = _.find( res.dbXrefs, xref => xref.db == 'GeneID' );
+      return _.get( dbXref, 'id', null );
+    } );
+};
+
+let searchByXref = ( xref ) => {
+  let { db, id } = xref;
+  let getNcbiId;
+  if ( db == 'uniprot' ) {
+    getNcbiId = getNcbiIdFromUniprotId;
+  }
+  else if ( db == 'refseq' ) {
+    getNcbiId = getNcbiIdfromRefSeqId;
+  }
+  else if ( db == 'hgnc symbol' ) {
+    getNcbiId = getNcbiIdfromHgncSymbol;
+  }
+
+  if ( getNcbiId != null ) {
+    return getNcbiId( id ).then( ncbiId => {
+      if ( ncbiId == null ) {
+        return Promise.resolve( null );
+      }
+
+      return groundingSearchGet( { id: ncbiId, namespace: 'ncbi' } );
+    } );
+  }
+
+  return null;
+};
+
+let getJsonFromBiopaxUrl = url => {
+  return fetch( BIOPAX_CONVERTER_URL + 'biopax-url-to-json', {
+    method: 'POST',
+    body: url,
+    headers: {
+      'Content-Type': 'text/plain',
+      'Accept':'application/json' }
   } )
   .then(handleResponseError);
 };
@@ -1220,6 +1318,79 @@ const checkApiKey = (apiKey) => {
   }
 };
 
+const getNovelInteractions = async doc => {
+  // n.b. will be empty if we haven't yet queried for related papers
+  return doc.interactions().filter(intn => intn.isNovel());
+};
+
+const emailRelatedPaperAuthors = async doc => {
+  if( doc.relatedPapersNotified() ){ return; } // bail out if already notified
+  const MAX_AGE_PAPER_YEARS = 5;
+
+  const getContact = paper => _.get(paper, ['pubmed', 'authors', 'contacts', 0]);
+
+  const hasContact = paper => getContact(paper) != null;
+
+  const sendEmail = async (paper, novelIntns) => {
+    const contact = getContact(paper);
+    const email = EMAIL_RELPPRS_CONTACT ? contact.email[0] : EMAIL_ADMIN_ADDR;
+    const name = contact.ForeName;
+
+    // prevent duplicate sending
+    doc.relatedPapersNotified(true);
+
+    const mailOpts =  await msgFactory(EMAIL_TYPE_REL_PPR_NOTIFICATION, doc, {
+      to: EMAIL_RELPPRS_CONTACT ? email : EMAIL_ADMIN_ADDR, //must explicitly turn off
+      name,
+      paper,
+      novelIntns
+    });
+
+    // Sending blocked by default, otherwise set EMAIL_ENABLED=true
+    await sendMail(mailOpts);
+
+    logger.info(`Related paper notification email for doc ${doc.id()} sent to ${name} at ${email} with ${novelIntns.length} novel interactions`);
+  };
+
+  // TODO RPN use semantic search score etc. in future
+  // just send to all for now, as we already have a small cutoff at 30
+  const notReviewPaper = async paper => {
+    const reviewTypeUI = 'D016454';
+    const pubTypes = _.get( paper, ['pubmed', 'pubTypes'] );
+    const notReview = !_.find( pubTypes, ['UI', reviewTypeUI] );
+    return notReview;
+  };
+
+  const publishedNYearsAgo = ( paper, years = MAX_AGE_PAPER_YEARS ) => {
+    const dateNow = new Date();
+    const dateYearsAgo = ( new Date() ).setFullYear( dateNow.getFullYear() - years );
+    const paperDate = new Date( _.get( paper, ['pubmed', 'ISODate'] ) );
+    return isWithinInterval( paperDate, { start: dateYearsAgo, end: dateNow } );
+  };
+
+  const paperIsGoodFit = async paper => publishedNYearsAgo( paper ) && notReviewPaper( paper );
+
+  const byPaperDate = (a, b) => {
+    const getISODate = p => _.get( p, ['pubmed', 'ISODate'] );
+    return new Date( getISODate( a ) ) - new Date( getISODate( b ) );
+  };
+
+  const getSendablePapers = async papers => {
+    const isGoodFit = await Promise.all(papers.map(paperIsGoodFit));
+    return papers.filter((paper, i) => isGoodFit[i] && hasContact(paper)).sort( byPaperDate );
+  };
+
+  const novelIntns = await getNovelInteractions(doc);
+
+  const papers = await getSendablePapers(doc.referencedPapers());
+
+  logger.info(`Sending related paper notifications for doc ${doc.id()} with ${papers.length} papers`);
+
+  await Promise.all(papers.map(async paper => sendEmail(paper, novelIntns)));
+
+  logger.info(`Related paper notifications complete for ${papers.length} emails`);
+};
+
 /**
  * @swagger
  *
@@ -1300,14 +1471,85 @@ const tryVerify = async doc => {
  */
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
-  const { paperId } = provided;
+  const { paperId, elements=[], performLayout, submit, groundEls } = provided;
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
+  const email = _.get( provided, 'email', true );
+  const fromAdmin = _.get( provided, 'fromAdmin', true );
+
+  const elToXref = {};
+  elements.forEach( el => {
+    let xref = el._xref;
+    if ( xref ) {
+      elToXref[ el.id ] = xref;
+    }
+  } );
 
   const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
   const handleDocCreation = async ({ docDb, eleDb }) => {
     if( id === DEMO_ID ) await deleteTableRows( API_KEY, secret );
     return await createDoc({ docDb, eleDb, id, secret, provided });
+  };
+  const addEls = doc => tryPromise( () => doc.fromJson( { elements } ) ).then( () => doc );
+  const handleLayout = doc => {
+    if ( performLayout ) {
+      return tryPromise( () => doc.applyLayout() ).then( () => doc );
+    }
+
+    return doc;
+  };
+  const handleSubmission = doc => {
+    if ( submit ) {
+      return tryPromise( () => doc.submit() ).then( () => doc );
+    }
+
+    return doc;
+  };
+  const handleElGroundings = doc => {
+    const perform = () => {
+      let entities = doc.entities();
+      let intns = doc.interactions();
+
+      let entityPromises = entities.map( entity => {
+        let xref = elToXref[entity.id()];
+        if ( !xref ) {
+          return Promise.resolve();
+        }
+
+        return searchByXref( xref ).then( res => {
+          if( res ) {
+            return entity.associate( res ).then( () => entity.complete() );
+          }
+
+          return Promise.resolve();
+        } );
+      } );
+
+      let intnPromises = intns.map( intn => intn.complete() );
+
+      return Promise.all( [ ...entityPromises, ...intnPromises ] );
+    };
+
+    if ( groundEls ){
+      return tryPromise( () => perform() ).then( () => doc );
+    }
+
+    return doc;
+  };
+  const handleInviteNotification = doc => {
+    if ( email ) {
+      return sendInviteNotification( doc ).then( () => doc );
+    }
+    
+    return doc;
+  };
+  const handleDocSource = doc => {
+    let fcn = () => doc.setAsPcDoc();
+    if ( fromAdmin ){
+      fcn = () => doc.setAsAdminDoc();
+    }
+
+    return fcn().then( () => doc );
   };
   const sendJSONResponse = doc => tryPromise( () => doc.json() )
   .then( json => res.json( json ) )
@@ -1319,9 +1561,14 @@ http.post('/', function( req, res, next ){
     .then( setStatus )
     .then( fillDoc )
     .then( tryVerify )
+    .then( addEls )
+    .then( handleElGroundings )
+    .then( handleLayout )
+    .then( handleDocSource )
+    .then( handleSubmission )
     .then( sendJSONResponse )
     .then( updateRelatedPapers )
-    .then( sendInviteNotification )
+    .then( handleInviteNotification )
     .catch( next );
 });
 
@@ -1435,7 +1682,16 @@ http.patch('/:id/:secret', function( req, res, next ){
     return;
   };
 
-  const sendFollowUpNotification = async doc => await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
+  const sendFollowUpNotification = async doc => {
+    await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
+    await emailRelatedPaperAuthors( doc );
+  };
+
+  const onDocPublic = async doc => {
+    await updateRelatedPapers( doc );
+    await sendFollowUpNotification( doc );
+  };
+
   const tryTweetingDoc = async doc => {
     if ( !doc.hasTweet() ) {
       try {
@@ -1449,9 +1705,8 @@ http.patch('/:id/:secret', function( req, res, next ){
   const handleMakePublicRequest = async doc => {
     await tryMakePublic( doc );
     if( doc.isPublic() ) {
-      updateRelatedPapers( doc );
       await tryTweetingDoc( doc );
-      sendFollowUpNotification( doc );
+      onDocPublic( doc );
     }
   };
 
@@ -1476,6 +1731,7 @@ http.patch('/:id/:secret', function( req, res, next ){
         case 'relatedPapers':
           if( op === 'replace' ){
             await updateRelatedPapers( doc );
+            await emailRelatedPaperAuthors( doc );
           }
           break;
       }
@@ -1600,6 +1856,15 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
+http.post('/bp2json', function( req, res, next ){
+  const provided = _.assign( {}, req.body );
+  const { url } = provided;
+  tryPromise( () => getJsonFromBiopaxUrl( url ) )
+    .then( r => r.json() )
+    .then( js => res.json( js ) )
+    .catch( next );
+});
+
 const updateRelatedPapers = async doc => {
   await getRelPprsForDoc( doc );
   await getRelatedPapersForNetwork( doc );
@@ -1608,6 +1873,7 @@ const updateRelatedPapers = async doc => {
 
 const getRelPprsForDoc = async doc => {
   let papers = [];
+  let referencedPapers = [];
 
   try {
     logger.info(`Updating document-level related papers for doc ${doc.id()}`);
@@ -1615,16 +1881,29 @@ const getRelPprsForDoc = async doc => {
     const { pmid } = doc.citation();
 
     if( pmid ){
-      const pmids = await db2pubmed({ uids: [pmid] });
-      let rankedDocs = await indra.semanticSearch({ query: pmid, documents: pmids });
+      const elinkResponse = await eLink( { id: [pmid] } );
+
+      // For .relatedPapers
+      const documents = elink2UidList( elinkResponse );
+      let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
       const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
-      const { PubmedArticleSet } = await fetchPubmed({ uids });
-      papers = PubmedArticleSet
+      const relatedPapersResponse = await fetchPubmed({ uids });
+      papers = _.get( relatedPapersResponse, 'PubmedArticleSet', [] )
         .map( getPubmedCitation )
         .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
+
+      // For .referencedPapers
+      const referencedPaperUids = elink2UidList( elinkResponse, ['pubmed_pubmed_refs'], 100 );
+      if( referencedPaperUids.length ){
+        const referencedPapersResponse = await fetchPubmed({ uids: referencedPaperUids });
+        referencedPapers = _.get( referencedPapersResponse, 'PubmedArticleSet', [] )
+          .map( getPubmedCitation )
+          .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
+      }
     }
 
     doc.relatedPapers( papers );
+    doc.referencedPapers( referencedPapers );
     logger.info(`Finished updating document-level related papers`);
     return doc;
 
@@ -1652,9 +1931,16 @@ const getRelatedPapersForNetwork = async doc => {
         entities: el.isEntity() ? [ template ] : []
       };
 
-      const indraRes = await indra.searchDocuments({ templates, doc });
+      let indraRes = await indra.searchDocuments({ templates, doc });
+      indraRes = indraRes || [];
 
-      el.relatedPapers( indraRes || [] );
+      if ( el.isInteraction() ) {
+        if ( indraRes.length == 0 ) {
+          el.setNovel( true );
+        }
+      }
+
+      el.relatedPapers( indraRes );
     };
 
     await Promise.all([ ...els.map(getRelPprsForEl) ]);

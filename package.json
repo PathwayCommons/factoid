@@ -1,5 +1,6 @@
 {
   "name": "factoid",
+  "license": "MIT",
   "private": true,
   "browserslist": "edge >=12, firefox >=40, chrome >=40, safari 9",
   "scripts": {
@@ -129,5 +130,5 @@
   "engines": {
     "node": ">=10.0.0"
   },
-  "version": "0.12.2"
+  "version": "0.13.0"
 }

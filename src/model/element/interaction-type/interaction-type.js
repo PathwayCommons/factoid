@@ -178,9 +178,9 @@ class InteractionType {
     return pptAssocsAllowed() && pptTypeAllowed();
   }
 
-  makeInvalidBiopaxTemplate(){
+  makeInvalidBiopaxTemplate( omitDbXref ){
     let participants = this.interaction.participants();
-    let participantTemplates = participants.map( participant => participant.toBiopaxTemplate() );
+    let participantTemplates = participants.map( participant => participant.toBiopaxTemplate( omitDbXref ) );
 
     return {
       type: BIOPAX_TEMPLATE_TYPE.OTHER_INTERACTION,

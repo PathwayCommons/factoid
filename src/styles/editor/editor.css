@@ -297,18 +297,12 @@
   margin: 0.5em 0;
 }
 
-.editor-info-author + .editor-info-author {
-  &::before {
-    content: ', ';
-  }
-}
-
 .editor-info-links {
   margin: 1.5em 0;
   line-height: 1.4;
 }
 
-.editor-info-link {
+.editor-info-link, .editor-info-author {
   display: inline-block;
   margin-right: 1em;
 }

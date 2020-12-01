@@ -11,6 +11,7 @@ import emailRegex from 'email-regex';
 import url from 'url';
 import fs from 'fs';
 import { URLSearchParams } from  'url';
+import * as xmljs from 'xml-js';
 
 import { exportToZip, EXPORT_TYPES } from './export';
 import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
@@ -324,9 +325,45 @@ const fillDocArticle = async doc => {
   }
 };
 
+const findOrcidUri = async ( firstName, lastName, doi ) => {
+  let url = `https://pub.orcid.org/v3.0/search?q=`
+      + `family-name:${lastName}+AND+given-names:${firstName}+AND+digital-object-ids:%22${doi}%22`;
+
+  const findUri = obj => {
+    let els = _.get( obj, [ 'elements', 0, 'elements', 0, 'elements', 0, 'elements' ] );
+    let uriObj = _.find( els, el => el.name = 'common:uri' );
+    let uri = _.get( uriObj, [ 'elements', 0, 'text' ] );
+
+    return uri;
+  };
+
+  return fetch( url )
+    .then( res => res.text() )
+    .then( res => xmljs.xml2json(res) )
+    .then( res => JSON.parse( res ) )
+    .then( findUri );
+};
+
+const fillDocAuthorProfiles = async doc => {
+  const citation = doc.citation();
+  const { authors, doi } = citation;
+
+  let promises = authors.authorList.map( async a => {
+    let orcid = await findOrcidUri( a.ForeName, a.LastName, doi );
+    orcid = orcid || null;
+
+    let authorProfile =  _.assignIn({}, a, { orcid });
+    return authorProfile;
+  });
+
+  let authorProfiles = await Promise.all( promises );
+  await doc.authorProfiles( authorProfiles );
+};
+
 const fillDoc = async doc => {
   await fillDocCorrespondence( doc );
   await fillDocArticle( doc );
+  await fillDocAuthorProfiles( doc );
   return doc;
 };
 

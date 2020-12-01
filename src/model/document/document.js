@@ -18,7 +18,7 @@ const DEFAULTS = Object.freeze({
   verified: false
 });
 
-const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'status', 'verified' ];
+const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'status', 'verified', 'authorProfiles' ];
 const READONLY_METADATA_FIELDS = _.difference( METADATA_FIELDS, ['provided', 'correspondence'] );
 const DOCUMENT_STATUS_FIELDS = Object.freeze({
   INITIATED: 'initiated',
@@ -202,6 +202,10 @@ class Document {
   provided(newVal){
     const provided = this.rwMeta('provided');
     return newVal ? this.rwMeta('provided', _.merge( provided, newVal )): provided;
+  }
+
+  authorProfiles(newVal){
+    return this.rwMeta('authorProfiles', newVal);
   }
 
   article(newVal){

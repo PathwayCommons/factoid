@@ -12,45 +12,7 @@ export class InfoPanel extends Component {
   constructor(props){
     super(props);
 
-    this.state = { orcidMap: null };
-  }
-
-  loadOrcidUriMap(){
-    const { document } = this.props;
-
-    const citation = document.citation();
-    const { authors, doi } = citation;
-
-    const findOrcidUri = ( firstName, lastName ) => {
-      let url = `https://pub.orcid.org/v3.0/search?q=`
-          + `family-name:${lastName}+AND+given-names:${firstName}+AND+digital-object-ids:%22${doi}%22`;
-
-      const findUri = obj => {
-        let els = _.get( obj, [ 'elements', 0, 'elements', 0, 'elements', 0, 'elements' ] );
-        let uriObj = _.find( els, el => el.name = 'common:uri' );
-        let uri = _.get( uriObj, [ 'elements', 0, 'text' ] );
-
-        return uri;
-      };
-
-      return fetch( url )
-        .then( res => res.text() )
-        .then( res => xmljs.xml2json(res) )
-        .then( res => JSON.parse( res ) )
-        .then( findUri );
-    };
-
-    let orcidMap = {};
-    let promises = authors.authorList.map(a => {
-      return findOrcidUri( a.ForeName, a.LastName )
-        .then( orcidUri => {
-          if ( orcidUri ) {
-              orcidMap[ a.name ] = orcidUri;
-          }
-        } );
-    });
-
-    return Promise.all( promises ).then( () => this.setState({ orcidMap }) );
+    this.state = {};
   }
 
   componentDidMount(){
@@ -66,8 +28,6 @@ export class InfoPanel extends Component {
 
     bus.on('select', this.onSelect);
     bus.on('unselect', this.onUnselect);
-
-    this.loadOrcidUriMap();
   }
 
   componentWillUnmount(){
@@ -79,7 +39,7 @@ export class InfoPanel extends Component {
 
   render(){
     const { document, bus, controller } = this.props;
-    const { selected, orcidMap } = this.state;
+    const { selected } = this.state;
 
     if( document.editable() ){ return null; }
 
@@ -104,15 +64,13 @@ export class InfoPanel extends Component {
     }
 
     const citation = document.citation();
+    const authorProfiles = document.authorProfiles();
     const { authors, pmid, title = 'Untitled article', reference, doi, abstract } = citation;
 
     return h('div.editor-info-panel', [
       h('div.editor-info-title', title),
-      h('div.editor-info-authors', authors.authorList.map(a => {
-        if ( orcidMap == null ) {
-          return h('i.icon.icon-spinner');
-        }
-        let orcidUri = orcidMap[ a.name ];
+      h('div.editor-info-authors', authorProfiles.map(a => {
+        let orcidUri = a.orcid;
         if ( orcidUri ) {
             return h('a.editor-info-author.plain-link', { target: '_blank', href: orcidUri }, a.name);
         }

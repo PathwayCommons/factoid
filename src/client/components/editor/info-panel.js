@@ -1,7 +1,5 @@
 import h from 'react-hyperscript';
 import { Component } from 'react';
-import * as xmljs from 'xml-js';
-import _ from 'lodash';
 import { DOI_LINK_BASE_URL, PUBMED_LINK_BASE_URL, GOOGLE_SCHOLAR_BASE_URL } from '../../../config';
 // import { Carousel, CAROUSEL_CONTENT } from '../carousel';
 import { makeClassList } from '../../dom';
@@ -65,7 +63,7 @@ export class InfoPanel extends Component {
 
     const citation = document.citation();
     const authorProfiles = document.authorProfiles();
-    const { authors, pmid, title = 'Untitled article', reference, doi, abstract } = citation;
+    const { pmid, title = 'Untitled article', reference, doi, abstract } = citation;
 
     return h('div.editor-info-panel', [
       h('div.editor-info-title', title),

@@ -62,7 +62,8 @@ export class InfoPanel extends Component {
     }
 
     const citation = document.citation();
-    const authorProfiles = document.authorProfiles();
+    // authorProfiles may not be existing for the older documents
+    const authorProfiles = document.authorProfiles() || citation.authors.authorList;
     const { pmid, title = 'Untitled article', reference, doi, abstract } = citation;
 
     return h('div.editor-info-panel', [
@@ -73,7 +74,7 @@ export class InfoPanel extends Component {
             return h('a.editor-info-author.plain-link', { target: '_blank', href: orcidUri }, a.name);
         }
 
-        return h('a.editor-info-author', a.name);
+        return h('span.editor-info-author', a.name);
       })),
       h('div.editor-info-links', doi ? [
         h('a.editor-info-link.plain-link', { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` }, reference),

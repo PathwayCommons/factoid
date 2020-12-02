@@ -62,11 +62,19 @@ export class InfoPanel extends Component {
     }
 
     const citation = document.citation();
-    const { authors, pmid, title = 'Untitled article', reference, doi, abstract } = citation;
+    const authorProfiles = document.authorProfiles();
+    const { pmid, title = 'Untitled article', reference, doi, abstract } = citation;
 
     return h('div.editor-info-panel', [
       h('div.editor-info-title', title),
-      h('div.editor-info-authors', authors.authorList.map(a => h('span.editor-info-author', a.name))),
+      h('div.editor-info-authors', authorProfiles.map(a => {
+        let orcidUri = a.orcid;
+        if ( orcidUri ) {
+            return h('a.editor-info-author.plain-link', { target: '_blank', href: orcidUri }, a.name);
+        }
+
+        return h('a.editor-info-author', a.name);
+      })),
       h('div.editor-info-links', doi ? [
         h('a.editor-info-link.plain-link', { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` }, reference),
         h('a.editor-info-link.plain-link', { target: '_blank', href: `${PUBMED_LINK_BASE_URL}${pmid}` }, 'PubMed'),

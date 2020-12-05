@@ -13,7 +13,8 @@ import { tryPromise } from '../../util';
 import { makeClassList } from '../dom';
 import Popover from './popover/popover';
 import { checkHTTPStatus } from '../../util';
-import { RequestForm, RequestBiopaxForm } from './home';
+import { RequestBiopaxForm } from './home';
+import RequestForm from './request-form';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 const DEFAULT_STATUS_FIELDS = _.pull( _.values( DOCUMENT_STATUS_FIELDS ), DOCUMENT_STATUS_FIELDS.TRASHED );
@@ -173,7 +174,8 @@ class DocumentManagement extends DirtyComponent {
           html: h( RequestForm, {
             apiKey,
             doneMsg: 'Request submitted.',
-            bus: this.bus
+            bus: this.bus,
+            submitBtnText: 'Create my article profile'
           }),
           onHidden: () => this.bus.emit( 'closecta' ),
           placement: 'top'

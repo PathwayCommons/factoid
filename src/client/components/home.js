@@ -139,22 +139,22 @@ class RequestBiopaxForm extends Component {
   render(){
     const { done } = this.state;
     if( done ){
-      return h('div.home-request-form-container', [
-        h('div.home-request-form-done', [
-          h( 'div.home-request-form-done-title', [
+      return h('div.request-form-container', [
+        h('div.request-form-done', [
+          h( 'div.request-form-done-title', [
             h('span', 'Articles are created from the biopax file!' )
           ])
         ])
       ]);
     }
 
-    return h('div.home-request-form-container', [
-      h('div.home-request-form-description', `Enter Biopax file url`),
-      h('i.icon.icon-spinner.home-request-spinner', {
-        className: makeClassList({ 'home-request-spinner-shown': this.state.submitting })
+    return h('div.request-form-container', [
+      h('div.request-form-description', `Enter Biopax file url`),
+      h('i.icon.icon-spinner.request-spinner', {
+        className: makeClassList({ 'request-spinner-shown': this.state.submitting })
       }),
-      h('div.home-request-form', {
-        className: makeClassList({ 'home-request-form-submitting': this.state.submitting })
+      h('div.request-form', {
+        className: makeClassList({ 'request-form-submitting': this.state.submitting })
       }, [
         h('input', {
           type: 'text',
@@ -162,13 +162,13 @@ class RequestBiopaxForm extends Component {
           onChange: e => this.updateForm({ url: e.target.value }),
           value: this.state.url
         }),
-        h('div.home-request-error', {
-          className: makeClassList({ 'home-request-error-message-shown': this.state.errors.incompleteForm })
+        h('div.request-error', {
+          className: makeClassList({ 'request-error-message-shown': this.state.errors.incompleteForm })
         }, 'Fill out everything above, then try again.'),
-        h('div.home-request-error', {
-          className: makeClassList({ 'home-request-error-message-shown': this.state.errors.network })
+        h('div.request-error', {
+          className: makeClassList({ 'request-error-message-shown': this.state.errors.network })
         }, 'Please try again later'),
-        h('button.super-salient-button.home-request-submit', {
+        h('button.super-salient-button.request-submit', {
           onClick: () => this.submitRequest()
         }, 'Create articles')
       ])
@@ -267,7 +267,6 @@ class Home extends Component {
         tippy: {
           html: h(RequestForm, {
             bus: this.bus,
-            fields: {},
             submitBtnText: 'Create my article profile'
           }),
           onHidden: () => this.bus.emit('closecta'),
@@ -526,4 +525,4 @@ class Home extends Component {
   }
 }
 
-export { Home as default, RequestForm, RequestBiopaxForm };
+export { Home as default, RequestBiopaxForm };

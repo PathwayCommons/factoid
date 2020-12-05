@@ -37,7 +37,7 @@ class RequestForm extends Component {
   }
 
   getFormField( fieldName ){
-    const { formFields } = this.props;
+    const { formFields = {} } = this.props;
     return _.get( formFields, fieldName, '' );
   }
 
@@ -69,8 +69,9 @@ class RequestForm extends Component {
 
   submitRequest(){
     const { paperId, authorEmail } = this.state;
+    const { checkIncomplete = false } = this.props;
 
-    if( !paperId || !authorEmail ){
+    if( !checkIncomplete && ( !paperId || !authorEmail ) ){
       this.setState({ errors: { incompleteForm: true } });
 
     } else {
@@ -111,25 +112,25 @@ class RequestForm extends Component {
       const { privateUrl, citation: { doi, title, reference } } = docJSON;
       const displayTitle = truncateString( title );
 
-      return h('div.home-request-form-container', [
-        h('div.home-request-form-done', [
-          h( 'a.home-request-form-done-button', { href: privateUrl, target: '_blank', }, 'Start Biofactoid' ),
-          h( 'div.home-request-form-done-title', [
+      return h('div.request-form-container', [
+        h('div.request-form-done', [
+          h( 'a.request-form-done-button', { href: privateUrl, target: '_blank', }, 'Start Biofactoid' ),
+          h( 'div.request-form-done-title', [
             h('span', 'Title: ' ),
             h( doi ? 'a.plain-link': 'span', (doi ? { href: `${DOI_LINK_BASE_URL}${doi}`, target: '_blank'}: {}), displayTitle )
           ]),
-          reference ? h( 'div.home-request-form-done-info', reference ) : null
+          reference ? h( 'div.request-form-done-info', reference ) : null
         ])
       ]);
     }
 
-    return h('div.home-request-form-container', [
-      h('div.home-request-form-description', `Enter your article information`),
-      h('i.icon.icon-spinner.home-request-spinner', {
-        className: makeClassList({ 'home-request-spinner-shown': this.state.submitting })
+    return h('div.request-form-container', [
+      h('div.request-form-description', `Enter your article information`),
+      h('i.icon.icon-spinner.request-spinner', {
+        className: makeClassList({ 'request-spinner-shown': this.state.submitting })
       }),
-      h('div.home-request-form', {
-        className: makeClassList({ 'home-request-form-submitting': this.state.submitting })
+      h('div.request-form', {
+        className: makeClassList({ 'request-form-submitting': this.state.submitting })
       }, [
         h('input', {
           type: 'text',
@@ -146,14 +147,14 @@ class RequestForm extends Component {
           value: this.state.authorEmail,
           spellCheck: false
         }),
-        h( 'div.home-request-form-footer', `A private editing link will be sent to your email. Email addresses are never shared.` ),
-        h('div.home-request-error', {
-          className: makeClassList({ 'home-request-error-message-shown': this.state.errors.incompleteForm })
+        h( 'div.request-form-footer', `A private editing link will be sent to your email. Email addresses are never shared.` ),
+        h('div.request-error', {
+          className: makeClassList({ 'request-error-message-shown': this.state.errors.incompleteForm })
         }, 'Fill out everything above, then try again.'),
-        h('div.home-request-error', {
-          className: makeClassList({ 'home-request-error-message-shown': this.state.errors.network })
+        h('div.request-error', {
+          className: makeClassList({ 'request-error-message-shown': this.state.errors.network })
         }, 'Please try again later'),
-        h('button.super-salient-button.home-request-submit', {
+        h('button.super-salient-button.request-submit', {
           onClick: () => this.submitRequest()
         }, submitBtnText)
       ])

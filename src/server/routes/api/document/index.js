@@ -317,11 +317,17 @@ const fillDocArticle = async doc => {
     await doc.article( pubmedRecord );
     await doc.issues({ paperId: null });
   } catch ( error ) {
+
     logger.error( `Error filling doc article` );
     logger.error( error );
-    const pubmedRecord = createPubmedArticle({ articleTitle: paperId });
-    await doc.article( pubmedRecord );
-    await doc.issues({ paperId: { error, message: error.message } });
+
+    // Only supply default when no previous retrieval (pmid is null)
+    const { pmid } = doc.citation();
+    if( pmid == null ){
+      const pubmedRecord = createPubmedArticle({ articleTitle: paperId });
+      await doc.article( pubmedRecord );
+      await doc.issues({ paperId: { error, message: error.message } });
+    }
   }
 };
 
@@ -1649,7 +1655,7 @@ http.post('/', function( req, res, next ){
     if ( email ) {
       return sendInviteNotification( doc ).then( () => doc );
     }
-    
+
     return doc;
   };
   const handleDocSource = doc => {

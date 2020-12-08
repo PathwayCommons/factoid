@@ -18,8 +18,8 @@ const DEFAULTS = Object.freeze({
   verified: false
 });
 
-const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'status', 'verified', 'authorProfiles' ];
-const READONLY_METADATA_FIELDS = _.difference( METADATA_FIELDS, ['provided', 'correspondence'] );
+const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'status', 'verified', 'authorProfiles', 'authorName' ];
+const READONLY_METADATA_FIELDS = _.difference( METADATA_FIELDS, ['provided', 'correspondence', 'authorName'] );
 const DOCUMENT_STATUS_FIELDS = Object.freeze({
   INITIATED: 'initiated',
   SUBMITTED: 'submitted',
@@ -452,6 +452,17 @@ class Document {
     }
     else if( !papersData ){
       return this.syncher.get( 'referencedPapers' );
+    }
+  }
+
+  authorName( name ){
+    if( name ){
+      let p = this.syncher.update({ 'authorName': name });
+      this.emit( 'authorName', name );
+      return p;
+    }
+    else if( !name ){
+      return this.syncher.get( 'authorName' );
     }
   }
 

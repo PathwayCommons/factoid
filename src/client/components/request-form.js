@@ -24,6 +24,7 @@ class RequestForm extends Component {
     this.state = {
       paperId: this.getFormField( 'paperId' ),
       authorEmail: this.getFormField( 'authorEmail' ),
+      authorName: this.getFormField( 'authorName' ),
       submitting: false,
       done: false,
       docJSON: undefined,
@@ -45,6 +46,7 @@ class RequestForm extends Component {
     this.setState({
       paperId: this.getFormField( 'paperId' ),
       authorEmail: this.getFormField( 'authorEmail' ),
+      authorName: this.getFormField( 'authorName' ),
       submitting: false,
       done: false,
       docJSON: undefined,
@@ -68,17 +70,18 @@ class RequestForm extends Component {
   }
 
   submitRequest(){
-    const { paperId, authorEmail } = this.state;
+    const { paperId, authorEmail, authorName } = this.state;
     const { checkIncomplete = false } = this.props;
 
-    if( !checkIncomplete && ( !paperId || !authorEmail ) ){
+    if( !checkIncomplete && ( !paperId || !authorEmail || !authorName ) ){
       this.setState({ errors: { incompleteForm: true } });
 
     } else {
       const url = 'api/document';
       const data = _.assign( {}, {
         paperId: _.trim( paperId ),
-        authorEmail
+        authorEmail,
+        authorName
       });
       const fetchOpts = {
         method: 'POST',
@@ -145,6 +148,15 @@ class RequestForm extends Component {
             authorEmail: e.target.value
           }),
           value: this.state.authorEmail,
+          spellCheck: false
+        }),
+        h('input', {
+          type: 'text',
+          placeholder: `Author name`,
+          onChange: e => this.updateForm({
+            authorName: e.target.value
+          }),
+          value: this.state.authorName,
           spellCheck: false
         }),
         h( 'div.request-form-footer', `A private editing link will be sent to your email. Email addresses are never shared.` ),

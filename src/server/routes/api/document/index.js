@@ -1580,7 +1580,7 @@ const tryVerify = async doc => {
  */
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
-  const { paperId, elements=[], performLayout, submit, groundEls } = provided;
+  const { paperId, elements=[], performLayout, submit, groundEls, authorName } = provided;
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
   const email = _.get( provided, 'email', true );
@@ -1660,6 +1660,13 @@ http.post('/', function( req, res, next ){
 
     return fcn().then( () => doc );
   };
+  const handleAuthorName = doc => {
+    if ( !authorName ){
+      return doc;
+    }
+
+    return doc.authorName( authorName ).then( () => doc );
+  };
   const sendJSONResponse = doc => tryPromise( () => doc.json() )
   .then( json => res.json( json ) )
   .then( () => doc );
@@ -1674,6 +1681,7 @@ http.post('/', function( req, res, next ){
     .then( handleElGroundings )
     .then( handleLayout )
     .then( handleDocSource )
+    .then( handleAuthorName )
     .then( handleSubmission )
     .then( sendJSONResponse )
     .then( updateRelatedPapers )

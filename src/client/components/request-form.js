@@ -71,9 +71,9 @@ class RequestForm extends Component {
 
   submitRequest(){
     const { paperId, authorEmail, authorName } = this.state;
-    const { checkIncomplete = false } = this.props;
+    const { checkIncomplete = true } = this.props;
 
-    if( !checkIncomplete && ( !paperId || !authorEmail || !authorName ) ){
+    if( checkIncomplete && ( !paperId || !authorEmail || !authorName ) ){
       this.setState({ errors: { incompleteForm: true } });
 
     } else {

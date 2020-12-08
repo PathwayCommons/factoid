@@ -2000,7 +2000,7 @@ const updateRelatedPapers = async doc => {
 };
 
 const getRelPprsForDoc = async doc => {
-  let papers = [];
+  let relatedPapers = [];
   let referencedPapers = [];
 
   try {
@@ -2008,36 +2008,40 @@ const getRelPprsForDoc = async doc => {
     const getUid = result => _.get( result, 'uid' );
     const { pmid } = doc.citation();
 
-    if( pmid ){
-      const elinkResponse = await eLink( { id: [pmid] } );
+    if( pmid == null ) throw new Error('Article pmid not available');
 
-      // For .relatedPapers
-      const documents = elink2UidList( elinkResponse );
-      let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
-      const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
-      const relatedPapersResponse = await fetchPubmed({ uids });
-      papers = _.get( relatedPapersResponse, 'PubmedArticleSet', [] )
+    const elinkResponse = await eLink( { id: [pmid] } );
+
+    // For .relatedPapers
+    const documents = elink2UidList( elinkResponse );
+    let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
+    const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
+    const relatedPapersResponse = await fetchPubmed({ uids });
+    relatedPapers = _.get( relatedPapersResponse, 'PubmedArticleSet', [] )
+      .map( getPubmedCitation )
+      .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
+    doc.relatedPapers( relatedPapers );
+
+    // For .referencedPapers
+    const referencedPaperUids = elink2UidList( elinkResponse, ['pubmed_pubmed_refs'], 100 );
+    if( referencedPaperUids.length ){
+      const referencedPapersResponse = await fetchPubmed({ uids: referencedPaperUids });
+      referencedPapers = _.get( referencedPapersResponse, 'PubmedArticleSet', [] )
         .map( getPubmedCitation )
         .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
-
-      // For .referencedPapers
-      const referencedPaperUids = elink2UidList( elinkResponse, ['pubmed_pubmed_refs'], 100 );
-      if( referencedPaperUids.length ){
-        const referencedPapersResponse = await fetchPubmed({ uids: referencedPaperUids });
-        referencedPapers = _.get( referencedPapersResponse, 'PubmedArticleSet', [] )
-          .map( getPubmedCitation )
-          .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
-      }
     }
 
-    doc.relatedPapers( papers );
     doc.referencedPapers( referencedPapers );
     logger.info(`Finished updating document-level related papers`);
     return doc;
 
   } catch ( err ){
-    logger.error(`Error getRelPprsForDoc: ${err.message}`);
-    doc.relatedPapers( papers );
+    logger.error(`Error getRelPprsForDoc: ${err}`);
+
+    // Only supply default when no previous retrieval
+    if( _.isNil( doc.relatedPapers() ) ) doc.relatedPapers( relatedPapers );
+    if( _.isNil( doc.referencedPapers() ) ) doc.referencedPapers( referencedPapers );
+
     return doc;
   }
 

@@ -29,6 +29,7 @@ services:
       NCBI_EUTILS_API_KEY:
       NODE_OPTIONS:
       EMAIL_RELPPRS_CONTACT:
+      CRON_SCHEDULE:
   grounding:
     image: pathwaycommons/grounding-search:${GROUNDING_SEARCH_IMAGE_TAG:-latest}
     restart: on-failure

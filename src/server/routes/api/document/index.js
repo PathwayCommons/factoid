@@ -1665,7 +1665,7 @@ http.post('/', function( req, res, next ){
       return doc;
     }
 
-    return doc.provided( { authorName } ).then( () => doc );
+    return doc.provided( { name: authorName } ).then( () => doc );
   };
   const sendJSONResponse = doc => tryPromise( () => doc.json() )
   .then( json => res.json( json ) )

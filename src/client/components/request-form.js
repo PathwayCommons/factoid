@@ -70,58 +70,117 @@ class RequestForm extends Component {
   }
 
   submitRequest(){
-    const { paperId, authorEmail, authorName } = this.state;
-    const { checkIncomplete = true } = this.props;
+    let { paperId, authorEmail, authorName } = this.state;
+    const { checkIncomplete = true, doc = null } = this.props;
+
+    // if doc property is not set create a document else edit the existing one
+    let createDoc = ( doc == null );
 
     if( checkIncomplete && ( !paperId || !authorEmail || !authorName ) ){
       this.setState({ errors: { incompleteForm: true } });
 
     } else {
-      const url = 'api/document';
-      const data = _.assign( {}, {
-        paperId: _.trim( paperId ),
-        authorEmail,
-        authorName
-      });
-      const fetchOpts = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify( data )
+      paperId = _.trim( paperId ) || undefined;
+      authorEmail = authorEmail || undefined;
+      authorName = authorName || undefined;
+
+      let fcn = () => {
+        if ( createDoc ) {
+          const url = 'api/document';
+
+          const data = _.assign( {}, {
+            paperId,
+            authorEmail,
+            authorName
+          });
+          const fetchOpts = {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify( data )
+          };
+
+          return fetch( url, fetchOpts )
+            .then( checkStatus )
+            .then( response => response.json() )
+            .then( docJSON => new Promise( resolve => {
+              window.open(docJSON.privateUrl);
+
+              this.setState({ done: true, docJSON }, resolve );
+            } ) );
+        }
+        else {
+          let existingTitle = doc.citation().title;
+          let existingName = doc.provided().name;
+          let existingEmail = doc.correspondence();
+
+          const data = [];
+          const provided = {};
+
+          if ( paperId && paperId != existingTitle ) {
+            provided['paperId'] = paperId;
+            data.push({ path: 'article', op: 'replace' });
+          }
+          if ( authorName && authorName != existingName ) {
+            provided['name'] = authorName;
+          }
+          if ( authorEmail && authorEmail != existingEmail ) {
+            provided['authorEmail'] = authorEmail;
+            data.push({ path: 'correspondence', op: 'replace' });
+          }
+
+          let docId = doc.id();
+          let docSecret = doc.secret();
+
+          const url = `/api/document/${docId}/${docSecret}`;
+          const fetchOpts = {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify( data )
+          };
+
+          return doc.provided( provided )
+            .then( () => fetch( url, fetchOpts ) )
+            .then( checkStatus )
+            .then( response => response.json() )
+            .then( docJSON => new Promise( resolve => {
+              this.setState({ done: true, docJSON }, resolve );
+            } ) );
+        }
       };
 
       this.setState({ submitting: true, errors: { incompleteForm: false, network: false } });
 
-      ( fetch( url, fetchOpts )
-        .then( checkStatus )
-        .then( response => response.json() )
-        .then( docJSON => new Promise( resolve => {
-          window.open(docJSON.privateUrl);
+      const emitAndResolve = resolve => {
+        this.bus.emit( 'requestBtnClick' );
+        resolve();
+      };
 
-          this.setState({ done: true, docJSON }, resolve );
-        } ) )
+      ( fcn()
         .catch( () => new Promise( resolve => this.setState({ errors: { network: true } }, resolve ) ) )
-        .finally( () => new Promise( resolve => this.setState({ submitting: false }, resolve ) ) )
+        .finally( () => new Promise( resolve => this.setState({ submitting: false }, () => emitAndResolve( resolve ) ) ) )
       );
     }
   }
 
   render(){
     const { done, docJSON } = this.state;
-    const { submitBtnText } = this.props;
+    const { submitBtnText, doc } = this.props;
+    let createDoc = ( doc == null );
 
     if( done && docJSON ){
       const { privateUrl, citation: { doi, title, reference } } = docJSON;
-      const displayTitle = truncateString( title );
-
+      const displayTitle = title ? truncateString( title  ) : null;
       return h('div.request-form-container', [
         h('div.request-form-done', [
-          h( 'a.request-form-done-button', { href: privateUrl, target: '_blank', }, 'Start Biofactoid' ),
-          h( 'div.request-form-done-title', [
+          createDoc ? h( 'a.request-form-done-button', { href: privateUrl, target: '_blank', }, 'Start Biofactoid' ) : null,
+          displayTitle ? h( 'div.request-form-done-title', [
             h('span', 'Title: ' ),
             h( doi ? 'a.plain-link': 'span', (doi ? { href: `${DOI_LINK_BASE_URL}${doi}`, target: '_blank'}: {}), displayTitle )
-          ]),
+          ]) : null,
           reference ? h( 'div.request-form-done-info', reference ) : null
         ])
       ]);

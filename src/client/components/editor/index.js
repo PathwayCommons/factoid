@@ -517,7 +517,7 @@ class Editor extends DataComponent {
     let { history } = this.props;
 
     let editorContent = this.data.initted ? [
-      h(EditorTitle, { citation: document.citation(), document }),
+      h(EditorTitle, { document, bus }),
       h('div.editor-main-menu', [
         h(MainMenu, { bus, document, history })
       ]),

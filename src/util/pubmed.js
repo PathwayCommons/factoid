@@ -227,7 +227,7 @@ const getPubmedCitation = PubmedArticle => {
  * @param {string} opts.publicationYear pubYear the year of publication
  * @returns {Object} the populated PubMedArticle
  */
-const createPubmedArticle = ({ articleTitle = 'Untitled', journalName = null, publicationYear = null }) => {
+const createPubmedArticle = ({ articleTitle = null, journalName = null, publicationYear = null }) => {
 
   const PubMedArticle = {
     MedlineCitation: {

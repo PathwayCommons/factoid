@@ -2,12 +2,12 @@ import _ from 'lodash';
 import h from 'react-hyperscript';
 import { Component } from 'react';
 import Popover from './popover/popover';
+import RequestForm from './request-form';
 import { makeClassList } from '../dom';
 import EventEmitter from 'eventemitter3';
-import { truncateString } from '../../util';
 import { Carousel, CAROUSEL_CONTENT } from './carousel';
 
-import { TWITTER_ACCOUNT_NAME, DOI_LINK_BASE_URL, SAMPLE_DOC_ID, EMAIL_ADDRESS_INFO } from '../../config';
+import { TWITTER_ACCOUNT_NAME, SAMPLE_DOC_ID, EMAIL_ADDRESS_INFO } from '../../config';
 
 const checkStatus = response => {
   if ( response.status >= 200 && response.status < 300 ) {
@@ -139,22 +139,22 @@ class RequestBiopaxForm extends Component {
   render(){
     const { done } = this.state;
     if( done ){
-      return h('div.home-request-form-container', [
-        h('div.home-request-form-done', [
-          h( 'div.home-request-form-done-title', [
+      return h('div.request-form-container', [
+        h('div.request-form-done', [
+          h( 'div.request-form-done-title', [
             h('span', 'Articles are created from the biopax file!' )
           ])
         ])
       ]);
     }
 
-    return h('div.home-request-form-container', [
-      h('div.home-request-form-description', `Enter Biopax file url`),
-      h('i.icon.icon-spinner.home-request-spinner', {
-        className: makeClassList({ 'home-request-spinner-shown': this.state.submitting })
+    return h('div.request-form-container', [
+      h('div.request-form-description', `Enter Biopax file url`),
+      h('i.icon.icon-spinner.request-spinner', {
+        className: makeClassList({ 'request-spinner-shown': this.state.submitting })
       }),
-      h('div.home-request-form', {
-        className: makeClassList({ 'home-request-form-submitting': this.state.submitting })
+      h('div.request-form', {
+        className: makeClassList({ 'request-form-submitting': this.state.submitting })
       }, [
         h('input', {
           type: 'text',
@@ -162,154 +162,15 @@ class RequestBiopaxForm extends Component {
           onChange: e => this.updateForm({ url: e.target.value }),
           value: this.state.url
         }),
-        h('div.home-request-error', {
-          className: makeClassList({ 'home-request-error-message-shown': this.state.errors.incompleteForm })
+        h('div.request-error', {
+          className: makeClassList({ 'request-error-message-shown': this.state.errors.incompleteForm })
         }, 'Fill out everything above, then try again.'),
-        h('div.home-request-error', {
-          className: makeClassList({ 'home-request-error-message-shown': this.state.errors.network })
+        h('div.request-error', {
+          className: makeClassList({ 'request-error-message-shown': this.state.errors.network })
         }, 'Please try again later'),
-        h('button.super-salient-button.home-request-submit', {
+        h('button.super-salient-button.request-submit', {
           onClick: () => this.submitRequest()
         }, 'Create articles')
-      ])
-    ]);
-  }
-}
-
-class RequestForm extends Component {
-  constructor(props){
-    super(props);
-
-    this.bus = this.props.bus;
-
-    this.state = {
-      paperId: '',
-      authorEmail: '',
-      submitting: false,
-      done: false,
-      docJSON: undefined,
-      errors: {
-        incompleteForm: false,
-        network: false
-      }
-    };
-
-    this.onCloseCTA = () => this.reset();
-  }
-
-  reset(){
-    this.setState({
-      paperId: '',
-      authorEmail: '',
-      submitting: false,
-      done: false,
-      docJSON: undefined,
-      errors: {
-        incompleteForm: false,
-        network: false
-      }
-    });
-  }
-
-  componentDidMount(){
-    this.bus.on('closecta', this.onCloseCTA);
-  }
-
-  componentWillUnmount(){
-    this.bus.removeListener('closecta', this.onCloseCTA);
-  }
-
-  updateForm(fields){
-    this.setState(fields);
-  }
-
-  submitRequest(){
-    const { paperId, authorEmail } = this.state;
-
-    if( !paperId || !authorEmail ){
-      this.setState({ errors: { incompleteForm: true } });
-
-    } else {
-      const url = 'api/document';
-      const data = _.assign( {}, {
-        paperId: _.trim( paperId ),
-        authorEmail
-      });
-      const fetchOpts = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify( data )
-      };
-
-      this.setState({ submitting: true, errors: { incompleteForm: false, network: false } });
-
-      ( fetch( url, fetchOpts )
-        .then( checkStatus )
-        .then( response => response.json() )
-        .then( docJSON => new Promise( resolve => {
-          window.open(docJSON.privateUrl);
-
-          this.setState({ done: true, docJSON }, resolve );
-        } ) )
-        .catch( () => new Promise( resolve => this.setState({ errors: { network: true } }, resolve ) ) )
-        .finally( () => new Promise( resolve => this.setState({ submitting: false }, resolve ) ) )
-      );
-    }
-  }
-
-  render(){
-    const { done, docJSON } = this.state;
-    if( done && docJSON ){
-      const { privateUrl, citation: { doi, title, reference } } = docJSON;
-      const displayTitle = truncateString( title );
-
-      return h('div.home-request-form-container', [
-        h('div.home-request-form-done', [
-          h( 'a.home-request-form-done-button', { href: privateUrl, target: '_blank', }, 'Start Biofactoid' ),
-          h( 'div.home-request-form-done-title', [
-            h('span', 'Title: ' ),
-            h( doi ? 'a.plain-link': 'span', (doi ? { href: `${DOI_LINK_BASE_URL}${doi}`, target: '_blank'}: {}), displayTitle )
-          ]),
-          reference ? h( 'div.home-request-form-done-info', reference ) : null
-        ])
-      ]);
-    }
-
-    return h('div.home-request-form-container', [
-      h('div.home-request-form-description', `Enter your article information`),
-      h('i.icon.icon-spinner.home-request-spinner', {
-        className: makeClassList({ 'home-request-spinner-shown': this.state.submitting })
-      }),
-      h('div.home-request-form', {
-        className: makeClassList({ 'home-request-form-submitting': this.state.submitting })
-      }, [
-        h('input', {
-          type: 'text',
-          placeholder: `Article title`,
-          onChange: e => this.updateForm({ paperId: e.target.value }),
-          value: this.state.paperId
-        }),
-        h('input', {
-          type: 'text',
-          placeholder: `Email address`,
-          onChange: e => this.updateForm({
-            authorEmail: e.target.value
-          }),
-          value: this.state.authorEmail,
-          spellCheck: false
-        }),
-        h( 'div.home-request-form-footer', `A private editing link will be sent to your email. Email addresses are never shared.` ),
-        h('div.home-request-error', {
-          className: makeClassList({ 'home-request-error-message-shown': this.state.errors.incompleteForm })
-        }, 'Fill out everything above, then try again.'),
-        h('div.home-request-error', {
-          className: makeClassList({ 'home-request-error-message-shown': this.state.errors.network })
-        }, 'Please try again later'),
-        h('button.super-salient-button.home-request-submit', {
-          onClick: () => this.submitRequest()
-        }, 'Create my article profile')
       ])
     ]);
   }
@@ -405,7 +266,8 @@ class Home extends Component {
       return h(Popover, {
         tippy: {
           html: h(RequestForm, {
-            bus: this.bus
+            bus: this.bus,
+            submitBtnText: 'Create my article profile'
           }),
           onHidden: () => this.bus.emit('closecta'),
           placement: props.placement || 'top'
@@ -663,4 +525,4 @@ class Home extends Component {
   }
 }
 
-export { Home as default, RequestForm, RequestBiopaxForm };
+export { Home as default, RequestBiopaxForm };

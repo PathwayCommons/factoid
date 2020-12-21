@@ -175,7 +175,8 @@ class DocumentManagement extends DirtyComponent {
             apiKey,
             doneMsg: 'Request submitted.',
             bus: this.bus,
-            submitBtnText: 'Create my article profile'
+            submitBtnText: 'Create my article profile',
+            checkIncomplete: false
           }),
           onHidden: () => this.bus.emit( 'closecta' ),
           placement: 'top'

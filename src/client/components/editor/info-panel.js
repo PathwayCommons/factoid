@@ -5,6 +5,7 @@ import { DOI_LINK_BASE_URL, PUBMED_LINK_BASE_URL, GOOGLE_SCHOLAR_BASE_URL } from
 import { makeClassList } from '../../dom';
 import ElementInfo from '../element-info/element-info';
 import RelatedPapers from '../related-papers';
+import _ from 'lodash';
 
 export class InfoPanel extends Component {
   constructor(props){
@@ -68,14 +69,21 @@ export class InfoPanel extends Component {
 
     return h('div.editor-info-panel', [
       h('div.editor-info-title', title),
-      h('div.editor-info-authors', authorProfiles.map(a => {
+      h('div.editor-info-authors', _.flatten(authorProfiles.map((a, i) => {
         let orcidUri = a.orcid;
         if ( orcidUri ) {
-            return h('a.editor-info-author.plain-link', { target: '_blank', href: orcidUri }, a.name);
+          return [
+            h('a.editor-info-author.plain-link', { target: '_blank', href: orcidUri }, a.name),
+            h('i.icon.icon-orcid.editor-info-author-orcid'),
+            i !== authorProfiles.length - 1 ? h('span.editor-info-author-spacer', ', ') : null
+          ];
         }
 
-        return h('span.editor-info-author', a.name);
-      })),
+        return [
+          h('span.editor-info-author', a.name),
+          i !== authorProfiles.length - 1 ? h('span.editor-info-author-spacer', ', ') : null
+        ];
+      }))),
       h('div.editor-info-links', doi ? [
         h('a.editor-info-link.plain-link', { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` }, reference),
         h('a.editor-info-link.plain-link', { target: '_blank', href: `${PUBMED_LINK_BASE_URL}${pmid}` }, 'PubMed'),

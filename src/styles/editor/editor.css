@@ -295,6 +295,7 @@
 
 .editor-info-authors {
   margin: 0.5em 0;
+  line-height: 1.4;
 }
 
 .editor-info-links {
@@ -302,7 +303,17 @@
   line-height: 1.4;
 }
 
-.editor-info-link, .editor-info-author {
+.editor-info-author-spacer {
+  margin-right: 0.333em;
+}
+
+.editor-info-author-orcid {
+  margin-left: 0.25em;
+  font-size: 0.8em;
+  opacity: 0.66;
+}
+
+.editor-info-link {
   display: inline-block;
   margin-right: 1em;
 }

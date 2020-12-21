@@ -21,6 +21,7 @@
   font-size: 1.25em;
   text-align: center;
   color: #000;
+  margin-bottom: 0.4em;
 }
 
 .request-form-author {
@@ -35,8 +36,11 @@
 .request-form > input {
   display: block;
   width: 100%;
-  margin-top: 0.5em;
   box-sizing: border-box;
+
+  & + input {
+    margin-top: 0.5em;
+  }
 }
 
 .request-form-footer {
@@ -117,4 +121,8 @@
 
 .request-form-done-msg {
   text-align: center;
+}
+
+.request-form-provided {
+  display: none !important;
 }

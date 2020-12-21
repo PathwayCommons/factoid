@@ -1843,7 +1843,10 @@ http.patch('/:id/:secret', function( req, res, next ){
           if( op === 'replace' && value === DOCUMENT_STATUS_FIELDS.PUBLIC ) await handleMakePublicRequest( doc );
           break;
         case 'article':
-          if( op === 'replace' ) await fillDocArticle( doc );
+          if( op === 'replace' ) {
+            await fillDocArticle( doc );
+            await fillDocAuthorProfiles( doc );
+          }
           break;
         case 'correspondence':
           if( op === 'replace' ){

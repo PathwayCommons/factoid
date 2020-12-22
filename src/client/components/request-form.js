@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { makeClassList } from '../dom';
 import { truncateString } from '../../util';
 import { DOI_LINK_BASE_URL } from '../../config';
+import { focusDomElement } from '../dom';
 
 const checkStatus = response => {
   if ( response.status >= 200 && response.status < 300 ) {
@@ -34,7 +35,16 @@ class RequestForm extends Component {
       }
     };
 
+    this.focusTitle = _.debounce(() => {
+      const titleEl = window.document.querySelector('.request-form-field-title');
+
+      if(titleEl){
+        focusDomElement(titleEl);
+      } 
+    }, 50);
+
     this.onCloseCTA = () => this.reset();
+    this.onOpenCTA = () => this.focusTitle();
   }
 
   getFormField( fieldName ){
@@ -59,10 +69,12 @@ class RequestForm extends Component {
 
   componentDidMount(){
     this.bus.on('closecta', this.onCloseCTA);
+    this.bus.on('opencta', this.onOpenCTA);
   }
 
   componentWillUnmount(){
     this.bus.removeListener('closecta', this.onCloseCTA);
+    this.bus.removeListener('opencta', this.onOpenCTA);
   }
 
   updateForm(fields){
@@ -147,6 +159,7 @@ class RequestForm extends Component {
             .then( checkStatus )
             .then( response => response.json() )
             .then( docJSON => new Promise( resolve => {
+              this.bus.emit('updatetitle');
               this.setState({ done: true, docJSON }, resolve );
             } ) );
         }
@@ -168,8 +181,10 @@ class RequestForm extends Component {
 
   render(){
     const { done, docJSON } = this.state;
-    const { submitBtnText, doc } = this.props;
+    const { submitBtnText, doc, addClasses } = this.props;
     let createDoc = ( doc == null );
+    let showDescription = _.defaultTo(this.props.showDescription, true);
+    let showTitle = _.defaultTo(this.props.showTitle, true);
 
     if( done && docJSON ){
       const { privateUrl, citation: { doi, title, reference } } = docJSON;
@@ -186,39 +201,47 @@ class RequestForm extends Component {
       ]);
     }
 
-    return h('div.request-form-container', [
-      h('div.request-form-description', `Enter your article information`),
+    const isFormFieldPredefined = field => {
+      const val = _.get(this.props, ['formFields', field]);
+
+      return val != null && val != '';
+    };
+
+    return h('div.request-form-container' + (addClasses ? addClasses : ''), [
+      showTitle ? h('div.request-form-description', `Enter your article information`) : null,
       h('i.icon.icon-spinner.request-spinner', {
         className: makeClassList({ 'request-spinner-shown': this.state.submitting })
       }),
       h('div.request-form', {
         className: makeClassList({ 'request-form-submitting': this.state.submitting })
       }, [
-        h('input', {
+        h('input.request-form-field-title', {
           type: 'text',
           placeholder: `Article title`,
           onChange: e => this.updateForm({ paperId: e.target.value }),
           value: this.state.paperId
         }),
-        h('input', {
+        h('input.request-form-field-name', {
           type: 'text',
-          placeholder: `Email address`,
-          onChange: e => this.updateForm({
-            authorEmail: e.target.value
-          }),
-          value: this.state.authorEmail,
-          spellCheck: false
-        }),
-        h('input', {
-          type: 'text',
-          placeholder: `Author name`,
+          placeholder: `Your name`,
           onChange: e => this.updateForm({
             authorName: e.target.value
           }),
           value: this.state.authorName,
-          spellCheck: false
+          spellCheck: false,
+          className: makeClassList({ 'request-form-provided': isFormFieldPredefined('authorName') })
         }),
-        h( 'div.request-form-footer', `A private editing link will be sent to your email. Email addresses are never shared.` ),
+        h('input.request-form-field-email', {
+          type: 'text',
+          placeholder: `Your email address`,
+          onChange: e => this.updateForm({
+            authorEmail: e.target.value
+          }),
+          value: this.state.authorEmail,
+          spellCheck: false,
+          className: makeClassList({ 'request-form-provided': isFormFieldPredefined('authorEmail') }),
+        }),
+        showDescription ? h( 'div.request-form-footer', `A private editing link will be sent to your email. Email addresses are never shared.` ) : null,
         h('div.request-error', {
           className: makeClassList({ 'request-error-message-shown': this.state.errors.incompleteForm })
         }, 'Fill out everything above, then try again.'),

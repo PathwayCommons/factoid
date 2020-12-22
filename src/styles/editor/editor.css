@@ -295,6 +295,7 @@
 
 .editor-info-authors {
   margin: 0.5em 0;
+  line-height: 1.4;
 }
 
 .editor-info-links {
@@ -302,7 +303,17 @@
   line-height: 1.4;
 }
 
-.editor-info-link, .editor-info-author {
+.editor-info-author-spacer {
+  margin-right: 0.333em;
+}
+
+.editor-info-author-orcid {
+  margin-left: 0.25em;
+  font-size: 0.8em;
+  opacity: 0.66;
+}
+
+.editor-info-link {
   display: inline-block;
   margin-right: 1em;
 }
@@ -328,6 +339,23 @@
 
 .editor-info-panel-close-icon {
   font-size: 3em;
+}
+
+.editor-credits {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 0.5em;
+  z-index: 1;
+  opacity: 0.7;
+
+  & .icon {
+    font-size: 0.8em;
+  }
+}
+
+.editor-request-form-container {
+  padding: 0.25em !important;
 }
 
 @media (min-width: 1000px) {

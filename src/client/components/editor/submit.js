@@ -14,10 +14,9 @@ export const Submit = props => {
     return null;
   }
 
-  // emitter.on('close', () => { console.log( 'close triggered'); });
-
   return h('div.editor-submit', [
     h(Popover, {
+      hide: hideNow => bus.on('closesubmit', hideNow),
       tippy: {
         html: h(TaskView, { document, bus, controller, emitter } ),
         sticky: true

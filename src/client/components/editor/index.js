@@ -27,6 +27,7 @@ import Help from './help';
 import InfoPanel from './info-panel';
 import ExploreShare from './explore-share';
 import * as cyDefs from './cy/defs';
+import Credits from './credits';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -527,7 +528,8 @@ class Editor extends DataComponent {
       h(UndoRemove, { controller, document, bus }),
       h('div.editor-graph#editor-graph'),
       h(Help, { controller, showHelp, document }),
-      h(InfoPanel, { controller, bus, document, history })
+      h(InfoPanel, { controller, bus, document, history }),
+      h(Credits, { controller, bus, document })
     ] : [];
 
     return h('div.editor', {

@@ -195,6 +195,7 @@ class TaskView extends DataComponent {
     this.props.document.on('remove', this.onRemove);
 
     this.props.document.elements().forEach(ele => bindEleEvts(ele, update));
+    this.props.bus.on('updatetitle', update);
   }
 
   tryPublish(){
@@ -220,6 +221,7 @@ class TaskView extends DataComponent {
     this.props.document.removeListener(this.onAdd);
     this.props.document.removeListener(this.onRemove);
     this.props.document.removeListener(this.onSubmit);
+    this.props.bus.removeListener('updatetitle', this.update);
   }
 
   submit(){
@@ -232,7 +234,7 @@ class TaskView extends DataComponent {
   }
 
   render(){
-    let { document, bus, emitter } = this.props;
+    let { document, bus } = this.props;
     let { submitting } = this.state;
     let done = this.props.controller.done();
 
@@ -317,7 +319,7 @@ class TaskView extends DataComponent {
       ]): null;
     };
 
-    // Minimal criteria: > 0 elements
+    // Minimal criteria: > 0 elements & has title
     let confirm = () => {
       let taskMsg = 'Are you sure you want to submit?';
       let taskButton = h('button.salient-button', {
@@ -327,8 +329,19 @@ class TaskView extends DataComponent {
 
       const entities = document.entities();
       let hasEntity = entities.length;
+      let hasTitle = _.get(document.citation(), ['title']) != null;
 
-      const close = () => emitter.emit('close');
+      const close = () => bus.emit('closesubmit');
+
+      if( !hasTitle ){
+        taskMsg = `Please set your article's title then submit.`;
+        taskButton = h('button.salient-button', {
+            onClick: () => {
+              bus.emit('showedittitle');
+              close();
+            }
+          }, 'Show me how');
+      }
 
       if( !hasEntity ){
         taskMsg = 'Please draw your interactions then submit.';
@@ -361,7 +374,7 @@ class TaskView extends DataComponent {
     } else {
       const publicUrl =  `${BASE_URL}${document.publicUrl()}`;
       const imageUrl = `${BASE_URL}/api${document.publicUrl()}.png`;
-      const provided = document.provided();
+
       return h('div.task-view', [
         h('div.task-view-done', [
           h('div.task-view-done-title', 'Thank you!' ),
@@ -398,20 +411,6 @@ class TaskView extends DataComponent {
                   )
                 ])
               ])
-            ])
-          ]),
-          h('hr'),
-          h('div.task-view-done-section', [
-            h('div.task-view-done-section-body', [
-              h('p', 'Optional info'),
-              h( TextEditableComponent, {
-                label: 'Name:',
-                value: _.get( provided, 'name' ),
-                autofocus: true,
-                placeholder: '',
-                autosubmit: 1000,
-                cb: name => document.provided({ name })
-              })
             ])
           ])
         ])

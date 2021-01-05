@@ -347,7 +347,11 @@ const findOrcidUri = async ( firstName, lastName, doi ) => {
     .then( res => res.text() )
     .then( res => xmljs.xml2json(res) )
     .then( res => JSON.parse( res ) )
-    .then( findUri );
+    .then( findUri )
+    .catch( error => {
+      logger.error( `Error finding Orcid URI: ${error.message}`);
+      return null;
+    } );
 };
 
 const fillDocAuthorProfiles = async doc => {

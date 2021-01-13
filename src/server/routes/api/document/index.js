@@ -18,6 +18,7 @@ import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '..
 import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
+import Organism from '../../../../model/organism';
 import db from '../../../db';
 import logger from '../../../logger';
 import { getPubmedArticle } from './pubmed';
@@ -1597,9 +1598,18 @@ http.post('/', function( req, res, next ){
   const fromAdmin = _.get( provided, 'fromAdmin', true );
 
   const elToXref = {};
+  const isValidXref = xref => {
+    if ( xref == null || xref.org == null ) {
+      return false;
+    }
+    if ( Organism.fromId( Number( xref.org ) ) == Organism.OTHER ) {
+      console.log( 'invalid org: ', xref.org );
+    }
+    return Organism.fromId( Number( xref.org ) ) != Organism.OTHER;
+  };
   elements.forEach( el => {
     let xref = el._xref;
-    if ( xref ) {
+    if ( isValidXref( xref ) ) {
       elToXref[ el.id ] = xref;
     }
   } );

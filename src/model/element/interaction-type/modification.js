@@ -50,7 +50,7 @@ class Modification extends InteractionType {
 
   toBiopaxTemplate(transform, omitDbXref, effect){//effect is undefined in base Modification case (i.e., no phys. mod. feature)
     if ( !this.validatePpts( transform ) ){
-      return this.makeInvalidBiopaxTemplate( omitDbXref );
+      return this.makeInvalidBiopaxTemplate( transform, omitDbXref );
     }
 
     //src, tgt shouldn't be null at this point (barring bug)

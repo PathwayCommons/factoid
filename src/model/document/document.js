@@ -545,8 +545,9 @@ class Document {
     let citation = this.citation();
     let pathwayName = citation.title;
     let pmid = citation.pmid;
+    let pathwayId = this.id();
 
-    let template = { interactions, pathwayName};
+    let template = { interactions, pathwayName, pathwayId };
     if ( pmid ) {
       template.publication = { id: pmid, db: 'pubmed' };
     }

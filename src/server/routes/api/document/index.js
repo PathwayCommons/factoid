@@ -1602,9 +1602,7 @@ http.post('/', function( req, res, next ){
     if ( xref == null || xref.org == null ) {
       return false;
     }
-    if ( Organism.fromId( Number( xref.org ) ) == Organism.OTHER ) {
-      console.log( 'invalid org: ', xref.org );
-    }
+    
     return Organism.fromId( Number( xref.org ) ) != Organism.OTHER;
   };
   elements.forEach( el => {

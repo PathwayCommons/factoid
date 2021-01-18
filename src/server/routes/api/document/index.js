@@ -1450,19 +1450,35 @@ const emailRelatedPaperAuthors = async doc => {
 
   const hasContact = paper => getContact(paper) != null;
 
+  const createEmptyDoc = async (authorName, authorEmail) => {
+    const provided = {
+      authorEmail,
+      authorName
+    };
+
+    const doc = await postDoc(provided);
+
+    return doc;
+  };
+
   const sendEmail = async (paper, novelIntns) => {
     const contact = getContact(paper);
     const email = EMAIL_RELPPRS_CONTACT ? contact.email[0] : EMAIL_ADMIN_ADDR;
     const name = contact.ForeName;
+    const fullName = contact.name;
 
     // prevent duplicate sending
     doc.relatedPapersNotified(true);
+
+    const newDoc = await createEmptyDoc(fullName, email);
+    const editorUrl = `${BASE_URL}${newDoc.privateUrl()}`;
 
     const mailOpts =  await msgFactory(EMAIL_TYPE_REL_PPR_NOTIFICATION, doc, {
       to: EMAIL_RELPPRS_CONTACT ? email : EMAIL_ADMIN_ADDR, //must explicitly turn off
       name,
       paper,
-      novelIntns
+      novelIntns,
+      editorUrl
     });
 
     // Sending blocked by default, otherwise set EMAIL_ENABLED=true
@@ -1589,7 +1605,21 @@ const tryVerify = async doc => {
  *         description: Error
  */
 http.post('/', function( req, res, next ){
-  const provided = _.assign( {}, req.body );
+  const impl = async () => {
+    try {
+      const provided = _.assign( {}, req.body );
+      const doc = await postDoc(provided);
+
+      res.json(doc.json());
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  impl();
+});
+
+const postDoc = provided => {
   const { paperId, elements=[], performLayout, submit, groundEls, authorName } = provided;
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
@@ -1677,11 +1707,8 @@ http.post('/', function( req, res, next ){
 
     return doc.provided( { name: authorName } ).then( () => doc );
   };
-  const sendJSONResponse = doc => tryPromise( () => doc.json() )
-  .then( json => res.json( json ) )
-  .then( () => doc );
 
-  tryPromise( () => createSecret({ secret }) )
+  return tryPromise( () => createSecret({ secret }) )
     .then( loadTables )
     .then( handleDocCreation )
     .then( setStatus )
@@ -1693,11 +1720,12 @@ http.post('/', function( req, res, next ){
     .then( handleDocSource )
     .then( handleAuthorName )
     .then( handleSubmission )
-    .then( sendJSONResponse )
-    .then( updateRelatedPapers )
-    .then( handleInviteNotification )
-    .catch( next );
-});
+    .then( doc => {
+      updateRelatedPapers(doc).then(handleInviteNotification).catch(_.nop);
+
+      return doc;
+    } );
+};
 
 /**
  * @swagger

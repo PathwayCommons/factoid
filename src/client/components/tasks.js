@@ -9,7 +9,7 @@ import { ENTITY_TYPE } from '../../model/element/entity-type';
 import { BASE_URL } from '../../config';
 import { makeClassList } from '../dom';
 import { NativeShare, isNativeShareSupported } from './native-share';
-import { NODE_ENV } from '../../config'
+import { MAX_WAIT_TWEET } from '../../config';
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete', 'associate' ];
 
@@ -219,14 +219,13 @@ class TaskView extends DataComponent {
   waitForTweet() {
     let { document } = this.props;
     let start = Date.now();
-    let maxTime = 10000; // TODO env var
 
     return new Promise(resolve => {
       let interval = setInterval(() => {
         let timeElapsed = Date.now() - start;
 
-        if (document.hasTweet() || timeElapsed >= maxTime) {
-          clearInterval(interval);
+        if ( document.hasTweet() || timeElapsed >= MAX_WAIT_TWEET ) {
+          clearInterval( interval );
           resolve();
         } else {
           // keep trying

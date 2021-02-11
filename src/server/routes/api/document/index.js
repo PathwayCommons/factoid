@@ -1287,32 +1287,20 @@ http.get('/(:id).png', function( req, res, next ){
 });
 
 // tweet a document as a card with a caption (text)
-const tweetDoc = ( id, secret, text ) => {
+const tweetDoc = ( doc, text ) => {
+  const id = doc.id()
   const url = `${BASE_URL}/document/${id}`;
   const status = `${text} ${url}`;
-  let db;
 
-  return ( tryPromise(() => loadTable('document'))
-    .then(docDb => {
-      db = docDb;
-
-      return db;
-    })
-    .then(({ table, conn }) => table.get(id).run(conn))
-    .then(doc => {
-      const docSecret = doc.secret;
-
-      if( !DEMO_CAN_BE_SHARED && id === DEMO_ID ){
-        throw new Error(`Tweeting the demo document is forbidden`);
-      }
-
-      if( docSecret !== secret ){
-        throw new Error(`Can not tweet since the provided secret is incorrect`);
-      }
-    })
-    .then(() => twitterClient.post('statuses/update', { status }))
+  return ( tryPromise(() => twitterClient.post('statuses/update', { status }))
     .then(tweet => {
-      return db.table.get(id).update({ tweet }).run(db.conn).then(() => tweet);
+      // TODO remove timeout
+      setTimeout(() => {
+        console.log('tweet stored', tweet);
+        doc.setTweetMetadata(tweet);
+      }, 5000);
+
+      return true;
     })
   );
 };
@@ -1360,6 +1348,7 @@ http.post('/:id/tweet', function( req, res, next ){
   const id = req.params.id;
   const { text, secret } = _.assign({ text: '', secret: 'read-only-no-secret-specified' }, req.body);
 
+  // TODO
   tweetDoc( id, secret, text )
     .then( json => res.json( json ) )
     .catch( next );
@@ -1823,7 +1812,7 @@ http.patch('/:id/:secret', function( req, res, next ){
     if ( !doc.hasTweet() ) {
       try {
         let text = truncateString( doc.toText(), MAX_TWEET_LENGTH ); // TODO?
-        return await tweetDoc( doc.id(), doc.secret(), text );
+        return await tweetDoc( doc, text );
       } catch ( e ) {
         logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow
       }

@@ -1287,34 +1287,36 @@ http.get('/(:id).png', function( req, res, next ){
 });
 
 // tweet a document as a card with a caption (text)
-const tweetDoc = ( id, secret, text ) => {
+const tweetDoc = ( doc, text ) => {
+  const id = doc.id();
   const url = `${BASE_URL}/document/${id}`;
   const status = `${text} ${url}`;
-  let db;
 
-  return ( tryPromise(() => loadTable('document'))
-    .then(docDb => {
-      db = docDb;
+  return  tryPromise( () => twitterClient.post( 'statuses/update', { status } ) )
+      .then( tweet =>  doc.setTweetMetadata( tweet ) );
+};
 
-      return db;
-    })
-    .then(({ table, conn }) => table.get(id).run(conn))
-    .then(doc => {
-      const docSecret = doc.secret;
+const tryTweetingDoc = async ( doc, text ) => {
 
-      if( !DEMO_CAN_BE_SHARED && id === DEMO_ID ){
-        throw new Error(`Tweeting the demo document is forbidden`);
-      }
+  const shouldTweet = doc => {
+    const alreadyTweeted = doc.hasTweet();
+    const readOnly = _.isNil( doc.secret() );
+    const isShareableDemo = doc.id() === DEMO_ID && DEMO_CAN_BE_SHARED;
+    return ( !alreadyTweeted && !readOnly ) || isShareableDemo;
+  };
 
-      if( docSecret !== secret ){
-        throw new Error(`Can not tweet since the provided secret is incorrect`);
-      }
-    })
-    .then(() => twitterClient.post('statuses/update', { status }))
-    .then(tweet => {
-      return db.table.get(id).update({ tweet }).run(db.conn).then(() => tweet);
-    })
-  );
+  if ( shouldTweet( doc ) ) {
+    try {
+      if( !text ) text = truncateString( doc.toText(), MAX_TWEET_LENGTH );
+      await tweetDoc( doc, text );
+    } catch ( e ) {
+      logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow
+    }
+  } else {
+    logger.info( `This doc cannot be Tweeted at this time` );
+  }
+
+  return doc;
 };
 
 /**
@@ -1360,9 +1362,14 @@ http.post('/:id/tweet', function( req, res, next ){
   const id = req.params.id;
   const { text, secret } = _.assign({ text: '', secret: 'read-only-no-secret-specified' }, req.body);
 
-  tweetDoc( id, secret, text )
+  return (
+    tryPromise( () => loadTables() )
+    .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
+    .then( doc => tryTweetingDoc( doc, text) )
+    .then( getDocJson )
     .then( json => res.json( json ) )
-    .catch( next );
+    .catch( next )
+  );
 });
 
 
@@ -1819,16 +1826,6 @@ http.patch('/:id/:secret', function( req, res, next ){
     await sendFollowUpNotification( doc );
   };
 
-  const tryTweetingDoc = async doc => {
-    if ( !doc.hasTweet() ) {
-      try {
-        let text = truncateString( doc.toText(), MAX_TWEET_LENGTH ); // TODO?
-        return await tweetDoc( doc.id(), doc.secret(), text );
-      } catch ( e ) {
-        logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow
-      }
-    }
-  };
   const handleMakePublicRequest = async doc => {
     await tryMakePublic( doc );
     if( doc.isPublic() ) {

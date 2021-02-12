@@ -109,6 +109,7 @@ export const TWITTER_ACCESS_TOKEN_KEY = env('TWITTER_ACCESS_TOKEN_KEY', 'SPECIFY
 export const TWITTER_ACCESS_TOKEN_SECRET = env('TWITTER_ACCESS_TOKEN_SECRET', 'SPECIFY_IN_YOUR_ENV');
 export const TWITTER_ACCOUNT_NAME = env('TWITTER_ACCOUNT_NAME', 'biofactoid');
 export const MAX_TWEET_LENGTH = env('MAX_TWEET_LENGTH', 150);
+export const MAX_WAIT_TWEET = env('MAX_WAIT_TWEET', 5000);
 
 // Demo and sample
 export const DEMO_ID = env('DEMO_ID', 'demo');

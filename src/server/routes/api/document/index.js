@@ -1701,8 +1701,8 @@ http.post('/', function( req, res, next ){
     .then( handleDocSource )
     .then( handleAuthorName )
     .then( handleSubmission )
-    .then( sendJSONResponse )
     .then( updateRelatedPapers )
+    .then( sendJSONResponse )
     .then( handleInviteNotification )
     .catch( next );
 });
@@ -2098,7 +2098,11 @@ const getRelatedPapersForNetwork = async doc => {
       el.relatedPapers( indraRes );
     };
 
-    await Promise.all([ ...els.map(getRelPprsForEl) ]);
+    let elChunks = _.chunk( els, 9 );
+    for ( let i = 0; i < elChunks.length; i++ ) {
+      let chunk = elChunks[ i ];
+      await Promise.all([ ...chunk.map(getRelPprsForEl) ]);
+    }
 
     const docPprs = doc.relatedPapers();
     const getPmid = ppr => ppr.pubmed.pmid;

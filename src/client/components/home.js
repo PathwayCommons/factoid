@@ -89,7 +89,8 @@ class RequestBiopaxForm extends Component {
           let pmids = Object.keys( docsJSON );
           // TODO: which email address?
           let authorEmail = 'pc@biofactoid.com';
-          let promises = pmids.map( pmid => {
+
+          const handleNewDoc = pmid => {
             let docJSON = docsJSON[ pmid ];
             const data = _.assign( {}, {
               paperId: _.trim( pmid ),
@@ -112,18 +113,20 @@ class RequestBiopaxForm extends Component {
             };
 
             return fetch( apiUrl, fetchOpts ).then( checkStatus );
-          } );
-
-          let chunks = _.chunk( promises, 20 );
-
-          const handleChunk = i => {
-            if ( i == chunks.length ){
-              return Promise.resolve();
-            }
-            return Promise.all( chunks[ i ] ).then( () => handleChunk( i + 1 ) );
           };
 
-          handleChunk( 0 ).then( () => this.setState({ done: true }, resolve ) );
+          const processPmid = i => {
+            if ( i == pmids.length ) {
+              return Promise.resolve();
+            }
+
+            return handleNewDoc( pmids[ i ] ).then( js => {
+              console.log( 'res: ', js );
+              return processPmid( i + 1 );
+            } );
+          };
+
+          processPmid( 0 ).then( () => this.setState({ done: true }, resolve ) );
         } ) )
         .catch( () => {
           const { readJson } = this.state;

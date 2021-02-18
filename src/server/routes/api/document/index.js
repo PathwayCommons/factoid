@@ -1598,6 +1598,7 @@ http.post('/', function( req, res, next ){
   const fromAdmin = _.get( provided, 'fromAdmin', true );
 
   const elToXref = {};
+  const elsToOmit = {};
   const isValidXref = xref => {
     if ( xref == null || xref.org == null ) {
       return false;
@@ -1605,12 +1606,26 @@ http.post('/', function( req, res, next ){
     
     return Organism.fromId( Number( xref.org ) ) != Organism.OTHER;
   };
+  // pass for the entities
   elements.forEach( el => {
     let xref = el._xref;
     if ( isValidXref( xref ) ) {
       elToXref[ el.id ] = xref;
     }
   } );
+  // pass for the interactions
+  elements.forEach( el => {
+    let ppts = el.entries;
+    if ( !_.isNil( ppts ) ){
+      let pptIds = ppts.map( ppt => ppt.id );
+      let hasInvalidPPt = _.some( pptIds, pptId => !elToXref[ pptId ] );
+      if ( hasInvalidPPt ) {
+        [ el.id, ...pptIds ].forEach( elId => elsToOmit[ elId ] = true );
+      }
+    }
+  } );
+
+  _.remove( elements, el => elsToOmit[ el.id ] );
 
   const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
   const handleDocCreation = async ({ docDb, eleDb }) => {

@@ -41,6 +41,10 @@ const fetchRetryUrl = ( url, opts ) => {
   let retryOpts = {
     retryDelay: FETCH_RETRY_DELAY + Math.round(Math.random() * FETCH_RETRY_DELAY_DELTA),
     retryOn: function( attempt, error, response ) {
+      if ( response == null ) {
+        logger.error( `Null response for ${url}` );
+        return false;
+      }
       // retry on any network error, or 4xx or 5xx status codes
       const { statusText, status, ok } = response;
       if ( attempt < FETCH_RETRIES && !ok ) {

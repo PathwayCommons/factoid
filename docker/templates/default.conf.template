@@ -3,8 +3,15 @@ upstream backend {
 }
 
 server {
-  listen ${NGINX_PORT};
-  listen [::]:${NGINX_PORT};
+    server_name ${NGINX_HOST};
+    listen 80;
+    listen [::]:80;
+    return 301 https://${NGINX_HOST}$request_uri;
+}
+
+server {
+  listen 443 ssl;
+  listen [::]:443 ssl;
   server_name ${NGINX_HOST};
   root /;
 

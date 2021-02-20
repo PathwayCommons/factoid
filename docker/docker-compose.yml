@@ -32,7 +32,7 @@ services:
       - webroot:/var/www/html
     depends_on:
       - proxy
-    command: ["certonly", "--webroot", "--webroot-path=/var/www/html", "--email", "${APP_EMAIL}", "--agree-tos", "--no-eff-email", "--force-renewal", "-d", "${APP_DOMAIN}", "-d", "www.${APP_DOMAIN}"]
+    command: ["certonly", "--webroot", "--webroot-path=/var/www/html", "--email", "${APP_EMAIL}", "--agree-tos", "--no-eff-email", "--force-renewal", "-d", "${NGINX_HOST}", "-d", "www.${NGINX_HOST}"]
   webapp:
     image: pathwaycommons/factoid:${FACTOID_IMAGE_TAG:-latest}
     restart: on-failure

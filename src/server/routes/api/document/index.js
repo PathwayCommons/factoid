@@ -494,13 +494,18 @@ let searchByXref = ( xref ) => {
   }
 
   if ( getNcbiId != null ) {
-    return getNcbiId( id ).then( ncbiId => {
-      if ( ncbiId == null ) {
-        return Promise.resolve( null );
-      }
+    try {
+      return getNcbiId( id ).then( ncbiId => {
+        if ( ncbiId == null ) {
+          return Promise.resolve( null );
+        }
 
-      return groundingSearchGet( { id: ncbiId, namespace: 'ncbi' } );
-    } );
+        return groundingSearchGet( { id: ncbiId, namespace: 'ncbi' } );
+      } );
+    }
+    catch( err ) {
+      logger.error(`Error searchByXref: ${err}`);
+    }
   }
 
   return null;
@@ -1557,44 +1562,10 @@ const tryVerify = async doc => {
   return doc;
 };
 
-/**
- * @swagger
- *
- * /api/document:
- *   post:
- *     description: Create a Document
- *     summary: Create a Document
- *     tags:
- *       - Document
- *     requestBody:
- *       description: Data to create a Document
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               paperId:
- *                 type: string
- *               authorEmail:
- *                 type: string
- *     responses:
- *       '200':
- *         description: ok
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/Document'
- *       '500':
- *         description: Error
- */
-http.post('/', function( req, res, next ){
-  const provided = _.assign( {}, req.body );
+const newDocRequest = provided => {
   const { paperId, elements=[], performLayout, submit, groundEls, authorName } = provided;
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
-  const email = _.get( provided, 'email', true );
   const fromAdmin = _.get( provided, 'fromAdmin', true );
 
   const elToXref = {};
@@ -1603,7 +1574,7 @@ http.post('/', function( req, res, next ){
     if ( xref == null || xref.org == null ) {
       return false;
     }
-    
+
     return Organism.fromId( Number( xref.org ) ) != Organism.OTHER;
   };
   // pass for the entities
@@ -1678,13 +1649,6 @@ http.post('/', function( req, res, next ){
 
     return doc;
   };
-  const handleInviteNotification = doc => {
-    if ( email ) {
-      return sendInviteNotification( doc ).then( () => doc );
-    }
-
-    return doc;
-  };
   const handleDocSource = doc => {
     let fcn = () => doc.setAsPcDoc();
     if ( fromAdmin ){
@@ -1700,11 +1664,8 @@ http.post('/', function( req, res, next ){
 
     return doc.provided( { name: authorName } ).then( () => doc );
   };
-  const sendJSONResponse = doc => tryPromise( () => doc.json() )
-  .then( json => res.json( json ) )
-  .then( () => doc );
 
-  tryPromise( () => createSecret({ secret }) )
+  return tryPromise( () => createSecret({ secret }) )
     .then( loadTables )
     .then( handleDocCreation )
     .then( setStatus )
@@ -1716,10 +1677,128 @@ http.post('/', function( req, res, next ){
     .then( handleDocSource )
     .then( handleAuthorName )
     .then( handleSubmission )
-    .then( updateRelatedPapers )
+    .then( updateRelatedPapers );
+};
+
+/**
+ * @swagger
+ *
+ * /api/document:
+ *   post:
+ *     description: Create a Document
+ *     summary: Create a Document
+ *     tags:
+ *       - Document
+ *     requestBody:
+ *       description: Data to create a Document
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               paperId:
+ *                 type: string
+ *               authorEmail:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/Document'
+ *       '500':
+ *         description: Error
+ */
+http.post('/', function( req, res, next ){
+  const provided = _.assign( {}, req.body );
+  const email = _.get( provided, 'email', true );
+
+  const handleInviteNotification = doc => {
+    if ( email ) {
+      return sendInviteNotification( doc ).then( () => doc );
+    }
+
+    return doc;
+  };
+  const sendJSONResponse = doc => tryPromise( () => doc.json() )
+  .then( json => res.json( json ) )
+  .then( () => doc );
+
+  tryPromise( () => newDocRequest( provided ) )
     .then( sendJSONResponse )
     .then( handleInviteNotification )
     .catch( next );
+});
+
+/**
+ * @swagger
+ *
+ * /api/document/from-url:
+ *   post:
+ *     description: Create new documents from given Biopax url
+ *     summary: Create new documents from given Biopax url
+ *     tags:
+ *       - Document
+ *     requestBody:
+ *       description: Data to create new Documents
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               url:
+ *                 type: string
+ *     responses:
+ *     '200':
+ *       description: Success
+ *     '500':
+ *       description: Error
+ */
+http.post('/from-url', function( req, res, next ){
+
+  const provided = _.assign( {}, req.body );
+
+  const { url } = provided;
+
+  tryPromise( () => getJsonFromBiopaxUrl( url ) )
+    .then( response => response.json() )
+    .then( docsJSON => new Promise( () => {
+      let pmids = Object.keys( docsJSON );
+      pmids = pmids.filter( pmid => pmid != null );
+      // TODO: which email address?
+      let authorEmail = 'pc@biofactoid.com';
+
+      const handleNewDoc = pmid => {
+        let docJSON = docsJSON[ pmid ];
+        const data = _.assign( {}, {
+          paperId: _.trim( pmid ),
+          authorEmail,
+          elements: docJSON,
+          performLayout: true,
+          groundEls: true,
+          submit: true,
+          email: false,
+          fromAdmin: false
+        });
+
+        return newDocRequest( data );
+      };
+
+      const processPmid = i => {
+        if ( i == pmids.length ) {
+          return Promise.resolve();
+        }
+
+        return handleNewDoc( pmids[ i ] ).then( () => processPmid( i + 1 ) );
+      };
+
+      processPmid( 0 )
+        .then( () => res.end() )
+        .catch( next );
+    } ) );
 });
 
 /**
@@ -2019,15 +2098,6 @@ http.get('/text/:id', function( req, res, next ){
     .then( loadDoc )
     .then( doc => doc.toText() )
     .then( txt => res.send( txt ))
-    .catch( next );
-});
-
-http.post('/bp2json', function( req, res, next ){
-  const provided = _.assign( {}, req.body );
-  const { url } = provided;
-  tryPromise( () => getJsonFromBiopaxUrl( url ) )
-    .then( r => r.json() )
-    .then( js => res.json( js ) )
     .catch( next );
 });
 

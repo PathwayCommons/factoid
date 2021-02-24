@@ -11,7 +11,6 @@ import emailRegex from 'email-regex';
 import url from 'url';
 import fs from 'fs';
 import { URLSearchParams } from  'url';
-import * as xmljs from 'xml-js';
 
 import { exportToZip, EXPORT_TYPES } from './export';
 import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';

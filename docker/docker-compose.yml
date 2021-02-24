@@ -1,5 +1,22 @@
 version: "3.8"
 services:
+  proxy:
+    image: nginx:${NGINX_IMAGE_TAG:-latest}
+    restart: on-failure
+    container_name: proxy_container
+    depends_on:
+      - webapp
+    ports:
+      - "${PROXY_PORT:-80}:${NGINX_PORT:-80}"
+    volumes:
+      - ./templates:/etc/nginx/templates
+      - appdata:/var/www/app:ro
+    environment:
+      NGINX_PORT: "80"
+      NGINX_HOST:
+      NGINX_PROXY_SERVER: "webapp:3000"
+      STATIC_ROOT: /var/www/app/build
+      IMAGE_ROOT: /var/www/app/src/styles
   webapp:
     image: pathwaycommons/factoid:${FACTOID_IMAGE_TAG:-latest}
     restart: on-failure
@@ -10,6 +27,8 @@ services:
       - converter
     ports:
       - "${FACTOID_PORT:-3000}:3000"
+    volumes:
+      - appdata:/home/appuser/app
     environment:
       BASE_URL:
       GROUNDING_SEARCH_BASE_URL: "http://grounding:3000"
@@ -41,6 +60,9 @@ services:
     environment:
       ELASTICSEARCH_HOST: "index:9200"
       NCBI_EUTILS_API_KEY:
+      ZENODO_ACCESS_TOKEN:
+      ZENODO_BASE_URL:
+      ZENODO_BUCKET_ID:
     command: ["./wait-for-elasticsearch.sh", "index:9200", "npm", "run", "boot"]
   index:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.7.2
@@ -64,6 +86,8 @@ services:
       - "${CONVERTER_PORT:-3082}:8080"
 
 volumes:
+  appdata:
+    name: appdata
   dbdata:
     name: dbdata
   indata:

@@ -21,7 +21,7 @@ class Interaction extends InteractionType {
 
   toBiopaxTemplate( transform, omitDbXref ){
     if ( !this.validatePpts( transform ) ){
-      return this.makeInvalidBiopaxTemplate( omitDbXref );
+      return this.makeInvalidBiopaxTemplate( transform, omitDbXref );
     }
 
     // "Other" type; see 4A-E in "Factoid binary interaction types" doc.

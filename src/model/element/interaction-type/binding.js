@@ -37,7 +37,7 @@ class Binding extends InteractionType {
 
   toBiopaxTemplate( transform, omitDbXref ){
     if ( !this.validatePpts() ){
-      return this.makeInvalidBiopaxTemplate( omitDbXref );
+      return this.makeInvalidBiopaxTemplate( transform, omitDbXref );
     }
 
     let participants = _.uniqBy(this.interaction.participants().map( transform ), p => p.id() );

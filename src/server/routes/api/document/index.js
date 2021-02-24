@@ -1293,34 +1293,36 @@ http.get('/(:id).png', function( req, res, next ){
 });
 
 // tweet a document as a card with a caption (text)
-const tweetDoc = ( id, secret, text ) => {
+const tweetDoc = ( doc, text ) => {
+  const id = doc.id();
   const url = `${BASE_URL}/document/${id}`;
   const status = `${text} ${url}`;
-  let db;
 
-  return ( tryPromise(() => loadTable('document'))
-    .then(docDb => {
-      db = docDb;
+  return  tryPromise( () => twitterClient.post( 'statuses/update', { status } ) )
+      .then( tweet =>  doc.setTweetMetadata( tweet ) );
+};
 
-      return db;
-    })
-    .then(({ table, conn }) => table.get(id).run(conn))
-    .then(doc => {
-      const docSecret = doc.secret;
+const tryTweetingDoc = async ( doc, text ) => {
 
-      if( !DEMO_CAN_BE_SHARED && id === DEMO_ID ){
-        throw new Error(`Tweeting the demo document is forbidden`);
-      }
+  const shouldTweet = doc => {
+    const alreadyTweeted = doc.hasTweet();
+    const readOnly = _.isNil( doc.secret() );
+    const isShareableDemo = doc.id() === DEMO_ID && DEMO_CAN_BE_SHARED;
+    return ( !alreadyTweeted && !readOnly ) || isShareableDemo;
+  };
 
-      if( docSecret !== secret ){
-        throw new Error(`Can not tweet since the provided secret is incorrect`);
-      }
-    })
-    .then(() => twitterClient.post('statuses/update', { status }))
-    .then(tweet => {
-      return db.table.get(id).update({ tweet }).run(db.conn).then(() => tweet);
-    })
-  );
+  if ( shouldTweet( doc ) ) {
+    try {
+      if( !text ) text = truncateString( doc.toText(), MAX_TWEET_LENGTH );
+      await tweetDoc( doc, text );
+    } catch ( e ) {
+      logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow
+    }
+  } else {
+    logger.info( `This doc cannot be Tweeted at this time` );
+  }
+
+  return doc;
 };
 
 /**
@@ -1366,9 +1368,14 @@ http.post('/:id/tweet', function( req, res, next ){
   const id = req.params.id;
   const { text, secret } = _.assign({ text: '', secret: 'read-only-no-secret-specified' }, req.body);
 
-  tweetDoc( id, secret, text )
+  return (
+    tryPromise( () => loadTables() )
+    .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
+    .then( doc => tryTweetingDoc( doc, text) )
+    .then( getDocJson )
     .then( json => res.json( json ) )
-    .catch( next );
+    .catch( next )
+  );
 });
 
 
@@ -1456,19 +1463,35 @@ const emailRelatedPaperAuthors = async doc => {
 
   const hasContact = paper => getContact(paper) != null;
 
+  const createEmptyDoc = async (authorName, authorEmail) => {
+    const provided = {
+      authorEmail,
+      authorName
+    };
+
+    const doc = await postDoc(provided);
+
+    return doc;
+  };
+
   const sendEmail = async (paper, novelIntns) => {
     const contact = getContact(paper);
     const email = EMAIL_RELPPRS_CONTACT ? contact.email[0] : EMAIL_ADMIN_ADDR;
     const name = contact.ForeName;
+    const fullName = contact.name;
 
     // prevent duplicate sending
     doc.relatedPapersNotified(true);
+
+    const newDoc = await createEmptyDoc(fullName, email);
+    const editorUrl = `${BASE_URL}${newDoc.privateUrl()}`;
 
     const mailOpts =  await msgFactory(EMAIL_TYPE_REL_PPR_NOTIFICATION, doc, {
       to: EMAIL_RELPPRS_CONTACT ? email : EMAIL_ADMIN_ADDR, //must explicitly turn off
       name,
       paper,
-      novelIntns
+      novelIntns,
+      editorUrl
     });
 
     // Sending blocked by default, otherwise set EMAIL_ENABLED=true
@@ -1562,10 +1585,58 @@ const tryVerify = async doc => {
   return doc;
 };
 
-const newDocRequest = provided => {
+/**
+ * @swagger
+ *
+ * /api/document:
+ *   post:
+ *     description: Create a Document
+ *     summary: Create a Document
+ *     tags:
+ *       - Document
+ *     requestBody:
+ *       description: Data to create a Document
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               paperId:
+ *                 type: string
+ *               authorEmail:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/Document'
+ *       '500':
+ *         description: Error
+ */
+http.post('/', function( req, res, next ){
+  const impl = async () => {
+    try {
+      const provided = _.assign( {}, req.body );
+      const doc = await postDoc(provided);
+
+      res.json(doc.json());
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  impl();
+});
+
+const postDoc = provided => {
   const { paperId, elements=[], performLayout, submit, groundEls, authorName } = provided;
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
+  const email = _.get( provided, 'email', true );
   const fromAdmin = _.get( provided, 'fromAdmin', true );
 
   const elToXref = {};
@@ -1664,6 +1735,13 @@ const newDocRequest = provided => {
 
     return doc.provided( { name: authorName } ).then( () => doc );
   };
+  const handleInviteNotification = doc => {
+    if ( email ) {
+      return sendInviteNotification( doc ).then( () => doc );
+    }
+
+    return doc;
+  };
 
   return tryPromise( () => createSecret({ secret }) )
     .then( loadTables )
@@ -1677,61 +1755,12 @@ const newDocRequest = provided => {
     .then( handleDocSource )
     .then( handleAuthorName )
     .then( handleSubmission )
-    .then( updateRelatedPapers );
+    .then( doc => {
+      updateRelatedPapers(doc).then(handleInviteNotification).catch(_.nop);
+
+      return doc;
+    } );
 };
-
-/**
- * @swagger
- *
- * /api/document:
- *   post:
- *     description: Create a Document
- *     summary: Create a Document
- *     tags:
- *       - Document
- *     requestBody:
- *       description: Data to create a Document
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               paperId:
- *                 type: string
- *               authorEmail:
- *                 type: string
- *     responses:
- *       '200':
- *         description: ok
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/Document'
- *       '500':
- *         description: Error
- */
-http.post('/', function( req, res, next ){
-  const provided = _.assign( {}, req.body );
-  const email = _.get( provided, 'email', true );
-
-  const handleInviteNotification = doc => {
-    if ( email ) {
-      return sendInviteNotification( doc ).then( () => doc );
-    }
-
-    return doc;
-  };
-  const sendJSONResponse = doc => tryPromise( () => doc.json() )
-  .then( json => res.json( json ) )
-  .then( () => doc );
-
-  tryPromise( () => newDocRequest( provided ) )
-    .then( sendJSONResponse )
-    .then( handleInviteNotification )
-    .catch( next );
-});
 
 /**
  * @swagger
@@ -1768,6 +1797,7 @@ http.post('/from-url', function( req, res, next ){
     .then( docsJSON => new Promise( () => {
       let pmids = Object.keys( docsJSON );
       pmids = pmids.filter( pmid => pmid != null );
+      pmids = _.slice( pmids, 0, 2 );
       // TODO: which email address?
       let authorEmail = 'pc@biofactoid.com';
 
@@ -1784,7 +1814,7 @@ http.post('/from-url', function( req, res, next ){
           fromAdmin: false
         });
 
-        return newDocRequest( data );
+        return postDoc( data );
       };
 
       const processPmid = i => {
@@ -1921,16 +1951,6 @@ http.patch('/:id/:secret', function( req, res, next ){
     await sendFollowUpNotification( doc );
   };
 
-  const tryTweetingDoc = async doc => {
-    if ( !doc.hasTweet() ) {
-      try {
-        let text = truncateString( doc.toText(), MAX_TWEET_LENGTH ); // TODO?
-        return await tweetDoc( doc.id(), doc.secret(), text );
-      } catch ( e ) {
-        logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow
-      }
-    }
-  };
   const handleMakePublicRequest = async doc => {
     await tryMakePublic( doc );
     if( doc.isPublic() ) {

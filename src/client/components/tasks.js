@@ -9,6 +9,7 @@ import { ENTITY_TYPE } from '../../model/element/entity-type';
 import { BASE_URL } from '../../config';
 import { makeClassList } from '../dom';
 import { NativeShare, isNativeShareSupported } from './native-share';
+import { MAX_WAIT_TWEET } from '../../config';
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete', 'associate' ];
 
@@ -215,6 +216,24 @@ class TaskView extends DataComponent {
     });
   }
 
+  waitForTweet() {
+    let { document } = this.props;
+    let start = Date.now();
+
+    return new Promise(resolve => {
+      let interval = setInterval(() => {
+        let timeElapsed = Date.now() - start;
+
+        if ( document.hasTweet() || timeElapsed >= MAX_WAIT_TWEET ) {
+          clearInterval( interval );
+          resolve();
+        } else {
+          // keep trying
+        }
+      }, 100);
+    });
+  }
+
   componentWillUnmount(){
     this.props.document.elements().forEach( ele => unbindEleEvts(ele, this.update));
 
@@ -228,6 +247,7 @@ class TaskView extends DataComponent {
     new Promise( resolve => this.setState({ submitting: true }, resolve ) )
       .then( () => this.props.document.submit() )
       .then( () => this.tryPublish() )
+      .then( () => this.waitForTweet() )
       .finally( () => {
         new Promise( resolve => this.setState({ submitting: false }, resolve ) );
       });

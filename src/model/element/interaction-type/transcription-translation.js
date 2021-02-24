@@ -50,7 +50,7 @@ class TranscriptionTranslation extends InteractionType {
 
   toBiopaxTemplate( transform, omitDbXref ){
     if ( !this.validatePpts() ){
-      return this.makeInvalidBiopaxTemplate( omitDbXref );
+      return this.makeInvalidBiopaxTemplate( transform, omitDbXref );
     }
 
     //src, tgt shouldn't be null at this point (barring bug)

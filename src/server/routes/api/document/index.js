@@ -11,7 +11,6 @@ import emailRegex from 'email-regex';
 import url from 'url';
 import fs from 'fs';
 import { URLSearchParams } from  'url';
-import * as xmljs from 'xml-js';
 
 import { exportToZip, EXPORT_TYPES } from './export';
 import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
@@ -331,23 +330,38 @@ const fillDocArticle = async doc => {
   }
 };
 
-const findOrcidUri = async ( firstName, lastName, doi ) => {
-  let url = `https://pub.orcid.org/v3.0/search?q=`
-      + `family-name:${lastName}+AND+given-names:${firstName}+AND+digital-object-ids:%22${doi}%22`;
+const makeOrcidKey = ( s1, s2 ) => s1 + '_' + s2;
 
-  const findUri = obj => {
-    let els = _.get( obj, [ 'elements', 0, 'elements', 0, 'elements', 0, 'elements' ] );
-    let uriObj = _.find( els, el => el.name = 'common:uri' );
-    let uri = _.get( uriObj, [ 'elements', 0, 'text' ] );
+const getOrcidUriMap = async doi => {
+  let url = `https://pub.orcid.org/v3.0/csv-search?q=`
+      + `doi%3D${doi}`;
 
-    return uri;
+  const textToMap = text => {
+    let lines = text.split(/\r\n|\r|\n/);
+    let obj = {};
+    lines.forEach( ( line, i ) => {
+      if ( i == 0 ) {
+        return;
+      }
+      let vals = line.split(',');
+      let orcidUri = 'https://orcid.org/' + vals[ 0 ];
+      let givenNames = vals[ 2 ];
+      let familyName = vals[ 3 ];
+
+      if ( !givenNames || !familyName ) {
+        return;
+      }
+
+      let key = makeOrcidKey( givenNames, familyName );
+      obj[ key ] = orcidUri;
+    } );
+
+    return obj;
   };
 
-  return fetch( url )
+  return fetch( url, { method: 'GET', headers: { 'accept': 'text/csv' } } )
     .then( res => res.text() )
-    .then( res => xmljs.xml2json(res) )
-    .then( res => JSON.parse( res ) )
-    .then( findUri )
+    .then( textToMap )
     .catch( error => {
       logger.error( `Error finding Orcid URI: ${error.message}`);
       return null;
@@ -358,15 +372,18 @@ const fillDocAuthorProfiles = async doc => {
   const citation = doc.citation();
   const { authors, doi } = citation;
 
-  let promises = authors.authorList.map( async a => {
-    let orcid = await findOrcidUri( a.ForeName, a.LastName, doi );
-    orcid = orcid || null;
+  let orcidUrisMap = await getOrcidUriMap( doi );
 
+  orcidUrisMap = orcidUrisMap || null;
+
+  let authorProfiles = authors.authorList.map( a => {
+    let key = makeOrcidKey( a.ForeName, a.LastName );
+    let orcid = orcidUrisMap[ key ] || null;
     let authorProfile =  _.assignIn({}, a, { orcid });
     return authorProfile;
   });
 
-  let authorProfiles = await Promise.all( promises );
+
   await doc.authorProfiles( authorProfiles );
 };
 

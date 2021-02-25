@@ -49,7 +49,8 @@ import { BASE_URL,
   SEMANTIC_SEARCH_LIMIT,
   NCBI_EUTILS_BASE_URL,
   PC_URL,
-  EMAIL_TYPE_REL_PPR_NOTIFICATION
+  EMAIL_TYPE_REL_PPR_NOTIFICATION,
+  EMAIL_ADDRESS_ADMIN
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
@@ -1797,9 +1798,8 @@ http.post('/from-url', function( req, res, next ){
     .then( docsJSON => new Promise( () => {
       let pmids = Object.keys( docsJSON );
       pmids = pmids.filter( pmid => pmid != null );
-      pmids = _.slice( pmids, 0, 2 );
       // TODO: which email address?
-      let authorEmail = 'pc@biofactoid.com';
+      let authorEmail = EMAIL_ADDRESS_ADMIN;
 
       const handleNewDoc = pmid => {
         let docJSON = docsJSON[ pmid ];

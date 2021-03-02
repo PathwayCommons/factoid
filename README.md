@@ -149,7 +149,7 @@ The following environment variables should always be set in production instances
 
 ## Running via Docker
 
-See [factoid-docker-config](https://github.com/PathwayCommons/factoid-docker-config).
+Images are maintained at [dockerhub](https://hub.docker.com/repository/docker/pathwaycommons/factoid). Also see [factoid-docker-config](https://github.com/PathwayCommons/factoid-docker-config).
 
 ## Testing
 

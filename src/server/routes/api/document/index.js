@@ -1779,7 +1779,7 @@ http.post('/from-url', function( req, res, next ){
     .then( response => response.json() )
     .then( docsJSON => new Promise( () => {
       let pmids = Object.keys( docsJSON );
-      pmids = pmids.filter( pmid => pmid != null );,
+      pmids = pmids.filter( pmid => pmid != null );
       // TODO: which email address?
       let authorEmail = EMAIL_ADDRESS_ADMIN;
 

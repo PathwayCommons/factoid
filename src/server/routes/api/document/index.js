@@ -22,6 +22,7 @@ import Organism from '../../../../model/organism';
 import db from '../../../db';
 import logger from '../../../logger';
 import { getPubmedArticle } from './pubmed';
+import { AdminPapersQueue, PCPapersQueue } from './related-papers-queue';
 import { createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
 import * as indra from './indra';
 import { get as groundingSearchGet } from '../element-association/grounding-search';
@@ -42,7 +43,7 @@ import { BASE_URL,
   DOCUMENT_IMAGE_PADDING,
   EMAIL_ADMIN_ADDR,
   EMAIL_RELPPRS_CONTACT,
-  EMAIL_TYPE_INVITE,
+  // EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP,
   MIN_RELATED_PAPERS,
@@ -399,15 +400,16 @@ const configureAndSendMail = async ( emailType, id, secret ) => {
 };
 
 // Do not try send when there are email issues
-const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
-const sendInviteNotification = async doc => {
-  let emailType = EMAIL_TYPE_INVITE;
-  const id = doc.id();
-  const secret = doc.secret();
-  const hasAuthorEmailIssue = hasIssue( doc, 'authorEmail' );
-  if( !hasAuthorEmailIssue ) await configureAndSendMail( emailType, id, secret );
-  return doc;
-};
+// const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
+// TODO: was not used?
+// const sendInviteNotification = async doc => {
+//   let emailType = EMAIL_TYPE_INVITE;
+//   const id = doc.id();
+//   const secret = doc.secret();
+//   const hasAuthorEmailIssue = hasIssue( doc, 'authorEmail' );
+//   if( !hasAuthorEmailIssue ) await configureAndSendMail( emailType, id, secret );
+//   return doc;
+// };
 
 let handleResponseError = response => {
   if (!response.ok) {
@@ -1634,10 +1636,9 @@ http.post('/', function( req, res, next ){
 });
 
 const postDoc = provided => {
-  const { paperId, elements=[], performLayout, submit, groundEls, authorName } = provided;
+  const { paperId, elements=[], performLayout, groundEls, authorName } = provided;
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
-  const email = _.get( provided, 'email', true );
   const fromAdmin = _.get( provided, 'fromAdmin', true );
 
   const elToXref = {};
@@ -1679,13 +1680,6 @@ const postDoc = provided => {
   const handleLayout = doc => {
     if ( performLayout ) {
       return tryPromise( () => doc.applyLayout() ).then( () => doc );
-    }
-
-    return doc;
-  };
-  const handleSubmission = doc => {
-    if ( submit ) {
-      return tryPromise( () => doc.submit() ).then( () => doc );
     }
 
     return doc;
@@ -1736,13 +1730,6 @@ const postDoc = provided => {
 
     return doc.provided( { name: authorName } ).then( () => doc );
   };
-  const handleInviteNotification = doc => {
-    if ( email ) {
-      return sendInviteNotification( doc ).then( () => doc );
-    }
-
-    return doc;
-  };
 
   return tryPromise( () => createSecret({ secret }) )
     .then( loadTables )
@@ -1755,12 +1742,7 @@ const postDoc = provided => {
     .then( handleLayout )
     .then( handleDocSource )
     .then( handleAuthorName )
-    .then( handleSubmission )
-    .then( doc => {
-      updateRelatedPapers(doc).then(handleInviteNotification).catch(_.nop);
-
-      return doc;
-    } );
+    .catch( _.nop );
 };
 
 /**
@@ -1797,9 +1779,12 @@ http.post('/from-url', function( req, res, next ){
     .then( response => response.json() )
     .then( docsJSON => new Promise( () => {
       let pmids = Object.keys( docsJSON );
-      pmids = pmids.filter( pmid => pmid != null );
+      pmids = pmids.filter( pmid => pmid != null );,
       // TODO: which email address?
       let authorEmail = EMAIL_ADDRESS_ADMIN;
+
+      const updateAndSubmit = doc => updateRelatedPapers( doc ).then( () => doc.submit() );
+      const addToRelatedPapersQueue = doc => PCPapersQueue.addJob( () => updateAndSubmit( doc ) );
 
       const handleNewDoc = pmid => {
         let docJSON = docsJSON[ pmid ];
@@ -1809,12 +1794,10 @@ http.post('/from-url', function( req, res, next ){
           elements: docJSON,
           performLayout: true,
           groundEls: true,
-          submit: true,
-          email: false,
           fromAdmin: false
         });
 
-        return postDoc( data );
+        return postDoc( data ).then( addToRelatedPapersQueue );
       };
 
       const processPmid = i => {
@@ -1947,8 +1930,10 @@ http.patch('/:id/:secret', function( req, res, next ){
   };
 
   const onDocPublic = async doc => {
-    await updateRelatedPapers( doc );
-    await sendFollowUpNotification( doc );
+    await AdminPapersQueue.addJob( async () => {
+      await updateRelatedPapers( doc );
+      await sendFollowUpNotification( doc );
+    } );
   };
 
   const handleMakePublicRequest = async doc => {
@@ -2203,7 +2188,7 @@ const getRelatedPapersForNetwork = async doc => {
       el.relatedPapers( indraRes );
     };
 
-    let elChunks = _.chunk( els, 9 );
+    let elChunks = _.chunk( els, 1 );
     for ( let i = 0; i < elChunks.length; i++ ) {
       let chunk = elChunks[ i ];
       await Promise.all([ ...chunk.map(getRelPprsForEl) ]);

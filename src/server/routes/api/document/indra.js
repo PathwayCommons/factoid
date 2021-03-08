@@ -18,7 +18,7 @@ const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
 const SORT_BY_DATE = false; // TODO remove
 
 const FETCH_RETRIES = 20;
-const FETCH_RETRY_DELAY = 3000;
+const FETCH_RETRY_DELAY = 6000;
 const FETCH_RETRY_DELAY_DELTA = 1000;
 
 const SUB_MODIFICATION_TYPES = ['Phosphorylation', 'Dephosphorylation', 'Dephosphorylation',
@@ -157,6 +157,10 @@ const getDocuments = ( templates, queryDoc ) => {
         ret = _.groupBy( filteredIntns, 'pmid' );
 
         return ret;
+      } )
+      .catch( err => {
+        logger.error( err );
+        return {};
       } );
   };
 
@@ -282,8 +286,9 @@ const transformIntnType = indraType => {
 };
 
 const getInteractions = (agent0, agent1) => {
+  let getStatementsMemoized = _.memoize( getStatements );
   return (
-    tryPromise( () => getStatements(agent0, agent1) )
+    tryPromise( () => getStatementsMemoized(agent0, agent1) )
       .then( stmts => {
         return assembleEnglish( stmts )
           .then( res => res.json() )
@@ -336,7 +341,7 @@ const getStatements = (agent0, agent1) => {
       }
       logger.error( errStr );
       logger.error( err );
-      throw err;
+      return [];
     } );
 };
 

@@ -499,7 +499,7 @@ class Home extends Component {
           ]),
           h('p.home-cta-p.home-cta-p-persistent', [
             // TODO use this one with link:
-            h('a', { href: 'https://osf.io/zep3x/', target: '_blank' },
+            h('a', { href: 'https://www.biorxiv.org/content/10.1101/2021.03.10.382333v1', target: '_blank' },
             [
               h('button.home-cta-alt-button', 'Read our paper')
             ]),

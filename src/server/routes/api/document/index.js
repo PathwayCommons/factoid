@@ -1687,7 +1687,7 @@ const postDoc = provided => {
   const handleElGroundings = doc => {
     const perform = () => {
       let entities = doc.entities();
-      let intns = doc.interactions();
+      let entityIdsToRemove = new Set();
 
       let entityPromises = entities.map( entity => {
         let xref = elToXref[entity.id()];
@@ -1700,13 +1700,44 @@ const postDoc = provided => {
             return entity.associate( res ).then( () => entity.complete() );
           }
 
+          entityIdsToRemove.add( entity.id() );
           return Promise.resolve();
         } );
       } );
 
-      let intnPromises = intns.map( intn => intn.complete() );
+      const handleIdsToRemove = () => {
+        let intnIdsToRemove = new Set();
 
-      return Promise.all( [ ...entityPromises, ...intnPromises ] );
+        entityIdsToRemove.forEach( entityId => {
+          elements.forEach( el => {
+            let ppts = el.entries;
+            if ( !_.isNil( ppts ) ){
+              let pptIds = ppts.map( ppt => ppt.id );
+              let includesEntity = _.includes( pptIds, entityId );
+              if ( includesEntity ) {
+                pptIds.forEach( pptId => entityIdsToRemove.add( pptId ) );
+                intnIdsToRemove.add( el.id );
+              }
+            }
+          } );
+        } );
+
+        const entityRemovePromises = [ ...entityIdsToRemove ].map( entityId => doc.remove( entityId ) );
+        const intnRemovePromises = [ ...intnIdsToRemove ].map( intnId => doc.remove( intnId ) );
+
+        return Promise.all( entityRemovePromises )
+          .then( () => Promise.all( intnRemovePromises ) );
+      };
+
+
+
+      return Promise.all( entityPromises )
+        .then( handleIdsToRemove )
+        .then( () => {
+          let intns = doc.interactions();
+          let intnPromises = intns.map( intn => intn.complete() );
+          return Promise.all( intnPromises );
+        } );
     };
 
     if ( groundEls ){
@@ -1797,7 +1828,13 @@ http.post('/from-url', function( req, res, next ){
           fromAdmin: false
         });
 
-        return postDoc( data ).then( addToRelatedPapersQueue );
+        return postDoc( data ).then( doc => {
+          if ( doc.interactions().length == 0 ) {
+            return doc.trash();
+          }
+
+          return addToRelatedPapersQueue( doc );
+        } );
       };
 
       const processPmid = i => {

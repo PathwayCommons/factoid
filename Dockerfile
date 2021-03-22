@@ -31,10 +31,6 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 # Note: NODE_ENV is development so that dev deps are installed
 RUN NODE_ENV=development npm install
 
-# Build project
-RUN npm run clean
-RUN npm run build
-
 # Expose port
 EXPOSE 3000
 

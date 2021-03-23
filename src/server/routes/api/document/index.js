@@ -17,9 +17,11 @@ import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '..
 import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
+import Organism from '../../../../model/organism';
 import db from '../../../db';
 import logger from '../../../logger';
 import { getPubmedArticle } from './pubmed';
+import { AdminPapersQueue, PCPapersQueue } from './related-papers-queue';
 import { createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
 import * as indra from './indra';
 import { get as groundingSearchGet } from '../element-association/grounding-search';
@@ -40,14 +42,15 @@ import { BASE_URL,
   DOCUMENT_IMAGE_PADDING,
   EMAIL_ADMIN_ADDR,
   EMAIL_RELPPRS_CONTACT,
-  EMAIL_TYPE_INVITE,
+  // EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP,
   MIN_RELATED_PAPERS,
   SEMANTIC_SEARCH_LIMIT,
   NCBI_EUTILS_BASE_URL,
   PC_URL,
-  EMAIL_TYPE_REL_PPR_NOTIFICATION
+  EMAIL_TYPE_REL_PPR_NOTIFICATION,
+  EMAIL_ADDRESS_ADMIN
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
@@ -92,6 +95,13 @@ let createSecret = ({ secret }) => {
   return (
     tryPromise( () => loadTable('secret') )
     .then(({ table, conn }) => table.insert({ id: secret }).run(conn))
+  );
+};
+
+let deleteSecret = ({ secret }) => {
+  return (
+    tryPromise( () => loadTable('secret') )
+    .then(({ table, conn }) => table.filter({ id: secret }).delete().run(conn))
   );
 };
 
@@ -414,15 +424,16 @@ const configureAndSendMail = async ( emailType, id, secret ) => {
 };
 
 // Do not try send when there are email issues
-const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
-const sendInviteNotification = async doc => {
-  let emailType = EMAIL_TYPE_INVITE;
-  const id = doc.id();
-  const secret = doc.secret();
-  const hasAuthorEmailIssue = hasIssue( doc, 'authorEmail' );
-  if( !hasAuthorEmailIssue ) await configureAndSendMail( emailType, id, secret );
-  return doc;
-};
+// const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
+// TODO: was not used?
+// const sendInviteNotification = async doc => {
+//   let emailType = EMAIL_TYPE_INVITE;
+//   const id = doc.id();
+//   const secret = doc.secret();
+//   const hasAuthorEmailIssue = hasIssue( doc, 'authorEmail' );
+//   if( !hasAuthorEmailIssue ) await configureAndSendMail( emailType, id, secret );
+//   return doc;
+// };
 
 let handleResponseError = response => {
   if (!response.ok) {
@@ -510,13 +521,18 @@ let searchByXref = ( xref ) => {
   }
 
   if ( getNcbiId != null ) {
-    return getNcbiId( id ).then( ncbiId => {
-      if ( ncbiId == null ) {
-        return Promise.resolve( null );
-      }
+    try {
+      return getNcbiId( id ).then( ncbiId => {
+        if ( ncbiId == null ) {
+          return Promise.resolve( null );
+        }
 
-      return groundingSearchGet( { id: ncbiId, namespace: 'ncbi' } );
-    } );
+        return groundingSearchGet( { id: ncbiId, namespace: 'ncbi' } );
+      } );
+    }
+    catch( err ) {
+      logger.error(`Error searchByXref: ${err}`);
+    }
   }
 
   return null;
@@ -1644,19 +1660,40 @@ http.post('/', function( req, res, next ){
 });
 
 const postDoc = provided => {
-  const { paperId, elements=[], performLayout, submit, groundEls, authorName } = provided;
+  const { paperId, elements=[], performLayout, groundEls, authorName } = provided;
   const id = paperId === DEMO_ID ? DEMO_ID: undefined;
   const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
-  const email = _.get( provided, 'email', true );
   const fromAdmin = _.get( provided, 'fromAdmin', true );
 
   const elToXref = {};
+  const elsToOmit = {};
+  const isValidXref = xref => {
+    if ( xref == null || xref.org == null ) {
+      return false;
+    }
+
+    return Organism.fromId( Number( xref.org ) ) != Organism.OTHER;
+  };
+  // pass for the entities
   elements.forEach( el => {
     let xref = el._xref;
-    if ( xref ) {
+    if ( isValidXref( xref ) ) {
       elToXref[ el.id ] = xref;
     }
   } );
+  // pass for the interactions
+  elements.forEach( el => {
+    let ppts = el.entries;
+    if ( !_.isNil( ppts ) ){
+      let pptIds = ppts.map( ppt => ppt.id );
+      let hasInvalidPPt = _.some( pptIds, pptId => !elToXref[ pptId ] );
+      if ( hasInvalidPPt ) {
+        [ el.id, ...pptIds ].forEach( elId => elsToOmit[ elId ] = true );
+      }
+    }
+  } );
+
+  _.remove( elements, el => elsToOmit[ el.id ] );
 
   const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
   const handleDocCreation = async ({ docDb, eleDb }) => {
@@ -1671,17 +1708,10 @@ const postDoc = provided => {
 
     return doc;
   };
-  const handleSubmission = doc => {
-    if ( submit ) {
-      return tryPromise( () => doc.submit() ).then( () => doc );
-    }
-
-    return doc;
-  };
   const handleElGroundings = doc => {
     const perform = () => {
       let entities = doc.entities();
-      let intns = doc.interactions();
+      let entityIdsToRemove = new Set();
 
       let entityPromises = entities.map( entity => {
         let xref = elToXref[entity.id()];
@@ -1694,24 +1724,48 @@ const postDoc = provided => {
             return entity.associate( res ).then( () => entity.complete() );
           }
 
+          entityIdsToRemove.add( entity.id() );
           return Promise.resolve();
         } );
       } );
 
-      let intnPromises = intns.map( intn => intn.complete() );
+      const handleIdsToRemove = () => {
+        let intnIdsToRemove = new Set();
 
-      return Promise.all( [ ...entityPromises, ...intnPromises ] );
+        entityIdsToRemove.forEach( entityId => {
+          elements.forEach( el => {
+            let ppts = el.entries;
+            if ( !_.isNil( ppts ) ){
+              let pptIds = ppts.map( ppt => ppt.id );
+              let includesEntity = _.includes( pptIds, entityId );
+              if ( includesEntity ) {
+                pptIds.forEach( pptId => entityIdsToRemove.add( pptId ) );
+                intnIdsToRemove.add( el.id );
+              }
+            }
+          } );
+        } );
+
+        const entityRemovePromises = [ ...entityIdsToRemove ].map( entityId => doc.remove( entityId ) );
+        const intnRemovePromises = [ ...intnIdsToRemove ].map( intnId => doc.remove( intnId ) );
+
+        return Promise.all( entityRemovePromises )
+          .then( () => Promise.all( intnRemovePromises ) );
+      };
+
+
+
+      return Promise.all( entityPromises )
+        .then( handleIdsToRemove )
+        .then( () => {
+          let intns = doc.interactions();
+          let intnPromises = intns.map( intn => intn.complete() );
+          return Promise.all( intnPromises );
+        } );
     };
 
     if ( groundEls ){
       return tryPromise( () => perform() ).then( () => doc );
-    }
-
-    return doc;
-  };
-  const handleInviteNotification = doc => {
-    if ( email ) {
-      return sendInviteNotification( doc ).then( () => doc );
     }
 
     return doc;
@@ -1743,13 +1797,84 @@ const postDoc = provided => {
     .then( handleLayout )
     .then( handleDocSource )
     .then( handleAuthorName )
-    .then( handleSubmission )
-    .then( doc => {
-      updateRelatedPapers(doc).then(handleInviteNotification).catch(_.nop);
-
-      return doc;
-    } );
+    .catch( _.nop );
 };
+
+/**
+ * @swagger
+ *
+ * /api/document/from-url:
+ *   post:
+ *     description: Create new documents from given Biopax url
+ *     summary: Create new documents from given Biopax url
+ *     tags:
+ *       - Document
+ *     requestBody:
+ *       description: Data to create new Documents
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               url:
+ *                 type: string
+ *     responses:
+ *     '200':
+ *       description: Success
+ *     '500':
+ *       description: Error
+ */
+http.post('/from-url', function( req, res, next ){
+
+  const provided = _.assign( {}, req.body );
+
+  const { url } = provided;
+
+  tryPromise( () => getJsonFromBiopaxUrl( url ) )
+    .then( response => response.json() )
+    .then( docsJSON => new Promise( () => {
+      let pmids = Object.keys( docsJSON );
+      pmids = pmids.filter( pmid => pmid != null );
+      // TODO: which email address?
+      let authorEmail = EMAIL_ADDRESS_ADMIN;
+
+      const updateAndSubmit = doc => updateRelatedPapers( doc ).then( () => doc.submit() );
+      const addToRelatedPapersQueue = doc => PCPapersQueue.addJob( () => updateAndSubmit( doc ) );
+
+      const handleNewDoc = pmid => {
+        let docJSON = docsJSON[ pmid ];
+        const data = _.assign( {}, {
+          paperId: _.trim( pmid ),
+          authorEmail,
+          elements: docJSON,
+          performLayout: true,
+          groundEls: true,
+          fromAdmin: false
+        });
+
+        return postDoc( data ).then( doc => {
+          if ( doc.interactions().length == 0 ) {
+            let secret = doc.secret();
+            return deleteTableRows( API_KEY, secret ).then( () => deleteSecret( { secret } ) );
+          }
+
+          return addToRelatedPapersQueue( doc );
+        } );
+      };
+
+      const processPmid = i => {
+        if ( i == pmids.length ) {
+          return Promise.resolve();
+        }
+
+        return handleNewDoc( pmids[ i ] ).then( () => processPmid( i + 1 ) );
+      };
+
+      processPmid( 0 )
+        .then( () => res.end() )
+        .catch( next );
+    } ) );
+});
 
 /**
  * @swagger
@@ -1867,8 +1992,10 @@ http.patch('/:id/:secret', function( req, res, next ){
   };
 
   const onDocPublic = async doc => {
-    await updateRelatedPapers( doc );
-    await sendFollowUpNotification( doc );
+    await AdminPapersQueue.addJob( async () => {
+      await updateRelatedPapers( doc );
+      await sendFollowUpNotification( doc );
+    } );
   };
 
   const handleMakePublicRequest = async doc => {
@@ -2041,15 +2168,6 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
-http.post('/bp2json', function( req, res, next ){
-  const provided = _.assign( {}, req.body );
-  const { url } = provided;
-  tryPromise( () => getJsonFromBiopaxUrl( url ) )
-    .then( r => r.json() )
-    .then( js => res.json( js ) )
-    .catch( next );
-});
-
 const updateRelatedPapers = async doc => {
   await getRelPprsForDoc( doc );
   await getRelatedPapersForNetwork( doc );
@@ -2132,7 +2250,11 @@ const getRelatedPapersForNetwork = async doc => {
       el.relatedPapers( indraRes );
     };
 
-    await Promise.all([ ...els.map(getRelPprsForEl) ]);
+    let elChunks = _.chunk( els, 1 );
+    for ( let i = 0; i < elChunks.length; i++ ) {
+      let chunk = elChunks[ i ];
+      await Promise.all([ ...chunk.map(getRelPprsForEl) ]);
+    }
 
     const docPprs = doc.relatedPapers();
     const getPmid = ppr => ppr.pubmed.pmid;

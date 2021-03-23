@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import h from 'react-hyperscript';
 import { Component } from 'react';
 import Popover from './popover/popover';
@@ -26,7 +25,6 @@ class RequestBiopaxForm extends Component {
     this.bus = this.props.bus;
 
     this.state = {
-      readJson: false,
       submitting: false,
       url: undefined,
       done: false,
@@ -41,7 +39,6 @@ class RequestBiopaxForm extends Component {
 
   reset(){
     this.setState({
-      readJson: false,
       submitting: false,
       url: undefined,
       done: false,
@@ -80,58 +77,12 @@ class RequestBiopaxForm extends Component {
       };
 
       this.setState({ submitting: true, errors: { incompleteForm: false, network: false } });
-      const apiUrl = 'api/document/bp2json';
+      const apiUrl = 'api/document/from-url';
       ( fetch( apiUrl, fetchOpts )
         .then( checkStatus )
-        .then( response => response.json() )
-        .then( docsJSON => new Promise( resolve => {
-          this.setState({readJson: true});
-          let pmids = Object.keys( docsJSON );
-          // TODO: which email address?
-          let authorEmail = 'pc@biofactoid.com';
-          let promises = pmids.map( pmid => {
-            let docJSON = docsJSON[ pmid ];
-            const data = _.assign( {}, {
-              paperId: _.trim( pmid ),
-              authorEmail,
-              elements: docJSON,
-              performLayout: true,
-              groundEls: true,
-              submit: true,
-              email: false,
-              fromAdmin: false
-            });
-
-            const apiUrl = 'api/document';
-            const fetchOpts = {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify( data )
-            };
-
-            return fetch( apiUrl, fetchOpts ).then( checkStatus );
-          } );
-
-          let chunks = _.chunk( promises, 20 );
-
-          const handleChunk = i => {
-            if ( i == chunks.length ){
-              return Promise.resolve();
-            }
-            return Promise.all( chunks[ i ] ).then( () => handleChunk( i + 1 ) );
-          };
-
-          handleChunk( 0 ).then( () => this.setState({ done: true }, resolve ) );
-        } ) )
-        .catch( () => {
-          const { readJson } = this.state;
-          if ( readJson ) {
-              return new Promise( resolve => this.setState({ errors: { network: true } }, resolve ) );
-          }
-        } )
-        .finally( () => new Promise( resolve => this.setState({ submitting: false, readJson: false }, resolve ) ) )
+        .then( () => new Promise( resolve => this.setState({ done: true }, resolve ) ) )
+        .catch( () => new Promise( resolve => this.setState({ errors: { network: true } }, resolve ) ) )
+        .finally( () => new Promise( resolve => this.setState({ submitting: false }, resolve ) ) )
       );
     }
   }

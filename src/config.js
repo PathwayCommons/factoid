@@ -97,6 +97,7 @@ export const EMAIL_TYPE_FOLLOWUP = env('EMAIL_TYPE_FOLLOWUP', 'followUp');
 export const EMAIL_TYPE_REQUEST_ISSUE = env('EMAIL_TYPE_REQUEST_ISSUE', 'requestIssue');
 export const EMAIL_TYPE_REL_PPR_NOTIFICATION = env('EMAIL_TYPE_REL_PPR_NOTIFICATION', 'relatedPaperNotification');
 export const EMAIL_ADDRESS_INFO = env('EMAIL_ADDRESS_INFO', 'info@biofactoid.org');
+export const EMAIL_ADDRESS_ADMIN = env('EMAIL_ADDRESS_ADMIN', 'pc@biofactoid.com');
 
 // Sharing
 export const DOCUMENT_IMAGE_CACHE_SIZE = env('DOCUMENT_IMAGE_CACHE_SIZE', 100);

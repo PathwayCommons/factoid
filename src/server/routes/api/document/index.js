@@ -99,6 +99,13 @@ let createSecret = ({ secret }) => {
   );
 };
 
+let deleteSecret = ({ secret }) => {
+  return (
+    tryPromise( () => loadTable('secret') )
+    .then(({ table, conn }) => table.filter({ id: secret }).delete().run(conn))
+  );
+};
+
 // let createRelatedPapers = ({ papersData, doc }) => {
 //   let sanitize = o => {
 //     delete o.intnId;
@@ -1831,7 +1838,7 @@ http.post('/from-url', function( req, res, next ){
         return postDoc( data ).then( doc => {
           if ( doc.interactions().length == 0 ) {
             let secret = doc.secret();
-            return deleteTableRows( API_KEY, secret );
+            return deleteTableRows( API_KEY, secret ).then( () => deleteSecret( { secret } ) );
           }
 
           return addToRelatedPapersQueue( doc );

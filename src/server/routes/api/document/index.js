@@ -1830,7 +1830,8 @@ http.post('/from-url', function( req, res, next ){
 
         return postDoc( data ).then( doc => {
           if ( doc.interactions().length == 0 ) {
-            return doc.trash();
+            let secret = doc.secret();
+            return deleteTableRows( API_KEY, secret );
           }
 
           return addToRelatedPapersQueue( doc );

@@ -1,18 +1,25 @@
 import fetch from 'node-fetch';
 import FetchRetry from 'fetch-retry';
 import _ from 'lodash';
-// import { parse as dateParse } from 'date-fns';
 import uuid from 'uuid';
-// import Heap from 'heap';
 
-import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL, NO_ABSTRACT_HANDLING,
-          MIN_SEMANTIC_SCORE, SEMANTIC_SEARCH_LIMIT } from '../../../../config';
+import {
+  INDRA_DB_BASE_URL,
+  INDRA_ENGLISH_ASSEMBLER_URL,
+  SEMANTIC_SEARCH_BASE_URL,
+  NO_ABSTRACT_HANDLING,
+  MIN_SEMANTIC_SCORE,
+  SEMANTIC_SEARCH_LIMIT,
+  GROUNDING_SEARCH_BASE_URL
+} from '../../../../config';
+
 import logger from '../../../logger';
 import { tryPromise } from '../../../../util';
 import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import querystring from 'querystring';
 import { getPubmedCitation } from '../../../../util/pubmed';
+import { checkHTTPStatus } from '../../../../util';
 
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
 const SORT_BY_DATE = false; // TODO remove
@@ -33,6 +40,39 @@ const BINDING_TYPES = ['Complex'];
 
 const INTN_STR = 'interaction';
 const ENTITY_STR = 'entity';
+
+const DB_PREFIXES = Object.freeze({
+  DB_PREFIX_HGNC: 'hgnc',
+  DB_PREFIX_CHEBI: 'CHEBI',
+  DB_PREFIX_UNIPROT: 'uniprot',
+  DB_PREFIX_NCBI_GENE: 'ncbigene'
+});
+
+const DB_NAMES = Object.freeze({
+  DB_NAME_HGNC: 'HGNC',
+  DB_NAME_CHEBI: 'ChEBI',
+  DB_NAME_NCBI_GENE: 'NCBI Gene'
+});
+
+const mapId = ( id, dbfrom, dbto ) => {
+  const body = JSON.stringify({ id: [ id ], dbfrom, dbto });
+  const url = `${GROUNDING_SEARCH_BASE_URL}/map`;
+  const toJson = res => res.json();
+  const findMapped = res => _.find( res, [ 'id', id ] );
+  const findDbXref = res => _.find( _.get( res, 'dbXrefs' ), [ 'db', dbto ] );
+  return fetch( url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body
+  })
+  .then( checkHTTPStatus )
+  .then( toJson )
+  .then( findMapped )
+  .then( findDbXref );
+};
 
 let sortByDate = SORT_BY_DATE;
 
@@ -72,18 +112,12 @@ const semanticSearch = params => {
   .then( res => res.json() );
 };
 
-// MIRIAM registry names https://registry.identifiers.org/registry/
-const DB_NAMES = Object.freeze({
-  DB_NAME_HGNC: 'HGNC',
-  DB_NAME_CHEBI: 'ChEBI'
-});
-
 // See https://indra.readthedocs.io/en/latest/modules/statements.html for database formats
 const getDocuments = ( templates, queryDoc ) => {
-  const getForEl = (elTemplate, elType) => {
-    const getAgent = t => {
+  const getForEl = async (elTemplate, elType) => {
+    const getAgent = async t => {
       let agent;
-      let xref = getXref( t );
+      let xref = await getXref( t );
       if ( xref ) {
         agent = sanitizeId(xref.id) + '@' + xref.db.toUpperCase();
       }
@@ -106,7 +140,7 @@ const getDocuments = ( templates, queryDoc ) => {
       return arr[1];
     };
 
-    const getXref = t => {
+    const getXref = async t => {
       let name = t.dbName;
       let xref = null;
 
@@ -115,8 +149,12 @@ const getDocuments = ( templates, queryDoc ) => {
           id: t.id,
           db: name
         };
+
+      } else if ( name == DB_NAMES.DB_NAME_NCBI_GENE ) {
+        xref = await mapId( t.id, DB_PREFIXES.DB_PREFIX_NCBI_GENE, DB_PREFIXES.DB_PREFIX_UNIPROT );
       }
-      else {
+
+      if ( !xref ) {
         xref = _.find( t.dbXrefs, ['db', DB_NAMES.DB_NAME_HGNC] );
       }
 
@@ -128,13 +166,13 @@ const getDocuments = ( templates, queryDoc ) => {
 
     if ( elType == INTN_STR ) {
       let pptTemplates = elTemplate.ppts;
-      let agent0 = getAgent( pptTemplates[0] );
-      let agent1 = getAgent( pptTemplates[1] );
+      let agent0 = await getAgent( pptTemplates[0] );
+      let agent1 = await getAgent( pptTemplates[1] );
 
       getIntns = () => getInteractions(agent0, agent1);
     }
     else if ( elType == ENTITY_STR ) {
-      let agent = getAgent( elTemplate );
+      let agent = await getAgent( elTemplate );
       getIntns = () => getInteractions(agent);
     }
     else {

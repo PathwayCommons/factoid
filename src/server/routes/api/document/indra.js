@@ -41,6 +41,13 @@ const BINDING_TYPES = ['Complex'];
 const INTN_STR = 'interaction';
 const ENTITY_STR = 'entity';
 
+const INDRA_FROM_AGENTS_DEFAULTS = {
+  format: 'json-js',
+  ev_limit: 10,
+  max_stmts: 10,
+  best_first: true
+};
+
 const DB_PREFIXES = Object.freeze({
   DB_PREFIX_HGNC: 'hgnc',
   DB_PREFIX_CHEBI: 'CHEBI',
@@ -54,24 +61,32 @@ const DB_NAMES = Object.freeze({
   DB_NAME_NCBI_GENE: 'NCBI Gene'
 });
 
-const mapId = ( id, dbfrom, dbto ) => {
+const toJson = res => res.json();
+
+const mapId = async ( id, dbfrom, dbto ) => {
   const body = JSON.stringify({ id: [ id ], dbfrom, dbto });
   const url = `${GROUNDING_SEARCH_BASE_URL}/map`;
-  const toJson = res => res.json();
   const findMapped = res => _.find( res, [ 'id', id ] );
   const findDbXref = res => _.find( _.get( res, 'dbXrefs' ), [ 'db', dbto ] );
-  return fetch( url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body
-  })
-  .then( checkHTTPStatus )
-  .then( toJson )
-  .then( findMapped )
-  .then( findDbXref );
+
+  try {
+    const fetchResponse = await fetch( url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body
+    });
+    checkHTTPStatus( fetchResponse );
+    const json = await fetchResponse.json();
+    const mapped = findMapped( json );
+    const dbXref = findDbXref( mapped );
+    return dbXref;
+
+  } catch ( error ) {
+    logger.error( `Error mapId: ${error}` );
+  }
 };
 
 let sortByDate = SORT_BY_DATE;
@@ -109,7 +124,8 @@ const semanticSearch = params => {
     body: JSON.stringify( params ),
     headers: { 'Content-Type': 'application/json' }
   })
-  .then( res => res.json() );
+  .then( checkHTTPStatus )
+  .then( toJson );
 };
 
 // See https://indra.readthedocs.io/en/latest/modules/statements.html for database formats
@@ -323,90 +339,99 @@ const transformIntnType = indraType => {
   return INTERACTION_TYPE.INTERACTION.value;
 };
 
-const getInteractions = (agent0, agent1) => {
+const getInteractions = async ( agent0, agent1 ) => {
   let getStatementsMemoized = _.memoize( getStatements );
-  return (
-    tryPromise( () => getStatementsMemoized(agent0, agent1) )
-      .then( stmts => {
-        return assembleEnglish( stmts )
-          .then( res => res.json() )
-          .then( js => {
-            const sentences = js.sentences;
 
-            const extractInteractions = statement => {
-              let {id, type, evidence} = statement;
-              let pmids = _.uniq( evidence.map( e => e.pmid ).filter( pmid => pmid != undefined ) );
+  try {
+    const statements = await getStatementsMemoized( agent0, agent1 );
+    const assembledEnglish = await assembleEnglish( statements );
+    const sentences = _.get( assembledEnglish, 'sentences' );
 
-              return pmids.map( pmid => {
-                return {
-                  text: sentences[id],
-                  type: transformIntnType(type),
-                  pmid
-                };
-              } );
-            };
+    const extractInteractions = statement => {
+      const { id, type, evidence } = statement;
+      const pmids = _.uniq( evidence.map( e => e.pmid ).filter( pmid => pmid != undefined ) );
 
-            let intns = _.flatten( stmts.map( extractInteractions ) );
-            return intns;
-          } );
-      } )
-  );
+      return pmids.map( pmid => {
+        return {
+          text: sentences[id],
+          type: transformIntnType(type),
+          pmid
+        };
+      });
+    };
+
+    const interactions = _.flatten( statements.map( extractInteractions ) );
+    return interactions;
+
+  } catch ( error ) {
+    logger.error( `Unable to getInteractions` );
+    logger.error( error );
+    throw error;
+  }
 };
 
-const getStatements = (agent0, agent1) => {
-  let query = { format: 'json-js', agent0 };
-
+const getStatements = async ( agent0, agent1 ) => {
+  let params = _.defaults( { agent0 }, INDRA_FROM_AGENTS_DEFAULTS );
   // if agent1 parameter is set the query is made for an interaction
   // else it is made for an entity
-  if ( agent1 != null ) {
-    query.agent1 = agent1;
+  if ( agent1 != null ) _.set( params, 'agent1', agent1 );
+  const url = INDRA_STATEMENTS_URL + '?' + querystring.stringify( params );
+
+  try {
+    const fetchResponse = await fetchRetryUrl( url );
+    checkHTTPStatus( fetchResponse );
+    const json = await fetchResponse.json();
+    const statements = Object.values( json.statements );
+    return statements;
+
+  } catch ( error ) {
+    let errMsg= 'Unable to retrieve the indra staments for the entity ';
+    if ( agent1 ) {
+      errMsg += `pair '${agent0}-${agent1}'`;
+    } else {
+      errMsg += agent0;
+    }
+    logger.error( errMsg );
+    logger.error( error );
+    return [];
   }
-
-  let addr = INDRA_STATEMENTS_URL + '?' + querystring.stringify( query );
-  return tryPromise( () => fetchRetryUrl(addr) )
-    .then( res =>
-      res.json()
-      )
-    .then( js => Object.values(js.statements) )
-    .catch( err => {
-      let errStr = 'Unable to retrieve the indra staments for the entity ';
-
-      if ( agent1 ) {
-        errStr += `pair '${agent0}-${agent1}'`;
-      }
-      else {
-        errStr += agent0;
-      }
-      logger.error( errStr );
-      logger.error( err );
-      return [];
-    } );
 };
 
-const assembleEnglish = statements => {
+const assembleEnglish = async statements => {
   let addr = INDRA_ENGLISH_ASSEMBLER_URL;
-  return fetchRetryUrl( addr, {
-    method: 'post',
-    body: JSON.stringify({statements}),
-    headers: { 'Content-Type': 'application/json' }
-  } )
-  .catch( err => {
+
+  try {
+    const fetchResponse = await fetchRetryUrl( addr, {
+      method: 'POST',
+      body: JSON.stringify( { statements } ),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    checkHTTPStatus( fetchResponse );
+    const json = await fetchResponse.json();
+    return json;
+
+  } catch ( error ) {
     logger.error( `Unable to assemble english for the indra statements` );
-    logger.error( err );
-    throw err;
-  } );
+    logger.error( error );
+    throw error;
+  }
 };
 
 
-const searchDocuments = opts => {
-  let { templates, doc } = opts;
-  return tryPromise( () => getDocuments(templates, doc) )
-    .catch( err => {
-      logger.error(`Finding indra documents failed`);
-      logger.error(err);
+const searchDocuments = async opts => {
 
-      throw err;
-    } );
+  try {
+    let { templates, doc } = opts;
+    const docs = await getDocuments( templates, doc );
+    return docs;
+
+  } catch ( error ) {
+    logger.error( `Finding indra documents failed` );
+    logger.error( error );
+    throw error;
+  }
 };
 
 export { searchDocuments, semanticSearch };

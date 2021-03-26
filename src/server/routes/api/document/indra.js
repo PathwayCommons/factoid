@@ -20,6 +20,7 @@ import { fetchPubmed } from './pubmed/fetchPubmed';
 import querystring from 'querystring';
 import { getPubmedCitation } from '../../../../util/pubmed';
 import { checkHTTPStatus } from '../../../../util';
+import fromagents from '../../../../../fromagents.json';
 
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
 const SORT_BY_DATE = false; // TODO remove
@@ -41,13 +42,6 @@ const BINDING_TYPES = ['Complex'];
 const INTN_STR = 'interaction';
 const ENTITY_STR = 'entity';
 
-const INDRA_FROM_AGENTS_DEFAULTS = {
-  format: 'json-js',
-  ev_limit: 10,
-  max_stmts: 10,
-  best_first: true
-};
-
 const DB_PREFIXES = Object.freeze({
   DB_PREFIX_HGNC: 'hgnc',
   DB_PREFIX_CHEBI: 'CHEBI',
@@ -57,6 +51,7 @@ const DB_PREFIXES = Object.freeze({
 
 const DB_NAMES = Object.freeze({
   DB_NAME_HGNC: 'HGNC',
+  DB_NAME_UNIPROT: 'UniProt Knowledgebase',
   DB_NAME_CHEBI: 'ChEBI',
   DB_NAME_NCBI_GENE: 'NCBI Gene'
 });
@@ -128,195 +123,101 @@ const semanticSearch = params => {
   .then( toJson );
 };
 
-// See https://indra.readthedocs.io/en/latest/modules/statements.html for database formats
-const getDocuments = ( templates, queryDoc ) => {
-  const getForEl = async (elTemplate, elType) => {
-    const getAgent = async t => {
-      let agent;
-      let xref = await getXref( t );
-      if ( xref ) {
-        agent = sanitizeId(xref.id) + '@' + xref.db.toUpperCase();
+// Try to update with a corresponding dbXref from UniProt or HGNC
+// INDRA won't deal with NCBI Gene IDs
+const getDbXref = async entityTemplate => {
+  const { id, dbName: db } = entityTemplate;
+  let dbXref = { db, id };
+
+  if ( db == DB_NAMES.DB_NAME_NCBI_GENE ) {
+    const mapResult = await mapId( id, DB_PREFIXES.DB_PREFIX_NCBI_GENE, DB_PREFIXES.DB_PREFIX_UNIPROT );
+    if ( mapResult ){
+      _.set( dbXref, 'db', DB_NAMES.DB_NAME_UNIPROT );
+      _.set( dbXref, 'id', _.get( mapResult, 'id' ) );
+    } else {
+      const hgncXref = _.find( entityTemplate.dbXrefs, ['db', DB_NAMES.DB_NAME_HGNC] );
+      if( hgncXref ){
+        _.set( dbXref, 'db', DB_NAMES.DB_NAME_HGNC );
+        _.set( dbXref, 'id', _.get( hgncXref, 'id' ) );
       }
-      else {
-        agent = t.name + '@TEXT';
-      }
-
-      return agent;
-    };
-
-    // for some datasources id may be in a form like "HGNC:10937"
-    // in that cases just consider the string coming after ":"
-    const sanitizeId = id => {
-      let arr = id.split(':');
-
-      if ( arr.length == 1 ) {
-        return arr[0];
-      }
-
-      return arr[1];
-    };
-
-    const getXref = async t => {
-      let name = t.dbName;
-      let xref = null;
-
-      if ( name == DB_NAMES.DB_NAME_CHEBI ) {
-        xref = {
-          id: t.id,
-          db: name
-        };
-
-      } else if ( name == DB_NAMES.DB_NAME_NCBI_GENE ) {
-        xref = await mapId( t.id, DB_PREFIXES.DB_PREFIX_NCBI_GENE, DB_PREFIXES.DB_PREFIX_UNIPROT );
-      }
-
-      if ( !xref ) {
-        xref = _.find( t.dbXrefs, ['db', DB_NAMES.DB_NAME_HGNC] );
-      }
-
-      return xref;
-    };
-
-
-    let getIntns;
-
-    if ( elType == INTN_STR ) {
-      let pptTemplates = elTemplate.ppts;
-      let agent0 = await getAgent( pptTemplates[0] );
-      let agent1 = await getAgent( pptTemplates[1] );
-
-      getIntns = () => getInteractions(agent0, agent1);
     }
-    else if ( elType == ENTITY_STR ) {
-      let agent = await getAgent( elTemplate );
-      getIntns = () => getInteractions(agent);
+  }
+  return dbXref;
+};
+
+// Map to the INDRA-specific ground
+// https://indra.readthedocs.io/en/latest/modules/statements.html#grounding-and-db-references
+const dbXref2Agent = ( dbXref, template ) => {
+
+  let agent;
+  const sanitizeId = id => {
+    let arr = id.split(':');
+    if ( arr.length == 1 ) {
+      return arr[0];
     }
-    else {
-      logger.error( `${elType} is not a valid element type!` );
-      getIntns = () => [];
-    }
-
-    return tryPromise( () => getIntns() )
-      .then( intns => {
-        let ret;
-
-        intns.forEach( intn => intn.elId = elTemplate.elId );
-
-        const filteredIntns = (
-          _.uniqBy( intns, 'pmid' )
-          .sort((a, b) => parseInt(b.pmid) - parseInt(a.pmid)) // sort by pmid as proxy for date -- higher pmid = newer
-          .slice(0, SEMANTIC_SEARCH_LIMIT + 1) // limit per-ele pmid count for s.s.
-        );
-
-        ret = _.groupBy( filteredIntns, 'pmid' );
-
-        return ret;
-      } )
-      .catch( err => {
-        logger.error( err );
-        return {};
-      } );
+    return arr[1];
   };
+  const { db, id } = dbXref;
 
-  const merger = (objValue, srcValue) => {
-    if (_.isArray(objValue)) {
-      return objValue.concat(srcValue);
-    }
+  switch( db ) {
+    case DB_NAMES.DB_NAME_HGNC:
+      agent = `${ sanitizeId( id ) }@HGNC`;
+      break;
+    case DB_NAMES.DB_NAME_UNIPROT:
+      agent = `${id}@UP`;
+      break;
+    case DB_NAMES.DB_NAME_CHEBI:
+      agent = `CHEBI:${id}@CHEBI`;
+      break;
+    default:
+      agent = `${_.get( template, 'name' )}@TEXT`;
+  }
+  return agent;
+};
+
+// Generate the parameters to send to INDRA
+// https://github.com/indralab/indra_db/tree/master/rest_api
+const getIndraParams = async element => {
+
+  const agents = {};
+  const sanitize = text => text.replace(/[\s:]/g,'_');
+  const setAgent = ( dbXref, template ) => {
+    const { db, id } = dbXref;
+    let agent = dbXref2Agent( dbXref, template );
+    _.set( agents, `agent_${sanitize( db )}_${sanitize( id )}`, agent );
   };
+  const template = element.toSearchTemplate();
+  const isInteraction = element.isInteraction();
 
-  const transform = o => {
-    let pmids = Object.keys( o );
+  if( isInteraction ){
+    const { ppts: participants } = template;
 
-    if ( pmids.length == 0 ) {
-      return [];
+    for ( const pTemplate of participants ){
+      let dbXref = await getDbXref( pTemplate );
+      setAgent( dbXref, pTemplate );
     }
+  } else {
+    let dbXref = await getDbXref( template );
+    setAgent( dbXref, template );
+  }
 
-    const handleNoQueryAbastract = doc => {
-      if ( NO_ABSTRACT_HANDLING == 'text' ) {
-        return doc.toText();
-      }
-      else if ( NO_ABSTRACT_HANDLING == 'date' ) {
-        // no need to return a valid abstract since sorting will be based on date
-        sortByDate = true;
-        return null;
-      }
-      else {
-        throw `${NO_ABSTRACT_HANDLING} is not a valid value for NO_ABSTRACT_HANDLING environment variable!`;
-      }
-    };
+  const indraOpts = _.assign( {}, agents );
+  return indraOpts;
+};
 
-    // const getMedlineArticle = article => article.MedlineCitation.Article;
-
-    const getSemanticScores = articles => {
-      if ( sortByDate ) {
-        let semanticScores = null;
-        return { semanticScores, articles };
-      }
-
-      let { abstract: queryText, pmid: queryUid = uuid() } = queryDoc.citation();
-
-      if ( queryText == null ) {
-        queryText = handleNoQueryAbastract( queryDoc );
-      }
-
-      // let url = SEMANTIC_SEARCH_BASE_URL;
-      let query = { uid: queryUid, text: queryText };
-
-      let documents = articles.map( article => {
-        const { abstract: text , pmid: uid } = article;
-
-        if ( text == null || uid == null ) {
-          return null;
-        }
-
-        return { text, uid };
-      } );
-
-      documents = _.filter( documents, d => d != null );
-
-      return semanticSearch({ query, documents })
-        .then( semanticScores => ( { articles, semanticScores } ) );
-    };
-
-    // filter again for case of multiple tempaltes in one query (i.e. document)
-    const filteredPmids = (
-      pmids.sort((a, b) => parseInt(b) - parseInt(a)) // higher pmids first
-      .slice(0, SEMANTIC_SEARCH_LIMIT + 1) // limit
-    );
-
-    return tryPromise( () => fetchPubmed({ uids: filteredPmids }) )
-      .then( o => o.PubmedArticleSet )
-      // .then( filterByDate )
-      .then( articles => articles.map( getPubmedCitation ) )
-      .then( getSemanticScores )
-      .then( ( { articles, semanticScores } ) => {
-        let semanticScoreById = _.groupBy( semanticScores, 'uid' );
-        let arr = articles.map( article => {
-          const { pmid } = article;
-          let elements = o[ pmid ];
-          // prevent duplication of the same interactions in a document
-          elements = _.uniqWith( elements, _.isEqual );
-          elements.forEach( e => delete e.pmid );
-
-          return { elements, pmid, pubmed: article };
-        } );
-
-        const queryDocPmid = queryDoc.citation().pmid;
-        const getSemanticScore = doc => _.get( semanticScoreById, [ doc.pmid, 0, 'score' ] );
-        const getNegativeScore = doc => -getSemanticScore( doc );
-
-        arr = arr.filter( doc => getSemanticScore( doc ) > MIN_SEMANTIC_SCORE && doc.pmid != queryDocPmid );
-        arr = _.sortBy( arr, getNegativeScore );
-
-        return arr;
-      } );
-  };
-
-  let promises = [ ...templates.intns.map( e => getForEl( e, INTN_STR ) ),
-                    ...templates.entities.map( e => getForEl( e, ENTITY_STR ) ) ];
-  return Promise.all( promises )
-    .then( res => _.mergeWith( {}, ...res, merger ) )
-    .then( transform );
+/**
+ * search
+ * Search the INDRA database for interactions and evidence
+ *
+ * @param {object} element An Element
+ * @param {object} doc A Document
+ * @returns
+ */
+const search = async ( element, doc ) => {
+  const indraParams = await getIndraParams( element );
+  const statements = await getStatements( indraParams );
+  let interactions = await statements2Interactions( statements, doc );
+  return interactions;
 };
 
 const transformIntnType = indraType => {
@@ -339,44 +240,87 @@ const transformIntnType = indraType => {
   return INTERACTION_TYPE.INTERACTION.value;
 };
 
-const getInteractions = async ( agent0, agent1 ) => {
-  let getStatementsMemoized = _.memoize( getStatements );
+const filterStatements = ( statements, doc ) => {
+  const { pmid } = doc.citation();
+
+  const hasPmid = e => _.has( e, 'pmid' );
+  const isDocPmid = e => _.get( e, 'pmid' ) === pmid;
+  const validPmids = e => hasPmid( e ) && !isDocPmid( e );
+
+  const uniquePmidText = a => _.uniqWith( a,
+    ( arrVal, othVal ) => arrVal.pmid == othVal.pmid &&
+    _.get( arrVal, 'text' ) === _.get( othVal, 'text', '' )
+  );
+
+  const groupSharedPmid = a => {
+    const pmidGroups = _.groupBy( a, 'pmid' );
+    const grouped = _.values( pmidGroups ).map( evidenceSet => {
+      const text = _.flatten( _.compact( evidenceSet.map( e => _.get( e, 'text' ) ) ) );
+      return _.assign( {}, _.first( evidenceSet ), { text } );
+    });
+    return grouped;
+  };
+
+  return statements.map( statement => {
+    let evidence = _.get( statement, 'evidence', [] );
+
+    // Has pmid, no self
+    evidence = _.filter( evidence , validPmids );
+
+    // Unique wrt pmid and text
+    evidence = uniquePmidText( evidence );
+
+    // drop statement with empty evidence
+
+    // aggregate text for identical pmid
+    evidence = groupSharedPmid( evidence );
+
+    // Update the evidence for this statement
+    _.set( statement, 'evidence', evidence );
+    return statement;
+  });
+
+};
+
+const statements2Interactions = async ( statements, doc ) => {
+  const evidenceFields = new Set([ 'source_api', 'source_id', 'pmid', 'text' ]);
 
   try {
-    const statements = await getStatementsMemoized( agent0, agent1 );
-    const assembledEnglish = await assembleEnglish( statements );
+    const assembledEnglish = await statements2Text( statements );
     const sentences = _.get( assembledEnglish, 'sentences' );
 
-    const extractInteractions = statement => {
-      const { id, type, evidence } = statement;
-      const pmids = _.uniq( evidence.map( e => e.pmid ).filter( pmid => pmid != undefined ) );
+    // pre-filter statements
+    let filteredStatements = filterStatements( statements, doc );
 
-      return pmids.map( pmid => {
-        return {
-          text: sentences[id],
-          type: transformIntnType(type),
-          pmid
-        };
-      });
-    };
-
-    const interactions = _.flatten( statements.map( extractInteractions ) );
-    return interactions;
+    // format statements
+    return filteredStatements.map( statement => {
+      const id = _.get( statement, [ 'id' ] );
+      const rawType = _.get( statement, [ 'type' ] );
+      const type = transformIntnType( rawType );
+      const sentence = _.get( sentences, id );
+      const evidences = _.get( statement, [ 'evidence' ] );
+      const participants = _.values( _.pick( statement, [ 'subj', 'obj', 'enz', 'sub', 'members' ] ) );
+      const evidence = evidences.map( evidence => _.pick( evidence, ...evidenceFields ) );
+      return { type, sentence, evidence, participants };
+    });
 
   } catch ( error ) {
-    logger.error( `Unable to getInteractions` );
-    logger.error( error );
+    logger.error( `Unable to getInteractions: ${error.message}` );
     throw error;
   }
 };
 
-const getStatements = async ( agent0, agent1 ) => {
-  let params = _.defaults( { agent0 }, INDRA_FROM_AGENTS_DEFAULTS );
-  // if agent1 parameter is set the query is made for an interaction
-  // else it is made for an entity
-  if ( agent1 != null ) _.set( params, 'agent1', agent1 );
-  const url = INDRA_STATEMENTS_URL + '?' + querystring.stringify( params );
+const INDRA_BY_AGENTS_DEFAULTS = {
+  format: 'json',
+  ev_limit: 10,
+  max_stmts: 10,
+  best_first: true
+};
 
+const statementsByAgent = async opts => {
+  // return Object.values( fromagents.statements );
+  let params = _.defaults( opts, INDRA_BY_AGENTS_DEFAULTS );
+  const url = INDRA_STATEMENTS_URL + '?' + querystring.stringify( params );
   try {
     const fetchResponse = await fetchRetryUrl( url );
     checkHTTPStatus( fetchResponse );
@@ -385,19 +329,14 @@ const getStatements = async ( agent0, agent1 ) => {
     return statements;
 
   } catch ( error ) {
-    let errMsg= 'Unable to retrieve the indra staments for the entity ';
-    if ( agent1 ) {
-      errMsg += `pair '${agent0}-${agent1}'`;
-    } else {
-      errMsg += agent0;
-    }
-    logger.error( errMsg );
-    logger.error( error );
+    logger.error( `Unable to retrieve the indra statements for ${JSON.stringify( opts )}\n${error.message}`);
     return [];
   }
 };
 
-const assembleEnglish = async statements => {
+const getStatements = _.memoize( statementsByAgent );
+
+const statements2Text = async statements => {
   let addr = INDRA_ENGLISH_ASSEMBLER_URL;
 
   try {
@@ -413,25 +352,22 @@ const assembleEnglish = async statements => {
     return json;
 
   } catch ( error ) {
-    logger.error( `Unable to assemble english for the indra statements` );
-    logger.error( error );
+    logger.error( `Unable to assemble english for the indra statements: ${error.message}` );
     throw error;
   }
 };
 
+const searchDocuments = () => {
+  return Promise.resolve(null);
+  // try {
+  //   let { templates, doc } = opts;
+  //   const docs = await getDocuments( templates, doc );
+  //   return docs;
 
-const searchDocuments = async opts => {
-
-  try {
-    let { templates, doc } = opts;
-    const docs = await getDocuments( templates, doc );
-    return docs;
-
-  } catch ( error ) {
-    logger.error( `Finding indra documents failed` );
-    logger.error( error );
-    throw error;
-  }
+  // } catch ( error ) {
+  //   logger.error( `Finding indra documents failed: ${error.message}` );
+  //   throw error;
+  // }
 };
 
-export { searchDocuments, semanticSearch };
+export { searchDocuments, semanticSearch, search };

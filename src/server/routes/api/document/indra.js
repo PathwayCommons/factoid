@@ -261,7 +261,7 @@ const filterStatements = ( statements, doc ) => {
     return grouped;
   };
 
-  return statements.map( statement => {
+  let filtered = statements.map( statement => {
     let evidence = _.get( statement, 'evidence', [] );
 
     // Has pmid, no self
@@ -270,8 +270,6 @@ const filterStatements = ( statements, doc ) => {
     // Unique wrt pmid and text
     evidence = uniquePmidText( evidence );
 
-    // drop statement with empty evidence
-
     // aggregate text for identical pmid
     evidence = groupSharedPmid( evidence );
 
@@ -279,6 +277,11 @@ const filterStatements = ( statements, doc ) => {
     _.set( statement, 'evidence', evidence );
     return statement;
   });
+
+  // drop statement with empty evidence
+  let nonEmpty = filtered.filter( s => !_.isEmpty( _.get( s, 'evidence' ) ));
+
+  return nonEmpty;
 
 };
 

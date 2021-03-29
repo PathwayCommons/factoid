@@ -20,7 +20,6 @@ import { fetchPubmed } from './pubmed/fetchPubmed';
 import querystring from 'querystring';
 import { getPubmedCitation } from '../../../../util/pubmed';
 import { checkHTTPStatus } from '../../../../util';
-import fromagents from '../../../../../fromagents.json';
 
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
 const SORT_BY_DATE = false; // TODO remove

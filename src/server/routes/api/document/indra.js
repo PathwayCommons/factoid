@@ -1,28 +1,30 @@
 import fetch from 'node-fetch';
 import FetchRetry from 'fetch-retry';
 import _ from 'lodash';
-import uuid from 'uuid';
+// import uuid from 'uuid';
 
 import {
   INDRA_DB_BASE_URL,
   INDRA_ENGLISH_ASSEMBLER_URL,
   SEMANTIC_SEARCH_BASE_URL,
-  NO_ABSTRACT_HANDLING,
-  MIN_SEMANTIC_SCORE,
-  SEMANTIC_SEARCH_LIMIT,
+  // NO_ABSTRACT_HANDLING,
+  // MIN_SEMANTIC_SCORE,
+  // SEMANTIC_SEARCH_LIMIT,
+  EVIDENCE_LIMIT,
+  MAX_STATEMENTS,
   GROUNDING_SEARCH_BASE_URL
 } from '../../../../config';
 
 import logger from '../../../logger';
-import { tryPromise } from '../../../../util';
 import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import querystring from 'querystring';
 import { getPubmedCitation } from '../../../../util/pubmed';
 import { checkHTTPStatus } from '../../../../util';
+// import testStatements from '../../../../../statements.json';
 
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
-const SORT_BY_DATE = false; // TODO remove
+// const SORT_BY_DATE = false; // TODO remove
 
 const FETCH_RETRIES = 20;
 const FETCH_RETRY_DELAY = 6000;
@@ -37,9 +39,6 @@ const BASE_MODIFICATION_TYPES = ['Sumoylation', 'Desumoylation', 'Hydroxylation'
   'Autophosphorylation', 'Transphosphorylation'];
 const TRANSCRIPTION_TRANSLATION_TYPES = ['IncreaseAmount', 'DecreaseAmount'];
 const BINDING_TYPES = ['Complex'];
-
-const INTN_STR = 'interaction';
-const ENTITY_STR = 'entity';
 
 const DB_PREFIXES = Object.freeze({
   DB_PREFIX_HGNC: 'hgnc',
@@ -82,8 +81,6 @@ const mapId = async ( id, dbfrom, dbto ) => {
     logger.error( `Error mapId: ${error}` );
   }
 };
-
-let sortByDate = SORT_BY_DATE;
 
 const fetchRetry = FetchRetry(fetch);
 const fetchRetryUrl = ( url, opts ) => {
@@ -204,21 +201,6 @@ const getIndraParams = async element => {
   return indraOpts;
 };
 
-/**
- * search
- * Search the INDRA database for interactions and evidence
- *
- * @param {object} element An Element
- * @param {object} doc A Document
- * @returns
- */
-const search = async ( element, doc ) => {
-  const indraParams = await getIndraParams( element );
-  const statements = await getStatements( indraParams );
-  let interactions = await statements2Interactions( statements, doc );
-  return interactions;
-};
-
 const transformIntnType = indraType => {
   if ( SUB_MODIFICATION_TYPES.includes( indraType ) ) {
     return indraType.toLowerCase();
@@ -240,11 +222,14 @@ const transformIntnType = indraType => {
 };
 
 const filterStatements = ( statements, doc ) => {
+  const evidenceFields = new Set([ 'source_api', 'source_id', 'pmid', 'text' ]);
   const { pmid } = doc.citation();
+
+  const pickEvidence = a => a.map( e => _.pick( e, ...evidenceFields ) );
 
   const hasPmid = e => _.has( e, 'pmid' );
   const isDocPmid = e => _.get( e, 'pmid' ) === pmid;
-  const validPmids = e => hasPmid( e ) && !isDocPmid( e );
+  const validPmids = a => _.filter( a , e => hasPmid( e ) && !isDocPmid( e ) );
 
   const uniquePmidText = a => _.uniqWith( a,
     ( arrVal, othVal ) => arrVal.pmid == othVal.pmid &&
@@ -253,69 +238,39 @@ const filterStatements = ( statements, doc ) => {
 
   const groupSharedPmid = a => {
     const pmidGroups = _.groupBy( a, 'pmid' );
-    const grouped = _.values( pmidGroups ).map( evidenceSet => {
-      const text = _.flatten( _.compact( evidenceSet.map( e => _.get( e, 'text' ) ) ) );
-      return _.assign( {}, _.first( evidenceSet ), { text } );
-    });
-    return grouped;
+    return _.toPairs( pmidGroups ).map( ([ pmid, source ]) => ({ pmid, source }) );
   };
 
-  let filtered = statements.map( statement => {
+  let transformed = statements.map( statement => {
     let evidence = _.get( statement, 'evidence', [] );
 
+    // Pick off desired fields
+    evidence = pickEvidence( evidence );
+
     // Has pmid, no self
-    evidence = _.filter( evidence , validPmids );
+    evidence = validPmids( evidence );
 
     // Unique wrt pmid and text
     evidence = uniquePmidText( evidence );
 
-    // aggregate text for identical pmid
+    // transform statements
     evidence = groupSharedPmid( evidence );
 
-    // Update the evidence for this statement
+    // Update the statement evidence
     _.set( statement, 'evidence', evidence );
     return statement;
   });
 
   // drop statement with empty evidence
-  let nonEmpty = filtered.filter( s => !_.isEmpty( _.get( s, 'evidence' ) ));
+  let nonEmpty = transformed.filter( s => !_.isEmpty( _.get( s, 'evidence' ) ));
 
   return nonEmpty;
-
-};
-
-const statements2Interactions = async ( statements, doc ) => {
-  const evidenceFields = new Set([ 'source_api', 'source_id', 'pmid', 'text' ]);
-
-  try {
-    const assembledEnglish = await statements2Text( statements );
-    const sentences = _.get( assembledEnglish, 'sentences' );
-
-    // pre-filter statements
-    let filteredStatements = filterStatements( statements, doc );
-
-    // format statements
-    return filteredStatements.map( statement => {
-      const id = _.get( statement, [ 'id' ] );
-      const rawType = _.get( statement, [ 'type' ] );
-      const type = transformIntnType( rawType );
-      const sentence = _.get( sentences, id );
-      const evidences = _.get( statement, [ 'evidence' ] );
-      const participants = _.values( _.pick( statement, [ 'subj', 'obj', 'enz', 'sub', 'members' ] ) );
-      const evidence = evidences.map( evidence => _.pick( evidence, ...evidenceFields ) );
-      return { type, sentence, evidence, participants };
-    });
-
-  } catch ( error ) {
-    logger.error( `Unable to getInteractions: ${error.message}` );
-    throw error;
-  }
 };
 
 const INDRA_BY_AGENTS_DEFAULTS = {
   format: 'json',
-  ev_limit: 10,
-  max_stmts: 10,
+  ev_limit: EVIDENCE_LIMIT,
+  max_stmts: MAX_STATEMENTS,
   best_first: true
 };
 
@@ -337,6 +292,7 @@ const statementsByAgent = async opts => {
 };
 
 const getStatements = _.memoize( statementsByAgent );
+// const getStatements = async () => Object.values( testStatements.statements );
 
 const statements2Text = async statements => {
   let addr = INDRA_ENGLISH_ASSEMBLER_URL;
@@ -359,17 +315,108 @@ const statements2Text = async statements => {
   }
 };
 
-const searchDocuments = () => {
-  return Promise.resolve(null);
-  // try {
-  //   let { templates, doc } = opts;
-  //   const docs = await getDocuments( templates, doc );
-  //   return docs;
+/**
+ * statements2Interactions
+ * Filter and transform INDRA statements into an 'interaction'
+ *
+ * @param {object} statements An list of INDRA statements {@link https://github.com/indralab/indra_db/tree/master/rest_api}
+ * @param {object} doc A Document, used to filter out self articles from interactions
+ * @returns an array of interactions:
+ *   - type String the factoid model type
+ *   - sentence String description of the interaction
+ *   - evidence object list of { pmid, source, citation }
+ *     - source list of { pmid, source_api, source_id }
+ *     - citation is the pubmed citation { pmid, doi, ... }
+ *   - participants object list of { name, db_refs }
+ *     - db_refs is a list of objects formatted like { "TEXT", [...<database name>] }
+ */
+const statements2Interactions = async ( statements, doc ) => {
 
-  // } catch ( error ) {
-  //   logger.error( `Finding indra documents failed: ${error.message}` );
-  //   throw error;
-  // }
+  try {
+    const assembledEnglish = await statements2Text( statements );
+    const sentences = _.get( assembledEnglish, 'sentences' );
+
+    // pick required fields from statements
+    const pickedStatements = statements.map( statement => {
+      const id = _.get( statement, [ 'id' ] );
+      const rawType = _.get( statement, [ 'type' ] );
+      const type = transformIntnType( rawType );
+      const sentence = _.get( sentences, id );
+      const evidence = _.get( statement, [ 'evidence' ] );
+      const participants = _.values( _.pick( statement, [ 'subj', 'obj', 'enz', 'sub', 'members' ] ) );
+      return { type, sentence, evidence, participants };
+    });
+
+    // filter statements and associated evidence
+    return filterStatements( pickedStatements, doc );
+
+  } catch ( error ) {
+    logger.error( `Unable to getInteractions: ${error.message}` );
+    throw error;
+  }
 };
 
-export { searchDocuments, semanticSearch, search };
+const fillArticleInfo = async ( interactions, citationMap ) => {
+
+  return interactions.map( interaction => {
+    let evidence = _.get( interaction, 'evidence' );
+    evidence = evidence.map( e => {
+      const pmid = _.get( e, 'pmid' );
+      const citation = citationMap.get( pmid  );
+      return _.assign( e, { citation } );
+    });
+    _.set( interaction, 'evidence', evidence );
+    return interaction;
+  });
+};
+
+const getCitationMap = async uids => {
+
+  let citations = [];
+  if( !_.isEmpty( uids ) ){
+    const { PubmedArticleSet } = await fetchPubmed( { uids } );
+    citations = PubmedArticleSet.map( PubmedArticle => {
+      const citation = getPubmedCitation( PubmedArticle );
+      const { pmid } = citation;
+      return ([ pmid, citation ]);
+    });
+  }
+  const citationMap = new Map( citations );
+  return citationMap;
+};
+
+const getPmids = interactions => interactions.map( interaction => {
+  const evidence = _.get( interaction, 'evidence' );
+  const pmids = evidence.map( e => _.get( e, 'pmid' ) );
+  return _.flatten( pmids );
+});
+
+/**
+ * search
+ * Search the INDRA database for interactions and evidence
+ *
+ * @param {object} element An Element to search for (entity, interaction)
+ * @param {object} doc A Document, used to filter out self articles from interactions
+ * @returns an array of interactions
+ */
+ const search = async ( element, doc ) => {
+
+  try {
+    const indraParams = await getIndraParams( element );
+    const statements = await getStatements( indraParams );
+    const interactions = await statements2Interactions( statements, doc );
+
+    const uids = getPmids( interactions );
+    const citationMap = await getCitationMap( uids );
+
+    // TODO: Globally rank pmids then use to order evidence using semanticsearch
+    await fillArticleInfo( interactions, citationMap );
+    return interactions;
+
+  } catch ( error ) {
+    logger.error( `INDRA search failed: ${error.message}` );
+    throw error;
+  }
+};
+
+export { search, semanticSearch };

@@ -1,85 +1,79 @@
-.related-papers {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  column-gap: 0.5em;
-  row-gap: 0.5em;
-}
-
-@media (max-width: 1000px) {
-  .related-papers {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 500px) {
-  .related-papers {
-    grid-template-columns: 1fr;
-  }
+.related-papers > .related-paper {
+  margin: auto auto 1em;
 }
 
 .related-paper {
   position: relative;
   box-sizing: border-box;
-  border: 1px solid #bbb;
-  overflow: hidden;
-  height: 20em;
-  border-radius: 0.25em;
-  padding: 0.5em;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-evenly;
+  line-height: 1.4;
+  font-size: 0.95rem;
 }
 
 .related-paper-title {
-  line-height: 1.4;
+  color: rgb(0, 113, 188);
 }
 
-.related-paper-abstract {
-  position: relative;
-  overflow: hidden;
-  margin: 0.5em 0;
-  flex: 1 1;
-  font-size: 0.8em;
-  line-height: 1.4;
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    height: 3em;
-    left: 0;
-    right: 0;
-    background: linear-gradient(to top, rgba(255, 255, 255, 1) 0, rgba(255, 255, 255, 0) 100%);
-  }
+.related-paper-journal-badge {
+  font-size: small;
+  background-color: var(--widgetActiveColor);
+  margin-right: 0.2rem;
 }
 
-.related-paper-author {
-  font-style: italic;
-  margin-bottom: 0.5em;
-}
-
-.related-paper-journal {
-  font-style: italic;
-}
-
-.related-papers-empty {
+.related-papers-loading {
   display: block;
   background: #f0f0f0;
   border: 1px solid #ddd;
-  border-radius: 0.25em;
+  border-radius: 0.25rem;
 }
 
-.related-papers-empty-icon {
+.related-papers-loading-icon {
   font-size: 2em;
   text-align: center;
-  margin: 0.5em 0;
+  margin: 0.5rem 0;
   opacity: 0.333;
 }
 
-.related-papers-empty-msg {
+.related-papers-loading-msg {
   margin: 1em 0;
   box-sizing: border-box;
-  padding: 0 1em;
+  padding: 0 1rem;
   color: #888;
   text-align: center;
+}
+
+.related-interactions > .related-interaction {
+  margin: auto auto 1em;
+}
+
+.related-interaction {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  border: 1px solid #bbb;
+  overflow: hidden;
+  min-height: 6em;
+  border-radius: 0.25em;
+  padding: 1.5em;
+  font-size: 0.95em;
+}
+
+.related-interaction-meta > * {
+  margin-bottom: 0.5em;
+}
+
+.related-interaction-meta {
+  flex: 0 0 20em;
+}
+
+.related-interaction-article-count {
+  font-size: small;
+  color: #888;
+}
+
+.related-interaction-evidence-source-text {
+  padding-bottom: 0.5em;
+  color: #666;
 }

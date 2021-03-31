@@ -325,7 +325,7 @@ const statements2Text = async statements => {
  *   - type String the factoid model type
  *   - sentence String description of the interaction
  *   - evidence object list of { pmid, source, citation }
- *     - source list of { pmid, source_api, source_id }
+ *     - source list of { pmid, source_api, source_id, text }
  *     - citation is the pubmed citation { pmid, doi, ... }
  *   - participants object list of { name, db_refs }
  *     - db_refs is a list of objects formatted like { "TEXT", [...<database name>] }

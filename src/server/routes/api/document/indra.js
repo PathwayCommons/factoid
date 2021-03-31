@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import FetchRetry from 'fetch-retry';
 import _ from 'lodash';
-// import uuid from 'uuid';
+import { v1 as uuidv1 } from 'uuid';
 
 import {
   INDRA_DB_BASE_URL,
@@ -176,7 +176,7 @@ const dbXref2Agent = ( dbXref, template ) => {
 const getIndraParams = async element => {
 
   const agents = {};
-  const sanitize = text => text.replace(/[\s:]/g,'_');
+  const sanitize = text => text ? text.replace(/[\s:]/g,'_') : uuidv1();
   const setAgent = ( dbXref, template ) => {
     const { db, id } = dbXref;
     let agent = dbXref2Agent( dbXref, template );

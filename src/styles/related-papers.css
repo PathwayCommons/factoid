@@ -1,3 +1,7 @@
+.related-paper-hypertext {
+  color: rgb(0, 113, 188);
+}
+
 .related-papers > .related-paper {
   margin: auto auto 1em;
 }
@@ -8,12 +12,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  line-height: 1.4;
   font-size: 0.95rem;
-}
-
-.related-paper-title {
-  color: rgb(0, 113, 188);
 }
 
 .related-paper-journal-badge {
@@ -52,28 +51,30 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  border: 1px solid #bbb;
-  overflow: hidden;
+  border: 1px solid #ddd;
   min-height: 6em;
   border-radius: 0.25em;
-  padding: 1.5em;
-  font-size: 0.95em;
-}
-
-.related-interaction-meta > * {
-  margin-bottom: 0.5em;
+  padding: 1.5em 1.5em 1.5em 1em;
+  font-size: 0.95rem;
 }
 
 .related-interaction-meta {
-  flex: 0 0 20em;
+  flex: 0 0 19em;
 }
 
-.related-interaction-article-count {
-  font-size: small;
-  color: #888;
+.related-interaction-sentence {
+  /* font-size: 1.1rem; */
 }
 
-.related-interaction-evidence-source-text {
-  padding-bottom: 0.5em;
-  color: #666;
+.related-interaction-detail > * {
+  margin-bottom: 0.25em;
+}
+
+.related-interaction-evidence-source-excerpt {
+  padding: 0 0 1em;
+}
+
+.related-interaction-additional-evidence {
+  text-align: right;
+  font-size: 0.9em;
 }

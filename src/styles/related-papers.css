@@ -59,14 +59,12 @@
 }
 
 .related-interaction-meta {
+  display: block;
   flex: 0 0 19em;
 }
 
-.related-interaction-sentence {
-  /* font-size: 1.1rem; */
-}
-
 .related-interaction-detail > * {
+  display: block;
   margin-bottom: 0.25em;
 }
 

@@ -548,7 +548,7 @@ class EntityInfo extends DataComponent {
                   const val = e.target.value;
                   const [ns, id] = val.split(':');
                   const om = s.matches.find(om => om.namespace === ns && om.id === id);
-    
+
                   if( om ){
                     this.associate(om);
                   } else {
@@ -557,7 +557,7 @@ class EntityInfo extends DataComponent {
                 }
               }, ambigGrs.map((om) => {
                 const value = `${om.namespace}:${om.id}`;
-    
+
                 return h('option', { value }, getDisamtDisplay(om));
               }).concat([
                 // selectedIndex < 0 ? h('option', { value: -1 }, getSelectDisplay(m, true)) : null,
@@ -588,6 +588,9 @@ class EntityInfo extends DataComponent {
 
         if( isComplex(s.element.type()) ){
           children.push( h('div.entity-info-assoc', targetFromAssoc({ type, name, entityNames }, true )) );
+          children.push( h('div.entity-info-related-papers', [
+            h(RelatedPapers, { document, source: s.element })
+          ]) );
         } else {
           children.push( h('div.entity-info-no-assoc', [
             h('div.element-info-message.element-info-no-data', [
@@ -600,7 +603,7 @@ class EntityInfo extends DataComponent {
         children.push( h('div.entity-info-assoc', allAssoc( assoc, true, false )) );
 
         children.push( h('div.entity-info-reld-papers-title', `Recommended articles`) );
-        
+
         children.push( h('div.entity-info-related-papers', [
           h(RelatedPapers, { document, source: s.element })
         ]) );

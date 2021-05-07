@@ -42,7 +42,7 @@ import { BASE_URL,
   DOCUMENT_IMAGE_PADDING,
   EMAIL_ADMIN_ADDR,
   EMAIL_RELPPRS_CONTACT,
-  // EMAIL_TYPE_INVITE,
+  EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP,
   MIN_RELATED_PAPERS,
@@ -1645,18 +1645,38 @@ const tryVerify = async doc => {
  *         description: Error
  */
 http.post('/', function( req, res, next ){
-  const impl = async () => {
-    try {
-      const provided = _.assign( {}, req.body );
-      const doc = await postDoc(provided);
+  const provided = _.assign( {}, req.body );
 
-      res.json(doc.json());
-    } catch (err) {
-      next(err);
-    }
+
+  const sendInviteNotification = async doc => {
+    // Do not try send when there are email issues
+    const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
+    let emailType = EMAIL_TYPE_INVITE;
+    const id = doc.id();
+    const secret = doc.secret();
+    const hasAuthorEmailIssue = hasIssue( doc, 'authorEmail' );
+    if( !hasAuthorEmailIssue ) await configureAndSendMail( emailType, id, secret );
+    return doc;
   };
 
-  impl();
+  const handleInviteNotification = doc => {
+    const email = _.get( provided, 'authorEmail' );
+    if ( email ) {
+      return sendInviteNotification( doc ).then( () => doc );
+    }
+    return doc;
+  };
+
+  const sendJSON = doc => {
+    res.json( doc.json() );
+    return doc;
+  };
+
+  postDoc( provided )
+    .then( sendJSON )
+    .then( handleInviteNotification )
+    .then( updateRelatedPapers )
+    .catch( next );
 });
 
 const postDoc = provided => {

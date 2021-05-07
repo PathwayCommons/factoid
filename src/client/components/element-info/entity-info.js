@@ -373,6 +373,16 @@ class EntityInfo extends DataComponent {
       assoc = null;
     }
 
+    // Add association 'name' as a (short) synonym, if different than input
+    if( assoc ) {
+      const { name: assocName } = assoc;
+      if( assocName !== s.name ){
+        const shortSynonyms = _.get( assoc, 'shortSynonyms', [] );
+        const updatedSynonyms = _.uniq( _.concat( assocName, shortSynonyms ) );
+        _.set( assoc, 'shortSynonyms', updatedSynonyms );
+      }
+    }
+
     let targetFromAssoc = (m, complete = false, showRefinement = false) => {
       let highlight = !complete;
       let searchStr = highlight ? s.name : null;

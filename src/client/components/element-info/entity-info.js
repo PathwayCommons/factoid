@@ -148,6 +148,21 @@ class EntityInfo extends DataComponent {
       delete match.typeOfGene; // n.b. the model overrides via this field
     }
 
+    if( s.name !== match.name ) {
+      // Add 'name' to shortSynonyms
+      let shortSyns = _.get( match, 'shortSynonyms', [] );
+      let newShortSyns = _.uniq( _.concat( match.name, shortSyns ) );
+      _.set( match, 'shortSynonyms', newShortSyns );
+    }
+
+    const assoc = el.association();
+    if( assoc ) {
+      // Drop 'name' from shortSynonyms
+      let shortSyns = _.get( assoc, 'shortSynonyms', [] );
+      let newShortSyns = _.without( shortSyns, assoc.name );
+      _.set( assoc, 'shortSynonyms', newShortSyns );
+    }
+
     el.associate( match );
     el.complete();
 
@@ -371,16 +386,6 @@ class EntityInfo extends DataComponent {
       assoc = s.element.association();
     } else {
       assoc = null;
-    }
-
-    // Add association 'name' as a (short) synonym, if different than input
-    if( assoc ) {
-      const { name: assocName } = assoc;
-      if( assocName !== s.name ){
-        const shortSynonyms = _.get( assoc, 'shortSynonyms', [] );
-        const updatedSynonyms = _.uniq( _.concat( assocName, shortSynonyms ) );
-        _.set( assoc, 'shortSynonyms', updatedSynonyms );
-      }
     }
 
     let targetFromAssoc = (m, complete = false, showRefinement = false) => {

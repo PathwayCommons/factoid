@@ -149,9 +149,8 @@ class EntityInfo extends DataComponent {
     }
 
     // If label is different from match 'name', add latter to shortSynonyms
-    const label = s.name;
     let matchShortSyns = _.get( match, 'shortSynonyms', [] );
-    let inputNotMatchName = label !== match.name;
+    let inputNotMatchName = _.toLower( s.name ) !== _.toLower( match.name );
     if ( inputNotMatchName ) {
       let newShortSyns = _.uniq( _.concat( match.name, matchShortSyns ) );
       _.set( match, 'shortSynonyms', newShortSyns );

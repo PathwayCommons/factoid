@@ -148,6 +148,22 @@ class EntityInfo extends DataComponent {
       delete match.typeOfGene; // n.b. the model overrides via this field
     }
 
+    // If label is different from match 'name', add latter to shortSynonyms
+    let matchShortSyns = _.get( match, 'shortSynonyms', [] );
+    let inputNotMatchName = _.toLower( s.name ) !== _.toLower( match.name );
+    if ( inputNotMatchName ) {
+      let newShortSyns = _.uniq( _.concat( match.name, matchShortSyns ) );
+      _.set( match, 'shortSynonyms', newShortSyns );
+    }
+
+    // Remove the match 'name' from the current association, if exists
+    const assoc = el.association();
+    if( assoc ) {
+      let shortSyns = _.get( assoc, 'shortSynonyms', [] );
+      let newShortSyns = _.without( shortSyns, assoc.name );
+      _.set( assoc, 'shortSynonyms', newShortSyns );
+    }
+
     el.associate( match );
     el.complete();
 

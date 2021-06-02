@@ -1,6 +1,7 @@
 # Factoid
 
 [![DOI](https://zenodo.org/badge/3910378.svg)](https://zenodo.org/badge/latestdoi/3910378)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/PathwayCommons/factoid/blob/unstable/LICENSE)
 
 Biofactoid [(biofactoid.org)](https://biofactoid.org/), is a web-based system that empowers authors to capture and share machine-readable summaries of molecular-level interactions described in their publications.
 

@@ -178,6 +178,7 @@ Notes:
   1. For a breaking API change, run `npm version major.`
   1. For a specific version number (e.g. 1.2.3), run `npm version 1.2.3`.
 1. Push the release: `git push origin --tags`
+1. [Publish a GitHub release](https://github.com/PathwayCommons/factoid/releases/new) so that Zenodo creates a DOI for this version.
 
 ## Related software
 

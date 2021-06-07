@@ -15,7 +15,8 @@ const ID_TYPE = Object.freeze({
 });
 
 const pubTypeToExclude = [
-  { UI: 'D016425', value: 'Published Erratum' }
+  { UI: 'D016425', value: 'Published Erratum' },
+  { UI: 'D016440', value: 'Retraction of Publication' }
 ];
 
 const paperId2Type = paperId => {

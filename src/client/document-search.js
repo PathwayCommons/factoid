@@ -14,6 +14,27 @@ class Search {
   }
 
   /**
+   * Fetch documents from source and index
+   * @param {string} url location to retrieve documents from
+   * @param {number} limit max documents to retrieve
+   * @param {number} offset starting index for documents to retrieve
+   * @return {object} a list of full Document JSON
+   */
+  fetch( url, limit = 50, offset = 0 ){
+    const opts = { limit, offset };
+    let addr = `${url}?${querystring.stringify( opts )}`;
+
+    return fetch( addr )
+      .then( res => res.json() )
+      .then( docs => this.index( docs ) )
+      .then( () => this.documents )
+      .catch( err => {
+        logger.error( `Unable to load documents from ${url}` );
+        logger.error( err );
+      });
+  }
+
+  /**
    * Load documents into the index and stash locally
    * @param {object} documents List of raw documents to index
    */
@@ -92,26 +113,6 @@ class DocumentSearch extends Search {
     super( docOpts );
   }
 
-  /**
-   * Fetch documents from source and index
-   * @param {string} url location to retrieve documents from
-   * @param {number} limit max documents to retrieve
-   * @param {number} offset starting index for documents to retrieve
-   * @return {object} a list of full Document JSON
-   */
-  fetch( url, limit = 50, offset = 0 ){
-    const opts = { limit, offset };
-    let addr = `${url}?${querystring.stringify( opts )}`;
-
-    return fetch( addr )
-      .then( res => res.json() )
-      .then( docs => this.index( docs ) )
-      .then( () => this.documents )
-      .catch( err => {
-        logger.error( `Unable to load documents from ${url}` );
-        logger.error( err );
-      });
-  }
 }
 
 export default DocumentSearch;

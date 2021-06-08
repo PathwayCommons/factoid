@@ -1,22 +1,34 @@
 import MiniSearch from 'minisearch';
 import _ from 'lodash';
 
+/** Class for  searching an index. */
 class Search {
 
   constructor( opts = {} ){
     this._engine = new MiniSearch( opts );
   }
 
+  /**
+   * Load documents into the index
+   * @param {object} documents List of Documents to index
+   */
   index( documents ){
     this._engine.addAll( documents );
   }
 
-  search( q, limit = 10 ){
+  /**
+   * Search the index
+   * @param {string} q search query
+   * @param {number} limit maximum number of hits to return (default 10)
+   * @return {object} a list of search hits
+   */
+   search( q, limit = 10 ){
     const searchHits = this._engine.search( q );
     return searchHits.slice( 0, limit );
   }
 }
 
+/** Class for searching Document objects. */
 class DocumentSearch extends Search {
 
   constructor( opts ) {

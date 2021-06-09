@@ -5,8 +5,12 @@ import RequestForm from './request-form';
 import { makeClassList } from '../dom';
 import EventEmitter from 'eventemitter3';
 import { Carousel, CAROUSEL_CONTENT } from './carousel';
+import { tryPromise } from '../../util';
+import { formatDistanceToNow } from 'date-fns';
+import DocumentSearch from '../document-search';
 
 import { TWITTER_ACCOUNT_NAME, SAMPLE_DOC_ID, EMAIL_ADDRESS_INFO } from '../../config';
+import _ from 'lodash';
 
 const checkStatus = response => {
   if ( response.status >= 200 && response.status < 300 ) {
@@ -132,6 +136,21 @@ class Home extends Component {
     super(props);
 
     this.bus = new EventEmitter();
+
+    this.state = {
+      query: '',
+      searchMode: false
+    };
+
+    this.debouncedSearch = _.debounce(() => {
+      this.search();
+    }, 500);
+
+    this.docSearch = new DocumentSearch();
+
+    this.docSearchFetch = this.docSearch.fetch('/api/document');
+
+    this.docSearchFetch.then(docs => this.setState({ allDocs: docs, searchDocs: docs }));
   }
 
   componentDidMount(){
@@ -212,6 +231,49 @@ class Home extends Component {
 
   }
 
+  activateSearchMode() {
+    this.setState({ searchMode: true });
+  }
+
+  deactivateSearchMode() {
+    if (this.state.query) {
+      // keep in search mode
+    } else {
+      this.setState({ searchMode: false, query: '', searchDocs: this.state.allDocs });
+    }
+  }
+
+  updateSearchQuery(query) {
+    this.setState({ query });
+
+    if (query) {
+      this.activateSearchMode();
+    
+      this.debouncedSearch();
+    } else {
+      this.setState({ searchDocs: this.state.allDocs });
+    }
+  }
+
+  clearSearchQuery() {
+    this.setState({ query: '', searchDocs: this.state.allDocs, searchMode: false });
+  }
+
+  search() {
+    const q = this.state.query;
+    const waitForFetch = () => this.docSearchFetch;
+    const doQuery = () => this.docSearch.search(q);
+
+    this.setState({ searching: true });
+
+    (tryPromise(waitForFetch)
+      .then(doQuery)
+      .then(docs => {
+        this.setState({ searchDocs: docs, searching: false });
+      })
+    );
+  }
+
   render(){
     const CTAPopover = props => {
       return h(Popover, {
@@ -257,13 +319,79 @@ class Home extends Component {
       ]);
     };
 
-    return h('div.home', [
+    const docCard = doc => {
+      const { title, authors: { authorList }, reference: journalName } = doc.citation;
+        let authorNames = authorList.map( a => a.name );
+        const id = doc.id;
+        const link = doc.publicUrl;
+    
+        if( authorNames.length > 3 ){
+          authorNames = authorNames.slice(0, 2).concat([ '...', authorNames[authorNames.length - 1] ]);
+        }
+    
+        const figureDiv = h('div.home-search-doc-figure', {
+          style: {
+            backgroundImage: `url('/api/document/${id}.png')`
+          }
+        });
+    
+        return h('div.home-search-doc',  [
+          h('a', {
+            href: link,
+            target: '_blank'
+          }, [
+            h('div.home-search-doc-descr', [
+              h('div.home-search-doc-title', title),
+              h('div.home-search-doc-meta', [
+                h('div.home-search-doc-authors', authorNames.map((name, i) => h(`span.home-search-doc-author.home-search-doc-author-${i}`, name))),
+                h('div.home-search-doc-journal', journalName)
+              ]),
+              h('div.home-search-doc-footer', [
+                h('div.home-search-doc-text', doc.text),
+                h('div.home-search-doc-datestamp', formatDistanceToNow( new Date( doc.lastEditedDate || 0 ), { addSuffix: true } ))
+              ]),
+            ]),
+            figureDiv,
+            h('div.home-search-doc-journal-banner')
+          ])
+        ]);
+    };
+
+    return h('div.home', {
+      className: makeClassList({
+        'home-search-mode': this.state.searchMode,
+        'home-search-focus': this.state.searchFocus
+      })
+    }, [
       h('div.home-section.home-figure-section.home-banner', [
         h('div.home-nav', [
           h('div.home-nav-left', [
             h('div.home-nav-logo')
           ]),
           h('div.home-nav-right', [
+            h('span.home-nav-link.home-search-box-area', [
+              h('input.home-search-box.input-round.input-joined', {
+                value: this.state.query,
+                onChange: event => this.updateSearchQuery(event.target.value),
+                type: 'text',
+                placeholder: 'Search',
+                onFocus: () => {
+                  this.setState({ searchFocus: true });
+
+                  this.activateSearchMode();
+                },
+                onBlur: () => {
+                  this.setState({ searchFocus: false });
+
+                  this.deactivateSearchMode();
+                }
+              }),
+              h('button', {
+                onClick: () => this.clearSearchQuery()
+              }, [
+                h('i.material-icons', 'clear')
+              ])
+            ]),
             h('a.home-nav-link', [
               h(ContactPopover)
             ]),
@@ -464,6 +592,27 @@ class Home extends Component {
             ])
           ])
         ])
+      ]),
+      h('div.home-section.home-search-results', [
+        this.state.searchMode ? (
+          this.state.searching ? (
+            h('div.home-search-results-searching', [
+              h('i.icon.icon-spinner')
+            ])
+          ) : (
+            this.state.searchDocs ?
+            (
+              this.state.searchDocs.length > 0 ? (
+                h('div.home-search-results-docs', this.state.searchDocs.map(docCard))
+              ) : (
+                h('div.home-search-results-none', 'There are no results for your search.')
+              )
+            )
+            : h('div.home-search-results-searching', [
+              h('i.icon.icon-spinner')
+            ])
+          )
+        ) : null
       ]),
       h('div.home-footer', [
         h('p', [

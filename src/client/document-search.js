@@ -1,8 +1,11 @@
 import MiniSearch from 'minisearch';
 import _ from 'lodash';
 import querystring from 'querystring';
+import Document from '../model/document';
 
 import logger from './logger';
+
+const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
 /** Class for  searching an index. */
 class Search {
@@ -21,7 +24,7 @@ class Search {
    * @return {object} a list of full Document JSON
    */
   fetch( url, limit = 50, offset = 0 ){
-    const opts = { limit, offset };
+    const opts = { limit, offset, status: [DOCUMENT_STATUS_FIELDS.PUBLIC].join(',') };
     let addr = `${url}?${querystring.stringify( opts )}`;
 
     return fetch( addr )

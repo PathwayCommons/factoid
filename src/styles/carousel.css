@@ -238,8 +238,7 @@
 }
 
 .carousel-doc-journal {
-  margin-top: 0.25em;
-  font-size: 1.1em;
+  font-size: 0.8em;
 }
 
 .carousel-doc-footer {
@@ -252,6 +251,25 @@
   margin-top: 0.5em;
   text-align: right;
   display: none;
+}
+
+.carousel-bg {
+  left: 3em;
+  right: 3em;
+  bottom: 3em;
+  height: 14em;
+  position: absolute;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.25;
+  pointer-events: none;
+  user-select: none;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-top: 2px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
 }
 
 .carousel-pager {
@@ -301,6 +319,11 @@
 @media (max-width: 500px) {
   .carousel-pager {
     width: 1.5em;
+  }
+
+  .carousel-bg {
+    left: 1.5em;
+    right: 1.5em;
   }
 
   .carousel-pager-icon {

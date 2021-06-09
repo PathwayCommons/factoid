@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import FetchRetry from 'fetch-retry';
 import _ from 'lodash';
 import { v1 as uuidv1 } from 'uuid';
+import stringSimilarity from 'string-similarity';
 
 import {
   INDRA_DB_BASE_URL,
@@ -23,6 +24,7 @@ import { getPubmedCitation } from '../../../../util/pubmed';
 import { checkHTTPStatus } from '../../../../util';
 // import testStatements from '../../../../../statements.json';
 
+const MAXIMUM_STRING_SIMILARITY_SCORE = 0.90;
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
 // const SORT_BY_DATE = false; // TODO remove
 
@@ -226,6 +228,15 @@ const filterStatements = ( statements, doc ) => {
   const { pmid } = doc.citation();
 
   const pickEvidence = a => a.map( e => _.pick( e, ...evidenceFields ) );
+  const uniqueByText = a => _.uniqWith( a,
+    ( arrayVal, other ) => {
+      const pmid = _.get( arrayVal, 'pmid' );
+      const text = _.get( arrayVal, 'text' );
+      const pmidOther = _.get( other, 'pmid' );
+      const textOther = _.get( other, 'text' );
+      return pmid === pmidOther && text && textOther &&
+      ( stringSimilarity.compareTwoStrings( text, textOther ) > MAXIMUM_STRING_SIMILARITY_SCORE );
+  });
 
   const hasPmid = e => _.has( e, 'pmid' );
   const isDocPmid = e => _.get( e, 'pmid' ) === pmid;
@@ -243,6 +254,9 @@ const filterStatements = ( statements, doc ) => {
 
   let transformed = statements.map( statement => {
     let evidence = _.get( statement, 'evidence', [] );
+
+    // Filter out duplicates wrt to text exceprt
+    evidence = uniqueByText( evidence );
 
     // Pick off desired fields
     evidence = pickEvidence( evidence );

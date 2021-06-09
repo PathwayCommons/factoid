@@ -382,8 +382,6 @@ class Home extends Component {
                 },
                 onBlur: () => {
                   this.setState({ searchFocus: false });
-
-                  this.deactivateSearchMode();
                 }
               }),
               h('button', {

@@ -59,8 +59,11 @@
 }
 
 .related-interaction-meta {
-  display: block;
-  flex: 0 0 19em;
+  width: 30%;
+}
+
+.related-interaction-detail {
+  flex: 1;
 }
 
 .related-interaction-detail > * {

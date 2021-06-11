@@ -103,6 +103,10 @@ export class RelatedInteractions extends RelatedPapers {
       const { evidence, sentence } = interaction;
       const { source, citation } = _.head( evidence );
 
+      // Database/source names
+      let names = _.uniqBy( source.map( s => _.get( s, 'name' ) ), 'name' );
+      let namesComponent = h('div.related-interaction-evidence-sources', `Source: ${names.join( '; ' )}` );
+
       // Format excerpts from the top evidence's sources
       let excerptComponent = null;
       const texts = _.compact( source.map( s => _.get( s, 'text' ) ) );
@@ -131,6 +135,7 @@ export class RelatedInteractions extends RelatedPapers {
         h('div.related-interaction-detail', [
           excerptComponent,
           paperComponent,
+          namesComponent,
           additionalEvidenceLink
         ])
       ]);

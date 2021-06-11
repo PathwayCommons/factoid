@@ -67,6 +67,10 @@
   flex: 1;
 }
 
+.related-interaction-evidence-sources {
+  font-size: small;
+}
+
 @media (max-width: 800px) {
   .related-interaction {
     flex-direction: column;

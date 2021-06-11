@@ -8,9 +8,6 @@ import {
   INDRA_DB_BASE_URL,
   INDRA_ENGLISH_ASSEMBLER_URL,
   SEMANTIC_SEARCH_BASE_URL,
-  // NO_ABSTRACT_HANDLING,
-  // MIN_SEMANTIC_SCORE,
-  // SEMANTIC_SEARCH_LIMIT,
   EVIDENCE_LIMIT,
   MAX_STATEMENTS,
   GROUNDING_SEARCH_BASE_URL
@@ -22,11 +19,9 @@ import { fetchPubmed } from './pubmed/fetchPubmed';
 import querystring from 'querystring';
 import { getPubmedCitation } from '../../../../util/pubmed';
 import { checkHTTPStatus } from '../../../../util';
-// import testStatements from '../../../../../statements.json';
 
 const MAXIMUM_STRING_SIMILARITY_SCORE = 0.90;
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
-// const SORT_BY_DATE = false; // TODO remove
 
 const FETCH_RETRIES = 20;
 const FETCH_RETRY_DELAY = 6000;
@@ -55,6 +50,41 @@ const DB_NAMES = Object.freeze({
   DB_NAME_CHEBI: 'ChEBI',
   DB_NAME_NCBI_GENE: 'NCBI Gene'
 });
+
+// Map from INDRA Knowledge sources (http://www.indra.bio/#knowledge-sources) to MIRIAM identifier
+// Set to null if not registered or ambiguous (e.g. CTD)
+const SOURCE_2_MIRIAM = new Map([
+  // Reading systems
+  [ 'trips', { dbPrefix: null, dbName: null, name: 'TRIPS' } ],
+  [ 'reach', { dbPrefix: null, dbName: null, name: 'REACH' } ],
+  [ 'sparser', { dbPrefix: null, dbName: null, name: 'Sparser' } ],
+  [ 'eidos', { dbPrefix: null, dbName: null, name: 'Eidos' } ],
+  [ 'tees', { dbPrefix: null, dbName: null, name: 'TEES' } ],
+  [ 'medscan', { dbPrefix: null, dbName: null, name: 'MedScan' } ],
+  [ 'rlimsp', { dbPrefix: null, dbName: null, name: 'RLIMS-P' } ],
+  [ 'isi', { dbPrefix: null, dbName: null, name: 'ISI/AMR' } ],
+  [ 'geneways', { dbPrefix: null, dbName: null, name: 'GeneWays' } ],
+  // Biological pathway databases
+  [ 'biopax', { dbPrefix: 'pathwaycommons', dbName: 'Pathway Commons', name: 'Pathway Commons' } ],
+  [ 'bel', { dbPrefix: null, dbName: null, name: 'Large Corpus / BEL' } ],
+  [ 'signor', { dbPrefix: 'signor', dbName: 'SIGNOR', name: 'Signor' } ],
+  [ 'biogrid', { dbPrefix: 'biogrid', dbName: 'BioGRID', name: 'BioGRID' } ],
+  [ 'tas', { dbPrefix: null, dbName: null, name: 'Target Affinity Spectrum' } ],
+  [ 'hprd', { dbPrefix: 'hprd', dbName: 'HPRD', name: 'Human Protein Reference Database' } ],
+  [ 'trrust', { dbPrefix: null, dbName: null, name: 'TRRUST Database' } ],
+  [ 'phosphoelm', { dbPrefix: null, dbName: null, name: 'Phospho.ELM' } ],
+  [ 'virhostnet', { dbPrefix: null, dbName: null, name: 'VirHostNet' } ],
+  [ 'ctd', { dbPrefix: null, dbName: null, name: 'The Comparative Toxicogenomics Database' } ],
+  [ 'drugbank', { dbPrefix: 'drugbank', dbName: 'DrugBank', name: 'DrugBank' } ],
+  [ 'omnipath', { dbPrefix: null, dbName: null, name: 'OmniPath' } ],
+  [ 'dgi', { dbPrefix: null, dbName: null, name: 'The Drug Gene Interaction Database' } ],
+  [ 'crog', { dbPrefix: null, dbName: null, name: 'Chemical Roles Graph' } ],
+  // Custom knowledge bases
+  [ 'ndex_cx', { dbPrefix: null, dbName: null, name: 'NDex' } ],
+  [ 'hypothesis', { dbPrefix: null, dbName: null, name: 'Hypothesis' } ],
+  [ 'biofactoid', { dbPrefix: null, dbName: null, name: 'Biofactoid' } ],
+  [ 'minerva', { dbPrefix: null, dbName: null, name: 'MINERVA' } ]
+]);
 
 const toJson = res => res.json();
 
@@ -224,10 +254,7 @@ const transformIntnType = indraType => {
 };
 
 const filterStatements = ( statements, doc ) => {
-  const evidenceFields = new Set([ 'source_api', 'source_id', 'pmid', 'text' ]);
   const { pmid } = doc.citation();
-
-  const pickEvidence = a => a.map( e => _.pick( e, ...evidenceFields ) );
   const uniqueByText = a => _.uniqWith( a,
     ( arrayVal, other ) => {
       const pmid = _.get( arrayVal, 'pmid' );
@@ -242,33 +269,14 @@ const filterStatements = ( statements, doc ) => {
   const isDocPmid = e => _.get( e, 'pmid' ) === pmid;
   const validPmids = a => _.filter( a , e => hasPmid( e ) && !isDocPmid( e ) );
 
-  const uniquePmidText = a => _.uniqWith( a,
-    ( arrVal, othVal ) => arrVal.pmid == othVal.pmid &&
-    _.get( arrVal, 'text' ) === _.get( othVal, 'text', '' )
-  );
-
-  const groupSharedPmid = a => {
-    const pmidGroups = _.groupBy( a, 'pmid' );
-    return _.toPairs( pmidGroups ).map( ([ pmid, source ]) => ({ pmid, source }) );
-  };
-
-  let transformed = statements.map( statement => {
+  let filtered = statements.map( statement => {
     let evidence = _.get( statement, 'evidence', [] );
 
     // Filter out duplicates wrt to text exceprt
     evidence = uniqueByText( evidence );
 
-    // Pick off desired fields
-    evidence = pickEvidence( evidence );
-
     // Has pmid, no self
     evidence = validPmids( evidence );
-
-    // Unique wrt pmid and text
-    evidence = uniquePmidText( evidence );
-
-    // transform statements
-    evidence = groupSharedPmid( evidence );
 
     // Update the statement evidence
     _.set( statement, 'evidence', evidence );
@@ -276,9 +284,55 @@ const filterStatements = ( statements, doc ) => {
   });
 
   // drop statement with empty evidence
-  let nonEmpty = transformed.filter( s => !_.isEmpty( _.get( s, 'evidence' ) ));
-
+  let nonEmpty = filtered.filter( s => !_.isEmpty( _.get( s, 'evidence' ) ));
   return nonEmpty;
+};
+
+// An interaction has evidence { pmid, source : [ { pmid, text, } ]}
+/**
+ * asInteraction
+ * transform an INDRA statement {@link https://github.com/sorgerlab/indra/blob/master/indra/resources/statements_schema.json}
+ * @param {object} statements a list of INDRA statements
+ * @returns a formatted object used downstream/UI
+ *   - type {string} the biofactoid model type
+ *   - sentence {string} english description
+ *   - evidence {object} list of evidence, grouped by PMID
+ *     - pmid {string}
+ *     - source {object} list of sources for PMID
+ *       - pmid {string}
+ *       - text {string} the text exerpt, possibly null
+ *       - hash {number} the has for the INDRA evidence element
+ *       - dbPrefix {string} the MIRIAM-registered collection prefix, possibly null
+ *       - dbName {string} the MIRIAM-registered collection prefix, possibly null
+ *       - name {string} any (possibly non-standard) name I could find
+ */
+const asInteraction = statements => {
+
+  const groupSharedPmid = a => {
+    const pmidGroups = _.groupBy( a, 'pmid' );
+    return _.toPairs( pmidGroups ).map( ([ pmid, source ]) => ({ pmid, source }) );
+  };
+
+  const mapEvidence = evidence => {
+    const { source_api, source_id: dbId = null, pmid = null, text = null, source_hash: hash } = evidence;
+    const miriamFields = SOURCE_2_MIRIAM.get( source_api );
+    return _.assign( { pmid, text, dbId, hash }, miriamFields );
+  };
+
+  let interactions = statements.map( statement => {
+    let evidence = _.get( statement, [ 'evidence' ], [] );
+
+    // translate evidence fields
+    evidence = evidence.map( mapEvidence );
+
+    // group by PMID
+    evidence = groupSharedPmid( evidence );
+
+    _.set( statement, [ 'evidence' ], evidence );
+    return statement;
+  });
+
+  return interactions;
 };
 
 const INDRA_BY_AGENTS_DEFAULTS = {
@@ -333,7 +387,7 @@ const statements2Text = async statements => {
  * statements2Interactions
  * Filter and transform INDRA statements into an 'interaction'
  *
- * @param {object} statements An list of INDRA statements {@link https://github.com/indralab/indra_db/tree/master/rest_api}
+ * @param {object} statements An list of INDRA statements {@link https://github.com/sorgerlab/indra/blob/master/indra/resources/statements_schema.json}
  * @param {object} doc A Document, used to filter out self articles from interactions
  * @returns an array of interactions:
  *   - type String the factoid model type
@@ -362,7 +416,10 @@ const statements2Interactions = async ( statements, doc ) => {
     });
 
     // filter statements and associated evidence
-    return filterStatements( pickedStatements, doc );
+    const filteredStatements = filterStatements( pickedStatements, doc );
+    const interactions = asInteraction( filteredStatements );
+
+    return interactions;
 
   } catch ( error ) {
     logger.error( `Unable to getInteractions: ${error.message}` );

@@ -2266,12 +2266,20 @@ const getRelPprsForDoc = async doc => {
 
 const getRelatedPapersForNetwork = async doc => {
 
-  try {
     const elements = doc.elements();
     logger.info(`Updating network-level related papers for doc ${doc.id()}`);
 
     for ( const element of elements ) {
-      let indraRes = await indra.search( element, doc );
+      let indraRes;
+      try {
+        indraRes = await indra.search( element, doc );
+
+      } catch ( err ) {
+
+        logger.error(`Error in getRelatedPapersForNetwork ${err.message}`);
+
+      }
+
       indraRes = indraRes || [];
       if ( element.isInteraction() ) {
         if ( indraRes.length == 0 ) {
@@ -2283,12 +2291,6 @@ const getRelatedPapersForNetwork = async doc => {
 
     logger.info(`Finished updating network-level related papers for doc`);
     return doc;
-
-  } catch ( err ) {
-    logger.error(`Error in getRelatedPapersForNetwork ${err.message}`);
-    return doc;
-  }
-
 };
 
 export default http;

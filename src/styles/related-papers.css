@@ -59,11 +59,27 @@
 }
 
 .related-interaction-meta {
+  font-weight: bold;
   width: 30%;
 }
 
 .related-interaction-detail {
   flex: 1;
+}
+
+@media (max-width: 800px) {
+  .related-interaction {
+    flex-direction: column;
+  }
+
+  .related-interaction-meta {
+    width: auto;
+    margin-bottom: 1em;
+  }
+
+  .related-interaction-detail {
+    width: auto;
+  }
 }
 
 .related-interaction-detail > * {

@@ -66,6 +66,7 @@
     "leven": "^2.1.0",
     "lodash": "^4.17.15",
     "lru-cache": "^4.1.1",
+    "minisearch": "^3.0.2",
     "morgan": "^1.9.1",
     "mousetrap": "^1.6.1",
     "node-cron": "^2.0.3",
@@ -133,5 +134,5 @@
   "engines": {
     "node": ">=10.0.0"
   },
-  "version": "0.14.0"
+  "version": "0.15.1"
 }

@@ -84,11 +84,11 @@ export class InfoPanel extends Component {
           i !== authorProfiles.length - 1 ? h('span.editor-info-author-spacer', ', ') : null
         ];
       }))),
-      h('div.editor-info-links', doi ? [
-        h('a.editor-info-link.plain-link', { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` }, reference),
+      h('div.editor-info-links', [
+        h( doi ? 'a.editor-info-link.plain-link': 'div.editor-info-link', doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` }: {}, reference),
         h('a.editor-info-link.plain-link', { target: '_blank', href: `${PUBMED_LINK_BASE_URL}${pmid}` }, 'PubMed'),
-        h('a.editor-info-link.plain-link', { target: '_blank', href: `${GOOGLE_SCHOLAR_BASE_URL}${doi}` }, 'Google Scholar')
-      ] : null),
+        h('a.editor-info-link.plain-link', { target: '_blank', href: `${GOOGLE_SCHOLAR_BASE_URL}${ doi ?  doi : ( "\u0022" + title + "\u0022") }` }, 'Google Scholar')
+      ]),
       h('div.editor-info-main-sections', [
         h('div.editor-info-abstract-section.editor-info-main-section', [
           h('div.editor-info-section-title', abstract ? 'Abstract': 'Summary'),

@@ -438,7 +438,10 @@ class Home extends Component {
           h('p', [
             `All Biofactoid data is made `,
             h('a.plain-link', { target: '_blank', href: 'https://github.com/PathwayCommons/factoid/blob/unstable/README.md#getting-the-data' }, `freely available to download`),
-            ` to the research community.`]),
+            ` to the research community, and licensed under `,
+            h('a.plain-link', { target: '_blank', href: 'https://creativecommons.org/publicdomain/zero/1.0/legalcode' }, `CC0`),
+            `.`
+          ]),
           h('p', [
             `Biofactoid is an academic project by: `,
               h('a.plain-link', { href: 'https://baderlab.org', target: '_blank' }, 'Bader Lab at the University of Toronto'),
@@ -463,6 +466,11 @@ class Home extends Component {
         ])
       ]),
       h('div.home-footer', [
+        h('p', [
+          h('small', [
+            h('a.plain-link', { href: 'https://github.com/PathwayCommons/factoid/blob/unstable/PRIVACY_POLICY.md', target: '_blank' }, 'Privacy Policy'),
+          ])
+        ]),
         h('p', [
           h('small', `Funding: NIH (U41 HG006623); DARPA Big Mechanism (ARO W911NF-14-C-0119).`)
         ]),

@@ -67,12 +67,13 @@
   width: 30%;
 }
 
-.related-interaction-detail {
+.related-interaction-evidence {
   flex: 1;
 }
 
 .related-interaction-evidence-sources {
   font-size: small;
+  text-align: right;
 }
 
 @media (max-width: 800px) {
@@ -85,12 +86,12 @@
     margin-bottom: 1em;
   }
 
-  .related-interaction-detail {
+  .related-interaction-evidence {
     width: auto;
   }
 }
 
-.related-interaction-detail > * {
+.related-interaction-evidence > * {
   display: block;
   margin-bottom: 0.25em;
 }

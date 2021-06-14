@@ -49,13 +49,17 @@
 
 .related-interaction {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: flex-start;
   border: 1px solid #ddd;
   min-height: 6em;
   border-radius: 0.25em;
   padding: 1.5em 1.5em 1.5em 1em;
-  font-size: 0.95rem;
+}
+
+.related-interaction-body {
+  display: flex;
+  flex-direction: row;
 }
 
 .related-interaction-meta {
@@ -72,7 +76,7 @@
 }
 
 @media (max-width: 800px) {
-  .related-interaction {
+  .related-interaction-body {
     flex-direction: column;
   }
 
@@ -105,6 +109,6 @@
 }
 
 .related-interaction-additional-evidence {
-  text-align: right;
+  float: right;
   font-size: 0.9em;
 }

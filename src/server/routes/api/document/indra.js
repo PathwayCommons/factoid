@@ -55,35 +55,35 @@ const DB_NAMES = Object.freeze({
 // Set to null if not registered or ambiguous (e.g. CTD)
 const SOURCE_2_MIRIAM = new Map([
   // Reading systems
-  [ 'trips', { dbPrefix: null, dbName: null, name: 'TRIPS' } ],
-  [ 'reach', { dbPrefix: null, dbName: null, name: 'REACH' } ],
-  [ 'sparser', { dbPrefix: null, dbName: null, name: 'Sparser' } ],
-  [ 'eidos', { dbPrefix: null, dbName: null, name: 'Eidos' } ],
-  [ 'tees', { dbPrefix: null, dbName: null, name: 'TEES' } ],
-  [ 'medscan', { dbPrefix: null, dbName: null, name: 'MedScan' } ],
-  [ 'rlimsp', { dbPrefix: null, dbName: null, name: 'RLIMS-P' } ],
-  [ 'isi', { dbPrefix: null, dbName: null, name: 'ISI/AMR' } ],
-  [ 'geneways', { dbPrefix: null, dbName: null, name: 'GeneWays' } ],
+  [ 'trips', { dbPrefix: null, dbName: null, name: 'TRIPS', type: 'nlp' } ],
+  [ 'reach', { dbPrefix: null, dbName: null, name: 'REACH', type: 'nlp' } ],
+  [ 'sparser', { dbPrefix: null, dbName: null, name: 'Sparser', type: 'nlp' } ],
+  [ 'eidos', { dbPrefix: null, dbName: null, name: 'Eidos', type: 'nlp' } ],
+  [ 'tees', { dbPrefix: null, dbName: null, name: 'TEES', type: 'nlp' } ],
+  [ 'medscan', { dbPrefix: null, dbName: null, name: 'MedScan', type: 'nlp' } ],
+  [ 'rlimsp', { dbPrefix: null, dbName: null, name: 'RLIMS-P', type: 'nlp' } ],
+  [ 'isi', { dbPrefix: null, dbName: null, name: 'ISI/AMR', type: 'nlp' } ],
+  [ 'geneways', { dbPrefix: null, dbName: null, name: 'GeneWays', type: 'nlp' } ],
   // Biological pathway databases
-  [ 'biopax', { dbPrefix: 'pathwaycommons', dbName: 'Pathway Commons', name: 'Pathway Commons' } ],
-  [ 'bel', { dbPrefix: null, dbName: null, name: 'Large Corpus / BEL' } ],
-  [ 'signor', { dbPrefix: 'signor', dbName: 'SIGNOR', name: 'Signor' } ],
-  [ 'biogrid', { dbPrefix: 'biogrid', dbName: 'BioGRID', name: 'BioGRID' } ],
-  [ 'tas', { dbPrefix: null, dbName: null, name: 'Target Affinity Spectrum' } ],
-  [ 'hprd', { dbPrefix: 'hprd', dbName: 'HPRD', name: 'Human Protein Reference Database' } ],
-  [ 'trrust', { dbPrefix: null, dbName: null, name: 'TRRUST Database' } ],
-  [ 'phosphoelm', { dbPrefix: null, dbName: null, name: 'Phospho.ELM' } ],
-  [ 'virhostnet', { dbPrefix: null, dbName: null, name: 'VirHostNet' } ],
-  [ 'ctd', { dbPrefix: null, dbName: null, name: 'The Comparative Toxicogenomics Database' } ],
-  [ 'drugbank', { dbPrefix: 'drugbank', dbName: 'DrugBank', name: 'DrugBank' } ],
-  [ 'omnipath', { dbPrefix: null, dbName: null, name: 'OmniPath' } ],
-  [ 'dgi', { dbPrefix: null, dbName: null, name: 'The Drug Gene Interaction Database' } ],
-  [ 'crog', { dbPrefix: null, dbName: null, name: 'Chemical Roles Graph' } ],
+  [ 'biopax', { dbPrefix: 'pathwaycommons', dbName: 'Pathway Commons', name: 'Pathway Commons', type: 'db' } ],
+  [ 'bel', { dbPrefix: null, dbName: null, name: 'Large Corpus / BEL', type: 'db' } ],
+  [ 'signor', { dbPrefix: 'signor', dbName: 'SIGNOR', name: 'Signor', type: 'db' } ],
+  [ 'biogrid', { dbPrefix: 'biogrid', dbName: 'BioGRID', name: 'BioGRID', type: 'db' } ],
+  [ 'tas', { dbPrefix: null, dbName: null, name: 'Target Affinity Spectrum', type: 'db' } ],
+  [ 'hprd', { dbPrefix: 'hprd', dbName: 'HPRD', name: 'Human Protein Reference Database', type: 'db' } ],
+  [ 'trrust', { dbPrefix: null, dbName: null, name: 'TRRUST Database', type: 'db' } ],
+  [ 'phosphoelm', { dbPrefix: null, dbName: null, name: 'Phospho.ELM', type: 'db' } ],
+  [ 'virhostnet', { dbPrefix: null, dbName: null, name: 'VirHostNet', type: 'db' } ],
+  [ 'ctd', { dbPrefix: null, dbName: null, name: 'The Comparative Toxicogenomics Database', type: 'db' } ],
+  [ 'drugbank', { dbPrefix: 'drugbank', dbName: 'DrugBank', name: 'DrugBank', type: 'db' } ],
+  [ 'omnipath', { dbPrefix: null, dbName: null, name: 'OmniPath', type: 'db' } ],
+  [ 'dgi', { dbPrefix: null, dbName: null, name: 'The Drug Gene Interaction Database', type: 'db' } ],
+  [ 'crog', { dbPrefix: null, dbName: null, name: 'Chemical Roles Graph', type: 'db' } ],
   // Custom knowledge bases
-  [ 'ndex_cx', { dbPrefix: null, dbName: null, name: 'NDex' } ],
-  [ 'hypothesis', { dbPrefix: null, dbName: null, name: 'Hypothesis' } ],
-  [ 'biofactoid', { dbPrefix: null, dbName: null, name: 'Biofactoid' } ],
-  [ 'minerva', { dbPrefix: null, dbName: null, name: 'MINERVA' } ]
+  [ 'ndex_cx', { dbPrefix: null, dbName: null, name: 'NDex', type: 'db' } ],
+  [ 'hypothesis', { dbPrefix: null, dbName: null, name: 'Hypothesis', type: 'db' } ],
+  [ 'biofactoid', { dbPrefix: null, dbName: null, name: 'Biofactoid', type: 'db' } ],
+  [ 'minerva', { dbPrefix: null, dbName: null, name: 'MINERVA', type: 'db' } ]
 ]);
 
 const toJson = res => res.json();
@@ -407,12 +407,13 @@ const statements2Interactions = async ( statements, doc ) => {
     // pick required fields from statements
     const pickedStatements = statements.map( statement => {
       const id = _.get( statement, [ 'id' ] );
+      const hash = _.get( statement, [ 'matches_hash' ] );
       const rawType = _.get( statement, [ 'type' ] );
       const type = transformIntnType( rawType );
       const sentence = _.get( sentences, id );
       const evidence = _.get( statement, [ 'evidence' ] );
       const participants = _.values( _.pick( statement, [ 'subj', 'obj', 'enz', 'sub', 'members' ] ) );
-      return { type, sentence, evidence, participants };
+      return { type, sentence, evidence, participants, id, hash };
     });
 
     // filter statements and associated evidence

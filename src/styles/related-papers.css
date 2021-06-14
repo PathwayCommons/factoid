@@ -67,12 +67,13 @@
   width: 30%;
 }
 
-.related-interaction-detail {
+.related-interaction .evidence {
   flex: 1;
 }
 
-.related-interaction-evidence-sources {
+.related-interaction .evidence-sources {
   font-size: small;
+  text-align: right;
 }
 
 @media (max-width: 800px) {
@@ -85,7 +86,7 @@
     margin-bottom: 1em;
   }
 
-  .related-interaction-detail {
+  .related-interaction .evidence {
     width: auto;
   }
 }
@@ -95,16 +96,16 @@
   margin-bottom: 0.25em;
 }
 
-.related-interaction-evidence-source-excerpts {
+.related-interaction .evidence-source-excerpts {
   padding: 10px;
   background-color: #f8f8f8;
 }
 
-.related-interaction-evidence-source-excerpt {
+.related-interaction .evidence-source-excerpt {
   padding: 0 0 0.8em;
 }
 
-.related-interaction-evidence-source-excerpt:last-child {
+.related-interaction .evidence-source-excerpt:last-child {
   padding: 0;
 }
 

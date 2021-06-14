@@ -75,7 +75,48 @@ export class RelatedPapers extends Component {
   }
 }
 
-class RelatedInteraction extends Component {
+export class EvidenceComponent extends Component {
+  constructor(props){
+    super(props);
+  }
+
+  render(){
+
+    const { evidence } = this.props;
+    const { source, citation } = evidence;
+
+    // Format excerpts from the top evidence's sources
+    let excerptComponent = null;
+    const texts = _.compact( source.map( s => _.get( s, 'text' ) ) );
+    const hasExcerpts = !_.isEmpty( texts );
+    if( hasExcerpts ){
+      let excerpts = texts.map( text => h('div.evidence-source-excerpt', text ) );
+      excerptComponent = h('div.evidence-source-excerpts', excerpts );
+    }
+
+    let paperComponent = h('div.evidence-paper', [ h( RelatedPaper, { citation } ) ]);
+
+    // Database/source names
+    const isDatabaseType = s => s.type == 'db';
+    const getSourceName = s => s.name;
+    let sourceNames = source
+      .filter( isDatabaseType )
+      .map( getSourceName );
+    sourceNames = _.uniqBy( sourceNames, 'name' );
+    // names = _.filter( names, [ 'type', 'db' ] );
+    let namesComponent = sourceNames.length ?
+      h('div.evidence-sources', `Source: ${sourceNames.join( '; ' )}` ) :
+      null;
+
+    return h('div.evidence', [
+        excerptComponent,
+        paperComponent,
+        namesComponent
+    ]);
+  }
+}
+
+export class RelatedInteraction extends Component {
   constructor(props){
     super(props);
   }
@@ -84,22 +125,6 @@ class RelatedInteraction extends Component {
 
     const { interaction } = this.props;
     const { evidence, sentence } = interaction;
-    const { source, citation } = _.head( evidence );
-
-    // Database/source names
-    let names = _.uniqBy( source.map( s => _.get( s, 'name' ) ), 'name' );
-    let namesComponent = h('div.related-interaction-evidence-sources', `Source: ${names.join( '; ' )}` );
-
-    // Format excerpts from the top evidence's sources
-    let excerptComponent = null;
-    const texts = _.compact( source.map( s => _.get( s, 'text' ) ) );
-    const hasExcerpts = !_.isEmpty( texts );
-    if( hasExcerpts ){
-      let excerpts = texts.map( text => h('div.related-interaction-evidence-source-excerpt', text ) );
-      excerptComponent = h('div.related-interaction-evidence-source-excerpts', excerpts );
-    }
-
-    let paperComponent = h('div.related-interaction-evidence-paper', [ h( RelatedPaper, { citation } ) ]);
 
     // Link to more evidence (i.e. papers for the interaction )
     let additionalEvidenceLink = null;
@@ -116,11 +141,7 @@ class RelatedInteraction extends Component {
         h('div.related-interaction-meta', [
           h('div.related-interaction-sentence', sentence )
         ]),
-        h('div.related-interaction-detail', [
-          excerptComponent,
-          paperComponent,
-          namesComponent
-        ])
+        h( EvidenceComponent, { evidence: _.head( evidence ) })
       ]),
       h('div.related-interaction-footer', [
         additionalEvidenceLink
@@ -129,6 +150,7 @@ class RelatedInteraction extends Component {
 
   }
 }
+
 
 export class RelatedInteractions extends RelatedPapers {
   constructor(props){

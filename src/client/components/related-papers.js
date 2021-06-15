@@ -29,7 +29,7 @@ class RelatedPaper extends Component {
     const isReview = _.find(  pubTypes, ["UI", "D016454"] ) === undefined ? false : true;
 
     return h('div.related-paper', [
-      h('a.related-paper-title.related-paper-hypertext', {
+      h('a.related-paper-title.related-paper-link', {
         href: link,
         target: '_blank'
       }, title),
@@ -131,7 +131,7 @@ export class RelatedInteraction extends Component {
     let numArticles = evidence.length;
     let hasMoreEvidence = numArticles > 1;
     if( hasMoreEvidence ){
-      additionalEvidenceLink = h('a.related-interaction-additional-evidence.related-paper-hypertext', {
+      additionalEvidenceLink = h('a.related-interaction-additional-evidence.related-paper-link', {
         target: '_blank'
       }, `Show more articles (${numArticles})` );
     }
@@ -152,9 +152,25 @@ export class RelatedInteraction extends Component {
 }
 
 
-export class RelatedInteractions extends RelatedPapers {
+export class RelatedInteractions extends Component {
   constructor(props){
     super(props);
+
+    this.state = {
+      papers: this.props.source.relatedPapers()
+    };
+  }
+
+  componentDidMount(){
+    this.onRefresh = () => {
+      this.setState({ papers: this.props.source.relatedPapers() });
+    };
+
+    this.props.source.on('relatedpapers', this.onRefresh);
+  }
+
+  componentWillUnmount(){
+    this.props.source.removeListener('relatedpapers', this.onRefresh);
   }
 
   render(){
@@ -181,75 +197,5 @@ export class RelatedInteractions extends RelatedPapers {
             );
   }
 }
-
-
-// export class RelatedInteractions extends RelatedPapers {
-//   constructor(props){
-//     super(props);
-//   }
-
-//   render(){
-//     let { papers } = this.state;
-
-//     // Haven't loaded yet
-//     if( !papers ) return h( RelatedPapersLoading );
-
-//     const emptyComponent = h('div.related-papers.related-papers-empty', [
-//       h('p.related-papers-empty-msg', 'There were no interactions found for the selected item' )
-//     ]);
-
-//     // Nothing here to show
-//     if( _.isEmpty( papers ) ) return emptyComponent;
-
-//     // Backwards-compatibility: Check schema { type, sentence, evidence, participants }
-//     let areInteractions = papers.every( paper => _.has( paper, 'evidence' ) && _.has( paper, 'sentence' ) );
-//     if( !areInteractions )  return emptyComponent;
-
-//     // OK - Display interactions
-//     const interactions = papers;
-//     return h('div.related-interactions', interactions.map( interaction => {
-//       const { evidence, sentence } = interaction;
-//       const { source, citation } = _.head( evidence );
-
-//       // Database/source names
-//       let names = _.uniqBy( source.map( s => _.get( s, 'name' ) ), 'name' );
-//       let namesComponent = h('div.related-interaction-evidence-sources', `Source: ${names.join( '; ' )}` );
-
-//       // Format excerpts from the top evidence's sources
-//       let excerptComponent = null;
-//       const texts = _.compact( source.map( s => _.get( s, 'text' ) ) );
-//       const hasExcerpts = !_.isEmpty( texts );
-//       if( hasExcerpts ){
-//         let excerpts = texts.map( text => h('div.related-interaction-evidence-source-excerpt', text ) );
-//         excerptComponent = h('div.related-interaction-evidence-source-excerpts', excerpts );
-//       }
-
-//       let paperComponent = h('div.related-interaction-evidence-paper', [ h( RelatedPaper, { citation } ) ]);
-
-//       // Link to more evidence (i.e. papers for the interaction )
-//       let additionalEvidenceLink = null;
-//       let numArticles = evidence.length;
-//       let hasMoreEvidence = numArticles > 1;
-//       if( hasMoreEvidence ){
-//         additionalEvidenceLink = h('a.related-interaction-additional-evidence.related-paper-hypertext', {
-//           target: '_blank'
-//         }, `Show more articles (${numArticles})` );
-//       }
-
-//       return h('div.related-interaction', [
-//         h('div.related-interaction-meta', [
-//           h('div.related-interaction-sentence', sentence )
-//         ]),
-//         h('div.related-interaction-detail', [
-//           excerptComponent,
-//           paperComponent,
-//           namesComponent,
-//           additionalEvidenceLink
-//         ])
-//       ]);
-//     }));
-
-//   }
-// }
 
 export default RelatedPapers;

@@ -90,11 +90,11 @@ export class EvidenceComponent extends Component {
     const texts = _.compact( source.map( s => _.get( s, 'text' ) ) );
     const hasExcerpts = !_.isEmpty( texts );
     if( hasExcerpts ){
-      let excerpts = texts.map( text => h('div.evidence-source-excerpt', text ) );
-      excerptComponent = h('div.evidence-source-excerpts', excerpts );
+      let excerpts = texts.map( text => h('div.related-interaction-evidence-source-excerpt', text ) );
+      excerptComponent = h('div.related-interaction-evidence-source-excerpts', excerpts );
     }
 
-    let paperComponent = h('div.evidence-paper', [ h( RelatedPaper, { citation } ) ]);
+    let paperComponent = h('div.related-interaction-evidence-paper', [ h( RelatedPaper, { citation } ) ]);
 
     // Database/source names
     const isDatabaseType = s => s.type == 'db';
@@ -105,10 +105,10 @@ export class EvidenceComponent extends Component {
     sourceNames = _.uniqBy( sourceNames, 'name' );
     // names = _.filter( names, [ 'type', 'db' ] );
     let namesComponent = sourceNames.length ?
-      h('div.evidence-sources', `Source: ${sourceNames.join( '; ' )}` ) :
+      h('div..related-interaction-evidence-sources', `Source: ${sourceNames.join( '; ' )}` ) :
       null;
 
-    return h('div.evidence', [
+    return h('div.related-interaction-evidence', [
         excerptComponent,
         paperComponent,
         namesComponent
@@ -131,7 +131,7 @@ export class RelatedInteraction extends Component {
     let numArticles = evidence.length;
     let hasMoreEvidence = numArticles > 1;
     if( hasMoreEvidence ){
-      additionalEvidenceLink = h('a.related-interaction-additional-evidence.related-paper-hypertext', {
+      additionalEvidenceLink = h('a.related-interaction-additional-evidence.related-paper-link', {
         target: '_blank'
       }, `Show more articles (${numArticles})` );
     }

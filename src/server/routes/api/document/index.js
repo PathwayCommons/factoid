@@ -2208,8 +2208,9 @@ const getRelPprsForDoc = async doc => {
     const elinkResponse = await eLink( { id: [pmid] } );
 
     // For .relatedPapers
-    const documents = elink2UidList( elinkResponse );
-    let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
+    const documents = elink2UidList( elinkResponse ).map( uid => ({ uid }) );
+    const query = { uid: pmid };
+    let rankedDocs = await indra.semanticSearch({ query, documents });
     const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
     const relatedPapersResponse = await fetchPubmed({ uids });
     relatedPapers = _.get( relatedPapersResponse, 'PubmedArticleSet', [] )

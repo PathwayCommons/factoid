@@ -1681,8 +1681,9 @@ http.post('/', function( req, res, next ){
 
 const postDoc = provided => {
   const { paperId, elements=[], performLayout, groundEls, authorName } = provided;
-  const id = paperId === DEMO_ID ? DEMO_ID: undefined;
-  const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
+  const isDemo = paperId === DEMO_ID;
+  const id = undefined;
+  const secret = isDemo ? DEMO_SECRET: uuid();
   const fromAdmin = _.get( provided, 'fromAdmin', true );
 
   const elToXref = {};
@@ -1715,11 +1716,11 @@ const postDoc = provided => {
 
   _.remove( elements, el => elsToOmit[ el.id ] );
 
-  const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
-  const handleDocCreation = async ({ docDb, eleDb }) => {
-    if( id === DEMO_ID ) await deleteTableRows( API_KEY, secret );
-    return await createDoc({ docDb, eleDb, id, secret, provided });
-  };
+  const setStatus = doc => tryPromise(
+      () => isDemo ? doc.trash(): doc.initiate()
+    )
+    .then( () => doc );
+  const handleDocCreation = ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided });
   const addEls = doc => tryPromise( () => doc.fromJson( { elements } ) ).then( () => doc );
   const handleLayout = doc => {
     if ( performLayout ) {

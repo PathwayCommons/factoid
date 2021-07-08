@@ -1647,7 +1647,6 @@ const tryVerify = async doc => {
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
 
-
   const sendInviteNotification = async doc => {
     // Do not try send when there are email issues
     const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
@@ -1674,8 +1673,14 @@ http.post('/', function( req, res, next ){
 
   postDoc( provided )
     .then( sendJSON )
-    .then( handleInviteNotification )
-    .then( updateRelatedPapers )
+    .then( doc => {
+      if ( doc.secret() === DEMO_SECRET ){
+        return doc;
+      } else {
+        return handleInviteNotification(doc)
+          .then( updateRelatedPapers );
+      }
+    })
     .catch( next );
 });
 

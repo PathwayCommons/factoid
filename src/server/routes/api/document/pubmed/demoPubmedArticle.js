@@ -1,277 +1,409 @@
 export default {
   "MedlineCitation": {
     "Article": {
-      "Journal": {
-        "Title": "Journal of Example",
-        "Volume": "1",
-        "Issue": "1",
-        "PubDate": {
-          "Year": "2019",
-          "Month": "Jan",
-          "Day": "01"
-        },
-        "ISSN": "0000-0000",
-        "ISOAbbreviation": "J. Example"
-      },
-      "ArticleTitle": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Abstract": [
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-      ],
+      "Abstract": "p21c-ras plays a critical role in mediating tyrosine kinase-stimulated cell growth and differentiation. However, the pathways through which p21c-ras propagates these signals remain unknown. We report that in PC12 cells, expression of a dominant inhibitory mutant of ras, c-Ha-ras(Asn-17), antagonizes growth factor- and phorbol ester-induced activation of the erk-encoded family of MAP kinases, the 85-92 kd RSKs, and the kinase(s) responsible for hyperphosphorylation of the proto-oncogene product Raf-1. In addition, we find that expression of the activated ras oncogene is sufficient to stimulate these events. These data indicate that ras mediates nerve growth factor receptor and protein kinase C modulation of MAP kinases, RSKs, and Raf-1.",
+      "ArticleTitle": "ras mediates nerve growth factor receptor modulation of three signal-transducing protein kinases: MAP kinase, Raf-1, and RSK.",
       "AuthorList": [
         {
-          "LastName": "Doe",
-          "ForeName": "Jane",
-          "Initials": "A",
-          "CollectiveName": null,
           "AffiliationInfo": [
             {
-              "Affiliation": "Centre for Medical Research, Research Institute, City, Country.",
+              "Affiliation": "Program in Cell and Developmental Biology, Harvard University, Boston, Massachusetts.",
               "email": null
             }
           ],
-          "Identifier": null
+          "CollectiveName": null,
+          "ForeName": "K W",
+          "Identifier": [],
+          "Initials": "KW",
+          "LastName": "Wood"
         },
         {
-          "LastName": "Doe",
-          "ForeName": "Jon",
-          "Initials": "A",
+          "AffiliationInfo": [],
           "CollectiveName": null,
-          "AffiliationInfo": [
-            {
-              "Affiliation": "Centre for Medical Research, Research Institute, City, Country.",
-              "email": null
-            }
-          ],
-          "Identifier": null
+          "ForeName": "C",
+          "Identifier": [],
+          "Initials": "C",
+          "LastName": "Sarnecki"
         },
         {
-          "LastName": "Public",
-          "ForeName": "Joseph",
-          "Initials": "E",
+          "AffiliationInfo": [],
           "CollectiveName": null,
-          "AffiliationInfo": [
-            {
-              "Affiliation": "Centre for Medical Research, Research Institute, City, Country.",
-              "email": "jepublic@example.com"
-            }
-          ],
-          "Identifier": null
+          "ForeName": "T M",
+          "Identifier": [],
+          "Initials": "TM",
+          "LastName": "Roberts"
+        },
+        {
+          "AffiliationInfo": [],
+          "CollectiveName": null,
+          "ForeName": "J",
+          "Identifier": [],
+          "Initials": "J",
+          "LastName": "Blenis"
+        }
+      ],
+      "Journal": {
+        "ISOAbbreviation": "Cell",
+        "ISSN": {
+          "IssnType": "Print",
+          "value": "0092-8674"
+        },
+        "JournalIssue": {
+          "Issue": "6",
+          "PubDate": {
+            "Day": "20",
+            "Month": "Mar",
+            "Year": "1992"
+          },
+          "Volume": "68"
+        },
+        "Title": "Cell"
+      },
+      "PublicationTypeList": [
+        {
+          "UI": "D016428",
+          "value": "Journal Article"
+        },
+        {
+          "UI": "D013485",
+          "value": "Research Support, Non-U.S. Gov't"
+        },
+        {
+          "UI": "D013487",
+          "value": "Research Support, U.S. Gov't, P.H.S."
         }
       ]
     },
     "ChemicalList": [
       {
-        "RegistryNumber": "0",
-        "NameOfSubstance": "DNA-Binding Proteins"
+        "NameOfSubstance": {
+          "UI": "D009414",
+          "value": "Nerve Growth Factors"
+        },
+        "RegistryNumber": "0"
       },
       {
-        "RegistryNumber": "0",
-        "NameOfSubstance": "PLAG1 protein, human"
+        "NameOfSubstance": {
+          "UI": "D010703",
+          "value": "Phorbol Esters"
+        },
+        "RegistryNumber": "0"
       },
       {
-        "RegistryNumber": "EC 1.4.1.2",
-        "NameOfSubstance": "Glutamate Dehydrogenase"
+        "NameOfSubstance": {
+          "UI": "D011518",
+          "value": "Proto-Oncogene Proteins"
+        },
+        "RegistryNumber": "0"
       },
       {
-        "RegistryNumber": "EC 2.7.1.-",
-        "NameOfSubstance": "STK11 protein, human"
+        "NameOfSubstance": {
+          "UI": "D011956",
+          "value": "Receptors, Cell Surface"
+        },
+        "RegistryNumber": "0"
       },
       {
-        "RegistryNumber": "EC 2.7.11.1",
-        "NameOfSubstance": "Protein-Serine-Threonine Kinases"
+        "NameOfSubstance": {
+          "UI": "D017475",
+          "value": "Receptors, Nerve Growth Factor"
+        },
+        "RegistryNumber": "0"
       },
       {
-        "RegistryNumber": "EC 2.7.11.17",
-        "NameOfSubstance": "CAMKK2 protein, human"
+        "NameOfSubstance": {
+          "UI": "D011494",
+          "value": "Protein Kinases"
+        },
+        "RegistryNumber": "EC 2.7.-"
       },
       {
-        "RegistryNumber": "EC 2.7.11.17",
-        "NameOfSubstance": "Calcium-Calmodulin-Dependent Protein Kinase Kinase"
+        "NameOfSubstance": {
+          "UI": "D019908",
+          "value": "Proto-Oncogene Proteins c-raf"
+        },
+        "RegistryNumber": "EC 2.7.11.1"
       },
       {
-        "RegistryNumber": "EC 2.7.11.31",
-        "NameOfSubstance": "AMP-Activated Protein Kinases"
+        "NameOfSubstance": {
+          "UI": "D019893",
+          "value": "Ribosomal Protein S6 Kinases"
+        },
+        "RegistryNumber": "EC 2.7.11.1"
+      },
+      {
+        "NameOfSubstance": {
+          "UI": "D011493",
+          "value": "Protein Kinase C"
+        },
+        "RegistryNumber": "EC 2.7.11.13"
+      },
+      {
+        "NameOfSubstance": {
+          "UI": "D017871",
+          "value": "Calcium-Calmodulin-Dependent Protein Kinases"
+        },
+        "RegistryNumber": "EC 2.7.11.17"
+      },
+      {
+        "NameOfSubstance": {
+          "UI": "D016283",
+          "value": "Proto-Oncogene Proteins p21(ras)"
+        },
+        "RegistryNumber": "EC 3.6.5.2"
       }
     ],
-    "KeywordList": [
-      "AMPKa",
-      "CamKK2",
-      "GLUD1",
-      "LKB1 deficient",
-      "anoikis",
-      "metastasis"
-    ],
+    "InvestigatorList": [],
+    "KeywordList": [],
     "MeshheadingList": [
       {
-        "DescriptorName": "A549 Cells",
-        "ID": "D000072283",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D000818",
+          "value": "Animals"
+        },
+        "QualifierName": []
       },
       {
-        "DescriptorName": "AMP-Activated Protein Kinases",
-        "ID": "D055372",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D017871",
+          "value": "Calcium-Calmodulin-Dependent Protein Kinases"
+        },
+        "QualifierName": []
       },
       {
-        "DescriptorName": "Animals",
-        "ID": "D000818",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D002460",
+          "value": "Cell Line"
+        },
+        "QualifierName": []
       },
       {
-        "DescriptorName": "Anoikis",
-        "ID": "D023102",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D005786",
+          "value": "Gene Expression Regulation"
+        },
+        "QualifierName": []
       },
       {
-        "DescriptorName": "Calcium-Calmodulin-Dependent Protein Kinase Kinase",
-        "ID": "D054737",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "Y",
+          "UI": "D005809",
+          "value": "Genes, Regulator"
+        },
+        "QualifierName": []
       },
       {
-        "DescriptorName": "Cell Line, Tumor",
-        "ID": "D045744",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "Y",
+          "UI": "D011905",
+          "value": "Genes, ras"
+        },
+        "QualifierName": []
       },
       {
-        "DescriptorName": "DNA-Binding Proteins",
-        "ID": "D004268",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D009414",
+          "value": "Nerve Growth Factors"
+        },
+        "QualifierName": [
+          {
+            "MajorTopicYN": "N",
+            "UI": "Q000494",
+            "value": "pharmacology"
+          }
+        ]
       },
       {
-        "DescriptorName": "Enzyme Activation",
-        "ID": "D004789",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D016716",
+          "value": "PC12 Cells"
+        },
+        "QualifierName": [
+          {
+            "MajorTopicYN": "N",
+            "UI": "Q000187",
+            "value": "drug effects"
+          }
+        ]
       },
       {
-        "DescriptorName": "Female",
-        "ID": "D005260",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D010703",
+          "value": "Phorbol Esters"
+        },
+        "QualifierName": [
+          {
+            "MajorTopicYN": "N",
+            "UI": "Q000494",
+            "value": "pharmacology"
+          }
+        ]
       },
       {
-        "DescriptorName": "Glutamate Dehydrogenase",
-        "ID": "D005969",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D010766",
+          "value": "Phosphorylation"
+        },
+        "QualifierName": [
+          {
+            "MajorTopicYN": "N",
+            "UI": "Q000187",
+            "value": "drug effects"
+          }
+        ]
       },
       {
-        "DescriptorName": "HEK293 Cells",
-        "ID": "D057809",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D011493",
+          "value": "Protein Kinase C"
+        },
+        "QualifierName": [
+          {
+            "MajorTopicYN": "Y",
+            "UI": "Q000378",
+            "value": "metabolism"
+          }
+        ]
       },
       {
-        "DescriptorName": "Humans",
-        "ID": "D006801",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D011494",
+          "value": "Protein Kinases"
+        },
+        "QualifierName": [
+          {
+            "MajorTopicYN": "Y",
+            "UI": "Q000378",
+            "value": "metabolism"
+          }
+        ]
       },
       {
-        "DescriptorName": "Lung Neoplasms",
-        "ID": "D008175",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D011518",
+          "value": "Proto-Oncogene Proteins"
+        },
+        "QualifierName": [
+          {
+            "MajorTopicYN": "Y",
+            "UI": "Q000378",
+            "value": "metabolism"
+          }
+        ]
       },
       {
-        "DescriptorName": "Mice",
-        "ID": "D051379",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D019908",
+          "value": "Proto-Oncogene Proteins c-raf"
+        },
+        "QualifierName": []
       },
       {
-        "DescriptorName": "Mice, Inbred NOD",
-        "ID": "D016688",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "Y",
+          "UI": "D016283",
+          "value": "Proto-Oncogene Proteins p21(ras)"
+        },
+        "QualifierName": []
       },
       {
-        "DescriptorName": "Mice, Nude",
-        "ID": "D008819",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D011956",
+          "value": "Receptors, Cell Surface"
+        },
+        "QualifierName": [
+          {
+            "MajorTopicYN": "N",
+            "UI": "Q000187",
+            "value": "drug effects"
+          },
+          {
+            "MajorTopicYN": "Y",
+            "UI": "Q000378",
+            "value": "metabolism"
+          }
+        ]
       },
       {
-        "DescriptorName": "Mice, SCID",
-        "ID": "D016513",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D017475",
+          "value": "Receptors, Nerve Growth Factor"
+        },
+        "QualifierName": []
       },
       {
-        "DescriptorName": "Neoplasm Metastasis",
-        "ID": "D009362",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D019893",
+          "value": "Ribosomal Protein S6 Kinases"
+        },
+        "QualifierName": []
       },
       {
-        "DescriptorName": "Neoplasm Transplantation",
-        "ID": "D009368",
-        "isMajorTopicYN": false
-      },
-      {
-        "DescriptorName": "Protein-Serine-Threonine Kinases",
-        "ID": "D017346",
-        "isMajorTopicYN": false
-      },
-      {
-        "DescriptorName": "Small Cell Lung Carcinoma",
-        "ID": "D055752",
-        "isMajorTopicYN": false
-      },
-      {
-        "DescriptorName": "Transplantation, Heterologous",
-        "ID": "D014183",
-        "isMajorTopicYN": false
+        "DescriptorName": {
+          "MajorTopicYN": "N",
+          "UI": "D015398",
+          "value": "Signal Transduction"
+        },
+        "QualifierName": []
       }
-    ],
-    "InvestigatorList": null
+    ]
   },
   "PubmedData": {
-    "History": [
-      {
-        "PubStatus": "received",
-        "PubMedPubDate": {
-          "Year": "2019",
-          "Month": "01",
-          "Day": "01"
-        }
-      },
-      {
-        "PubStatus": "accepted",
-        "PubMedPubDate": {
-          "Year": "2019",
-          "Month": "01",
-          "Day": "01"
-        }
-      },
-      {
-        "PubStatus": "entrez",
-        "PubMedPubDate": {
-          "Year": "2019",
-          "Month": "01",
-          "Day": "01"
-        }
-      },
-      {
-        "PubStatus": "pubmed",
-        "PubMedPubDate": {
-          "Year": "2019",
-          "Month": "01",
-          "Day": "01"
-        }
-      },
-      {
-        "PubStatus": "medline",
-        "PubMedPubDate": {
-          "Year": "2019",
-          "Month": "01",
-          "Day": "01"
-        }
-      }
-    ],
     "ArticleIdList": [
       {
         "IdType": "pubmed",
-        "id": "000000"
+        "id": "1312393"
+      },
+      {
+        "IdType": "pii",
+        "id": "0092-8674(92)90076-O"
       },
       {
         "IdType": "doi",
-        "id": "10.1038/s00000-000-0000-0"
-      },
-      {
-        "IdType": "pmc",
-        "id": "PMC0000000"
+        "id": "10.1016/0092-8674(92)90076-o"
       }
     ],
-    "ReferenceList": null
+    "History": [
+      {
+        "PubMedPubDate": {
+          "Day": "20",
+          "Month": "3",
+          "Year": "1992"
+        },
+        "PubStatus": "pubmed"
+      },
+      {
+        "PubMedPubDate": {
+          "Day": "20",
+          "Month": "3",
+          "Year": "1992"
+        },
+        "PubStatus": "medline"
+      },
+      {
+        "PubMedPubDate": {
+          "Day": "20",
+          "Month": "3",
+          "Year": "1992"
+        },
+        "PubStatus": "entrez"
+      }
+    ],
+    "ReferenceList": []
   }
 };

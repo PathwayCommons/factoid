@@ -1721,14 +1721,7 @@ const postDoc = provided => {
 
   _.remove( elements, el => elsToOmit[ el.id ] );
 
-  const setStatus = doc =>
-    tryPromise( () => doc.initiate() )
-      .then( () => {
-        if( isDemo ){
-          doc.trash();
-        }
-        return doc;
-      });
+  const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
   const handleDocCreation = ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided });
   const addEls = doc => tryPromise( () => doc.fromJson( { elements } ) ).then( () => doc );
   const handleLayout = doc => {

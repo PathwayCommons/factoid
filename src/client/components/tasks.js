@@ -6,7 +6,7 @@ import React from 'react';
 
 import Document from '../../model/document';
 import { ENTITY_TYPE } from '../../model/element/entity-type';
-import { BASE_URL } from '../../config';
+import { BASE_URL, DEMO_SECRET } from '../../config';
 import { makeClassList } from '../dom';
 import { NativeShare, isNativeShareSupported } from './native-share';
 import { MAX_WAIT_TWEET } from '../../config';
@@ -379,7 +379,10 @@ class TaskView extends DataComponent {
       ]);
     };
 
-    if( !done || submitting ){
+     if ( document.secret() === DEMO_SECRET ) {
+      return h('div.task-view', "Submit is disabled for demo");
+
+    } else if( !done || submitting ){
       return h('div.task-view', [
         h('i.icon.icon-spinner.task-view-spinner', {
           className: makeClassList({ 'task-view-spinner-shown': submitting })
@@ -391,6 +394,7 @@ class TaskView extends DataComponent {
           confirm()
         ])
       ]);
+
     } else {
       const publicUrl =  `${BASE_URL}${document.publicUrl()}`;
       const imageUrl = `${BASE_URL}/api${document.publicUrl()}.png`;

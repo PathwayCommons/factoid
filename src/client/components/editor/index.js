@@ -6,7 +6,7 @@ import io from 'socket.io-client';
 import _ from 'lodash';
 import Mousetrap from 'mousetrap';
 
-import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL } from '../../../config';
+import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL, NODE_ENV } from '../../../config';
 
 import { makeClassList } from '../../dom';
 import { getId, defer, tryPromise } from '../../../util';
@@ -144,7 +144,7 @@ class Editor extends DataComponent {
         this.done( isDone );
       }
     });
-
+    
     let bus = new EventEmitter();
 
     bus.on('drawtoggle', (toggle, type) => this.toggleDrawMode(toggle, type));
@@ -251,6 +251,17 @@ class Editor extends DataComponent {
       } )
       .catch( (err) => logger.error('An error occurred livening the doc', err) )
     ;
+
+    window.addEventListener('beforeunload', (event) => {
+      const isDevMode = NODE_ENV != 'production';
+      const shouldWarnUser = !this.data.document.submitted() && !isDevMode; // dev mode blacklisted so livereload works (for productivity)
+
+      if (shouldWarnUser) {
+        event.preventDefault();
+        
+        return event.returnValue = 'Your article summary has not been submitted.  Are you sure you would like to quit?';
+      }
+    }, { capture: true });
   }
 
   done( done ){

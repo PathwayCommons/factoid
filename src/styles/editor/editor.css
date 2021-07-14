@@ -285,6 +285,17 @@
   }
 }
 
+.editor-info-flags {
+  padding: 0.5em;
+  text-align: center;
+  max-width: 15em;
+  text-overflow: ellipsis;
+}
+
+.editor-info-flags.danger {
+  background-color: rgba(255, 0, 0, 0.2);
+}
+
 .editor-info-main-section + .editor-info-main-section {
   margin-top: 2em;
 }

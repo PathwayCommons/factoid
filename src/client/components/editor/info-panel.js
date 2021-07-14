@@ -68,10 +68,10 @@ export class InfoPanel extends Component {
     const { pmid, title = 'Untitled article', reference, doi, abstract } = citation;
 
     const retractedPubType = _.find( citation.pubTypes, ['UI', 'D016441'] );
-    const flags = retractedPubType ? retractedPubType.value : null;
+    const retractFlag = retractedPubType ? h('div.editor-info-flag.danger', retractedPubType.value) : null;
 
     return h('div.editor-info-panel', [
-      h('div.editor-info-flags.danger', flags),
+      h('div.editor-info-flags', [ retractFlag ]),
       h('div.editor-info-title', title),
       h('div.editor-info-authors', _.flatten(authorProfiles.map((a, i) => {
         let orcidUri = a.orcid;

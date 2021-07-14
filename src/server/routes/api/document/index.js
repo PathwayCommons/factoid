@@ -1647,7 +1647,6 @@ const tryVerify = async doc => {
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
 
-
   const sendInviteNotification = async doc => {
     // Do not try send when there are email issues
     const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
@@ -1674,15 +1673,22 @@ http.post('/', function( req, res, next ){
 
   postDoc( provided )
     .then( sendJSON )
-    .then( handleInviteNotification )
-    .then( updateRelatedPapers )
+    .then( doc => {
+      if ( doc.secret() === DEMO_SECRET ){
+        return doc;
+      } else {
+        return handleInviteNotification(doc)
+          .then( updateRelatedPapers );
+      }
+    })
     .catch( next );
 });
 
 const postDoc = provided => {
   const { paperId, elements=[], performLayout, groundEls, authorName } = provided;
-  const id = paperId === DEMO_ID ? DEMO_ID: undefined;
-  const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
+  const isDemo = paperId === DEMO_ID;
+  const id = undefined;
+  const secret = isDemo ? DEMO_SECRET: uuid();
   const fromAdmin = _.get( provided, 'fromAdmin', true );
 
   const elToXref = {};
@@ -1716,10 +1722,7 @@ const postDoc = provided => {
   _.remove( elements, el => elsToOmit[ el.id ] );
 
   const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
-  const handleDocCreation = async ({ docDb, eleDb }) => {
-    if( id === DEMO_ID ) await deleteTableRows( API_KEY, secret );
-    return await createDoc({ docDb, eleDb, id, secret, provided });
-  };
+  const handleDocCreation = ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided });
   const addEls = doc => tryPromise( () => doc.fromJson( { elements } ) ).then( () => doc );
   const handleLayout = doc => {
     if ( performLayout ) {

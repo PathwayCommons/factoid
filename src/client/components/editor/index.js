@@ -204,9 +204,22 @@ class Editor extends DataComponent {
               authorEmail: DEMO_AUTHOR_EMAIL
             })
           });
+          let toJSON = res => res.json();
           let reloadDoc = () => doc.load();
+          let updateDoc = docJSON => {
+            const { id, secret } = docJSON;
+            doc = new Document({
+              socket: docSocket,
+              factoryOptions: { socket: eleSocket },
+              data: { id, secret }
+            });
+            this.setData('document', doc);
+          };
 
-          return createDemoDoc().then(reloadDoc);
+          return createDemoDoc()
+            .then( toJSON )
+            .then( updateDoc )
+            .then( reloadDoc );
         } else {
           logger.error('The doc does not exist or an error occurred');
           logger.error( err );

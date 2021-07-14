@@ -320,6 +320,12 @@ class Home extends Component {
             ]),
             ` and Biofactoid automatically takes care of the rest.`
           ]),
+          h('a', {
+            target: '_blank',
+            href: `/demo`
+          }, [
+            h('button.home-cta-button', 'Demo')
+          ]),
           h('h3', `Get connected`),
           h('p', [`
             Your article profile links your research to a wider research audience:  It’s automatically connected to `,

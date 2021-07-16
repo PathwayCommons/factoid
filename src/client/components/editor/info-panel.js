@@ -68,7 +68,7 @@ export class InfoPanel extends Component {
     const { pmid, title = 'Untitled article', reference, doi, abstract } = citation;
 
     const retractedPubType = _.find( citation.pubTypes, ['UI', 'D016441'] );
-    const retractFlag = retractedPubType ? h('div.editor-info-flag.danger', retractedPubType.value) : null;
+    const retractFlag = retractedPubType ? h('span.editor-info-flag.super-salient-button.danger', retractedPubType.value) : null;
 
     return h('div.editor-info-panel', [
       h('div.editor-info-flags', [ retractFlag ]),

@@ -6,6 +6,7 @@ import { makeClassList } from '../../dom';
 import ElementInfo from '../element-info/element-info';
 import RelatedPapers from '../related-papers';
 import _ from 'lodash';
+import Credits from './credits';
 
 export class InfoPanel extends Component {
   constructor(props){
@@ -84,6 +85,7 @@ export class InfoPanel extends Component {
           i !== authorProfiles.length - 1 ? h('span.editor-info-author-spacer', ', ') : null
         ];
       }))),
+      h(Credits, { controller, bus, document }),
       h('div.editor-info-links', [
         h( doi ? 'a.editor-info-link.plain-link': 'div.editor-info-link', doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` }: {}, reference),
         h('a.editor-info-link.plain-link', { target: '_blank', href: `${PUBMED_LINK_BASE_URL}${pmid}` }, 'PubMed'),

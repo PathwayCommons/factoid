@@ -285,6 +285,19 @@
   }
 }
 
+.editor-info-flag {
+  padding: 0.2em 0.6em;
+  line-height: 2em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.editor-info-flag.danger {
+  color: #000;
+  background-color: rgba(255, 0, 0, 0.3);
+}
+
 .editor-info-main-section + .editor-info-main-section {
   margin-top: 2em;
 }

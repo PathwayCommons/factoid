@@ -20,7 +20,7 @@ export class Credits extends Component {
     const authorLink = _.get(profiles.find(isContributingAuthor), ['orcid']);
 
     return h('div.editor-credits', [
-      `Created by `,
+      `Article summary created by `,
       (authorLink ? 
         h('a.plain-link', { href: authorLink, target: '_blank' }, authorName) 
         :

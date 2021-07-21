@@ -355,13 +355,6 @@
 }
 
 .editor-credits {
-  position: absolute;
-  right: 0;
-  bottom: 50%;
-  margin: 0.5em;
-  z-index: 1;
-  opacity: 0.7;
-
   & .icon {
     font-size: 0.8em;
   }
@@ -369,6 +362,36 @@
 
 .editor-request-form-container {
   padding: 0.25em !important;
+}
+
+.editor-caption {
+  position: absolute;
+  z-index: 9999;
+  bottom: 4em;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editor-read-only .editor-caption {
+  bottom: 50vh;
+  margin: 0.5em;
+  text-align: center;
+  margin-bottom: 1em;
+  pointer-events: none;
+}
+
+.editor-caption-textarea {
+  flex-grow: 1;
+  margin: 0 5em;
+  text-align: center;
+  resize: none !important;
+
+  &:not(:focus, :hover) {
+    border-color: transparent;
+  }
 }
 
 @media (min-width: 1000px) {

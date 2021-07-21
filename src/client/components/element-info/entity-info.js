@@ -9,7 +9,7 @@ import Notification from '../notification';
 import assocDisp from './entity-assoc-display';
 import CancelablePromise from 'p-cancelable';
 import { isComplex, isGGP, ELEMENT_TYPE } from '../../../model/element/element-type';
-import RelatedPapers from '../related-papers';
+import { RelatedInteractions } from '../related-papers';
 import Organism from '../../../model/organism';
 
 import { makeClassList, focusDomElement } from '../../dom';
@@ -605,7 +605,7 @@ class EntityInfo extends DataComponent {
         if( isComplex(s.element.type()) ){
           children.push( h('div.entity-info-assoc', targetFromAssoc({ type, name, entityNames }, true )) );
           children.push( h('div.entity-info-related-papers', [
-            h(RelatedPapers, { document, source: s.element })
+            h(RelatedInteractions, { document, source: s.element })
           ]) );
         } else {
           children.push( h('div.entity-info-no-assoc', [
@@ -618,10 +618,10 @@ class EntityInfo extends DataComponent {
       } else {
         children.push( h('div.entity-info-assoc', allAssoc( assoc, true, false )) );
 
-        children.push( h('div.entity-info-reld-papers-title', `Recommended articles`) );
+        children.push( h('div.entity-info-reld-papers-title', `Related interactions`) );
 
         children.push( h('div.entity-info-related-papers', [
-          h(RelatedPapers, { document, source: s.element })
+          h(RelatedInteractions, { document, source: s.element })
         ]) );
       }
     } else {

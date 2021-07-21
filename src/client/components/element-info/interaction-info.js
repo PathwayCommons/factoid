@@ -10,7 +10,7 @@ import Progression from './progression';
 import EventEmitter from 'eventemitter3';
 import { INTERACTION_TYPES, INTERACTION_TYPE } from '../../../model/element/interaction-type';
 // import { Carousel, CAROUSEL_CONTENT } from '../carousel';
-import RelatedPapers from '../related-papers';
+import { RelatedInteractions } from '../related-papers';
 
 let stageCache = new WeakMap();
 
@@ -236,10 +236,10 @@ class InteractionInfo extends DataComponent {
         //   h(Carousel, { content: CAROUSEL_CONTENT.ABSTRACT })
         // ]) );
 
-        summaryChildren.push( h('div.interaction-info-reld-papers-title', 'Recommended articles') );
-        
+        summaryChildren.push( h('div.interaction-info-reld-papers-title', 'Related interactions') );
+
         summaryChildren.push( h('div.interaction-info-related-papers', [
-          h(RelatedPapers, { document, source: el })
+          h(RelatedInteractions, { document, source: el })
         ]) );
       }
 

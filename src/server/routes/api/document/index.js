@@ -45,7 +45,6 @@ import { BASE_URL,
   EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP,
-  MIN_RELATED_PAPERS,
   SEMANTIC_SEARCH_LIMIT,
   NCBI_EUTILS_BASE_URL,
   PC_URL,
@@ -597,6 +596,29 @@ const generateSitemap = () => {
     .then( docs2Sitemap )
   );
 };
+
+// TO REMOVE: debugging ONLY
+http.get('/search/:id', async function( req, res, next ){
+
+  try {
+    let output = [];
+    const { id } = req.params;
+    const { docDb, eleDb } = await loadTables();
+    const doc =  await loadDoc ({ docDb, eleDb, id });
+    logger.info(`Testing search for doc ${doc.id()}`);
+
+    const getRelPprsForEl = async el => {
+      let indraRes = await indra.search( el, doc );
+      return indraRes;
+    };
+    output = await Promise.all( doc.elements().map( getRelPprsForEl ) );
+    res.json( output );
+
+  } catch ( err ) {
+    logger.error(`Error in search ${err.message}`);
+    next( err );
+  }
+});
 
 /**
  * @swagger
@@ -2247,58 +2269,31 @@ const getRelPprsForDoc = async doc => {
 
 const getRelatedPapersForNetwork = async doc => {
 
-  try {
+    const elements = doc.elements();
     logger.info(`Updating network-level related papers for doc ${doc.id()}`);
-    const els = doc.elements();
 
-    const toTemplate = el => el.toSearchTemplate();
+    for ( const element of elements ) {
+      let indraRes;
+      try {
+        indraRes = await indra.search( element, doc );
 
-    const getRelPprsForEl = async el => {
-      const template = toTemplate(el);
+      } catch ( err ) {
 
-      const templates = {
-        intns: el.isInteraction() ? [ template ] : [],
-        entities: el.isEntity() ? [ template ] : []
-      };
+        logger.error(`Error in getRelatedPapersForNetwork ${err.message}`);
 
-      let indraRes = await indra.searchDocuments({ templates, doc });
-      indraRes = indraRes || [];
-
-      if ( el.isInteraction() ) {
-        if ( indraRes.length == 0 ) {
-          el.setNovel( true );
-        }
       }
 
-      el.relatedPapers( indraRes );
-    };
-
-    let elChunks = _.chunk( els, 1 );
-    for ( let i = 0; i < elChunks.length; i++ ) {
-      let chunk = elChunks[ i ];
-      await Promise.all([ ...chunk.map(getRelPprsForEl) ]);
+      indraRes = indraRes || [];
+      if ( element.isInteraction() ) {
+        if ( indraRes.length == 0 ) {
+          element.setNovel( true );
+        }
+      }
+      element.relatedPapers( indraRes );
     }
 
-    const docPprs = doc.relatedPapers();
-    const getPmid = ppr => ppr.pubmed.pmid;
-
-    await Promise.all( doc.elements().map(async el => {
-      const pprs = el.relatedPapers();
-
-      if( pprs.length > MIN_RELATED_PAPERS ){ return; }
-
-      const newPprs = _.uniq( _.concat(pprs, _.shuffle(docPprs)), getPmid );
-
-      await el.relatedPapers(newPprs);
-    }) );
     logger.info(`Finished updating network-level related papers for doc`);
     return doc;
-
-  } catch ( err ) {
-    logger.error(`Error in getRelatedPapersForNetwork ${err.message}`);
-    return doc;
-  }
-
 };
 
 export default http;

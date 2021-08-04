@@ -43,6 +43,7 @@ export const CRON_SCHEDULE = env('CRON_SCHEDULE', '0 1 * * *');
 export const DOCUMENT_CRON_UPDATE_PERIOD_DAYS = env('DOCUMENT_CRON_UPDATE_PERIOD_DAYS', 7);
 export const DOCUMENT_CRON_CREATED_AGE_DAYS = env('DOCUMENT_CRON_CREATED_AGE_DAYS', undefined);
 export const DOCUMENT_CRON_REFRESH_ENABLED = env('DOCUMENT_CRON_REFRESH_ENABLED', true);
+export const DOCUMENT_CRON_UNEDITED_DAYS = env('DOCUMENT_CRON_UNEDITED_DAYS', 30);
 
 // Connect to localhost
 export const SOCKET_HOST = env('SOCKET_HOST', isClient() ? window.location.hostname : 'localhost');

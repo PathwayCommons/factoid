@@ -40,13 +40,12 @@ const unixTimeFromDate = date => {
   }
   return Math.floor( msSinceEpoch / MILLISECONDS_PER_SECOND );
 };
-const dateFromUnixTime = unixTime  => {
-  return new Date( unixTime * MILLISECONDS_PER_SECOND );
-};
 const getDateSafe = value => {
   let date = value;
-  if( typeof( date ) == 'number' ) {
-    date = dateFromUnixTime( date );
+  if( typeof( value ) == 'number' ) {
+    date = new Date( value * MILLISECONDS_PER_SECOND );
+  } else if( typeof( value ) == 'string' ) {
+    date = new Date( value );
   }
   return date;
 };

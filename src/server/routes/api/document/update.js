@@ -32,6 +32,11 @@ const docsToUpdate = async () => {
   const tables = await loadTables();
   const { docDb, eleDb } = tables;
   let { table: q, conn, rethink: r } = docDb;
+  const toTime = field => r.branch(
+    r.typeOf( r.row( field ) ).eq( 'STRING' ), r.ISO8601( r.row( field ) ),
+    r.typeOf( r.row( field ) ).eq( 'NUMBER' ), r.epochTime( r.row( field ) ),
+    r.row( field ) // 'PTYPE<TIME>'
+  );
 
   // Filter: Exclude DEMO
   q = q.filter( r.row( 'secret' ).ne( DEMO_SECRET ) );
@@ -41,7 +46,7 @@ const docsToUpdate = async () => {
 
   // Filter: Include when created less than DOCUMENT_CRON_CREATED_AGE_DAYS days ago
   let startDate = DOCUMENT_CRON_CREATED_AGE_DAYS ? dateFromToday( -1 * DOCUMENT_CRON_CREATED_AGE_DAYS ) : DEFAULT_DOCUMENT_CREATED_START_DATE;
-  q = q.filter( r.row( 'createdDate' ).during( startDate, new Date() ) );
+  q = q.filter( toTime( 'createdDate' ).during( startDate, new Date() ) );
 
   // Filter: Include when article is missing metadata (implied vis a vis missing pmid)
   if( !DOCUMENT_CRON_REFRESH_ENABLED ){
@@ -52,7 +57,7 @@ const docsToUpdate = async () => {
     );
   }
 
-  q = q.orderBy( r.desc( 'createdDate' ) );
+  q = q.orderBy( r.desc( toTime('createdDate') ) );
   q = q.pluck([ 'id', 'secret' ]);
 
   const cursor =  await q.run( conn );

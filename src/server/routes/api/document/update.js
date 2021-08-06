@@ -86,10 +86,9 @@ const docsToTrash = async () => {
   const { docDb, eleDb } = tables;
   let { table: q, conn, rethink: r } = docDb;
 
-  // Normalize time object
-  // https://github.com/PathwayCommons/factoid/issues/997#issuecomment-891985488
   const toTime = field => r.branch(
     r.typeOf( r.row( field ) ).eq( 'STRING' ), r.ISO8601( r.row( field ) ),
+    r.typeOf( r.row( field ) ).eq( 'NUMBER' ), r.epochTime( r.row( field ) ),
     r.row( field )
   );
   const editedMoreThanDaysAgo = d => r.now().sub( toTime( 'lastEditedDate' ) ).gt( daysToSec( d ) );

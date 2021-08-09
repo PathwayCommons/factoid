@@ -21,7 +21,7 @@ export class Caption extends Component {
             'editor-caption-textarea': true
           }),
           value: this.state.caption,
-          placeholder: `List terms that identify the context (e.g. T cell, cancer, genome stability)`,
+          placeholder: `List terms that describe the context (e.g. T cell, cancer, genome stability)`,
           onChange: event => {
             const val = event.target.value;
 

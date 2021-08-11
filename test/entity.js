@@ -205,5 +205,102 @@ describe('Entity', function(){
 
       eleC1.rename('newname');
     });
+
+    it('associates with grounding', function( done ){
+      eleC2.on('associate', function(){
+        expect( eleC2.association().foo ).to.equal('bar');
+
+        done();
+      });
+
+      eleC1.associate({
+        foo: 'bar'
+      });
+    });
+
+    it('associates with grounding x2 on self client', function( done ){
+      eleC1.associate({
+        foo: 'bar'
+      });
+
+      eleC1.associate({
+        baz: 'bat'
+      });
+
+      // old grounding should be gone from client 1
+      expect( eleC1.association().foo ).to.not.exist;
+
+      // new grounding should be there for client 1
+      expect( eleC1.association().baz ).to.equal('bat');
+
+      done();
+    });
+
+    it('associates with grounding x2 on server', function( done ){
+      const test = async function() {
+        await eleC1.associate({
+          foo: 'bar'
+        });
+  
+        await eleC1.associate({
+          baz: 'bat'
+        });
+
+        let eleS1 = new Entity({ // server
+          rethink: tableUtil.rethink,
+          table: tableUtil.table,
+          conn: tableUtil.conn,
+          data: {
+            id: 'id',
+            secret: 'secret'
+          }
+        });
+
+        await eleS1.load();
+
+        // old grounding should be gone from client 1
+        expect( eleS1.association().foo ).to.not.exist;
+
+        // new grounding should be there for client 1
+        expect( eleS1.association().baz ).to.equal('bat');
+
+        done();
+      };
+
+      test();
+    });
+
+    it('associates with grounding x2 on remote client', function( done ){
+      const test = async function() {
+        let i = 0;
+
+        eleC2.on('associate', function() {
+          i++;
+
+          if (i === 1) {
+            // first grounding should be in client 2
+            expect( eleC2.association().foo ).to.equal('bar');
+          } else {
+            // old grounding should be gone from client 2
+            expect( eleC2.association().foo ).to.not.exist;
+            
+            // new grounding should be there for client 2
+            expect( eleC2.association().baz ).to.equal('bat');
+            
+            done();
+          }
+        });
+        
+        await eleC1.associate({
+          foo: 'bar'
+        });
+
+        await eleC1.associate({
+          baz: 'bat'
+        });
+      };
+
+      test();
+    });
   });
 });

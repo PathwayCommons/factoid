@@ -1,4 +1,5 @@
 import * as conf from './util/conf';
+import _ from 'lodash';
 
 import { expect } from 'chai';
 import Syncher from '../src/model/syncher';
@@ -294,9 +295,11 @@ describe('Entity', function(){
     });
 
     it('associates with grounding x2 on self client', function( done ){
-      eleC1.associate( TEST_GROUND_GGP );
+      const grd_gpp = _.cloneDeep( TEST_GROUND_GGP );
+      eleC1.associate( grd_gpp );
 
-      eleC1.associate( TEST_GROUND_CHEMICAL );
+      const grd_chem = _.cloneDeep( TEST_GROUND_CHEMICAL );
+      eleC1.associate( grd_chem );
 
       // old grounding should be gone from client 1
       expect( eleC1.association().organism ).to.not.exist;
@@ -304,14 +307,19 @@ describe('Entity', function(){
       // new grounding should be there for client 1
       expect( eleC1.association().monoisotopicMass ).to.equal( TEST_GROUND_CHEMICAL.monoisotopicMass );
 
+      // Does not merge object/array
+      expect( eleC1.association().synonyms ).to.not.include( TEST_GROUND_GGP.synonyms[0] );
+
       done();
     });
 
     it('associates with grounding x2 on server', function( done ){
       const test = async function() {
-        await eleC1.associate( TEST_GROUND_GGP );
+        const grd_gpp = _.cloneDeep( TEST_GROUND_GGP );
+        await eleC1.associate( grd_gpp );
 
-        await eleC1.associate( TEST_GROUND_CHEMICAL );
+        const grd_chem = _.cloneDeep( TEST_GROUND_CHEMICAL );
+        await eleC1.associate( grd_chem );
 
         let eleS1 = new Entity({ // server
           rethink: tableUtil.rethink,
@@ -330,6 +338,9 @@ describe('Entity', function(){
 
         // new grounding should be there for client 1
         expect( eleS1.association().monoisotopicMass ).to.equal( TEST_GROUND_CHEMICAL.monoisotopicMass );
+
+        // Does not merge object/array
+        expect( eleS1.association().synonyms ).to.not.include( TEST_GROUND_GGP.synonyms[0] );
 
         done();
       };
@@ -354,13 +365,17 @@ describe('Entity', function(){
             // new grounding should be there for client 2
             expect( eleC2.association().monoisotopicMass ).to.equal( TEST_GROUND_CHEMICAL.monoisotopicMass );
 
+            // Does not merge object/array
+            expect( eleC2.association().synonyms ).to.not.include( TEST_GROUND_GGP.synonyms[0] );
+
             done();
           }
         });
+        const grd_gpp = _.cloneDeep( TEST_GROUND_GGP );
+        await eleC1.associate( grd_gpp );
 
-        await eleC1.associate( TEST_GROUND_GGP );
-
-        await eleC1.associate( TEST_GROUND_CHEMICAL );
+        const grd_chem = _.cloneDeep( TEST_GROUND_CHEMICAL );
+        await eleC1.associate( grd_chem );
       };
 
       test();

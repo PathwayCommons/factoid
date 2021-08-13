@@ -706,6 +706,120 @@ http.get('/zip/biopax', function( req, res, next ){
 /**
  * @swagger
  *
+ * /api/document/statistics:
+ *   get:
+ *     description: Summary of Biofactoid data
+ *     summary: Biofactoid entity, interaction and organism counts
+ *     tags:
+ *       - Document
+ *     responses:
+ *      '200':
+ *        description: OK
+ *        content:
+ *          application/json
+ */
+http.get('/statistics', function( req, res, next ){
+
+  const count = docs => {
+
+    const entityTypes = new Set( _.values( ENTITY_TYPE ) );
+    const isEntity = type => type && entityTypes.has( type );
+    const isComplex = type => type === ENTITY_TYPE.COMPLEX;
+
+    let numEntities = 0,
+        numComplexes = 0,
+        entityMap = new Map(),
+        orgEntityMap = new Map(),
+        numInteractions = 0,
+        entitySet = new Set(),
+        pmidSet = new Set();
+
+    docs.forEach( ({ pmid, elements }) => {
+      // ---------- Articles ---------- //
+      pmid && pmidSet.add( pmid );
+
+      // ---------- Model ------ //
+
+      elements.forEach( element => {
+        const { type, association } = element;
+
+        if ( isEntity( type ) ){
+          numEntities++;
+
+          if( isComplex( type ) ) {
+            numComplexes++;
+
+          } else {
+
+            let { dbPrefix, id, organismName } = association;
+            let entityName = `${dbPrefix}_${id}`;
+            entitySet.add( entityName );
+
+            // Count by organism
+            let orgEntityCount = orgEntityMap.has( organismName ) ? orgEntityMap.get( organismName ) : 0;
+            organismName && orgEntityMap.set( organismName, ++orgEntityCount );
+
+            let entityCount = entityMap.has( entityName ) ? entityMap.get( entityName ) : 0;
+            entityMap.set( entityName, ++entityCount );
+          }
+
+        } else {
+
+          numInteractions++;
+        }
+      });
+
+    });
+
+    return ({
+      documents: docs.length,
+      articles: pmidSet.size,
+      entities: {
+        total: numEntities,
+        unique: entitySet.size,
+        complexes: numComplexes,
+        perOrganism: Object.fromEntries( orgEntityMap )
+      },
+      interactions: numInteractions
+    });
+  };
+
+  tryPromise( () => loadTables() )
+    .then( ({ docDb, eleDb }) => {
+      let { table: dTable, conn, rethink: r } = docDb;
+      let { table: eTable } = eleDb;
+
+      return (
+        dTable
+          .filter({ 'status': DOCUMENT_STATUS_FIELDS.PUBLIC })
+          .map( function( document ){
+            return document.merge({ entries: document( 'entries' )( 'id' ) });
+          })
+          .merge( function( document ) {
+            return {
+              elements: eTable.getAll( r.args( document( 'entries' ) ) )
+                .coerceTo( 'array' )
+                .pluck( 'id', 'association', 'type', 'name' )
+            };
+          })
+          .merge( function( document ) {
+            return {
+              pmid: document('article')('PubmedData')('ArticleIdList').filter({ IdType: 'pubmed' })('id')(0).default( null )
+            };
+          })
+          .pluck( 'elements', 'pmid' )
+          .run( conn )
+      );
+    })
+    .then( cursor => cursor.toArray() )
+    .then( count )
+    .then( results => res.json( results ) )
+    .catch( next );
+});
+
+/**
+ * @swagger
+ *
  * components:
  *
  *   securitySchemes:

@@ -144,7 +144,7 @@ class Editor extends DataComponent {
         this.done( isDone );
       }
     });
-    
+
     let bus = new EventEmitter();
 
     bus.on('drawtoggle', (toggle, type) => this.toggleDrawMode(toggle, type));
@@ -267,11 +267,11 @@ class Editor extends DataComponent {
 
     window.addEventListener('beforeunload', (event) => {
       const isDevMode = NODE_ENV != 'production';
-      const shouldWarnUser = !this.data.document.submitted() && !isDevMode; // dev mode blacklisted so livereload works (for productivity)
+      const shouldWarnUser = this.data.document.initiated() && !isDevMode; // dev mode blacklisted so livereload works (for productivity)
 
       if (shouldWarnUser) {
         event.preventDefault();
-        
+
         return event.returnValue = 'Your article summary has not been submitted.  Are you sure you would like to quit?';
       }
     }, { capture: true });

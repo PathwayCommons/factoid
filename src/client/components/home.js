@@ -444,8 +444,8 @@ class Home extends Component {
           h('p', [
             `All Biofactoid data is made `,
             h('a.plain-link', { target: '_blank', href: 'https://github.com/PathwayCommons/factoid/blob/unstable/README.md#getting-the-data' }, `freely available to download`),
-            ` to the research community, and licensed under `,
-            h('a.plain-link', { target: '_blank', href: 'https://creativecommons.org/publicdomain/zero/1.0/legalcode' }, `CC0`),
+            ` to the research community under a public domain-equivalent license `,
+            h('a.plain-link', { target: '_blank', href: 'https://creativecommons.org/publicdomain/zero/1.0/legalcode' }, `(CC0)`),
             `.`
           ]),
           h('p', [

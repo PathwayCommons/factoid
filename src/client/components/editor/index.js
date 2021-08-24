@@ -267,7 +267,8 @@ class Editor extends DataComponent {
 
     window.addEventListener('beforeunload', (event) => {
       const isDevMode = NODE_ENV != 'production';
-      const shouldWarnUser = this.data.document.initiated() && !isDevMode; // dev mode blacklisted so livereload works (for productivity)
+      const isDemo = doc.secret() === DEMO_SECRET;
+      const shouldWarnUser = this.data.document.initiated() && !isDemo && !isDevMode; // dev mode blacklisted so livereload works (for productivity)
 
       if (shouldWarnUser) {
         event.preventDefault();

@@ -1,6 +1,6 @@
 import express from 'express';
 import { generateSitemap, getDocumentJson } from './api/document';
-import { TWITTER_ACCOUNT_NAME, BASE_URL, EMAIL_ADDRESS_INFO } from '../../config';
+import { TWITTER_ACCOUNT_NAME, BASE_URL, EMAIL_ADDRESS_INFO, NODE_ENV, GA_ID } from '../../config';
 
 const http = express.Router();
 
@@ -10,7 +10,9 @@ const getDocumentPage = function(req, res) {
     .then(document => res.render('index.html.ejs', {
       document,
       TWITTER_ACCOUNT_NAME,
-      BASE_URL
+      BASE_URL,
+      NODE_ENV,
+      GA_ID
     }))
     .catch( () => res.render( '404', { EMAIL_ADDRESS_INFO } ) )
   );
@@ -36,7 +38,9 @@ http.get('/document/:id', getDocumentPage);
 http.get('*', function(req, res) {
   res.render('index.html.ejs', {
     TWITTER_ACCOUNT_NAME,
-    BASE_URL
+    BASE_URL,
+    NODE_ENV,
+    GA_ID
   });
 });
 

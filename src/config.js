@@ -126,3 +126,6 @@ export const NO_ABSTRACT_HANDLING = env('NO_ABSTRACT_HANDLING', 'text');
 export const MIN_SEMANTIC_SCORE = env('MIN_SEMANTIC_SCORE', 0.47);
 export const SEMANTIC_SEARCH_LIMIT = env('SEMANTIC_SEARCH_LIMIT', 30);
 export const MIN_RELATED_PAPERS = env('MIN_RELATED_PAPERS', 6);
+
+// google analytics
+export const GA_ID = env('GA_ID', 'UA-43341809-12');

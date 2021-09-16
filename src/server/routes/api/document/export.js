@@ -20,7 +20,7 @@ const EXPORT_TYPES = Object.freeze({
   'SBGN': 'sbgn'
 });
 
-const exportToZip = (baseUrl, zipPath, types) => {
+const exportToZip = (baseUrl, zipPath, types, biopaxIdMapping) => {
   let offset = 0;
   let zip = new JSZip();
 
@@ -34,7 +34,7 @@ const exportToZip = (baseUrl, zipPath, types) => {
           const includedStatuses = [DOCUMENT_STATUS_FIELDS.PUBLIC];
           const shouldInclude = doc => _.includes(includedStatuses, doc.status);
           let ids = res.filter( shouldInclude ).map( doc => doc.id );
-          return addToZip( ids ).then( processNext );
+          return addToZip( ids, biopaxIdMapping ).then( processNext );
         }
 
         return writeZip();
@@ -49,10 +49,11 @@ const exportToZip = (baseUrl, zipPath, types) => {
     } );
   };
 
-  const addToZip = ids => {
+  const addToZip = ( ids, biopaxIdMapping ) => {
+    let _convertDocumentToBiopax = ( id, baseUrl ) => convertDocumentToBiopax( id, baseUrl, biopaxIdMapping );
     let typeToConverter = {
       [EXPORT_TYPES.JSON]: convertDocumentToJson,
-      [EXPORT_TYPES.BP]: convertDocumentToBiopax,
+      [EXPORT_TYPES.BP]: _convertDocumentToBiopax,
       [EXPORT_TYPES.SBGN]: convertDocumentToSbgn
     };
 

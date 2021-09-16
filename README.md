@@ -1,6 +1,11 @@
 # Factoid
 
+[![DOI](https://zenodo.org/badge/3910378.svg)](https://zenodo.org/badge/latestdoi/3910378)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/PathwayCommons/factoid/blob/unstable/LICENSE)
+
 Biofactoid [(biofactoid.org)](https://biofactoid.org/), is a web-based system that empowers authors to capture and share machine-readable summaries of molecular-level interactions described in their publications.
+
+Biofactoid's codebase is licensed under [MIT](LICENSE).
 
 ## Getting the data
 
@@ -8,6 +13,8 @@ All contributed pathway data is freely available for download at https://biofact
   - JavaScript Object Notation (JSON). This is the native format for Biofactoid data and contains interaction data, metadata of the record itself, metadata of the corresponding article, and visualisation data (layout and colors as Cytoscape JSON (Franz et al. (2016) Bioinforma. Oxf. Engl., 32, 309–311.)).
   - [Biological Pathway Exchange (BioPAX)](http://www.biopax.org/) (Demir et al. (2010) Biotechnol., 28, 935–942.) for detailed semantic exchange.
   - [Systems Biology Graphical Notation Markup Language (SBGNML)](https://sbgn.github.io/), a format that supports biological process visualization (Le Novère et al. Nat. Biotechnol., 27, 735–741. (2009); van Iersel et al. (2012) Bioinforma. Oxf. Engl., 28, 2016–2021.)
+
+Our data is licensed under [CC0](https://creativecommons.org/publicdomain/zero/1.0/legalcode).
 
 ## Required software
 
@@ -32,6 +39,7 @@ CRON:
 - `DOCUMENT_CRON_UPDATE_PERIOD_DAYS` : The minimum time between successive Document cron update calls
 - `DOCUMENT_CRON_CREATED_AGE_DAYS` : Only Documents created fewer than this many days will be selecte for update. When undefined (default), ignores filtering on creation date.
 - `DOCUMENT_CRON_REFRESH_ENABLED` : Flag to enable existing Document metadata to be refreshed (e.g. PubMed UID) (default true).
+- `DOCUMENT_CRON_UNEDITED_DAYS` : Number of days since Documemt was last edited; criteria for trashing
 
 Database:
 
@@ -149,80 +157,7 @@ The following environment variables should always be set in production instances
 
 ## Running via Docker
 
-### Requirements
-
-Dockerized system has been successfully deployed on:
-  - Ubuntu 16.04.5 LTS (GNU/Linux 4.4.0-145-generic x86_64)
-    - Docker version 19.03.12
-    - docker-compose version 1.26.2
-  - OSX 10.15.1 (Catalina)
-    - Docker version 19.03.12
-    - docker-compose version 1.26.2
-
-### Docker Compose
-
-In the directory containing the `docker-compose.yml` file, execute:
-
-```sh
-docker-compose up -d
-```
-
-Monitor stdout of the system:
-
-```sh
-docker-compose logs -ft
-```
-
-Stop and remove services:
-```sh
-docker-compose down
-```
-
-#### Notes
-
-- Environment variables:
-  - Docker Compose will draw environment variables from the shell or from an `.env` file in the same directory. Please see private [remote](https://github.com/BaderLab/sysadmin/blob/master/websites/factoid.md) for production-level file settings.
-
-- Database service:
-  - Do not restart a stopped container. Rather, remove and run anew.
-
-- OS specifics:
-  - For Ubuntu 16.04.5 LTS to [play nice with elasticsearch](https://github.com/docker-library/elasticsearch/issues/111#issuecomment-268511769) needed to set `sudo sysctl -w vm.max_map_count=262144`.
-
-### Dump and restore Rethinkdb data
-
-NB: RethinkDB [dump and restore](https://rethinkdb.com/docs/backup/) command-line utility depends on the [Python driver](https://rethinkdb.com/docs/install-drivers/python/). The `docker/Dockerfile-rethinkdb` file documents these requirements.
-
-#### Dump
-
-To create an archive of data in RethinkDB, use the supplied bash script `/docker/dump_rethinkdb.sh`.
-
-- The script accepts four arguments:
-  - `-c` (required) The container name
-  - `-e` (optional) Limit the dump to the given database and/or table; Use dot notation e.g. 'test.authors'
-  - `-n` (optional) The dump archive name; `.tar.gz` will be appended
-  - `-d` (optional) Output to the specified directory on the host; defaults to `pwd`
-
-Example: To dump a running container `db_container` with database named `factoid` to an archive named `factoid_dump_latest` in a directory on the host named `/backups`:
-
-```sh
-./dump_rethinkdb.sh -c db_container -e factoid -n factoid_dump_latest -d /backups
-```
-
-#### Restore
-
-To populate RethinkDB from an archive, use the supplied bash script `/docker/restore_rethinkdb.sh`.
-
-- The script accepts three arguments:
-  - `-c` (required) The container name
-  - `-f` (required) Archive file path on host
-  - `-i` (optional) Limit the restore to the given database and/or table; Use dot notation e.g. 'test.authors'. By default, the script will overwrite any existing database/table data.
-
-Example: To restore a running container `db_container` with database named `factoid` from an archive named `/backups/factoid_dump_latest.tar.gz`:
-
-```sh
-./restore_rethinkdb.sh -c db_container -f /backups/factoid_dump_latest.tar.gz -i factoid
-```
+Images are maintained at [dockerhub](https://hub.docker.com/repository/docker/pathwaycommons/factoid). Also see [factoid-docker-config](https://github.com/PathwayCommons/factoid-docker-config).
 
 ## Testing
 
@@ -247,6 +182,7 @@ Notes:
   1. For a breaking API change, run `npm version major.`
   1. For a specific version number (e.g. 1.2.3), run `npm version 1.2.3`.
 1. Push the release: `git push origin --tags`
+1. [Publish a GitHub release](https://github.com/PathwayCommons/factoid/releases/new) so that Zenodo creates a DOI for this version.
 
 ## Related software
 

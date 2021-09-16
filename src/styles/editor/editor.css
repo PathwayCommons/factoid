@@ -285,6 +285,19 @@
   }
 }
 
+.editor-info-flag {
+  padding: 0.2em 0.6em;
+  line-height: 2em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.editor-info-flag.danger {
+  color: #000;
+  background-color: rgba(255, 0, 0, 0.3);
+}
+
 .editor-info-main-section + .editor-info-main-section {
   margin-top: 2em;
 }
@@ -295,17 +308,22 @@
 
 .editor-info-authors {
   margin: 0.5em 0;
-}
-
-.editor-info-author + .editor-info-author {
-  &::before {
-    content: ', ';
-  }
+  line-height: 1.4;
 }
 
 .editor-info-links {
   margin: 1.5em 0;
   line-height: 1.4;
+}
+
+.editor-info-author-spacer {
+  margin-right: 0.333em;
+}
+
+.editor-info-author-orcid {
+  margin-left: 0.25em;
+  font-size: 0.8em;
+  opacity: 0.66;
 }
 
 .editor-info-link {
@@ -334,6 +352,46 @@
 
 .editor-info-panel-close-icon {
   font-size: 3em;
+}
+
+.editor-credits {
+  & .icon {
+    font-size: 0.8em;
+  }
+}
+
+.editor-request-form-container {
+  padding: 0.25em !important;
+}
+
+.editor-caption {
+  position: absolute;
+  z-index: 9999;
+  bottom: 4em;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editor-read-only .editor-caption {
+  bottom: 50vh;
+  margin: 0.5em;
+  text-align: center;
+  margin-bottom: 1em;
+  pointer-events: none;
+}
+
+.editor-caption-textarea {
+  flex-grow: 1;
+  margin: 0 5em;
+  text-align: center;
+  resize: none !important;
+
+  &:not(:focus, :hover) {
+    border-color: transparent;
+  }
 }
 
 @media (min-width: 1000px) {

@@ -5,6 +5,8 @@ import { DOI_LINK_BASE_URL, PUBMED_LINK_BASE_URL, GOOGLE_SCHOLAR_BASE_URL } from
 import { makeClassList } from '../../dom';
 import ElementInfo from '../element-info/element-info';
 import RelatedPapers from '../related-papers';
+import _ from 'lodash';
+import Credits from './credits';
 
 export class InfoPanel extends Component {
   constructor(props){
@@ -62,16 +64,37 @@ export class InfoPanel extends Component {
     }
 
     const citation = document.citation();
-    const { authors, pmid, title = 'Untitled article', reference, doi, abstract } = citation;
+    // authorProfiles may not be existing for the older documents
+    const authorProfiles = document.authorProfiles() || citation.authors.authorList;
+    const { pmid, title = 'Untitled article', reference, doi, abstract } = citation;
+
+    const retractedPubType = _.find( citation.pubTypes, ['UI', 'D016441'] );
+    const retractFlag = retractedPubType ? h('span.editor-info-flag.super-salient-button.danger', retractedPubType.value) : null;
 
     return h('div.editor-info-panel', [
+      h('div.editor-info-flags', [ retractFlag ]),
       h('div.editor-info-title', title),
-      h('div.editor-info-authors', authors.authorList.map(a => h('span.editor-info-author', a.name))),
-      h('div.editor-info-links', doi ? [
-        h('a.editor-info-link.plain-link', { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` }, reference),
+      h('div.editor-info-authors', _.flatten(authorProfiles.map((a, i) => {
+        let orcidUri = a.orcid;
+        if ( orcidUri ) {
+          return [
+            h('a.editor-info-author.plain-link', { target: '_blank', href: orcidUri }, a.name),
+            h('i.icon.icon-orcid.editor-info-author-orcid'),
+            i !== authorProfiles.length - 1 ? h('span.editor-info-author-spacer', ', ') : null
+          ];
+        }
+
+        return [
+          h('span.editor-info-author', a.name),
+          i !== authorProfiles.length - 1 ? h('span.editor-info-author-spacer', ', ') : null
+        ];
+      }))),
+      h(Credits, { controller, bus, document }),
+      h('div.editor-info-links', [
+        h( doi ? 'a.editor-info-link.plain-link': 'div.editor-info-link', doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` }: {}, reference),
         h('a.editor-info-link.plain-link', { target: '_blank', href: `${PUBMED_LINK_BASE_URL}${pmid}` }, 'PubMed'),
-        h('a.editor-info-link.plain-link', { target: '_blank', href: `${GOOGLE_SCHOLAR_BASE_URL}${doi}` }, 'Google Scholar')
-      ] : null),
+        h('a.editor-info-link.plain-link', { target: '_blank', href: `${GOOGLE_SCHOLAR_BASE_URL}${ doi ?  doi : ( "\u0022" + title + "\u0022") }` }, 'Google Scholar')
+      ]),
       h('div.editor-info-main-sections', [
         h('div.editor-info-abstract-section.editor-info-main-section', [
           h('div.editor-info-section-title', abstract ? 'Abstract': 'Summary'),

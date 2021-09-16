@@ -9,8 +9,8 @@ class Dephosphorylation extends Modification {
     super( intn );
   }
 
-  toBiopaxTemplate(transform){
-    return super.toBiopaxTemplate(transform, EFFECT);
+  toBiopaxTemplate(transform, omitDbXref){
+    return super.toBiopaxTemplate(transform, omitDbXref, EFFECT);
   }
 
   toString(){

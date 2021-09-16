@@ -19,9 +19,9 @@ class Interaction extends InteractionType {
     return Interaction.isAllowedForInteraction(this.interaction);
   }
 
-  toBiopaxTemplate( transform ){
+  toBiopaxTemplate( transform, omitDbXref ){
     if ( !this.validatePpts( transform ) ){
-      return this.makeInvalidBiopaxTemplate();
+      return this.makeInvalidBiopaxTemplate( transform, omitDbXref );
     }
 
     // "Other" type; see 4A-E in "Factoid binary interaction types" doc.
@@ -47,7 +47,7 @@ class Interaction extends InteractionType {
       return null;
     }
 
-    template.participants = participants.map( participant => participant.toBiopaxTemplate() );
+    template.participants = participants.map( participant => participant.toBiopaxTemplate( omitDbXref ) );
 
     return template;
   }

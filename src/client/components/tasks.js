@@ -6,9 +6,10 @@ import React from 'react';
 
 import Document from '../../model/document';
 import { ENTITY_TYPE } from '../../model/element/entity-type';
-import { BASE_URL } from '../../config';
+import { BASE_URL, DEMO_SECRET } from '../../config';
 import { makeClassList } from '../dom';
 import { NativeShare, isNativeShareSupported } from './native-share';
+import { MAX_WAIT_TWEET } from '../../config';
 
 const eleEvts = [ 'rename', 'complete', 'uncomplete', 'associate' ];
 
@@ -195,6 +196,7 @@ class TaskView extends DataComponent {
     this.props.document.on('remove', this.onRemove);
 
     this.props.document.elements().forEach(ele => bindEleEvts(ele, update));
+    this.props.bus.on('updatetitle', update);
   }
 
   tryPublish(){
@@ -214,25 +216,45 @@ class TaskView extends DataComponent {
     });
   }
 
+  waitForTweet() {
+    let { document } = this.props;
+    let start = Date.now();
+
+    return new Promise(resolve => {
+      let interval = setInterval(() => {
+        let timeElapsed = Date.now() - start;
+
+        if ( document.hasTweet() || timeElapsed >= MAX_WAIT_TWEET ) {
+          clearInterval( interval );
+          resolve();
+        } else {
+          // keep trying
+        }
+      }, 100);
+    });
+  }
+
   componentWillUnmount(){
     this.props.document.elements().forEach( ele => unbindEleEvts(ele, this.update));
 
     this.props.document.removeListener(this.onAdd);
     this.props.document.removeListener(this.onRemove);
     this.props.document.removeListener(this.onSubmit);
+    this.props.bus.removeListener('updatetitle', this.update);
   }
 
   submit(){
     new Promise( resolve => this.setState({ submitting: true }, resolve ) )
       .then( () => this.props.document.submit() )
       .then( () => this.tryPublish() )
+      .then( () => this.waitForTweet() )
       .finally( () => {
         new Promise( resolve => this.setState({ submitting: false }, resolve ) );
       });
   }
 
   render(){
-    let { document, bus, emitter } = this.props;
+    let { document, bus } = this.props;
     let { submitting } = this.state;
     let done = this.props.controller.done();
 
@@ -317,7 +339,7 @@ class TaskView extends DataComponent {
       ]): null;
     };
 
-    // Minimal criteria: > 0 elements
+    // Minimal criteria: > 0 elements & has title
     let confirm = () => {
       let taskMsg = 'Are you sure you want to submit?';
       let taskButton = h('button.salient-button', {
@@ -327,8 +349,19 @@ class TaskView extends DataComponent {
 
       const entities = document.entities();
       let hasEntity = entities.length;
+      let hasTitle = _.get(document.citation(), ['title']) != null;
 
-      const close = () => emitter.emit('close');
+      const close = () => bus.emit('closesubmit');
+
+      if( !hasTitle ){
+        taskMsg = `Please set your article's title then submit.`;
+        taskButton = h('button.salient-button', {
+            onClick: () => {
+              bus.emit('showedittitle');
+              close();
+            }
+          }, 'Show me how');
+      }
 
       if( !hasEntity ){
         taskMsg = 'Please draw your interactions then submit.';
@@ -346,7 +379,10 @@ class TaskView extends DataComponent {
       ]);
     };
 
-    if( !done || submitting ){
+     if ( document.secret() === DEMO_SECRET ) {
+      return h('div.task-view', "Submit is disabled for demo");
+
+    } else if( !done || submitting ){
       return h('div.task-view', [
         h('i.icon.icon-spinner.task-view-spinner', {
           className: makeClassList({ 'task-view-spinner-shown': submitting })
@@ -358,10 +394,11 @@ class TaskView extends DataComponent {
           confirm()
         ])
       ]);
+
     } else {
       const publicUrl =  `${BASE_URL}${document.publicUrl()}`;
       const imageUrl = `${BASE_URL}/api${document.publicUrl()}.png`;
-      const provided = document.provided();
+
       return h('div.task-view', [
         h('div.task-view-done', [
           h('div.task-view-done-title', 'Thank you!' ),
@@ -398,20 +435,6 @@ class TaskView extends DataComponent {
                   )
                 ])
               ])
-            ])
-          ]),
-          h('hr'),
-          h('div.task-view-done-section', [
-            h('div.task-view-done-section-body', [
-              h('p', 'Optional info'),
-              h( TextEditableComponent, {
-                label: 'Name:',
-                value: _.get( provided, 'name' ),
-                autofocus: true,
-                placeholder: '',
-                autosubmit: 1000,
-                cb: name => document.provided({ name })
-              })
             ])
           ])
         ])

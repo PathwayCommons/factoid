@@ -18,7 +18,7 @@ const DEFAULTS = Object.freeze({
   verified: false
 });
 
-const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'createdDate', 'lastEditedDate', 'status', 'verified' ];
+const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'status', 'verified', 'authorProfiles', 'caption' ];
 const READONLY_METADATA_FIELDS = _.difference( METADATA_FIELDS, ['provided', 'correspondence'] );
 const DOCUMENT_STATUS_FIELDS = Object.freeze({
   INITIATED: 'initiated',
@@ -30,6 +30,25 @@ const DOCUMENT_SOURCE_FIELDS = Object.freeze({
   ADMIN: 'admin',
   PC: 'pc'
 });
+
+// Get the UNIX time (seconds since epoch) for a date or now
+const MILLISECONDS_PER_SECOND = 1000;
+const unixTimeFromDate = date => {
+  let msSinceEpoch = Date.now();
+  if( date ){
+    msSinceEpoch = ( new Date( date ) ).getTime();
+  }
+  return Math.floor( msSinceEpoch / MILLISECONDS_PER_SECOND );
+};
+const getDateSafe = value => {
+  let date = value;
+  if( typeof( value ) == 'number' ) {
+    date = new Date( value * MILLISECONDS_PER_SECOND );
+  } else if( typeof( value ) == 'string' ) {
+    date = new Date( value );
+  }
+  return date;
+};
 
 /**
 A document that contains a set of biological elements (i.e. entities and interactions).
@@ -103,9 +122,9 @@ class Document {
     });
 
     if( isServer ) this.syncher.on( 'create', () => {
-      const createdDate = new Date();
-      this.rwMeta( 'createdDate', createdDate );
-      this.rwMeta( 'lastEditedDate', createdDate );
+      const unixTime = unixTimeFromDate();
+      this.rwMeta( 'createdDate', unixTime );
+      this.rwMeta( 'lastEditedDate', unixTime );
     });
   }
 
@@ -199,9 +218,17 @@ class Document {
     }
   }
 
+  caption(newVal) {
+    return this.rwMeta('caption', newVal);
+  }
+
   provided(newVal){
     const provided = this.rwMeta('provided');
     return newVal ? this.rwMeta('provided', _.merge( provided, newVal )): provided;
+  }
+
+  authorProfiles(newVal){
+    return this.rwMeta('authorProfiles', newVal);
   }
 
   article(newVal){
@@ -222,15 +249,15 @@ class Document {
   }
 
   createdDate(){
-    return this.rwMeta('createdDate');
+    return getDateSafe( this.rwMeta('createdDate') );
   }
 
   lastEditedDate(){
-    return this.rwMeta('lastEditedDate');
+    return getDateSafe( this.rwMeta('lastEditedDate') );
   }
 
   updateLastEditedDate(){
-    return this.rwMeta('lastEditedDate', new Date());
+    return this.rwMeta('lastEditedDate', unixTimeFromDate());
   }
 
   entities(){
@@ -509,10 +536,12 @@ class Document {
       privateUrl: this.privateUrl(),
       citation: this.citation(),
       text: this.toText(),
+      createdDate: this.createdDate(),
+      lastEditedDate: this.lastEditedDate(),
     }, _.pick(this.syncher.get(), this.syncher.hasCorrectSecret() ? METADATA_FIELDS: READONLY_METADATA_FIELDS  ));
   }
 
-  toBiopaxIntnTemplates(){
+  toBiopaxIntnTemplates( omitDbXref ){
     let interactions = this.interactions();
     let templates = [];
     let getElById = id => this.elementSet.get(id);
@@ -527,7 +556,7 @@ class Document {
     };
 
     interactions.forEach( intn => {
-      let template = intn.toBiopaxTemplate( transform );
+      let template = intn.toBiopaxTemplate( transform, omitDbXref );
       if (template != null){
         templates.push(template);
       }
@@ -536,13 +565,14 @@ class Document {
     return templates;
   }
 
-  toBiopaxTemplate(){
-    let interactions = this.toBiopaxIntnTemplates();
+  toBiopaxTemplate( omitDbXref ){
+    let interactions = this.toBiopaxIntnTemplates( omitDbXref );
     let citation = this.citation();
     let pathwayName = citation.title;
     let pmid = citation.pmid;
+    let pathwayId = this.id();
 
-    let template = { interactions, pathwayName};
+    let template = { interactions, pathwayName, pathwayId };
     if ( pmid ) {
       template.publication = { id: pmid, db: 'pubmed' };
     }

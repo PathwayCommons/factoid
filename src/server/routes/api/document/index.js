@@ -8,6 +8,7 @@ import cytosnap from 'cytosnap';
 import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
+import url from 'url';
 import fs from 'fs';
 import { URLSearchParams } from  'url';
 
@@ -16,14 +17,17 @@ import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '..
 import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
+import Organism from '../../../../model/organism';
 import db from '../../../db';
 import logger from '../../../logger';
 import { getPubmedArticle } from './pubmed';
+import { AdminPapersQueue, PCPapersQueue } from './related-papers-queue';
 import { createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
 import * as indra from './indra';
 import { get as groundingSearchGet } from '../element-association/grounding-search';
 import { BASE_URL,
   BIOPAX_CONVERTER_URL,
+  GROUNDING_SEARCH_BASE_URL,
   API_KEY,
   DEMO_ID,
   DEMO_SECRET,
@@ -45,7 +49,8 @@ import { BASE_URL,
   SEMANTIC_SEARCH_LIMIT,
   NCBI_EUTILS_BASE_URL,
   PC_URL,
-  EMAIL_TYPE_REL_PPR_NOTIFICATION
+  EMAIL_TYPE_REL_PPR_NOTIFICATION,
+  EMAIL_ADDRESS_ADMIN
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
@@ -90,6 +95,13 @@ let createSecret = ({ secret }) => {
   return (
     tryPromise( () => loadTable('secret') )
     .then(({ table, conn }) => table.insert({ id: secret }).run(conn))
+  );
+};
+
+let deleteSecret = ({ secret }) => {
+  return (
+    tryPromise( () => loadTable('secret') )
+    .then(({ table, conn }) => table.filter({ id: secret }).delete().run(conn))
   );
 };
 
@@ -178,6 +190,66 @@ const DEFAULT_CORRESPONDENCE = {
   emails: []
 };
 
+const mapToUniprotIds = docTemplate => {
+  const updateGrounding = entityTemplate => {
+    if ( entityTemplate == null ) {
+      return Promise.resolve();
+    }
+
+    let xref = entityTemplate.xref;
+    let { id, dbPrefix } = xref;
+
+    if ( dbPrefix !== 'ncbigene' ){
+      return Promise.resolve();
+    }
+
+    const opts = {
+      id: [
+        id
+      ],
+      dbfrom: dbPrefix,
+      dbto: 'uniprot'
+    };
+
+    return fetch( GROUNDING_SEARCH_BASE_URL + '/map', {
+      method: 'POST',
+      body: JSON.stringify( opts ),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    } )
+    .then( res => res.json() )
+    .then( res => {
+      let dbXref = _.get( res, [ 0, 'dbXrefs', 0 ] );
+      if ( dbXref ) {
+        xref.id = dbXref.id;
+        xref.db = dbXref.db;
+      }
+    } );
+  };
+  let intnTemplates = docTemplate.interactions;
+  let promises = intnTemplates.map( intnTemplate => {
+    let ppts = intnTemplate.participants;
+    return updateGrounding( intnTemplate.controller )
+      .then( () => updateGrounding( intnTemplate.source ) )
+      .then( () => updateGrounding( _.get( ppts, 0 ) ) )
+      .then( () => updateGrounding( _.get( ppts, 1 ) ) );
+  } );
+
+  let chunks = _.chunk( promises, 10 );
+
+  const handleChunk = i => {
+    if ( i == chunks.length ) {
+      return Promise.resolve();
+    }
+
+    return Promise.all( chunks[i] ).then( () => handleChunk( i + 1 ) );
+  };
+
+  return handleChunk( 0 )
+    .then( () => docTemplate );
+};
+
 /**
  * findEmailAddress
  *
@@ -254,17 +326,81 @@ const fillDocArticle = async doc => {
     await doc.article( pubmedRecord );
     await doc.issues({ paperId: null });
   } catch ( error ) {
+
     logger.error( `Error filling doc article` );
     logger.error( error );
-    const pubmedRecord = createPubmedArticle({ articleTitle: paperId });
-    await doc.article( pubmedRecord );
-    await doc.issues({ paperId: { error, message: error.message } });
+
+    // Only supply default when no previous retrieval (pmid is null)
+    const { pmid } = doc.citation();
+    if( pmid == null ){
+      const pubmedRecord = createPubmedArticle({ articleTitle: paperId });
+      await doc.article( pubmedRecord );
+      await doc.issues({ paperId: { error, message: error.message } });
+    }
   }
+};
+
+const makeOrcidKey = ( s1, s2 ) => s1 + '_' + s2;
+
+const getOrcidUriMap = async doi => {
+  let url = `https://pub.orcid.org/v3.0/csv-search?q=`
+      + `doi%3D${doi}`;
+
+  const textToMap = text => {
+    let lines = text.split(/\r\n|\r|\n/);
+    let obj = {};
+    lines.forEach( ( line, i ) => {
+      if ( i == 0 ) {
+        return;
+      }
+      let vals = line.split(',');
+      let orcidUri = 'https://orcid.org/' + vals[ 0 ];
+      let givenNames = vals[ 2 ];
+      let familyName = vals[ 3 ];
+
+      if ( !givenNames || !familyName ) {
+        return;
+      }
+
+      let key = makeOrcidKey( givenNames, familyName );
+      obj[ key ] = orcidUri;
+    } );
+
+    return obj;
+  };
+
+  return fetch( url, { method: 'GET', headers: { 'accept': 'text/csv' } } )
+    .then( res => res.text() )
+    .then( textToMap )
+    .catch( error => {
+      logger.error( `Error finding Orcid URI: ${error.message}`);
+      return null;
+    } );
+};
+
+const fillDocAuthorProfiles = async doc => {
+  const citation = doc.citation();
+  const { authors, doi } = citation;
+
+  let orcidUrisMap = await getOrcidUriMap( doi );
+
+  orcidUrisMap = orcidUrisMap || null;
+
+  let authorProfiles = authors.authorList.map( a => {
+    let key = makeOrcidKey( a.ForeName, a.LastName );
+    let orcid = orcidUrisMap[ key ] || null;
+    let authorProfile =  _.assignIn({}, a, { orcid });
+    return authorProfile;
+  });
+
+
+  await doc.authorProfiles( authorProfiles );
 };
 
 const fillDoc = async doc => {
   await fillDocCorrespondence( doc );
   await fillDocArticle( doc );
+  await fillDocAuthorProfiles( doc );
   return doc;
 };
 
@@ -288,15 +424,16 @@ const configureAndSendMail = async ( emailType, id, secret ) => {
 };
 
 // Do not try send when there are email issues
-const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
-const sendInviteNotification = async doc => {
-  let emailType = EMAIL_TYPE_INVITE;
-  const id = doc.id();
-  const secret = doc.secret();
-  const hasAuthorEmailIssue = hasIssue( doc, 'authorEmail' );
-  if( !hasAuthorEmailIssue ) await configureAndSendMail( emailType, id, secret );
-  return doc;
-};
+// const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
+// TODO: was not used?
+// const sendInviteNotification = async doc => {
+//   let emailType = EMAIL_TYPE_INVITE;
+//   const id = doc.id();
+//   const secret = doc.secret();
+//   const hasAuthorEmailIssue = hasIssue( doc, 'authorEmail' );
+//   if( !hasAuthorEmailIssue ) await configureAndSendMail( emailType, id, secret );
+//   return doc;
+// };
 
 let handleResponseError = response => {
   if (!response.ok) {
@@ -384,13 +521,18 @@ let searchByXref = ( xref ) => {
   }
 
   if ( getNcbiId != null ) {
-    return getNcbiId( id ).then( ncbiId => {
-      if ( ncbiId == null ) {
-        return Promise.resolve( null );
-      }
+    try {
+      return getNcbiId( id ).then( ncbiId => {
+        if ( ncbiId == null ) {
+          return Promise.resolve( null );
+        }
 
-      return groundingSearchGet( { id: ncbiId, namespace: 'ncbi' } );
-    } );
+        return groundingSearchGet( { id: ncbiId, namespace: 'ncbi' } );
+      } );
+    }
+    catch( err ) {
+      logger.error(`Error searchByXref: ${err}`);
+    }
   }
 
   return null;
@@ -438,9 +580,14 @@ const generateSitemap = () => {
       let t = tables.docDb;
       let { table, conn, rethink: r } = t;
       let q = table;
+      const toTime = field => r.branch(
+        r.typeOf( r.row( field ) ).eq( 'STRING' ), r.ISO8601( r.row( field ) ),
+        r.typeOf( r.row( field ) ).eq( 'NUMBER' ), r.epochTime( r.row( field ) ),
+        r.row( field ) // 'PTYPE<TIME>'
+      );
 
       q = q.filter( r.row( 'status' ).eq( status ) );
-      q = q.orderBy( r.desc( 'createdDate' ) );
+      q = q.orderBy( r.desc( toTime( 'createdDate' ) ) );
       q = q.pluck( ['id', 'secret'] );
       return q.run( conn );
     })
@@ -510,6 +657,10 @@ http.get('/zip', function( req, res, next ){
  *     summary: Zip file of every Document represented as BioPAX in owl file format.
  *     tags:
  *       - Document
+ *     parameters:
+ *       - name: idMapping
+ *         in: query
+ *         description: Whether to mao ncbi ids to uniprot ids in biopax conversion
  *     responses:
  *      '200':
  *        description: OK
@@ -518,7 +669,13 @@ http.get('/zip', function( req, res, next ){
  *             description: Download a zip file containing each Document represented as BioPAX in owl file format.
  */
 http.get('/zip/biopax', function( req, res, next ){
+  const queryObject = url.parse( req.url, true ).query;
   let filePath = 'download/factoid_biopax.zip';
+  let idMapping = _.get( queryObject, 'idMapping' ) == 'true';
+
+  if ( idMapping ) {
+    filePath = 'download/factoid_biopax_with_id_mapping.zip';
+  }
 
   const lazyExport = () => {
     let recreate = true;
@@ -535,7 +692,7 @@ http.get('/zip/biopax', function( req, res, next ){
 
     if ( recreate ) {
       let addr = req.protocol + '://' + req.get('host');
-      return exportToZip(addr, filePath, [ EXPORT_TYPES.BP ]);
+      return exportToZip(addr, filePath, [ EXPORT_TYPES.BP ], idMapping);
     }
 
     return Promise.resolve();
@@ -543,6 +700,120 @@ http.get('/zip/biopax', function( req, res, next ){
 
   tryPromise( lazyExport )
     .then( () => res.download( filePath ))
+    .catch( next );
+});
+
+/**
+ * @swagger
+ *
+ * /api/document/statistics:
+ *   get:
+ *     description: Summary of Biofactoid data
+ *     summary: Biofactoid entity, interaction and organism counts
+ *     tags:
+ *       - Document
+ *     responses:
+ *      '200':
+ *        description: OK
+ *        content:
+ *          application/json
+ */
+http.get('/statistics', function( req, res, next ){
+
+  const count = docs => {
+
+    const entityTypes = new Set( _.values( ENTITY_TYPE ) );
+    const isEntity = type => type && entityTypes.has( type );
+    const isComplex = type => type === ENTITY_TYPE.COMPLEX;
+
+    let numEntities = 0,
+        numComplexes = 0,
+        entityMap = new Map(),
+        orgEntityMap = new Map(),
+        numInteractions = 0,
+        entitySet = new Set(),
+        pmidSet = new Set();
+
+    docs.forEach( ({ pmid, elements }) => {
+      // ---------- Articles ---------- //
+      pmid && pmidSet.add( pmid );
+
+      // ---------- Model ------ //
+
+      elements.forEach( element => {
+        const { type, association } = element;
+
+        if ( isEntity( type ) ){
+          numEntities++;
+
+          if( isComplex( type ) ) {
+            numComplexes++;
+
+          } else {
+
+            let { dbPrefix, id, organismName } = association;
+            let entityName = `${dbPrefix}_${id}`;
+            entitySet.add( entityName );
+
+            // Count by organism
+            let orgEntityCount = orgEntityMap.has( organismName ) ? orgEntityMap.get( organismName ) : 0;
+            organismName && orgEntityMap.set( organismName, ++orgEntityCount );
+
+            let entityCount = entityMap.has( entityName ) ? entityMap.get( entityName ) : 0;
+            entityMap.set( entityName, ++entityCount );
+          }
+
+        } else {
+
+          numInteractions++;
+        }
+      });
+
+    });
+
+    return ({
+      documents: docs.length,
+      articles: pmidSet.size,
+      entities: {
+        total: numEntities,
+        unique: entitySet.size,
+        complexes: numComplexes,
+        perOrganism: Object.fromEntries( orgEntityMap )
+      },
+      interactions: numInteractions
+    });
+  };
+
+  tryPromise( () => loadTables() )
+    .then( ({ docDb, eleDb }) => {
+      let { table: dTable, conn, rethink: r } = docDb;
+      let { table: eTable } = eleDb;
+
+      return (
+        dTable
+          .filter({ 'status': DOCUMENT_STATUS_FIELDS.PUBLIC })
+          .map( function( document ){
+            return document.merge({ entries: document( 'entries' )( 'id' ) });
+          })
+          .merge( function( document ) {
+            return {
+              elements: eTable.getAll( r.args( document( 'entries' ) ) )
+                .coerceTo( 'array' )
+                .pluck( 'id', 'association', 'type', 'name' )
+            };
+          })
+          .merge( function( document ) {
+            return {
+              pmid: document('article')('PubmedData')('ArticleIdList').filter({ IdType: 'pubmed' })('id')(0).default( null )
+            };
+          })
+          .pluck( 'elements', 'pmid' )
+          .run( conn )
+      );
+    })
+    .then( cursor => cursor.toArray() )
+    .then( count )
+    .then( results => res.json( results ) )
     .catch( next );
 });
 
@@ -972,9 +1243,14 @@ http.get('/', function( req, res, next ){
       let { table, conn, rethink: r } = t;
       let q = table;
       let count;
+      const toTime = field => r.branch(
+        r.typeOf( r.row( field ) ).eq( 'STRING' ), r.ISO8601( r.row( field ) ),
+        r.typeOf( r.row( field ) ).eq( 'NUMBER' ), r.epochTime( r.row( field ) ),
+        r.row( field ) // 'PTYPE<TIME>'
+      );
 
       q = q.filter(r.row('secret').ne(DEMO_SECRET));
-      q = q.orderBy(r.desc('createdDate'));
+      q = q.orderBy(r.desc( toTime( 'createdDate' ) ));
 
       if( ids ){ // doc id must be in specified id list
         let exprs = ids.map(id => r.row('id').eq(id));
@@ -1168,34 +1444,36 @@ http.get('/(:id).png', function( req, res, next ){
 });
 
 // tweet a document as a card with a caption (text)
-const tweetDoc = ( id, secret, text ) => {
+const tweetDoc = ( doc, text ) => {
+  const id = doc.id();
   const url = `${BASE_URL}/document/${id}`;
   const status = `${text} ${url}`;
-  let db;
 
-  return ( tryPromise(() => loadTable('document'))
-    .then(docDb => {
-      db = docDb;
+  return  tryPromise( () => twitterClient.post( 'statuses/update', { status } ) )
+      .then( tweet =>  doc.setTweetMetadata( tweet ) );
+};
 
-      return db;
-    })
-    .then(({ table, conn }) => table.get(id).run(conn))
-    .then(doc => {
-      const docSecret = doc.secret;
+const tryTweetingDoc = async ( doc, text ) => {
 
-      if( !DEMO_CAN_BE_SHARED && id === DEMO_ID ){
-        throw new Error(`Tweeting the demo document is forbidden`);
-      }
+  const shouldTweet = doc => {
+    const alreadyTweeted = doc.hasTweet();
+    const readOnly = _.isNil( doc.secret() );
+    const isShareableDemo = doc.id() === DEMO_ID && DEMO_CAN_BE_SHARED;
+    return ( !alreadyTweeted && !readOnly ) || isShareableDemo;
+  };
 
-      if( docSecret !== secret ){
-        throw new Error(`Can not tweet since the provided secret is incorrect`);
-      }
-    })
-    .then(() => twitterClient.post('statuses/update', { status }))
-    .then(tweet => {
-      return db.table.get(id).update({ tweet }).run(db.conn).then(() => tweet);
-    })
-  );
+  if ( shouldTweet( doc ) ) {
+    try {
+      if( !text ) text = truncateString( doc.toText(), MAX_TWEET_LENGTH );
+      await tweetDoc( doc, text );
+    } catch ( e ) {
+      logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow
+    }
+  } else {
+    logger.info( `This doc cannot be Tweeted at this time` );
+  }
+
+  return doc;
 };
 
 /**
@@ -1241,9 +1519,14 @@ http.post('/:id/tweet', function( req, res, next ){
   const id = req.params.id;
   const { text, secret } = _.assign({ text: '', secret: 'read-only-no-secret-specified' }, req.body);
 
-  tweetDoc( id, secret, text )
+  return (
+    tryPromise( () => loadTables() )
+    .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
+    .then( doc => tryTweetingDoc( doc, text) )
+    .then( getDocJson )
     .then( json => res.json( json ) )
-    .catch( next );
+    .catch( next )
+  );
 });
 
 
@@ -1331,19 +1614,35 @@ const emailRelatedPaperAuthors = async doc => {
 
   const hasContact = paper => getContact(paper) != null;
 
+  const createEmptyDoc = async (authorName, authorEmail) => {
+    const provided = {
+      authorEmail,
+      authorName
+    };
+
+    const doc = await postDoc(provided);
+
+    return doc;
+  };
+
   const sendEmail = async (paper, novelIntns) => {
     const contact = getContact(paper);
     const email = EMAIL_RELPPRS_CONTACT ? contact.email[0] : EMAIL_ADMIN_ADDR;
     const name = contact.ForeName;
+    const fullName = contact.name;
 
     // prevent duplicate sending
     doc.relatedPapersNotified(true);
+
+    const newDoc = await createEmptyDoc(fullName, email);
+    const editorUrl = `${BASE_URL}${newDoc.privateUrl()}`;
 
     const mailOpts =  await msgFactory(EMAIL_TYPE_REL_PPR_NOTIFICATION, doc, {
       to: EMAIL_RELPPRS_CONTACT ? email : EMAIL_ADMIN_ADDR, //must explicitly turn off
       name,
       paper,
-      novelIntns
+      novelIntns,
+      editorUrl
     });
 
     // Sending blocked by default, otherwise set EMAIL_ENABLED=true
@@ -1471,25 +1770,83 @@ const tryVerify = async doc => {
  */
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
-  const { paperId, elements=[], performLayout, submit, groundEls } = provided;
-  const id = paperId === DEMO_ID ? DEMO_ID: undefined;
-  const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
-  const email = _.get( provided, 'email', true );
+
+  const sendInviteNotification = async doc => {
+    // Do not try send when there are email issues
+    const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
+    let emailType = EMAIL_TYPE_INVITE;
+    const id = doc.id();
+    const secret = doc.secret();
+    const hasAuthorEmailIssue = hasIssue( doc, 'authorEmail' );
+    if( !hasAuthorEmailIssue ) await configureAndSendMail( emailType, id, secret );
+    return doc;
+  };
+
+  const handleInviteNotification = doc => {
+    const email = _.get( provided, 'authorEmail' );
+    if ( email ) {
+      return sendInviteNotification( doc ).then( () => doc );
+    }
+    return doc;
+  };
+
+  const sendJSON = doc => {
+    res.json( doc.json() );
+    return doc;
+  };
+
+  postDoc( provided )
+    .then( sendJSON )
+    .then( doc => {
+      if ( doc.secret() === DEMO_SECRET ){
+        return doc;
+      } else {
+        return handleInviteNotification(doc)
+          .then( updateRelatedPapers );
+      }
+    })
+    .catch( next );
+});
+
+const postDoc = provided => {
+  const { paperId, elements=[], performLayout, groundEls, authorName } = provided;
+  const isDemo = paperId === DEMO_ID;
+  const id = undefined;
+  const secret = isDemo ? DEMO_SECRET: uuid();
   const fromAdmin = _.get( provided, 'fromAdmin', true );
 
   const elToXref = {};
+  const elsToOmit = {};
+  const isValidXref = xref => {
+    if ( xref == null || xref.org == null ) {
+      return false;
+    }
+
+    return Organism.fromId( Number( xref.org ) ) != Organism.OTHER;
+  };
+  // pass for the entities
   elements.forEach( el => {
     let xref = el._xref;
-    if ( xref ) {
+    if ( isValidXref( xref ) ) {
       elToXref[ el.id ] = xref;
     }
   } );
+  // pass for the interactions
+  elements.forEach( el => {
+    let ppts = el.entries;
+    if ( !_.isNil( ppts ) ){
+      let pptIds = ppts.map( ppt => ppt.id );
+      let hasInvalidPPt = _.some( pptIds, pptId => !elToXref[ pptId ] );
+      if ( hasInvalidPPt ) {
+        [ el.id, ...pptIds ].forEach( elId => elsToOmit[ elId ] = true );
+      }
+    }
+  } );
+
+  _.remove( elements, el => elsToOmit[ el.id ] );
 
   const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
-  const handleDocCreation = async ({ docDb, eleDb }) => {
-    if( id === DEMO_ID ) await deleteTableRows( API_KEY, secret );
-    return await createDoc({ docDb, eleDb, id, secret, provided });
-  };
+  const handleDocCreation = ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided });
   const addEls = doc => tryPromise( () => doc.fromJson( { elements } ) ).then( () => doc );
   const handleLayout = doc => {
     if ( performLayout ) {
@@ -1498,17 +1855,10 @@ http.post('/', function( req, res, next ){
 
     return doc;
   };
-  const handleSubmission = doc => {
-    if ( submit ) {
-      return tryPromise( () => doc.submit() ).then( () => doc );
-    }
-
-    return doc;
-  };
   const handleElGroundings = doc => {
     const perform = () => {
       let entities = doc.entities();
-      let intns = doc.interactions();
+      let entityIdsToRemove = new Set();
 
       let entityPromises = entities.map( entity => {
         let xref = elToXref[entity.id()];
@@ -1521,26 +1871,50 @@ http.post('/', function( req, res, next ){
             return entity.associate( res ).then( () => entity.complete() );
           }
 
+          entityIdsToRemove.add( entity.id() );
           return Promise.resolve();
         } );
       } );
 
-      let intnPromises = intns.map( intn => intn.complete() );
+      const handleIdsToRemove = () => {
+        let intnIdsToRemove = new Set();
 
-      return Promise.all( [ ...entityPromises, ...intnPromises ] );
+        entityIdsToRemove.forEach( entityId => {
+          elements.forEach( el => {
+            let ppts = el.entries;
+            if ( !_.isNil( ppts ) ){
+              let pptIds = ppts.map( ppt => ppt.id );
+              let includesEntity = _.includes( pptIds, entityId );
+              if ( includesEntity ) {
+                pptIds.forEach( pptId => entityIdsToRemove.add( pptId ) );
+                intnIdsToRemove.add( el.id );
+              }
+            }
+          } );
+        } );
+
+        const entityRemovePromises = [ ...entityIdsToRemove ].map( entityId => doc.remove( entityId ) );
+        const intnRemovePromises = [ ...intnIdsToRemove ].map( intnId => doc.remove( intnId ) );
+
+        return Promise.all( entityRemovePromises )
+          .then( () => Promise.all( intnRemovePromises ) );
+      };
+
+
+
+      return Promise.all( entityPromises )
+        .then( handleIdsToRemove )
+        .then( () => {
+          let intns = doc.interactions();
+          let intnPromises = intns.map( intn => intn.complete() );
+          return Promise.all( intnPromises );
+        } );
     };
 
     if ( groundEls ){
       return tryPromise( () => perform() ).then( () => doc );
     }
 
-    return doc;
-  };
-  const handleInviteNotification = doc => {
-    if ( email ) {
-      return sendInviteNotification( doc ).then( () => doc );
-    }
-    
     return doc;
   };
   const handleDocSource = doc => {
@@ -1551,11 +1925,15 @@ http.post('/', function( req, res, next ){
 
     return fcn().then( () => doc );
   };
-  const sendJSONResponse = doc => tryPromise( () => doc.json() )
-  .then( json => res.json( json ) )
-  .then( () => doc );
+  const handleAuthorName = doc => {
+    if ( !authorName ){
+      return doc;
+    }
 
-  tryPromise( () => createSecret({ secret }) )
+    return doc.provided( { name: authorName } ).then( () => doc );
+  };
+
+  return tryPromise( () => createSecret({ secret }) )
     .then( loadTables )
     .then( handleDocCreation )
     .then( setStatus )
@@ -1565,11 +1943,84 @@ http.post('/', function( req, res, next ){
     .then( handleElGroundings )
     .then( handleLayout )
     .then( handleDocSource )
-    .then( handleSubmission )
-    .then( sendJSONResponse )
-    .then( updateRelatedPapers )
-    .then( handleInviteNotification )
-    .catch( next );
+    .then( handleAuthorName )
+    .catch( _.nop );
+};
+
+/**
+ * @swagger
+ *
+ * /api/document/from-url:
+ *   post:
+ *     description: Create new documents from given Biopax url
+ *     summary: Create new documents from given Biopax url
+ *     tags:
+ *       - Document
+ *     requestBody:
+ *       description: Data to create new Documents
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               url:
+ *                 type: string
+ *     responses:
+ *     '200':
+ *       description: Success
+ *     '500':
+ *       description: Error
+ */
+http.post('/from-url', function( req, res, next ){
+
+  const provided = _.assign( {}, req.body );
+
+  const { url } = provided;
+
+  tryPromise( () => getJsonFromBiopaxUrl( url ) )
+    .then( response => response.json() )
+    .then( docsJSON => new Promise( () => {
+      let pmids = Object.keys( docsJSON );
+      pmids = pmids.filter( pmid => pmid != null );
+      // TODO: which email address?
+      let authorEmail = EMAIL_ADDRESS_ADMIN;
+
+      const updateAndSubmit = doc => updateRelatedPapers( doc ).then( () => doc.submit() );
+      const addToRelatedPapersQueue = doc => PCPapersQueue.addJob( () => updateAndSubmit( doc ) );
+
+      const handleNewDoc = pmid => {
+        let docJSON = docsJSON[ pmid ];
+        const data = _.assign( {}, {
+          paperId: _.trim( pmid ),
+          authorEmail,
+          elements: docJSON,
+          performLayout: true,
+          groundEls: true,
+          fromAdmin: false
+        });
+
+        return postDoc( data ).then( doc => {
+          if ( doc.interactions().length == 0 ) {
+            let secret = doc.secret();
+            return deleteTableRows( API_KEY, secret ).then( () => deleteSecret( { secret } ) );
+          }
+
+          return addToRelatedPapersQueue( doc );
+        } );
+      };
+
+      const processPmid = i => {
+        if ( i == pmids.length ) {
+          return Promise.resolve();
+        }
+
+        return handleNewDoc( pmids[ i ] ).then( () => processPmid( i + 1 ) );
+      };
+
+      processPmid( 0 )
+        .then( () => res.end() )
+        .catch( next );
+    } ) );
 });
 
 /**
@@ -1688,20 +2139,12 @@ http.patch('/:id/:secret', function( req, res, next ){
   };
 
   const onDocPublic = async doc => {
-    await updateRelatedPapers( doc );
-    await sendFollowUpNotification( doc );
+    await AdminPapersQueue.addJob( async () => {
+      await updateRelatedPapers( doc );
+      await sendFollowUpNotification( doc );
+    } );
   };
 
-  const tryTweetingDoc = async doc => {
-    if ( !doc.hasTweet() ) {
-      try {
-        let text = truncateString( doc.toText(), MAX_TWEET_LENGTH ); // TODO?
-        return await tweetDoc( doc.id(), doc.secret(), text );
-      } catch ( e ) {
-        logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow
-      }
-    }
-  };
   const handleMakePublicRequest = async doc => {
     await tryMakePublic( doc );
     if( doc.isPublic() ) {
@@ -1720,7 +2163,10 @@ http.patch('/:id/:secret', function( req, res, next ){
           if( op === 'replace' && value === DOCUMENT_STATUS_FIELDS.PUBLIC ) await handleMakePublicRequest( doc );
           break;
         case 'article':
-          if( op === 'replace' ) await fillDocArticle( doc );
+          if( op === 'replace' ) {
+            await fillDocArticle( doc );
+            await fillDocAuthorProfiles( doc );
+          }
           break;
         case 'correspondence':
           if( op === 'replace' ){
@@ -1765,6 +2211,9 @@ http.patch('/:id/:secret', function( req, res, next ){
  *         summary: Document ID
  *         in: path
  *         required: true
+ *       - name: idMapping
+ *         in: query
+ *         description: Whether to mao ncbi ids to uniprot ids in biopax conversion
  *     responses:
  *       '200':
  *         description: ok
@@ -1776,10 +2225,20 @@ http.patch('/:id/:secret', function( req, res, next ){
  */
 http.get('/biopax/:id', function( req, res, next ){
   let id = req.params.id;
+  const queryObject = url.parse( req.url, true ).query;
+  let idMapping = _.get( queryObject, 'idMapping' ) == 'true';
+  let omitDbXref = true;
   tryPromise( loadTables )
     .then( json => _.assign( {}, json, { id } ) )
     .then( loadDoc )
-    .then( doc => doc.toBiopaxTemplate() )
+    .then( doc => doc.toBiopaxTemplate( omitDbXref ) )
+    .then( template => {
+      if ( !idMapping ) {
+        return template;
+      }
+
+      return mapToUniprotIds( template );
+    } )
     .then( getBiopaxFromTemplates )
     .then( result => result.text() )
     .then( owl => res.send( owl ))
@@ -1856,15 +2315,6 @@ http.get('/text/:id', function( req, res, next ){
     .catch( next );
 });
 
-http.post('/bp2json', function( req, res, next ){
-  const provided = _.assign( {}, req.body );
-  const { url } = provided;
-  tryPromise( () => getJsonFromBiopaxUrl( url ) )
-    .then( r => r.json() )
-    .then( js => res.json( js ) )
-    .catch( next );
-});
-
 const updateRelatedPapers = async doc => {
   await getRelPprsForDoc( doc );
   await getRelatedPapersForNetwork( doc );
@@ -1872,7 +2322,7 @@ const updateRelatedPapers = async doc => {
 };
 
 const getRelPprsForDoc = async doc => {
-  let papers = [];
+  let relatedPapers = [];
   let referencedPapers = [];
 
   try {
@@ -1880,36 +2330,40 @@ const getRelPprsForDoc = async doc => {
     const getUid = result => _.get( result, 'uid' );
     const { pmid } = doc.citation();
 
-    if( pmid ){
-      const elinkResponse = await eLink( { id: [pmid] } );
+    if( pmid == null ) throw new Error('Article pmid not available');
 
-      // For .relatedPapers
-      const documents = elink2UidList( elinkResponse );
-      let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
-      const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
-      const relatedPapersResponse = await fetchPubmed({ uids });
-      papers = _.get( relatedPapersResponse, 'PubmedArticleSet', [] )
+    const elinkResponse = await eLink( { id: [pmid] } );
+
+    // For .relatedPapers
+    const documents = elink2UidList( elinkResponse );
+    let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
+    const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
+    const relatedPapersResponse = await fetchPubmed({ uids });
+    relatedPapers = _.get( relatedPapersResponse, 'PubmedArticleSet', [] )
+      .map( getPubmedCitation )
+      .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
+    doc.relatedPapers( relatedPapers );
+
+    // For .referencedPapers
+    const referencedPaperUids = elink2UidList( elinkResponse, ['pubmed_pubmed_refs'], 100 );
+    if( referencedPaperUids.length ){
+      const referencedPapersResponse = await fetchPubmed({ uids: referencedPaperUids });
+      referencedPapers = _.get( referencedPapersResponse, 'PubmedArticleSet', [] )
         .map( getPubmedCitation )
         .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
-
-      // For .referencedPapers
-      const referencedPaperUids = elink2UidList( elinkResponse, ['pubmed_pubmed_refs'], 100 );
-      if( referencedPaperUids.length ){
-        const referencedPapersResponse = await fetchPubmed({ uids: referencedPaperUids });
-        referencedPapers = _.get( referencedPapersResponse, 'PubmedArticleSet', [] )
-          .map( getPubmedCitation )
-          .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
-      }
     }
 
-    doc.relatedPapers( papers );
     doc.referencedPapers( referencedPapers );
     logger.info(`Finished updating document-level related papers`);
     return doc;
 
   } catch ( err ){
-    logger.error(`Error getRelPprsForDoc: ${err.message}`);
-    doc.relatedPapers( papers );
+    logger.error(`Error getRelPprsForDoc: ${err}`);
+
+    // Only supply default when no previous retrieval
+    if( _.isNil( doc.relatedPapers() ) ) doc.relatedPapers( relatedPapers );
+    if( _.isNil( doc.referencedPapers() ) ) doc.referencedPapers( referencedPapers );
+
     return doc;
   }
 
@@ -1943,7 +2397,11 @@ const getRelatedPapersForNetwork = async doc => {
       el.relatedPapers( indraRes );
     };
 
-    await Promise.all([ ...els.map(getRelPprsForEl) ]);
+    let elChunks = _.chunk( els, 1 );
+    for ( let i = 0; i < elChunks.length; i++ ) {
+      let chunk = elChunks[ i ];
+      await Promise.all([ ...chunk.map(getRelPprsForEl) ]);
+    }
 
     const docPprs = doc.relatedPapers();
     const getPmid = ppr => ppr.pubmed.pmid;

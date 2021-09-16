@@ -101,6 +101,8 @@ class Entity extends Element {
   }
 
   associate( def ){
+    let oldAssoc = this.association();
+
     // ncbi provides typeOfGene property. Therefore, for the ncbi genes
     // obtain the entity type from typeOfGene property if it is available
     if ( def.namespace == 'ncbi' && def.typeOfGene != null ) {
@@ -111,6 +113,13 @@ class Entity extends Element {
     let changes = {
       association: def
     };
+
+    // ensure old keys deleted when a grounding is replaced
+    _.keys(oldAssoc).forEach(key => {
+      if (changes.association[key] == null) {
+        changes.association[key] = null;
+      }
+    });
 
     if( def.type != null ){
       changes.type = def.type;
@@ -168,7 +177,7 @@ class Entity extends Element {
     return _.assign( {}, super.json(), _.pick( this.syncher.get(), _.keys(DEFAULTS) ) );
   }
 
-  getBiopaxXref(){
+  getBiopaxXref( omitDbXref ){
     let assoc = this.association();
 
     if ( assoc == undefined ) {
@@ -177,20 +186,26 @@ class Entity extends Element {
 
     let dbXrefs = assoc.dbXrefs;
 
-    if ( dbXrefs && dbXrefs.length > 0 ) {
+    if ( !omitDbXref && dbXrefs && dbXrefs.length > 0 ) {
       return dbXrefs[0];
     }
 
-    return {
+    let bpXref = {
       id: assoc.id,
       db: assoc.dbName
     };
+
+    if ( omitDbXref ) {
+      bpXref.dbPrefix = assoc.dbPrefix;
+    }
+
+    return bpXref;
   }
 
-  toBiopaxTemplate(){
+  toBiopaxTemplate( omitDbXref ){
     let type = this.type();
     let name = this.name() || '';
-    let xref = this.getBiopaxXref();
+    let xref = this.getBiopaxXref( omitDbXref );
     let orgId = _.get( this.association(), ['organism'] );
     let organism = null;
 
@@ -201,7 +216,7 @@ class Entity extends Element {
     let entity = { type, name, xref, organism };
 
     if ( type == ENTITY_TYPE.COMPLEX ) {
-      entity.components = this.participants().map( p => p.toBiopaxTemplate() );
+      entity.components = this.participants().map( p => p.toBiopaxTemplate( omitDbXref ) );
     }
 
     return entity;

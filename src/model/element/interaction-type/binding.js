@@ -35,9 +35,9 @@ class Binding extends InteractionType {
     return ppts.length === 2;
   }
 
-  toBiopaxTemplate( transform ){
+  toBiopaxTemplate( transform, omitDbXref ){
     if ( !this.validatePpts() ){
-      return this.makeInvalidBiopaxTemplate();
+      return this.makeInvalidBiopaxTemplate( transform, omitDbXref );
     }
 
     let participants = _.uniqBy(this.interaction.participants().map( transform ), p => p.id() );
@@ -47,7 +47,7 @@ class Binding extends InteractionType {
       return null;
     }
 
-    let participantTemplates = participants.map( participant => participant.toBiopaxTemplate() );
+    let participantTemplates = participants.map( participant => participant.toBiopaxTemplate( omitDbXref ) );
 
     return {
       type: BIOPAX_TEMPLATE_TYPE.MOLECULAR_INTERACTION,

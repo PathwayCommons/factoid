@@ -3,8 +3,12 @@ import fetch from 'node-fetch';
 import { tryPromise } from '../util/promise';
 import { checkHTTPStatus } from '../util/fetch';
 
-function convertDocumentToBiopax(docId, baseUrl = '') {
+function convertDocumentToBiopax(docId, baseUrl = '', idMapping=false) {
   let SERVER_URL = baseUrl + `/api/document/biopax/${docId}`;
+  if ( idMapping ) {
+    SERVER_URL = SERVER_URL + '?idMapping=true';
+  }
+  
   let makeRequest = () => fetch(SERVER_URL);
   return tryPromise( makeRequest )
     .then( checkHTTPStatus )

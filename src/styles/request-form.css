@@ -1,0 +1,128 @@
+.request-form-container {
+  padding: 0.5em;
+  box-sizing: border-box;
+  max-width: calc(100vw - 1em);
+  min-width: 300px;
+  width: 300px;
+}
+
+.request-form {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.request-form-submitting {
+  opacity: 0.333;
+  pointer-events: none;
+}
+
+.request-form-description {
+  margin: 0;
+  font-size: 1.25em;
+  text-align: center;
+  color: #000;
+  margin-bottom: 0.4em;
+}
+
+.request-form-author {
+  font-size: var(--smallFontSize);
+  margin: 0.5em 0;
+
+  & * {
+    margin-right: 0.25em;
+  }
+}
+
+.request-form > input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+
+  & + input {
+    margin-top: 0.5em;
+  }
+}
+
+.request-form-footer {
+  margin: 0.2em 0.5em 0;
+  color: var(--fadedColor);
+  font-size: 0.8em;
+}
+
+.request-submit {
+  width: 100%;
+  margin-top: 1em;
+  text-transform: uppercase;
+  font-weight: normal;
+  border: 0;
+  background-color: var(--brandColor);
+
+  &:active {
+    background-color: var(--brandColorDark);
+  }
+}
+
+.request-error {
+  display: none;
+  color: var(--invalidColor);
+  font-weight: bold;
+  padding: 0.25em 0.5em;
+  font-size: var(--smallFontSize);
+  text-align: center;
+  margin-top: 1em;
+}
+
+.request-error-message-shown {
+  display: block;
+}
+
+.request-spinner {
+  font-size: 2em;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -0.5em;
+  margin-top: -0.5em;
+  display: none;
+}
+
+.request-spinner-shown {
+  display: block;
+}
+
+.request-form-done > * {
+  text-align: center;
+  margin: 0 0 0.5em;
+}
+
+.request-form-done .request-form-done-button {
+  display: block;
+  background-color: var(--brandColor);
+  color: #fff;
+  padding: 0.5em 0;
+  text-decoration: none;
+  text-transform: uppercase;
+  border-radius: 4em;
+}
+
+.request-form-done-title {
+  color: var(--buttonActiveColor);
+}
+
+.request-form-done-info {
+  margin: 0;
+  font-size: 0.8em;
+}
+
+.request-form-done-icon {
+  font-size: 2em;
+  text-align: center;
+}
+
+.request-form-done-msg {
+  text-align: center;
+}
+
+.request-form-provided {
+  display: none !important;
+}

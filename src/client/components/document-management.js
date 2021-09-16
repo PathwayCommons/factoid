@@ -13,7 +13,8 @@ import { tryPromise } from '../../util';
 import { makeClassList } from '../dom';
 import Popover from './popover/popover';
 import { checkHTTPStatus } from '../../util';
-import { RequestForm, RequestBiopaxForm } from './home';
+import { RequestBiopaxForm } from './home';
+import RequestForm from './request-form';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 const DEFAULT_STATUS_FIELDS = _.pull( _.values( DOCUMENT_STATUS_FIELDS ), DOCUMENT_STATUS_FIELDS.TRASHED );
@@ -53,8 +54,11 @@ class DocumentManagement extends DirtyComponent {
 
     // API Key
     const query = queryString.parse( this.props.history.location.search );
+    const page = parseInt( _.get( query, 'page', 1 ) );
+    const limit =  parseInt( _.get( query, 'limit', 10 ) );
     const apiKey =  _.get( query, 'apiKey', '' );
     const status =  _.get( query, 'status' ) ? _.get( query, 'status' ).split(/\s*,\s*/) : DEFAULT_STATUS_FIELDS;
+    let offset = limit * ( page - 1 );
 
     this.state = {
       apiKey,
@@ -63,8 +67,9 @@ class DocumentManagement extends DirtyComponent {
       docs: [],
       status,
       pageCount: 0,
-      limit: 10,
-      offset: 0,
+      limit,
+      offset,
+      page,
       isLoading: false
     };
 
@@ -88,23 +93,18 @@ class DocumentManagement extends DirtyComponent {
       });
   }
 
-  getUrlParams(){
-    const { apiKey, status, limit, offset } = this.state;
-    return queryString.stringify( { apiKey, status: status.join(','), limit, offset } );
-  }
-
-  updateUrlParams(){
-    const urlParams = this.getUrlParams();
-    this.props.history.push(`/document?${urlParams}`);
+  updateUrlParams( params ){
+    this.props.history.push(`/document?${params}`);
   }
 
   getDocs(){
     const url = '/api/document';
-    const params = this.getUrlParams();
+    const { apiKey, status, limit, offset, page } = this.state;
+    const queryParams = queryString.stringify( { apiKey, status: status.join(','), limit, offset } );
 
     this.setState({ isLoading: true });
 
-    return fetch(`${url}?${params}`)
+    return fetch(`${url}?${queryParams}`)
       .then( res => {
         const total = res.headers.get('X-Document-Count');
         const pageCount = Math.ceil( total / this.state.limit );
@@ -116,7 +116,10 @@ class DocumentManagement extends DirtyComponent {
         return docs;
       })
       .then( docs => new Promise( resolve => this.setState( { docs }, resolve ) ) )
-      .then( () => this.updateUrlParams() )
+      .then( () => {
+        const urlParams = queryString.stringify( { apiKey, status: status.join(','), limit, page } );
+        this.updateUrlParams( urlParams );
+      })
       .finally( () => {
         new Promise( resolve => this.setState( { isLoading: false }, resolve ) );
       });
@@ -153,16 +156,18 @@ class DocumentManagement extends DirtyComponent {
 
   handlePageClick( data ) {
     const { selected } = data;
-    const offset = selected * this.state.limit;
-    new Promise( resolve => this.setState( { offset }, () => this.getDocs().then( resolve ) ) );
+    const { limit } = this.state;
+    let page = selected + 1;
+    let offset = limit * ( page - 1 );
+    new Promise( resolve => this.setState( { offset, page }, () => this.getDocs().then( resolve ) ) );
   }
 
   render(){
-    let { docs, apiKey, status, validApiKey, isLoading } = this.state;
+    let { docs, apiKey, status, validApiKey, isLoading, page } = this.state;
     const header = h('div.page-content-title', [
       h('h1', 'Document management panel')
     ]);
-
+    let initialPage = page - 1;
     const getAddButtons = () => {
       return h('small', [getAddDoc(), getAddBiopax()]);
     };
@@ -173,7 +178,9 @@ class DocumentManagement extends DirtyComponent {
           html: h( RequestForm, {
             apiKey,
             doneMsg: 'Request submitted.',
-            bus: this.bus
+            bus: this.bus,
+            submitBtnText: 'Create my article profile',
+            checkIncomplete: false
           }),
           onHidden: () => this.bus.emit( 'closecta' ),
           placement: 'top'
@@ -276,6 +283,8 @@ class DocumentManagement extends DirtyComponent {
           pageCount: this.state.pageCount,
           marginPagesDisplayed: 1,
           pageRangeDisplayed: 2,
+          disableInitialCallback: true,
+          initialPage,
           onPageChange: data => this.handlePageClick( data )
         })
       ])

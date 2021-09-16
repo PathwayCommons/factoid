@@ -48,4 +48,8 @@
       background-image: url('./image/share-white.svg');
     }
   }
+
+  &.icon-orcid {
+    background-image: url('./image/orcid-icon.svg');
+  }
 }

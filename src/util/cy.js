@@ -164,7 +164,9 @@ function makeBaseStylesheet(isStatic = false){
         'curve-style': 'bezier',
         'line-color': defaultColor,
         'target-arrow-color': defaultColor,
-        'source-arrow-color': defaultColor
+        'source-arrow-color': defaultColor,
+        'target-endpoint': 'outside-to-node-or-label',
+        'source-endpoint': 'outside-to-node-or-label'
       }
     },
     {
@@ -178,7 +180,8 @@ function makeBaseStylesheet(isStatic = false){
       selector: 'edge[sign="negative"]',
       style: {
         'source-arrow-shape': 'none',
-        'target-arrow-shape': 'tee'
+        'target-arrow-shape': 'tee',
+        'target-distance-from-node': 1
       }
     },
     {

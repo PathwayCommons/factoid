@@ -6,7 +6,7 @@ import io from 'socket.io-client';
 import _ from 'lodash';
 import Mousetrap from 'mousetrap';
 
-import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL } from '../../../config';
+import { DEMO_ID, DEMO_SECRET, DEMO_AUTHOR_EMAIL, NODE_ENV } from '../../../config';
 
 import { makeClassList } from '../../dom';
 import { getId, defer, tryPromise } from '../../../util';
@@ -27,7 +27,7 @@ import Help from './help';
 import InfoPanel from './info-panel';
 import ExploreShare from './explore-share';
 import * as cyDefs from './cy/defs';
-import Credits from './credits';
+import Caption from './caption';
 
 const RM_DEBOUNCE_TIME = 500;
 const RM_AVAIL_DURATION = 5000;
@@ -204,9 +204,22 @@ class Editor extends DataComponent {
               authorEmail: DEMO_AUTHOR_EMAIL
             })
           });
+          let toJSON = res => res.json();
           let reloadDoc = () => doc.load();
+          let updateDoc = docJSON => {
+            const { id, secret } = docJSON;
+            doc = new Document({
+              socket: docSocket,
+              factoryOptions: { socket: eleSocket },
+              data: { id, secret }
+            });
+            this.setData('document', doc);
+          };
 
-          return createDemoDoc().then(reloadDoc);
+          return createDemoDoc()
+            .then( toJSON )
+            .then( updateDoc )
+            .then( reloadDoc );
         } else {
           logger.error('The doc does not exist or an error occurred');
           logger.error( err );
@@ -251,6 +264,18 @@ class Editor extends DataComponent {
       } )
       .catch( (err) => logger.error('An error occurred livening the doc', err) )
     ;
+
+    window.addEventListener('beforeunload', (event) => {
+      const isDevMode = NODE_ENV != 'production';
+      const isDemo = doc.secret() === DEMO_SECRET;
+      const shouldWarnUser = this.data.document.initiated() && !isDemo && !isDevMode; // dev mode blacklisted so livereload works (for productivity)
+
+      if (shouldWarnUser) {
+        event.preventDefault();
+
+        return event.returnValue = 'Your article summary has not been submitted.  Are you sure you would like to quit?';
+      }
+    }, { capture: true });
   }
 
   done( done ){
@@ -529,7 +554,7 @@ class Editor extends DataComponent {
       h('div.editor-graph#editor-graph'),
       h(Help, { controller, showHelp, document }),
       h(InfoPanel, { controller, bus, document, history }),
-      h(Credits, { controller, bus, document })
+      h(Caption, { controller, bus, document })
     ] : [];
 
     return h('div.editor', {

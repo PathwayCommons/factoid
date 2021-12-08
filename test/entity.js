@@ -1,4 +1,5 @@
 import * as conf from './util/conf';
+import _ from 'lodash';
 
 import { expect } from 'chai';
 import Syncher from '../src/model/syncher';
@@ -8,6 +9,81 @@ import TableUtil from './util/table';
 import * as io from './util/socket-io';
 
 const NS = 'entity_tests';
+
+const TEST_GROUND_GGP = {
+  "namespace": "ncbi",
+  "type": "ggp",
+  "dbName": "NCBI Gene",
+  "dbPrefix": "ncbigene",
+  "id": "6187",
+  "organism": "9606",
+  "organismName": "Homo sapiens",
+  "name": "RPS2",
+  "synonyms": [
+    "LLREP3",
+    "S2",
+    "40S ribosomal protein S2",
+    "40S ribosomal protein S4",
+    "OK/KNS-cl.6",
+    "protein LLRep3",
+    "small ribosomal subunit protein uS5",
+    "ribosomal protein S2"
+  ],
+  "dbXrefs": [
+    {
+      "db": "MIM",
+      "id": "603624"
+    },
+    {
+      "db": "HGNC",
+      "id": "HGNC:10404"
+    },
+    {
+      "db": "Ensembl",
+      "id": "ENSG00000140988"
+    }
+  ],
+  "typeOfGene": "protein-coding",
+  "esScore": 11.818938,
+  "defaultOrganismIndex": 2,
+  "organismIndex": 2,
+  "combinedOrganismIndex": 2,
+  "distance": 0,
+  "nameDistance": 0,
+  "overallDistance": 200000
+};
+
+const TEST_GROUND_CHEMICAL = {
+  "namespace": "chebi",
+  "type": "chemical",
+  "dbName": "ChEBI",
+  "dbPrefix": "CHEBI",
+  "id": "73694",
+  "name": "Trp-Ser",
+  "inchi": "InChI=1S/C14H17N3O4/c15-10(13(19)17-12(7-18)14(20)21)5-8-6-16-11-4-2-1-3-9(8)11/h1-4,6,10,12,16,18H,5,7,15H2,(H,17,19)(H,20,21)/t10-,12-/m0/s1",
+  "inchiKey": "MYVYPSWUSKCCHG-JQWIXIFHSA-N",
+  "synonyms": [
+    "L-Trp-L-Ser",
+    "W-S",
+    "WS",
+    "tryptophylserine",
+    "L-tryptophyl-L-serine"
+  ],
+  "charge": 0,
+  "mass": 291.3025,
+  "monoisotopicMass": 291.12191,
+  "formulae": [
+    "C14H17N3O4"
+  ],
+  "summary": "A dipeptide formed from L-tryptophan and L-serine residues.",
+  "esScore": 1.4385332,
+  "defaultOrganismIndex": 0,
+  "organismIndex": 0,
+  "combinedOrganismIndex": 0,
+  "distance": 0.6,
+  "nameDistance": 0.6,
+  "overallDistance": 6000000060
+};
 
 describe('Entity', function(){
   let ele;
@@ -204,6 +280,105 @@ describe('Entity', function(){
       });
 
       eleC1.rename('newname');
+    });
+
+    it('associates with grounding', function( done ){
+      eleC2.on('associate', function(){
+        expect( eleC2.association().foo ).to.equal('bar');
+
+        done();
+      });
+
+      eleC1.associate({
+        foo: 'bar'
+      });
+    });
+
+    it('associates with grounding x2 on self client', function( done ){
+      const grd_gpp = _.cloneDeep( TEST_GROUND_GGP );
+      eleC1.associate( grd_gpp );
+
+      const grd_chem = _.cloneDeep( TEST_GROUND_CHEMICAL );
+      eleC1.associate( grd_chem );
+
+      // old grounding should be gone from client 1
+      expect( eleC1.association().organism ).to.not.exist;
+
+      // new grounding should be there for client 1
+      expect( eleC1.association().monoisotopicMass ).to.equal( TEST_GROUND_CHEMICAL.monoisotopicMass );
+
+      // Does not merge object/array
+      expect( eleC1.association().synonyms ).to.not.include( TEST_GROUND_GGP.synonyms[0] );
+
+      done();
+    });
+
+    it('associates with grounding x2 on server', function( done ){
+      const test = async function() {
+        const grd_gpp = _.cloneDeep( TEST_GROUND_GGP );
+        await eleC1.associate( grd_gpp );
+
+        const grd_chem = _.cloneDeep( TEST_GROUND_CHEMICAL );
+        await eleC1.associate( grd_chem );
+
+        let eleS1 = new Entity({ // server
+          rethink: tableUtil.rethink,
+          table: tableUtil.table,
+          conn: tableUtil.conn,
+          data: {
+            id: 'id',
+            secret: 'secret'
+          }
+        });
+
+        await eleS1.load();
+
+        // old grounding should be gone from client 1
+        expect( eleS1.association().organism ).to.not.exist;
+
+        // new grounding should be there for client 1
+        expect( eleS1.association().monoisotopicMass ).to.equal( TEST_GROUND_CHEMICAL.monoisotopicMass );
+
+        // Does not merge object/array
+        expect( eleS1.association().synonyms ).to.not.include( TEST_GROUND_GGP.synonyms[0] );
+
+        done();
+      };
+
+      test();
+    });
+
+    it('associates with grounding x2 on remote client', function( done ){
+      const test = async function() {
+        let i = 0;
+
+        eleC2.on('associate', function() {
+          i++;
+
+          if (i === 1) {
+            // first grounding should be in client 2
+            expect( eleC2.association().organism ).to.equal( TEST_GROUND_GGP.organism );
+          } else {
+            // old grounding should be gone from client 2
+            expect( eleC2.association().organism ).to.not.exist;
+
+            // new grounding should be there for client 2
+            expect( eleC2.association().monoisotopicMass ).to.equal( TEST_GROUND_CHEMICAL.monoisotopicMass );
+
+            // Does not merge object/array
+            expect( eleC2.association().synonyms ).to.not.include( TEST_GROUND_GGP.synonyms[0] );
+
+            done();
+          }
+        });
+        const grd_gpp = _.cloneDeep( TEST_GROUND_GGP );
+        await eleC1.associate( grd_gpp );
+
+        const grd_chem = _.cloneDeep( TEST_GROUND_CHEMICAL );
+        await eleC1.associate( grd_chem );
+      };
+
+      test();
     });
   });
 });

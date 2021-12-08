@@ -39,6 +39,7 @@ CRON:
 - `DOCUMENT_CRON_UPDATE_PERIOD_DAYS` : The minimum time between successive Document cron update calls
 - `DOCUMENT_CRON_CREATED_AGE_DAYS` : Only Documents created fewer than this many days will be selecte for update. When undefined (default), ignores filtering on creation date.
 - `DOCUMENT_CRON_REFRESH_ENABLED` : Flag to enable existing Document metadata to be refreshed (e.g. PubMed UID) (default true).
+- `DOCUMENT_CRON_UNEDITED_DAYS` : Number of days since Documemt was last edited; criteria for trashing
 
 Database:
 

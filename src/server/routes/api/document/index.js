@@ -2397,13 +2397,17 @@ const getRelatedPapersForNetwork = async doc => {
         entities: el.isEntity() ? [ template ] : []
       };
 
-      let indraRes = await indra.searchDocuments({ templates, doc });
-      indraRes = indraRes || [];
-
-      if ( el.isInteraction() ) {
-        if ( indraRes.length == 0 ) {
-          el.setNovel( true );
+      let indraRes = [];
+      try {
+        indraRes = await indra.searchDocuments({ templates, doc });
+        if ( el.isInteraction() ) {
+          if ( indraRes.length == 0 ) {
+            el.setNovel( true );
+          }
         }
+
+      } catch ( err ) {
+        logger.error(`Failed searchDocuments for  ${el.id()}`);
       }
 
       el.relatedPapers( indraRes );

@@ -2324,7 +2324,7 @@ const updateRelatedPapers = async doc => {
 const getRelPprsForDoc = async doc => {
   let relatedPapers = [];
   let referencedPapers = [];
-  const noRelatedPapers = _.isNil( doc.relatedPapers() ) || _.isEmpty( doc.relatedPapers() );
+  const noRelatedPapers = _.isEmpty( doc.relatedPapers() );
 
   try {
     logger.info(`Updating document-level related papers for doc ${doc.id()}`);
@@ -2398,6 +2398,7 @@ const getRelatedPapersForNetwork = async doc => {
     const toTemplate = el => el.toSearchTemplate();
 
     const getRelPprsForEl = async el => {
+      const hasRelatedPapers = !_.isEmpty( el.relatedPapers() );
       const template = toTemplate(el);
 
       const templates = {
@@ -2415,7 +2416,9 @@ const getRelatedPapersForNetwork = async doc => {
         }
 
       } catch ( err ) {
+        // Handle searchDocuments failures
         logger.error(`Failed searchDocuments for  ${el.id()}`);
+        if( hasRelatedPapers ) indraRes = el.relatedPapers();
       }
 
       el.relatedPapers( indraRes );

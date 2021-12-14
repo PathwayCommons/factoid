@@ -2324,6 +2324,7 @@ const updateRelatedPapers = async doc => {
 const getRelPprsForDoc = async doc => {
   let relatedPapers = [];
   let referencedPapers = [];
+  const noRelatedPapers = _.isEmpty( doc.relatedPapers() );
 
   try {
     logger.info(`Updating document-level related papers for doc ${doc.id()}`);
@@ -2336,8 +2337,26 @@ const getRelPprsForDoc = async doc => {
 
     // For .relatedPapers
     const documents = elink2UidList( elinkResponse );
-    let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
-    const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
+    let uids;
+    try {
+      let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
+      uids = rankedDocs.map( getUid );
+
+    } catch ( err ) {
+      // Handling semantic search failures
+      logger.error(`Bypassing semantic search for document ${doc.id()}`);
+      if( noRelatedPapers ){
+        // Use the unranked raw list of paper pmids
+        uids = documents;
+      } else {
+        // Use existing related paper pmids, data will be refreshed
+        uids = doc.relatedPapers().map( ({ pmid }) => pmid );
+      }
+
+    } finally {
+      uids = _.take( uids, SEMANTIC_SEARCH_LIMIT );
+    }
+
     const relatedPapersResponse = await fetchPubmed({ uids });
     relatedPapers = _.get( relatedPapersResponse, 'PubmedArticleSet', [] )
       .map( getPubmedCitation )
@@ -2358,6 +2377,7 @@ const getRelPprsForDoc = async doc => {
     return doc;
 
   } catch ( err ){
+    // Handling PubMed EUTILS failures
     logger.error(`Error getRelPprsForDoc: ${err}`);
 
     // Only supply default when no previous retrieval
@@ -2378,6 +2398,7 @@ const getRelatedPapersForNetwork = async doc => {
     const toTemplate = el => el.toSearchTemplate();
 
     const getRelPprsForEl = async el => {
+      const hasRelatedPapers = !_.isEmpty( el.relatedPapers() );
       const template = toTemplate(el);
 
       const templates = {
@@ -2385,13 +2406,19 @@ const getRelatedPapersForNetwork = async doc => {
         entities: el.isEntity() ? [ template ] : []
       };
 
-      let indraRes = await indra.searchDocuments({ templates, doc });
-      indraRes = indraRes || [];
-
-      if ( el.isInteraction() ) {
-        if ( indraRes.length == 0 ) {
-          el.setNovel( true );
+      let indraRes = [];
+      try {
+        indraRes = await indra.searchDocuments({ templates, doc });
+        if ( el.isInteraction() ) {
+          if ( indraRes.length == 0 ) {
+            el.setNovel( true );
+          }
         }
+
+      } catch ( err ) {
+        // Handle searchDocuments failures
+        logger.error(`Failed searchDocuments for  ${el.id()}`);
+        if( hasRelatedPapers ) indraRes = el.relatedPapers();
       }
 
       el.relatedPapers( indraRes );

@@ -43,6 +43,7 @@ export const CRON_SCHEDULE = env('CRON_SCHEDULE', '0 1 * * *');
 export const DOCUMENT_CRON_UPDATE_PERIOD_DAYS = env('DOCUMENT_CRON_UPDATE_PERIOD_DAYS', 7);
 export const DOCUMENT_CRON_CREATED_AGE_DAYS = env('DOCUMENT_CRON_CREATED_AGE_DAYS', undefined);
 export const DOCUMENT_CRON_REFRESH_ENABLED = env('DOCUMENT_CRON_REFRESH_ENABLED', true);
+export const DOCUMENT_CRON_UNEDITED_DAYS = env('DOCUMENT_CRON_UNEDITED_DAYS', 30);
 
 // Connect to localhost
 export const SOCKET_HOST = env('SOCKET_HOST', isClient() ? window.location.hostname : 'localhost');
@@ -125,3 +126,6 @@ export const NO_ABSTRACT_HANDLING = env('NO_ABSTRACT_HANDLING', 'text');
 export const MIN_SEMANTIC_SCORE = env('MIN_SEMANTIC_SCORE', 0.47);
 export const SEMANTIC_SEARCH_LIMIT = env('SEMANTIC_SEARCH_LIMIT', 30);
 export const MIN_RELATED_PAPERS = env('MIN_RELATED_PAPERS', 6);
+
+// google analytics
+export const GA_ID = env('GA_ID', 'UA-43341809-12');

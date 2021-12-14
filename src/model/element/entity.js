@@ -101,6 +101,8 @@ class Entity extends Element {
   }
 
   associate( def ){
+    let oldAssoc = this.association();
+
     // ncbi provides typeOfGene property. Therefore, for the ncbi genes
     // obtain the entity type from typeOfGene property if it is available
     if ( def.namespace == 'ncbi' && def.typeOfGene != null ) {
@@ -111,6 +113,13 @@ class Entity extends Element {
     let changes = {
       association: def
     };
+
+    // ensure old keys deleted when a grounding is replaced
+    _.keys(oldAssoc).forEach(key => {
+      if (changes.association[key] == null) {
+        changes.association[key] = null;
+      }
+    });
 
     if( def.type != null ){
       changes.type = def.type;

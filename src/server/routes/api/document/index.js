@@ -580,9 +580,14 @@ const generateSitemap = () => {
       let t = tables.docDb;
       let { table, conn, rethink: r } = t;
       let q = table;
+      const toTime = field => r.branch(
+        r.typeOf( r.row( field ) ).eq( 'STRING' ), r.ISO8601( r.row( field ) ),
+        r.typeOf( r.row( field ) ).eq( 'NUMBER' ), r.epochTime( r.row( field ) ),
+        r.row( field ) // 'PTYPE<TIME>'
+      );
 
       q = q.filter( r.row( 'status' ).eq( status ) );
-      q = q.orderBy( r.desc( 'createdDate' ) );
+      q = q.orderBy( r.desc( toTime( 'createdDate' ) ) );
       q = q.pluck( ['id', 'secret'] );
       return q.run( conn );
     })
@@ -695,6 +700,120 @@ http.get('/zip/biopax', function( req, res, next ){
 
   tryPromise( lazyExport )
     .then( () => res.download( filePath ))
+    .catch( next );
+});
+
+/**
+ * @swagger
+ *
+ * /api/document/statistics:
+ *   get:
+ *     description: Summary of Biofactoid data
+ *     summary: Biofactoid entity, interaction and organism counts
+ *     tags:
+ *       - Document
+ *     responses:
+ *      '200':
+ *        description: OK
+ *        content:
+ *          application/json
+ */
+http.get('/statistics', function( req, res, next ){
+
+  const count = docs => {
+
+    const entityTypes = new Set( _.values( ENTITY_TYPE ) );
+    const isEntity = type => type && entityTypes.has( type );
+    const isComplex = type => type === ENTITY_TYPE.COMPLEX;
+
+    let numEntities = 0,
+        numComplexes = 0,
+        entityMap = new Map(),
+        orgEntityMap = new Map(),
+        numInteractions = 0,
+        entitySet = new Set(),
+        pmidSet = new Set();
+
+    docs.forEach( ({ pmid, elements }) => {
+      // ---------- Articles ---------- //
+      pmid && pmidSet.add( pmid );
+
+      // ---------- Model ------ //
+
+      elements.forEach( element => {
+        const { type, association } = element;
+
+        if ( isEntity( type ) ){
+          numEntities++;
+
+          if( isComplex( type ) ) {
+            numComplexes++;
+
+          } else {
+
+            let { dbPrefix, id, organismName } = association;
+            let entityName = `${dbPrefix}_${id}`;
+            entitySet.add( entityName );
+
+            // Count by organism
+            let orgEntityCount = orgEntityMap.has( organismName ) ? orgEntityMap.get( organismName ) : 0;
+            organismName && orgEntityMap.set( organismName, ++orgEntityCount );
+
+            let entityCount = entityMap.has( entityName ) ? entityMap.get( entityName ) : 0;
+            entityMap.set( entityName, ++entityCount );
+          }
+
+        } else {
+
+          numInteractions++;
+        }
+      });
+
+    });
+
+    return ({
+      documents: docs.length,
+      articles: pmidSet.size,
+      entities: {
+        total: numEntities,
+        unique: entitySet.size,
+        complexes: numComplexes,
+        perOrganism: Object.fromEntries( orgEntityMap )
+      },
+      interactions: numInteractions
+    });
+  };
+
+  tryPromise( () => loadTables() )
+    .then( ({ docDb, eleDb }) => {
+      let { table: dTable, conn, rethink: r } = docDb;
+      let { table: eTable } = eleDb;
+
+      return (
+        dTable
+          .filter({ 'status': DOCUMENT_STATUS_FIELDS.PUBLIC })
+          .map( function( document ){
+            return document.merge({ entries: document( 'entries' )( 'id' ) });
+          })
+          .merge( function( document ) {
+            return {
+              elements: eTable.getAll( r.args( document( 'entries' ) ) )
+                .coerceTo( 'array' )
+                .pluck( 'id', 'association', 'type', 'name' )
+            };
+          })
+          .merge( function( document ) {
+            return {
+              pmid: document('article')('PubmedData')('ArticleIdList').filter({ IdType: 'pubmed' })('id')(0).default( null )
+            };
+          })
+          .pluck( 'elements', 'pmid' )
+          .run( conn )
+      );
+    })
+    .then( cursor => cursor.toArray() )
+    .then( count )
+    .then( results => res.json( results ) )
     .catch( next );
 });
 
@@ -1124,9 +1243,14 @@ http.get('/', function( req, res, next ){
       let { table, conn, rethink: r } = t;
       let q = table;
       let count;
+      const toTime = field => r.branch(
+        r.typeOf( r.row( field ) ).eq( 'STRING' ), r.ISO8601( r.row( field ) ),
+        r.typeOf( r.row( field ) ).eq( 'NUMBER' ), r.epochTime( r.row( field ) ),
+        r.row( field ) // 'PTYPE<TIME>'
+      );
 
       q = q.filter(r.row('secret').ne(DEMO_SECRET));
-      q = q.orderBy(r.desc('createdDate'));
+      q = q.orderBy(r.desc( toTime( 'createdDate' ) ));
 
       if( ids ){ // doc id must be in specified id list
         let exprs = ids.map(id => r.row('id').eq(id));
@@ -1647,7 +1771,6 @@ const tryVerify = async doc => {
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
 
-
   const sendInviteNotification = async doc => {
     // Do not try send when there are email issues
     const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
@@ -1674,15 +1797,22 @@ http.post('/', function( req, res, next ){
 
   postDoc( provided )
     .then( sendJSON )
-    .then( handleInviteNotification )
-    .then( updateRelatedPapers )
+    .then( doc => {
+      if ( doc.secret() === DEMO_SECRET ){
+        return doc;
+      } else {
+        return handleInviteNotification(doc)
+          .then( updateRelatedPapers );
+      }
+    })
     .catch( next );
 });
 
 const postDoc = provided => {
   const { paperId, elements=[], performLayout, groundEls, authorName } = provided;
-  const id = paperId === DEMO_ID ? DEMO_ID: undefined;
-  const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
+  const isDemo = paperId === DEMO_ID;
+  const id = undefined;
+  const secret = isDemo ? DEMO_SECRET: uuid();
   const fromAdmin = _.get( provided, 'fromAdmin', true );
 
   const elToXref = {};
@@ -1716,10 +1846,7 @@ const postDoc = provided => {
   _.remove( elements, el => elsToOmit[ el.id ] );
 
   const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
-  const handleDocCreation = async ({ docDb, eleDb }) => {
-    if( id === DEMO_ID ) await deleteTableRows( API_KEY, secret );
-    return await createDoc({ docDb, eleDb, id, secret, provided });
-  };
+  const handleDocCreation = ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided });
   const addEls = doc => tryPromise( () => doc.fromJson( { elements } ) ).then( () => doc );
   const handleLayout = doc => {
     if ( performLayout ) {
@@ -2197,6 +2324,7 @@ const updateRelatedPapers = async doc => {
 const getRelPprsForDoc = async doc => {
   let relatedPapers = [];
   let referencedPapers = [];
+  const noRelatedPapers = _.isEmpty( doc.relatedPapers() );
 
   try {
     logger.info(`Updating document-level related papers for doc ${doc.id()}`);
@@ -2208,10 +2336,27 @@ const getRelPprsForDoc = async doc => {
     const elinkResponse = await eLink( { id: [pmid] } );
 
     // For .relatedPapers
-    const documents = elink2UidList( elinkResponse ).map( uid => ({ uid }) );
-    const query = { uid: pmid };
-    let rankedDocs = await indra.semanticSearch({ query, documents });
-    const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
+    const documents = elink2UidList( elinkResponse );
+    let uids;
+    try {
+      let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
+      uids = rankedDocs.map( getUid );
+
+    } catch ( err ) {
+      // Handling semantic search failures
+      logger.error(`Bypassing semantic search for document ${doc.id()}`);
+      if( noRelatedPapers ){
+        // Use the unranked raw list of paper pmids
+        uids = documents;
+      } else {
+        // Use existing related paper pmids, data will be refreshed
+        uids = doc.relatedPapers().map( ({ pmid }) => pmid );
+      }
+
+    } finally {
+      uids = _.take( uids, SEMANTIC_SEARCH_LIMIT );
+    }
+
     const relatedPapersResponse = await fetchPubmed({ uids });
     relatedPapers = _.get( relatedPapersResponse, 'PubmedArticleSet', [] )
       .map( getPubmedCitation )
@@ -2232,6 +2377,7 @@ const getRelPprsForDoc = async doc => {
     return doc;
 
   } catch ( err ){
+    // Handling PubMed EUTILS failures
     logger.error(`Error getRelPprsForDoc: ${err}`);
 
     // Only supply default when no previous retrieval
@@ -2252,6 +2398,7 @@ const getRelatedPapersForNetwork = async doc => {
     const toTemplate = el => el.toSearchTemplate();
 
     const getRelPprsForEl = async el => {
+      const hasRelatedPapers = !_.isEmpty( el.relatedPapers() );
       const template = toTemplate(el);
 
       const templates = {
@@ -2259,13 +2406,19 @@ const getRelatedPapersForNetwork = async doc => {
         entities: el.isEntity() ? [ template ] : []
       };
 
-      let indraRes = await indra.searchDocuments({ templates, doc });
-      indraRes = indraRes || [];
-
-      if ( el.isInteraction() ) {
-        if ( indraRes.length == 0 ) {
-          el.setNovel( true );
+      let indraRes = [];
+      try {
+        indraRes = await indra.searchDocuments({ templates, doc });
+        if ( el.isInteraction() ) {
+          if ( indraRes.length == 0 ) {
+            el.setNovel( true );
+          }
         }
+
+      } catch ( err ) {
+        // Handle searchDocuments failures
+        logger.error(`Failed searchDocuments for  ${el.id()}`);
+        if( hasRelatedPapers ) indraRes = el.relatedPapers();
       }
 
       el.relatedPapers( indraRes );

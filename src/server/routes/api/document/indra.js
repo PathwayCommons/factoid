@@ -64,9 +64,10 @@ const fetchRetryUrl = ( url, opts ) => {
 
 
 const semanticSearch = params => {
-  return fetch( SEMANTIC_SEARCH_BASE_URL, {
+  const opts = _.defaults( params, { top_k: SEMANTIC_SEARCH_LIMIT } );
+  return fetch( `${SEMANTIC_SEARCH_BASE_URL}search`, {
     method: 'POST',
-    body: JSON.stringify( params ),
+    body: JSON.stringify( opts ),
     headers: { 'Content-Type': 'application/json' }
   })
   .then( res => res.json() );

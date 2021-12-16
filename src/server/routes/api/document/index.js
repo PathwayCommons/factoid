@@ -2339,7 +2339,10 @@ const getRelPprsForDoc = async doc => {
     const documents = elink2UidList( elinkResponse );
     let uids;
     try {
-      let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
+      let rankedDocs = await indra.semanticSearch({
+        query: { uid: pmid },
+        documents: documents.map( uid => ({ uid }) )
+      });
       uids = rankedDocs.map( getUid );
 
     } catch ( err ) {

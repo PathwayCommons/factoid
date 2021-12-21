@@ -10,7 +10,8 @@ import {
   SEMANTIC_SEARCH_BASE_URL,
   EVIDENCE_LIMIT,
   MAX_STATEMENTS,
-  GROUNDING_SEARCH_BASE_URL
+  GROUNDING_SEARCH_BASE_URL,
+  SEMANTIC_SEARCH_LIMIT
 } from '../../../../config';
 
 import logger from '../../../logger';

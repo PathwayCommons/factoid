@@ -2422,19 +2422,22 @@ const getRelatedPapersForNetwork = async doc => {
     logger.info(`Updating network-level related papers for doc ${doc.id()}`);
 
     for ( const element of elements ) {
-      let indraRes;
+      const hasRelatedPapers = !_.isEmpty( element.relatedPapers() );
+      let indraRes = [];
       try {
         indraRes = await indra.search( element, doc );
+        if ( element.isInteraction() ) {
+          if ( indraRes.length == 0 ) {
+            element.setNovel( true );
+          }
+        }
+
       } catch ( err ) {
-        logger.error(`Error in getRelatedPapersForNetwork ${err.message}`);
+        // Handle searchDocuments failures
+        logger.error(`Failed searchDocuments for  ${element.id()}`);
+        if( hasRelatedPapers ) indraRes = element.relatedPapers();
       }
 
-      indraRes = indraRes || [];
-      if ( element.isInteraction() ) {
-        if ( indraRes.length == 0 ) {
-          element.setNovel( true );
-        }
-      }
       element.relatedPapers( indraRes );
     }
 

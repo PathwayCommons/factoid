@@ -1,9 +1,10 @@
 import h from 'react-hyperscript';
 import { Component } from 'react';
 import _ from 'lodash';
-import { DOI_LINK_BASE_URL, PUBMED_LINK_BASE_URL } from '../../config';
-
-const MAX_PAPERS = 5;
+import {
+  DOI_LINK_BASE_URL,
+  PUBMED_LINK_BASE_URL,
+  MAX_DOC_RELATED_PAPERS } from '../../config';
 
 class RelatedPapersLoading extends Component {
   render(){
@@ -69,7 +70,7 @@ export class RelatedPapers extends Component {
     if( !papers ){
       return h( RelatedPapersLoading );
     } else {
-      papers = papers.slice(0, MAX_PAPERS);
+      papers = papers.slice(0, MAX_DOC_RELATED_PAPERS);
       return h('div.related-papers', papers.map( paper => h( RelatedPaper, { citation: paper.pubmed } ) ) );
     }
   }

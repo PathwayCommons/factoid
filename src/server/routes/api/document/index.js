@@ -49,7 +49,8 @@ import { BASE_URL,
   NCBI_EUTILS_BASE_URL,
   PC_URL,
   EMAIL_TYPE_REL_PPR_NOTIFICATION,
-  EMAIL_ADDRESS_ADMIN
+  EMAIL_ADDRESS_ADMIN,
+  MAX_DOC_RELATED_PAPERS
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
@@ -2363,7 +2364,8 @@ const getRelPprsForDoc = async doc => {
     try {
       let rankedDocs = await indra.semanticSearch({
         query: { uid: pmid },
-        documents: documents.map( uid => ({ uid }) )
+        documents: documents.map( uid => ({ uid }) ),
+        top_k: MAX_DOC_RELATED_PAPERS
       });
       uids = rankedDocs.map( getUid );
 
@@ -2423,11 +2425,8 @@ const getRelatedPapersForNetwork = async doc => {
       let indraRes;
       try {
         indraRes = await indra.search( element, doc );
-
       } catch ( err ) {
-
         logger.error(`Error in getRelatedPapersForNetwork ${err.message}`);
-
       }
 
       indraRes = indraRes || [];

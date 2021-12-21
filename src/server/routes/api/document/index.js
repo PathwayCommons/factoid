@@ -2346,6 +2346,7 @@ const updateRelatedPapers = async doc => {
 const getRelPprsForDoc = async doc => {
   let relatedPapers = [];
   let referencedPapers = [];
+  const noRelatedPapers = _.isEmpty( doc.relatedPapers() );
 
   try {
     logger.info(`Updating document-level related papers for doc ${doc.id()}`);
@@ -2358,8 +2359,29 @@ const getRelPprsForDoc = async doc => {
 
     // For .relatedPapers
     const documents = elink2UidList( elinkResponse );
-    let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
-    const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
+    let uids;
+    try {
+      let rankedDocs = await indra.semanticSearch({
+        query: { uid: pmid },
+        documents: documents.map( uid => ({ uid }) )
+      });
+      uids = rankedDocs.map( getUid );
+
+    } catch ( err ) {
+      // Handling semantic search failures
+      logger.error(`Bypassing semantic search for document ${doc.id()}`);
+      if( noRelatedPapers ){
+        // Use the unranked raw list of paper pmids
+        uids = documents;
+      } else {
+        // Use existing related paper pmids, data will be refreshed
+        uids = doc.relatedPapers().map( ({ pmid }) => pmid );
+      }
+
+    } finally {
+      uids = _.take( uids, SEMANTIC_SEARCH_LIMIT );
+    }
+
     const relatedPapersResponse = await fetchPubmed({ uids });
     relatedPapers = _.get( relatedPapersResponse, 'PubmedArticleSet', [] )
       .map( getPubmedCitation )
@@ -2380,6 +2402,7 @@ const getRelPprsForDoc = async doc => {
     return doc;
 
   } catch ( err ){
+    // Handling PubMed EUTILS failures
     logger.error(`Error getRelPprsForDoc: ${err}`);
 
     // Only supply default when no previous retrieval

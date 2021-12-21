@@ -10,6 +10,7 @@ import {
   SEMANTIC_SEARCH_BASE_URL,
   EVIDENCE_LIMIT,
   MAX_STATEMENTS,
+  MAX_STATEMENTS_ELEMENT,
   GROUNDING_SEARCH_BASE_URL,
   SEMANTIC_SEARCH_LIMIT
 } from '../../../../config';
@@ -290,6 +291,22 @@ const filterStatements = ( statements, doc ) => {
   return nonEmpty;
 };
 
+const rankStatements = async ( doc, statements ) => {
+  const { pmid } = doc.citation();
+  const query = { uid: pmid };
+  const documents = statements.map( stmt => {
+    const pmid = _.get( stmt, [ 'evidence', '0', 'pmid' ] );
+    return { uid: pmid };
+  });
+  const rankedDocs = await semanticSearch({ query, documents, docs_only: true });
+  const rankedUids = rankedDocs.map( ({ uid }) => uid );
+  statements.sort( (stmt1, stmt2) => {
+    const getPmid = s => _.get( s, ['evidence', '0', 'pmid'] );
+    return rankedUids.indexOf( getPmid( stmt1 ) ) - rankedUids.indexOf( getPmid( stmt2 ) );
+  });
+  return statements;
+};
+
 // An interaction has evidence { pmid, source : [ { pmid, text, } ]}
 /**
  * asInteraction
@@ -420,7 +437,9 @@ const statements2Interactions = async ( statements, doc ) => {
 
     // filter statements and associated evidence
     const filteredStatements = filterStatements( pickedStatements, doc );
-    const interactions = asInteraction( filteredStatements );
+    const rankedStatements = await rankStatements( doc, filteredStatements, MAX_STATEMENTS_ELEMENT );
+    const topStatements = rankedStatements.slice(0, MAX_STATEMENTS_ELEMENT);
+    const interactions = asInteraction( topStatements );
 
     return interactions;
 

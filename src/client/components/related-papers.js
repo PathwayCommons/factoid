@@ -128,15 +128,16 @@ export class RelatedInteraction extends Component {
     const { interaction } = this.props;
     const { evidence, sentence } = interaction;
 
+    //// NB: To reduce data size, only show top evidence
     // Link to more evidence (i.e. papers for the interaction )
-    let additionalEvidenceLink = null;
-    let numArticles = evidence.length;
-    let hasMoreEvidence = numArticles > 1;
-    if( hasMoreEvidence ){
-      additionalEvidenceLink = h('a.related-interaction-additional-evidence.related-paper-link', {
-        target: '_blank'
-      }, `Show more articles (${numArticles})` );
-    }
+    // let additionalEvidenceLink = null;
+    // let numArticles = evidence.length;
+    // let hasMoreEvidence = numArticles > 1;
+    // if( hasMoreEvidence ){
+    //   additionalEvidenceLink = h('a.related-interaction-additional-evidence.related-paper-link', {
+    //     target: '_blank'
+    //   }, `Show more articles (${numArticles})` );
+    // }
 
     return h('div.related-interaction', [
       h('div.related-interaction-body', [
@@ -145,9 +146,9 @@ export class RelatedInteraction extends Component {
         ]),
         h( EvidenceComponent, { evidence: _.head( evidence ) })
       ]),
-      h('div.related-interaction-footer', [
-        additionalEvidenceLink
-      ])
+      // h('div.related-interaction-footer', [
+      //   additionalEvidenceLink
+      // ])
     ]);
 
   }

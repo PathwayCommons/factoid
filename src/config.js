@@ -127,7 +127,7 @@ export const MIN_SEMANTIC_SCORE = env('MIN_SEMANTIC_SCORE', 0.47);
 export const SEMANTIC_SEARCH_LIMIT = env('SEMANTIC_SEARCH_LIMIT', 30);
 export const MAX_DOC_RELATED_PAPERS = env('MAX_DOC_RELATED_PAPERS', 5);
 export const MAX_STATEMENTS =  env('MAX_STATEMENTS', 10);
-export const EVIDENCE_LIMIT =  env('EVIDENCE_LIMIT', 10);
+export const EVIDENCE_LIMIT =  env('EVIDENCE_LIMIT', 1);
 
 // google analytics
 export const GA_ID = env('GA_ID', 'UA-43341809-12');

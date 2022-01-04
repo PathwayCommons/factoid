@@ -628,7 +628,7 @@ http.get('/zip', function( req, res, next ){
       const DAY_TO_MS = 86400000;
 
       let now = Date.now();
-      let fileDate = fs.statSync(filePath).birthtimeMs;
+      let fileDate = fs.statSync(filePath).mtimeMs;
 
       if ( now - fileDate < DAY_TO_MS ) {
         recreate = false;

@@ -619,32 +619,10 @@ const generateSitemap = () => {
  *          application/zip:
  *             description: Download a zip file containing each Document in various file formats.
  */
-http.get('/zip', function( req, res, next ){
+http.get('/zip', async function( req, res, next ){
   let filePath = 'download/factoid_bulk.zip';
 
-  const lazyExport = () => {
-    let recreate = true;
-    if ( fs.existsSync( filePath ) ) {
-      const DAY_TO_MS = 86400000;
-
-      let now = Date.now();
-      let fileDate = fs.statSync(filePath).birthtimeMs;
-
-      if ( now - fileDate < DAY_TO_MS ) {
-        recreate = false;
-      }
-    }
-
-    if ( recreate ) {
-      let addr = req.protocol + '://' + req.get('host');
-      return exportToZip(addr, filePath);
-    }
-
-    return Promise.resolve();
-  };
-
-  tryPromise( lazyExport )
-    .then( () => res.download( filePath ))
+  tryPromise( () => res.download( filePath ) )
     .catch( next );
 });
 

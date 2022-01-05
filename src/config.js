@@ -56,6 +56,9 @@ export const DB_USER = env('DB_USER', undefined); // username if db uses auth
 export const DB_PASS = env('DB_PASS', undefined); // password if db uses auth
 export const DB_CERT = env('DB_CERT', undefined);  // path to a certificate (cert) file if db uses ssl
 
+// Downloads
+export const BULK_DOWNLOADS_PATH = env('BULK_DOWNLOADS_PATH', 'download/factoid_bulk.zip');
+
 // Services
 export const PC_URL = env('PC_URL', 'https://apps.pathwaycommons.org/');
 export const REACH_URL = env('REACH_URL', 'http://reach.baderlab.org/api/uploadFile');

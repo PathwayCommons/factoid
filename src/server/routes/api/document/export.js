@@ -2,8 +2,12 @@ import fetch from 'node-fetch';
 import JSZip from 'jszip';
 import _ from 'lodash';
 import fs from 'fs';
-import logger from '../../../logger';
+import util from 'util';
+import addMilliseconds from 'date-fns/addMilliseconds';
+import formatDistance from 'date-fns/formatDistance';
 
+import logger from '../../../logger';
+import db from '../../../db';
 import Document from '../../../../model/document';
 
 import { convertDocumentToBiopax,
@@ -11,6 +15,7 @@ import { convertDocumentToBiopax,
         convertDocumentToSbgn } from '../../../document-util';
 
 import { checkHTTPStatus } from '../../../../util';
+import { PORT, BULK_DOWNLOADS_PATH } from '../../../../config';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 const CHUNK_SIZE = 20;
@@ -25,7 +30,7 @@ const exportToZip = (baseUrl, zipPath, types, biopaxIdMapping) => {
   let zip = new JSZip();
 
   const processNext = () => {
-    return fetch(`${baseUrl}/api/document?limit=${CHUNK_SIZE}&offset=${offset}`)
+    return fetch(`${baseUrl}/api/document?limit=${CHUNK_SIZE}&offset=${offset}&status=public`)
       .then( checkHTTPStatus )
       .then( res => res.json() )
       .then( res => {
@@ -99,4 +104,89 @@ const exportToZip = (baseUrl, zipPath, types, biopaxIdMapping) => {
   return processNext();
 };
 
-export { exportToZip, EXPORT_TYPES };
+let taskScheduled = false;
+let taskTime = null;
+const resetTaskSchedule = () => { taskScheduled = false; taskTime = null; };
+/**
+ * scheduleTask
+ * Schedule a task in 'delay' ms. Ignore additional requests while scheduled.
+ *
+ * @param {object} task The task to execute
+ * @param {number} delay ms delay for task execution (default 0)
+ * @param {object} next The callback to run after a task is initiated
+ */
+const scheduleTask = async ( task, delay = 0, next = () => {} ) => {
+  const setTimeoutPromise = util.promisify( setTimeout );
+  let now = new Date();
+  logger.info( `A task request has been received` );
+
+  if( taskScheduled ){
+    logger.info( `A task has already been scheduled for ${taskTime} (${formatDistance( now, taskTime )})` );
+
+  } else {
+    taskTime = addMilliseconds( new Date(), delay );
+    logger.info( `A task was scheduled for ${taskTime} (${formatDistance( now, taskTime )})` );
+    taskScheduled = true;
+
+    setTimeoutPromise( delay )
+      .then( task )
+      .then( next )
+      .catch( () => {} ) // swallow
+      .finally( resetTaskSchedule ); // allow another backup request
+  }
+
+  return Promise.resolve();
+};
+
+// Configure Changefeeds for the document table
+const setupChangefeeds = async ({ rethink: r, conn, table }) => {
+  const docOpts = {
+    includeTypes: true,
+    squash: true
+   };
+
+  // Database restore - does this catch add doc?
+  const toPublicStatusFromNull = r.row( 'new_val' )( 'status' ).eq( 'public' )
+    .and( r.row( 'old_val' ).eq( null ) );
+  // Status changed to 'public' from other status/null
+  const toPublicStatusFromOtherStatus = r.row( 'new_val' )( 'status' ).eq( 'public' )
+    .and( r.row( 'old_val' )( 'status' ).ne( 'public' ) );
+  // Status is changed from 'public'
+  const toOtherStatusFromPublicStatus = r.row( 'new_val' )( 'status' ).ne( 'public' )
+    .and( r.row( 'old_val' )( 'status' ).eq( 'public' ) );
+
+  const docFilter = toPublicStatusFromNull.or( toPublicStatusFromOtherStatus ).or( toOtherStatusFromPublicStatus );
+  const cursor = await table.changes( docOpts )
+   .filter( docFilter )
+   .run( conn );
+  return cursor;
+};
+
+const MS_PER_SEC = 1000;
+const SEC_PER_MIN = 60;
+const work = () => {
+  const baseUrl = `http://localhost:${PORT}`; // case where not localhost?
+  return exportToZip( baseUrl, BULK_DOWNLOADS_PATH );
+};
+
+/**
+* initChangefeedsTasks
+* Initialize the Changefeeds and perform batched tasks ( export )
+*/
+const initExportTasks = async () => {
+  let delay = MS_PER_SEC * SEC_PER_MIN * 1;
+  const loadTable = name => db.accessTable( name );
+  const dbTable = await loadTable( 'document' );
+  const cursor = await setupChangefeeds( dbTable );
+
+  cursor.each( async err => {
+    if( err ){
+      logger.error( `Error in Changefeed: ${err}` );
+      return;
+    }
+    await scheduleTask( work, delay );
+  });
+};
+
+
+export { exportToZip, EXPORT_TYPES, initExportTasks };

@@ -50,6 +50,13 @@ Database:
 - `DB_PASS` : password if the db uses auth (undefined by default)
 - `DB_CERT` : local file path to certificate (cert) file if the db uses ssl (undefined by default)
 
+Downloads:
+
+- `BULK_DOWNLOADS_PATH` : relative path to bulk downloads
+- `BIOPAX_DOWNLOADS_PATH` : relative path to biopax downloads
+- `BIOPAX_IDMAP_DOWNLOADS_PATH` : relative path to id-mapped biopax downloads
+- `EXPORT_BULK_DELAY_HOURS` : period to delay (bactch) export tasks
+
 Services:
 
 - `DEFAULT_CACHE_SIZE` : default max number of entries in each cache

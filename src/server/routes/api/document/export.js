@@ -174,7 +174,7 @@ const setupChangefeeds = async ({ rethink: r, conn, table }) => {
 * initExportTasks
 * Initialize the export tasks
 */
-const initExportTasks = async () => {
+const initExportTasks = async ( exportOnInit = true ) => {
   const MS_PER_SEC = 1000;
   const SEC_PER_MIN = 60;
   const MIN_PER_HOUR = 60;
@@ -195,15 +195,18 @@ const initExportTasks = async () => {
   const exportBiopaxIdMapTask = () => exportToZip( baseUrl, BIOPAX_IDMAP_DOWNLOADS_PATH, [ EXPORT_TYPES.BP ], true );
   const doExportBiopaxIdMap = taskScheduler( exportBiopaxIdMapTask, export_delay * delay_shift );
 
+  let taskList = [ exportTask(), exportBiopaxTask(), exportBiopaxIdMapTask() ];
+  let scheduledTaskList = [ doExport(), doExportBiopax(), doExportBiopaxIdMap() ];
+
   cursor.each( async err => {
     if( err ){
       logger.error( `Error in Changefeed: ${err}` );
       return;
     }
-    await doExport();
-    await doExportBiopax();
-    await doExportBiopaxIdMap();
+    await Promise.all( scheduledTaskList );
   });
+
+  if( exportOnInit ) await Promise.all( taskList );
 };
 
 

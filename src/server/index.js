@@ -151,7 +151,6 @@ tryPromise( () => {
   const tables = ['element', 'document'];
   return tables.reduce( ( p, name ) => p.then( () => setup( name ) ), Promise.resolve() );
 } )
-.then( initExportTasks )
 .then( () => {
   cron.schedule( config.CRON_SCHEDULE, () => {
     updateCron();
@@ -159,7 +158,9 @@ tryPromise( () => {
 } )
 .then( () => {
   server.listen(port);
-} );
+} )
+.then( initExportTasks )
+;
 
 function normalizePort(val) {
   let port = parseInt(val, 10);

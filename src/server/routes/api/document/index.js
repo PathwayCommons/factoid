@@ -50,7 +50,8 @@ import { BASE_URL,
   NCBI_EUTILS_BASE_URL,
   PC_URL,
   EMAIL_TYPE_REL_PPR_NOTIFICATION,
-  EMAIL_ADDRESS_ADMIN
+  EMAIL_ADDRESS_ADMIN,
+  BULK_DOWNLOADS_PATH
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
@@ -620,9 +621,7 @@ const generateSitemap = () => {
  *             description: Download a zip file containing each Document in various file formats.
  */
 http.get('/zip', async function( req, res, next ){
-  let filePath = 'download/factoid_bulk.zip';
-
-  tryPromise( () => res.download( filePath ) )
+  tryPromise( () => res.download( BULK_DOWNLOADS_PATH ) )
     .catch( next );
 });
 

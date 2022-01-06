@@ -15,7 +15,10 @@ import { convertDocumentToBiopax,
         convertDocumentToSbgn } from '../../../document-util';
 
 import { checkHTTPStatus } from '../../../../util';
-import { PORT, BULK_DOWNLOADS_PATH } from '../../../../config';
+import {
+  PORT,
+  BULK_DOWNLOADS_PATH,
+  EXPORT_DELAY_HOURS } from '../../../../config';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 const CHUNK_SIZE = 20;
@@ -104,9 +107,6 @@ const exportToZip = (baseUrl, zipPath, types, biopaxIdMapping) => {
   return processNext();
 };
 
-let taskScheduled = false;
-let taskTime = null;
-const resetTaskSchedule = () => { taskScheduled = false; taskTime = null; };
 /**
  * scheduleTask
  * Schedule a task in 'delay' ms. Ignore additional requests while scheduled.
@@ -115,27 +115,33 @@ const resetTaskSchedule = () => { taskScheduled = false; taskTime = null; };
  * @param {number} delay ms delay for task execution (default 0)
  * @param {object} next The callback to run after a task is initiated
  */
-const scheduleTask = async ( task, delay = 0, next = () => {} ) => {
-  const setTimeoutPromise = util.promisify( setTimeout );
-  let now = new Date();
-  logger.info( `A task request has been received` );
+const taskScheduler = ( task, delay = 0, next = () => {} ) => {
+  let taskScheduled = false;
+  let taskTime = null;
+  const resetTaskSchedule = () => { taskScheduled = false; taskTime = null; };
 
-  if( taskScheduled ){
-    logger.info( `A task has already been scheduled for ${taskTime} (${formatDistance( now, taskTime )})` );
+  return (() => {
+    const setTimeoutPromise = util.promisify( setTimeout );
+    let now = new Date();
+    logger.info( `A task request has been received` );
 
-  } else {
-    taskTime = addMilliseconds( new Date(), delay );
-    logger.info( `A task was scheduled for ${taskTime} (${formatDistance( now, taskTime )})` );
-    taskScheduled = true;
+    if( taskScheduled ){
+      logger.info( `A task has already been scheduled for ${taskTime} (${formatDistance( now, taskTime )})` );
 
-    setTimeoutPromise( delay )
-      .then( task )
-      .then( next )
-      .catch( () => {} ) // swallow
-      .finally( resetTaskSchedule ); // allow another backup request
-  }
+    } else {
+      taskTime = addMilliseconds( new Date(), delay );
+      logger.info( `A task was scheduled for ${taskTime} (${formatDistance( now, taskTime )})` );
+      taskScheduled = true;
 
-  return Promise.resolve();
+      setTimeoutPromise( delay )
+        .then( task )
+        .then( next )
+        .catch( () => {} ) // swallow
+        .finally( resetTaskSchedule ); // allow another backup request
+    }
+
+    return Promise.resolve();
+  });
 };
 
 // Configure Changefeeds for the document table
@@ -145,10 +151,10 @@ const setupChangefeeds = async ({ rethink: r, conn, table }) => {
     squash: true
    };
 
-  // Database restore - does this catch add doc?
+  // Database restore of doc with public status
   const toPublicStatusFromNull = r.row( 'new_val' )( 'status' ).eq( 'public' )
     .and( r.row( 'old_val' ).eq( null ) );
-  // Status changed to 'public' from other status/null
+  // Status changed to 'public'
   const toPublicStatusFromOtherStatus = r.row( 'new_val' )( 'status' ).eq( 'public' )
     .and( r.row( 'old_val' )( 'status' ).ne( 'public' ) );
   // Status is changed from 'public'
@@ -162,29 +168,32 @@ const setupChangefeeds = async ({ rethink: r, conn, table }) => {
   return cursor;
 };
 
-const MS_PER_SEC = 1000;
-const SEC_PER_MIN = 60;
-const work = () => {
-  const baseUrl = `http://localhost:${PORT}`; // case where not localhost?
-  return exportToZip( baseUrl, BULK_DOWNLOADS_PATH );
-};
-
 /**
-* initChangefeedsTasks
-* Initialize the Changefeeds and perform batched tasks ( export )
+* initExportTasks
+* Initialize the export tasks
 */
 const initExportTasks = async () => {
-  let delay = MS_PER_SEC * SEC_PER_MIN * 1;
+  const MS_PER_SEC = 1000;
+  const SEC_PER_MIN = 60;
+  const MIN_PER_HOUR = 60;
+
+  let delay = MS_PER_SEC * SEC_PER_MIN * MIN_PER_HOUR * EXPORT_DELAY_HOURS;
   const loadTable = name => db.accessTable( name );
   const dbTable = await loadTable( 'document' );
   const cursor = await setupChangefeeds( dbTable );
+
+  const exportTask = () => {
+    const baseUrl = `http://localhost:${PORT}`; // ever not localhost?
+    return exportToZip( baseUrl, BULK_DOWNLOADS_PATH );
+  };
+  const doExport = taskScheduler( exportTask, delay );
 
   cursor.each( async err => {
     if( err ){
       logger.error( `Error in Changefeed: ${err}` );
       return;
     }
-    await scheduleTask( work, delay );
+    await doExport();
   });
 };
 

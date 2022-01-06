@@ -55,7 +55,7 @@ Downloads:
 - `BULK_DOWNLOADS_PATH` : relative path to bulk downloads
 - `BIOPAX_DOWNLOADS_PATH` : relative path to biopax downloads
 - `BIOPAX_IDMAP_DOWNLOADS_PATH` : relative path to id-mapped biopax downloads
-- `EXPORT_BULK_DELAY_HOURS` : period to delay (bactch) export tasks
+- `EXPORT_BULK_DELAY_HOURS` : period to delay (batch) export tasks
 
 Services:
 

@@ -58,7 +58,9 @@ export const DB_CERT = env('DB_CERT', undefined);  // path to a certificate (cer
 
 // Downloads
 export const BULK_DOWNLOADS_PATH = env('BULK_DOWNLOADS_PATH', 'download/factoid_bulk.zip');
-export const EXPORT_DELAY_HOURS = env('EXPORT_DELAY_HOURS', 0.25);
+export const BIOPAX_DOWNLOADS_PATH = env('BIOPAX_DOWNLOADS_PATH', 'download/factoid_biopax.zip');
+export const BIOPAX_IDMAP_DOWNLOADS_PATH = env('BIOPAX_IDMAP_DOWNLOADS_PATH', 'download/factoid_biopax_with_id_mapping.zip');
+export const EXPORT_BULK_DELAY_HOURS = env('EXPORT_BULK_DELAY_HOURS', 0.25);
 
 // Services
 export const PC_URL = env('PC_URL', 'https://apps.pathwaycommons.org/');

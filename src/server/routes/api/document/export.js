@@ -18,7 +18,9 @@ import { checkHTTPStatus } from '../../../../util';
 import {
   PORT,
   BULK_DOWNLOADS_PATH,
-  EXPORT_DELAY_HOURS } from '../../../../config';
+  BIOPAX_DOWNLOADS_PATH,
+  EXPORT_BULK_DELAY_HOURS,
+  BIOPAX_IDMAP_DOWNLOADS_PATH} from '../../../../config';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 const CHUNK_SIZE = 20;
@@ -176,17 +178,22 @@ const initExportTasks = async () => {
   const MS_PER_SEC = 1000;
   const SEC_PER_MIN = 60;
   const MIN_PER_HOUR = 60;
+  const baseUrl = `http://localhost:${PORT}`; // ever not localhost?
 
-  let delay = MS_PER_SEC * SEC_PER_MIN * MIN_PER_HOUR * EXPORT_DELAY_HOURS;
   const loadTable = name => db.accessTable( name );
   const dbTable = await loadTable( 'document' );
   const cursor = await setupChangefeeds( dbTable );
 
-  const exportTask = () => {
-    const baseUrl = `http://localhost:${PORT}`; // ever not localhost?
-    return exportToZip( baseUrl, BULK_DOWNLOADS_PATH );
-  };
-  const doExport = taskScheduler( exportTask, delay );
+  let export_delay = MS_PER_SEC * SEC_PER_MIN * MIN_PER_HOUR * EXPORT_BULK_DELAY_HOURS;
+  let delay_shift = 2;
+
+  const exportTask = () => exportToZip( baseUrl, BULK_DOWNLOADS_PATH );
+  const doExport = taskScheduler( exportTask, export_delay );
+
+  const exportBiopaxTask = () => exportToZip( baseUrl, BIOPAX_DOWNLOADS_PATH, [ EXPORT_TYPES.BP ], false );
+  const doExportBiopax = taskScheduler( exportBiopaxTask, export_delay * delay_shift );
+  const exportBiopaxIdMapTask = () => exportToZip( baseUrl, BIOPAX_IDMAP_DOWNLOADS_PATH, [ EXPORT_TYPES.BP ], true );
+  const doExportBiopaxIdMap = taskScheduler( exportBiopaxIdMapTask, export_delay * delay_shift );
 
   cursor.each( async err => {
     if( err ){
@@ -194,6 +201,8 @@ const initExportTasks = async () => {
       return;
     }
     await doExport();
+    await doExportBiopax();
+    await doExportBiopaxIdMap();
   });
 };
 

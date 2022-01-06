@@ -9,10 +9,8 @@ import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
 import url from 'url';
-import fs from 'fs';
 import { URLSearchParams } from  'url';
 
-import { exportToZip, EXPORT_TYPES } from './export';
 import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
 import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
 import sendMail from '../../../email-transport';
@@ -51,7 +49,9 @@ import { BASE_URL,
   PC_URL,
   EMAIL_TYPE_REL_PPR_NOTIFICATION,
   EMAIL_ADDRESS_ADMIN,
-  BULK_DOWNLOADS_PATH
+  BULK_DOWNLOADS_PATH,
+  BIOPAX_DOWNLOADS_PATH,
+  BIOPAX_IDMAP_DOWNLOADS_PATH
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
@@ -647,36 +647,14 @@ http.get('/zip', async function( req, res, next ){
  */
 http.get('/zip/biopax', function( req, res, next ){
   const queryObject = url.parse( req.url, true ).query;
-  let filePath = 'download/factoid_biopax.zip';
+  let filePath = BIOPAX_DOWNLOADS_PATH;
   let idMapping = _.get( queryObject, 'idMapping' ) == 'true';
 
   if ( idMapping ) {
-    filePath = 'download/factoid_biopax_with_id_mapping.zip';
+    filePath = BIOPAX_IDMAP_DOWNLOADS_PATH;
   }
 
-  const lazyExport = () => {
-    let recreate = true;
-    if ( fs.existsSync( filePath ) ) {
-      const DAY_TO_MS = 86400000;
-
-      let now = Date.now();
-      let fileDate = fs.statSync(filePath).birthtimeMs;
-
-      if ( now - fileDate < DAY_TO_MS ) {
-        recreate = false;
-      }
-    }
-
-    if ( recreate ) {
-      let addr = req.protocol + '://' + req.get('host');
-      return exportToZip(addr, filePath, [ EXPORT_TYPES.BP ], idMapping);
-    }
-
-    return Promise.resolve();
-  };
-
-  tryPromise( lazyExport )
-    .then( () => res.download( filePath ))
+  tryPromise( () => res.download( filePath ))
     .catch( next );
 });
 

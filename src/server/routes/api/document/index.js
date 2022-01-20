@@ -620,9 +620,14 @@ const generateSitemap = () => {
  *          application/zip:
  *             description: Download a zip file containing each Document in various file formats.
  */
-http.get('/zip', async function( req, res, next ){
+http.get('/zip', function( req, res, next ){
+
   tryPromise( () => res.download( BULK_DOWNLOADS_PATH ) )
-    .catch( next );
+    .catch( error => {
+      logger.error( 'Error retrieving bulk downloads (/zip)' );
+      logger.error( error );
+      next( error );
+    });
 });
 
 /**
@@ -655,7 +660,11 @@ http.get('/zip/biopax', function( req, res, next ){
   }
 
   tryPromise( () => res.download( filePath ))
-    .catch( next );
+  .catch( error => {
+    logger.error( 'Error retrieving biopax download (/zip/biopax)' );
+    logger.error( error );
+    next( error );
+  });
 });
 
 /**

@@ -581,14 +581,9 @@ const generateSitemap = () => {
       let t = tables.docDb;
       let { table, conn, rethink: r } = t;
       let q = table;
-      const toTime = field => r.branch(
-        r.typeOf( r.row( field ) ).eq( 'STRING' ), r.ISO8601( r.row( field ) ),
-        r.typeOf( r.row( field ) ).eq( 'NUMBER' ), r.epochTime( r.row( field ) ),
-        r.row( field ) // 'PTYPE<TIME>'
-      );
 
+      q = q.orderBy({ index: r.desc( 'createdDate' ) });
       q = q.filter( r.row( 'status' ).eq( status ) );
-      q = q.orderBy( r.desc( toTime( 'createdDate' ) ) );
       q = q.pluck( ['id', 'secret'] );
       return q.run( conn );
     })
@@ -1207,14 +1202,9 @@ http.get('/', function( req, res, next ){
       let { table, conn, rethink: r } = t;
       let q = table;
       let count;
-      const toTime = field => r.branch(
-        r.typeOf( r.row( field ) ).eq( 'STRING' ), r.ISO8601( r.row( field ) ),
-        r.typeOf( r.row( field ) ).eq( 'NUMBER' ), r.epochTime( r.row( field ) ),
-        r.row( field ) // 'PTYPE<TIME>'
-      );
 
+      q = q.orderBy({ index: r.desc('createdDate') });
       q = q.filter(r.row('secret').ne(DEMO_SECRET));
-      q = q.orderBy(r.desc( toTime( 'createdDate' ) ));
 
       if( ids ){ // doc id must be in specified id list
         let exprs = ids.map(id => r.row('id').eq(id));

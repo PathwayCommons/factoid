@@ -20,7 +20,9 @@ import {
   BULK_DOWNLOADS_PATH,
   BIOPAX_DOWNLOADS_PATH,
   EXPORT_BULK_DELAY_HOURS,
-  BIOPAX_IDMAP_DOWNLOADS_PATH} from '../../../../config';
+  BIOPAX_IDMAP_DOWNLOADS_PATH,
+  NODE_ENV
+} from '../../../../config';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 const CHUNK_SIZE = 20;
@@ -174,7 +176,7 @@ const setupChangefeeds = async ({ rethink: r, conn, table }) => {
 * initExportTasks
 * Initialize the export tasks
 */
-const initExportTasks = async ( exportOnInit = true ) => {
+const initExportTasks = async () => {
   const MS_PER_SEC = 1000;
   const SEC_PER_MIN = 60;
   const MIN_PER_HOUR = 60;
@@ -195,18 +197,27 @@ const initExportTasks = async ( exportOnInit = true ) => {
   const exportBiopaxIdMapTask = () => exportToZip( baseUrl, BIOPAX_IDMAP_DOWNLOADS_PATH, [ EXPORT_TYPES.BP ], true );
   const doExportBiopaxIdMap = taskScheduler( exportBiopaxIdMapTask, export_delay * delay_shift );
 
-  let taskList = [ exportTask(), exportBiopaxTask(), exportBiopaxIdMapTask() ];
-  let scheduledTaskList = [ doExport(), doExportBiopax(), doExportBiopaxIdMap() ];
+  let taskList = [ exportTask, exportBiopaxTask, exportBiopaxIdMapTask ];
+  let scheduledTaskList = [ doExport, doExportBiopax, doExportBiopaxIdMap ];
+
+  const doTasks = tasks => Promise.all( tasks.map( t => t() ) );
 
   cursor.each( async err => {
     if( err ){
       logger.error( `Error in Changefeed: ${err}` );
       return;
     }
-    await Promise.all( scheduledTaskList );
+    await doTasks( scheduledTaskList );
   });
 
-  if( exportOnInit ) await Promise.all( taskList );
+  const isProduction = NODE_ENV == 'production';
+  const exportIsMissing = [
+    BULK_DOWNLOADS_PATH,
+    BIOPAX_DOWNLOADS_PATH,
+    BIOPAX_IDMAP_DOWNLOADS_PATH
+  ].some( p => !fs.existsSync( p ) );
+
+  if ( isProduction || exportIsMissing ) await doTasks( taskList );
 };
 
 

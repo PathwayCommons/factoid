@@ -144,6 +144,8 @@ tryPromise( () => {
       .then( log('Accessed table "%s"', name) )
       .then( t => synch( t, name ) )
       .then( log('Set up synching for "%s"', name) )
+      .then( () => db.guaranteeIndex( 'document', 'createdDate' ) )
+      .then( log('Set up index for document') )
     ;
   };
 

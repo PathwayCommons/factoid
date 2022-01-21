@@ -10,7 +10,6 @@ import db from '../../../db';
 import Document from '../../../../model/document';
 import { getBioPAX, getSBGN, getDocuments, getDocumentJson } from './index';
 import {
-  PORT,
   BULK_DOWNLOADS_PATH,
   BIOPAX_DOWNLOADS_PATH,
   EXPORT_BULK_DELAY_HOURS,
@@ -26,7 +25,7 @@ const EXPORT_TYPES = Object.freeze({
   'SBGN': 'sbgn'
 });
 
-const exportToZip = (baseUrl, zipPath, types, biopaxIdMapping) => {
+const exportToZip = (zipPath, types, biopaxIdMapping) => {
   let offset = 0;
   let zip = new JSZip();
 
@@ -77,7 +76,7 @@ const exportToZip = (baseUrl, zipPath, types, biopaxIdMapping) => {
     }
 
     const idToFiles = id => types.map( t => {
-      return typeToConverter[ t ]( id, baseUrl )
+      return typeToConverter[ t ]( id )
               .catch( () => {
                 logger.error(`Error in export: cannot convert the document ${id} into ${t}`);
                 return null;
@@ -176,7 +175,6 @@ const initExportTasks = async () => {
   const MS_PER_SEC = 1000;
   const SEC_PER_MIN = 60;
   const MIN_PER_HOUR = 60;
-  const baseUrl = `http://localhost:${PORT}`; // ever not localhost?
 
   const loadTable = name => db.accessTable( name );
   const dbTable = await loadTable( 'document' );
@@ -185,12 +183,12 @@ const initExportTasks = async () => {
   let export_delay = MS_PER_SEC * SEC_PER_MIN * MIN_PER_HOUR * EXPORT_BULK_DELAY_HOURS;
   let delay_shift = 2;
 
-  const exportTask = () => exportToZip( baseUrl, BULK_DOWNLOADS_PATH );
+  const exportTask = () => exportToZip( BULK_DOWNLOADS_PATH );
   const doExport = taskScheduler( exportTask, export_delay );
 
-  const exportBiopaxTask = () => exportToZip( baseUrl, BIOPAX_DOWNLOADS_PATH, [ EXPORT_TYPES.BP ], false );
+  const exportBiopaxTask = () => exportToZip( BIOPAX_DOWNLOADS_PATH, [ EXPORT_TYPES.BP ], false );
   const doExportBiopax = taskScheduler( exportBiopaxTask, export_delay * delay_shift );
-  const exportBiopaxIdMapTask = () => exportToZip( baseUrl, BIOPAX_IDMAP_DOWNLOADS_PATH, [ EXPORT_TYPES.BP ], true );
+  const exportBiopaxIdMapTask = () => exportToZip( BIOPAX_IDMAP_DOWNLOADS_PATH, [ EXPORT_TYPES.BP ], true );
   const doExportBiopaxIdMap = taskScheduler( exportBiopaxIdMapTask, export_delay * delay_shift );
 
   let taskList = [ exportTask, exportBiopaxTask, exportBiopaxIdMapTask ];

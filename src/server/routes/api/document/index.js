@@ -1126,68 +1126,8 @@ http.get('/statistics', function( req, res, next ){
  *       description: No response from database for ID
  */
 
-/**
- * @swagger
- *
- * /api/document:
- *   get:
- *     security:
- *       - ApiKeyAuth: []
- *     description: Retrieve Documents
- *     summary: Filter and retrieve a list of paginated Documents
- *     tags:
- *       - Document
- *     parameters:
- *       - name: limit
- *         in: query
- *         description: Pagination size limit
- *         required: false
- *         type: number
- *         allowEmptyValue: true
- *       - name: offset
- *         in: query
- *         description: Pagination start index
- *         required: false
- *         type: number
- *         allowEmptyValue: true
- *       - name: ids
- *         in: query
- *         description: Document IDs (comma-delimited)
- *         summary: Accepts a comma-separated list of doc ids. Disables pagination when used.
- *         required: false
- *         schema:
- *           type: string
- *         allowEmptyValue: true
- *       - name: status
- *         in: query
- *         description: Documents status
- *         summary: Accepts one of the pre-defined statuses
- *         required: false
- *         schema:
- *           $ref: '#/components/status'
- *         allowEmptyValue: true
- *     responses:
- *       '200':
- *         description: ok
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/Document'
- */
-http.get('/', function( req, res, next ){
-  let limit = _.toInteger( _.get( req.query, 'limit', 50 ) );
-  let offset = _.toInteger( _.get( req.query, 'offset', 0 ) );
-  let apiKey = _.get( req.query, 'apiKey' );
 
-  let ids = req.query.ids ? req.query.ids.split(/\s*,\s*/) : null;
-
-  let status;
-  if( _.has( req.query, 'status' ) ){
-    status = _.compact( req.query.status.split(/\s*,\s*/) );
-  }
-
+function getDocuments({ limit = 20, offset = 0, status, apiKey, ids }){
   let tables, total;
 
   return (
@@ -1265,8 +1205,76 @@ http.get('/', function( req, res, next ){
 
         return loadDoc(docOpts).then(getDocJson);
       }));
-    } )
-    .then( results => {
+    })
+    .then( results => ({ total, results }) )
+  );
+}
+
+/**
+ * @swagger
+ *
+ * /api/document:
+ *   get:
+ *     security:
+ *       - ApiKeyAuth: []
+ *     description: Retrieve Documents
+ *     summary: Filter and retrieve a list of paginated Documents
+ *     tags:
+ *       - Document
+ *     parameters:
+ *       - name: limit
+ *         in: query
+ *         description: Pagination size limit
+ *         required: false
+ *         type: number
+ *         allowEmptyValue: true
+ *       - name: offset
+ *         in: query
+ *         description: Pagination start index
+ *         required: false
+ *         type: number
+ *         allowEmptyValue: true
+ *       - name: ids
+ *         in: query
+ *         description: Document IDs (comma-delimited)
+ *         summary: Accepts a comma-separated list of doc ids. Disables pagination when used.
+ *         required: false
+ *         schema:
+ *           type: string
+ *         allowEmptyValue: true
+ *       - name: status
+ *         in: query
+ *         description: Documents status
+ *         summary: Accepts one of the pre-defined statuses
+ *         required: false
+ *         schema:
+ *           $ref: '#/components/status'
+ *         allowEmptyValue: true
+ *     responses:
+ *       '200':
+ *         description: ok
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/Document'
+ */
+http.get('/', function( req, res, next ){
+  let limit = _.toInteger( _.get( req.query, 'limit', 50 ) );
+  let offset = _.toInteger( _.get( req.query, 'offset', 0 ) );
+  let apiKey = _.get( req.query, 'apiKey' );
+
+  let ids = req.query.ids ? req.query.ids.split(/\s*,\s*/) : null;
+
+  let status;
+  if( _.has( req.query, 'status' ) ){
+    status = _.compact( req.query.status.split(/\s*,\s*/) );
+  }
+
+  return (
+    tryPromise( () => getDocuments({ limit, offset, status, apiKey, ids }) )
+    .then( ({ total, results }) => {
       res.set({ 'X-Document-Count': total });
       res.json( results );
     })
@@ -2150,6 +2158,22 @@ http.patch('/:id/:secret', function( req, res, next ){
   );
 });
 
+function getBioPAX( id, idMapping = false, omitDbXref = true ){
+  return tryPromise( loadTables )
+    .then( json => _.assign( {}, json, { id } ) )
+    .then( loadDoc )
+    .then( doc => doc.toBiopaxTemplate( omitDbXref ) )
+    .then( template => {
+      if ( !idMapping ) {
+        return template;
+      }
+
+      return mapToUniprotIds( template );
+    } )
+    .then( getBiopaxFromTemplates )
+    .then( result => result.text() );
+}
+
 /**
  * @swagger
  *
@@ -2181,23 +2205,24 @@ http.get('/biopax/:id', function( req, res, next ){
   let id = req.params.id;
   const queryObject = url.parse( req.url, true ).query;
   let idMapping = _.get( queryObject, 'idMapping' ) == 'true';
-  let omitDbXref = true;
-  tryPromise( loadTables )
-    .then( json => _.assign( {}, json, { id } ) )
-    .then( loadDoc )
-    .then( doc => doc.toBiopaxTemplate( omitDbXref ) )
-    .then( template => {
-      if ( !idMapping ) {
-        return template;
-      }
 
-      return mapToUniprotIds( template );
-    } )
-    .then( getBiopaxFromTemplates )
-    .then( result => result.text() )
+  getBioPAX( id, idMapping )
     .then( owl => res.send( owl ))
     .catch( next );
 });
+
+function getSBGN( id ){
+  return tryPromise( loadTables )
+    .then( json => _.assign( {}, json, { id } ) )
+    .then( loadDoc )
+    .then( doc => doc.toBiopaxTemplate() )
+    .then( getSbgnFromTemplates )
+    .then( result => result.text() )
+    .catch( err => {
+      logger.error( `Error retrieving SBGN for id: ${id}`);
+      logger.error( err );
+    });
+}
 
 /**
  * @swagger
@@ -2225,12 +2250,7 @@ http.get('/biopax/:id', function( req, res, next ){
  */
 http.get('/sbgn/:id', function( req, res, next ){
   let id = req.params.id;
-  tryPromise( loadTables )
-    .then( json => _.assign( {}, json, { id } ) )
-    .then( loadDoc )
-    .then( doc => doc.toBiopaxTemplate() )
-    .then( getSbgnFromTemplates )
-    .then( result => result.text() )
+  getSBGN( id )
     .then( xml => res.send( xml ))
     .catch( next );
 });
@@ -2412,5 +2432,6 @@ const getRelatedPapersForNetwork = async doc => {
 export default http;
 export { getDocumentJson,
   loadTables, loadDoc, fillDocArticle, updateRelatedPapers,
-  generateSitemap
+  generateSitemap,
+  getDocuments, getSBGN, getBioPAX
 }; // allow access so page rendering can get the same data as the rest api

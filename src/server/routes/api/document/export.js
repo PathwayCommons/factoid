@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import JSZip from 'jszip';
 import _ from 'lodash';
 import fs from 'fs';
@@ -9,12 +8,7 @@ import formatDistance from 'date-fns/formatDistance';
 import logger from '../../../logger';
 import db from '../../../db';
 import Document from '../../../../model/document';
-
-import { convertDocumentToBiopax,
-        convertDocumentToJson,
-        convertDocumentToSbgn } from '../../../document-util';
-
-import { checkHTTPStatus } from '../../../../util';
+import { getBioPAX, getSBGN, getDocuments, getDocumentJson } from './index';
 import {
   PORT,
   BULK_DOWNLOADS_PATH,
@@ -37,15 +31,16 @@ const exportToZip = (baseUrl, zipPath, types, biopaxIdMapping) => {
   let zip = new JSZip();
 
   const processNext = () => {
-    return fetch(`${baseUrl}/api/document?limit=${CHUNK_SIZE}&offset=${offset}&status=public`)
-      .then( checkHTTPStatus )
-      .then( res => res.json() )
-      .then( res => {
-        offset += res.length;
-        if ( res.length > 0 ) {
-          const includedStatuses = [DOCUMENT_STATUS_FIELDS.PUBLIC];
-          const shouldInclude = doc => _.includes(includedStatuses, doc.status);
-          let ids = res.filter( shouldInclude ).map( doc => doc.id );
+
+    return getDocuments({
+        limit: CHUNK_SIZE,
+        offset,
+        status: [DOCUMENT_STATUS_FIELDS.PUBLIC]
+      })
+      .then( ({ results }) => {
+        offset += results.length;
+        if ( results.length > 0 ) {
+          let ids = results.map( doc => doc.id );
           return addToZip( ids, biopaxIdMapping ).then( processNext );
         }
 
@@ -62,11 +57,12 @@ const exportToZip = (baseUrl, zipPath, types, biopaxIdMapping) => {
   };
 
   const addToZip = ( ids, biopaxIdMapping ) => {
-    let _convertDocumentToBiopax = ( id, baseUrl ) => convertDocumentToBiopax( id, baseUrl, biopaxIdMapping );
+    let _getBioPAX = id => getBioPAX( id, biopaxIdMapping );
+    let _getDocumentJson = id => getDocumentJson( id ).then( r => JSON.stringify( r ) );
     let typeToConverter = {
-      [EXPORT_TYPES.JSON]: convertDocumentToJson,
-      [EXPORT_TYPES.BP]: _convertDocumentToBiopax,
-      [EXPORT_TYPES.SBGN]: convertDocumentToSbgn
+      [EXPORT_TYPES.JSON]: _getDocumentJson,
+      [EXPORT_TYPES.BP]: _getBioPAX,
+      [EXPORT_TYPES.SBGN]: getSBGN
     };
 
     let typeToExt = {

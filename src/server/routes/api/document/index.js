@@ -9,10 +9,8 @@ import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
 import url from 'url';
-import fs from 'fs';
 import { URLSearchParams } from  'url';
 
-import { exportToZip, EXPORT_TYPES } from './export';
 import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
 import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
 import sendMail from '../../../email-transport';
@@ -50,7 +48,10 @@ import { BASE_URL,
   NCBI_EUTILS_BASE_URL,
   PC_URL,
   EMAIL_TYPE_REL_PPR_NOTIFICATION,
-  EMAIL_ADDRESS_ADMIN
+  EMAIL_ADDRESS_ADMIN,
+  BULK_DOWNLOADS_PATH,
+  BIOPAX_DOWNLOADS_PATH,
+  BIOPAX_IDMAP_DOWNLOADS_PATH
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
@@ -580,14 +581,9 @@ const generateSitemap = () => {
       let t = tables.docDb;
       let { table, conn, rethink: r } = t;
       let q = table;
-      const toTime = field => r.branch(
-        r.typeOf( r.row( field ) ).eq( 'STRING' ), r.ISO8601( r.row( field ) ),
-        r.typeOf( r.row( field ) ).eq( 'NUMBER' ), r.epochTime( r.row( field ) ),
-        r.row( field ) // 'PTYPE<TIME>'
-      );
 
+      q = q.orderBy({ index: r.desc( 'createdDate' ) });
       q = q.filter( r.row( 'status' ).eq( status ) );
-      q = q.orderBy( r.desc( toTime( 'createdDate' ) ) );
       q = q.pluck( ['id', 'secret'] );
       return q.run( conn );
     })
@@ -620,32 +616,13 @@ const generateSitemap = () => {
  *             description: Download a zip file containing each Document in various file formats.
  */
 http.get('/zip', function( req, res, next ){
-  let filePath = 'download/factoid_bulk.zip';
 
-  const lazyExport = () => {
-    let recreate = true;
-    if ( fs.existsSync( filePath ) ) {
-      const DAY_TO_MS = 86400000;
-
-      let now = Date.now();
-      let fileDate = fs.statSync(filePath).birthtimeMs;
-
-      if ( now - fileDate < DAY_TO_MS ) {
-        recreate = false;
-      }
-    }
-
-    if ( recreate ) {
-      let addr = req.protocol + '://' + req.get('host');
-      return exportToZip(addr, filePath);
-    }
-
-    return Promise.resolve();
-  };
-
-  tryPromise( lazyExport )
-    .then( () => res.download( filePath ))
-    .catch( next );
+  tryPromise( () => res.download( BULK_DOWNLOADS_PATH ) )
+    .catch( error => {
+      logger.error( 'Error retrieving bulk downloads (/zip)' );
+      logger.error( error );
+      next( error );
+    });
 });
 
 /**
@@ -670,37 +647,19 @@ http.get('/zip', function( req, res, next ){
  */
 http.get('/zip/biopax', function( req, res, next ){
   const queryObject = url.parse( req.url, true ).query;
-  let filePath = 'download/factoid_biopax.zip';
+  let filePath = BIOPAX_DOWNLOADS_PATH;
   let idMapping = _.get( queryObject, 'idMapping' ) == 'true';
 
   if ( idMapping ) {
-    filePath = 'download/factoid_biopax_with_id_mapping.zip';
+    filePath = BIOPAX_IDMAP_DOWNLOADS_PATH;
   }
 
-  const lazyExport = () => {
-    let recreate = true;
-    if ( fs.existsSync( filePath ) ) {
-      const DAY_TO_MS = 86400000;
-
-      let now = Date.now();
-      let fileDate = fs.statSync(filePath).birthtimeMs;
-
-      if ( now - fileDate < DAY_TO_MS ) {
-        recreate = false;
-      }
-    }
-
-    if ( recreate ) {
-      let addr = req.protocol + '://' + req.get('host');
-      return exportToZip(addr, filePath, [ EXPORT_TYPES.BP ], idMapping);
-    }
-
-    return Promise.resolve();
-  };
-
-  tryPromise( lazyExport )
-    .then( () => res.download( filePath ))
-    .catch( next );
+  tryPromise( () => res.download( filePath ))
+  .catch( error => {
+    logger.error( 'Error retrieving biopax download (/zip/biopax)' );
+    logger.error( error );
+    next( error );
+  });
 });
 
 /**
@@ -1167,6 +1126,90 @@ http.get('/statistics', function( req, res, next ){
  *       description: No response from database for ID
  */
 
+
+function getDocuments({ limit = 20, offset = 0, status, apiKey, ids }){
+  let tables, total;
+
+  return (
+    tryPromise( () => loadTables() )
+    .then( tbls => {
+      tables = tbls;
+
+      return tables;
+    } )
+    .then( tables => {
+      let t = tables.docDb;
+      let { table, conn, rethink: r } = t;
+      let q = table;
+      let count;
+
+      q = q.orderBy({ index: r.desc('createdDate') });
+      q = q.filter(r.row('secret').ne(DEMO_SECRET));
+
+      if( ids ){ // doc id must be in specified id list
+        let exprs = ids.map(id => r.row('id').eq(id));
+        let joinedExpr = exprs[0];
+
+        for( let i = 1; i < exprs.length; i++ ){
+          joinedExpr = joinedExpr.or(exprs[i]);
+        }
+
+        q = q.filter( joinedExpr );
+      }
+
+      if( status ){
+        const values =  _.intersection( _.values( DOCUMENT_STATUS_FIELDS ), status );
+        let byStatus = { foo: true };
+        values.forEach( ( value, index ) => {
+          if( index == 0 ){
+            byStatus = r.row('status').default('unset').eq( value );
+          } else {
+            byStatus = byStatus.or( r.row('status').default('unset').eq( value ) );
+          }
+        });
+
+        q = q.filter( byStatus );
+      }
+
+      count = q.count();
+
+      if( !ids ){
+        q = q.skip(offset).limit(limit);
+      }
+
+      q = q.pluck(['id', 'secret']);
+
+      return Promise.all([
+        count.run( conn ),
+        q.run( conn )
+      ]);
+    })
+    .then( ([ count, cursor ]) => {
+      total = count;
+      return cursor.toArray();
+    })
+    .then( res => {
+      try {
+        checkApiKey(apiKey);
+
+        return { res, haveSecretAccess: true };
+      } catch( err ){
+        return { res, haveSecretAccess: false };
+      }
+    } )
+    .then( ({res, haveSecretAccess}) => { // map ids to full doc json
+      return Promise.all(res.map(docDbJson => {
+        let { id } = docDbJson;
+        let secret = haveSecretAccess ? docDbJson.secret : undefined;
+        let docOpts = _.assign( {}, tables, { id, secret } );
+
+        return loadDoc(docOpts).then(getDocJson);
+      }));
+    })
+    .then( results => ({ total, results }) )
+  );
+}
+
 /**
  * @swagger
  *
@@ -1229,90 +1272,9 @@ http.get('/', function( req, res, next ){
     status = _.compact( req.query.status.split(/\s*,\s*/) );
   }
 
-  let tables, total;
-
   return (
-    tryPromise( () => loadTables() )
-    .then( tbls => {
-      tables = tbls;
-
-      return tables;
-    } )
-    .then( tables => {
-      let t = tables.docDb;
-      let { table, conn, rethink: r } = t;
-      let q = table;
-      let count;
-      const toTime = field => r.branch(
-        r.typeOf( r.row( field ) ).eq( 'STRING' ), r.ISO8601( r.row( field ) ),
-        r.typeOf( r.row( field ) ).eq( 'NUMBER' ), r.epochTime( r.row( field ) ),
-        r.row( field ) // 'PTYPE<TIME>'
-      );
-
-      q = q.filter(r.row('secret').ne(DEMO_SECRET));
-      q = q.orderBy(r.desc( toTime( 'createdDate' ) ));
-
-      if( ids ){ // doc id must be in specified id list
-        let exprs = ids.map(id => r.row('id').eq(id));
-        let joinedExpr = exprs[0];
-
-        for( let i = 1; i < exprs.length; i++ ){
-          joinedExpr = joinedExpr.or(exprs[i]);
-        }
-
-        q = q.filter( joinedExpr );
-      }
-
-      if( status ){
-        const values =  _.intersection( _.values( DOCUMENT_STATUS_FIELDS ), status );
-        let byStatus = { foo: true };
-        values.forEach( ( value, index ) => {
-          if( index == 0 ){
-            byStatus = r.row('status').default('unset').eq( value );
-          } else {
-            byStatus = byStatus.or( r.row('status').default('unset').eq( value ) );
-          }
-        });
-
-        q = q.filter( byStatus );
-      }
-
-      count = q.count();
-
-      if( !ids ){
-        q = q.skip(offset).limit(limit);
-      }
-
-      q = q.pluck(['id', 'secret']);
-
-      return Promise.all([
-        count.run( conn ),
-        q.run( conn )
-      ]);
-    })
-    .then( ([ count, cursor ]) => {
-      total = count;
-      return cursor.toArray();
-    })
-    .then( res => {
-      try {
-        checkApiKey(apiKey);
-
-        return { res, haveSecretAccess: true };
-      } catch( err ){
-        return { res, haveSecretAccess: false };
-      }
-    } )
-    .then( ({res, haveSecretAccess}) => { // map ids to full doc json
-      return Promise.all(res.map(docDbJson => {
-        let { id } = docDbJson;
-        let secret = haveSecretAccess ? docDbJson.secret : undefined;
-        let docOpts = _.assign( {}, tables, { id, secret } );
-
-        return loadDoc(docOpts).then(getDocJson);
-      }));
-    } )
-    .then( results => {
+    tryPromise( () => getDocuments({ limit, offset, status, apiKey, ids }) )
+    .then( ({ total, results }) => {
       res.set({ 'X-Document-Count': total });
       res.json( results );
     })
@@ -2196,6 +2158,22 @@ http.patch('/:id/:secret', function( req, res, next ){
   );
 });
 
+function getBioPAX( id, idMapping = false, omitDbXref = true ){
+  return tryPromise( loadTables )
+    .then( json => _.assign( {}, json, { id } ) )
+    .then( loadDoc )
+    .then( doc => doc.toBiopaxTemplate( omitDbXref ) )
+    .then( template => {
+      if ( !idMapping ) {
+        return template;
+      }
+
+      return mapToUniprotIds( template );
+    } )
+    .then( getBiopaxFromTemplates )
+    .then( result => result.text() );
+}
+
 /**
  * @swagger
  *
@@ -2227,23 +2205,24 @@ http.get('/biopax/:id', function( req, res, next ){
   let id = req.params.id;
   const queryObject = url.parse( req.url, true ).query;
   let idMapping = _.get( queryObject, 'idMapping' ) == 'true';
-  let omitDbXref = true;
-  tryPromise( loadTables )
-    .then( json => _.assign( {}, json, { id } ) )
-    .then( loadDoc )
-    .then( doc => doc.toBiopaxTemplate( omitDbXref ) )
-    .then( template => {
-      if ( !idMapping ) {
-        return template;
-      }
 
-      return mapToUniprotIds( template );
-    } )
-    .then( getBiopaxFromTemplates )
-    .then( result => result.text() )
+  getBioPAX( id, idMapping )
     .then( owl => res.send( owl ))
     .catch( next );
 });
+
+function getSBGN( id ){
+  return tryPromise( loadTables )
+    .then( json => _.assign( {}, json, { id } ) )
+    .then( loadDoc )
+    .then( doc => doc.toBiopaxTemplate() )
+    .then( getSbgnFromTemplates )
+    .then( result => result.text() )
+    .catch( err => {
+      logger.error( `Error retrieving SBGN for id: ${id}`);
+      logger.error( err );
+    });
+}
 
 /**
  * @swagger
@@ -2271,12 +2250,7 @@ http.get('/biopax/:id', function( req, res, next ){
  */
 http.get('/sbgn/:id', function( req, res, next ){
   let id = req.params.id;
-  tryPromise( loadTables )
-    .then( json => _.assign( {}, json, { id } ) )
-    .then( loadDoc )
-    .then( doc => doc.toBiopaxTemplate() )
-    .then( getSbgnFromTemplates )
-    .then( result => result.text() )
+  getSBGN( id )
     .then( xml => res.send( xml ))
     .catch( next );
 });
@@ -2339,7 +2313,10 @@ const getRelPprsForDoc = async doc => {
     const documents = elink2UidList( elinkResponse );
     let uids;
     try {
-      let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
+      let rankedDocs = await indra.semanticSearch({
+        query: { uid: pmid },
+        documents: documents.map( uid => ({ uid }) )
+      });
       uids = rankedDocs.map( getUid );
 
     } catch ( err ) {
@@ -2455,5 +2432,6 @@ const getRelatedPapersForNetwork = async doc => {
 export default http;
 export { getDocumentJson,
   loadTables, loadDoc, fillDocArticle, updateRelatedPapers,
-  generateSitemap
+  generateSitemap,
+  getDocuments, getSBGN, getBioPAX
 }; // allow access so page rendering can get the same data as the rest api

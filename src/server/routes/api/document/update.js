@@ -39,6 +39,8 @@ const docsToUpdate = async () => {
     r.row( field ) // 'PTYPE<TIME>'
   );
 
+  q = q.orderBy({ index: r.desc( 'createdDate' ) });
+
   // Filter: Exclude DEMO
   q = q.filter( r.row( 'secret' ).ne( DEMO_SECRET ) );
 
@@ -58,7 +60,6 @@ const docsToUpdate = async () => {
     );
   }
 
-  q = q.orderBy( r.desc( toTime('createdDate') ) );
   q = q.pluck([ 'id', 'secret' ]);
 
   const cursor =  await q.run( conn );

@@ -86,7 +86,26 @@ let db = {
         table: table
       };
     } );
+  },
+
+  guaranteeIndex: function( tableName, secondaryKey ){
+    let t, c, r;
+    return this.accessTable( tableName )
+      .then( ({ table, conn, rethink }) => {
+        t = table;
+        c = conn;
+        r = rethink;
+      })
+      .then( () => {
+        return r.branch(
+           t.indexList().contains( secondaryKey ).not(),
+           t.indexCreate( secondaryKey ),
+           null
+        ).run( c );
+      })
+      .then( () => t.indexWait( secondaryKey ).run( c ) );
   }
+
 };
 
 export default db;

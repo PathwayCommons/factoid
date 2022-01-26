@@ -70,7 +70,7 @@
     "morgan": "^1.9.1",
     "mousetrap": "^1.6.1",
     "node-cron": "^2.0.3",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "nodemailer": "^4.6.8",
     "normalize.css": "^5.0.0",
     "p-cancelable": "^0.5.1",

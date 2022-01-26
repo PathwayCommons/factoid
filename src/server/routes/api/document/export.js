@@ -181,15 +181,14 @@ const initExportTasks = async () => {
   const cursor = await setupChangefeeds( dbTable );
 
   let export_delay = MS_PER_SEC * SEC_PER_MIN * MIN_PER_HOUR * EXPORT_BULK_DELAY_HOURS;
-  let delay_shift = 2;
 
   const exportTask = () => exportToZip( BULK_DOWNLOADS_PATH );
   const doExport = taskScheduler( exportTask, export_delay );
 
   const exportBiopaxTask = () => exportToZip( BIOPAX_DOWNLOADS_PATH, [ EXPORT_TYPES.BP ], false );
-  const doExportBiopax = taskScheduler( exportBiopaxTask, export_delay * delay_shift );
+  const doExportBiopax = taskScheduler( exportBiopaxTask, export_delay );
   const exportBiopaxIdMapTask = () => exportToZip( BIOPAX_IDMAP_DOWNLOADS_PATH, [ EXPORT_TYPES.BP ], true );
-  const doExportBiopaxIdMap = taskScheduler( exportBiopaxIdMapTask, export_delay * delay_shift );
+  const doExportBiopaxIdMap = taskScheduler( exportBiopaxIdMapTask, export_delay );
 
   let taskList = [ exportTask, exportBiopaxTask, exportBiopaxIdMapTask ];
   let scheduledTaskList = [ doExport, doExportBiopax, doExportBiopaxIdMap ];

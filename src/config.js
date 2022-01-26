@@ -56,6 +56,12 @@ export const DB_USER = env('DB_USER', undefined); // username if db uses auth
 export const DB_PASS = env('DB_PASS', undefined); // password if db uses auth
 export const DB_CERT = env('DB_CERT', undefined);  // path to a certificate (cert) file if db uses ssl
 
+// Downloads
+export const BULK_DOWNLOADS_PATH = env('BULK_DOWNLOADS_PATH', 'download/factoid_bulk.zip');
+export const BIOPAX_DOWNLOADS_PATH = env('BIOPAX_DOWNLOADS_PATH', 'download/factoid_biopax.zip');
+export const BIOPAX_IDMAP_DOWNLOADS_PATH = env('BIOPAX_IDMAP_DOWNLOADS_PATH', 'download/factoid_biopax_with_id_mapping.zip');
+export const EXPORT_BULK_DELAY_HOURS = env('EXPORT_BULK_DELAY_HOURS', 0.25);
+
 // Services
 export const PC_URL = env('PC_URL', 'https://apps.pathwaycommons.org/');
 export const REACH_URL = env('REACH_URL', 'http://reach.baderlab.org/api/uploadFile');

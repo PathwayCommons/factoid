@@ -20,6 +20,7 @@ import cron from 'node-cron';
 import updateCron from './update-cron';
 import { Appsignal } from '@appsignal/nodejs';
 import { expressMiddleware as asExpressMiddleware, expressErrorHandler as asExpressErrorHandler } from '@appsignal/express';
+import { initExportTasks } from './routes/api/document/export';
 
 let app = express();
 let server = http.createServer(app);
@@ -151,13 +152,17 @@ tryPromise( () => {
 
   const tables = ['element', 'document'];
   return tables.reduce( ( p, name ) => p.then( () => setup( name ) ), Promise.resolve() );
-} ).then( () => {
+} )
+.then( () => {
   cron.schedule( config.CRON_SCHEDULE, () => {
     updateCron();
   });
-} ).then( () => {
+} )
+.then( () => {
   server.listen(port);
-} );
+} )
+.then( initExportTasks )
+;
 
 function normalizePort(val) {
   let port = parseInt(val, 10);

@@ -1,6 +1,6 @@
 import logger from '../../../logger';
 import { DEMO_SECRET, DOCUMENT_CRON_CREATED_AGE_DAYS, DOCUMENT_CRON_REFRESH_ENABLED, DOCUMENT_CRON_UNEDITED_DAYS } from '../../../../config';
-import { loadTables, loadDoc, fillDocArticle, updateRelatedPapers } from  './index';
+import { loadTables, loadDoc, fillDocArticle } from  './index';
 import Document from '../../../../model/document';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -47,6 +47,9 @@ const docsToUpdate = async () => {
   // Filter: Exclude by status 'trashed'
   q = q.filter( r.row( 'status' ).ne( DOCUMENT_STATUS_FIELDS.TRASHED ) );
 
+  // Filter: Only those with a paper id provided
+  q = q.filter( r.row( 'provided' ).hasFields( 'paperId' ) );
+
   // Filter: Include when created less than  days ago
   let startDate = DOCUMENT_CRON_CREATED_AGE_DAYS ? dateFromToday( -1 * DOCUMENT_CRON_CREATED_AGE_DAYS ) : DEFAULT_DOCUMENT_CREATED_START_DATE;
   q = q.filter( toTime( 'createdDate' ).during( startDate, new Date() ) );
@@ -74,11 +77,21 @@ const docsToUpdate = async () => {
  *
  */
 const updateArticle = async () => {
+  const chunkify = ( arr, chunkSize = 3 ) => {
+    const res = [];
+    for (let i = 0; i < arr.length; i += chunkSize) {
+        const chunk = arr.slice(i, i + chunkSize);
+        res.push(chunk);
+    }
+    return res;
+  };
+
   try {
     const docs = await docsToUpdate();
-    for( const doc of docs ){
-      await fillDocArticle( doc );
-      await updateRelatedPapers( doc );
+    logger.info( `Updating data for ${docs.length} documents`);
+    let chunks = chunkify( docs );
+    for( const chunk of chunks ){
+      await Promise.all( chunk.map( fillDocArticle ) );
     }
     lastUpdateTime( Date.now() );
 

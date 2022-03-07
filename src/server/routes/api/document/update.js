@@ -55,7 +55,7 @@ const docsToUpdate = async () => {
   if( !DOCUMENT_CRON_REFRESH_ENABLED ){
     q = q.filter(
       r.not(
-        r.row( 'article' )( 'PubmedData' )( 'ArticleIdList' ).contains( ArticleId => ArticleId('IdType').eq('pmid') )
+        r.row( 'article' )( 'PubmedData' )( 'ArticleIdList' ).contains( ArticleId => ArticleId('IdType').eq('pubmed') )
       )
     );
   }

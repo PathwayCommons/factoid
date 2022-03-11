@@ -2,7 +2,7 @@ import MiniSearch from 'minisearch';
 import _ from 'lodash';
 import querystring from 'querystring';
 import Document from '../model/document';
-
+import { isEntity } from '../model/element/element-type';
 import logger from './logger';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -75,12 +75,9 @@ class DocumentSearch extends Search {
       // function used to get the value of a field in a document
       extractField: ( document, fieldName ) => {
 
-        // customize field extraction
-        const isEntity = el => el.type !== 'interaction';
-
         if ( fieldName === 'entities' ) {
           const { elements } = document;
-          const entities = elements.filter( isEntity );
+          const entities = elements.filter( ({ type }) => isEntity( type ) );
           const entityNames = entities.map( entity => {
             const { name, association } = entity;
             const tokens = [ name ];
@@ -94,6 +91,10 @@ class DocumentSearch extends Search {
           });
 
           return entityNames;
+
+        } else if ( fieldName === 'authors' ) {
+          const { citation: { authors: { authorList } } } = document;
+          return authorList.map( ({ name }) => name ).join(' ');
         }
 
         // Access nested fields
@@ -101,12 +102,12 @@ class DocumentSearch extends Search {
       },
 
       // fields to be indexed
-      fields: [
+      fields: [//TODO
         'text',
         'citation.title',
-        'citation.authors.abbreviation',
         'citation.reference',
         'citation.abstract',
+        'authors',
         'entities'
       ]
     };

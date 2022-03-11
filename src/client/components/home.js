@@ -446,6 +446,12 @@ class Home extends Component {
             ]),
             ` and Biofactoid automatically takes care of the rest.`
           ]),
+          h('a', {
+            target: '_blank',
+            href: `/demo`
+          }, [
+            h('button.home-cta-button', 'Demo')
+          ]),
           h('h3', `Get connected`),
           h('p', [`
             Your article profile links your research to a wider research audience:  It’s automatically connected to `,
@@ -564,8 +570,8 @@ class Home extends Component {
           h('p', [
             `All Biofactoid data is made `,
             h('a.plain-link', { target: '_blank', href: 'https://github.com/PathwayCommons/factoid/blob/unstable/README.md#getting-the-data' }, `freely available to download`),
-            ` to the research community, and licensed under `,
-            h('a.plain-link', { target: '_blank', href: 'https://creativecommons.org/publicdomain/zero/1.0/legalcode' }, `CC0`),
+            ` to the research community under a public domain-equivalent license `,
+            h('a.plain-link', { target: '_blank', href: 'https://creativecommons.org/publicdomain/zero/1.0/legalcode' }, `(Creative Commons CC0 license)`),
             `.`
           ]),
           h('p', [
@@ -579,7 +585,7 @@ class Home extends Component {
           ]),
           h('p.home-cta-p.home-cta-p-persistent', [
             // TODO use this one with link:
-            h('a', { href: 'https://www.biorxiv.org/content/10.1101/2021.03.10.382333v1', target: '_blank' },
+            h('a', { href: 'https://elifesciences.org/articles/68292', target: '_blank' },
             [
               h('button.home-cta-alt-button', 'Read our paper')
             ]),

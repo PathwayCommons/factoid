@@ -9,10 +9,8 @@ import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
 import url from 'url';
-import fs from 'fs';
 import { URLSearchParams } from  'url';
 
-import { exportToZip, EXPORT_TYPES } from './export';
 import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
 import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
 import sendMail from '../../../email-transport';
@@ -50,7 +48,10 @@ import { BASE_URL,
   NCBI_EUTILS_BASE_URL,
   PC_URL,
   EMAIL_TYPE_REL_PPR_NOTIFICATION,
-  EMAIL_ADDRESS_ADMIN
+  EMAIL_ADDRESS_ADMIN,
+  BULK_DOWNLOADS_PATH,
+  BIOPAX_DOWNLOADS_PATH,
+  BIOPAX_IDMAP_DOWNLOADS_PATH
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
@@ -581,8 +582,8 @@ const generateSitemap = () => {
       let { table, conn, rethink: r } = t;
       let q = table;
 
+      q = q.orderBy({ index: r.desc( 'createdDate' ) });
       q = q.filter( r.row( 'status' ).eq( status ) );
-      q = q.orderBy( r.desc( 'createdDate' ) );
       q = q.pluck( ['id', 'secret'] );
       return q.run( conn );
     })
@@ -615,32 +616,13 @@ const generateSitemap = () => {
  *             description: Download a zip file containing each Document in various file formats.
  */
 http.get('/zip', function( req, res, next ){
-  let filePath = 'download/factoid_bulk.zip';
 
-  const lazyExport = () => {
-    let recreate = true;
-    if ( fs.existsSync( filePath ) ) {
-      const DAY_TO_MS = 86400000;
-
-      let now = Date.now();
-      let fileDate = fs.statSync(filePath).birthtimeMs;
-
-      if ( now - fileDate < DAY_TO_MS ) {
-        recreate = false;
-      }
-    }
-
-    if ( recreate ) {
-      let addr = req.protocol + '://' + req.get('host');
-      return exportToZip(addr, filePath);
-    }
-
-    return Promise.resolve();
-  };
-
-  tryPromise( lazyExport )
-    .then( () => res.download( filePath ))
-    .catch( next );
+  tryPromise( () => res.download( BULK_DOWNLOADS_PATH ) )
+    .catch( error => {
+      logger.error( 'Error retrieving bulk downloads (/zip)' );
+      logger.error( error );
+      next( error );
+    });
 });
 
 /**
@@ -665,36 +647,132 @@ http.get('/zip', function( req, res, next ){
  */
 http.get('/zip/biopax', function( req, res, next ){
   const queryObject = url.parse( req.url, true ).query;
-  let filePath = 'download/factoid_biopax.zip';
+  let filePath = BIOPAX_DOWNLOADS_PATH;
   let idMapping = _.get( queryObject, 'idMapping' ) == 'true';
 
   if ( idMapping ) {
-    filePath = 'download/factoid_biopax_with_id_mapping.zip';
+    filePath = BIOPAX_IDMAP_DOWNLOADS_PATH;
   }
 
-  const lazyExport = () => {
-    let recreate = true;
-    if ( fs.existsSync( filePath ) ) {
-      const DAY_TO_MS = 86400000;
+  tryPromise( () => res.download( filePath ))
+  .catch( error => {
+    logger.error( 'Error retrieving biopax download (/zip/biopax)' );
+    logger.error( error );
+    next( error );
+  });
+});
 
-      let now = Date.now();
-      let fileDate = fs.statSync(filePath).birthtimeMs;
+/**
+ * @swagger
+ *
+ * /api/document/statistics:
+ *   get:
+ *     description: Summary of Biofactoid data
+ *     summary: Biofactoid entity, interaction and organism counts
+ *     tags:
+ *       - Document
+ *     responses:
+ *      '200':
+ *        description: OK
+ *        content:
+ *          application/json
+ */
+http.get('/statistics', function( req, res, next ){
 
-      if ( now - fileDate < DAY_TO_MS ) {
-        recreate = false;
-      }
-    }
+  const count = docs => {
 
-    if ( recreate ) {
-      let addr = req.protocol + '://' + req.get('host');
-      return exportToZip(addr, filePath, [ EXPORT_TYPES.BP ], idMapping);
-    }
+    const entityTypes = new Set( _.values( ENTITY_TYPE ) );
+    const isEntity = type => type && entityTypes.has( type );
+    const isComplex = type => type === ENTITY_TYPE.COMPLEX;
 
-    return Promise.resolve();
+    let numEntities = 0,
+        numComplexes = 0,
+        entityMap = new Map(),
+        orgEntityMap = new Map(),
+        numInteractions = 0,
+        entitySet = new Set(),
+        pmidSet = new Set();
+
+    docs.forEach( ({ pmid, elements }) => {
+      // ---------- Articles ---------- //
+      pmid && pmidSet.add( pmid );
+
+      // ---------- Model ------ //
+
+      elements.forEach( element => {
+        const { type, association } = element;
+
+        if ( isEntity( type ) ){
+          numEntities++;
+
+          if( isComplex( type ) ) {
+            numComplexes++;
+
+          } else {
+
+            let { dbPrefix, id, organismName } = association;
+            let entityName = `${dbPrefix}_${id}`;
+            entitySet.add( entityName );
+
+            // Count by organism
+            let orgEntityCount = orgEntityMap.has( organismName ) ? orgEntityMap.get( organismName ) : 0;
+            organismName && orgEntityMap.set( organismName, ++orgEntityCount );
+
+            let entityCount = entityMap.has( entityName ) ? entityMap.get( entityName ) : 0;
+            entityMap.set( entityName, ++entityCount );
+          }
+
+        } else {
+
+          numInteractions++;
+        }
+      });
+
+    });
+
+    return ({
+      documents: docs.length,
+      articles: pmidSet.size,
+      entities: {
+        total: numEntities,
+        unique: entitySet.size,
+        complexes: numComplexes,
+        perOrganism: Object.fromEntries( orgEntityMap )
+      },
+      interactions: numInteractions
+    });
   };
 
-  tryPromise( lazyExport )
-    .then( () => res.download( filePath ))
+  tryPromise( () => loadTables() )
+    .then( ({ docDb, eleDb }) => {
+      let { table: dTable, conn, rethink: r } = docDb;
+      let { table: eTable } = eleDb;
+
+      return (
+        dTable
+          .filter({ 'status': DOCUMENT_STATUS_FIELDS.PUBLIC })
+          .map( function( document ){
+            return document.merge({ entries: document( 'entries' )( 'id' ) });
+          })
+          .merge( function( document ) {
+            return {
+              elements: eTable.getAll( r.args( document( 'entries' ) ) )
+                .coerceTo( 'array' )
+                .pluck( 'id', 'association', 'type', 'name' )
+            };
+          })
+          .merge( function( document ) {
+            return {
+              pmid: document('article')('PubmedData')('ArticleIdList').filter({ IdType: 'pubmed' })('id')(0).default( null )
+            };
+          })
+          .pluck( 'elements', 'pmid' )
+          .run( conn )
+      );
+    })
+    .then( cursor => cursor.toArray() )
+    .then( count )
+    .then( results => res.json( results ) )
     .catch( next );
 });
 
@@ -1048,6 +1126,90 @@ http.get('/zip/biopax', function( req, res, next ){
  *       description: No response from database for ID
  */
 
+
+function getDocuments({ limit = 20, offset = 0, status, apiKey, ids }){
+  let tables, total;
+
+  return (
+    tryPromise( () => loadTables() )
+    .then( tbls => {
+      tables = tbls;
+
+      return tables;
+    } )
+    .then( tables => {
+      let t = tables.docDb;
+      let { table, conn, rethink: r } = t;
+      let q = table;
+      let count;
+
+      q = q.orderBy({ index: r.desc('createdDate') });
+      q = q.filter(r.row('secret').ne(DEMO_SECRET));
+
+      if( ids ){ // doc id must be in specified id list
+        let exprs = ids.map(id => r.row('id').eq(id));
+        let joinedExpr = exprs[0];
+
+        for( let i = 1; i < exprs.length; i++ ){
+          joinedExpr = joinedExpr.or(exprs[i]);
+        }
+
+        q = q.filter( joinedExpr );
+      }
+
+      if( status ){
+        const values =  _.intersection( _.values( DOCUMENT_STATUS_FIELDS ), status );
+        let byStatus = { foo: true };
+        values.forEach( ( value, index ) => {
+          if( index == 0 ){
+            byStatus = r.row('status').default('unset').eq( value );
+          } else {
+            byStatus = byStatus.or( r.row('status').default('unset').eq( value ) );
+          }
+        });
+
+        q = q.filter( byStatus );
+      }
+
+      count = q.count();
+
+      if( !ids ){
+        q = q.skip(offset).limit(limit);
+      }
+
+      q = q.pluck(['id', 'secret']);
+
+      return Promise.all([
+        count.run( conn ),
+        q.run( conn )
+      ]);
+    })
+    .then( ([ count, cursor ]) => {
+      total = count;
+      return cursor.toArray();
+    })
+    .then( res => {
+      try {
+        checkApiKey(apiKey);
+
+        return { res, haveSecretAccess: true };
+      } catch( err ){
+        return { res, haveSecretAccess: false };
+      }
+    } )
+    .then( ({res, haveSecretAccess}) => { // map ids to full doc json
+      return Promise.all(res.map(docDbJson => {
+        let { id } = docDbJson;
+        let secret = haveSecretAccess ? docDbJson.secret : undefined;
+        let docOpts = _.assign( {}, tables, { id, secret } );
+
+        return loadDoc(docOpts).then(getDocJson);
+      }));
+    })
+    .then( results => ({ total, results }) )
+  );
+}
+
 /**
  * @swagger
  *
@@ -1110,85 +1272,9 @@ http.get('/', function( req, res, next ){
     status = _.compact( req.query.status.split(/\s*,\s*/) );
   }
 
-  let tables, total;
-
   return (
-    tryPromise( () => loadTables() )
-    .then( tbls => {
-      tables = tbls;
-
-      return tables;
-    } )
-    .then( tables => {
-      let t = tables.docDb;
-      let { table, conn, rethink: r } = t;
-      let q = table;
-      let count;
-
-      q = q.filter(r.row('secret').ne(DEMO_SECRET));
-      q = q.orderBy(r.desc('createdDate'));
-
-      if( ids ){ // doc id must be in specified id list
-        let exprs = ids.map(id => r.row('id').eq(id));
-        let joinedExpr = exprs[0];
-
-        for( let i = 1; i < exprs.length; i++ ){
-          joinedExpr = joinedExpr.or(exprs[i]);
-        }
-
-        q = q.filter( joinedExpr );
-      }
-
-      if( status ){
-        const values =  _.intersection( _.values( DOCUMENT_STATUS_FIELDS ), status );
-        let byStatus = { foo: true };
-        values.forEach( ( value, index ) => {
-          if( index == 0 ){
-            byStatus = r.row('status').default('unset').eq( value );
-          } else {
-            byStatus = byStatus.or( r.row('status').default('unset').eq( value ) );
-          }
-        });
-
-        q = q.filter( byStatus );
-      }
-
-      count = q.count();
-
-      if( !ids ){
-        q = q.skip(offset).limit(limit);
-      }
-
-      q = q.pluck(['id', 'secret']);
-
-      return Promise.all([
-        count.run( conn ),
-        q.run( conn )
-      ]);
-    })
-    .then( ([ count, cursor ]) => {
-      total = count;
-      return cursor.toArray();
-    })
-    .then( res => {
-      try {
-        checkApiKey(apiKey);
-
-        return { res, haveSecretAccess: true };
-      } catch( err ){
-        return { res, haveSecretAccess: false };
-      }
-    } )
-    .then( ({res, haveSecretAccess}) => { // map ids to full doc json
-      return Promise.all(res.map(docDbJson => {
-        let { id } = docDbJson;
-        let secret = haveSecretAccess ? docDbJson.secret : undefined;
-        let docOpts = _.assign( {}, tables, { id, secret } );
-
-        return loadDoc(docOpts).then(getDocJson);
-      }));
-    } )
-    .then( results => {
+    tryPromise( () => getDocuments({ limit, offset, status, apiKey, ids }) )
+    .then( ({ total, results }) => {
       res.set({ 'X-Document-Count': total });
       res.json( results );
     })
@@ -1647,7 +1733,6 @@ const tryVerify = async doc => {
 http.post('/', function( req, res, next ){
   const provided = _.assign( {}, req.body );
 
-
   const sendInviteNotification = async doc => {
     // Do not try send when there are email issues
     const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
@@ -1674,15 +1759,22 @@ http.post('/', function( req, res, next ){
 
   postDoc( provided )
     .then( sendJSON )
-    .then( handleInviteNotification )
-    .then( updateRelatedPapers )
+    .then( doc => {
+      if ( doc.secret() === DEMO_SECRET ){
+        return doc;
+      } else {
+        return handleInviteNotification(doc)
+          .then( updateRelatedPapers );
+      }
+    })
     .catch( next );
 });
 
 const postDoc = provided => {
   const { paperId, elements=[], performLayout, groundEls, authorName } = provided;
-  const id = paperId === DEMO_ID ? DEMO_ID: undefined;
-  const secret = paperId === DEMO_ID ? DEMO_SECRET: uuid();
+  const isDemo = paperId === DEMO_ID;
+  const id = undefined;
+  const secret = isDemo ? DEMO_SECRET: uuid();
   const fromAdmin = _.get( provided, 'fromAdmin', true );
 
   const elToXref = {};
@@ -1716,10 +1808,7 @@ const postDoc = provided => {
   _.remove( elements, el => elsToOmit[ el.id ] );
 
   const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
-  const handleDocCreation = async ({ docDb, eleDb }) => {
-    if( id === DEMO_ID ) await deleteTableRows( API_KEY, secret );
-    return await createDoc({ docDb, eleDb, id, secret, provided });
-  };
+  const handleDocCreation = ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided });
   const addEls = doc => tryPromise( () => doc.fromJson( { elements } ) ).then( () => doc );
   const handleLayout = doc => {
     if ( performLayout ) {
@@ -2069,6 +2158,22 @@ http.patch('/:id/:secret', function( req, res, next ){
   );
 });
 
+function getBioPAX( id, idMapping = false, omitDbXref = true ){
+  return tryPromise( loadTables )
+    .then( json => _.assign( {}, json, { id } ) )
+    .then( loadDoc )
+    .then( doc => doc.toBiopaxTemplate( omitDbXref ) )
+    .then( template => {
+      if ( !idMapping ) {
+        return template;
+      }
+
+      return mapToUniprotIds( template );
+    } )
+    .then( getBiopaxFromTemplates )
+    .then( result => result.text() );
+}
+
 /**
  * @swagger
  *
@@ -2100,23 +2205,24 @@ http.get('/biopax/:id', function( req, res, next ){
   let id = req.params.id;
   const queryObject = url.parse( req.url, true ).query;
   let idMapping = _.get( queryObject, 'idMapping' ) == 'true';
-  let omitDbXref = true;
-  tryPromise( loadTables )
-    .then( json => _.assign( {}, json, { id } ) )
-    .then( loadDoc )
-    .then( doc => doc.toBiopaxTemplate( omitDbXref ) )
-    .then( template => {
-      if ( !idMapping ) {
-        return template;
-      }
 
-      return mapToUniprotIds( template );
-    } )
-    .then( getBiopaxFromTemplates )
-    .then( result => result.text() )
+  getBioPAX( id, idMapping )
     .then( owl => res.send( owl ))
     .catch( next );
 });
+
+function getSBGN( id ){
+  return tryPromise( loadTables )
+    .then( json => _.assign( {}, json, { id } ) )
+    .then( loadDoc )
+    .then( doc => doc.toBiopaxTemplate() )
+    .then( getSbgnFromTemplates )
+    .then( result => result.text() )
+    .catch( err => {
+      logger.error( `Error retrieving SBGN for id: ${id}`);
+      logger.error( err );
+    });
+}
 
 /**
  * @swagger
@@ -2144,12 +2250,7 @@ http.get('/biopax/:id', function( req, res, next ){
  */
 http.get('/sbgn/:id', function( req, res, next ){
   let id = req.params.id;
-  tryPromise( loadTables )
-    .then( json => _.assign( {}, json, { id } ) )
-    .then( loadDoc )
-    .then( doc => doc.toBiopaxTemplate() )
-    .then( getSbgnFromTemplates )
-    .then( result => result.text() )
+  getSBGN( id )
     .then( xml => res.send( xml ))
     .catch( next );
 });
@@ -2197,6 +2298,7 @@ const updateRelatedPapers = async doc => {
 const getRelPprsForDoc = async doc => {
   let relatedPapers = [];
   let referencedPapers = [];
+  const noRelatedPapers = _.isEmpty( doc.relatedPapers() );
 
   try {
     logger.info(`Updating document-level related papers for doc ${doc.id()}`);
@@ -2209,8 +2311,29 @@ const getRelPprsForDoc = async doc => {
 
     // For .relatedPapers
     const documents = elink2UidList( elinkResponse );
-    let rankedDocs = await indra.semanticSearch({ query: pmid, documents });
-    const uids = _.take( rankedDocs, SEMANTIC_SEARCH_LIMIT ).map( getUid );
+    let uids;
+    try {
+      let rankedDocs = await indra.semanticSearch({
+        query: { uid: pmid },
+        documents: documents.map( uid => ({ uid }) )
+      });
+      uids = rankedDocs.map( getUid );
+
+    } catch ( err ) {
+      // Handling semantic search failures
+      logger.error(`Bypassing semantic search for document ${doc.id()}`);
+      if( noRelatedPapers ){
+        // Use the unranked raw list of paper pmids
+        uids = documents;
+      } else {
+        // Use existing related paper pmids, data will be refreshed
+        uids = doc.relatedPapers().map( ({ pmid }) => pmid );
+      }
+
+    } finally {
+      uids = _.take( uids, SEMANTIC_SEARCH_LIMIT );
+    }
+
     const relatedPapersResponse = await fetchPubmed({ uids });
     relatedPapers = _.get( relatedPapersResponse, 'PubmedArticleSet', [] )
       .map( getPubmedCitation )
@@ -2231,6 +2354,7 @@ const getRelPprsForDoc = async doc => {
     return doc;
 
   } catch ( err ){
+    // Handling PubMed EUTILS failures
     logger.error(`Error getRelPprsForDoc: ${err}`);
 
     // Only supply default when no previous retrieval
@@ -2251,6 +2375,7 @@ const getRelatedPapersForNetwork = async doc => {
     const toTemplate = el => el.toSearchTemplate();
 
     const getRelPprsForEl = async el => {
+      const hasRelatedPapers = !_.isEmpty( el.relatedPapers() );
       const template = toTemplate(el);
 
       const templates = {
@@ -2258,13 +2383,19 @@ const getRelatedPapersForNetwork = async doc => {
         entities: el.isEntity() ? [ template ] : []
       };
 
-      let indraRes = await indra.searchDocuments({ templates, doc });
-      indraRes = indraRes || [];
-
-      if ( el.isInteraction() ) {
-        if ( indraRes.length == 0 ) {
-          el.setNovel( true );
+      let indraRes = [];
+      try {
+        indraRes = await indra.searchDocuments({ templates, doc });
+        if ( el.isInteraction() ) {
+          if ( indraRes.length == 0 ) {
+            el.setNovel( true );
+          }
         }
+
+      } catch ( err ) {
+        // Handle searchDocuments failures
+        logger.error(`Failed searchDocuments for  ${el.id()}`);
+        if( hasRelatedPapers ) indraRes = el.relatedPapers();
       }
 
       el.relatedPapers( indraRes );
@@ -2301,5 +2432,6 @@ const getRelatedPapersForNetwork = async doc => {
 export default http;
 export { getDocumentJson,
   loadTables, loadDoc, fillDocArticle, updateRelatedPapers,
-  generateSitemap
+  generateSitemap,
+  getDocuments, getSBGN, getBioPAX
 }; // allow access so page rendering can get the same data as the rest api

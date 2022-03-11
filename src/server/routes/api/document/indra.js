@@ -1,21 +1,29 @@
 import fetch from 'node-fetch';
 import FetchRetry from 'fetch-retry';
 import _ from 'lodash';
-// import { parse as dateParse } from 'date-fns';
-import uuid from 'uuid';
-// import Heap from 'heap';
+import { v1 as uuidv1 } from 'uuid';
+import stringSimilarity from 'string-similarity';
 
-import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL, NO_ABSTRACT_HANDLING,
-          MIN_SEMANTIC_SCORE, SEMANTIC_SEARCH_LIMIT } from '../../../../config';
+import {
+  INDRA_DB_BASE_URL,
+  INDRA_ENGLISH_ASSEMBLER_URL,
+  SEMANTIC_SEARCH_BASE_URL,
+  EVIDENCE_LIMIT,
+  MAX_STATEMENTS,
+  MAX_STATEMENTS_ELEMENT,
+  GROUNDING_SEARCH_BASE_URL,
+  SEMANTIC_SEARCH_LIMIT
+} from '../../../../config';
+
 import logger from '../../../logger';
-import { tryPromise } from '../../../../util';
 import { INTERACTION_TYPE } from '../../../../model/element/interaction-type/enum';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import querystring from 'querystring';
 import { getPubmedCitation } from '../../../../util/pubmed';
+import { checkHTTPStatus } from '../../../../util';
 
+const MAXIMUM_STRING_SIMILARITY_SCORE = 0.90;
 const INDRA_STATEMENTS_URL = INDRA_DB_BASE_URL + 'statements/from_agents';
-const SORT_BY_DATE = false; // TODO remove
 
 const FETCH_RETRIES = 20;
 const FETCH_RETRY_DELAY = 6000;
@@ -31,10 +39,82 @@ const BASE_MODIFICATION_TYPES = ['Sumoylation', 'Desumoylation', 'Hydroxylation'
 const TRANSCRIPTION_TRANSLATION_TYPES = ['IncreaseAmount', 'DecreaseAmount'];
 const BINDING_TYPES = ['Complex'];
 
-const INTN_STR = 'interaction';
-const ENTITY_STR = 'entity';
+const DB_PREFIXES = Object.freeze({
+  DB_PREFIX_HGNC: 'hgnc',
+  DB_PREFIX_CHEBI: 'CHEBI',
+  DB_PREFIX_UNIPROT: 'uniprot',
+  DB_PREFIX_NCBI_GENE: 'ncbigene'
+});
 
-let sortByDate = SORT_BY_DATE;
+const DB_NAMES = Object.freeze({
+  DB_NAME_HGNC: 'HGNC',
+  DB_NAME_UNIPROT: 'UniProt Knowledgebase',
+  DB_NAME_CHEBI: 'ChEBI',
+  DB_NAME_NCBI_GENE: 'NCBI Gene'
+});
+
+// Map from INDRA Knowledge sources (http://www.indra.bio/#knowledge-sources) to MIRIAM identifier
+// Set to null if not registered or ambiguous (e.g. CTD)
+const SOURCE_2_MIRIAM = new Map([
+  // Reading systems
+  [ 'trips', { dbPrefix: null, dbName: null, name: 'TRIPS', type: 'nlp' } ],
+  [ 'reach', { dbPrefix: null, dbName: null, name: 'REACH', type: 'nlp' } ],
+  [ 'sparser', { dbPrefix: null, dbName: null, name: 'Sparser', type: 'nlp' } ],
+  [ 'eidos', { dbPrefix: null, dbName: null, name: 'Eidos', type: 'nlp' } ],
+  [ 'tees', { dbPrefix: null, dbName: null, name: 'TEES', type: 'nlp' } ],
+  [ 'medscan', { dbPrefix: null, dbName: null, name: 'MedScan', type: 'nlp' } ],
+  [ 'rlimsp', { dbPrefix: null, dbName: null, name: 'RLIMS-P', type: 'nlp' } ],
+  [ 'isi', { dbPrefix: null, dbName: null, name: 'ISI/AMR', type: 'nlp' } ],
+  [ 'geneways', { dbPrefix: null, dbName: null, name: 'GeneWays', type: 'nlp' } ],
+  // Biological pathway databases
+  [ 'biopax', { dbPrefix: 'pathwaycommons', dbName: 'Pathway Commons', name: 'Pathway Commons', type: 'db' } ],
+  [ 'bel', { dbPrefix: null, dbName: null, name: 'Large Corpus / BEL', type: 'db' } ],
+  [ 'signor', { dbPrefix: 'signor', dbName: 'SIGNOR', name: 'Signor', type: 'db' } ],
+  [ 'biogrid', { dbPrefix: 'biogrid', dbName: 'BioGRID', name: 'BioGRID', type: 'db' } ],
+  [ 'tas', { dbPrefix: null, dbName: null, name: 'Target Affinity Spectrum', type: 'db' } ],
+  [ 'hprd', { dbPrefix: 'hprd', dbName: 'HPRD', name: 'Human Protein Reference Database', type: 'db' } ],
+  [ 'trrust', { dbPrefix: null, dbName: null, name: 'TRRUST Database', type: 'db' } ],
+  [ 'phosphoelm', { dbPrefix: null, dbName: null, name: 'Phospho.ELM', type: 'db' } ],
+  [ 'virhostnet', { dbPrefix: null, dbName: null, name: 'VirHostNet', type: 'db' } ],
+  [ 'ctd', { dbPrefix: null, dbName: null, name: 'The Comparative Toxicogenomics Database', type: 'db' } ],
+  [ 'drugbank', { dbPrefix: 'drugbank', dbName: 'DrugBank', name: 'DrugBank', type: 'db' } ],
+  [ 'omnipath', { dbPrefix: null, dbName: null, name: 'OmniPath', type: 'db' } ],
+  [ 'dgi', { dbPrefix: null, dbName: null, name: 'The Drug Gene Interaction Database', type: 'db' } ],
+  [ 'crog', { dbPrefix: null, dbName: null, name: 'Chemical Roles Graph', type: 'db' } ],
+  // Custom knowledge bases
+  [ 'ndex_cx', { dbPrefix: null, dbName: null, name: 'NDex', type: 'db' } ],
+  [ 'hypothesis', { dbPrefix: null, dbName: null, name: 'Hypothesis', type: 'db' } ],
+  [ 'biofactoid', { dbPrefix: null, dbName: null, name: 'Biofactoid', type: 'db' } ],
+  [ 'minerva', { dbPrefix: null, dbName: null, name: 'MINERVA', type: 'db' } ]
+]);
+
+const toJson = res => res.json();
+
+const mapId = async ( id, dbfrom, dbto ) => {
+  const body = JSON.stringify({ id: [ id ], dbfrom, dbto });
+  const url = `${GROUNDING_SEARCH_BASE_URL}/map`;
+  const findMapped = res => _.find( res, [ 'id', id ] );
+  const findDbXref = res => _.find( _.get( res, 'dbXrefs' ), [ 'db', dbto ] );
+
+  try {
+    const fetchResponse = await fetch( url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body
+    });
+    checkHTTPStatus( fetchResponse );
+    const json = await fetchResponse.json();
+    const mapped = findMapped( json );
+    const dbXref = findDbXref( mapped );
+    return dbXref;
+
+  } catch ( error ) {
+    logger.error( `Error mapId: ${error}` );
+  }
+};
 
 const fetchRetry = FetchRetry(fetch);
 const fetchRetryUrl = ( url, opts ) => {
@@ -70,200 +150,90 @@ const semanticSearch = params => {
     body: JSON.stringify( opts ),
     headers: { 'Content-Type': 'application/json' }
   })
-  .then( res => res.json() );
+  .then( checkHTTPStatus )
+  .then( toJson );
 };
 
-// MIRIAM registry names https://registry.identifiers.org/registry/
-const DB_NAMES = Object.freeze({
-  DB_NAME_HGNC: 'HGNC',
-  DB_NAME_CHEBI: 'ChEBI'
-});
+// Try to update with a corresponding dbXref from UniProt or HGNC
+// INDRA won't deal with NCBI Gene IDs
+const getDbXref = async entityTemplate => {
+  const { id, dbName: db } = entityTemplate;
+  let dbXref = { db, id };
 
-// See https://indra.readthedocs.io/en/latest/modules/statements.html for database formats
-const getDocuments = ( templates, queryDoc ) => {
-  const getForEl = (elTemplate, elType) => {
-    const getAgent = t => {
-      let agent;
-      let xref = getXref( t );
-      if ( xref ) {
-        agent = sanitizeId(xref.id) + '@' + xref.db.toUpperCase();
+  if ( db == DB_NAMES.DB_NAME_NCBI_GENE ) {
+    const mapResult = await mapId( id, DB_PREFIXES.DB_PREFIX_NCBI_GENE, DB_PREFIXES.DB_PREFIX_UNIPROT );
+    if ( mapResult ){
+      _.set( dbXref, 'db', DB_NAMES.DB_NAME_UNIPROT );
+      _.set( dbXref, 'id', _.get( mapResult, 'id' ) );
+    } else {
+      const hgncXref = _.find( entityTemplate.dbXrefs, ['db', DB_NAMES.DB_NAME_HGNC] );
+      if( hgncXref ){
+        _.set( dbXref, 'db', DB_NAMES.DB_NAME_HGNC );
+        _.set( dbXref, 'id', _.get( hgncXref, 'id' ) );
       }
-      else {
-        agent = t.name + '@TEXT';
-      }
-
-      return agent;
-    };
-
-    // for some datasources id may be in a form like "HGNC:10937"
-    // in that cases just consider the string coming after ":"
-    const sanitizeId = id => {
-      let arr = id.split(':');
-
-      if ( arr.length == 1 ) {
-        return arr[0];
-      }
-
-      return arr[1];
-    };
-
-    const getXref = t => {
-      let name = t.dbName;
-      let xref = null;
-
-      if ( name == DB_NAMES.DB_NAME_CHEBI ) {
-        xref = {
-          id: t.id,
-          db: name
-        };
-      }
-      else {
-        xref = _.find( t.dbXrefs, ['db', DB_NAMES.DB_NAME_HGNC] );
-      }
-
-      return xref;
-    };
-
-
-    let getIntns;
-
-    if ( elType == INTN_STR ) {
-      let pptTemplates = elTemplate.ppts;
-      let agent0 = getAgent( pptTemplates[0] );
-      let agent1 = getAgent( pptTemplates[1] );
-
-      getIntns = () => getInteractions(agent0, agent1);
     }
-    else if ( elType == ENTITY_STR ) {
-      let agent = getAgent( elTemplate );
-      getIntns = () => getInteractions(agent);
+  }
+  return dbXref;
+};
+
+// Map to the INDRA-specific ground
+// https://indra.readthedocs.io/en/latest/modules/statements.html#grounding-and-db-references
+const dbXref2Agent = ( dbXref, template ) => {
+
+  let agent;
+  const sanitizeId = id => {
+    let arr = id.split(':');
+    if ( arr.length == 1 ) {
+      return arr[0];
     }
-    else {
-      logger.error( `${elType} is not a valid element type!` );
-      getIntns = () => [];
-    }
-
-    return tryPromise( () => getIntns() )
-      .then( intns => {
-        let ret;
-
-        intns.forEach( intn => intn.elId = elTemplate.elId );
-
-        const filteredIntns = (
-          _.uniqBy( intns, 'pmid' )
-          .sort((a, b) => parseInt(b.pmid) - parseInt(a.pmid)) // sort by pmid as proxy for date -- higher pmid = newer
-          .slice(0, SEMANTIC_SEARCH_LIMIT + 1) // limit per-ele pmid count for s.s.
-        );
-
-        ret = _.groupBy( filteredIntns, 'pmid' );
-
-        return ret;
-      } )
-      .catch( err => {
-        logger.error( err );
-        return {};
-      } );
+    return arr[1];
   };
+  const { db, id } = dbXref;
 
-  const merger = (objValue, srcValue) => {
-    if (_.isArray(objValue)) {
-      return objValue.concat(srcValue);
-    }
+  switch( db ) {
+    case DB_NAMES.DB_NAME_HGNC:
+      agent = `${ sanitizeId( id ) }@HGNC`;
+      break;
+    case DB_NAMES.DB_NAME_UNIPROT:
+      agent = `${id}@UP`;
+      break;
+    case DB_NAMES.DB_NAME_CHEBI:
+      agent = `CHEBI:${id}@CHEBI`;
+      break;
+    default:
+      agent = `${_.get( template, 'name' )}@TEXT`;
+  }
+  return agent;
+};
+
+// Generate the parameters to send to INDRA
+// https://github.com/indralab/indra_db/tree/master/rest_api
+const getIndraParams = async element => {
+
+  const agents = {};
+  const sanitize = text => text ? text.replace(/[\s:]/g,'_') : uuidv1();
+  const setAgent = ( dbXref, template ) => {
+    const { db, id } = dbXref;
+    let agent = dbXref2Agent( dbXref, template );
+    _.set( agents, `agent_${sanitize( db )}_${sanitize( id )}`, agent );
   };
+  const template = element.toSearchTemplate();
+  const isInteraction = element.isInteraction();
 
-  const transform = o => {
-    let pmids = Object.keys( o );
+  if( isInteraction ){
+    const { ppts: participants } = template;
 
-    if ( pmids.length == 0 ) {
-      return [];
+    for ( const pTemplate of participants ){
+      let dbXref = await getDbXref( pTemplate );
+      setAgent( dbXref, pTemplate );
     }
+  } else {
+    let dbXref = await getDbXref( template );
+    setAgent( dbXref, template );
+  }
 
-    const handleNoQueryAbastract = doc => {
-      if ( NO_ABSTRACT_HANDLING == 'text' ) {
-        return doc.toText();
-      }
-      else if ( NO_ABSTRACT_HANDLING == 'date' ) {
-        // no need to return a valid abstract since sorting will be based on date
-        sortByDate = true;
-        return null;
-      }
-      else {
-        throw `${NO_ABSTRACT_HANDLING} is not a valid value for NO_ABSTRACT_HANDLING environment variable!`;
-      }
-    };
-
-    // const getMedlineArticle = article => article.MedlineCitation.Article;
-
-    const getSemanticScores = articles => {
-      if ( sortByDate ) {
-        let semanticScores = null;
-        return { semanticScores, articles };
-      }
-
-      let { abstract: queryText, pmid: queryUid = uuid() } = queryDoc.citation();
-
-      if ( queryText == null ) {
-        queryText = handleNoQueryAbastract( queryDoc );
-      }
-
-      // let url = SEMANTIC_SEARCH_BASE_URL;
-      let query = { uid: queryUid, text: queryText };
-
-      let documents = articles.map( article => {
-        const { abstract: text , pmid: uid } = article;
-
-        if ( text == null || uid == null ) {
-          return null;
-        }
-
-        return { text, uid };
-      } );
-
-      documents = _.filter( documents, d => d != null );
-
-      return semanticSearch({ query, documents })
-        .then( semanticScores => ( { articles, semanticScores } ) );
-    };
-
-    // filter again for case of multiple tempaltes in one query (i.e. document)
-    const filteredPmids = (
-      pmids.sort((a, b) => parseInt(b) - parseInt(a)) // higher pmids first
-      .slice(0, SEMANTIC_SEARCH_LIMIT + 1) // limit
-    );
-
-    return tryPromise( () => fetchPubmed({ uids: filteredPmids }) )
-      .then( o => o.PubmedArticleSet )
-      // .then( filterByDate )
-      .then( articles => articles.map( getPubmedCitation ) )
-      .then( getSemanticScores )
-      .then( ( { articles, semanticScores } ) => {
-        let semanticScoreById = _.groupBy( semanticScores, 'uid' );
-        let arr = articles.map( article => {
-          const { pmid } = article;
-          let elements = o[ pmid ];
-          // prevent duplication of the same interactions in a document
-          elements = _.uniqWith( elements, _.isEqual );
-          elements.forEach( e => delete e.pmid );
-
-          return { elements, pmid, pubmed: article };
-        } );
-
-        const queryDocPmid = queryDoc.citation().pmid;
-        const getSemanticScore = doc => _.get( semanticScoreById, [ doc.pmid, 0, 'score' ] );
-        const getNegativeScore = doc => -getSemanticScore( doc );
-
-        arr = arr.filter( doc => getSemanticScore( doc ) > MIN_SEMANTIC_SCORE && doc.pmid != queryDocPmid );
-        arr = _.sortBy( arr, getNegativeScore );
-
-        return arr;
-      } );
-  };
-
-  let promises = [ ...templates.intns.map( e => getForEl( e, INTN_STR ) ),
-                    ...templates.entities.map( e => getForEl( e, ENTITY_STR ) ) ];
-  return Promise.all( promises )
-    .then( res => _.mergeWith( {}, ...res, merger ) )
-    .then( transform );
+  const indraOpts = _.assign( {}, agents );
+  return indraOpts;
 };
 
 const transformIntnType = indraType => {
@@ -286,90 +256,260 @@ const transformIntnType = indraType => {
   return INTERACTION_TYPE.INTERACTION.value;
 };
 
-const getInteractions = (agent0, agent1) => {
-  let getStatementsMemoized = _.memoize( getStatements );
-  return (
-    tryPromise( () => getStatementsMemoized(agent0, agent1) )
-      .then( stmts => {
-        return assembleEnglish( stmts )
-          .then( res => res.json() )
-          .then( js => {
-            const sentences = js.sentences;
+const filterStatements = ( statements, doc ) => {
+  const { pmid } = doc.citation();
+  const uniqueByText = a => _.uniqWith( a,
+    ( arrayVal, other ) => {
+      const pmid = _.get( arrayVal, 'pmid' );
+      const text = _.get( arrayVal, 'text' );
+      const pmidOther = _.get( other, 'pmid' );
+      const textOther = _.get( other, 'text' );
+      return pmid === pmidOther && text && textOther &&
+      ( stringSimilarity.compareTwoStrings( text, textOther ) > MAXIMUM_STRING_SIMILARITY_SCORE );
+  });
 
-            const extractInteractions = statement => {
-              let {id, type, evidence} = statement;
-              let pmids = _.uniq( evidence.map( e => e.pmid ).filter( pmid => pmid != undefined ) );
+  const hasPmid = e => _.has( e, 'pmid' );
+  const isDocPmid = e => _.get( e, 'pmid' ) === pmid;
+  const validPmids = a => _.filter( a , e => hasPmid( e ) && !isDocPmid( e ) );
 
-              return pmids.map( pmid => {
-                return {
-                  text: sentences[id],
-                  type: transformIntnType(type),
-                  pmid
-                };
-              } );
-            };
+  let filtered = statements.map( statement => {
+    let evidence = _.get( statement, 'evidence', [] );
 
-            let intns = _.flatten( stmts.map( extractInteractions ) );
-            return intns;
-          } );
-      } )
-  );
+    // Filter out duplicates wrt to text exceprt
+    evidence = uniqueByText( evidence );
+
+    // Has pmid, no self
+    evidence = validPmids( evidence );
+
+    // Update the statement evidence
+    _.set( statement, 'evidence', evidence );
+    return statement;
+  });
+
+  // drop statement with empty evidence
+  let nonEmpty = filtered.filter( s => !_.isEmpty( _.get( s, 'evidence' ) ));
+  return nonEmpty;
 };
 
-const getStatements = (agent0, agent1) => {
-  let query = { format: 'json-js', agent0 };
+const rankStatements = async ( doc, statements ) => {
+  const { pmid } = doc.citation();
+  const query = { uid: pmid };
+  const documents = statements.map( stmt => {
+    const pmid = _.get( stmt, [ 'evidence', '0', 'pmid' ] );
+    return { uid: pmid };
+  });
+  const rankedDocs = await semanticSearch({ query, documents, docs_only: true });
+  const rankedUids = rankedDocs.map( ({ uid }) => uid );
+  statements.sort( (stmt1, stmt2) => {
+    const getPmid = s => _.get( s, ['evidence', '0', 'pmid'] );
+    return rankedUids.indexOf( getPmid( stmt1 ) ) - rankedUids.indexOf( getPmid( stmt2 ) );
+  });
+  return statements;
+};
 
-  // if agent1 parameter is set the query is made for an interaction
-  // else it is made for an entity
-  if ( agent1 != null ) {
-    query.agent1 = agent1;
+// An interaction has evidence { pmid, source : [ { pmid, text, } ]}
+/**
+ * asInteraction
+ * transform an INDRA statement {@link https://github.com/sorgerlab/indra/blob/master/indra/resources/statements_schema.json}
+ * @param {object} statements a list of INDRA statements
+ * @returns a formatted object used downstream/UI
+ *   - type {string} the biofactoid model type
+ *   - sentence {string} english description
+ *   - evidence {object} list of evidence, grouped by PMID
+ *     - pmid {string}
+ *     - source {object} list of sources for PMID
+ *       - pmid {string}
+ *       - text {string} the text exerpt, possibly null
+ *       - hash {number} the has for the INDRA evidence element
+ *       - dbPrefix {string} the MIRIAM-registered collection prefix, possibly null
+ *       - dbName {string} the MIRIAM-registered collection prefix, possibly null
+ *       - name {string} any (possibly non-standard) name I could find
+ */
+const asInteraction = statements => {
+
+  const groupSharedPmid = a => {
+    const pmidGroups = _.groupBy( a, 'pmid' );
+    return _.toPairs( pmidGroups ).map( ([ pmid, source ]) => ({ pmid, source }) );
+  };
+
+  const mapEvidence = evidence => {
+    const { source_api, source_id: dbId = null, pmid = null, text = null, source_hash: hash } = evidence;
+    const miriamFields = SOURCE_2_MIRIAM.get( source_api );
+    return _.assign( { pmid, text, dbId, hash }, miriamFields );
+  };
+
+  let interactions = statements.map( statement => {
+    let evidence = _.get( statement, [ 'evidence' ], [] );
+
+    // translate evidence fields
+    evidence = evidence.map( mapEvidence );
+
+    // group by PMID
+    evidence = groupSharedPmid( evidence );
+
+    _.set( statement, [ 'evidence' ], evidence );
+    return statement;
+  });
+
+  return interactions;
+};
+
+const INDRA_BY_AGENTS_DEFAULTS = {
+  format: 'json',
+  ev_limit: EVIDENCE_LIMIT,
+  max_stmts: MAX_STATEMENTS,
+  best_first: true
+};
+
+const statementsByAgent = async opts => {
+  // return Object.values( fromagents.statements );
+  let params = _.defaults( opts, INDRA_BY_AGENTS_DEFAULTS );
+  const url = INDRA_STATEMENTS_URL + '?' + querystring.stringify( params );
+  try {
+    const fetchResponse = await fetchRetryUrl( url );
+    checkHTTPStatus( fetchResponse );
+    const json = await fetchResponse.json();
+    const statements = Object.values( json.statements );
+    return statements;
+
+  } catch ( error ) {
+    logger.error( `Unable to retrieve the indra statements for ${JSON.stringify( opts )}\n${error.message}`);
+    return [];
   }
-
-  let addr = INDRA_STATEMENTS_URL + '?' + querystring.stringify( query );
-  return tryPromise( () => fetchRetryUrl(addr) )
-    .then( res =>
-      res.json()
-      )
-    .then( js => Object.values(js.statements) )
-    .catch( err => {
-      let errStr = 'Unable to retrieve the indra staments for the entity ';
-
-      if ( agent1 ) {
-        errStr += `pair '${agent0}-${agent1}'`;
-      }
-      else {
-        errStr += agent0;
-      }
-      logger.error( errStr );
-      logger.error( err );
-      return [];
-    } );
 };
 
-const assembleEnglish = statements => {
+const getStatements = _.memoize( statementsByAgent );
+// const getStatements = async () => Object.values( testStatements.statements );
+
+const statements2Text = async statements => {
   let addr = INDRA_ENGLISH_ASSEMBLER_URL;
-  return fetchRetryUrl( addr, {
-    method: 'post',
-    body: JSON.stringify({statements}),
-    headers: { 'Content-Type': 'application/json' }
-  } )
-  .catch( err => {
-    logger.error( `Unable to assemble english for the indra statements` );
-    logger.error( err );
-    throw err;
-  } );
+
+  try {
+    const fetchResponse = await fetchRetryUrl( addr, {
+      method: 'POST',
+      body: JSON.stringify( { statements } ),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    checkHTTPStatus( fetchResponse );
+    const json = await fetchResponse.json();
+    return json;
+
+  } catch ( error ) {
+    logger.error( `Unable to assemble english for the indra statements: ${error.message}` );
+    throw error;
+  }
 };
 
+/**
+ * statements2Interactions
+ * Filter and transform INDRA statements into an 'interaction'
+ *
+ * @param {object} statements An list of INDRA statements {@link https://github.com/sorgerlab/indra/blob/master/indra/resources/statements_schema.json}
+ * @param {object} doc A Document, used to filter out self articles from interactions
+ * @returns an array of interactions:
+ *   - type String the factoid model type
+ *   - sentence String description of the interaction
+ *   - evidence object list of { pmid, source, citation }
+ *     - source list of { pmid, source_api, source_id, text }
+ *     - citation is the pubmed citation { pmid, doi, ... }
+ *   - participants object list of { name, db_refs }
+ *     - db_refs is a list of objects formatted like { "TEXT", [...<database name>] }
+ */
+const statements2Interactions = async ( statements, doc ) => {
 
-const searchDocuments = opts => {
-  let { templates, doc } = opts;
-  return tryPromise( () => getDocuments(templates, doc) )
-    .catch( err => {
-      logger.error(`Finding indra documents failed`);
-      logger.error(err);
+  try {
+    const assembledEnglish = await statements2Text( statements );
+    const sentences = _.get( assembledEnglish, 'sentences' );
 
-      throw err;
-    } );
+    // pick required fields from statements
+    const pickedStatements = statements.map( statement => {
+      const id = _.get( statement, [ 'id' ] );
+      const hash = _.get( statement, [ 'matches_hash' ] );
+      const rawType = _.get( statement, [ 'type' ] );
+      const type = transformIntnType( rawType );
+      const sentence = _.get( sentences, id );
+      const evidence = _.get( statement, [ 'evidence' ] );
+      const participants = _.values( _.pick( statement, [ 'subj', 'obj', 'enz', 'sub', 'members' ] ) );
+      return { type, sentence, evidence, participants, id, hash };
+    });
+
+    // filter statements and associated evidence
+    const filteredStatements = filterStatements( pickedStatements, doc );
+    const rankedStatements = await rankStatements( doc, filteredStatements, MAX_STATEMENTS_ELEMENT );
+    const topStatements = rankedStatements.slice(0, MAX_STATEMENTS_ELEMENT);
+    const interactions = asInteraction( topStatements );
+
+    return interactions;
+
+  } catch ( error ) {
+    logger.error( `Unable to getInteractions: ${error.message}` );
+    throw error;
+  }
 };
 
-export { searchDocuments, semanticSearch };
+const fillArticleInfo = async ( interactions, citationMap ) => {
+
+  return interactions.map( interaction => {
+    let evidence = _.get( interaction, 'evidence' );
+    evidence = evidence.map( e => {
+      const pmid = _.get( e, 'pmid' );
+      const citation = citationMap.get( pmid  );
+      return _.assign( e, { citation } );
+    });
+    _.set( interaction, 'evidence', evidence );
+    return interaction;
+  });
+};
+
+const getCitationMap = async uids => {
+
+  let citations = [];
+  if( !_.isEmpty( uids ) ){
+    const { PubmedArticleSet } = await fetchPubmed( { uids } );
+    citations = PubmedArticleSet.map( PubmedArticle => {
+      const citation = getPubmedCitation( PubmedArticle );
+      const { pmid } = citation;
+      return ([ pmid, citation ]);
+    });
+  }
+  const citationMap = new Map( citations );
+  return citationMap;
+};
+
+const getPmids = interactions => interactions.map( interaction => {
+  const evidence = _.get( interaction, 'evidence' );
+  const pmids = evidence.map( e => _.get( e, 'pmid' ) );
+  return _.flatten( pmids );
+});
+
+/**
+ * search
+ * Search the INDRA database for interactions and evidence
+ *
+ * @param {object} element An Element to search for (entity, interaction)
+ * @param {object} doc A Document, used to filter out self articles from interactions
+ * @returns an array of interactions
+ */
+ const search = async ( element, doc ) => {
+
+  try {
+    const indraParams = await getIndraParams( element );
+    const statements = await getStatements( indraParams );
+    const interactions = await statements2Interactions( statements, doc );
+
+    const uids = getPmids( interactions );
+    const citationMap = await getCitationMap( uids );
+
+    // TODO: Globally rank pmids then use to order evidence using semanticsearch
+    await fillArticleInfo( interactions, citationMap );
+    return interactions;
+
+  } catch ( error ) {
+    logger.error( `INDRA search failed: ${error.message}` );
+    throw error;
+  }
+};
+
+export { search, semanticSearch };

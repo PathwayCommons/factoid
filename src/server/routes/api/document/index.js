@@ -43,7 +43,6 @@ import { BASE_URL,
   EMAIL_TYPE_INVITE,
   DOCUMENT_IMAGE_CACHE_SIZE,
   EMAIL_TYPE_FOLLOWUP,
-  MIN_RELATED_PAPERS,
   SEMANTIC_SEARCH_LIMIT,
   NCBI_EUTILS_BASE_URL,
   PC_URL,
@@ -51,7 +50,8 @@ import { BASE_URL,
   EMAIL_ADDRESS_ADMIN,
   BULK_DOWNLOADS_PATH,
   BIOPAX_DOWNLOADS_PATH,
-  BIOPAX_IDMAP_DOWNLOADS_PATH
+  BIOPAX_IDMAP_DOWNLOADS_PATH,
+  MAX_DOC_RELATED_PAPERS
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
@@ -598,6 +598,29 @@ const generateSitemap = () => {
     .then( docs2Sitemap )
   );
 };
+
+// TO REMOVE: debugging ONLY
+http.get('/search/:id', async function( req, res, next ){
+
+  try {
+    let output = [];
+    const { id } = req.params;
+    const { docDb, eleDb } = await loadTables();
+    const doc =  await loadDoc ({ docDb, eleDb, id });
+    logger.info(`Testing search for doc ${doc.id()}`);
+
+    const getRelPprsForEl = async el => {
+      let indraRes = await indra.search( el, doc );
+      return indraRes;
+    };
+    output = await Promise.all( doc.elements().map( getRelPprsForEl ) );
+    res.json( output );
+
+  } catch ( err ) {
+    logger.error(`Error in search ${err.message}`);
+    next( err );
+  }
+});
 
 /**
  * @swagger
@@ -2315,7 +2338,8 @@ const getRelPprsForDoc = async doc => {
     try {
       let rankedDocs = await indra.semanticSearch({
         query: { uid: pmid },
-        documents: documents.map( uid => ({ uid }) )
+        documents: documents.map( uid => ({ uid }) ),
+        top_k: MAX_DOC_RELATED_PAPERS
       });
       uids = rankedDocs.map( getUid );
 
@@ -2368,65 +2392,31 @@ const getRelPprsForDoc = async doc => {
 
 const getRelatedPapersForNetwork = async doc => {
 
-  try {
+    const elements = doc.elements();
     logger.info(`Updating network-level related papers for doc ${doc.id()}`);
-    const els = doc.elements();
 
-    const toTemplate = el => el.toSearchTemplate();
-
-    const getRelPprsForEl = async el => {
-      const hasRelatedPapers = !_.isEmpty( el.relatedPapers() );
-      const template = toTemplate(el);
-
-      const templates = {
-        intns: el.isInteraction() ? [ template ] : [],
-        entities: el.isEntity() ? [ template ] : []
-      };
-
+    for ( const element of elements ) {
+      const hasRelatedPapers = !_.isEmpty( element.relatedPapers() );
       let indraRes = [];
       try {
-        indraRes = await indra.searchDocuments({ templates, doc });
-        if ( el.isInteraction() ) {
+        indraRes = await indra.search( element, doc );
+        if ( element.isInteraction() ) {
           if ( indraRes.length == 0 ) {
-            el.setNovel( true );
+            element.setNovel( true );
           }
         }
 
       } catch ( err ) {
         // Handle searchDocuments failures
-        logger.error(`Failed searchDocuments for  ${el.id()}`);
-        if( hasRelatedPapers ) indraRes = el.relatedPapers();
+        logger.error(`Failed searchDocuments for  ${element.id()}`);
+        if( hasRelatedPapers ) indraRes = element.relatedPapers();
       }
 
-      el.relatedPapers( indraRes );
-    };
-
-    let elChunks = _.chunk( els, 1 );
-    for ( let i = 0; i < elChunks.length; i++ ) {
-      let chunk = elChunks[ i ];
-      await Promise.all([ ...chunk.map(getRelPprsForEl) ]);
+      element.relatedPapers( indraRes );
     }
 
-    const docPprs = doc.relatedPapers();
-    const getPmid = ppr => ppr.pubmed.pmid;
-
-    await Promise.all( doc.elements().map(async el => {
-      const pprs = el.relatedPapers();
-
-      if( pprs.length > MIN_RELATED_PAPERS ){ return; }
-
-      const newPprs = _.uniq( _.concat(pprs, _.shuffle(docPprs)), getPmid );
-
-      await el.relatedPapers(newPprs);
-    }) );
     logger.info(`Finished updating network-level related papers for doc`);
     return doc;
-
-  } catch ( err ) {
-    logger.error(`Error in getRelatedPapersForNetwork ${err.message}`);
-    return doc;
-  }
-
 };
 
 export default http;

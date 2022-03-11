@@ -131,7 +131,10 @@ export const SAMPLE_DOC_ID = env('SAMPLE_DOC_ID', '5df17c41-acb7-4c42-a37b-fe323
 export const NO_ABSTRACT_HANDLING = env('NO_ABSTRACT_HANDLING', 'text');
 export const MIN_SEMANTIC_SCORE = env('MIN_SEMANTIC_SCORE', 0.47);
 export const SEMANTIC_SEARCH_LIMIT = env('SEMANTIC_SEARCH_LIMIT', 30);
-export const MIN_RELATED_PAPERS = env('MIN_RELATED_PAPERS', 6);
+export const MAX_DOC_RELATED_PAPERS = env('MAX_DOC_RELATED_PAPERS', 5);
+export const MAX_STATEMENTS =  env('MAX_STATEMENTS', 10);
+export const MAX_STATEMENTS_ELEMENT = env('MAX_STATEMENTS_ELEMENT', 5);
+export const EVIDENCE_LIMIT =  env('EVIDENCE_LIMIT', 1);
 
 // google analytics
 export const GA_ID = env('GA_ID', 'UA-43341809-12');

@@ -1,6 +1,5 @@
 import MiniSearch from 'minisearch';
 import _ from 'lodash';
-import querystring from 'querystring';
 import Document from '../model/document';
 import { isEntity } from '../model/element/element-type';
 import logger from './logger';
@@ -23,9 +22,9 @@ class Search {
    * @param {number} offset starting index for documents to retrieve
    * @return {object} a list of full Document JSON
    */
-  fetch( url, limit = 50, offset = 0 ){
+  fetch( url, limit = 100, offset = 0 ){
     const opts = { limit, offset, status: [DOCUMENT_STATUS_FIELDS.PUBLIC].join(',') };
-    let addr = `${url}?${querystring.stringify( opts )}`;
+    let addr = `${url}?${new URLSearchParams( opts ).toString()}`;
 
     return fetch( addr )
       .then( res => res.json() )
@@ -107,6 +106,9 @@ class DocumentSearch extends Search {
         'citation.title',
         'citation.reference',
         'citation.abstract',
+        'citation.pmid',
+        'citation.doi',
+        'caption',
         'authors',
         'entities'
       ]

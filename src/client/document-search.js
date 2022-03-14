@@ -22,7 +22,7 @@ class Search {
    * @param {number} offset starting index for documents to retrieve
    * @return {object} a list of full Document JSON
    */
-  fetch( url, limit = 100, offset = 0 ){
+  fetch( url, limit = 150, offset = 0 ){
     const opts = { limit, offset, status: [DOCUMENT_STATUS_FIELDS.PUBLIC].join(',') };
     let addr = `${url}?${new URLSearchParams( opts ).toString()}`;
 

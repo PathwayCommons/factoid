@@ -10,6 +10,7 @@ import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
 import url from 'url';
 import { URLSearchParams } from  'url';
+import NodeCache from 'node-cache';
 
 import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
 import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
@@ -59,6 +60,7 @@ import { eLink, elink2UidList } from './pubmed/linkPubmed';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import { docs2Sitemap } from '../../../sitemap';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
+const DOC_CACHE_KEY = 'documents';
 
 const http = Express.Router();
 
@@ -1210,11 +1212,7 @@ function getDocuments({ limit = 20, offset = 0, status = [ DOCUMENT_STATUS_FIELD
   );
 }
 
-
-const docCache = new LRUCache({
-  max: DOCUMENT_IMAGE_CACHE_SIZE,
-  maxAge: 1000 * 60 * 60 * 24
-});
+const docCache = new NodeCache();
 
 /**
  * @swagger
@@ -1268,7 +1266,7 @@ const docCache = new LRUCache({
  */
 http.get('/', async function( req, res, next ){
   let docJSON, count;
-  const DOC_KEY = 'documents';
+  const TTL = 60 * 60 * 24;
 
   const csv2Array = par => _.uniq( _.compact( par.split(/\s*,\s*/) ) );
   const toInteger = par => parseInt( par );
@@ -1287,12 +1285,12 @@ http.get('/', async function( req, res, next ){
       docJSON = results;
 
     } else {
-      let hasValues = docCache.has( DOC_KEY );
+      let hasValues = docCache.has( DOC_CACHE_KEY );
       if( !hasValues ){
         let { total, results } = await getDocuments({});
-        docCache.set( DOC_KEY, { total, results } );
+        docCache.set( DOC_CACHE_KEY, { total, results }, TTL );
       }
-      let { total, results } = docCache.get( DOC_KEY );
+      let { total, results } = docCache.get( DOC_CACHE_KEY );
       count = total;
       docJSON = results;
     }
@@ -2124,7 +2122,7 @@ http.patch('/:id/:secret', function( req, res, next ){
   };
 
   const onDocPublic = async doc => {
-    docCache.reset();
+    docCache.del( DOC_CACHE_KEY );
     await AdminPapersQueue.addJob( async () => {
       await updateRelatedPapers( doc );
       await sendFollowUpNotification( doc );

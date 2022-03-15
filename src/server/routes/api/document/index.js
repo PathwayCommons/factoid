@@ -1212,7 +1212,8 @@ function getDocuments({ limit = 20, offset = 0, status = [ DOCUMENT_STATUS_FIELD
 
 
 const docCache = new LRUCache({
-  max: DOCUMENT_IMAGE_CACHE_SIZE
+  max: DOCUMENT_IMAGE_CACHE_SIZE,
+  maxAge: 1000 * 60 * 60 * 24
 });
 
 /**

@@ -1,8 +1,10 @@
 import MiniSearch from 'minisearch';
 import _ from 'lodash';
-import querystring from 'querystring';
-
+import Document from '../model/document';
+import { isEntity } from '../model/element/element-type';
 import logger from './logger';
+
+const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
 /** Class for  searching an index. */
 class Search {
@@ -20,9 +22,9 @@ class Search {
    * @param {number} offset starting index for documents to retrieve
    * @return {object} a list of full Document JSON
    */
-  fetch( url, limit = 50, offset = 0 ){
-    const opts = { limit, offset };
-    let addr = `${url}?${querystring.stringify( opts )}`;
+  fetch( url, limit = 100, offset = 0 ){
+    const opts = { limit, offset, status: [DOCUMENT_STATUS_FIELDS.PUBLIC].join(',') };
+    let addr = `${url}?${new URLSearchParams( opts ).toString()}`;
 
     return fetch( addr )
       .then( res => res.json() )
@@ -72,12 +74,9 @@ class DocumentSearch extends Search {
       // function used to get the value of a field in a document
       extractField: ( document, fieldName ) => {
 
-        // customize field extraction
-        const isEntity = el => el.type !== 'interaction';
-
         if ( fieldName === 'entities' ) {
           const { elements } = document;
-          const entities = elements.filter( isEntity );
+          const entities = elements.filter( ({ type }) => isEntity( type ) );
           const entityNames = entities.map( entity => {
             const { name, association } = entity;
             const tokens = [ name ];
@@ -91,6 +90,10 @@ class DocumentSearch extends Search {
           });
 
           return entityNames;
+
+        } else if ( fieldName === 'authors' ) {
+          const { citation: { authors: { authorList } } } = document;
+          return authorList.map( ({ name }) => name ).join(' ');
         }
 
         // Access nested fields
@@ -98,12 +101,15 @@ class DocumentSearch extends Search {
       },
 
       // fields to be indexed
-      fields: [
+      fields: [//TODO
         'text',
         'citation.title',
-        'citation.authors.abbreviation',
         'citation.reference',
         'citation.abstract',
+        'citation.pmid',
+        'citation.doi',
+        'caption',
+        'authors',
         'entities'
       ]
     };

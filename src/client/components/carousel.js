@@ -19,6 +19,7 @@ export class Carousel extends Component {
       pagerLeftAvailable: false,
       pagerRightAvailable: false,
       isScrolling: false,
+      refreshing: true,
       docs: [],
       content: props.content,
       refresh: props.refresh || (() => { // get all docs from service by default
@@ -48,6 +49,14 @@ export class Carousel extends Component {
       this.updatePagerAvailabilityDebounced();
       this.setScrollState();
     };
+
+    const { bus } = this.props;
+
+    if (bus) {
+      bus.on('carouselrefresh', () => {
+        this.onRefreshRequested();
+      });
+    }
   }
 
   componentDidMount(){
@@ -110,9 +119,19 @@ export class Carousel extends Component {
   }
 
   refreshDocs(){
+    this.setState({ refreshing: true });
+
     const update = docs => new Promise(resolve => this.setState({ docs }, () => resolve(docs)));
 
-    return this.state.refresh().then(update);
+    return this.state.refresh().then(update).then(docs => {
+      this.setState({ refreshing: false });
+
+      return docs;
+    });
+  }
+
+  onRefreshRequested() {
+    this.refreshDocs().then(() => this.updatePagerAvailabilityDebounced());
   }
 
   render(){
@@ -191,7 +210,7 @@ export class Carousel extends Component {
     };
 
     const docs = this.state.docs;
-
+    const refreshing = this.state.refreshing;
 
     return h('div.carousel', {
       className: makeClassList({
@@ -214,13 +233,14 @@ export class Carousel extends Component {
       }, [
         h('i.carousel-pager-icon.material-icons', 'chevron_right')
       ]),
+      h('div.carousel-bg'),
       h('div.carousel-content', {
         className: makeClassList({
           'carousel-content-only-placeholders': docs.length === 0
         }),
         onScroll: () => this.onScrollExplore(),
         ref: el => this.exploreDocsContainer = el
-      }, (docs.length > 0 ? docs.map(exploreDocEntry) : docPlaceholders()).concat([
+      }, (!refreshing && docs.length > 0 ? docs.map(exploreDocEntry) : docPlaceholders()).concat([
         h('div.carousel-doc-spacer')
       ]))
     ]);

@@ -1,10 +1,7 @@
 import MiniSearch from 'minisearch';
 import _ from 'lodash';
-import Document from '../model/document';
 import { isEntity } from '../model/element/element-type';
 import logger from './logger';
-
-const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
 /** Class for  searching an index. */
 class Search {
@@ -18,12 +15,10 @@ class Search {
   /**
    * Fetch documents from source and index
    * @param {string} url location to retrieve documents from
-   * @param {number} limit max documents to retrieve
-   * @param {number} offset starting index for documents to retrieve
    * @return {object} a list of full Document JSON
    */
-  fetch( url, limit = 150, offset = 0 ){
-    const opts = { limit, offset, status: [DOCUMENT_STATUS_FIELDS.PUBLIC].join(',') };
+  fetch( url ){
+    const opts = { limit: 'Infinity' };
     let addr = `${url}?${new URLSearchParams( opts ).toString()}`;
 
     return fetch( addr )

@@ -10,6 +10,7 @@ import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
 import url from 'url';
 import { URLSearchParams } from  'url';
+import NodeCache from 'node-cache';
 
 import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
 import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
@@ -59,6 +60,8 @@ import { eLink, elink2UidList } from './pubmed/linkPubmed';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import { docs2Sitemap } from '../../../sitemap';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
+const DOC_CACHE_KEY = 'documents';
+const SEARCH_CACHE_KEY = 'search';
 
 const http = Express.Router();
 
@@ -1150,7 +1153,7 @@ http.get('/statistics', function( req, res, next ){
  */
 
 
-function getDocuments({ limit = 20, offset = 0, status, apiKey, ids }){
+function getDocuments({ limit = 20, offset, status = [ DOCUMENT_STATUS_FIELDS.PUBLIC ], apiKey, ids }){
   let tables, total;
 
   return (
@@ -1197,7 +1200,8 @@ function getDocuments({ limit = 20, offset = 0, status, apiKey, ids }){
       count = q.count();
 
       if( !ids ){
-        q = q.skip(offset).limit(limit);
+        if( offset ) q = q.skip(offset);
+        if( limit == 0 || limit ) q = q.limit(limit);
       }
 
       q = q.pluck(['id', 'secret']);
@@ -1232,6 +1236,8 @@ function getDocuments({ limit = 20, offset = 0, status, apiKey, ids }){
     .then( results => ({ total, results }) )
   );
 }
+
+const docCache = new NodeCache();
 
 /**
  * @swagger
@@ -1283,26 +1289,60 @@ function getDocuments({ limit = 20, offset = 0, status, apiKey, ids }){
  *               items:
  *                 $ref: '#/components/Document'
  */
-http.get('/', function( req, res, next ){
-  let limit = _.toInteger( _.get( req.query, 'limit', 50 ) );
-  let offset = _.toInteger( _.get( req.query, 'offset', 0 ) );
-  let apiKey = _.get( req.query, 'apiKey' );
+http.get('/', async function( req, res, next ){
+  let docJSON, count;
+  const TTL = 60 * 60 * 24;
 
-  let ids = req.query.ids ? req.query.ids.split(/\s*,\s*/) : null;
+  const csv2Array = par => _.uniq( _.compact( par.split(/\s*,\s*/) ) );
+  const noValues = array => array.every( p => _.isUndefined( p ) );
 
-  let status;
-  if( _.has( req.query, 'status' ) ){
-    status = _.compact( req.query.status.split(/\s*,\s*/) );
+  let { limit, offset, apiKey, status, ids } = req.query;
+  const hasQuery = !noValues( [ limit, offset, apiKey, status, ids ] );
+  const limitOnly = !_.isUndefined( limit ) && noValues( [ offset, apiKey, status, ids ] );
+
+  // Recognize the limit 'Infinity'
+  if( limit ) limit = _.toNumber( limit ) === Number.POSITIVE_INFINITY ? null : _.toInteger( limit );
+  if( offset ) offset = _.toInteger( offset );
+  if( ids ) ids = csv2Array( ids );
+  if( status ) status = csv2Array( status );
+  const opts = { limit, offset, apiKey, status, ids };
+
+  try {
+    if ( limit == null && limitOnly ) {
+      // Case: search - all public docs
+      let hasValues = docCache.has( SEARCH_CACHE_KEY );
+      if( !hasValues ){
+        let { total, results } = await getDocuments( opts );
+        docCache.set( SEARCH_CACHE_KEY, { total, results }, TTL );
+      }
+      let { total, results } = docCache.get( SEARCH_CACHE_KEY );
+      count = total;
+      docJSON = results;
+
+    } else if( hasQuery ) {
+      // Case: some tailored request
+      const { total, results } = await getDocuments( opts );
+      count = total;
+      docJSON = results;
+
+    } else {
+      // Case: no params, default
+      let hasValues = docCache.has( DOC_CACHE_KEY );
+      if( !hasValues ){
+        let { total, results } = await getDocuments( opts );
+        docCache.set( DOC_CACHE_KEY, { total, results }, TTL );
+      }
+      let { total, results } = docCache.get( DOC_CACHE_KEY );
+      count = total;
+      docJSON = results;
+    }
+    res.set({ 'X-Document-Count': count });
+    res.json( docJSON );
+
+  } catch( err ) {
+    next( err );
   }
 
-  return (
-    tryPromise( () => getDocuments({ limit, offset, status, apiKey, ids }) )
-    .then( ({ total, results }) => {
-      res.set({ 'X-Document-Count': total });
-      res.json( results );
-    })
-    .catch( next )
-  );
 });
 
 /**
@@ -2124,6 +2164,8 @@ http.patch('/:id/:secret', function( req, res, next ){
   };
 
   const onDocPublic = async doc => {
+    docCache.del( DOC_CACHE_KEY );
+    docCache.del( SEARCH_CACHE_KEY );
     await AdminPapersQueue.addJob( async () => {
       await updateRelatedPapers( doc );
       await sendFollowUpNotification( doc );

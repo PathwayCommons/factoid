@@ -3,10 +3,8 @@ import h from 'react-hyperscript';
 import { Component } from 'react';
 import _ from 'lodash';
 import { formatDistanceToNow } from 'date-fns';
-import queryString from 'query-string';
 import { makeClassList } from '../dom';
 
-import Document from '../../model/document';
 
 export const CAROUSEL_CONTENT = {
   FIGURE: 'figure',
@@ -17,8 +15,6 @@ export class Carousel extends Component {
   constructor(props){
     super(props);
 
-    const DOCUMENT_STATUS_FIELDS = Document.statusFields();
-
     this.state = {
       pagerLeftAvailable: false,
       pagerRightAvailable: false,
@@ -28,11 +24,7 @@ export class Carousel extends Component {
       content: props.content,
       refresh: props.refresh || (() => { // get all docs from service by default
         const url = `/api/document`;
-        const params = queryString.stringify({
-          status: [DOCUMENT_STATUS_FIELDS.PUBLIC].join(','),
-          limit: 20
-        });
-        const doFetch = () => fetch(`${url}?${params}`);
+        const doFetch = () => fetch(url);
         const toJson = res => res.json();
 
         return tryPromise(doFetch).then(toJson);

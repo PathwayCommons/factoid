@@ -765,7 +765,7 @@
     }
 
     & + button {
-      display: none;
+      display: none !important;
     }
   }
 }
@@ -789,16 +789,9 @@
   }
 }
 
-@media (max-width: 750px) {
-  .home-search-focus {
-    & .home-nav-link:not(.home-search-box-area) {
-      display: none;
-    }
-  }
-}
-
-@media (max-width: 500px) {
-  .home-search-focus {
+@media (max-width: 550px) {
+  .home-search-focus,
+  .home-search-mode {
     & .home-nav-link:not(.home-search-box-area) {
       display: none;
     }

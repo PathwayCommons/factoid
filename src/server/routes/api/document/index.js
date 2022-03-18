@@ -1146,39 +1146,20 @@ function getDocuments({ limit = 20, offset, status = [ DOCUMENT_STATUS_FIELDS.PU
       let q = table;
       let count;
 
-      q = q.orderBy({ index: r.desc('createdDate') });
-      q = q.filter(r.row('secret').ne(DEMO_SECRET));
-
       if( ids ){ // doc id must be in specified id list
-        let exprs = ids.map(id => r.row('id').eq(id));
-        let joinedExpr = exprs[0];
+        q = q.getAll( r.args( ids ) );
 
-        for( let i = 1; i < exprs.length; i++ ){
-          joinedExpr = joinedExpr.or(exprs[i]);
-        }
-
-        q = q.filter( joinedExpr );
-      }
-
-      if( status ){
-        const values =  _.intersection( _.values( DOCUMENT_STATUS_FIELDS ), status );
-        let byStatus = { foo: true };
-        values.forEach( ( value, index ) => {
-          if( index == 0 ){
-            byStatus = r.row('status').default('unset').eq( value );
-          } else {
-            byStatus = byStatus.or( r.row('status').default('unset').eq( value ) );
-          }
-        });
-
-        q = q.filter( byStatus );
+      } else if( status ){
+        const statuses =  _.intersection( _.values( DOCUMENT_STATUS_FIELDS ), status );
+        q = q.getAll( r.args( statuses ), { index: 'status' } );
       }
 
       count = q.count();
+      q = q.orderBy( r.desc('createdDate') );
 
       if( !ids ){
-        if( offset ) q = q.skip(offset);
-        if( limit == 0 || limit ) q = q.limit(limit);
+        if( offset ) q = q.skip( offset );
+        if( limit == 0 || limit ) q = q.limit( limit );
       }
 
       q = q.pluck(['id', 'secret']);
@@ -1280,8 +1261,8 @@ http.get('/', async function( req, res, next ){
   // Recognize the limit 'Infinity'
   if( limit ) limit = _.toNumber( limit ) === Number.POSITIVE_INFINITY ? null : _.toInteger( limit );
   if( offset ) offset = _.toInteger( offset );
-  if( ids ) ids = csv2Array( ids );
-  if( status ) status = csv2Array( status );
+  if( ids || ids === '' ) ids = csv2Array( ids );
+  if( status || status === '' ) status = csv2Array( status );
   const opts = { limit, offset, apiKey, status, ids };
 
   try {

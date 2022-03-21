@@ -1169,39 +1169,20 @@ function getDocuments({ limit = 20, offset, status = [ DOCUMENT_STATUS_FIELDS.PU
       let q = table;
       let count;
 
-      q = q.orderBy({ index: r.desc('createdDate') });
-      q = q.filter(r.row('secret').ne(DEMO_SECRET));
-
       if( ids ){ // doc id must be in specified id list
-        let exprs = ids.map(id => r.row('id').eq(id));
-        let joinedExpr = exprs[0];
+        q = q.getAll( r.args( ids ) );
 
-        for( let i = 1; i < exprs.length; i++ ){
-          joinedExpr = joinedExpr.or(exprs[i]);
-        }
-
-        q = q.filter( joinedExpr );
-      }
-
-      if( status ){
-        const values =  _.intersection( _.values( DOCUMENT_STATUS_FIELDS ), status );
-        let byStatus = { foo: true };
-        values.forEach( ( value, index ) => {
-          if( index == 0 ){
-            byStatus = r.row('status').default('unset').eq( value );
-          } else {
-            byStatus = byStatus.or( r.row('status').default('unset').eq( value ) );
-          }
-        });
-
-        q = q.filter( byStatus );
+      } else if( status ){
+        const statuses =  _.intersection( _.values( DOCUMENT_STATUS_FIELDS ), status );
+        q = q.getAll( r.args( statuses ), { index: 'status' } );
       }
 
       count = q.count();
+      q = q.orderBy( r.desc('createdDate') );
 
       if( !ids ){
-        if( offset ) q = q.skip(offset);
-        if( limit == 0 || limit ) q = q.limit(limit);
+        if( offset ) q = q.skip( offset );
+        if( limit == 0 || limit ) q = q.limit( limit );
       }
 
       q = q.pluck(['id', 'secret']);
@@ -1292,24 +1273,19 @@ const docCache = new NodeCache();
 http.get('/', async function( req, res, next ){
   let docJSON, count;
   const TTL = 60 * 60 * 24;
-
   const csv2Array = par => _.uniq( _.compact( par.split(/\s*,\s*/) ) );
   const noValues = array => array.every( p => _.isUndefined( p ) );
 
-  let { limit, offset, apiKey, status, ids } = req.query;
-  const hasQuery = !noValues( [ limit, offset, apiKey, status, ids ] );
-  const limitOnly = !_.isUndefined( limit ) && noValues( [ offset, apiKey, status, ids ] );
-
-  // Recognize the limit 'Infinity'
-  if( limit ) limit = _.toNumber( limit ) === Number.POSITIVE_INFINITY ? null : _.toInteger( limit );
-  if( offset ) offset = _.toInteger( offset );
-  if( ids ) ids = csv2Array( ids );
-  if( status ) status = csv2Array( status );
-  const opts = { limit, offset, apiKey, status, ids };
-
   try {
-    if ( limit == null && limitOnly ) {
-      // Case: search - all public docs
+    let opts = {};
+    let { limit, offset, apiKey, status, ids } = req.query;
+    const limitOnly = !_.isUndefined( limit ) && noValues( [ offset, apiKey, status, ids ] );
+    const limitIsInfinity = _.toNumber( limit ) === Number.POSITIVE_INFINITY;
+    const hasQueryParams = !noValues( [ limit, offset, apiKey, status, ids ] );
+
+    if ( limitOnly && limitIsInfinity ) {
+      // Case: special limit 'Infinity' - get all public docs
+      _.set( opts, 'limit', null );
       let hasValues = docCache.has( SEARCH_CACHE_KEY );
       if( !hasValues ){
         let { total, results } = await getDocuments( opts );
@@ -1319,8 +1295,13 @@ http.get('/', async function( req, res, next ){
       count = total;
       docJSON = results;
 
-    } else if( hasQuery ) {
+    } else if( hasQueryParams ) {
       // Case: some tailored request
+      if( limit ) limit = limitIsInfinity ? null : _.toInteger( limit );
+      if( offset ) offset = _.toInteger( offset );
+      if( ids || ids === '' ) ids = csv2Array( ids );
+      if( status || status === '' ) status = csv2Array( status );
+      _.assign( opts, { limit, offset, apiKey, status, ids } );
       const { total, results } = await getDocuments( opts );
       count = total;
       docJSON = results;

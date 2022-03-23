@@ -18,7 +18,7 @@ const DEFAULTS = Object.freeze({
   verified: false
 });
 
-const METADATA_FIELDS = ['provided', 'article', 'correspondence', 'status', 'verified', 'authorProfiles', 'caption' ];
+const METADATA_FIELDS = ['provided', 'correspondence', 'status', 'verified', 'authorProfiles', 'caption' ];
 const READONLY_METADATA_FIELDS = _.difference( METADATA_FIELDS, ['provided', 'correspondence'] );
 const DOCUMENT_STATUS_FIELDS = Object.freeze({
   INITIATED: 'initiated',

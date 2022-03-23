@@ -10,6 +10,7 @@ import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
 import url from 'url';
 import { URLSearchParams } from  'url';
+import NodeCache from 'node-cache';
 
 import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
 import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
@@ -59,6 +60,8 @@ import { eLink, elink2UidList } from './pubmed/linkPubmed';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import { docs2Sitemap } from '../../../sitemap';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
+const DOC_CACHE_KEY = 'documents';
+const SEARCH_CACHE_KEY = 'search';
 
 const http = Express.Router();
 
@@ -1127,7 +1130,7 @@ http.get('/statistics', function( req, res, next ){
  */
 
 
-function getDocuments({ limit = 20, offset = 0, status, apiKey, ids }){
+function getDocuments({ limit = 20, offset, status = [ DOCUMENT_STATUS_FIELDS.PUBLIC ], apiKey, ids }){
   let tables, total;
 
   return (
@@ -1143,38 +1146,20 @@ function getDocuments({ limit = 20, offset = 0, status, apiKey, ids }){
       let q = table;
       let count;
 
-      q = q.orderBy({ index: r.desc('createdDate') });
-      q = q.filter(r.row('secret').ne(DEMO_SECRET));
-
       if( ids ){ // doc id must be in specified id list
-        let exprs = ids.map(id => r.row('id').eq(id));
-        let joinedExpr = exprs[0];
+        q = q.getAll( r.args( ids ) );
 
-        for( let i = 1; i < exprs.length; i++ ){
-          joinedExpr = joinedExpr.or(exprs[i]);
-        }
-
-        q = q.filter( joinedExpr );
-      }
-
-      if( status ){
-        const values =  _.intersection( _.values( DOCUMENT_STATUS_FIELDS ), status );
-        let byStatus = { foo: true };
-        values.forEach( ( value, index ) => {
-          if( index == 0 ){
-            byStatus = r.row('status').default('unset').eq( value );
-          } else {
-            byStatus = byStatus.or( r.row('status').default('unset').eq( value ) );
-          }
-        });
-
-        q = q.filter( byStatus );
+      } else if( status ){
+        const statuses =  _.intersection( _.values( DOCUMENT_STATUS_FIELDS ), status );
+        q = q.getAll( r.args( statuses ), { index: 'status' } );
       }
 
       count = q.count();
+      q = q.orderBy( r.desc('createdDate') );
 
       if( !ids ){
-        q = q.skip(offset).limit(limit);
+        if( offset ) q = q.skip( offset );
+        if( limit == 0 || limit ) q = q.limit( limit );
       }
 
       q = q.pluck(['id', 'secret']);
@@ -1209,6 +1194,8 @@ function getDocuments({ limit = 20, offset = 0, status, apiKey, ids }){
     .then( results => ({ total, results }) )
   );
 }
+
+const docCache = new NodeCache();
 
 /**
  * @swagger
@@ -1260,26 +1247,60 @@ function getDocuments({ limit = 20, offset = 0, status, apiKey, ids }){
  *               items:
  *                 $ref: '#/components/Document'
  */
-http.get('/', function( req, res, next ){
-  let limit = _.toInteger( _.get( req.query, 'limit', 50 ) );
-  let offset = _.toInteger( _.get( req.query, 'offset', 0 ) );
-  let apiKey = _.get( req.query, 'apiKey' );
+http.get('/', async function( req, res, next ){
+  let docJSON, count;
+  const TTL = 60 * 60 * 24;
+  const csv2Array = par => _.uniq( _.compact( par.split(/\s*,\s*/) ) );
+  const noValues = array => array.every( p => _.isUndefined( p ) );
 
-  let ids = req.query.ids ? req.query.ids.split(/\s*,\s*/) : null;
+  try {
+    let opts = {};
+    let { limit, offset, apiKey, status, ids } = req.query;
+    const limitOnly = !_.isUndefined( limit ) && noValues( [ offset, apiKey, status, ids ] );
+    const limitIsInfinity = _.toNumber( limit ) === Number.POSITIVE_INFINITY;
+    const hasQueryParams = !noValues( [ limit, offset, apiKey, status, ids ] );
 
-  let status;
-  if( _.has( req.query, 'status' ) ){
-    status = _.compact( req.query.status.split(/\s*,\s*/) );
+    if ( limitOnly && limitIsInfinity ) {
+      // Case: special limit 'Infinity' - get all public docs
+      _.set( opts, 'limit', null );
+      let hasValues = docCache.has( SEARCH_CACHE_KEY );
+      if( !hasValues ){
+        let { total, results } = await getDocuments( opts );
+        docCache.set( SEARCH_CACHE_KEY, { total, results }, TTL );
+      }
+      let { total, results } = docCache.get( SEARCH_CACHE_KEY );
+      count = total;
+      docJSON = results;
+
+    } else if( hasQueryParams ) {
+      // Case: some tailored request
+      if( limit ) limit = limitIsInfinity ? null : _.toInteger( limit );
+      if( offset ) offset = _.toInteger( offset );
+      if( ids || ids === '' ) ids = csv2Array( ids );
+      if( status || status === '' ) status = csv2Array( status );
+      _.assign( opts, { limit, offset, apiKey, status, ids } );
+      const { total, results } = await getDocuments( opts );
+      count = total;
+      docJSON = results;
+
+    } else {
+      // Case: no params, default
+      let hasValues = docCache.has( DOC_CACHE_KEY );
+      if( !hasValues ){
+        let { total, results } = await getDocuments( opts );
+        docCache.set( DOC_CACHE_KEY, { total, results }, TTL );
+      }
+      let { total, results } = docCache.get( DOC_CACHE_KEY );
+      count = total;
+      docJSON = results;
+    }
+    res.set({ 'X-Document-Count': count });
+    res.json( docJSON );
+
+  } catch( err ) {
+    next( err );
   }
 
-  return (
-    tryPromise( () => getDocuments({ limit, offset, status, apiKey, ids }) )
-    .then( ({ total, results }) => {
-      res.set({ 'X-Document-Count': total });
-      res.json( results );
-    })
-    .catch( next )
-  );
 });
 
 /**
@@ -2101,6 +2122,8 @@ http.patch('/:id/:secret', function( req, res, next ){
   };
 
   const onDocPublic = async doc => {
+    docCache.del( DOC_CACHE_KEY );
+    docCache.del( SEARCH_CACHE_KEY );
     await AdminPapersQueue.addJob( async () => {
       await updateRelatedPapers( doc );
       await sendFollowUpNotification( doc );

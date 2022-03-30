@@ -294,7 +294,11 @@ input {
   &.input-round {
     border-radius: 1em;
     padding-left: 0.5em;
-    padding-right: 2em;
+    padding-right: 0.5em;
+
+    &.input-joined {
+      padding-right: 2em;
+    }
 
     & + button,
     & + .input-joined-after {

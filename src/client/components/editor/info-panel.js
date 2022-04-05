@@ -1,12 +1,13 @@
 import h from 'react-hyperscript';
 import { Component } from 'react';
-import { DOI_LINK_BASE_URL, PUBMED_LINK_BASE_URL, GOOGLE_SCHOLAR_BASE_URL } from '../../../config';
+import { DOI_LINK_BASE_URL, PUBMED_LINK_BASE_URL, GOOGLE_SCHOLAR_BASE_URL, ORCID_BASE_URL } from '../../../config';
 // import { Carousel, CAROUSEL_CONTENT } from '../carousel';
 import { makeClassList } from '../../dom';
 import ElementInfo from '../element-info/element-info';
 import RelatedPapers from '../related-papers';
 import _ from 'lodash';
 import Credits from './credits';
+import { findOrcidIdentifier } from '../../../util/pubmed';
 
 export class InfoPanel extends Component {
   constructor(props){
@@ -75,10 +76,10 @@ export class InfoPanel extends Component {
       h('div.editor-info-flags', [ retractFlag ]),
       h('div.editor-info-title', title),
       h('div.editor-info-authors', _.flatten(authorProfiles.map((a, i) => {
-        let orcidUri = a.orcid;
-        if ( orcidUri ) {
+        let orcid = findOrcidIdentifier( a.orcid ); // Backwards compatible with URI
+        if ( orcid ) {
           return [
-            h('a.editor-info-author.plain-link', { target: '_blank', href: orcidUri }, a.name),
+            h('a.editor-info-author.plain-link', { target: '_blank', href: `${ORCID_BASE_URL}${orcid}` }, a.name),
             h('i.icon.icon-orcid.editor-info-author-orcid'),
             i !== authorProfiles.length - 1 ? h('span.editor-info-author-spacer', ', ') : null
           ];

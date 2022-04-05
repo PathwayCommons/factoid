@@ -52,7 +52,8 @@ import { BASE_URL,
   EMAIL_ADDRESS_ADMIN,
   BULK_DOWNLOADS_PATH,
   BIOPAX_DOWNLOADS_PATH,
-  BIOPAX_IDMAP_DOWNLOADS_PATH
+  BIOPAX_IDMAP_DOWNLOADS_PATH,
+  ORCID_PUBLIC_API_BASE_URL
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
@@ -344,67 +345,76 @@ const fillDocArticle = async doc => {
   }
 };
 
-const makeOrcidKey = ( s1, s2 ) => s1 + '_' + s2;
+// const makeOrcidKey = ( s1, s2 ) => s1 + '_' + s2;
 
-const getOrcidUriMap = async doi => {
-  let url = `https://pub.orcid.org/v3.0/csv-search?q=`
-      + `doi%3D${doi}`;
+const searchOrcid = async doi => {
+  const getDoiSearchUrl = doi => `${ORCID_PUBLIC_API_BASE_URL}expanded-search?q=doi-self:${doi}`;
+  const fetchJson = url => fetch( url, { headers: { 'accept': 'application/json' } } );
+  const toJson = res => res.json();
+  const fetchAllJson = async urls => {
+    const responses = await Promise.all( urls.map( fetchJson ) );
+    return await Promise.all( responses.map( toJson ) );
+  };
+  let rawUrl = getDoiSearchUrl( doi );
+  // DOIs are set by clients, with varying case (e.g. eLife)
+  let urls = [ rawUrl, rawUrl.toLowerCase() ];
 
-  const textToMap = text => {
-    let lines = text.split(/\r\n|\r|\n/);
-    let obj = {};
-    lines.forEach( ( line, i ) => {
-      if ( i == 0 ) {
-        return;
-      }
-      let vals = line.split(',');
-      let orcidUri = 'https://orcid.org/' + vals[ 0 ];
-      let givenNames = vals[ 2 ];
-      let familyName = vals[ 3 ];
-
-      if ( !givenNames || !familyName ) {
-        return;
-      }
-
-      let key = makeOrcidKey( givenNames, familyName );
-      obj[ key ] = orcidUri;
-    } );
-
-    return obj;
+  const mergeExpandedResults = searchResults => {
+    const getSearchResult = response => response['expanded-result']; //possibly null
+    let records = _.compact( searchResults.map( getSearchResult ) );
+    return _.unionBy( ...records, 'orcid-id' );
   };
 
-  return fetch( url, { method: 'GET', headers: { 'accept': 'text/csv' } } )
-    .then( res => res.text() )
-    .then( textToMap )
-    .catch( error => {
-      logger.error( `Error finding Orcid URI: ${error.message}`);
-      return null;
-    } );
+  try {
+    let expandedSearchResults = await fetchAllJson( urls );
+    let searchRecords = mergeExpandedResults( expandedSearchResults );
+    return searchRecords;
+
+  } catch ( err ) {
+    logger.error( `Error finding Orcid URI: ${err.message}`);
+    return null;
+  }
+};
+
+const findAllIndexes = ( collection, key, val ) => {
+  var indexes = [], i = -1;
+  while ( ( i = _.findIndex( collection, [ key, val ], i + 1 ) ) != -1 ){
+    indexes.push( i );
+  }
+  return indexes;
 };
 
 const fillDocAuthorProfiles = async doc => {
   const citation = doc.citation();
-  const { authors, doi } = citation;
+  const { authors: { authorList }, doi } = citation;
 
-  let orcidUrisMap = await getOrcidUriMap( doi );
+  let orcidRecords = await searchOrcid( doi );
+  let authorProfiles = authorList
+    .map( author => {
+      let authorProfile = _.assign( {}, author );
+      const { orcid, ForeName, LastName } = author;
+      if( orcid == null ){
+        let match;
+        const byLastName =  [ 'family-names', LastName ];
+        const byFirstLastNames = o => LastName == o['family-names'] && ForeName == o['given-names'];
+        let authorListIndices = findAllIndexes( authorList, 'LastName', LastName );
+        let lastNameIsUnique = authorListIndices.length == 1;
 
-  orcidUrisMap = orcidUrisMap || null;
-
-  let authorProfiles = authors.authorList.map( a => {
-    let key = makeOrcidKey( a.ForeName, a.LastName );
-    let orcid = orcidUrisMap[ key ] || null;
-    let authorProfile =  _.assignIn({}, a, { orcid });
-    return authorProfile;
-  });
-
-
+        // Find by last name alone, if it is unique
+        match = lastNameIsUnique ?
+          _.find( orcidRecords, byLastName ) :
+          _.find( orcidRecords, byFirstLastNames );
+        if( match ) _.set( authorProfile, ['orcid'], match['orcid-id'] );
+      }
+      return authorProfile;
+    });
   await doc.authorProfiles( authorProfiles );
 };
 
 const fillDoc = async doc => {
   await fillDocCorrespondence( doc );
   await fillDocArticle( doc );
-  await fillDocAuthorProfiles( doc );
+  // await fillDocAuthorProfiles( doc );
   return doc;
 };
 

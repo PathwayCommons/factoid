@@ -95,8 +95,14 @@ const getAuthorAbbrev = AuthorList => {
 const getContacts = AuthorList => AuthorList.map( getContact ).filter( contact => !_.isEmpty( _.get( contact, 'email' ) ) );
 
 const findOrcidIdentifier = raw => {
+  let orcidId = null;
+  if( raw ){
   const ORCID_REGEX = /\d{4}-\d{4}-\d{4}-\d{3}(\d|X)/g;
-  return raw ? _.head( raw.match( ORCID_REGEX ) ) : null;
+    const matches = raw.match( ORCID_REGEX );
+    const hasMatch = !_.isEmpty( matches );
+    if( hasMatch ) orcidId = _.head( matches );
+  }
+  return orcidId;
 };
 
 const getAuthorOrcid = Author => {

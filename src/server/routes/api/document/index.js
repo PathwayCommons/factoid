@@ -414,7 +414,7 @@ const fillDocAuthorProfiles = async doc => {
 const fillDoc = async doc => {
   await fillDocCorrespondence( doc );
   await fillDocArticle( doc );
-  // await fillDocAuthorProfiles( doc );
+  await fillDocAuthorProfiles( doc );
   return doc;
 };
 

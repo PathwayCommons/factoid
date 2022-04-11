@@ -345,8 +345,13 @@ const fillDocArticle = async doc => {
   }
 };
 
-// const makeOrcidKey = ( s1, s2 ) => s1 + '_' + s2;
-
+/**
+ * searchOrcid
+ * Search the ORCID API using an article DOI
+ *
+ * @param {string} doi article DOI
+ * @returns A unique set of search {@link https://info.orcid.org/documentation/integration-guide/orcid-record/ records}
+ */
 const searchOrcid = async doi => {
   const getDoiSearchUrl = doi => `${ORCID_PUBLIC_API_BASE_URL}expanded-search?q=doi-self:${doi}`;
   const fetchJson = url => fetch( url, { headers: { 'accept': 'application/json' } } );
@@ -355,10 +360,6 @@ const searchOrcid = async doi => {
     const responses = await Promise.all( urls.map( fetchJson ) );
     return await Promise.all( responses.map( toJson ) );
   };
-  let rawUrl = getDoiSearchUrl( doi );
-  // DOIs are set by clients, with varying case (e.g. eLife)
-  let urls = [ rawUrl, rawUrl.toLowerCase() ];
-
   const mergeExpandedResults = searchResults => {
     const getSearchResult = response => response['expanded-result']; //possibly null
     let records = _.compact( searchResults.map( getSearchResult ) );
@@ -366,6 +367,11 @@ const searchOrcid = async doi => {
   };
 
   try {
+    // DOIs can be set by clients, with varying case (e.g. eLife vs elife)
+    let rawUrl = getDoiSearchUrl( doi );
+    let normalizedUrl = getDoiSearchUrl( doi.toLowerCase() );
+    let urls = [ rawUrl, normalizedUrl ];
+
     let expandedSearchResults = await fetchAllJson( urls );
     let searchRecords = mergeExpandedResults( expandedSearchResults );
     return searchRecords;
@@ -384,6 +390,14 @@ const findAllIndexes = ( collection, key, val ) => {
   return indexes;
 };
 
+/**
+ * fillDocAuthorProfiles
+ * Supplement PubMed author ORCIDs from ORCID itself.
+ * Match by last name when unique, else by first and last names.
+ *
+ * @param {Object} doc Document
+ * @returns An array of author profile information
+ */
 const fillDocAuthorProfiles = async doc => {
   const citation = doc.citation();
   const { authors: { authorList }, doi } = citation;

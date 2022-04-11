@@ -94,6 +94,13 @@ const getAuthorAbbrev = AuthorList => {
 
 const getContacts = AuthorList => AuthorList.map( getContact ).filter( contact => !_.isEmpty( _.get( contact, 'email' ) ) );
 
+/**
+ * findOrcidIdentifier
+ * Helper to extract an ORCID accession from a string
+ *
+ * @param {string} raw the string to examine
+ * @returns ORCID accession, possibly null
+ */
 const findOrcidIdentifier = raw => {
   let orcidId = null;
   if( raw ){

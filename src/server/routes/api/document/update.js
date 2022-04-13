@@ -1,6 +1,6 @@
 import logger from '../../../logger';
 import { DEMO_SECRET, DOCUMENT_CRON_CREATED_AGE_DAYS, DOCUMENT_CRON_REFRESH_ENABLED, DOCUMENT_CRON_UNEDITED_DAYS } from '../../../../config';
-import { loadTables, loadDoc, fillDocArticle } from  './index';
+import { loadTables, loadDoc, fillDocArticle, fillDocAuthorProfiles } from  './index';
 import Document from '../../../../model/document';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
@@ -92,6 +92,7 @@ const updateArticle = async () => {
     let chunks = chunkify( docs );
     for( const chunk of chunks ){
       await Promise.all( chunk.map( fillDocArticle ) );
+      await Promise.all( chunk.map( fillDocAuthorProfiles ) );
     }
     lastUpdateTime( Date.now() );
 

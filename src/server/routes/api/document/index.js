@@ -2479,6 +2479,7 @@ const getRelatedPapersForNetwork = async doc => {
 export default http;
 export { getDocumentJson,
   loadTables, loadDoc, fillDocArticle, updateRelatedPapers,
+  fillDocAuthorProfiles,
   generateSitemap,
   getDocuments, getSBGN, getBioPAX
 }; // allow access so page rendering can get the same data as the rest api

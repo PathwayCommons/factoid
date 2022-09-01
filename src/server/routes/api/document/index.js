@@ -208,12 +208,13 @@ const mapToUniprotIds = docTemplate => {
       return Promise.resolve();
     }
 
+    const UNIPROT_DB_PREFIX = 'uniprot';
     const opts = {
       id: [
         id
       ],
       dbfrom: dbPrefix,
-      dbto: 'uniprot'
+      dbto: UNIPROT_DB_PREFIX
     };
 
     return fetch( GROUNDING_SEARCH_BASE_URL + '/map', {
@@ -229,6 +230,7 @@ const mapToUniprotIds = docTemplate => {
       if ( dbXref ) {
         xref.id = dbXref.id;
         xref.db = dbXref.db;
+        xref.dbPrefix = opts.dbto;
       }
     } );
   };

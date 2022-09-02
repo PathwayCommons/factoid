@@ -53,7 +53,8 @@ import { BASE_URL,
   BULK_DOWNLOADS_PATH,
   BIOPAX_DOWNLOADS_PATH,
   BIOPAX_IDMAP_DOWNLOADS_PATH,
-  ORCID_PUBLIC_API_BASE_URL
+  ORCID_PUBLIC_API_BASE_URL,
+  DOI_LINK_BASE_URL
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
@@ -1462,6 +1463,19 @@ const tweetDoc = ( doc, text ) => {
       .then( tweet =>  doc.setTweetMetadata( tweet ) );
 };
 
+// reply to document tweet with article link
+const tweetArticleReply = async doc => {
+  const { doi } = doc.citation();
+  if( !doi || !doc.hasTweet() ) return;
+
+  const { id_str: in_reply_to_status_id } = doc.tweetMetadata();
+  const url = `${DOI_LINK_BASE_URL}${doi}`;
+  const status = `Read the paper: ${url}`;
+
+  await twitterClient.post( 'statuses/update', { status, in_reply_to_status_id } );
+  return doc;
+};
+
 const tryTweetingDoc = async ( doc, text ) => {
 
   const shouldTweet = doc => {
@@ -1475,6 +1489,7 @@ const tryTweetingDoc = async ( doc, text ) => {
     try {
       if( !text ) text = truncateString( doc.toText(), MAX_TWEET_LENGTH );
       await tweetDoc( doc, text );
+      await tweetArticleReply( doc );
     } catch ( e ) {
       logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow
     }

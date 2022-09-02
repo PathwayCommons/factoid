@@ -52,7 +52,9 @@ import { BASE_URL,
   EMAIL_ADDRESS_ADMIN,
   BULK_DOWNLOADS_PATH,
   BIOPAX_DOWNLOADS_PATH,
-  BIOPAX_IDMAP_DOWNLOADS_PATH
+  BIOPAX_IDMAP_DOWNLOADS_PATH,
+  ORCID_PUBLIC_API_BASE_URL,
+  DOI_LINK_BASE_URL
  } from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
@@ -207,12 +209,13 @@ const mapToUniprotIds = docTemplate => {
       return Promise.resolve();
     }
 
+    const UNIPROT_DB_PREFIX = 'uniprot';
     const opts = {
       id: [
         id
       ],
       dbfrom: dbPrefix,
-      dbto: 'uniprot'
+      dbto: UNIPROT_DB_PREFIX
     };
 
     return fetch( GROUNDING_SEARCH_BASE_URL + '/map', {
@@ -228,6 +231,7 @@ const mapToUniprotIds = docTemplate => {
       if ( dbXref ) {
         xref.id = dbXref.id;
         xref.db = dbXref.db;
+        xref.dbPrefix = opts.dbto;
       }
     } );
   };
@@ -344,60 +348,83 @@ const fillDocArticle = async doc => {
   }
 };
 
-const makeOrcidKey = ( s1, s2 ) => s1 + '_' + s2;
-
-const getOrcidUriMap = async doi => {
-  let url = `https://pub.orcid.org/v3.0/csv-search?q=`
-      + `doi%3D${doi}`;
-
-  const textToMap = text => {
-    let lines = text.split(/\r\n|\r|\n/);
-    let obj = {};
-    lines.forEach( ( line, i ) => {
-      if ( i == 0 ) {
-        return;
-      }
-      let vals = line.split(',');
-      let orcidUri = 'https://orcid.org/' + vals[ 0 ];
-      let givenNames = vals[ 2 ];
-      let familyName = vals[ 3 ];
-
-      if ( !givenNames || !familyName ) {
-        return;
-      }
-
-      let key = makeOrcidKey( givenNames, familyName );
-      obj[ key ] = orcidUri;
-    } );
-
-    return obj;
+/**
+ * searchOrcid
+ * Search the ORCID API using an article DOI
+ *
+ * @param {string} doi article DOI
+ * @returns A unique set of search {@link https://info.orcid.org/documentation/integration-guide/orcid-record/ records}
+ */
+const searchOrcid = async doi => {
+  const getDoiSearchUrl = doi => `${ORCID_PUBLIC_API_BASE_URL}expanded-search?q=doi-self:${doi}`;
+  const fetchJson = url => fetch( url, { headers: { 'accept': 'application/json' } } );
+  const toJson = res => res.json();
+  const fetchAllJson = async urls => {
+    const responses = await Promise.all( urls.map( fetchJson ) );
+    return await Promise.all( responses.map( toJson ) );
+  };
+  const mergeExpandedResults = searchResults => {
+    const getSearchResult = response => response['expanded-result']; //possibly null
+    let records = _.compact( searchResults.map( getSearchResult ) );
+    return _.unionBy( ...records, 'orcid-id' );
   };
 
-  return fetch( url, { method: 'GET', headers: { 'accept': 'text/csv' } } )
-    .then( res => res.text() )
-    .then( textToMap )
-    .catch( error => {
-      logger.error( `Error finding Orcid URI: ${error.message}`);
-      return null;
-    } );
+  try {
+    // DOIs can be set by clients, with varying case (e.g. eLife vs elife)
+    let rawUrl = getDoiSearchUrl( doi );
+    let normalizedUrl = getDoiSearchUrl( doi.toLowerCase() );
+    let urls = [ rawUrl, normalizedUrl ];
+
+    let expandedSearchResults = await fetchAllJson( urls );
+    let searchRecords = mergeExpandedResults( expandedSearchResults );
+    return searchRecords;
+
+  } catch ( err ) {
+    logger.error( `Error finding Orcid URI: ${err.message}`);
+    return null;
+  }
 };
 
+const findAllIndexes = ( collection, key, val ) => {
+  var indexes = [], i = -1;
+  while ( ( i = _.findIndex( collection, [ key, val ], i + 1 ) ) != -1 ){
+    indexes.push( i );
+  }
+  return indexes;
+};
+
+/**
+ * fillDocAuthorProfiles
+ * Supplement PubMed author ORCIDs from ORCID itself.
+ * Match by last name when unique, else by first and last names.
+ *
+ * @param {Object} doc Document
+ * @returns An array of author profile information
+ */
 const fillDocAuthorProfiles = async doc => {
   const citation = doc.citation();
-  const { authors, doi } = citation;
+  const { authors: { authorList }, doi } = citation;
 
-  let orcidUrisMap = await getOrcidUriMap( doi );
+  let orcidRecords = await searchOrcid( doi );
+  let authorProfiles = authorList
+    .map( author => {
+      let authorProfile = _.assign( {}, author );
+      const { orcid, ForeName, LastName } = author;
+      if( orcid == null ){
+        let match;
+        const byLastName =  [ 'family-names', LastName ];
+        const byFirstLastNames = o => LastName == o['family-names'] && ForeName == o['given-names'];
+        let authorListIndices = findAllIndexes( authorList, 'LastName', LastName );
+        let lastNameIsUnique = authorListIndices.length == 1;
 
-  orcidUrisMap = orcidUrisMap || null;
-
-  let authorProfiles = authors.authorList.map( a => {
-    let key = makeOrcidKey( a.ForeName, a.LastName );
-    let orcid = orcidUrisMap[ key ] || null;
-    let authorProfile =  _.assignIn({}, a, { orcid });
-    return authorProfile;
-  });
-
-
+        // Find by last name alone, if it is unique
+        match = lastNameIsUnique ?
+          _.find( orcidRecords, byLastName ) :
+          _.find( orcidRecords, byFirstLastNames );
+        if( match ) _.set( authorProfile, ['orcid'], match['orcid-id'] );
+      }
+      return authorProfile;
+    });
   await doc.authorProfiles( authorProfiles );
 };
 
@@ -1436,6 +1463,19 @@ const tweetDoc = ( doc, text ) => {
       .then( tweet =>  doc.setTweetMetadata( tweet ) );
 };
 
+// reply to document tweet with article link
+const tweetArticleReply = async doc => {
+  const { doi } = doc.citation();
+  if( !doi || !doc.hasTweet() ) return;
+
+  const { id_str: in_reply_to_status_id } = doc.tweetMetadata();
+  const url = `${DOI_LINK_BASE_URL}${doi}`;
+  const status = `Read the paper: ${url}`;
+
+  await twitterClient.post( 'statuses/update', { status, in_reply_to_status_id } );
+  return doc;
+};
+
 const tryTweetingDoc = async ( doc, text ) => {
 
   const shouldTweet = doc => {
@@ -1449,6 +1489,7 @@ const tryTweetingDoc = async ( doc, text ) => {
     try {
       if( !text ) text = truncateString( doc.toText(), MAX_TWEET_LENGTH );
       await tweetDoc( doc, text );
+      await tweetArticleReply( doc );
     } catch ( e ) {
       logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow
     }
@@ -2455,6 +2496,7 @@ const getRelatedPapersForNetwork = async doc => {
 export default http;
 export { getDocumentJson,
   loadTables, loadDoc, fillDocArticle, updateRelatedPapers,
+  fillDocAuthorProfiles,
   generateSitemap,
   getDocuments, getSBGN, getBioPAX
 }; // allow access so page rendering can get the same data as the rest api

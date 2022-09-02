@@ -69,6 +69,8 @@ Services:
 - `INDRA_DB_BASE_URL` : url for [INDRA (Integrated Network and Dynamical Reasoning Assembler)](https://indralab.github.io/)
 - `INDRA_ENGLISH_ASSEMBLER_URL` : url for service that assembles INDRA statements into models
 - `SEMANTIC_SEARCH_BASE_URL` : url for [semantic-search](https://github.com/PathwayCommons/semantic-search) web service
+- `ORCID_BASE_URL` : url for [ORCID](https://orcid.org/) website
+- `ORCID_PUBLIC_API_BASE_URL` : url for version of [ORCID](https://orcid.org/) public API
 - `NO_ABSTRACT_HANDLING` : labels directing how to sort documents missing query text. 'text' (default): autogenerate text from templates; 'date': sort by date and ignore text.
 
 Links:

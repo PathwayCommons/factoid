@@ -72,6 +72,8 @@ export const NCBI_EUTILS_API_KEY = env('NCBI_EUTILS_API_KEY', 'b99e10ebe0f90d815
 export const INDRA_DB_BASE_URL = env('INDRA_DB_BASE_URL', 'https://db.indra.bio/');
 export const INDRA_ENGLISH_ASSEMBLER_URL = env('INDRA_ENGLISH_ASSEMBLER_URL', 'http://api.indra.bio:8000/assemblers/english');
 export const SEMANTIC_SEARCH_BASE_URL = env('SEMANTIC_SEARCH_BASE_URL', 'https://main.semanticsearch.baderlab.org/');
+export const ORCID_BASE_URL = env('ORCID_BASE_URL', 'https://orcid.org/');
+export const ORCID_PUBLIC_API_BASE_URL = env('ORCID_PUBLIC_API_BASE_URL', 'https://pub.orcid.org/v3.0/');
 
 // Links
 export const UNIPROT_LINK_BASE_URL = env('UNIPROT_LINK_BASE_URL', 'http://www.uniprot.org/uniprot/');

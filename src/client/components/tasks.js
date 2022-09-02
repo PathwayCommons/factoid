@@ -347,8 +347,8 @@ class TaskView extends DataComponent {
         onClick: () => this.submit()
       }, 'Yes, submit');
 
-      const entities = document.entities();
-      let hasEntity = entities.length;
+      const interactions = document.interactions();
+      let hasInteraction = interactions.length;
       let hasTitle = _.get(document.citation(), ['title']) != null;
 
       const close = () => bus.emit('closesubmit');
@@ -363,8 +363,8 @@ class TaskView extends DataComponent {
           }, 'Show me how');
       }
 
-      if( !hasEntity ){
-        taskMsg = 'Please draw your interactions then submit.';
+      if( !hasInteraction ){
+        taskMsg = 'Please draw an interaction then submit.';
         taskButton = h('button.salient-button', {
             onClick: () => {
               bus.emit('togglehelp');

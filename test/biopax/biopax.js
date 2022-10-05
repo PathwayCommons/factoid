@@ -31,7 +31,9 @@ describe('mapToUniprotIds', function(){
             .reply(200, mockRes);
     });
 
-    after( () => nock.cleanAll() );
+    after( () => {
+        nock.cleanAll();
+    } );
 
     it( 'updated uniprot ids', () => {
         const entityPaths = ['interactions.0.controller', 'interactions.0.source', 'interactions.0.participants.0', 'interactions.0.participants.1'];
@@ -39,7 +41,8 @@ describe('mapToUniprotIds', function(){
             entityPaths.push(entityPath + '.components.0');
             entityPaths.push(entityPath + '.components.1');
         } );
-        mapToUniprotIds(this.biopaxTemplate)
+        
+        return mapToUniprotIds(this.biopaxTemplate)
             .then( updatedTemplate => {
                 entityPaths.forEach( entityPath => {
                     const xrefPath = entityPath + '.xref';

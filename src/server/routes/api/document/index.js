@@ -196,21 +196,9 @@ const DEFAULT_CORRESPONDENCE = {
   emails: []
 };
 
-const mapToUniprotIds = docTemplate => {
+const mapToUniprotIds = biopaxTemplate => {
   const updateGrounding = entityTemplate => {
     if ( entityTemplate == null ) {
-      return Promise.resolve();
-    }
-
-    let xref = entityTemplate.xref;
-
-    if ( xref == null ) {
-      return Promise.resolve();
-    }
-
-    let { id, dbPrefix } = xref;
-
-    if ( dbPrefix !== 'ncbigene' ){
       return Promise.resolve();
     }
 
@@ -225,6 +213,18 @@ const mapToUniprotIds = docTemplate => {
     };
 
     const handleSelf = () => {
+      let xref = entityTemplate.xref;
+
+      if ( xref == null ) {
+        return Promise.resolve();
+      }
+
+      let { id, dbPrefix } = xref;
+
+      if ( dbPrefix !== 'ncbigene' ){
+        return Promise.resolve();
+      }
+      
       const UNIPROT_DB_PREFIX = 'uniprot';
       const opts = {
         id: [
@@ -254,7 +254,7 @@ const mapToUniprotIds = docTemplate => {
 
     return handleComponents().then( handleSelf );
   };
-  let intnTemplates = docTemplate.interactions;
+  let intnTemplates = biopaxTemplate.interactions;
   let promises = intnTemplates.map( intnTemplate => {
     let ppts = intnTemplate.participants;
     return updateGrounding( intnTemplate.controller )
@@ -274,7 +274,7 @@ const mapToUniprotIds = docTemplate => {
   };
 
   return handleChunk( 0 )
-    .then( () => docTemplate );
+    .then( () => biopaxTemplate );
 };
 
 /**

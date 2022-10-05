@@ -203,37 +203,56 @@ const mapToUniprotIds = docTemplate => {
     }
 
     let xref = entityTemplate.xref;
+
+    if ( xref == null ) {
+      return Promise.resolve();
+    }
+
     let { id, dbPrefix } = xref;
 
     if ( dbPrefix !== 'ncbigene' ){
       return Promise.resolve();
     }
 
-    const UNIPROT_DB_PREFIX = 'uniprot';
-    const opts = {
-      id: [
-        id
-      ],
-      dbfrom: dbPrefix,
-      dbto: UNIPROT_DB_PREFIX
+    const handleComponents = () => {
+      const components = entityTemplate.components;
+
+      if ( components == null ) {
+        return Promise.resolve();
+      }
+
+      return Promise.all( components.map( updateGrounding ) );
     };
 
-    return fetch( GROUNDING_SEARCH_BASE_URL + '/map', {
-      method: 'POST',
-      body: JSON.stringify( opts ),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    } )
-    .then( res => res.json() )
-    .then( res => {
-      let dbXref = _.get( res, [ 0, 'dbXrefs', 0 ] );
-      if ( dbXref ) {
-        xref.id = dbXref.id;
-        xref.db = dbXref.db;
-        xref.dbPrefix = opts.dbto;
-      }
-    } );
+    const handleSelf = () => {
+      const UNIPROT_DB_PREFIX = 'uniprot';
+      const opts = {
+        id: [
+          id
+        ],
+        dbfrom: dbPrefix,
+        dbto: UNIPROT_DB_PREFIX
+      };
+
+      return fetch( GROUNDING_SEARCH_BASE_URL + '/map', {
+        method: 'POST',
+        body: JSON.stringify( opts ),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      } )
+      .then( res => res.json() )
+      .then( res => {
+        let dbXref = _.get( res, [ 0, 'dbXrefs', 0 ] );
+        if ( dbXref ) {
+          xref.id = dbXref.id;
+          xref.db = dbXref.db;
+          xref.dbPrefix = opts.dbto;
+        }
+      } );
+    };
+
+    return handleComponents().then( handleSelf );
   };
   let intnTemplates = docTemplate.interactions;
   let promises = intnTemplates.map( intnTemplate => {
@@ -2498,5 +2517,6 @@ export { getDocumentJson,
   loadTables, loadDoc, fillDocArticle, updateRelatedPapers,
   fillDocAuthorProfiles,
   generateSitemap,
-  getDocuments, getSBGN, getBioPAX
+  getDocuments, getSBGN, getBioPAX,
+  mapToUniprotIds
 }; // allow access so page rendering can get the same data as the rest api

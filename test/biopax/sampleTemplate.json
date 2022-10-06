@@ -1,0 +1,61 @@
+{
+    "interactions":[
+        {
+            "type":"Other Interaction",
+            "participants":[
+                {
+                    "type":"protein",
+                    "name":"Ataxin 3",
+                    "xref":{
+                        "id":"110616",
+                        "db":"NCBI Gene",
+                        "dbPrefix":"ncbigene"
+                    },
+                    "organism":{
+                        "id":"10090",
+                        "db":"taxonomy"
+                    }
+                },
+                {
+                    "type":"complex",
+                    "name":"Complex (Rheb:ubiquitin)",
+                    "xref":null,
+                    "organism":null,
+                    "components":[
+                        {
+                            "type":"protein",
+                            "name":"Rheb",
+                            "xref":{
+                                "id":"19744",
+                                "db":"NCBI Gene",
+                                "dbPrefix":"ncbigene"
+                            },
+                            "organism":{
+                                "id":"10090",
+                                "db":"taxonomy"
+                            }
+                        },{
+                            "type":"protein",
+                            "name":"ubiquitin",
+                            "xref":{
+                                "id":"216818",
+                                "db":"NCBI Gene",
+                                "dbPrefix":"ncbigene"
+                            },
+                            "organism":{
+                                "id":"10090",
+                                "db":"taxonomy"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "pathwayName":"Tributyrin ester-impregnated pH strips for confirming neonatal feeding tube placement: a diagnostic test accuracy study.",
+    "pathwayId":"e22e6084-6505-4725-8792-7727484fec9b",
+    "publication":{
+        "id":"36175118",
+        "db":"pubmed"
+    }
+}

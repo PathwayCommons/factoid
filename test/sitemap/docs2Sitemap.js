@@ -9,10 +9,16 @@ import { BASE_URL } from '../../src/config.js';
 
 describe('docs2Sitemap - Element: <urlset>', function(){
 
-  let etree, sitemap;
+  let etree, sitemap, docs;
 
   before( () => {
-    sitemap = docs2Sitemap( docsDataJSON );
+    // Mock the Document Date fields
+    docs = docsDataJSON.map( d => {
+      d.createdDate = new Date(d.createdDate);
+      d.lastEditedDate = new Date(d.lastEditedDate);
+      return d;
+    });
+    sitemap = docs2Sitemap( docs );
     etree = et.parse( sitemap );
   });
 
@@ -37,14 +43,14 @@ describe('docs2Sitemap - Element: <urlset>', function(){
     });
 
     it('Should have the correct number of <url> children', () => {
-      expect( urls ).to.have.lengthOf( docsDataJSON.length + 1 );
+      expect( urls ).to.have.lengthOf( docs.length + 1 );
     });
 
     it('Should have the correct <loc>', () => {
       docUrls.forEach( url => {
         const locText = url.findtext('./loc');
         const locURL = new URL(locText);
-        const doc = _.find( docsDataJSON, [ 'publicUrl', locURL.pathname ]);
+        const doc = _.find( docs, [ 'publicUrl', locURL.pathname ]);
         expect( doc ).not.to.be.undefined;
       });
     }); // loc
@@ -52,9 +58,8 @@ describe('docs2Sitemap - Element: <urlset>', function(){
     it('Should have the correct <lastmod>', () => {
       docUrls.forEach( url => {
         const lastmod = url.findtext('./lastmod');
-        const doc = _.find( docsDataJSON, [ 'lastEditedDate', lastmod ]);
+        const doc = _.find( docs, d => d.lastEditedDate.toISOString() == lastmod );
         expect( doc ).not.to.be.undefined;
-        expect( doc.lastEditedDate ).to.equal( lastmod );
       });
     }); // lastmod
 
@@ -70,15 +75,15 @@ describe('docs2Sitemap - Element: <urlset>', function(){
     it('Should have the correct <image:image>', () => {
       docUrls.forEach( url => {
         const imageLocText = url.findtext('./image:image/image:loc');
-        const hasDocLoc = docsDataJSON.some( docJSON => imageLocText && imageLocText.includes( docJSON.id ) );
+        const hasDocLoc = docs.some( docJSON => imageLocText && imageLocText.includes( docJSON.id ) );
         expect( hasDocLoc ).to.be.true;
 
         const imageTitleText = url.findtext('./image:image/image:title');
-        const hasDocTitle = docsDataJSON.some( docJSON => docJSON.citation.title === imageTitleText );
+        const hasDocTitle = docs.some( docJSON => docJSON.citation.title === imageTitleText );
         expect( hasDocTitle ).to.be.true;
 
         const imageCaptionText = url.findtext('./image:image/image:caption');
-        const hasDocCaption = docsDataJSON.some( docJSON => docJSON.text === imageCaptionText );
+        const hasDocCaption = docs.some( docJSON => docJSON.text === imageCaptionText );
         expect( hasDocCaption ).to.be.true;
       });
     }); // image:image

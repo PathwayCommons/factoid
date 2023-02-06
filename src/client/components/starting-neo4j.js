@@ -19,7 +19,7 @@ async function toDocs(docJSONs, docSocket, eleSocket) {
   return Promise.all( docPromises );
 }
 
-async function getAllDocs() {
+async function getAllDocs() {// eslint-disable-line no-unused-vars
   const url = 'https://biofactoid.org/api/document/a896d611-affe-4b45-a5e1-9bc560ffceab';
 
   const res = await fetch(`${url}`);

@@ -136,4 +136,5 @@ export const SEMANTIC_SEARCH_LIMIT = env('SEMANTIC_SEARCH_LIMIT', 30);
 export const MIN_RELATED_PAPERS = env('MIN_RELATED_PAPERS', 6);
 
 // google analytics
-export const GA_ID = env('GA_ID', 'UA-43341809-12');
+// google tag manager
+export const GTM_ID = env('GTM_ID', 'GTM-NV468LC');

@@ -133,7 +133,7 @@
     "webpack-bundle-analyzer": "^2.9.2"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=16.19.0"
   },
   "version": "0.22.0"
 }

@@ -33,6 +33,24 @@ async function getAllDocs() {// eslint-disable-line no-unused-vars
 
 const driver = neo4j.driver('bolt://52.23.228.198:7687', neo4j.auth.basic('neo4j', 'metals-wires-alarms')); // free sandbox. temporary
 
+export async function helloWorld() {
+    const session = driver.session({database:"neo4j"});
+    await session
+    .beginTransaction()
+    .then(transaction => {
+        transaction.run('MERGE (a:Greeting) SET a.message = $message RETURN a.message + ", from node " + id(a)',
+        { message: 'Hello World!!!' })
+        .then(result1 => {
+            console.log("Message Sent: ", result1.records[0].get(0));
+            return transaction.commit();
+        })
+        .then (() => {
+            session.close();
+            driver.close();
+        });
+    });
+}
+
 const makeNodeQuery = 
     `MERGE (gene:Gene {id: $id})
     ON CREATE SET gene.factoidId = $factoidId, 
@@ -54,21 +72,39 @@ const nodeData = [
     type: 'protein', dbId: '207', dbName: 'NCBI Gene'}
 ];
 
+// this test does as I want, but it doesn't exit by itself (need to use Ctrl-C)
+export async function makeGeneNodeTest() {
+    for (let i = 0; i < nodeData.length; i++) {
+        const session = driver.session({database:"neo4j"});
+        await session
+          .run(makeNodeQuery, nodeData[i])
+          .then(result => {
+            console.log("Gene Node created:", nodeData[i].name);
+            session.close();
+          })
+          .catch(error => {
+            console.error(error);
+            session.close();
+            driver.close();
+          });
+        }
+}
+
 const makeRelationshipQuery = 
-`MATCH (x:Gene {id: $id1})
-MATCH (y:Gene {id: $id2})
-MERGE (x)-[r:INTERACTION {id: $id3}]->(y)
-ON CREATE SET r.type = $type,
-r.createdDate = $createdDate,
-r.lastEditedDate = $lastEditedDate,
-r.abstract = $abstract,
-r.text = $text,
-r.doi = $doi, 
-r.pmid = $pmid, 
-r.ISODate = $ISODate, 
-r.authors = $abbreviation,
-r.documentId = $documentId,
-r.title = $title`;
+    `MATCH (x:Gene {id: $id1})
+    MATCH (y:Gene {id: $id2})
+    MERGE (x)-[r:INTERACTION {id: $id3}]->(y)
+    ON CREATE SET r.type = $type,
+    r.createdDate = $createdDate,
+    r.lastEditedDate = $lastEditedDate,
+    r.abstract = $abstract,
+    r.text = $text,
+    r.doi = $doi, 
+    r.pmid = $pmid, 
+    r.ISODate = $ISODate, 
+    r.authors = $abbreviation,
+    r.documentId = $documentId,
+    r.title = $title`;
 
 // Parameters of edgeData are as follows:
 // { id1: 'element.association.dbPrefix'+ ':' + 'element.association.id',
@@ -85,25 +121,7 @@ doi: '10.1126/sciadv.abi6439', pmid: '34767444', ISODate: '2021-11-12T00:00:00.0
 abbreviation: 'Qinbo Cai, Wolong Zhou, Wei Wang, ..., Feng Yang', documentId: 'a896d611-affe-4b45-a5e1-9bc560ffceab', 
 title: 'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.'}];
 
-export async function helloWorld() {
-    const session = driver.session({database:"neo4j"});
-    await session
-    .beginTransaction()
-    .then(transaction => {
-        transaction.run('MERGE (a:Greeting) SET a.message = $message RETURN a.message + ", from node " + id(a)',
-        { message: 'Hello World!!!' })
-        .then(result1 => {
-            console.log("Message Sent: ", result1.records[0].get(0));
-            return transaction.commit();
-        })
-        .then (() => {
-            session.close();
-            driver.close();
-        });
-    });
-}
-
-export async function test() {
+export async function test() { // This test does not yet work
     const session = driver.session({database:"neo4j"});
     await session
     .beginTransaction()

@@ -1,3 +1,6 @@
+// const neo4j = require('neo4j-driver');   <-- old, read up on imports and exports
+import neo4j from 'neo4j-driver';
+
 async function loadDoc(data, docSocket, eleSocket) {
     const { id, secret } = data;
 
@@ -27,7 +30,7 @@ async function getAllDocs() {// eslint-disable-line no-unused-vars
   return await toDocs(docJSONs, this.docSocket, this.eleSocket);
 }
 
-const neo4j = require('neo4j-driver');
+
 const driver = neo4j.driver('bolt://52.23.228.198:7687', neo4j.auth.basic('neo4j', 'metals-wires-alarms')); // free sandbox. temporary
 
 const makeNodeQuery = 'MERGE (gene:Gene {id: $id}) \n'
@@ -81,21 +84,25 @@ doi: '10.1126/sciadv.abi6439', pmid: '34767444', ISODate: '2021-11-12T00:00:00.0
 abbreviation: 'Qinbo Cai, Wolong Zhou, Wei Wang, ..., Feng Yang', documentId: 'a896d611-affe-4b45-a5e1-9bc560ffceab', 
 title: 'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.'}];
 
-const session = driver.session({database:"neo4j"});
-session
-.beginTransaction()
-.then(transaction => {
-    transaction.run(makeNodeQuery, nodeData) // Step 1: Make the nodes
-    .then(result1 => {
-        console.log("Nodes created:", result1.summary.counters.nodesCreated);
-        return transaction.run (makeRelationshipQuery, edgeData); // Step 2: Make the relationship
-    })
-    .then (result2 => {
-        console.log(result2.records.map(record => record.get("type")));
-        return transaction.commit();
-    })
-    .then (() => {
-        session.close();
-        driver.close();
+
+
+export async function test() {
+    const session = driver.session({database:"neo4j"});
+    await session
+    .beginTransaction()
+    .then(transaction => {
+        transaction.run(makeNodeQuery, nodeData) // Step 1: Make the nodes
+        .then(result1 => {
+            console.log("Nodes created:", result1.summary.counters.nodesCreated);
+            return transaction.run (makeRelationshipQuery, edgeData); // Step 2: Make the relationship
+        })
+        .then (result2 => {
+            console.log(result2.records.map(record => record.get("type")));
+            return transaction.commit();
+        })
+        .then (() => {
+            session.close();
+            driver.close();
+        });
     });
-});
+}

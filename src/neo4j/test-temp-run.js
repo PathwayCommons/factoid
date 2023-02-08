@@ -1,9 +1,9 @@
-import { test } from './starting-neo4j.js';
+import { helloWorld, test } from './starting-neo4j.js';
 
 async function running() {
     console.log("We are starting now!");
-    await test();
+    await helloWorld();
     console.log("This is my test run!");
 }
 
-running();
+ running();

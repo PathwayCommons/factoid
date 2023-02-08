@@ -1,4 +1,4 @@
-// const neo4j = require('neo4j-driver');   <-- old, read up on imports and exports
+// const neo4j = require('neo4j-driver');   <-- old, read up on imports and exports in book
 import neo4j from 'neo4j-driver';
 
 async function loadDoc(data, docSocket, eleSocket) {
@@ -33,12 +33,13 @@ async function getAllDocs() {// eslint-disable-line no-unused-vars
 
 const driver = neo4j.driver('bolt://52.23.228.198:7687', neo4j.auth.basic('neo4j', 'metals-wires-alarms')); // free sandbox. temporary
 
-const makeNodeQuery = 'MERGE (gene:Gene {id: $id}) \n'
-+ 'ON CREATE SET gene.factoidId = $factoidId, \n'
-+ 'gene.name = $name, \n'
-+ 'gene.type = $type, \n'
-+ 'gene.dbId = $dbId, \n'
-+ 'gene.dbName = $dbName';
+const makeNodeQuery = 
+    `MERGE (gene:Gene {id: $id})
+    ON CREATE SET gene.factoidId = $factoidId, 
+    gene.name = $name,
+    gene.type = $type,
+    gene.dbId = $dbId,
+    gene.dbName = $dbName`;
 
 // Format of nodeData are as follows:
 // { id: 'element.association.dbPrefix'+ ':' + 'element.association.id', factoidId: 'element.id',
@@ -53,21 +54,21 @@ const nodeData = [
     type: 'protein', dbId: '207', dbName: 'NCBI Gene'}
 ];
 
-const makeRelationshipQuery = 'MATCH (x:Gene {id: $id1}) \n'
-+ 'MATCH (y:Gene {id: $id2}) \n'
-+ 'WHERE (element.id = $id3) \n'
-+ 'MERGE (x)-[r:INTERACTION {id: $id3}]->(y) \n'
-+ 'ON CREATE SET r.type = $type, \n'
-+ 'r.createdDate = $createdDate, \n'
-+ 'r.lastEditedDate = $lastEditedDate, \n'
-+ 'r.abstract = $abstract, \n'
-+ 'r.text = $text, \n'
-+ 'r.doi = $doi, \n'
-+ 'r.pmid = $pmid, \n'
-+ 'r.ISODate = $ISODate, \n'
-+ 'r.authors = $abbreviation, \n'
-+ 'r.documentId = $documentId \n'
-+ 'r.title = $title';
+const makeRelationshipQuery = 
+`MATCH (x:Gene {id: $id1})
+MATCH (y:Gene {id: $id2})
+MERGE (x)-[r:INTERACTION {id: $id3}]->(y)
+ON CREATE SET r.type = $type,
+r.createdDate = $createdDate,
+r.lastEditedDate = $lastEditedDate,
+r.abstract = $abstract,
+r.text = $text,
+r.doi = $doi, 
+r.pmid = $pmid, 
+r.ISODate = $ISODate, 
+r.authors = $abbreviation,
+r.documentId = $documentId,
+r.title = $title`;
 
 // Parameters of edgeData are as follows:
 // { id1: 'element.association.dbPrefix'+ ':' + 'element.association.id',
@@ -84,7 +85,23 @@ doi: '10.1126/sciadv.abi6439', pmid: '34767444', ISODate: '2021-11-12T00:00:00.0
 abbreviation: 'Qinbo Cai, Wolong Zhou, Wei Wang, ..., Feng Yang', documentId: 'a896d611-affe-4b45-a5e1-9bc560ffceab', 
 title: 'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.'}];
 
-
+export async function helloWorld() {
+    const session = driver.session({database:"neo4j"});
+    await session
+    .beginTransaction()
+    .then(transaction => {
+        transaction.run('MERGE (a:Greeting) SET a.message = $message RETURN a.message + ", from node " + id(a)',
+        { message: 'Hello World!!!' })
+        .then(result1 => {
+            console.log("Message Sent: ", result1.records[0].get(0));
+            return transaction.commit();
+        })
+        .then (() => {
+            session.close();
+            driver.close();
+        });
+    });
+}
 
 export async function test() {
     const session = driver.session({database:"neo4j"});

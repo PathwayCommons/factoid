@@ -18,3 +18,11 @@ services:
       NEO4J_PLUGINS: '["apoc"]'
     networks:
       - graphdb-config-network
+
+volumes:
+  graphdb-data:
+  graphdb-plugins:
+  
+networks:
+  graphdb-config-network:
+    driver: bridge

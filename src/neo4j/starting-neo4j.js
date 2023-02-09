@@ -31,7 +31,7 @@ async function getAllDocs() {// eslint-disable-line no-unused-vars
 }
 
 
-const driver = neo4j.driver('bolt://52.23.228.198:7687', neo4j.auth.basic('neo4j', 'metals-wires-alarms')); // free sandbox. temporary
+const driver = neo4j.driver('bolt://localhost:7687');
 
 // Format of nodeData are as follows:
 // { id: 'element.association.dbPrefix'+ ':' + 'element.association.id', factoidId: 'element.id',

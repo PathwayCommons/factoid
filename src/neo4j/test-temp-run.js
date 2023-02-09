@@ -1,14 +1,8 @@
-import { helloWorld, makeGeneNodeTest } from './starting-neo4j.js';
-
-async function helloTest() { // eslint-disable-line no-unused-vars
-    console.log("We are starting now!");
-    await helloWorld();
-    console.log("This is my test run!");
-}
+import { makeMAPK6Test, makeGeneNodeTest } from './starting-neo4j.js';
 
 async function makeNodeTest() {
     console.log("Starting makeNodeTest");
-    await makeGeneNodeTest();
+    await makeMAPK6Test();
     console.log("Finish makeNodeTest");
 }
 

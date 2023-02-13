@@ -1,5 +1,5 @@
 import neo4j from 'neo4j-driver';
-import { makeNodeQuery, makeRelationshipQuery } from './query-strings';
+import { giveInfoByGeneId, makeNodeQuery, makeRelationshipQuery } from './query-strings';
 import { nodeData, relationshipData } from './graph-data';
 
 const driver = neo4j.driver('bolt://localhost:7687');
@@ -62,7 +62,6 @@ export async function test() {
             tx.run(makeRelationshipQuery, relationshipData[0]);
             console.log ("Relationship made!");
 
-            // Step 3: Commit the transactions
             await tx.commit();
         } catch(error) {
             await tx.rollback();
@@ -76,5 +75,28 @@ export async function test() {
         await session.close();
     }
     driver.close();
+    return;
+}
+
+// this test reads the database. Use case of: user gives "ncbigene:207" and 
+//     the database returns all nodes and relationships connected to it
+export async function read1() {
+    let session;
+    try {
+        session = driver.session({ database: "neo4j" });
+        let result = await session.executeRead(tx => {
+            return tx.run(giveInfoByGeneId, { id: 'ncbigene:207' });
+        });
+        let names = result.records.map(row => {
+            return row.get('m');
+        });
+        console.log(names);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    } finally {
+        await session.close();
+        driver.close();
+    }
     return;
 }

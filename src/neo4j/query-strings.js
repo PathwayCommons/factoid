@@ -16,3 +16,10 @@ export const makeRelationshipQuery =
     r.pmid = $pmid,
     r.documentId = $documentId,
     r.title = $title`;
+
+export const giveInfoByGeneId = 
+    `MATCH (n:Gene {id: "ncbigene:207"})<-[r]-(m)
+    RETURN n, r, m
+    UNION
+    MATCH (m)-[r]->(n:Gene {id: "ncbigene:207"})
+    RETURN n, r, m`;

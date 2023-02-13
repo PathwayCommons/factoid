@@ -1,9 +1,10 @@
-import { makeMAPK6Test, makeGeneNodeTest } from './starting-neo4j.js';
+import { test, makeMAPK6Test, makeGeneNodeTest } from './starting-neo4j.js';
 
 async function makeNodeTest() {
     console.log("Starting makeNodeTest");
     //await makeMAPK6Test();
-    await makeGeneNodeTest();
+    //await makeGeneNodeTest();
+    await test();
     console.log("Finish makeNodeTest");
 }
 

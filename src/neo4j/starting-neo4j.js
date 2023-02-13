@@ -9,19 +9,19 @@ export async function makeMAPK6Test() {
     let session;
     try {
         session = driver.session({ database: "neo4j" });
-        let result = await session.run(makeNodeQuery, nodeData[0]);
-        console.log("Gene Node created:", result.records[0].get(0));
+        let result = await session.executeWrite(makeNodeQuery, nodeData[0]);
+        console.log("Gene Node created:", result.records[0].get('gene.name'));
     } catch (error) {
         console.error(error);
         throw error;
     } finally {
-        session.close();
+        await session.close();
         driver.close();
     }
     return;
 }
 
-// this test does as I want (make both nodes at once) but it doesn't exit by itself (need to use Ctrl-C)
+// this test makes both the MAPK6 node and the AKT node, then terminates successfully
 export async function makeGeneNodeTest() {
     //let session;
     for (let i = 0; i < nodeData.length; i++) {
@@ -30,14 +30,14 @@ export async function makeGeneNodeTest() {
             session = driver.session({ database: "neo4j" });
             let result = await session.run(makeNodeQuery, nodeData[i]);
             console.log("Gene Node created: ", result.records);
-            session.close();
+            await session.close();
         } catch (error) {
             console.error(error);
-            session.close();
-            driver.close();
+            await session.close();
             throw error;
         }
     }
+    driver.close();
     console.log("Loop ends!");
     return;
 }

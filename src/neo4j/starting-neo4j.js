@@ -9,7 +9,9 @@ export async function makeMAPK6Test() {
     let session;
     try {
         session = driver.session({ database: "neo4j" });
-        let result = await session.executeWrite(makeNodeQuery, nodeData[0]);
+        let result = await session.executeWrite(tx => {
+            return tx.run(makeNodeQuery, nodeData[0]);
+        });
         console.log("Gene Node created:", result.records[0].get('gene.name'));
     } catch (error) {
         console.error(error);
@@ -23,12 +25,13 @@ export async function makeMAPK6Test() {
 
 // this test makes both the MAPK6 node and the AKT node, then terminates successfully
 export async function makeGeneNodeTest() {
-    //let session;
     for (let i = 0; i < nodeData.length; i++) {
         let session;
         try {
             session = driver.session({ database: "neo4j" });
-            let result = await session.run(makeNodeQuery, nodeData[i]);
+            let result = await session.executeWrite(tx => {
+                return tx.run(makeNodeQuery, nodeData[i]);
+            });
             console.log("Gene Node created: ", result.records);
             await session.close();
         } catch (error) {
@@ -42,25 +45,9 @@ export async function makeGeneNodeTest() {
     return;
 }
 
-// This test does not yet work!!!
+// This test does not yet work!!! Will make the MAPK6 node, AKT node and the relationship between them
 export async function test() { 
     const session = driver.session({ database: "neo4j" });
-    await session
-        .beginTransaction()
-        .then(transaction => {
-            transaction.run(makeNodeQuery, nodeData) // Step 1: Make the nodes
-                .then(result1 => {
-                    console.log("Nodes created:", result1.summary.counters.nodesCreated);
-                    // Step 2: Make the relationship
-                    return transaction.run(makeRelationshipQuery, relationshipData);
-                })
-                .then(result2 => {
-                    console.log(result2.records.map(record => record.get("type")));
-                    return transaction.commit();
-                })
-                .then(() => {
-                    session.close();
-                    driver.close();
-                });
-        });
+    await session.close();
+    return;
 }

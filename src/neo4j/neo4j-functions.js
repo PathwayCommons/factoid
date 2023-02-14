@@ -45,11 +45,14 @@ export async function searchByGeneId(id) {
         let result = await session.executeRead(tx => {
             return tx.run(giveInfoByGeneId, { id: id });
         });
-        let names = result.records.map(row => {
+        let nodes = result.records.map(row => {
             return row.get('m');
         });
-        console.log(names);
-        return names;
+        let edges = result.records.map(row => {
+            return row.get('r');
+        });
+        console.log(nodes);
+        console.log(edges);
     } catch (error) {
         console.error(error);
         throw error;

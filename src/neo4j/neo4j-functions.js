@@ -6,6 +6,7 @@ export async function addNode(id, name, type) {
     let session;
     try {
         session = driver.session({ database: "neo4j" });
+        // eslint-disable-next-line no-unused-vars
         let result = await session.executeWrite(tx => {
             return tx.run(makeNodeQuery, {
                 id: id,
@@ -23,13 +24,25 @@ export async function addNode(id, name, type) {
     return;
 }
 
-export async function addEdge(params) {
+export async function addEdge(id, type, factoidId, sourceId, targetId, doi, pmid, 
+    factoidDocumentId, articleTitle) {
     const driver = neo4j.driver('bolt://localhost:7687');
     let session;
     try {
         session = driver.session({ database: "neo4j" });
+        // eslint-disable-next-line no-unused-vars
         let result = await session.executeWrite(tx => {
-            return tx.run(makeRelationshipQuery, params);
+            return tx.run(makeRelationshipQuery, {
+                id: id,
+                type: type,
+                factoidId: factoidId,
+                sourceId: sourceId,
+                targetId: targetId,
+                doi: doi,
+                pmid: pmid,
+                factoidDocumentId: factoidDocumentId,
+                articleTitle: articleTitle
+            });
         });
     } catch (error) {
         console.error(error);

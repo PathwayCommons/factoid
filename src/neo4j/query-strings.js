@@ -1,18 +1,17 @@
 export const makeNodeQuery =
     `MERGE (gene:Gene {id: $id})
     ON CREATE SET gene.name = $name,
-    gene.type = $type,
-    RETURN gene.name`;
+    gene.type = $type`;
 
 export const makeRelationshipQuery =
-    `MATCH (x:Gene {id: $id1})
-    MATCH (y:Gene {id: $id2})
-    MERGE (x)-[r:INTERACTION {id: $id3}]->(y)
+    `MATCH (x:Gene {id: $sourceId})
+    MATCH (y:Gene {id: $targetId})
+    MERGE (x)-[r:INTERACTION {id: $id}]->(y)
     ON CREATE SET r.type = $type,
     r.doi = $doi, 
     r.pmid = $pmid,
-    r.documentId = $documentId,
-    r.title = $title`;
+    r.factoidDocumentId = $factoidDocumentId,
+    r.articleTitle = $articleTitle`;
 
 export const giveInfoByGeneId = 
     `MATCH (n:Gene {id: $id})<-[r]-(m)

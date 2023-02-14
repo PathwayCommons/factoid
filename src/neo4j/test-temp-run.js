@@ -13,10 +13,10 @@ async function makeNodeTest() { // eslint-disable-line no-unused-vars
 async function testingAddFunctions() {
     console.log("Begin test");
     // Add MAPK6 Node
-    await addNode('ncbigene:5597', 'MAPK6', 'protein', '5597', 'NCBI Gene');
+    await addNode('ncbigene:5597', 'MAPK6', 'protein');
 
     // Add AKT Node
-    await addNode('ncbigene:207', 'AKT', 'protein', '207', 'NCBI Gene');
+    await addNode('ncbigene:207', 'AKT', 'protein');
 
     // Add Interaction
     await addEdge({

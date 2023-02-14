@@ -2,8 +2,6 @@ export const makeNodeQuery =
     `MERGE (gene:Gene {id: $id})
     ON CREATE SET gene.name = $name,
     gene.type = $type,
-    gene.dbId = $dbId,
-    gene.dbName = $dbName
     RETURN gene.name`;
 
 export const makeRelationshipQuery =

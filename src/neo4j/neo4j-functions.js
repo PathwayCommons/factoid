@@ -1,7 +1,7 @@
 import neo4j from 'neo4j-driver';
 import { giveInfoByGeneId, makeNodeQuery, makeRelationshipQuery } from './query-strings';
 
-export async function addNode(id, name, type, dbId, dbName) {
+export async function addNode(id, name, type) {
     const driver = neo4j.driver('bolt://localhost:7687');
     let session;
     try {
@@ -11,8 +11,6 @@ export async function addNode(id, name, type, dbId, dbName) {
                 id: id,
                 name: name,
                 type: type,
-                dbId: dbId,
-                dbName: dbName
             });
         });
     } catch (error) {

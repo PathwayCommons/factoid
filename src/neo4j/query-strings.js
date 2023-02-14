@@ -18,8 +18,8 @@ export const makeRelationshipQuery =
     r.title = $title`;
 
 export const giveInfoByGeneId = 
-    `MATCH (n:Gene {id: "ncbigene:207"})<-[r]-(m)
+    `MATCH (n:Gene {id: $id})<-[r]-(m)
     RETURN n, r, m
     UNION
-    MATCH (m)-[r]->(n:Gene {id: "ncbigene:207"})
+    MATCH (n:Gene {id: $id})-[r]->(m)
     RETURN n, r, m`;

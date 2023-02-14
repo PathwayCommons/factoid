@@ -48,6 +48,7 @@ export async function searchByGeneId(id) {
         let names = result.records.map(row => {
             return row.get('m');
         });
+        console.log(names);
         return names;
     } catch (error) {
         console.error(error);

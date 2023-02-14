@@ -1,7 +1,6 @@
 export const makeNodeQuery =
     `MERGE (gene:Gene {id: $id})
-    ON CREATE SET gene.factoidId = $factoidId, 
-    gene.name = $name,
+    ON CREATE SET gene.name = $name,
     gene.type = $type,
     gene.dbId = $dbId,
     gene.dbName = $dbName

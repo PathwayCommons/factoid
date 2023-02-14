@@ -1,13 +1,19 @@
 import neo4j from 'neo4j-driver';
 import { giveInfoByGeneId, makeNodeQuery, makeRelationshipQuery } from './query-strings';
 
-export async function addNode(params) {
+export async function addNode(id, name, type, dbId, dbName) {
     const driver = neo4j.driver('bolt://localhost:7687');
     let session;
     try {
         session = driver.session({ database: "neo4j" });
         let result = await session.executeWrite(tx => {
-            return tx.run(makeNodeQuery, params);
+            return tx.run(makeNodeQuery, {
+                id: id,
+                name: name,
+                type: type,
+                dbId: dbId,
+                dbName: dbName
+            });
         });
     } catch (error) {
         console.error(error);

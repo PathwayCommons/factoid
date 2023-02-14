@@ -13,16 +13,10 @@ async function makeNodeTest() { // eslint-disable-line no-unused-vars
 async function testingAddFunctions() {
     console.log("Begin test");
     // Add MAPK6 Node
-    await addNode({
-        id: 'ncbigene:5597', factoidId: '598f8bef-f858-4dd0-b1c6-5168a8ae5349', name: 'MAPK6',
-        type: 'protein', dbId: '5597', dbName: 'NCBI Gene'
-    });
+    await addNode('ncbigene:5597', 'MAPK6', 'protein', '5597', 'NCBI Gene');
 
     // Add AKT Node
-    await addNode({
-        id: 'ncbigene:207', factoidId: '4081348e-20b8-4bf8-836f-695827a4f9a2', name: 'AKT',
-        type: 'protein', dbId: '207', dbName: 'NCBI Gene'
-    });
+    await addNode('ncbigene:207', 'AKT', 'protein', '207', 'NCBI Gene');
 
     // Add Interaction
     await addEdge({

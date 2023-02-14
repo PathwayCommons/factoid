@@ -3,10 +3,10 @@ import { addNode, addEdge, searchByGeneId } from './neo4j-functions';
 async function testingFunctions() {
     console.log("Begin test");
     // Add MAPK6 Node
-    await addNode('ncbigene:5597', 'MAPK6', 'protein');
+    await addNode('ncbigene:5597', 'MAPK6');
 
     // Add AKT Node
-    await addNode('ncbigene:207', 'AKT', 'protein');
+    await addNode('ncbigene:207', 'AKT');
 
     // Add Interaction
     await addEdge(

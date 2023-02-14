@@ -1,7 +1,6 @@
 export const makeNodeQuery =
     `MERGE (gene:Gene {id: $id})
-    ON CREATE SET gene.name = $name,
-    gene.type = $type`;
+    ON CREATE SET gene.name = $name`;
 
 export const makeRelationshipQuery =
     `MATCH (x:Gene {id: $sourceId})

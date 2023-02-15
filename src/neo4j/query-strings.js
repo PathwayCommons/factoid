@@ -7,9 +7,9 @@ export const makeRelationshipQuery =
     MATCH (y:Gene {id: $targetId})
     MERGE (x)-[r:INTERACTION {id: $id}]->(y)
     ON CREATE SET r.type = $type,
+    r.xref = $xref,
     r.doi = $doi, 
     r.pmid = $pmid,
-    r.factoidDocumentId = $factoidDocumentId,
     r.articleTitle = $articleTitle`;
 
 export const giveInfoByGeneId = 

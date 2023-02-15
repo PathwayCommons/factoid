@@ -23,8 +23,7 @@ export async function addNode(id, name) {
     return;
 }
 
-export async function addEdge(id, type, factoidId, sourceId, targetId, doi, pmid, 
-    factoidDocumentId, articleTitle) {
+export async function addEdge(id, type, sourceId, targetId, xref, doi, pmid, articleTitle) {
     const driver = neo4j.driver('bolt://localhost:7687');
     let session;
     try {
@@ -34,12 +33,11 @@ export async function addEdge(id, type, factoidId, sourceId, targetId, doi, pmid
             return tx.run(makeRelationshipQuery, {
                 id: id.toLowerCase(),
                 type: type,
-                factoidId: factoidId.toLowerCase(),
                 sourceId: sourceId.toLowerCase(),
                 targetId: targetId.toLowerCase(),
+                xref: xref.toLowerCase(),
                 doi: doi,
                 pmid: pmid,
-                factoidDocumentId: factoidDocumentId.toLowerCase(),
                 articleTitle: articleTitle
             });
         });

@@ -1,8 +1,10 @@
 import neo4j from 'neo4j-driver';
 import { giveInfoByGeneId, makeNodeQuery, makeRelationshipQuery } from './query-strings';
+import { closeDriver, getDriver, initDriver } from './neo4j-driver';
 
 export async function addNode(id, name) {
-    const driver = neo4j.driver('bolt://localhost:7687');
+    initDriver();
+    const driver = getDriver();
     let session;
     try {
         session = driver.session({ database: "neo4j" });
@@ -18,13 +20,14 @@ export async function addNode(id, name) {
         throw error;
     } finally {
         await session.close();
-        driver.close();
+        closeDriver();
     }
     return;
 }
 
 export async function addEdge(id, type, sourceId, targetId, xref, doi, pmid, articleTitle) {
-    const driver = neo4j.driver('bolt://localhost:7687');
+    initDriver();
+    const driver = getDriver();
     let session;
     try {
         session = driver.session({ database: "neo4j" });
@@ -46,13 +49,14 @@ export async function addEdge(id, type, sourceId, targetId, xref, doi, pmid, art
         throw error;
     } finally {
         await session.close();
-        driver.close();
+        closeDriver();
     }
     return;
 }
 
 export async function searchByGeneId(id) {
-    const driver = neo4j.driver('bolt://localhost:7687');
+    initDriver();
+    const driver = getDriver();
     let session;
     try {
         session = driver.session({ database: "neo4j" });
@@ -72,7 +76,7 @@ export async function searchByGeneId(id) {
         throw error;
     } finally {
         await session.close();
-        driver.close();
+        closeDriver();
     }
     return;
 }

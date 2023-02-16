@@ -10,7 +10,7 @@ describe('01. Initiate Driver', () => {
     expect(driver).an.instanceof(neo4j.Driver);
   });
 
-  it('getDriver should initialize and/or return the driver', () => {
+  it('getDriver should return the driver', () => {
     initDriver();
     const driver = getDriver();
     expect(driver).an.instanceof(neo4j.Driver);

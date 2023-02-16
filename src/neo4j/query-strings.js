@@ -12,9 +12,43 @@ export const makeRelationshipQuery =
     r.pmid = $pmid,
     r.articleTitle = $articleTitle`;
 
-export const giveInfoByGeneId = 
+export const giveConnectedInfoByGeneId =
     `MATCH (n:Gene {id: $id})<-[r]-(m)
     RETURN n, r, m
     UNION
     MATCH (n:Gene {id: $id})-[r]->(m)
     RETURN n, r, m`;
+
+export const returnGeneNameById =
+    `MATCH (n {id: $id}) 
+    RETURN n.name AS name`;
+
+export const returnEdgeTypeById =
+    `MATCH(n)-[r {id: '01ef22cc-2a8e-46d4-9060-6bf1c273869b'}]->(m) 
+    RETURN r.type AS type`;
+
+export const returnEdgeXrefById =
+    `MATCH(n)-[r {id: '01ef22cc-2a8e-46d4-9060-6bf1c273869b'}]->(m) 
+    RETURN r.xref AS xref`;
+
+export const returnEdgeDoiById =
+    `MATCH(n)-[r {id: '01ef22cc-2a8e-46d4-9060-6bf1c273869b'}]->(m) 
+    RETURN r.doi AS doi`;
+
+export const returnEdgePmidById =
+    `MATCH(n)-[r {id: '01ef22cc-2a8e-46d4-9060-6bf1c273869b'}]->(m) 
+    RETURN r.pmid AS pmid`;
+
+export const returnEdgearticleTitleById =
+    `MATCH(n)-[r {id: '01ef22cc-2a8e-46d4-9060-6bf1c273869b'}]->(m) 
+    RETURN r.articleTitle AS articleTitle`;
+
+export const deleteAll =
+    `MATCH (n)-[r]->(m)
+    DELETE r, n, m`;
+
+export const numNodes =
+    `MATCH (n) RETURN count(*) as count`;
+
+export const numEdges =
+    `MATCH (n)-[r]->(m) RETURN count(r) as count`;

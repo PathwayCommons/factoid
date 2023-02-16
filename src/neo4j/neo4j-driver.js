@@ -6,7 +6,7 @@ let driver;
 /**
  * Initialize the Neo4j driver singleton
  *
- * @returns Neo4j driver instance
+ * @returns Promise<Neo4j driver>
  */
 export async function initDriver() {
   driver = neo4j.driver( GRAPHDB_CONN,
@@ -19,7 +19,7 @@ export async function initDriver() {
 /**
  * Retrieve the Neo4j driver instance
  *
- * @returns Neo4j driver instance, possibly undefined
+ * @returns Neo4j driver instance or undefined
  */
 export function getDriver() {
   return driver;

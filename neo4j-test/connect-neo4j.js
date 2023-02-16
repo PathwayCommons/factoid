@@ -5,13 +5,13 @@ import { closeDriver, getDriver, initDriver } from '../src/neo4j/neo4j-driver.js
 
 describe('01. Initiate Driver', () => {
 
-  it('initDriver Should initialize and return a driver', async () => {
-    const driver = await initDriver();
+  it('initDriver Should initialize and return a driver', () => {
+    const driver = initDriver();
     expect(driver).an.instanceof(neo4j.Driver);
   });
 
-  it('getDriver should initialize and/or return the driver', async () => {
-    await initDriver();
+  it('getDriver should initialize and/or return the driver', () => {
+    initDriver();
     const driver = getDriver();
     expect(driver).an.instanceof(neo4j.Driver);
   });

@@ -7,9 +7,9 @@ let driver;
  * Initialize the Neo4j driver singleton
  *
  * @param {object} config additional configuration
- * @returns Promise resolving to Neo4j {@link https://neo4j.com/docs/api/javascript-driver/current/class/lib6/driver.js~Driver.html Driver} instance
+ * @returns Neo4j {@link https://neo4j.com/docs/api/javascript-driver/current/class/lib6/driver.js~Driver.html Driver} instance
  */
-export async function initDriver( config = {} ) {
+export function initDriver( config = {} ) {
   driver = neo4j.driver( GRAPHDB_CONN,
     neo4j.auth.basic( GRAPHDB_USER, GRAPHDB_PASS ),
     config

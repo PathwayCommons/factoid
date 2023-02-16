@@ -1,38 +1,22 @@
-//import { config } from 'dotenv';
 import { expect } from 'chai';
+import neo4j from 'neo4j-driver';
 
 import { closeDriver, getDriver, initDriver } from '../src/neo4j/neo4j-driver.js';
 
 describe('01. Initiate Driver', () => {
-    //beforeAll(() => config());
-    //afterAll(() => closeDriver());
 
-    it('Should create a driver instance and connect to server', async () => {
-        await initDriver();
-    });
+  it('initDriver Should initialize and return a driver', async () => {
+    const driver = await initDriver();
+    expect(driver).an.instanceof(neo4j.Driver);
+  });
 
-    it('Driver has been instantiated', () => {
-        const driver = getDriver();
-        expect(driver).toBeDefined();
+  it('getDriver should initialize and/or return the driver', async () => {
+    const driver = await getDriver();
+    expect(driver).not.to.be.undefined;
+  });
 
-        expect(driver.constructor.name).toEqual('Driver');
-    });
-
-    it('Driver can verify connectivity', () => {
-        const driver = getDriver();
-        expect(driver).toBeDefined();
-        expect(driver.constructor.name).toEqual('Driver');
-
-        driver.verifyConnectivity()
-            .then(() => {
-                expect(true).toEqual(true);
-            })
-            .catch(e => {
-                expect(e).toBeUndefined('Unable to verify connectivity');
-            });
-    });
-
-    it('Close the Driver', () => {
-        closeDriver();
-    });
+  it('closeDriver should remove driver instance', async () => {
+    const driver = await closeDriver();
+    expect(driver).to.be.undefined;
+  });
 });

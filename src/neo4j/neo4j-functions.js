@@ -1,9 +1,8 @@
 import neo4j from 'neo4j-driver';
-import { giveInfoByGeneId, makeNodeQuery, makeRelationshipQuery } from './query-strings';
+import { giveConnectedInfoByGeneId, makeNodeQuery, makeRelationshipQuery } from './query-strings';
 import { closeDriver, getDriver, initDriver } from './neo4j-driver';
 
 export async function addNode(id, name) {
-    initDriver();
     const driver = getDriver();
     let session;
     try {
@@ -20,13 +19,11 @@ export async function addNode(id, name) {
         throw error;
     } finally {
         await session.close();
-        closeDriver();
     }
     return;
 }
 
 export async function addEdge(id, type, sourceId, targetId, xref, doi, pmid, articleTitle) {
-    initDriver();
     const driver = getDriver();
     let session;
     try {
@@ -49,19 +46,17 @@ export async function addEdge(id, type, sourceId, targetId, xref, doi, pmid, art
         throw error;
     } finally {
         await session.close();
-        closeDriver();
     }
     return;
 }
 
 export async function searchByGeneId(id) {
-    initDriver();
     const driver = getDriver();
     let session;
     try {
         session = driver.session({ database: "neo4j" });
         let result = await session.executeRead(tx => {
-            return tx.run(giveInfoByGeneId, { id: id });
+            return tx.run(giveConnectedInfoByGeneId, { id: id });
         });
         let nodes = result.records.map(row => {
             return row.get('m');
@@ -76,7 +71,6 @@ export async function searchByGeneId(id) {
         throw error;
     } finally {
         await session.close();
-        closeDriver();
     }
     return;
 }

@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-
-import { closeDriver, getDriver, initDriver } from '../src/neo4j/neo4j-driver.js';
+import { initDriver, getDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
 
 describe('01. Initiate Driver', () => {
 

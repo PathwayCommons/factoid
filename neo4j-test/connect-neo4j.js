@@ -1,6 +1,7 @@
 //import { config } from 'dotenv';
 import { expect } from 'chai';
-import { closeDriver, getDriver, initDriver } from '../../src/neo4j/neo4j-driver.js';
+
+import { closeDriver, getDriver, initDriver } from '../src/neo4j/neo4j-driver.js';
 
 describe('01. Initiate Driver', () => {
     //beforeAll(() => config());

@@ -18,16 +18,12 @@ export async function initDriver( config = {} ) {
 }
 
 /**
- * Retrieve the Neo4j driver instance, create if not exists
+ * Retrieve the Neo4j driver instance
  *
- * @returns Promise resolving to Neo4j Driver instance
+ * @returns The Neo4j Driver instance
  */
-export async function getDriver() {
-  if( !driver ){
-    await initDriver();
-  } else {
-    return driver;
-  }
+export function getDriver() {
+  return driver;
 }
 
 /**

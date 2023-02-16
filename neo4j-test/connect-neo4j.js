@@ -11,7 +11,8 @@ describe('01. Initiate Driver', () => {
   });
 
   it('getDriver should initialize and/or return the driver', async () => {
-    const driver = await getDriver();
+    await initDriver();
+    const driver = getDriver();
     expect(driver).not.to.be.undefined;
   });
 

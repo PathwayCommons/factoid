@@ -13,7 +13,7 @@ describe('01. Initiate Driver', () => {
   it('getDriver should initialize and/or return the driver', async () => {
     await initDriver();
     const driver = getDriver();
-    expect(driver).not.to.be.undefined;
+    expect(driver).an.instanceof(neo4j.Driver);
   });
 
   it('closeDriver should remove driver instance', async () => {

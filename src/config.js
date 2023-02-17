@@ -138,3 +138,10 @@ export const MIN_RELATED_PAPERS = env('MIN_RELATED_PAPERS', 6);
 // google analytics
 // google tag manager
 export const GTM_ID = env('GTM_ID', 'GTM-NV468LC');
+
+// Graph Database
+export const GRAPHDB_CONN = env('GRAPHDB_CONN', 'bolt://localhost:7687');
+export const GRAPHDB_USER = env('GRAPHDB_USER', undefined);
+export const GRAPHDB_PASS = env('GRAPHDB_PASS', undefined);
+export const GRAPHDB_DBNAME = env('GRAPHDB_DBNAME', 'factoid');
+

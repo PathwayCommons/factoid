@@ -133,6 +133,12 @@ AppSignal:
 - `APPSIGNAL_APP_NAME` : name of this app (e.g. 'Biofactoid')
 - `APPSIGNAL_APP_ENV` : used to indicate which instance is running (e.g 'master', 'production', 'unstable')
 
+Graph Database:
+
+- `GRAPHDB_CONN` : The connection string
+- `GRAPHDB_USER` : Authentication username
+- `GRAPHDB_PASS` : Authentication password
+
 The following environment variables should always be set in production instances:
 
 - `NODE_ENV` : set to `production`

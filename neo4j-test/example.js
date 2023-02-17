@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
-import { addNode, deleteAllNodesAndEdges, getNumNodes } from '../src/neo4j/neo4j-functions';
+import { addNode } from '../src/neo4j/neo4j-functions';
+import { deleteAllNodesAndEdges, getNumNodes } from '../src/neo4j/test-functions.js';
 
 describe('Example set of tests', function () {
 

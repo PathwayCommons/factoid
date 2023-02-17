@@ -1,5 +1,5 @@
 import { closeDriver, initDriver } from './neo4j-driver';
-import { addNode, addEdge, searchByGeneId, getNumNodes, deleteAllNodesAndEdges } from './neo4j-functions';
+import { addNode, addEdge, searchByGeneId } from './neo4j-functions';
 
 async function testingFunctions() {
     console.log("Begin test");

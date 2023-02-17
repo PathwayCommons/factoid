@@ -1,5 +1,5 @@
 import neo4j from 'neo4j-driver';
-import { giveConnectedInfoByGeneId, makeNodeQuery, makeRelationshipQuery } from './query-strings';
+import { giveConnectedInfoByGeneId, makeNodeQuery, makeRelationshipQuery, returnEdgeArticleTitleById } from './query-strings';
 import { closeDriver, getDriver, initDriver } from './neo4j-driver';
 
 export async function addNode(id, name) {
@@ -73,4 +73,23 @@ export async function searchByGeneId(id) {
         await session.close();
     }
     return;
+}
+
+export async function getEdgeArticleTitleById(id) {
+    const driver = getDriver();
+    let session;
+    let articleTitle;
+    try {
+        session = driver.session({ database: 'neo4j' });
+        let result = session.executeRead(tx => {
+            return tx.run(returnEdgeArticleTitleById, { id: id });
+        });
+        articleTitle = result.records.get('articleTitle');
+    } catch (error) {
+        console.error(error);
+        throw error;
+    } finally {
+        await session.close();
+    }
+    return articleTitle;
 }

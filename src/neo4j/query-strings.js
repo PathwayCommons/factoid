@@ -24,23 +24,23 @@ export const returnGeneNameById =
     RETURN n.name AS name`;
 
 export const returnEdgeTypeById =
-    `MATCH(n)-[r {id: '01ef22cc-2a8e-46d4-9060-6bf1c273869b'}]->(m) 
+    `MATCH(n)-[r {id: $id}]->(m) 
     RETURN r.type AS type`;
 
 export const returnEdgeXrefById =
-    `MATCH(n)-[r {id: '01ef22cc-2a8e-46d4-9060-6bf1c273869b'}]->(m) 
+    `MATCH(n)-[r {id: $id}]->(m) 
     RETURN r.xref AS xref`;
 
 export const returnEdgeDoiById =
-    `MATCH(n)-[r {id: '01ef22cc-2a8e-46d4-9060-6bf1c273869b'}]->(m) 
+    `MATCH(n)-[r {id: $id}]->(m) 
     RETURN r.doi AS doi`;
 
 export const returnEdgePmidById =
-    `MATCH(n)-[r {id: '01ef22cc-2a8e-46d4-9060-6bf1c273869b'}]->(m) 
+    `MATCH(n)-[r {id: $id}]->(m) 
     RETURN r.pmid AS pmid`;
 
-export const returnEdgearticleTitleById =
-    `MATCH(n)-[r {id: '01ef22cc-2a8e-46d4-9060-6bf1c273869b'}]->(m) 
+export const returnEdgeArticleTitleById =
+    `MATCH(n)-[r {id: $id}]->(m) 
     RETURN r.articleTitle AS articleTitle`;
 
 export const deleteAll =

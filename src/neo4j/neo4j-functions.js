@@ -1,7 +1,7 @@
 import neo4j from 'neo4j-driver';
 import {
     giveConnectedInfoByGeneId, makeNodeQuery, makeRelationshipQuery,
-    numNodes, numEdges, returnEdgeArticleTitleById
+    numNodes, numEdges, deleteAll, returnEdgeArticleTitleById
 } from './query-strings';
 import { closeDriver, getDriver, initDriver } from './neo4j-driver';
 
@@ -97,7 +97,7 @@ export async function getEdgeArticleTitleById(id) {
     return articleTitle;
 }
 
-export async function deleteAll() {
+export async function deleteAllNodesAndEdges() {
     const driver = getDriver();
     let session;
     try {

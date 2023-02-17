@@ -1,22 +1,17 @@
 import { expect } from 'chai';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
-import { addNode, deleteAll, getNumNodes } from '../src/neo4j/neo4j-functions';
+import { addNode, deleteAllNodesAndEdges, getNumNodes } from '../src/neo4j/neo4j-functions';
 
 describe('Example set of tests', function () {
 
   before('Should create a driver instance and connect to server', async () => {
     await initDriver();
+    await deleteAllNodesAndEdges();
   });
 
   after('Delete nodes and edges, close driver', async function () {
-    try {
-      //await deleteAll();
-    } catch (error) {
-      console.log(error);
-      throw (error);
-    } finally {
-      await closeDriver();
-    }
+    await deleteAllNodesAndEdges();
+    await closeDriver();
   });
 
   it('Make one node', async function () {
@@ -34,7 +29,7 @@ describe('Example set of tests', function () {
 
   });
 
-  it('Read data from two nodes and edge', function () {
+  it('Ensure searchGeneById works as expected', function () {
 
   });
 });

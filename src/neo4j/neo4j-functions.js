@@ -1,5 +1,8 @@
 import neo4j from 'neo4j-driver';
-import { giveConnectedInfoByGeneId, makeNodeQuery, makeRelationshipQuery, returnEdgeArticleTitleById } from './query-strings';
+import {
+    giveConnectedInfoByGeneId, makeNodeQuery, makeRelationshipQuery,
+    numNodes, numEdges, returnEdgeArticleTitleById
+} from './query-strings';
 import { closeDriver, getDriver, initDriver } from './neo4j-driver';
 
 export async function addNode(id, name) {
@@ -93,3 +96,62 @@ export async function getEdgeArticleTitleById(id) {
     }
     return articleTitle;
 }
+
+export async function deleteAll() {
+    const driver = getDriver();
+    let session;
+    try {
+        session = driver.session({ database: "neo4j" });
+        let result = await session.executeWrite(tx => {
+            return tx.run(deleteAll);
+        });
+    } catch (error) {
+        console.error(error);
+        throw error;
+    } finally {
+        await session.close();
+    }
+    return;
+}
+
+export async function getNumNodes() {
+    const driver = getDriver();
+    let session;
+    let num;
+    try {
+        session = driver.session({ database: "neo4j" });
+        let result = await session.executeRead(tx => {
+            return tx.run(numNodes);
+        });
+        num = result.records[0].get(0).toNumber();
+        console.log(num.toString());
+    } catch (error) {
+        console.error(error);
+        throw error;
+    } finally {
+        await session.close();
+    }
+    return num;
+}
+
+export async function getNumEdges() {
+    const driver = getDriver();
+    let session;
+    let num;
+    try {
+        session = driver.session({ database: "neo4j" });
+        let result = await session.executeRead(tx => {
+            return tx.run(numEdges);
+        });
+        num = result.records.map(row => {
+            return row.get('count');
+        });
+    } catch (error) {
+        console.error(error);
+        throw error;
+    } finally {
+        await session.close();
+    }
+    return num;
+}
+

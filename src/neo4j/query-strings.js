@@ -43,12 +43,8 @@ export const returnEdgeArticleTitleById =
     `MATCH(n)-[r {id: $id}]->(m) 
     RETURN r.articleTitle AS articleTitle`;
 
-export const deleteAll =
-    `MATCH (n)-[r]->(m)
-    DELETE r, n, m`;
+export const deleteAll = `MATCH (n) DETACH DELETE n`;
 
-export const numNodes =
-    `MATCH (n) RETURN count(*) as count`;
+export const numNodes = `MATCH (n) RETURN COUNT(*) as count`;
 
-export const numEdges =
-    `MATCH (n)-[r]->(m) RETURN count(r) as count`;
+export const numEdges = `MATCH (n)-[r]->(m) RETURN COUNT(r) as count`;

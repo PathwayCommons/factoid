@@ -1,6 +1,5 @@
 import {
-  numNodes, numEdges, deleteAll, returnEdgeArticleTitleById,
-  returnGeneNameById, returnEdgeById
+  numNodes, numEdges, deleteAll, returnGeneNameById, returnEdgeById
 } from './query-strings';
 import { getDriver } from './neo4j-driver';
 

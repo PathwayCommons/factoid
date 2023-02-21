@@ -51,6 +51,25 @@ describe('Example set of tests', function () {
     expect(edge['properties'].articleTitle).equal('MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
   });
 
+  it('Making a duplicate node fails', async function () {
+    expect(await getNumNodes()).equal(2);
+    await addNode('ncbigene:5597', 'MAPK6');
+    expect(await getNumNodes()).equal(2);
+  });
+
+  it('Making a duplicate edge fails', async function () {
+    expect(await getNumEdges()).equal(1);
+    await addEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b',
+      'phosphorylation',
+      'ncbigene:5597',
+      'ncbigene:207',
+      'a896d611-affe-4b45-a5e1-9bc560ffceab',
+      '10.1126/sciadv.abi6439',
+      '34767444',
+      'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
+    expect(await getNumEdges()).equal(1);
+  });
+
   it('Ensure searchGeneById works as expected', function () {
 
   });

@@ -23,6 +23,10 @@ export const returnGeneNameById =
     `MATCH (n {id: $id}) 
     RETURN n.name AS name`;
 
+export const returnEdgeById =
+    `MATCH(n)-[r {id: $id}]->(m)
+    RETURN r`;
+
 export const returnEdgeTypeById =
     `MATCH(n)-[r {id: $id}]->(m) 
     RETURN r.type AS type`;

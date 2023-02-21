@@ -40,14 +40,14 @@ describe('Example set of tests', function () {
       'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
     expect(await getNumEdges()).equal(1);
     let edge = await getEdgebyId('01ef22cc-2a8e-46d4-9060-6bf1c273869b');
-    expect(edge['type']).equal('INTERACTION');
-    expect(edge['properties'].type).equal('phosphorylation');
-    expect(edge['properties'].sourceId).equal('ncbigene:5597');
-    expect(edge['properties'].targetId).equal('ncbigene:207');
-    expect(edge['properties'].xref).equal('a896d611-affe-4b45-a5e1-9bc560ffceab');
-    expect(edge['properties'].doi).equal('10.1126/sciadv.abi6439');
-    expect(edge['properties'].pmid).equal('34767444');
-    expect(edge['properties'].articleTitle).equal('MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
+    expect(edge.type).equal('INTERACTION');
+    expect(edge.properties.type).equal('phosphorylation');
+    expect(edge.properties.sourceId).equal('ncbigene:5597');
+    expect(edge.properties.targetId).equal('ncbigene:207');
+    expect(edge.properties.xref).equal('a896d611-affe-4b45-a5e1-9bc560ffceab');
+    expect(edge.properties.doi).equal('10.1126/sciadv.abi6439');
+    expect(edge.properties.pmid).equal('34767444');
+    expect(edge.properties.articleTitle).equal('MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
   });
 
   it('Making a duplicate node fails', async function () {

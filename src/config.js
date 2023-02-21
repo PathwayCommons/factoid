@@ -81,7 +81,7 @@ export const CHEBI_LINK_BASE_URL = env('CHEBI_LINK_BASE_URL', 'https://www.ebi.a
 export const PUBCHEM_LINK_BASE_URL = env('PUBCHEM_LINK_BASE_URL', 'https://pubchem.ncbi.nlm.nih.gov/compound/');
 export const NCBI_LINK_BASE_URL = env('NCBI_LINK_BASE_URL', 'https://www.ncbi.nlm.nih.gov/gene/');
 export const PUBMED_LINK_BASE_URL = env('PUBMED_LINK_BASE_URL', 'https://pubmed.ncbi.nlm.nih.gov/');
-export const DOI_LINK_BASE_URL = env('DOI_LINK_BASE_URL', 'https://www.doi.org/');
+export const DOI_LINK_BASE_URL = env('DOI_LINK_BASE_URL', 'https://doi.org/');
 export const GOOGLE_SCHOLAR_BASE_URL = env('GOOGLE_SCHOLAR_BASE_URL', 'https://scholar.google.com/scholar?q=');
 export const IDENTIFIERS_ORG_ID_BASE_URL = env('IDENTIFIERS_ORG_ID_BASE_URL', '	https://identifiers.org/');
 
@@ -138,3 +138,10 @@ export const MIN_RELATED_PAPERS = env('MIN_RELATED_PAPERS', 6);
 // google analytics
 // google tag manager
 export const GTM_ID = env('GTM_ID', 'GTM-NV468LC');
+
+// Graph Database
+export const GRAPHDB_CONN = env('GRAPHDB_CONN', 'bolt://localhost:7687');
+export const GRAPHDB_USER = env('GRAPHDB_USER', undefined);
+export const GRAPHDB_PASS = env('GRAPHDB_PASS', undefined);
+export const GRAPHDB_DBNAME = env('GRAPHDB_DBNAME', 'factoid');
+

@@ -28,7 +28,8 @@
     "watch": "run-p watch:*",
     "test": "mocha -r esm --recursive",
     "test:travis": "run-s lint",
-    "ci": "run-s test lint"
+    "ci": "run-s test lint",
+    "neo4j": "node -r esm ./src/neo4j/test-temp-run.js"
   },
   "dependencies": {
     "@appsignal/express": "^0.5.1",
@@ -69,6 +70,7 @@
     "minisearch": "^3.0.2",
     "morgan": "^1.9.1",
     "mousetrap": "^1.6.1",
+    "neo4j-driver": "^5.5.0",
     "node-cache": "^5.1.2",
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.7",
@@ -133,7 +135,7 @@
     "webpack-bundle-analyzer": "^2.9.2"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=16.19.0"
   },
-  "version": "0.22.0"
+  "version": "0.22.1"
 }

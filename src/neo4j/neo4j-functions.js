@@ -53,25 +53,31 @@ export async function addEdge(id, type, sourceId, targetId, xref, doi, pmid, art
 export async function searchByGeneId(id) {
     const driver = getDriver();
     let session;
+    let record;
     try {
         session = driver.session({ database: "neo4j" });
         let result = await session.executeRead(tx => {
             return tx.run(giveConnectedInfoByGeneId, { id: id });
         });
+        if (result) {
+            record = result.records;
+        } else {
+            record = null;
+        }
         let nodes = result.records.map(row => {
             return row.get('m');
         });
         let edges = result.records.map(row => {
             return row.get('r');
         });
-        console.log(nodes);
-        console.log(edges);
+        //console.log(nodes);
+        //console.log(edges);
     } catch (error) {
         console.error(error);
         throw error;
     } finally {
         await session.close();
     }
-    return;
+    return record;
 }
 

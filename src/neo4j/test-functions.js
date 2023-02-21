@@ -1,5 +1,31 @@
-import { numNodes, numEdges, deleteAll, returnEdgeArticleTitleById } from './query-strings';
+import {
+  numNodes, numEdges, deleteAll, returnEdgeArticleTitleById,
+  returnGeneNameById
+} from './query-strings';
 import { getDriver } from './neo4j-driver';
+
+export async function getGeneNameById(id) {
+  const driver = getDriver();
+  let session;
+  let name;
+  try {
+    session = driver.session({ database: 'neo4j' });
+    let result = await session.executeRead(tx => {
+      return tx.run(returnGeneNameById, { id: id });
+    });
+    if (result.records.length > 0) {
+      name = result.records[0].get('name');
+    } else {
+      name = 'No matching gene found';
+    }
+  } catch (error) {
+    console.error(error);
+    throw error;
+  } finally {
+    await session.close();
+  }
+  return name;
+}
 
 export async function getEdgeArticleTitleById(id) {
   const driver = getDriver();
@@ -7,7 +33,7 @@ export async function getEdgeArticleTitleById(id) {
   let articleTitle;
   try {
     session = driver.session({ database: 'neo4j' });
-    let result = session.executeRead(tx => {
+    let result = await session.executeRead(tx => {
       return tx.run(returnEdgeArticleTitleById, { id: id });
     });
     articleTitle = result.records.get('articleTitle');
@@ -66,9 +92,7 @@ export async function getNumEdges() {
     let result = await session.executeRead(tx => {
       return tx.run(numEdges);
     });
-    num = result.records.map(row => {
-      return row.get('count');
-    });
+    num = result.records[0].get(0).toNumber();
   } catch (error) {
     console.error(error);
     throw error;

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
 import { addNode } from '../src/neo4j/neo4j-functions';
-import { deleteAllNodesAndEdges, getNumNodes } from '../src/neo4j/test-functions.js';
+import { deleteAllNodesAndEdges, getGeneNameById, getNumNodes } from '../src/neo4j/test-functions.js';
 
 describe('Example set of tests', function () {
 
@@ -11,14 +11,14 @@ describe('Example set of tests', function () {
   });
 
   after('Delete nodes and edges, close driver', async function () {
-    await deleteAllNodesAndEdges();
+    //await deleteAllNodesAndEdges();
     await closeDriver();
   });
 
   it('Make one node', async function () {
     expect(await getNumNodes()).equal(0);
     await addNode('ncbigene:5597', 'MAPK6');
-    //expect().equal('MAPK6');
+    expect(await getGeneNameById('ncbigene:5597')).equal('MAPK6');
     expect(await getNumNodes()).equal(1);
   });
 

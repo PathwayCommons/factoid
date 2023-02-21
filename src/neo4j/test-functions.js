@@ -50,25 +50,6 @@ export async function getEdgebyId(id) {
   return edge;
 }
 
-export async function getEdgeArticleTitleById(id) {
-  const driver = getDriver();
-  let session;
-  let articleTitle;
-  try {
-    session = driver.session({ database: 'neo4j' });
-    let result = await session.executeRead(tx => {
-      return tx.run(returnEdgeArticleTitleById, { id: id });
-    });
-    articleTitle = result.records.get('articleTitle');
-  } catch (error) {
-    console.error(error);
-    throw error;
-  } finally {
-    await session.close();
-  }
-  return articleTitle;
-}
-
 export async function deleteAllNodesAndEdges() {
   const driver = getDriver();
   let session;

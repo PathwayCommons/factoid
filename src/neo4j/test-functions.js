@@ -3,7 +3,7 @@ import {
 } from './query-strings';
 import { getDriver } from './neo4j-driver';
 
-export async function getGeneNameById(id) {
+export async function getGeneName(id) {
   const driver = getDriver();
   let session;
   let name;

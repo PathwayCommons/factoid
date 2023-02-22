@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
 import { addEdge, addNode, searchByGeneId } from '../src/neo4j/neo4j-functions';
-import { deleteAllNodesAndEdges, getGeneNameById, getNumNodes, getNumEdges, getEdgebyId } from '../src/neo4j/test-functions.js';
+import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdgebyId } from '../src/neo4j/test-functions.js';
 
 describe('Tests for addNode, addEdge and seachByGeneId', function () {
 
@@ -20,7 +20,7 @@ describe('Tests for addNode, addEdge and seachByGeneId', function () {
   it('Make one node', async function () {
     expect(await getNumNodes()).equal(0);
     await addNode('ncbigene:5597', 'MAPK6');
-    expect(await getGeneNameById('ncbigene:5597')).equal('MAPK6');
+    expect(await getGeneName('ncbigene:5597')).equal('MAPK6');
     expect(await getNumNodes()).equal(1);
   });
 
@@ -55,7 +55,7 @@ describe('Tests for addNode, addEdge and seachByGeneId', function () {
     await addNode('ncbigene:5597', 'MAPK6');
     await addNode('ncbigene:5597', 'This is a dummy name');
     expect(await getNumNodes()).equal(2);
-    expect(await getGeneNameById('ncbigene:5597')).equal('MAPK6');
+    expect(await getGeneName('ncbigene:5597')).equal('MAPK6');
   });
 
   it('Making a duplicate edge fails', async function () {

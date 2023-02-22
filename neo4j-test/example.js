@@ -181,4 +181,14 @@ describe('Tests for addNode, addEdge and seachByGeneId', function () {
     nonexistent = await getNeighbouringNodes('ncbigene:217');
     expect(nonexistent.length).equal(0);
   });
+
+  it('Search for a gene in an empty database yields empty array', async function () {
+    let nonexistent = await searchByGeneId('ncbigene:207');
+    expect(nonexistent.length).equal(0);
+    nonexistent = await getInteractions('ncbigene:207');
+    expect(nonexistent.length).equal(0);
+    nonexistent = await getNeighbouringNodes('ncbigene:207');
+    expect(nonexistent.length).equal(0);
+  });
+
 });

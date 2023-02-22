@@ -64,14 +64,6 @@ export async function searchByGeneId(id) {
         } else {
             record = null;
         }
-        let nodes = result.records.map(row => {
-            return row.get('m');
-        });
-        let edges = result.records.map(row => {
-            return row.get('r');
-        });
-        //console.log(nodes);
-        //console.log(edges);
     } catch (error) {
         console.error(error);
         throw error;
@@ -81,3 +73,22 @@ export async function searchByGeneId(id) {
     return record;
 }
 
+export async function getNeighbouringNodes(id) {
+    let record = await searchByGeneId(id);
+    if (record.length == 0) {
+        return record;
+    }
+    return record.map(row => {
+        return row.get('m');
+    });
+}
+
+export async function getInteractions(id) {
+    let record = await searchByGeneId(id);
+    if (record.length == 0) {
+        return record;
+    }
+    return record.map(row => {
+        return row.get('r');
+    });
+}

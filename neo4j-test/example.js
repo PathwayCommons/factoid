@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
 import { addEdge, addNode, getInteractions, getNeighbouringNodes, searchByGeneId } from '../src/neo4j/neo4j-functions';
-import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdgebyId } from '../src/neo4j/test-functions.js';
+import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
 
 describe('Tests for addNode, addEdge and seachByGeneId', function () {
 
@@ -37,7 +37,7 @@ describe('Tests for addNode, addEdge and seachByGeneId', function () {
       '34767444',
       'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
     expect(await getNumEdges()).equal(1);
-    let edge = await getEdgebyId('01ef22cc-2a8e-46d4-9060-6bf1c273869b');
+    let edge = await getEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b');
     expect(edge.type).equal('INTERACTION');
     expect(edge.properties.type).equal('phosphorylation');
     expect(edge.properties.sourceId).equal('ncbigene:5597');
@@ -87,7 +87,7 @@ describe('Tests for addNode, addEdge and seachByGeneId', function () {
       '3444',
       'MAPK6-AKT signaling ');
     expect(await getNumEdges()).equal(1);
-    let edge = await getEdgebyId('01ef22cc-2a8e-46d4-9060-6bf1c273869b');
+    let edge = await getEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b');
     expect(edge.type).equal('INTERACTION');
     expect(edge.properties.type).equal('phosphorylation');
     expect(edge.properties.sourceId).equal('ncbigene:5597');

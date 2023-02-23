@@ -1,6 +1,4 @@
-import {
-  numNodes, numEdges, deleteAll, returnGeneNameById, returnEdgeById
-} from './query-strings';
+import { numNodes, numEdges, deleteAll, returnGeneNameById, returnEdgeById } from './query-strings';
 import { getDriver } from './neo4j-driver';
 
 export async function getGeneName(id) {
@@ -26,7 +24,7 @@ export async function getGeneName(id) {
   return name;
 }
 
-export async function getEdgebyId(id) {
+export async function getEdge(id) {
   const driver = getDriver();
   let session;
   let edge;

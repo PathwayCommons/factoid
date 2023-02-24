@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
 import { addEdge, addNode, getInteractions, getNeighbouringNodes, searchByGeneId } from '../src/neo4j/neo4j-functions';
-import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
+import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge, getNode } from '../src/neo4j/test-functions.js';
 
 describe('Tests for addNode, addEdge and seachByGeneId', function () {
 
@@ -162,6 +162,15 @@ describe('Tests for addNode, addEdge and seachByGeneId', function () {
     expect(aktNeighbouringNodes[0].properties.name).equal('MAPK6');
   });
 
+  it('Search for a gene in an empty database yields empty array', async function () {
+    let nonexistent = await searchByGeneId('ncbigene:207');
+    expect(nonexistent.length).equal(0);
+    nonexistent = await getInteractions('ncbigene:207');
+    expect(nonexistent.length).equal(0);
+    nonexistent = await getNeighbouringNodes('ncbigene:207');
+    expect(nonexistent.length).equal(0);
+  });
+
   it('Search for a non-existing gene in a non-empty database yields empty array', async function () {
     await addNode('ncbigene:207', 'AKT');
     await addNode('ncbigene:5597', 'MAPK6');
@@ -179,15 +188,6 @@ describe('Tests for addNode, addEdge and seachByGeneId', function () {
     nonexistent = await getInteractions('ncbigene:217');
     expect(nonexistent.length).equal(0);
     nonexistent = await getNeighbouringNodes('ncbigene:217');
-    expect(nonexistent.length).equal(0);
-  });
-
-  it('Search for a gene in an empty database yields empty array', async function () {
-    let nonexistent = await searchByGeneId('ncbigene:207');
-    expect(nonexistent.length).equal(0);
-    nonexistent = await getInteractions('ncbigene:207');
-    expect(nonexistent.length).equal(0);
-    nonexistent = await getNeighbouringNodes('ncbigene:207');
     expect(nonexistent.length).equal(0);
   });
 

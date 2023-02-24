@@ -21,9 +21,9 @@ export const giveConnectedInfoByGeneId =
     MATCH (n:Gene {id: $id})-[r]->(m)
     RETURN n, r, m`;
 
-export const returnGeneNameById =
+export const returnGene =
     `MATCH (n {id: $id}) 
-    RETURN n.name AS name`;
+    RETURN n`;
 
 export const returnEdgeById =
     `MATCH(n)-[r {id: $id}]->(m)

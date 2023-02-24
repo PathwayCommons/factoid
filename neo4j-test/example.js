@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
 import { addEdge, addNode, getInteractions, getNeighbouringNodes, searchByGeneId } from '../src/neo4j/neo4j-functions';
-import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge, getNode } from '../src/neo4j/test-functions.js';
+import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
 
 describe('Tests for addNode, addEdge and seachByGeneId', function () {
 

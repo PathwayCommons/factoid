@@ -1,4 +1,4 @@
-import { giveConnectedInfoByGeneId, makeNodeQuery, makeRelationshipQuery, returnGeneById } from './query-strings';
+import { giveConnectedInfoByGeneId, makeNodeQuery, makeRelationshipQuery } from './query-strings';
 import { getDriver } from './neo4j-driver';
 
 /**
@@ -11,8 +11,7 @@ export async function addNode(id, name) {
     let session;
     try {
         session = driver.session({ database: "neo4j" });
-        // eslint-disable-next-line no-unused-vars
-        let result = await session.executeWrite(tx => {
+        await session.executeWrite(tx => {
             return tx.run(makeNodeQuery, {
                 id: id.toLowerCase(),
                 name: name
@@ -43,8 +42,7 @@ export async function addEdge(id, type, sourceId, targetId, xref, doi, pmid, art
     let session;
     try {
         session = driver.session({ database: "neo4j" });
-        // eslint-disable-next-line no-unused-vars
-        let result = await session.executeWrite(tx => {
+        await session.executeWrite(tx => {
             return tx.run(makeRelationshipQuery, {
                 id: id.toLowerCase(),
                 type: type,

@@ -10,7 +10,9 @@ export const makeRelationshipQuery =
     r.xref = $xref,
     r.doi = $doi, 
     r.pmid = $pmid,
-    r.articleTitle = $articleTitle`;
+    r.articleTitle = $articleTitle,
+    r.sourceId = $sourceId,
+    r.targetId = $targetId`;
 
 export const giveConnectedInfoByGeneId =
     `MATCH (n:Gene {id: $id})<-[r]-(m)
@@ -19,29 +21,13 @@ export const giveConnectedInfoByGeneId =
     MATCH (n:Gene {id: $id})-[r]->(m)
     RETURN n, r, m`;
 
-export const returnGeneNameById =
+export const returnGene =
     `MATCH (n {id: $id}) 
-    RETURN n.name AS name`;
+    RETURN n`;
 
-export const returnEdgeTypeById =
-    `MATCH(n)-[r {id: $id}]->(m) 
-    RETURN r.type AS type`;
-
-export const returnEdgeXrefById =
-    `MATCH(n)-[r {id: $id}]->(m) 
-    RETURN r.xref AS xref`;
-
-export const returnEdgeDoiById =
-    `MATCH(n)-[r {id: $id}]->(m) 
-    RETURN r.doi AS doi`;
-
-export const returnEdgePmidById =
-    `MATCH(n)-[r {id: $id}]->(m) 
-    RETURN r.pmid AS pmid`;
-
-export const returnEdgeArticleTitleById =
-    `MATCH(n)-[r {id: $id}]->(m) 
-    RETURN r.articleTitle AS articleTitle`;
+export const returnEdgeById =
+    `MATCH(n)-[r {id: $id}]->(m)
+    RETURN r`;
 
 export const deleteAll = `MATCH (n) DETACH DELETE n`;
 

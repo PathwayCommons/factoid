@@ -1,22 +1,19 @@
-import {
-  numNodes, numEdges, deleteAll, returnEdgeArticleTitleById,
-  returnGeneNameById
-} from './query-strings';
+import { numNodes, numEdges, deleteAll, returnEdgeById, returnGene } from './query-strings';
 import { getDriver } from './neo4j-driver';
 
-export async function getGeneNameById(id) {
+export async function getNode(id) {
   const driver = getDriver();
   let session;
-  let name;
+  let node;
   try {
-    session = driver.session({ database: 'neo4j' });
+    session = driver.session({ database: "neo4j" });
     let result = await session.executeRead(tx => {
-      return tx.run(returnGeneNameById, { id: id });
+      return tx.run(returnGene, { id: id });
     });
-    if (result.records.length > 0) {
-      name = result.records[0].get('name');
+    if (result) {
+      node = result.records[0].get('n');
     } else {
-      name = 'No matching gene found';
+      node = null;
     }
   } catch (error) {
     console.error(error);
@@ -24,26 +21,38 @@ export async function getGeneNameById(id) {
   } finally {
     await session.close();
   }
-  return name;
+  return node;
 }
 
-export async function getEdgeArticleTitleById(id) {
+export async function getGeneName(id) {
+  let node = await getNode(id);
+  if (node) {
+    return node.properties.name;
+  }
+  return null;
+}
+
+export async function getEdge(id) {
   const driver = getDriver();
   let session;
-  let articleTitle;
+  let edge;
   try {
     session = driver.session({ database: 'neo4j' });
     let result = await session.executeRead(tx => {
-      return tx.run(returnEdgeArticleTitleById, { id: id });
+      return tx.run(returnEdgeById, { id: id });
     });
-    articleTitle = result.records.get('articleTitle');
+    if (result.records.length > 0) {
+      edge = result.records[0].get('r');
+    } else {
+      edge = null;
+    }
   } catch (error) {
     console.error(error);
     throw error;
   } finally {
     await session.close();
   }
-  return articleTitle;
+  return edge;
 }
 
 export async function deleteAllNodesAndEdges() {
@@ -51,7 +60,7 @@ export async function deleteAllNodesAndEdges() {
   let session;
   try {
     session = driver.session({ database: "neo4j" });
-    let result = await session.executeWrite(tx => {
+    await session.executeWrite(tx => {
       return tx.run(deleteAll);
     });
   } catch (error) {
@@ -73,7 +82,6 @@ export async function getNumNodes() {
       return tx.run(numNodes);
     });
     num = result.records[0].get(0).toNumber();
-    console.log(num.toString());
   } catch (error) {
     console.error(error);
     throw error;

@@ -1,6 +1,6 @@
 import { closeDriver, initDriver } from './neo4j-driver';
 import { addNode, addEdge, searchByGeneId } from './neo4j-functions';
-import { getGeneNameById } from './test-functions';
+import { deleteAllNodesAndEdges } from './test-functions';
 
 async function testingFunctions() {
     console.log("Begin test");
@@ -31,8 +31,7 @@ async function testingFunctions() {
     await searchByGeneId("ncbigene:207");
 
     //console.log(await getNumNodes());
-    //await deleteAllNodesAndEdges();
-    await getGeneNameById("ncbigene:5597");
+    await deleteAllNodesAndEdges();
 
     closeDriver();
     console.log("End test");

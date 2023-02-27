@@ -2,6 +2,8 @@ import neo4j from 'neo4j-driver';
 import { giveInfoByGeneId, makeNodeQuery, makeRelationshipQuery } from './query-strings';
 import { nodeData, relationshipData } from './graph-data';
 
+// This file is just for testing/exploring purposes
+
 const driver = neo4j.driver('bolt://localhost:7687');
 
 // makes the MAPK6 node. Successful
@@ -46,7 +48,7 @@ export async function makeGeneNodeTest() {
 }
 
 // makes the MAPK6 node, AKT node and the relationship between them. Successful
-export async function test() { 
+export async function test() {
     let session;
     try {
         session = driver.session({ database: "neo4j" });
@@ -54,21 +56,21 @@ export async function test() {
         try {
             // Step 1: Make the nodes
             for (let i = 0; i < nodeData.length; i++) {
-            let result = await tx.run(makeNodeQuery, nodeData[i]);
-            console.log("Gene Node created: ", result.records);
+                let result = await tx.run(makeNodeQuery, nodeData[i]);
+                console.log("Gene Node created: ", result.records);
             }
 
             // Step 2: Make the relationship
             tx.run(makeRelationshipQuery, relationshipData[0]);
-            console.log ("Relationship made!");
+            console.log("Relationship made!");
 
             await tx.commit();
-        } catch(error) {
+        } catch (error) {
             await tx.rollback();
             console.error(error);
             throw error;
         }
-    } catch(error) {
+    } catch (error) {
         console.error(error);
         throw error;
     } finally {

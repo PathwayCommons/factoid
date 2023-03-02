@@ -2,6 +2,7 @@ import { closeDriver, initDriver } from './neo4j-driver';
 import { addNode, addEdge, searchByGeneId } from './neo4j-functions';
 import { deleteAllNodesAndEdges } from './test-functions';
 import { addDocumentToNeo4j } from './neo4j-document';
+import { getAllDocs } from './get-doc-functions';
 
 async function testingFunctions() {
     console.log("Begin test");
@@ -48,4 +49,10 @@ async function test() {
     await closeDriver();
 }
 
-test();
+async function doc() {
+    console.log("Test Begins");
+    const docs = await getAllDocs();
+    console.log("Test End");
+    return;
+}
+doc();

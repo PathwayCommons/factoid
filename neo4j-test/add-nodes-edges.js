@@ -5,7 +5,7 @@ import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge 
 
 describe('Tests for addNode, addEdge and seachByGeneId', function () {
 
-  before('Should create a driver instance and connect to server', async () => {
+  before('Should create a driver instance and connect to server', async function () {
     await initDriver();
   });
 
@@ -190,5 +190,4 @@ describe('Tests for addNode, addEdge and seachByGeneId', function () {
     nonexistent = await getNeighbouringNodes('ncbigene:217');
     expect(nonexistent.length).equal(0);
   });
-
 });

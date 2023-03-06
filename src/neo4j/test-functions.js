@@ -10,7 +10,7 @@ export async function getNode(id) {
     let result = await session.executeRead(tx => {
       return tx.run(returnGene, { id: id });
     });
-    if (result) {
+    if (result.records.length > 0) {
       node = result.records[0].get('n');
     } else {
       node = null;

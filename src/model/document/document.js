@@ -19,6 +19,7 @@ const DEFAULTS = Object.freeze({
 });
 
 const METADATA_FIELDS = ['provided', 'correspondence', 'status', 'verified', 'authorProfiles', 'caption' ];
+const DESERIAL_METADATA_FIELDS = _.concat(METADATA_FIELDS, ['article']);
 const READONLY_METADATA_FIELDS = _.difference( METADATA_FIELDS, ['provided', 'correspondence'] );
 const DOCUMENT_STATUS_FIELDS = Object.freeze({
   INITIATED: 'initiated',
@@ -607,7 +608,7 @@ class Document {
     let orgIds = json.organisms || [];
     let addOrganism = id => this.toggleOrganism( id, true );
     let addOrganisms = () => Promise.all( orgIds.map( addOrganism ) );
-    let updateMetadataEtc = () => this.syncher.update( _.pick(json, METADATA_FIELDS) );
+    let updateMetadataEtc = () => this.syncher.update( _.pick(json, DESERIAL_METADATA_FIELDS) );
 
     return Promise.all([
       updateMetadataEtc(),

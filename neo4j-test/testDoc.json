@@ -367,5 +367,618 @@
       "name": "Feng Yang",
       "orcid": "0000-0002-3401-5783"
     }
-  ]
+  ],
+  "article": {
+    "MedlineCitation": {
+      "Article": {
+        "Abstract": "Mitogen-activated protein kinase 6 (MAPK6) is an atypical MAPK. Its function in regulating cancer growth remains elusive. Here, we reported that MAPK6 directly activated AKT and induced oncogenic outcomes. MAPK6 interacted with AKT through its C34 region and the C-terminal tail and phosphorylated AKT at S473 independent of mTORC2, the major S473 kinase. mTOR kinase inhibitors have not made notable progress in the clinic. Our identified MAPK6-AKT axis may provide a major resistance pathway. Besides repressing growth, inhibiting MAPK6 sensitized cancer cells to mTOR kinase inhibitors. MAPK6 overexpression is associated with decreased overall survival and the survival of patients with lung adenocarcinoma, mesothelioma, uveal melanoma, and breast cancer. MAPK6 expression also correlated with AKT phosphorylation at S473 in human cancer tissues. We conclude that MAPK6 can promote cancer by activating AKT independent of mTORC2 and targeting MAPK6, either alone or in combination with mTOR blockade, may be effective in cancers.",
+        "ArticleTitle": "MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.",
+        "AuthorList": [
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Molecular and Cellular Biology, Baylor College of Medicine, Houston, TX 77030, USA.",
+                "email": null
+              },
+              {
+                "Affiliation": "Center of Gastrointestinal Surgery, the First Affiliated Hospital of Sun Yat-sen University, Guangzhou 510080, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Qinbo",
+            "Identifier": [
+              {
+                "Source": "ORCID",
+                "id": "0000-0001-5294-4319"
+              }
+            ],
+            "Initials": "Q",
+            "LastName": "Cai"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Molecular and Cellular Biology, Baylor College of Medicine, Houston, TX 77030, USA.",
+                "email": null
+              },
+              {
+                "Affiliation": "Department of Thoracic Surgery, Xiangya Hospital of Central South University, Changsha 410008, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Wolong",
+            "Identifier": [
+              {
+                "Source": "ORCID",
+                "id": "0000-0001-8784-6196"
+              }
+            ],
+            "Initials": "W",
+            "LastName": "Zhou"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Molecular and Cellular Biology, Baylor College of Medicine, Houston, TX 77030, USA.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Wei",
+            "Identifier": [
+              {
+                "Source": "ORCID",
+                "id": "0000-0002-0600-7276"
+              }
+            ],
+            "Initials": "W",
+            "LastName": "Wang"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Molecular and Cellular Biology, Baylor College of Medicine, Houston, TX 77030, USA.",
+                "email": null
+              },
+              {
+                "Affiliation": "Department of Medicine, Baylor College of Medicine, Houston, TX 77070, USA.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Bingning",
+            "Identifier": [
+              {
+                "Source": "ORCID",
+                "id": "0000-0002-4300-3928"
+              }
+            ],
+            "Initials": "B",
+            "LastName": "Dong"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Molecular and Cellular Biology, Baylor College of Medicine, Houston, TX 77030, USA.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Dong",
+            "Identifier": [],
+            "Initials": "D",
+            "LastName": "Han"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Molecular and Cellular Biology, Baylor College of Medicine, Houston, TX 77030, USA.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Tao",
+            "Identifier": [],
+            "Initials": "T",
+            "LastName": "Shen"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Medicine, Baylor College of Medicine, Houston, TX 77070, USA.",
+                "email": null
+              },
+              {
+                "Affiliation": "Dan L. Duncan Comprehensive Cancer Center, Baylor College of Medicine, Houston, TX 77030, USA.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Chad J",
+            "Identifier": [
+              {
+                "Source": "ORCID",
+                "id": "0000-0002-6090-703X"
+              }
+            ],
+            "Initials": "CJ",
+            "LastName": "Creighton"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Molecular and Cellular Biology, Baylor College of Medicine, Houston, TX 77030, USA.",
+                "email": null
+              },
+              {
+                "Affiliation": "Nutritional Sciences and Toxicology, University of California, Berkeley, Berkeley, CA 94720, USA.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "David D",
+            "Identifier": [
+              {
+                "Source": "ORCID",
+                "id": "0000-0002-5151-9748"
+              }
+            ],
+            "Initials": "DD",
+            "LastName": "Moore"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Molecular and Cellular Biology, Baylor College of Medicine, Houston, TX 77030, USA.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Feng",
+            "Identifier": [
+              {
+                "Source": "ORCID",
+                "id": "0000-0002-3401-5783"
+              }
+            ],
+            "Initials": "F",
+            "LastName": "Yang"
+          }
+        ],
+        "Journal": {
+          "ISOAbbreviation": "Sci Adv",
+          "ISSN": {
+            "IssnType": "Electronic",
+            "value": "2375-2548"
+          },
+          "JournalIssue": {
+            "Issue": "46",
+            "PubDate": {
+              "Day": "12",
+              "Month": "Nov",
+              "Year": "2021"
+            },
+            "Volume": "7"
+          },
+          "Title": "Science advances"
+        },
+        "PublicationTypeList": [
+          {
+            "UI": "D016428",
+            "value": "Journal Article"
+          }
+        ]
+      },
+      "ChemicalList": [],
+      "InvestigatorList": [],
+      "KeywordList": [],
+      "MeshheadingList": []
+    },
+    "PubmedData": {
+      "ArticleIdList": [
+        {
+          "IdType": "pubmed",
+          "id": "34767444"
+        },
+        {
+          "IdType": "pmc",
+          "id": "PMC8589317"
+        },
+        {
+          "IdType": "doi",
+          "id": "10.1126/sciadv.abi6439"
+        }
+      ],
+      "History": [
+        {
+          "PubMedPubDate": {
+            "Day": "12",
+            "Month": "11",
+            "Year": "2021"
+          },
+          "PubStatus": "entrez"
+        },
+        {
+          "PubMedPubDate": {
+            "Day": "13",
+            "Month": "11",
+            "Year": "2021"
+          },
+          "PubStatus": "pubmed"
+        },
+        {
+          "PubMedPubDate": {
+            "Day": "13",
+            "Month": "11",
+            "Year": "2021"
+          },
+          "PubStatus": "medline"
+        }
+      ],
+      "ReferenceList": [
+        {
+          "Reference": [
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pubmed",
+                  "id": "17161475"
+                }
+              ],
+              "Citation": "Coulombe P., Meloche S., Atypical mitogen-activated protein kinases: Structure, regulation and functions. Biochim. Biophys. Acta 1773, 1376–1387 (2007)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pubmed",
+                  "id": "17496909"
+                }
+              ],
+              "Citation": "Raman M., Chen W., Cobb M. H., Differential regulation and properties of MAPKs. Oncogene 26, 3100–3112 (2007)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC3063353"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "21372320"
+                }
+              ],
+              "Citation": "Cargnello M., Roux P. P., Activation and function of the MAPKs and their substrates, the MAPK-activated protein kinases. Microbiol. Mol. Biol. Rev. 75, 50–83 (2011)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC3075705"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "21317288"
+                }
+              ],
+              "Citation": "De la Mota-Peynado A., Chernoff J., Beeser A., Identification of the atypical MAPK Erk3 as a novel substrate for p21-activated kinase (Pak) activity. J. Biol. Chem. 286, 13603–13611 (2011)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC3057823"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "21177870"
+                }
+              ],
+              "Citation": "Déléris P., Trost M., Topisirovic I., Tanguay P.-L., Borden K. L. B., Thibault P., Meloche S., Activation loop phosphorylation of ERK3/ERK4 by group I p21-activated kinases (PAKs) defines a novel PAK-ERK3/4-MAPK-activated protein kinase 5 signaling pathway. J. Biol. Chem. 286, 6470–6478 (2011)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC535084"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "15538386"
+                }
+              ],
+              "Citation": "Schumacher S., Laaß K., Kant S., Shi Y., Visel A., Gruber A. D., Kotlyarov A., Gaestel M., Scaffolding by ERK3 regulates MK5 in development. EMBO J. 23, 4770–4779 (2004)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC535098"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "15577943"
+                }
+              ],
+              "Citation": "Seternes O. M., Mikalsen T., Johansen B., Michaelsen E., Armstrong C. G., Morrice N. A., Turgeon B., Meloche S., Moens U., Keyse S. M., Activation of MK5/PRAK by the atypical MAP kinase ERK3 defines a novel signal transduction pathway. EMBO J. 23, 4780–4791 (2004)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC3336992"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "22505454"
+                }
+              ],
+              "Citation": "Long W., Foulds C. E., Qin J., Liu J., Ding C., Lonard D. M., Solis L. M., Wistuba I. I., Qin J., Tsai S. Y., Tsai M. J., O’Malley B. W., ERK3 signals through SRC-3 coactivator to promote human lung cancer cell invasion. J. Clin. Invest. 122, 1869–1880 (2012)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC4872741"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "26701725"
+                }
+              ],
+              "Citation": "Bian K., Muppani N. R., Elkhadragy L., Wang W., Zhang C., Chen T., Jung S., Seternes O. M., Long W., ERK3 regulates TDP2-mediated DNA damage response and chemoresistance in lung cancer cells. Oncotarget 7, 6665–6675 (2016)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC5399463"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "28429763"
+                }
+              ],
+              "Citation": "Tan J., Yang L., Liu C., Yan Z., MicroRNA-26a targets MAPK6 to inhibit smooth muscle cell proliferation and vein graft neointimal hyperplasia. Sci. Rep. 7, 46602 (2017)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC5288292"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "28079973"
+                }
+              ],
+              "Citation": "Elkhadragy L., Chen M., Miller K., Yang M. H., Long W., A regulatory BMI1/let-7i/ERK3 pathway controls the motility of head and neck cancer cells. Mol. Oncol. 11, 194–207 (2017)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC7192585"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "32314963"
+                }
+              ],
+              "Citation": "Bogucka K., Pompaiah M., Marini F., Binder H., Harms G., Kaulich M., Klein M., Michel C., Radsak M. P., Rosigkeit S., Grimminger P., Schild H., Rajalingam K., ERK3/MAPK6 controls IL-8 production and chemotaxis. eLife 9, e52511 (2020)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC4078721"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "24585635"
+                }
+              ],
+              "Citation": "Wang W., Bian K., Vallabhaneni S., Zhang B., Wu R. C., O’Malley B. W., Long W., ERK3 promotes endothelial cell functions by upregulating SRC-3/SP1-mediated VEGFR2 expression. J. Cell. Physiol. 229, 1529–1537 (2014)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pubmed",
+                  "id": "31016619"
+                }
+              ],
+              "Citation": "Wu J., Zhao Y., Li F., Qiao B., MiR-144-3p: A novel tumor suppressor targeting MAPK6 in cervical cancer. J. Physiol. Biochem. 75, 143–152 (2019)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC4955959"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "26588708"
+                }
+              ],
+              "Citation": "Al-Mahdi R., Babteen N., Thillai K., Holt M., Johansen B., Wetting H. L., Seternes O.-M., Wells C. M., A novel role for atypical MAPK kinase ERK3 in regulating breast cancer cell morphology and migration. Cell Adhes. Migr. 9, 483–494 (2015)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pubmed",
+                  "id": "12915405"
+                }
+              ],
+              "Citation": "Julien C., Coulombe P., Meloche S., Nuclear export of ERK3 by a CRM1-dependent mechanism regulates its inhibitory action on cell cycle progression. J. Biol. Chem. 278, 42615–42624 (2003)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC8378996"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "30569573"
+                }
+              ],
+              "Citation": "Chen M., Myers A. K., Markey M. P., Long W., The atypical MAPK ERK3 potently suppresses melanoma cell growth and invasiveness. J. Cell. Physiol. 234, 13220–13232 (2019)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC5329912"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "28241849"
+                }
+              ],
+              "Citation": "Ling S., Xie H., Yang F., Shan Q., Dai H., Zhuo J., Wei X., Song P., Zhou L., Xu X., Zheng S., Metformin potentiates the effect of arsenic trioxide suppressing intrahepatic cholangiocarcinoma: Roles of p38 MAPK, ERK3, and mTORC1. J. Hematol. Oncol. 10, 59 (2017)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC6391107"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "30688659"
+                }
+              ],
+              "Citation": "Wang W., Shen T., Dong B., Creighton C. J., Meng Y., Zhou W., Shi Q., Zhou H., Zhang Y., Moore D. D., Yang F., MAPK4 overexpression promotes tumor progression via noncanonical activation of AKT/mTOR signaling. J. Clin. Invest. 129, 1015–1029 (2019)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC7880415"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "33586682"
+                }
+              ],
+              "Citation": "Shen T., Wang W., Zhou W., Coleman I., Cai Q., Dong B., Ittmann M. M., Creighton C. J., Bian Y., Meng Y., Rowley D. R., Nelson P. S., Moore D. D., Yang F., MAPK4 promotes prostate cancer by concerted activation of androgen receptor and AKT. J. Clin. Invest. 131, e135465 (2021)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC164847"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "12808096"
+                }
+              ],
+              "Citation": "Coulombe P., Rodier G., Pelletier S., Pellerin J., Meloche S., Rapid turnover of extracellular signal-regulated kinase 3 by the ubiquitin-proteasome pathway defines a novel paradigm of mitogen-activated protein kinase regulation during cellular differentiation. Mol. Cell. Biol. 23, 4542–4558 (2003)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pubmed",
+                  "id": "15718470"
+                }
+              ],
+              "Citation": "Sarbassov D. D., Guertin D. A., Ali S. M., Sabatini D. M., Phosphorylation and regulation of Akt/PKB by the rictor-mTOR complex. Science 307, 1098–1101 (2005)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pubmed",
+                  "id": "16962829"
+                }
+              ],
+              "Citation": "Shiota C., Woo J. T., Lindner J., Shelton K. D., Magnuson M. A., Multiallelic disruption of the rictor gene in mice reveals that mTOR complex 2 is essential for fetal growth and viability. Dev. Cell 11, 583–589 (2006)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC2637922"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "19209957"
+                }
+              ],
+              "Citation": "Feldman M. E., Apsel B., Uotila A., Loewith R., Knight Z. A., Ruggero D., Shokat K. M., Active-site inhibitors of mTOR target rapamycin-resistant outputs of mTORC1 and mTORC2. PLoS Biol. 7, e38 (2009)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pubmed",
+                  "id": "16973613"
+                }
+              ],
+              "Citation": "Kant S., Schumacher S., Singh M. K., Kispert A., Kotlyarov A., Gaestel M., Characterization of the atypical MAPK ERK4 and its activation of the MAPK-activated protein kinase MK5. J. Biol. Chem. 281, 35511–35519 (2006)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC3663483"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "22367541"
+                }
+              ],
+              "Citation": "Hsieh A. C., Liu Y., Edlind M. P., Ingolia N. T., Janes M. R., Sher A., Shi E. Y., Stumpf C. R., Christensen C., Bonham M. J., Wang S., Ren P., Martin M., Jessen K., Feldman M. E., Weissman J. S., Shokat K. M., Rommel C., Ruggero D., The translational landscape of mTOR signalling steers cancer initiation and metastasis. Nature 485, 55–61 (2012)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC3919969"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "24071849"
+                }
+              ],
+              "Citation": "Cancer Genome Atlas Research Network, Weinstein J. N., Collisson E. A., Mills G. B., Shaw K. R. M., Ozenberger B. A., Ellrott K., Shmulevich I., Sander C., Stuart J. M., The cancer genome atlas pan-cancer analysis project. Nat. Genet. 45, 1113–1120 (2013)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pubmed",
+                  "id": "32188723"
+                }
+              ],
+              "Citation": "Tan X., Banerjee P., Pham E. A., Rutaganira F. U. N., Basu K., Bota-Rabassedas N., Guo H. F., Grzeskowiak C. L., Liu X., Yu J., Shi L., Peng D. H., Rodriguez B. L., Zhang J., Zheng V., Duose D. Y., Solis L. M., Mino B., Raso M. G., Behrens C., Wistuba I. I., Scott K. L., Smith M., Nguyen K., Lam G., Choong I., Mazumdar A., Hill J. L., Gibbons D. L., Brown P. H., Russell W. K., Shokat K., Creighton C. J., Glenn J. S., Kurie J. M., PI4KIIIβ is a therapeutic target in chromosome 1q-amplified lung adenocarcinoma. Sci. Transl. Med. 12, eaax3772 (2020)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pmc",
+                  "id": "PMC4059214"
+                },
+                {
+                  "IdType": "pubmed",
+                  "id": "22157079"
+                }
+              ],
+              "Citation": "Kessler J. D., Kahle K. T., Sun T., Meerbrey K. L., Schlabach M. R., Schmitt E. M., Skinner S. O., Xu Q., Li M. Z., Hartman Z. C., Rao M., Yu P., Dominguez-Vidana R., Liang A. C., Solimini N. L., Bernardi R. J., Yu B., Hsu T., Golding I., Luo J., Osborne C. K., Creighton C. J., Hilsenbeck S. G., Schiff R., Shaw C. A., Elledge S. J., Westbrook T. F., A SUMOylation-dependent transcriptional subprogram is required for Myc-driven tumorigenesis. Science 335, 348–353 (2012)."
+            },
+            {
+              "ArticleIdList": [
+                {
+                  "IdType": "pubmed",
+                  "id": "17637743"
+                }
+              ],
+              "Citation": "Yang F., Strand D. W., Rowley D. R., Fibroblast growth factor-2 mediates transforming growth factor-β action in prostate cancer reactive stroma. Oncogene 27, 450–459 (2008)."
+            }
+          ],
+          "ReferenceList": [],
+          "Title": null
+        }
+      ]
+    }
+  }
 }

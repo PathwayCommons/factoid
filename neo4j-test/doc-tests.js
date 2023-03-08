@@ -6,39 +6,56 @@ import { loadTables, createDoc, deleteDoc } from '../src/neo4j/get-doc-functions
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
 import { addDocumentToNeo4j } from '../src/neo4j/neo4j-document.js';
 import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
-// import r from 'rethinkdb';
+import r from 'rethinkdb';
 
-// Note: Before running, make sure to delete entries in database
-//        and restart everything (npm run watch)
-
-// const dbName = 'factoid-neo4j-test';
-// let conn;
+const dbName = 'factoid-neo4j-test';
+let rdbConn;
 
 describe('Tests for Documents', function () {
 
-  before('Should create a driver instance and connect to server', async function () {
+  before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
     await initDriver();
 
-    // conn = await r.connect({ db: dbName }); // connect to rdb
+    rdbConn = await r.connect({ host: 'localhost', db: dbName });
+    const exists = await r.dbList().contains(dbName).run(rdbConn);
+    if (!exists) {
+      await r.dbCreate(dbName).run(rdbConn);
+    }
   });
 
-  after('Close driver', async function () {
+  after('Close Neo4j driver and RDB connection', async function () {
     await closeDriver();
-    // await conn.close(); // close rdb
+    await rdbConn.close();
   });
 
-  beforeEach('Delete nodes and edges', async function () {
+  beforeEach('Delete nodes and edges from Neo4j and Delete RDB db', async function () {
     await deleteAllNodesAndEdges();
 
     // ensure clean rdb before each test
-    // await r.dbDrop(dbName).run(); // delete db for rdb
-    // await r.dbCreate(dbName).run(); // create db for rdb
+    //await r.dbDrop(dbName).run(); // delete db for rdb
+
+    try {
+      await r.dbDrop(dbName).run(rdbConn);
+      console.log(`Database '${dbName}' dropped.`);
+    } catch (err) {
+      if (err.message !== 'Database `your_database_name` does not exist.') {
+        throw err;
+      }
+    }
+
+    try {
+      const result = await r.dbCreate(dbName).run(rdbConn);
+      console.log(`Database '${result.config_changes[0].new_val}' created.`);
+    } catch (err) {
+      throw err;
+    }
   });
 
   let dummyDoc;
 
-  beforeEach('Create a dummy doc', async function () {
+  beforeEach('Make a dummy doc', async function () {
     const { docDb, eleDb } = await loadTables();
+
     const id = uuid(); //npm uuid
     const secret = uuid(); // npm uuid
     const provided = {
@@ -49,10 +66,6 @@ describe('Tests for Documents', function () {
     };
     dummyDoc = await createDoc({ docDb, eleDb, id, secret, provided });
     await dummyDoc.fromJson(testDoc);
-  });
-
-  afterEach('Drop dummy Doc', async function () {
-    await deleteDoc(dummyDoc);
   });
 
   it('Make sure dummy doc has been made with necessary fields', async function () {

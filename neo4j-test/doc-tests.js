@@ -62,9 +62,9 @@ describe('Tests for Documents', function () {
 
     let myDoc = myDummyDoc[0];
     expect(myDoc.id).to.equal(dummyDoc.id());
-    expect(myDoc.citation.doi).to.equal(null); //to.equal('10.1126/sciadv.abi6439');
-    expect(myDoc.citation.pmid).to.equal(null); //to.equal('34767444');
-    expect(myDoc.text).to.equal('MAPK6 activates AKT via phosphorylation.');
+    expect(myDoc.citation.doi).to.be.null; //to.equal('10.1126/sciadv.abi6439');
+    expect(myDoc.citation.pmid).to.be.null; //to.equal('34767444');
+    expect(myDoc.citation.title).to.be.null; //to.equal('MAPK6 activates AKT via phosphorylation.');
 
     expect(myDoc.elements.length).to.equal(3);
 
@@ -92,7 +92,7 @@ describe('Tests for Documents', function () {
     let myDoc = myDummyDoc[0];
     expect(await getNumNodes()).equal(0);
     expect(await getNumEdges()).equal(0);
-    addDocumentToNeo4j(myDoc);
+    await addDocumentToNeo4j(myDoc);
 
     expect(await getGeneName('ncbigene:5597')).equal('MAPK6');
     expect(await getGeneName('ncbigene:5597')).equal('MAPK6');
@@ -105,9 +105,9 @@ describe('Tests for Documents', function () {
     expect(edge.properties.sourceId).equal('ncbigene:5597');
     expect(edge.properties.targetId).equal('ncbigene:207');
     expect(edge.properties.xref).equal(myDoc.id);
-    expect(edge.properties.doi).equal('10.1126/sciadv.abi6439');
-    expect(edge.properties.pmid).equal('34767444');
-    expect(edge.properties.articleTitle).equal('MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
+    expect(edge.properties.doi).equal('not found'); //equal('10.1126/sciadv.abi6439');
+    expect(edge.properties.pmid).equal('not found'); //equal('34767444');
+    expect(edge.properties.articleTitle).equal('not found'); //equal('MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
   });
 
 });

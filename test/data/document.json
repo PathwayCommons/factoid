@@ -1,0 +1,1218 @@
+{
+  "organisms": [
+    9606,
+    10090,
+    "9606"
+  ],
+  "elements": [],
+  "publicUrl": "/document/5df17c41-acb7-4c42-a37b-fe323688bc64",
+  "privateUrl": "/document/5df17c41-acb7-4c42-a37b-fe323688bc64",
+  "citation": {
+    "title": "SENP1-Sirt3 Signaling Controls Mitochondrial Protein Acetylation and Metabolism.",
+    "authors": {
+      "abbreviation": "Tianshi Wang, Ying Cao, Quan Zheng, ..., Jinke Cheng",
+      "contacts": [
+        {
+          "name": "Tianshi Wang",
+          "email": [
+            "tianshi777@shsmu.edu.cn"
+          ],
+          "ForeName": "Tianshi",
+          "LastName": "Wang"
+        },
+        {
+          "name": "Jinke Cheng",
+          "email": [
+            "jkcheng@shsmu.edu.cn"
+          ],
+          "ForeName": "Jinke",
+          "LastName": "Cheng"
+        }
+      ],
+      "authorList": [
+        {
+          "name": "Tianshi Wang",
+          "ForeName": "Tianshi",
+          "LastName": "Wang",
+          "email": "tianshi777@shsmu.edu.cn",
+          "abbrevName": "Wang T",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Ying Cao",
+          "ForeName": "Ying",
+          "LastName": "Cao",
+          "email": null,
+          "abbrevName": "Cao Y",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Quan Zheng",
+          "ForeName": "Quan",
+          "LastName": "Zheng",
+          "email": null,
+          "abbrevName": "Zheng Q",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Jun Tu",
+          "ForeName": "Jun",
+          "LastName": "Tu",
+          "email": null,
+          "abbrevName": "Tu J",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Wei Zhou",
+          "ForeName": "Wei",
+          "LastName": "Zhou",
+          "email": null,
+          "abbrevName": "Zhou W",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Jianli He",
+          "ForeName": "Jianli",
+          "LastName": "He",
+          "email": null,
+          "abbrevName": "He J",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Jie Zhong",
+          "ForeName": "Jie",
+          "LastName": "Zhong",
+          "email": null,
+          "abbrevName": "Zhong J",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Yalan Chen",
+          "ForeName": "Yalan",
+          "LastName": "Chen",
+          "email": null,
+          "abbrevName": "Chen Y",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Jiqiu Wang",
+          "ForeName": "Jiqiu",
+          "LastName": "Wang",
+          "email": null,
+          "abbrevName": "Wang J",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Rong Cai",
+          "ForeName": "Rong",
+          "LastName": "Cai",
+          "email": null,
+          "abbrevName": "Cai R",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Yong Zuo",
+          "ForeName": "Yong",
+          "LastName": "Zuo",
+          "email": null,
+          "abbrevName": "Zuo Y",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Bo Wei",
+          "ForeName": "Bo",
+          "LastName": "Wei",
+          "email": null,
+          "abbrevName": "Wei B",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Qiuju Fan",
+          "ForeName": "Qiuju",
+          "LastName": "Fan",
+          "email": null,
+          "abbrevName": "Fan Q",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Jie Yang",
+          "ForeName": "Jie",
+          "LastName": "Yang",
+          "email": null,
+          "abbrevName": "Yang J",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Yicheng Wu",
+          "ForeName": "Yicheng",
+          "LastName": "Wu",
+          "email": null,
+          "abbrevName": "Wu Y",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Jing Yi",
+          "ForeName": "Jing",
+          "LastName": "Yi",
+          "email": null,
+          "abbrevName": "Yi J",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Dali Li",
+          "ForeName": "Dali",
+          "LastName": "Li",
+          "email": null,
+          "abbrevName": "Li D",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Mingyao Liu",
+          "ForeName": "Mingyao",
+          "LastName": "Liu",
+          "email": null,
+          "abbrevName": "Liu M",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Chuangui Wang",
+          "ForeName": "Chuangui",
+          "LastName": "Wang",
+          "email": null,
+          "abbrevName": "Wang C",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Aiwu Zhou",
+          "ForeName": "Aiwu",
+          "LastName": "Zhou",
+          "email": null,
+          "abbrevName": "Zhou A",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Yu Li",
+          "ForeName": "Yu",
+          "LastName": "Li",
+          "email": null,
+          "abbrevName": "Li Y",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Xuefeng Wu",
+          "ForeName": "Xuefeng",
+          "LastName": "Wu",
+          "email": null,
+          "abbrevName": "Wu X",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Wen Yang",
+          "ForeName": "Wen",
+          "LastName": "Yang",
+          "email": null,
+          "abbrevName": "Yang W",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Y Eugene Chin",
+          "ForeName": "Y",
+          "LastName": "Chin",
+          "email": null,
+          "abbrevName": "Chin YE",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Guoqiang Chen",
+          "ForeName": "Guoqiang",
+          "LastName": "Chen",
+          "email": null,
+          "abbrevName": "Chen G",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Jinke Cheng",
+          "ForeName": "Jinke",
+          "LastName": "Cheng",
+          "email": "jkcheng@shsmu.edu.cn",
+          "abbrevName": "Cheng J",
+          "isCollectiveName": false,
+          "orcid": null
+        }
+      ]
+    },
+    "reference": "Mol Cell 75 2019",
+    "abstract": "Sirt3, as a major mitochondrial nicotinamide adenine dinucleotide (NAD)-dependent deacetylase, is required for mitochondrial metabolic adaption to various stresses. However, how to regulate Sirt3 activity responding to metabolic stress remains largely unknown. Here, we report Sirt3 as a SUMOylated protein in mitochondria. SUMOylation suppresses Sirt3 catalytic activity. SUMOylation-deficient Sirt3 shows elevated deacetylation on mitochondrial proteins and increased fatty acid oxidation. During fasting, SUMO-specific protease SENP1 is accumulated in mitochondria and quickly de-SUMOylates and activates Sirt3. SENP1 deficiency results in hyper-SUMOylation of Sirt3 and hyper-acetylation of mitochondrial proteins, which reduces mitochondrial metabolic adaption responding to fasting. Furthermore, we find that fasting induces SENP1 translocation into mitochondria to activate Sirt3. The studies on mice show that Sirt3 SUMOylation mutation reduces fat mass and antagonizes high-fat diet (HFD)-induced obesity via increasing oxidative phosphorylation and energy expenditure. Our results reveal that SENP1-Sirt3 signaling modulates Sirt3 activation and mitochondrial metabolism during metabolic stress.",
+    "pmid": "31302001",
+    "doi": "10.1016/j.molcel.2019.06.008",
+    "pubTypes": [
+      {
+        "UI": "D016428",
+        "value": "Journal Article"
+      },
+      {
+        "UI": "D013485",
+        "value": "Research Support, Non-U.S. Gov't"
+      }
+    ],
+    "ISODate": "2019-08-22T00:00:00.000Z"
+  },
+  "text": "senp1 activates sirt3.",
+  "createdDate": "2019-09-05T14:29:27.000Z",
+  "lastEditedDate": "2019-09-06T01:21:01.000Z",
+  "status": "public",
+  "verified": true,
+  "authorProfiles": [
+    {
+      "ForeName": "Tianshi",
+      "LastName": "Wang",
+      "abbrevName": "Wang T",
+      "email": "tianshi777@shsmu.edu.cn",
+      "isCollectiveName": false,
+      "name": "Tianshi Wang",
+      "orcid": null
+    },
+    {
+      "ForeName": "Ying",
+      "LastName": "Cao",
+      "abbrevName": "Cao Y",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Ying Cao",
+      "orcid": null
+    },
+    {
+      "ForeName": "Quan",
+      "LastName": "Zheng",
+      "abbrevName": "Zheng Q",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Quan Zheng",
+      "orcid": null
+    },
+    {
+      "ForeName": "Jun",
+      "LastName": "Tu",
+      "abbrevName": "Tu J",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Jun Tu",
+      "orcid": null
+    },
+    {
+      "ForeName": "Wei",
+      "LastName": "Zhou",
+      "abbrevName": "Zhou W",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Wei Zhou",
+      "orcid": null
+    },
+    {
+      "ForeName": "Jianli",
+      "LastName": "He",
+      "abbrevName": "He J",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Jianli He",
+      "orcid": null
+    },
+    {
+      "ForeName": "Jie",
+      "LastName": "Zhong",
+      "abbrevName": "Zhong J",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Jie Zhong",
+      "orcid": null
+    },
+    {
+      "ForeName": "Yalan",
+      "LastName": "Chen",
+      "abbrevName": "Chen Y",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Yalan Chen",
+      "orcid": null
+    },
+    {
+      "ForeName": "Jiqiu",
+      "LastName": "Wang",
+      "abbrevName": "Wang J",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Jiqiu Wang",
+      "orcid": "0000-0002-9383-7656"
+    },
+    {
+      "ForeName": "Rong",
+      "LastName": "Cai",
+      "abbrevName": "Cai R",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Rong Cai",
+      "orcid": null
+    },
+    {
+      "ForeName": "Yong",
+      "LastName": "Zuo",
+      "abbrevName": "Zuo Y",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Yong Zuo",
+      "orcid": null
+    },
+    {
+      "ForeName": "Bo",
+      "LastName": "Wei",
+      "abbrevName": "Wei B",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Bo Wei",
+      "orcid": null
+    },
+    {
+      "ForeName": "Qiuju",
+      "LastName": "Fan",
+      "abbrevName": "Fan Q",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Qiuju Fan",
+      "orcid": null
+    },
+    {
+      "ForeName": "Jie",
+      "LastName": "Yang",
+      "abbrevName": "Yang J",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Jie Yang",
+      "orcid": null
+    },
+    {
+      "ForeName": "Yicheng",
+      "LastName": "Wu",
+      "abbrevName": "Wu Y",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Yicheng Wu",
+      "orcid": null
+    },
+    {
+      "ForeName": "Jing",
+      "LastName": "Yi",
+      "abbrevName": "Yi J",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Jing Yi",
+      "orcid": null
+    },
+    {
+      "ForeName": "Dali",
+      "LastName": "Li",
+      "abbrevName": "Li D",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Dali Li",
+      "orcid": "0000-0002-0046-8493"
+    },
+    {
+      "ForeName": "Mingyao",
+      "LastName": "Liu",
+      "abbrevName": "Liu M",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Mingyao Liu",
+      "orcid": null
+    },
+    {
+      "ForeName": "Chuangui",
+      "LastName": "Wang",
+      "abbrevName": "Wang C",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Chuangui Wang",
+      "orcid": null
+    },
+    {
+      "ForeName": "Aiwu",
+      "LastName": "Zhou",
+      "abbrevName": "Zhou A",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Aiwu Zhou",
+      "orcid": null
+    },
+    {
+      "ForeName": "Yu",
+      "LastName": "Li",
+      "abbrevName": "Li Y",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Yu Li",
+      "orcid": null
+    },
+    {
+      "ForeName": "Xuefeng",
+      "LastName": "Wu",
+      "abbrevName": "Wu X",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Xuefeng Wu",
+      "orcid": null
+    },
+    {
+      "ForeName": "Wen",
+      "LastName": "Yang",
+      "abbrevName": "Yang W",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Wen Yang",
+      "orcid": null
+    },
+    {
+      "ForeName": "Y",
+      "LastName": "Chin",
+      "abbrevName": "Chin YE",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Y Eugene Chin",
+      "orcid": null
+    },
+    {
+      "ForeName": "Guoqiang",
+      "LastName": "Chen",
+      "abbrevName": "Chen G",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Guoqiang Chen",
+      "orcid": null
+    },
+    {
+      "ForeName": "Jinke",
+      "LastName": "Cheng",
+      "abbrevName": "Cheng J",
+      "email": "jkcheng@shsmu.edu.cn",
+      "isCollectiveName": false,
+      "name": "Jinke Cheng",
+      "orcid": null
+    }
+  ],
+  "article": {
+    "MedlineCitation": {
+      "Article": {
+        "Abstract": "Sirt3, as a major mitochondrial nicotinamide adenine dinucleotide (NAD)-dependent deacetylase, is required for mitochondrial metabolic adaption to various stresses. However, how to regulate Sirt3 activity responding to metabolic stress remains largely unknown. Here, we report Sirt3 as a SUMOylated protein in mitochondria. SUMOylation suppresses Sirt3 catalytic activity. SUMOylation-deficient Sirt3 shows elevated deacetylation on mitochondrial proteins and increased fatty acid oxidation. During fasting, SUMO-specific protease SENP1 is accumulated in mitochondria and quickly de-SUMOylates and activates Sirt3. SENP1 deficiency results in hyper-SUMOylation of Sirt3 and hyper-acetylation of mitochondrial proteins, which reduces mitochondrial metabolic adaption responding to fasting. Furthermore, we find that fasting induces SENP1 translocation into mitochondria to activate Sirt3. The studies on mice show that Sirt3 SUMOylation mutation reduces fat mass and antagonizes high-fat diet (HFD)-induced obesity via increasing oxidative phosphorylation and energy expenditure. Our results reveal that SENP1-Sirt3 signaling modulates Sirt3 activation and mitochondrial metabolism during metabolic stress.",
+        "ArticleTitle": "SENP1-Sirt3 Signaling Controls Mitochondrial Protein Acetylation and Metabolism.",
+        "AuthorList": [
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China; State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China. Electronic address: tianshi777@shsmu.edu.cn.",
+                "email": [
+                  "tianshi777@shsmu.edu.cn"
+                ]
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Tianshi",
+            "Identifier": [],
+            "Initials": "T",
+            "LastName": "Wang"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China; State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Ying",
+            "Identifier": [],
+            "Initials": "Y",
+            "LastName": "Cao"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China; State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Quan",
+            "Identifier": [],
+            "Initials": "Q",
+            "LastName": "Zheng"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China; State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Jun",
+            "Identifier": [],
+            "Initials": "J",
+            "LastName": "Tu"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China; State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Wei",
+            "Identifier": [],
+            "Initials": "W",
+            "LastName": "Zhou"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China; State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Jianli",
+            "Identifier": [],
+            "Initials": "J",
+            "LastName": "He"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Jie",
+            "Identifier": [],
+            "Initials": "J",
+            "LastName": "Zhong"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China; State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Yalan",
+            "Identifier": [],
+            "Initials": "Y",
+            "LastName": "Chen"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Endocrinology and Metabolism, Ruijin Hospital, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Jiqiu",
+            "Identifier": [],
+            "Initials": "J",
+            "LastName": "Wang"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China; State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Rong",
+            "Identifier": [],
+            "Initials": "R",
+            "LastName": "Cai"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China; State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Yong",
+            "Identifier": [],
+            "Initials": "Y",
+            "LastName": "Zuo"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China; State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Bo",
+            "Identifier": [],
+            "Initials": "B",
+            "LastName": "Wei"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China; State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Qiuju",
+            "Identifier": [],
+            "Initials": "Q",
+            "LastName": "Fan"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Jie",
+            "Identifier": [],
+            "Initials": "J",
+            "LastName": "Yang"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Yicheng",
+            "Identifier": [],
+            "Initials": "Y",
+            "LastName": "Wu"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China; State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Jing",
+            "Identifier": [],
+            "Initials": "J",
+            "LastName": "Yi"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Institute of Biomedical Sciences, East China Normal University, Shanghai 200241, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Dali",
+            "Identifier": [],
+            "Initials": "D",
+            "LastName": "Li"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Institute of Biomedical Sciences, East China Normal University, Shanghai 200241, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Mingyao",
+            "Identifier": [],
+            "Initials": "M",
+            "LastName": "Liu"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Institute of Translational Medicine, Shanghai General Hospital, Shanghai Jiao Tong University School of Medicine, Shanghai 201620, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Chuangui",
+            "Identifier": [],
+            "Initials": "C",
+            "LastName": "Wang"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China; Hongqiao International Institute of Medicine, Shanghai Tongren Hospital/Faculty of Basic Medicine, Shanghai 200050, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Aiwu",
+            "Identifier": [],
+            "Initials": "A",
+            "LastName": "Zhou"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Institute of Immunology, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Yu",
+            "Identifier": [],
+            "Initials": "Y",
+            "LastName": "Li"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China; Institute of Immunology, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Xuefeng",
+            "Identifier": [],
+            "Initials": "X",
+            "LastName": "Wu"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China; State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Wen",
+            "Identifier": [],
+            "Initials": "W",
+            "LastName": "Yang"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Institute of Health Sciences, Chinese Academy of Sciences-Shanghai Jiao Tong University School of Medicine, Shanghai 200031, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Y Eugene",
+            "Identifier": [],
+            "Initials": "YE",
+            "LastName": "Chin"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China.",
+                "email": null
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Guoqiang",
+            "Identifier": [],
+            "Initials": "G",
+            "LastName": "Chen"
+          },
+          {
+            "AffiliationInfo": [
+              {
+                "Affiliation": "Department of Biochemistry and Molecular Cell Biology, Shanghai Key Laboratory for Tumor Microenvironment and Inflammation, Shanghai Jiao Tong University School of Medicine, Shanghai 200025, China; State Key Laboratory of Oncogenes and Related Genes, Renji Hospital Affiliated, Shanghai Jiao Tong University School of Medicine, Shanghai 200127, China. Electronic address: jkcheng@shsmu.edu.cn.",
+                "email": [
+                  "jkcheng@shsmu.edu.cn"
+                ]
+              }
+            ],
+            "CollectiveName": null,
+            "ForeName": "Jinke",
+            "Identifier": [],
+            "Initials": "J",
+            "LastName": "Cheng"
+          }
+        ],
+        "Journal": {
+          "ISOAbbreviation": "Mol Cell",
+          "ISSN": {
+            "IssnType": "Electronic",
+            "value": "1097-4164"
+          },
+          "Issue": "4",
+          "JournalIssue": {
+            "Issue": "4",
+            "PubDate": {
+              "Day": "22",
+              "Month": "Aug",
+              "Year": "2019"
+            },
+            "Volume": "75"
+          },
+          "PubDate": {
+            "Day": "22",
+            "Month": "Aug",
+            "Year": "2019"
+          },
+          "Title": "Molecular cell",
+          "Volume": "75"
+        },
+        "PublicationTypeList": [
+          {
+            "UI": "D016428",
+            "value": "Journal Article"
+          },
+          {
+            "UI": "D013485",
+            "value": "Research Support, Non-U.S. Gov't"
+          }
+        ]
+      },
+      "ChemicalList": [
+        {
+          "NameOfSubstance": {
+            "UI": "D004041",
+            "value": "Dietary Fats"
+          },
+          "RegistryNumber": "0"
+        },
+        {
+          "NameOfSubstance": {
+            "UI": "C525046",
+            "value": "Sirt3 protein, mouse"
+          },
+          "RegistryNumber": "0"
+        },
+        {
+          "NameOfSubstance": {
+            "UI": "D003546",
+            "value": "Cysteine Endopeptidases"
+          },
+          "RegistryNumber": "EC 3.4.22.-"
+        },
+        {
+          "NameOfSubstance": {
+            "UI": "C501974",
+            "value": "Senp1 protein, mouse"
+          },
+          "RegistryNumber": "EC 3.4.22.-"
+        },
+        {
+          "NameOfSubstance": {
+            "UI": "D056566",
+            "value": "Sirtuin 3"
+          },
+          "RegistryNumber": "EC 3.5.1.-"
+        }
+      ],
+      "InvestigatorList": [],
+      "KeywordList": [
+        "SENP1",
+        "SUMOylation",
+        "Sirt3",
+        "acetylation",
+        "metabolism",
+        "mitochondrion",
+        "obesity"
+      ],
+      "MeshheadingList": [
+        {
+          "DescriptorName": {
+            "MajorTopicYN": "N",
+            "UI": "D000107",
+            "value": "Acetylation"
+          },
+          "QualifierName": []
+        },
+        {
+          "DescriptorName": {
+            "MajorTopicYN": "N",
+            "UI": "D000818",
+            "value": "Animals"
+          },
+          "QualifierName": []
+        },
+        {
+          "DescriptorName": {
+            "MajorTopicYN": "N",
+            "UI": "D003546",
+            "value": "Cysteine Endopeptidases"
+          },
+          "QualifierName": [
+            {
+              "MajorTopicYN": "N",
+              "UI": "Q000235",
+              "value": "genetics"
+            },
+            {
+              "MajorTopicYN": "Y",
+              "UI": "Q000378",
+              "value": "metabolism"
+            }
+          ]
+        },
+        {
+          "DescriptorName": {
+            "MajorTopicYN": "N",
+            "UI": "D004041",
+            "value": "Dietary Fats"
+          },
+          "QualifierName": [
+            {
+              "MajorTopicYN": "N",
+              "UI": "Q000009",
+              "value": "adverse effects"
+            },
+            {
+              "MajorTopicYN": "N",
+              "UI": "Q000494",
+              "value": "pharmacology"
+            }
+          ]
+        },
+        {
+          "DescriptorName": {
+            "MajorTopicYN": "N",
+            "UI": "D057809",
+            "value": "HEK293 Cells"
+          },
+          "QualifierName": []
+        },
+        {
+          "DescriptorName": {
+            "MajorTopicYN": "N",
+            "UI": "D006801",
+            "value": "Humans"
+          },
+          "QualifierName": []
+        },
+        {
+          "DescriptorName": {
+            "MajorTopicYN": "N",
+            "UI": "D008297",
+            "value": "Male"
+          },
+          "QualifierName": []
+        },
+        {
+          "DescriptorName": {
+            "MajorTopicYN": "N",
+            "UI": "D051379",
+            "value": "Mice"
+          },
+          "QualifierName": []
+        },
+        {
+          "DescriptorName": {
+            "MajorTopicYN": "N",
+            "UI": "D008817",
+            "value": "Mice, Mutant Strains"
+          },
+          "QualifierName": []
+        },
+        {
+          "DescriptorName": {
+            "MajorTopicYN": "N",
+            "UI": "D008928",
+            "value": "Mitochondria"
+          },
+          "QualifierName": [
+            {
+              "MajorTopicYN": "N",
+              "UI": "Q000235",
+              "value": "genetics"
+            },
+            {
+              "MajorTopicYN": "Y",
+              "UI": "Q000378",
+              "value": "metabolism"
+            },
+            {
+              "MajorTopicYN": "N",
+              "UI": "Q000473",
+              "value": "pathology"
+            }
+          ]
+        },
+        {
+          "DescriptorName": {
+            "MajorTopicYN": "Y",
+            "UI": "D009154",
+            "value": "Mutation"
+          },
+          "QualifierName": []
+        },
+        {
+          "DescriptorName": {
+            "MajorTopicYN": "N",
+            "UI": "D009765",
+            "value": "Obesity"
+          },
+          "QualifierName": [
+            {
+              "MajorTopicYN": "N",
+              "UI": "Q000139",
+              "value": "chemically induced"
+            },
+            {
+              "MajorTopicYN": "N",
+              "UI": "Q000235",
+              "value": "genetics"
+            },
+            {
+              "MajorTopicYN": "Y",
+              "UI": "Q000378",
+              "value": "metabolism"
+            },
+            {
+              "MajorTopicYN": "N",
+              "UI": "Q000473",
+              "value": "pathology"
+            }
+          ]
+        },
+        {
+          "DescriptorName": {
+            "MajorTopicYN": "Y",
+            "UI": "D015398",
+            "value": "Signal Transduction"
+          },
+          "QualifierName": []
+        },
+        {
+          "DescriptorName": {
+            "MajorTopicYN": "N",
+            "UI": "D056566",
+            "value": "Sirtuin 3"
+          },
+          "QualifierName": [
+            {
+              "MajorTopicYN": "N",
+              "UI": "Q000235",
+              "value": "genetics"
+            },
+            {
+              "MajorTopicYN": "Y",
+              "UI": "Q000378",
+              "value": "metabolism"
+            }
+          ]
+        },
+        {
+          "DescriptorName": {
+            "MajorTopicYN": "Y",
+            "UI": "D058207",
+            "value": "Sumoylation"
+          },
+          "QualifierName": []
+        }
+      ]
+    },
+    "PubmedData": {
+      "ArticleIdList": [
+        {
+          "IdType": "pubmed",
+          "id": "31302001"
+        },
+        {
+          "IdType": "doi",
+          "id": "10.1016/j.molcel.2019.06.008"
+        },
+        {
+          "IdType": "pii",
+          "id": "S1097-2765(19)30441-1"
+        }
+      ],
+      "History": [
+        {
+          "PubMedPubDate": {
+            "Day": "26",
+            "Month": "2",
+            "Year": "2019"
+          },
+          "PubStatus": "received"
+        },
+        {
+          "PubMedPubDate": {
+            "Day": "1",
+            "Month": "5",
+            "Year": "2019"
+          },
+          "PubStatus": "revised"
+        },
+        {
+          "PubMedPubDate": {
+            "Day": "4",
+            "Month": "6",
+            "Year": "2019"
+          },
+          "PubStatus": "accepted"
+        },
+        {
+          "PubMedPubDate": {
+            "Day": "16",
+            "Month": "7",
+            "Year": "2019"
+          },
+          "PubStatus": "pubmed"
+        },
+        {
+          "PubMedPubDate": {
+            "Day": "29",
+            "Month": "1",
+            "Year": "2020"
+          },
+          "PubStatus": "medline"
+        },
+        {
+          "PubMedPubDate": {
+            "Day": "15",
+            "Month": "7",
+            "Year": "2019"
+          },
+          "PubStatus": "entrez"
+        }
+      ],
+      "ReferenceList": []
+    }
+  }
+}

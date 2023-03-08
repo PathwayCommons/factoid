@@ -51,8 +51,8 @@ export async function addDocumentToNeo4j(doc) {
   let docCitations = {
     xref: doc.id,
     doi: doc.citation.doi ? doc.citation.doi : 'not found', //'10.1126/sciadv.abi6439',
-    pmid: doc.citation.pmid ? doc.citation.doi : 'not found', //'34767444', 
-    articleTitle: doc.citation.title ? doc.citation.doi : 'not found' //'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.'
+    pmid: doc.citation.pmid ? doc.citation.pmid : 'not found', //'34767444', 
+    articleTitle: doc.citation.title ? doc.citation.title : 'not found' //'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.'
   };
 
   // Step 2: Make all the nodes

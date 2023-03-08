@@ -6,22 +6,33 @@ import { loadTables, createDoc, deleteDoc } from '../src/neo4j/get-doc-functions
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
 import { addDocumentToNeo4j } from '../src/neo4j/neo4j-document.js';
 import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
+// import r from 'rethinkdb';
 
 // Note: Before running, make sure to delete entries in database
 //        and restart everything (npm run watch)
+
+// const dbName = 'factoid-neo4j-test';
+// let conn;
 
 describe('Tests for Documents', function () {
 
   before('Should create a driver instance and connect to server', async function () {
     await initDriver();
+
+    // conn = await r.connect({ db: dbName }); // connect to rdb
   });
 
   after('Close driver', async function () {
     await closeDriver();
+    // await conn.close(); // close rdb
   });
 
   beforeEach('Delete nodes and edges', async function () {
     await deleteAllNodesAndEdges();
+
+    // ensure clean rdb before each test
+    // await r.dbDrop(dbName).run(); // delete db for rdb
+    // await r.dbCreate(dbName).run(); // create db for rdb
   });
 
   let dummyDoc;

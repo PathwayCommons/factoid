@@ -1,0 +1,371 @@
+{
+  "organisms": [
+    "9606"
+  ],
+  "elements": [
+    {
+      "id": "598f8bef-f858-4dd0-b1c6-5168a8ae5349",
+      "secret": "3a7d96cb-a203-4f08-86d1-981e73271b1e",
+      "position": {
+        "x": -293.62739490935775,
+        "y": -99.72685471867636
+      },
+      "name": "MAPK6",
+      "description": "",
+      "type": "protein",
+      "completed": true,
+      "association": {
+        "combinedOrganismIndex": 2,
+        "dbName": "NCBI Gene",
+        "dbPrefix": "ncbigene",
+        "dbXrefs": [
+          {
+            "db": "MIM",
+            "id": "602904"
+          },
+          {
+            "db": "HGNC",
+            "id": "HGNC:6879"
+          },
+          {
+            "db": "Ensembl",
+            "id": "ENSG00000069956"
+          }
+        ],
+        "defaultOrganismIndex": 2,
+        "distance": 0,
+        "esScore": 11.3388,
+        "id": "5597",
+        "name": "MAPK6",
+        "nameDistance": 0,
+        "namespace": "ncbi",
+        "organism": "9606",
+        "organismIndex": 0,
+        "organismName": "Homo sapiens",
+        "overallDistance": 200000,
+        "shortSynonyms": [
+          "ERK3",
+          "HsT17250",
+          "PRKM6",
+          "p97MAPK",
+          "mitogen-activated protein kinase 6",
+          "MAPK 6",
+          "p97-MAPK",
+          "MAP kinase 6",
+          "protein kinase, mitogen-activated 5",
+          "ERK-3"
+        ],
+        "synonyms": [
+          "ERK3",
+          "HsT17250",
+          "PRKM6",
+          "p97MAPK",
+          "mitogen-activated protein kinase 6",
+          "ERK-3",
+          "MAP kinase 6",
+          "MAPK 6",
+          "extracellular signal-regulated kinase 3",
+          "extracellular signal-regulated kinase, p97",
+          "p97-MAPK",
+          "protein kinase, mitogen-activated 5",
+          "protein kinase, mitogen-activated 6"
+        ],
+        "type": "protein"
+      }
+    },
+    {
+      "id": "4081348e-20b8-4bf8-836f-695827a4f9a2",
+      "secret": "ba70bd0d-98dc-4b2a-b3c2-b1ac81f06d84",
+      "position": {
+        "x": -246.42444519327938,
+        "y": -98.99404397931303
+      },
+      "name": "AKT",
+      "description": "",
+      "type": "protein",
+      "completed": true,
+      "association": {
+        "charge": null,
+        "combinedOrganismIndex": 0,
+        "dbName": "NCBI Gene",
+        "dbPrefix": "ncbigene",
+        "dbXrefs": [
+          {
+            "db": "MIM",
+            "id": "164730"
+          },
+          {
+            "db": "HGNC",
+            "id": "HGNC:391"
+          },
+          {
+            "db": "Ensembl",
+            "id": "ENSG00000142208"
+          }
+        ],
+        "defaultOrganismIndex": 2,
+        "distance": 0,
+        "esScore": 10.916169,
+        "formulae": null,
+        "id": "207",
+        "mass": null,
+        "monoisotopicMass": null,
+        "name": "AKT1",
+        "nameDistance": 0.19999999999999996,
+        "namespace": "ncbi",
+        "organism": "9606",
+        "organismIndex": 0,
+        "organismName": "Homo sapiens",
+        "overallDistance": 20,
+        "shortSynonyms": [
+          "AKT1",
+          "AKT",
+          "PKB",
+          "PKB-ALPHA",
+          "PRKBA",
+          "RAC",
+          "AKT1m",
+          "proto-oncogene c-Akt",
+          "AKT serine/threonine kinase 1",
+          "v-akt murine thymoma viral oncogene homolog 1",
+          "v-akt murine thymoma viral oncogene-like protein 1"
+        ],
+        "synonyms": [
+          "AKT",
+          "PKB",
+          "PKB-ALPHA",
+          "PRKBA",
+          "RAC",
+          "RAC-ALPHA",
+          "RAC-alpha serine/threonine-protein kinase",
+          "AKT1m",
+          "PKB alpha",
+          "RAC-PK-alpha",
+          "protein kinase B alpha",
+          "proto-oncogene c-Akt",
+          "rac protein kinase alpha",
+          "serine-threonine protein kinase",
+          "v-akt murine thymoma viral oncogene homolog 1",
+          "v-akt murine thymoma viral oncogene-like protein 1",
+          "AKT serine/threonine kinase 1"
+        ],
+        "type": "protein"
+      }
+    },
+    {
+      "id": "01ef22cc-2a8e-46d4-9060-6bf1c273869b",
+      "secret": "76d980c6-2c5c-47fc-a171-c093dc439106",
+      "position": {
+        "x": -691.2664263804326,
+        "y": -368.2212088426656
+      },
+      "name": "",
+      "description": "",
+      "type": "phosphorylation",
+      "completed": true,
+      "association": "phosphorylation",
+      "novel": true,
+      "entries": [
+        {
+          "group": null,
+          "id": "598f8bef-f858-4dd0-b1c6-5168a8ae5349"
+        },
+        {
+          "group": "positive",
+          "id": "4081348e-20b8-4bf8-836f-695827a4f9a2"
+        }
+      ]
+    }
+  ],
+  "publicUrl": "/document/a896d611-affe-4b45-a5e1-9bc560ffceab",
+  "privateUrl": "/document/a896d611-affe-4b45-a5e1-9bc560ffceab",
+  "citation": {
+    "title": "MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.",
+    "authors": {
+      "abbreviation": "Qinbo Cai, Wolong Zhou, Wei Wang, ..., Feng Yang",
+      "contacts": [],
+      "authorList": [
+        {
+          "name": "Qinbo Cai",
+          "ForeName": "Qinbo",
+          "LastName": "Cai",
+          "email": null,
+          "abbrevName": "Cai Q",
+          "isCollectiveName": false,
+          "orcid": "0000-0001-5294-4319"
+        },
+        {
+          "name": "Wolong Zhou",
+          "ForeName": "Wolong",
+          "LastName": "Zhou",
+          "email": null,
+          "abbrevName": "Zhou W",
+          "isCollectiveName": false,
+          "orcid": "0000-0001-8784-6196"
+        },
+        {
+          "name": "Wei Wang",
+          "ForeName": "Wei",
+          "LastName": "Wang",
+          "email": null,
+          "abbrevName": "Wang W",
+          "isCollectiveName": false,
+          "orcid": "0000-0002-0600-7276"
+        },
+        {
+          "name": "Bingning Dong",
+          "ForeName": "Bingning",
+          "LastName": "Dong",
+          "email": null,
+          "abbrevName": "Dong B",
+          "isCollectiveName": false,
+          "orcid": "0000-0002-4300-3928"
+        },
+        {
+          "name": "Dong Han",
+          "ForeName": "Dong",
+          "LastName": "Han",
+          "email": null,
+          "abbrevName": "Han D",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Tao Shen",
+          "ForeName": "Tao",
+          "LastName": "Shen",
+          "email": null,
+          "abbrevName": "Shen T",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Chad J Creighton",
+          "ForeName": "Chad",
+          "LastName": "Creighton",
+          "email": null,
+          "abbrevName": "Creighton CJ",
+          "isCollectiveName": false,
+          "orcid": "0000-0002-6090-703X"
+        },
+        {
+          "name": "David D Moore",
+          "ForeName": "David",
+          "LastName": "Moore",
+          "email": null,
+          "abbrevName": "Moore DD",
+          "isCollectiveName": false,
+          "orcid": "0000-0002-5151-9748"
+        },
+        {
+          "name": "Feng Yang",
+          "ForeName": "Feng",
+          "LastName": "Yang",
+          "email": null,
+          "abbrevName": "Yang F",
+          "isCollectiveName": false,
+          "orcid": "0000-0002-3401-5783"
+        }
+      ]
+    },
+    "reference": "Sci Adv 7 2021",
+    "abstract": "Mitogen-activated protein kinase 6 (MAPK6) is an atypical MAPK. Its function in regulating cancer growth remains elusive. Here, we reported that MAPK6 directly activated AKT and induced oncogenic outcomes. MAPK6 interacted with AKT through its C34 region and the C-terminal tail and phosphorylated AKT at S473 independent of mTORC2, the major S473 kinase. mTOR kinase inhibitors have not made notable progress in the clinic. Our identified MAPK6-AKT axis may provide a major resistance pathway. Besides repressing growth, inhibiting MAPK6 sensitized cancer cells to mTOR kinase inhibitors. MAPK6 overexpression is associated with decreased overall survival and the survival of patients with lung adenocarcinoma, mesothelioma, uveal melanoma, and breast cancer. MAPK6 expression also correlated with AKT phosphorylation at S473 in human cancer tissues. We conclude that MAPK6 can promote cancer by activating AKT independent of mTORC2 and targeting MAPK6, either alone or in combination with mTOR blockade, may be effective in cancers.",
+    "pmid": "34767444",
+    "doi": "10.1126/sciadv.abi6439",
+    "pubTypes": [
+      {
+        "UI": "D016428",
+        "value": "Journal Article"
+      }
+    ],
+    "ISODate": "2021-11-12T00:00:00.000Z"
+  },
+  "text": "MAPK6 activates AKT via phosphorylation.",
+  "createdDate": "2022-12-14T21:16:57.000Z",
+  "lastEditedDate": "2022-12-15T14:41:51.000Z",
+  "status": "public",
+  "verified": false,
+  "authorProfiles": [
+    {
+      "ForeName": "Qinbo",
+      "LastName": "Cai",
+      "abbrevName": "Cai Q",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Qinbo Cai",
+      "orcid": "0000-0001-5294-4319"
+    },
+    {
+      "ForeName": "Wolong",
+      "LastName": "Zhou",
+      "abbrevName": "Zhou W",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Wolong Zhou",
+      "orcid": "0000-0001-8784-6196"
+    },
+    {
+      "ForeName": "Wei",
+      "LastName": "Wang",
+      "abbrevName": "Wang W",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Wei Wang",
+      "orcid": "0000-0002-0600-7276"
+    },
+    {
+      "ForeName": "Bingning",
+      "LastName": "Dong",
+      "abbrevName": "Dong B",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Bingning Dong",
+      "orcid": "0000-0002-4300-3928"
+    },
+    {
+      "ForeName": "Dong",
+      "LastName": "Han",
+      "abbrevName": "Han D",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Dong Han",
+      "orcid": null
+    },
+    {
+      "ForeName": "Tao",
+      "LastName": "Shen",
+      "abbrevName": "Shen T",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Tao Shen",
+      "orcid": null
+    },
+    {
+      "ForeName": "Chad",
+      "LastName": "Creighton",
+      "abbrevName": "Creighton CJ",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Chad J Creighton",
+      "orcid": "0000-0002-6090-703X"
+    },
+    {
+      "ForeName": "David",
+      "LastName": "Moore",
+      "abbrevName": "Moore DD",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "David D Moore",
+      "orcid": "0000-0002-5151-9748"
+    },
+    {
+      "ForeName": "Feng",
+      "LastName": "Yang",
+      "abbrevName": "Yang F",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Feng Yang",
+      "orcid": "0000-0002-3401-5783"
+    }
+  ]
+}

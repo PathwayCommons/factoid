@@ -1,5 +1,7 @@
 import * as conf from './util/conf';
 
+import fs from 'fs';
+import path from 'path';
 import { expect } from 'chai';
 import Syncher from '../src/model/syncher';
 import ElementFactory from '../src/model/element/factory';
@@ -18,6 +20,8 @@ const TAXON_ID_2 = 10090;
 
 const NS = 'document_tests';
 const NS_ELE = 'document_tests_elements';
+
+const docJson = JSON.parse( fs.readFileSync( path.resolve( __dirname, './data/document.json' ), 'utf8' ) );
 
 describe('Document', function(){
   let doc;
@@ -90,6 +94,13 @@ describe('Document', function(){
       expect( doc.has( intn ), 'doc has intn' ).to.be.false;
 
       expect( intn.has( ent ), 'intn has ent' ).to.be.true;
+    });
+
+    it('generates a citation given an article"', async function(){
+      await doc.fromJson(docJson);
+      const { title } = doc.citation();
+      expect( title ).to.not.be.null;
+      expect( title ).to.be.a('string');
     });
   }
 
@@ -697,4 +708,5 @@ describe('Document', function(){
       });
     });
   });
+
 });

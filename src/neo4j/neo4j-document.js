@@ -1,7 +1,5 @@
 import { addNode, addEdge } from './neo4j-functions';
 
-let nodeTypes = ['entity', 'ggp', 'dna', 'rna', 'protein', 'chemical', 'complex'];
-
 function convertUUIDtoId(docElements, id) {
   for (let i = 0; i < docElements.length; i++) {
     let e = docElements[i];
@@ -28,7 +26,7 @@ export async function addDocumentToNeo4j(doc) {
   let docElements = doc.elements();
   for (let i = 0; i < docElements.length; i++) {
     let e = docElements[i];
-    if (nodeTypes.includes(e.type())) {
+    if (e.isEntity()) {
       let nodeInfo = {
         id: `${e.association().dbPrefix}:${e.association().id}`,
         name: e.association().name

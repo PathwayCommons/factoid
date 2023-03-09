@@ -1,13 +1,11 @@
 import { addNode, addEdge } from './neo4j-functions';
 
-function convertUUIDtoId(docElements, id) {
-  for (let i = 0; i < docElements.length; i++) {
-    let e = docElements[i];
-    if (e.id() == id) {
-      return `${e.association().dbPrefix}:${e.association().id}`;
-    }
+function convertUUIDtoId(doc, id) {
+  let node = doc.get(id);
+  if (node) {
+    return `${node.association().dbPrefix}:${node.association().id}`;
   }
-  return 'node id not found';
+  return 'node not found';
 }
 
 /**
@@ -38,8 +36,8 @@ export async function addDocumentToNeo4j(doc) {
       let edgeInfo = {
         id: e.id(),
         type: e.type(),
-        sourceId: convertUUIDtoId(docElements, sourceUUId),
-        targetId: convertUUIDtoId(docElements, targetUUId)
+        sourceId: convertUUIDtoId(doc, sourceUUId),
+        targetId: convertUUIDtoId(doc, targetUUId)
       };
       arrEdges.push(edgeInfo);
     }

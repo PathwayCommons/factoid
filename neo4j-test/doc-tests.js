@@ -43,12 +43,12 @@ describe('Tests for Documents', function () {
 
   beforeEach('Create a dummy doc', async function () {
     let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
-    let loadTables = () => Promise.all( dbTables.map( loadTable ) ).then( dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1]}) );
+    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
 
     const { document } = await dbFix.Insert(fixture);
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
-    fixtureDocs = await Promise.all(document.map( loadDocs ));
+    fixtureDocs = await Promise.all(document.map(loadDocs));
   });
 
   afterEach('Drop dummy Doc', async function () {
@@ -62,21 +62,20 @@ describe('Tests for Documents', function () {
     expect(await getNumEdges()).equal(0);
     await addDocumentToNeo4j(myDoc);
 
-    // todo - refs #1138
-    // expect(await getNumNodes()).equal(2);
-    // expect(await getGeneName('ncbigene:5597')).equal('MAPK6');
-    // expect(await getGeneName('ncbigene:207')).equal('AKT1');
+    expect(await getNumNodes()).equal(2);
+    expect(await getGeneName('ncbigene:5597')).equal('MAPK6');
+    expect(await getGeneName('ncbigene:207')).equal('AKT1');
 
-    // expect(await getNumEdges()).equal(1);
-    // let edge = await getEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b');
-    // expect(edge.type).equal('INTERACTION');
-    // expect(edge.properties.type).equal('phosphorylation');
-    // expect(edge.properties.sourceId).equal('ncbigene:5597');
-    // expect(edge.properties.targetId).equal('ncbigene:207');
-    // expect(edge.properties.xref).equal(myDoc.id);
-    // expect(edge.properties.doi).equal('10.1126/sciadv.abi6439');
-    // expect(edge.properties.pmid).equal('34767444');
-    // expect(edge.properties.articleTitle).equal('MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
+    expect(await getNumEdges()).equal(1);
+    let edge = await getEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b');
+    expect(edge.type).equal('INTERACTION');
+    expect(edge.properties.type).equal('phosphorylation');
+    expect(edge.properties.sourceId).equal('ncbigene:5597');
+    expect(edge.properties.targetId).equal('ncbigene:207');
+    expect(edge.properties.xref).equal(myDoc.id());
+    expect(edge.properties.doi).equal('10.1126/sciadv.abi6439');
+    expect(edge.properties.pmid).equal('34767444');
+    expect(edge.properties.articleTitle).equal('MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
   });
 
 });

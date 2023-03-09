@@ -5,13 +5,19 @@ let nodeTypes = ['entity', 'ggp', 'dna', 'rna', 'protein', 'chemical', 'complex'
 function convertUUIDtoId(docElements, id) {
   for (let i = 0; i < docElements.length; i++) {
     let e = docElements[i];
-    if (e.id == id) {
-      return `${e.association.dbPrefix}:${e.association.id}`;
+    if (e.id() == id) {
+      return `${e.association().dbPrefix}:${e.association().id}`;
     }
   }
   return 'node id not found';
 }
 
+/**
+ * addDocumentToNeo4j takes doc as a parameter and creates the associated nodes 
+ * and edges in a Neo4j database
+ * @param { Document } doc is a document model instance
+ * @returns 
+ */
 export async function addDocumentToNeo4j(doc) {
 
   // Step 1: Sort each element in a document into one of two categories
@@ -19,28 +25,29 @@ export async function addDocumentToNeo4j(doc) {
   //              b. Edge/Interaction
   let arrNodes = [];
   let arrEdges = [];
-  let docElements = doc.elements;
+  let docElements = doc.elements();
   for (let i = 0; i < docElements.length; i++) {
     let e = docElements[i];
-    if (nodeTypes.includes(e.type)) {
+    if (nodeTypes.includes(e.type())) {
       let nodeInfo = {
-        id: `${e.association.dbPrefix}:${e.association.id}`,
-        name: e.association.name
+        id: `${e.association().dbPrefix}:${e.association().id}`,
+        name: e.association().name
       };
       arrNodes.push(nodeInfo);
     } else {
       let sourceUUId;
       let targetUUId;
-      if (e.entries[0].group == null) {
-        sourceUUId = e.entries[0].id;
-        targetUUId = e.entries[1].id;
+      let entries = e.elements();
+      if (entries[0].group == null) {
+        sourceUUId = entries[0].id();
+        targetUUId = entries[1].id();
       } else {
-        sourceUUId = e.entries[1].id;
-        targetUUId = e.entries[0].id;
+        sourceUUId = entries[1].id();
+        targetUUId = entries[0].id();
       }
       let edgeInfo = {
-        id: e.id,
-        type: e.type,
+        id: e.id(),
+        type: e.type(),
         sourceId: convertUUIDtoId(docElements, sourceUUId),
         targetId: convertUUIDtoId(docElements, targetUUId)
       };
@@ -49,10 +56,10 @@ export async function addDocumentToNeo4j(doc) {
   }
 
   let docCitations = {
-    xref: doc.id,
-    doi: doc.citation.doi ? doc.citation.doi : 'not found', //'10.1126/sciadv.abi6439',
-    pmid: doc.citation.pmid ? doc.citation.pmid : 'not found', //'34767444', 
-    articleTitle: doc.citation.title ? doc.citation.title : 'not found' //'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.'
+    xref: doc.id(),
+    doi: doc.citation().doi ? doc.citation().doi : 'not found',
+    pmid: doc.citation().pmid ? doc.citation().pmid : 'not found',
+    articleTitle: doc.citation().title ? doc.citation().title : 'not found'
   };
 
   // Step 2: Make all the nodes

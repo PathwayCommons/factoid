@@ -1,12 +1,12 @@
 import { expect } from 'chai';
 import rdbFix from 'rethinkdb-fixtures';
+import r from 'rethinkdb';
 
 import fixture from './testDoc.json';
 import { loadDoc } from '../src/server/routes/api/document/index.js';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
 import { addDocumentToNeo4j, convertUUIDtoId } from '../src/neo4j/neo4j-document.js';
 import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
-import r from 'rethinkdb';
 
 let rdbConn;
 let dbFix;
@@ -78,11 +78,7 @@ describe('Tests for Documents', function () {
       let id = `${n.association().dbPrefix}:${n.association().id}`;
       expect(await getGeneName(id)).equal(`${n.association().name}`);
     }
-    //expect(await getNumNodes()).equal(2);
-    //expect(await getGeneName('ncbigene:5597')).equal('MAPK6');
-    //expect(await getGeneName('ncbigene:207')).equal('AKT1');
 
-    //expect(await getNumEdges()).equal(1);
     expect(await getNumEdges()).equal(arrEdges.length);
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
@@ -95,15 +91,6 @@ describe('Tests for Documents', function () {
       expect(edge.properties.pmid).equal(myDoc.citation().pmid);
       expect(edge.properties.articleTitle).equal(myDoc.citation().title);
     }
-    //let edge = await getEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b');
-    //expect(edge.properties.type).equal('phosphorylation');
-    //expect(edge.properties.sourceId).equal('ncbigene:5597');
-    //expect(edge.properties.targetId).equal('ncbigene:207');
-    //expect(edge.type).equal('INTERACTION');
-    //expect(edge.properties.xref).equal(myDoc.id());
-    //expect(edge.properties.doi).equal(myDoc.citation().doi);
-    //expect(edge.properties.pmid).equal(myDoc.citation().pmid);
-    //expect(edge.properties.articleTitle).equal(myDoc.citation().title);
   });
 
 });

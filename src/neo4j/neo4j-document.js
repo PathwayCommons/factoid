@@ -1,6 +1,6 @@
 import { addNode, addEdge } from './neo4j-functions';
 
-function convertUUIDtoId(doc, id) {
+export function convertUUIDtoId(doc, id) {
   let node = doc.get(id);
   if (node) {
     return `${node.association().dbPrefix}:${node.association().id}`;
@@ -22,8 +22,7 @@ export async function addDocumentToNeo4j(doc) {
   let arrNodes = [];
   let arrEdges = [];
   let docElements = doc.elements();
-  for (let i = 0; i < docElements.length; i++) {
-    let e = docElements[i];
+  for (const e of docElements) {
     if (e.isEntity()) {
       let nodeInfo = {
         id: `${e.association().dbPrefix}:${e.association().id}`,
@@ -51,14 +50,12 @@ export async function addDocumentToNeo4j(doc) {
   };
 
   // Step 2: Make all the nodes
-  for (let i = 0; i < arrNodes.length; i++) {
-    let node = arrNodes[i];
+  for (const node of arrNodes) {
     await addNode(node.id, node.name);
   }
 
   // Step 3: Make all the edges
-  for (let i = 0; i < arrEdges.length; i++) {
-    let edge = arrEdges[i];
+  for (const edge of arrEdges) {
     await addEdge(edge.id, edge.type, edge.sourceId, edge.targetId,
       docCitations.xref, docCitations.doi, docCitations.pmid, docCitations.articleTitle);
   }

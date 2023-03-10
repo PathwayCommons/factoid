@@ -4,7 +4,7 @@ import rdbFix from 'rethinkdb-fixtures';
 import fixture from './testDoc.json';
 import { loadDoc } from '../src/server/routes/api/document/index.js';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
-import { addDocumentToNeo4j } from '../src/neo4j/neo4j-document.js';
+import { addDocumentToNeo4j, convertUUIDtoId } from '../src/neo4j/neo4j-document.js';
 import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
 import r from 'rethinkdb';
 
@@ -37,18 +37,18 @@ describe('Tests for Documents', function () {
     await rdbConn.close();
   });
 
-  beforeEach('Delete nodes and edges', async function () {
+  beforeEach('Delete nodes and edges from Neo4j', async function () {
     await deleteAllNodesAndEdges();
   });
 
   beforeEach('Create a dummy doc', async function () {
     let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
-    let loadTables = () => Promise.all( dbTables.map( loadTable ) ).then( dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1]}) );
+    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
 
     const { document } = await dbFix.Insert(fixture);
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
-    fixtureDocs = await Promise.all(document.map( loadDocs ));
+    fixtureDocs = await Promise.all(document.map(loadDocs));
   });
 
   afterEach('Drop dummy Doc', async function () {
@@ -62,21 +62,48 @@ describe('Tests for Documents', function () {
     expect(await getNumEdges()).equal(0);
     await addDocumentToNeo4j(myDoc);
 
-    // todo - refs #1138
-    // expect(await getNumNodes()).equal(2);
-    // expect(await getGeneName('ncbigene:5597')).equal('MAPK6');
-    // expect(await getGeneName('ncbigene:207')).equal('AKT1');
+    let arrNodes = [];
+    let arrEdges = [];
+    let docElements = myDoc.elements();
+    for (const e of docElements) {
+      if (e.isEntity()) {
+        arrNodes.push(e);
+      } else {
+        arrEdges.push(e);
+      }
+    }
 
-    // expect(await getNumEdges()).equal(1);
-    // let edge = await getEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b');
-    // expect(edge.type).equal('INTERACTION');
-    // expect(edge.properties.type).equal('phosphorylation');
-    // expect(edge.properties.sourceId).equal('ncbigene:5597');
-    // expect(edge.properties.targetId).equal('ncbigene:207');
-    // expect(edge.properties.xref).equal(myDoc.id);
-    // expect(edge.properties.doi).equal('10.1126/sciadv.abi6439');
-    // expect(edge.properties.pmid).equal('34767444');
-    // expect(edge.properties.articleTitle).equal('MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
+    expect(await getNumNodes()).equal(arrNodes.length);
+    for (const n of arrNodes) {
+      let id = `${n.association().dbPrefix}:${n.association().id}`;
+      expect(await getGeneName(id)).equal(`${n.association().name}`);
+    }
+    //expect(await getNumNodes()).equal(2);
+    //expect(await getGeneName('ncbigene:5597')).equal('MAPK6');
+    //expect(await getGeneName('ncbigene:207')).equal('AKT1');
+
+    //expect(await getNumEdges()).equal(1);
+    expect(await getNumEdges()).equal(arrEdges.length);
+    for (const e of arrEdges) {
+      let edge = await getEdge(e.id());
+      expect(edge.properties.type).equal(e.type());
+      expect(edge.properties.sourceId).equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
+      expect(edge.properties.targetId).equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
+      expect(edge.type).equal('INTERACTION');
+      expect(edge.properties.xref).equal(myDoc.id());
+      expect(edge.properties.doi).equal(myDoc.citation().doi);
+      expect(edge.properties.pmid).equal(myDoc.citation().pmid);
+      expect(edge.properties.articleTitle).equal(myDoc.citation().title);
+    }
+    //let edge = await getEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b');
+    //expect(edge.properties.type).equal('phosphorylation');
+    //expect(edge.properties.sourceId).equal('ncbigene:5597');
+    //expect(edge.properties.targetId).equal('ncbigene:207');
+    //expect(edge.type).equal('INTERACTION');
+    //expect(edge.properties.xref).equal(myDoc.id());
+    //expect(edge.properties.doi).equal(myDoc.citation().doi);
+    //expect(edge.properties.pmid).equal(myDoc.citation().pmid);
+    //expect(edge.properties.articleTitle).equal(myDoc.citation().title);
   });
 
 });

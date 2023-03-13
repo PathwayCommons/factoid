@@ -43,22 +43,7 @@ describe('Tests for Documents', function () {
     await deleteAllNodesAndEdges();
   });
 
-  beforeEach('Create a dummy doc', async function () {
-    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
-    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
-
-    const { document } = await dbFix.Insert(goult);
-    //const { document } = await dbFix.Insert(fixture);
-    const { docDb, eleDb } = await loadTables();
-    const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
-    fixtureDocs = await Promise.all(document.map(loadDocs));
-  });
-
   afterEach('Drop dummy Doc', async function () {
-    await dbFix.Delete(dbTables);
-  });
-
-  it('Add the elements of dummy doc to Neo4j db', async function () {
     let myDoc = fixtureDocs[0];
 
     expect(await getNumNodes()).equal(0);
@@ -94,6 +79,28 @@ describe('Tests for Documents', function () {
       expect(edge.properties.pmid).equal(myDoc.citation().pmid);
       expect(edge.properties.articleTitle).equal(myDoc.citation().title);
     }
+
+    await dbFix.Delete(dbTables);
   });
+
+  it('Add the elements of MAPK6-AKT1 dummy doc to Neo4j db', async function () {
+    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
+    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
+
+    const { document } = await dbFix.Insert(fixture);
+    const { docDb, eleDb } = await loadTables();
+    const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
+    fixtureDocs = await Promise.all(document.map(loadDocs));
+  });
+
+  /*it('Add the elements of Goult 1 doc to Neo4j db', async function () {
+    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
+    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
+
+    const { document } = await dbFix.Insert(goult);
+    const { docDb, eleDb } = await loadTables();
+    const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
+    fixtureDocs = await Promise.all(document.map(loadDocs));
+  });*/
 
 });

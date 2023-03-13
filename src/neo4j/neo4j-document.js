@@ -1,5 +1,11 @@
 import { addNode, addEdge } from './neo4j-functions';
 
+/**
+ * @param { Document } doc : document model instance
+ * @param { String } id : UUID of an entity element in doc
+ * @returns string in the form of dbname:id (ex. 'ncbigene:207') if entity element
+ *            if found, 'node not found' otherwise
+ */
 export function convertUUIDtoId(doc, id) {
   let node = doc.get(id);
   if (node) {
@@ -9,9 +15,9 @@ export function convertUUIDtoId(doc, id) {
 }
 
 /**
- * addDocumentToNeo4j takes doc as a parameter and creates the associated nodes 
+ * addDocumentToNeo4j takes a Document as a parameter and creates the associated nodes 
  * and edges in a Neo4j database
- * @param { Document } doc is a document model instance
+ * @param { Document } doc : a document model instance
  * @returns 
  */
 export async function addDocumentToNeo4j(doc) {

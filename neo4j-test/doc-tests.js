@@ -8,6 +8,8 @@ import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
 import { addDocumentToNeo4j, convertUUIDtoId } from '../src/neo4j/neo4j-document.js';
 import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
 
+import goult from './goultDoc1.json';
+
 let rdbConn;
 let dbFix;
 let fixtureDocs;
@@ -45,7 +47,8 @@ describe('Tests for Documents', function () {
     let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
     let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
 
-    const { document } = await dbFix.Insert(fixture);
+    const { document } = await dbFix.Insert(goult);
+    //const { document } = await dbFix.Insert(fixture);
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
     fixtureDocs = await Promise.all(document.map(loadDocs));

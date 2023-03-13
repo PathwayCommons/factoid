@@ -1,0 +1,375 @@
+{
+  "id": "df9348dc-2126-45ff-a379-138b5589bcc8",
+  "secret": "read-only",
+  "organisms": [
+    "9606"
+  ],
+  "elements": [
+    {
+      "id": "1df25530-cd6f-45b9-8e4a-246651c639e3",
+      "secret": "read-only",
+      "position": {
+        "x": 164.0506329113924,
+        "y": 100.75949367088607
+      },
+      "name": "Kindlin-1",
+      "description": "",
+      "type": "protein",
+      "completed": true,
+      "association": {
+        "combinedOrganismIndex": 2,
+        "dbName": "NCBI Gene",
+        "dbPrefix": "ncbigene",
+        "dbXrefs": [
+          {
+            "db": "MIM",
+            "id": "607900"
+          },
+          {
+            "db": "HGNC",
+            "id": "HGNC:15889"
+          },
+          {
+            "db": "Ensembl",
+            "id": "ENSG00000101311"
+          }
+        ],
+        "defaultOrganismIndex": 2,
+        "distance": 0,
+        "esScore": 11.754701,
+        "id": "55612",
+        "name": "FERMT1",
+        "nameDistance": 1,
+        "namespace": "ncbi",
+        "organism": "9606",
+        "organismIndex": 0,
+        "organismName": "Homo sapiens",
+        "overallDistance": 200100,
+        "shortSynonyms": [
+          "FERMT1",
+          "C20orf42",
+          "DTGCU2",
+          "KIND1",
+          "UNC112A",
+          "URP1",
+          "kindlin 1",
+          "kindlerin",
+          "kindlin syndrome protein",
+          "FERM domain containing kindlin 1",
+          "unc-112-related protein 1"
+        ],
+        "synonyms": [
+          "C20orf42",
+          "DTGCU2",
+          "KIND1",
+          "UNC112A",
+          "URP1",
+          "fermitin family homolog 1",
+          "UNC112 related protein 1",
+          "fermitin family member 1",
+          "kindlerin",
+          "kindlin 1",
+          "kindlin syndrome protein",
+          "unc-112-related protein 1",
+          "FERM domain containing kindlin 1"
+        ],
+        "type": "protein"
+      }
+    },
+    {
+      "id": "95c4cbb1-bdff-473e-9203-8ebca2d44747",
+      "secret": "read-only",
+      "position": {
+        "x": 250.126582278481,
+        "y": 127.59493670886076
+      },
+      "name": "EGFR",
+      "description": "",
+      "type": "protein",
+      "completed": true,
+      "association": {
+        "charge": null,
+        "combinedOrganismIndex": 0,
+        "dbName": "NCBI Gene",
+        "dbPrefix": "ncbigene",
+        "dbXrefs": [
+          {
+            "db": "MIM",
+            "id": "131550"
+          },
+          {
+            "db": "HGNC",
+            "id": "HGNC:3236"
+          },
+          {
+            "db": "Ensembl",
+            "id": "ENSG00000146648"
+          }
+        ],
+        "defaultOrganismIndex": 2,
+        "distance": 0,
+        "esScore": 11.857173,
+        "formulae": null,
+        "id": "1956",
+        "inchi": null,
+        "inchiKey": null,
+        "mass": null,
+        "monoisotopicMass": null,
+        "name": "EGFR",
+        "nameDistance": 0,
+        "namespace": "ncbi",
+        "organism": "9606",
+        "organismIndex": 0,
+        "organismName": "Homo sapiens",
+        "overallDistance": 0,
+        "shortSynonyms": [
+          "ERBB",
+          "ERBB1",
+          "ERRP",
+          "HER1",
+          "NISBD2",
+          "EGFR vIII",
+          "cell proliferation-inducing protein 61",
+          "epidermal growth factor receptor",
+          "PIG61",
+          "proto-oncogene c-ErbB-1"
+        ],
+        "summary": null,
+        "synonyms": [
+          "ERBB",
+          "ERBB1",
+          "ERRP",
+          "HER1",
+          "NISBD2",
+          "PIG61",
+          "mENA",
+          "epidermal growth factor receptor",
+          "EGFR vIII",
+          "avian erythroblastic leukemia viral (v-erb-b) oncogene homolog",
+          "cell growth inhibiting protein 40",
+          "cell proliferation-inducing protein 61",
+          "epidermal growth factor receptor tyrosine kinase domain",
+          "erb-b2 receptor tyrosine kinase 1",
+          "proto-oncogene c-ErbB-1",
+          "receptor tyrosine-protein kinase erbB-1"
+        ],
+        "type": "protein"
+      }
+    },
+    {
+      "id": "f4b557ff-2219-45a8-bffb-5b7691e6b6bd",
+      "secret": "read-only",
+      "position": {
+        "x": 55.69620253164557,
+        "y": 60.75949367088607
+      },
+      "name": "",
+      "description": "",
+      "type": "binding",
+      "completed": true,
+      "association": "binding",
+      "novel": true,
+      "entries": [
+        {
+          "group": null,
+          "id": "1df25530-cd6f-45b9-8e4a-246651c639e3"
+        },
+        {
+          "group": "unsigned",
+          "id": "95c4cbb1-bdff-473e-9203-8ebca2d44747"
+        }
+      ]
+    }
+  ],
+  "publicUrl": "/document/df9348dc-2126-45ff-a379-138b5589bcc8",
+  "privateUrl": "/document/df9348dc-2126-45ff-a379-138b5589bcc8",
+  "citation": {
+    "title": "Kindlin-1 Regulates Epidermal Growth Factor Receptor Signaling.",
+    "authors": {
+      "abbreviation": "Magdalene Michael, Rumena Begum, Grace K Chan, ..., Maddy Parsons",
+      "contacts": [
+        {
+          "name": "Maddy Parsons",
+          "email": [
+            "maddy.parsons@kcl.ac.uk"
+          ],
+          "ForeName": "Maddy",
+          "LastName": "Parsons"
+        }
+      ],
+      "authorList": [
+        {
+          "name": "Magdalene Michael",
+          "ForeName": "Magdalene",
+          "LastName": "Michael",
+          "email": null,
+          "abbrevName": "Michael M",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Rumena Begum",
+          "ForeName": "Rumena",
+          "LastName": "Begum",
+          "email": null,
+          "abbrevName": "Begum R",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Grace K Chan",
+          "ForeName": "Grace",
+          "LastName": "Chan",
+          "email": null,
+          "abbrevName": "Chan GK",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Austin J Whitewood",
+          "ForeName": "Austin",
+          "LastName": "Whitewood",
+          "email": null,
+          "abbrevName": "Whitewood AJ",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Daniel R Matthews",
+          "ForeName": "Daniel",
+          "LastName": "Matthews",
+          "email": null,
+          "abbrevName": "Matthews DR",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Benjamin T Goult",
+          "ForeName": "Benjamin",
+          "LastName": "Goult",
+          "email": null,
+          "abbrevName": "Goult BT",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "John A McGrath",
+          "ForeName": "John",
+          "LastName": "McGrath",
+          "email": null,
+          "abbrevName": "McGrath JA",
+          "isCollectiveName": false,
+          "orcid": null
+        },
+        {
+          "name": "Maddy Parsons",
+          "ForeName": "Maddy",
+          "LastName": "Parsons",
+          "email": "maddy.parsons@kcl.ac.uk",
+          "abbrevName": "Parsons M",
+          "isCollectiveName": false,
+          "orcid": null
+        }
+      ]
+    },
+    "reference": "J Invest Dermatol 139 2019",
+    "abstract": "Kindler syndrome is an autosomal recessive genodermatosis that results from mutations in the FERMT1 gene encoding t kindlin-1. Kindlin-1 localizes to focal adhesion and is known to contribute to the activation of integrin receptors. Most cases of Kindler syndrome show a reduction or complete absence of kindlin-1 in keratinocytes, resulting in defective integrin activation, cell adhesion, and migration. However, roles for kindlin-1 beyond integrin activation remain poorly defined. In this study we show that skin and keratinocytes from Kindler syndrome patients have significantly reduced expression levels of the EGFR, resulting in defective EGF-dependent signaling and cell migration. Mechanistically, we show that kindlin-1 can associate directly with EGFR in vitro and in keratinocytes in an EGF-dependent, integrin-independent manner and that formation of this complex is required for EGF-dependent migration. We further show that kindlin-1 acts to protect EGFR from lysosomal-mediated degradation. This shows a new role for kindlin-1 that has implications for understanding Kindler syndrome disease pathology.",
+    "pmid": "30248333",
+    "doi": "10.1016/j.jid.2018.08.020",
+    "pubTypes": [
+      {
+        "UI": "D016428",
+        "value": "Journal Article"
+      },
+      {
+        "UI": "D013485",
+        "value": "Research Support, Non-U.S. Gov't"
+      },
+      {
+        "UI": "D059040",
+        "value": "Video-Audio Media"
+      }
+    ],
+    "ISODate": "2019-02-01T00:00:00.000Z"
+  },
+  "text": "Kindlin-1 binds with EGFR.",
+  "createdDate": "2022-02-13T11:20:08.000Z",
+  "lastEditedDate": "2022-02-13T11:20:40.000Z",
+  "status": "public",
+  "verified": false,
+  "authorProfiles": [
+    {
+      "ForeName": "Magdalene",
+      "LastName": "Michael",
+      "abbrevName": "Michael M",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Magdalene Michael",
+      "orcid": "0000-0003-2577-729X"
+    },
+    {
+      "ForeName": "Rumena",
+      "LastName": "Begum",
+      "abbrevName": "Begum R",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Rumena Begum",
+      "orcid": null
+    },
+    {
+      "ForeName": "Grace",
+      "LastName": "Chan",
+      "abbrevName": "Chan GK",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Grace K Chan",
+      "orcid": "0000-0002-7163-8285"
+    },
+    {
+      "ForeName": "Austin",
+      "LastName": "Whitewood",
+      "abbrevName": "Whitewood AJ",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Austin J Whitewood",
+      "orcid": "0000-0002-8255-8248"
+    },
+    {
+      "ForeName": "Daniel",
+      "LastName": "Matthews",
+      "abbrevName": "Matthews DR",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Daniel R Matthews",
+      "orcid": null
+    },
+    {
+      "ForeName": "Benjamin",
+      "LastName": "Goult",
+      "abbrevName": "Goult BT",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "Benjamin T Goult",
+      "orcid": "0000-0002-3438-2807"
+    },
+    {
+      "ForeName": "John",
+      "LastName": "McGrath",
+      "abbrevName": "McGrath JA",
+      "email": null,
+      "isCollectiveName": false,
+      "name": "John A McGrath",
+      "orcid": "0000-0002-3708-9964"
+    },
+    {
+      "ForeName": "Maddy",
+      "LastName": "Parsons",
+      "abbrevName": "Parsons M",
+      "email": "maddy.parsons@kcl.ac.uk",
+      "isCollectiveName": false,
+      "name": "Maddy Parsons",
+      "orcid": "0000-0002-2021-8379"
+    }
+  ],
+  "caption": "cell adhesion, Kindler syndrome, "
+}

@@ -66,16 +66,8 @@ describe('Tests for Documents', function () {
     expect(await getNumEdges()).equal(0);
     await addDocumentToNeo4j(myDoc);
 
-    let arrNodes = [];
-    let arrEdges = [];
-    let docElements = myDoc.elements();
-    for (const e of docElements) {
-      if (e.isEntity()) {
-        arrNodes.push(e);
-      } else {
-        arrEdges.push(e);
-      }
-    }
+    let arrNodes = myDoc.elements().filter(ele => ele.isEntity());
+    let arrEdges = myDoc.elements().filter(ele => !(ele.isEntity()));
 
     expect(await getNumNodes()).equal(arrNodes.length);
     for (const n of arrNodes) {
@@ -112,16 +104,8 @@ describe('Tests for Documents', function () {
     expect(await getNumEdges()).equal(0);
     await addDocumentToNeo4j(myDoc);
 
-    let arrNodes = [];
-    let arrEdges = [];
-    let docElements = myDoc.elements();
-    for (const e of docElements) {
-      if (e.isEntity()) {
-        arrNodes.push(e);
-      } else {
-        arrEdges.push(e);
-      }
-    }
+    let arrNodes = myDoc.elements().filter(ele => ele.isEntity());
+    let arrEdges = myDoc.elements().filter(ele => !(ele.isEntity()));
 
     expect(await getNumNodes()).equal(2);
     for (const n of arrNodes) {
@@ -158,16 +142,8 @@ describe('Tests for Documents', function () {
     expect(await getNumEdges()).equal(0);
     await addDocumentToNeo4j(myDoc);
 
-    let arrNodes = [];
-    let arrEdges = [];
-    let docElements = myDoc.elements();
-    for (const e of docElements) {
-      if (e.isEntity()) {
-        arrNodes.push(e);
-      } else {
-        arrEdges.push(e);
-      }
-    }
+    let arrNodes = myDoc.elements().filter(ele => ele.isEntity());
+    let arrEdges = myDoc.elements().filter(ele => !(ele.isEntity()));
 
     expect(await getNumNodes()).equal(3);
     for (const n of arrNodes) {
@@ -204,16 +180,8 @@ describe('Tests for Documents', function () {
     expect(await getNumEdges()).equal(0);
     await addDocumentToNeo4j(myDoc);
 
-    let arrNodes = [];
-    let arrEdges = [];
-    let docElements = myDoc.elements();
-    for (const e of docElements) {
-      if (e.isEntity()) {
-        arrNodes.push(e);
-      } else {
-        arrEdges.push(e);
-      }
-    }
+    let arrNodes = myDoc.elements().filter(ele => ele.isEntity());
+    let arrEdges = myDoc.elements().filter(ele => !(ele.isEntity()));
 
     expect(await getNumNodes()).equal(2);
     for (const n of arrNodes) {
@@ -250,16 +218,8 @@ describe('Tests for Documents', function () {
     expect(await getNumEdges()).equal(0);
     await addDocumentToNeo4j(myDoc);
 
-    let arrNodes = [];
-    let arrEdges = [];
-    let docElements = myDoc.elements();
-    for (const e of docElements) {
-      if (e.isEntity()) {
-        arrNodes.push(e);
-      } else {
-        arrEdges.push(e);
-      }
-    }
+    let arrNodes = myDoc.elements().filter(ele => ele.isEntity());
+    let arrEdges = myDoc.elements().filter(ele => !(ele.isEntity()));
 
     expect(await getNumNodes()).equal(4);
     for (const n of arrNodes) {
@@ -296,16 +256,8 @@ describe('Tests for Documents', function () {
     expect(await getNumEdges()).equal(0);
     await addDocumentToNeo4j(myDoc);
 
-    let arrNodes = [];
-    let arrEdges = [];
-    let docElements = myDoc.elements();
-    for (const e of docElements) {
-      if (e.isEntity()) {
-        arrNodes.push(e);
-      } else {
-        arrEdges.push(e);
-      }
-    }
+    let arrNodes = myDoc.elements().filter(ele => ele.isEntity());
+    let arrEdges = myDoc.elements().filter(ele => !(ele.isEntity()));
 
     expect(await getNumNodes()).equal(5);
     for (const n of arrNodes) {

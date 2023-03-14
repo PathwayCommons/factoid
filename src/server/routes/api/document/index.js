@@ -11,6 +11,7 @@ import emailRegex from 'email-regex';
 import url from 'url';
 import { URLSearchParams } from  'url';
 import NodeCache from 'node-cache';
+import pLimit from './p-limit';
 
 import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
 import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
@@ -54,8 +55,11 @@ import { BASE_URL,
   BIOPAX_DOWNLOADS_PATH,
   BIOPAX_IDMAP_DOWNLOADS_PATH,
   ORCID_PUBLIC_API_BASE_URL,
-  DOI_LINK_BASE_URL
+  DOI_LINK_BASE_URL,
+  DOCUMENT_IMAGE_PLL_LIMIT
  } from '../../../../config';
+
+
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
 import { eLink, elink2UidList } from './pubmed/linkPubmed';
@@ -1407,6 +1411,12 @@ const getDocumentImageBuffer = doc => {
   );
 };
 
+const imgLimit = pLimit(DOCUMENT_IMAGE_PLL_LIMIT);
+
+const getDocumentImageBufferRatedLimited = doc => {
+  return imgLimit(() => getDocumentImageBuffer(doc));
+};
+
 const imageCache = new LRUCache({
   max: DOCUMENT_IMAGE_CACHE_SIZE
 });
@@ -1442,7 +1452,7 @@ http.get('/(:id).png', function( req, res, next ){
   res.setHeader('content-type', 'image/png');
 
   const fillCache = async (doc, lastEditedDate) => {
-    const img = await getDocumentImageBuffer(doc);
+    const img = await getDocumentImageBufferRatedLimited(doc);
     const cache = { img, lastEditedDate };
 
     imageCache.set(id, cache);

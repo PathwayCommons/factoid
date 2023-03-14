@@ -36,8 +36,15 @@ export async function addDocumentToNeo4j(doc) {
       };
       arrNodes.push(nodeInfo);
     } else {
-      let sourceUUId = e.association().getSource().id();
-      let targetUUId = e.association().getTarget().id();
+      let sourceUUId;
+      let targetUUId;
+      if (e.association().getSource()) {
+        sourceUUId = e.association().getSource().id();
+        targetUUId = e.association().getTarget().id();
+      } else { // if getSource() is null, this interaction is undirected
+        sourceUUId = e.elements()[0].id();
+        targetUUId = e.elements()[1].id();
+      }
       let edgeInfo = {
         id: e.id(),
         type: e.type(),

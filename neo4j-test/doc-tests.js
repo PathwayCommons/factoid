@@ -12,6 +12,7 @@ import goult1 from './doct_tests_1.json';
 import goult2 from './doct_tests_2.json';
 import goult3 from './doct_tests_3.json';
 import goult4 from './doct_tests_4.json';
+import goult5 from './doct_tests_5.json';
 
 let rdbConn;
 let dbFix;
@@ -122,13 +123,13 @@ describe('Tests for Documents', function () {
       }
     }
 
-    expect(await getNumNodes()).equal(arrNodes.length);
+    expect(await getNumNodes()).equal(2);
     for (const n of arrNodes) {
       let id = `${n.association().dbPrefix}:${n.association().id}`;
       expect(await getGeneName(id)).equal(`${n.association().name}`);
     }
 
-    expect(await getNumEdges()).equal(arrEdges.length);
+    expect(await getNumEdges()).equal(1);
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
       expect(edge.properties.type).equal(e.type());
@@ -168,13 +169,13 @@ describe('Tests for Documents', function () {
       }
     }
 
-    expect(await getNumNodes()).equal(arrNodes.length);
+    expect(await getNumNodes()).equal(3);
     for (const n of arrNodes) {
       let id = `${n.association().dbPrefix}:${n.association().id}`;
       expect(await getGeneName(id)).equal(`${n.association().name}`);
     }
 
-    expect(await getNumEdges()).equal(arrEdges.length);
+    expect(await getNumEdges()).equal(2);
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
       expect(edge.properties.type).equal(e.type());
@@ -214,13 +215,13 @@ describe('Tests for Documents', function () {
       }
     }
 
-    expect(await getNumNodes()).equal(arrNodes.length);
+    expect(await getNumNodes()).equal(2);
     for (const n of arrNodes) {
       let id = `${n.association().dbPrefix}:${n.association().id}`;
       expect(await getGeneName(id)).equal(`${n.association().name}`);
     }
 
-    expect(await getNumEdges()).equal(arrEdges.length);
+    expect(await getNumEdges()).equal(2);
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
       expect(edge.properties.type).equal(e.type());
@@ -260,13 +261,59 @@ describe('Tests for Documents', function () {
       }
     }
 
-    expect(await getNumNodes()).equal(arrNodes.length);
+    expect(await getNumNodes()).equal(4);
     for (const n of arrNodes) {
       let id = `${n.association().dbPrefix}:${n.association().id}`;
       expect(await getGeneName(id)).equal(`${n.association().name}`);
     }
 
-    expect(await getNumEdges()).equal(arrEdges.length);
+    expect(await getNumEdges()).equal(4);
+    for (const e of arrEdges) {
+      let edge = await getEdge(e.id());
+      expect(edge.properties.type).equal(e.type());
+      expect(edge.properties.sourceId).equal(convertUUIDtoId(myDoc, e.elements()[0].id()));
+      expect(edge.properties.targetId).equal(convertUUIDtoId(myDoc, e.elements()[1].id()));
+      expect(edge.type).equal('INTERACTION');
+      expect(edge.properties.xref).equal(myDoc.id());
+      expect(edge.properties.doi).equal(myDoc.citation().doi);
+      expect(edge.properties.pmid).equal(myDoc.citation().pmid);
+      expect(edge.properties.articleTitle).equal(myDoc.citation().title);
+    }
+  });
+
+  it('Add the elements of Goult 5 doc to Neo4j db', async function () {
+    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
+    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
+
+    const { document } = await dbFix.Insert(goult5);
+    const { docDb, eleDb } = await loadTables();
+    const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
+    fixtureDocs = await Promise.all(document.map(loadDocs));
+
+    let myDoc = fixtureDocs[0];
+
+    expect(await getNumNodes()).equal(0);
+    expect(await getNumEdges()).equal(0);
+    await addDocumentToNeo4j(myDoc);
+
+    let arrNodes = [];
+    let arrEdges = [];
+    let docElements = myDoc.elements();
+    for (const e of docElements) {
+      if (e.isEntity()) {
+        arrNodes.push(e);
+      } else {
+        arrEdges.push(e);
+      }
+    }
+
+    expect(await getNumNodes()).equal(5);
+    for (const n of arrNodes) {
+      let id = `${n.association().dbPrefix}:${n.association().id}`;
+      expect(await getGeneName(id)).equal(`${n.association().name}`);
+    }
+
+    expect(await getNumEdges()).equal(5);
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
       expect(edge.properties.type).equal(e.type());

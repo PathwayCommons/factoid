@@ -81,8 +81,23 @@ describe('04. Tests for searchByGeneId', function () {
 
   it('Search for TLN1', async function () {
     let tln1 = 'ncbigene:7094';
-    const res = await searchByGeneId(tln1);
+    expect(await searchByGeneId(tln1)).to.not.be.null;
+    let edges = await getInteractions(tln1);
+    expect(edges.length).equal(6);
+    expect(_.find(edges, { id: '028e7366-9779-4466-96ea-18a45bfe3f38' })).to.be.not.undefined;
+    expect(_.find(edges, { id: '80a4d403-8bc1-4ddb-a4f9-5227e87ef6fa' })).to.be.not.undefined;
+    expect(_.find(edges, { id: 'e56263d8-d5b6-4812-bc2f-8d905a66f0f9' })).to.be.not.undefined;
+    expect(_.find(edges, { id: '013b7e2a-7240-4668-b628-2653c60f47e9' })).to.be.not.undefined;
+    expect(_.find(edges, { id: '3e7c85db-c2a3-4a1f-b96e-6d187c6ab93b' })).to.be.not.undefined;
+    expect(_.find(edges, { id: 'e39d0a06-5b02-44e3-9c36-27cc1f9ac08c' })).to.be.not.undefined;
 
+    let nodes = await getNeighbouringNodes(tln1);
+    expect(nodes.length).equal(5);
+    expect(_.find(nodes, { id: 'ncbigene:5829', name: 'PXN' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:983', name: 'CDK1' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:10395', name: 'DLC1' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:23189', name: 'KANK1' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:25959', name: 'KANK2' })).to.be.not.undefined;
   });
 
   it('Search for TLNRD1', async function () {

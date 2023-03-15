@@ -5,8 +5,8 @@ import r from 'rethinkdb';
 import { loadDoc } from '../src/server/routes/api/document/index.js';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
 import { searchByGeneId } from '../src/neo4j/neo4j-functions.js';
-import { addDocumentToNeo4j, convertUUIDtoId } from '../src/neo4j/neo4j-document.js';
-import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
+import { addDocumentToNeo4j } from '../src/neo4j/neo4j-document.js';
+import { deleteAllNodesAndEdges } from '../src/neo4j/test-functions.js';
 
 import goult1 from './doct_tests_1.json';
 import goult2 from './doct_tests_2.json';
@@ -20,7 +20,7 @@ let testDb;
 const dbName = 'factoid-neo4j-test';
 const dbTables = ['document', 'element'];
 
-describe('Tests for Documents', function () {
+describe('Tests for searchByGeneId', function () {
 
   before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
     await initDriver();
@@ -33,11 +33,13 @@ describe('Tests for Documents', function () {
     testDb = r.db(dbName);
     dbFix = rdbFix({
       db: dbName,
-      clear: true //clear tables before inserting.
+      clear: true
     });
   });
 
-  before('Add all 5 test docs to Neo4j', async function () {
+  before('Wipe Neo4j database. Then add all 5 test docs to Neo4j', async function () {
+    await deleteAllNodesAndEdges();
+
     let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
     let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
 
@@ -54,26 +56,31 @@ describe('Tests for Documents', function () {
     }
   });
 
-  after('Close Neo4j driver and RDB connection. Wipe Neo4j db', async function () {
-    await deleteAllNodesAndEdges();
+  after('Wipe RDB. Close Neo4j driver and RDB connection.', async function () {
+    await dbFix.Delete(dbTables);
     await closeDriver();
     await rdbConn.close();
   });
 
   it('Search for KANK1', async function () {
+    let kank1 = 'ncbigene:23189';
 
   });
 
   it('Search for TLN1', async function () {
+    let tln1 = 'ncbigene:7094';
 
   });
 
   it('Search for TLNRD1', async function () {
+    let tlnrd1 = 'ncbigene:59274';
 
   });
 
   it('Search for MAPK6', async function () {
-
+    let mapk6 = 'ncbigene:5597';
+    const res = await searchByGeneId(mapk6);
+    expect(res).to.be.null;
   });
 
 });

@@ -76,7 +76,7 @@ export async function searchByGeneId(id) {
         let result = await session.executeRead(tx => {
             return tx.run(giveConnectedInfoByGeneId, { id: id });
         });
-        if (result) {
+        if (result.records.length > 0) {
             record = result.records;
         } else {
             record = null;

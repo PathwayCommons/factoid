@@ -164,11 +164,7 @@ describe('Tests for addNode, addEdge and seachByGeneId', function () {
 
   it('Search for a gene in an empty database yields empty array', async function () {
     let nonexistent = await searchByGeneId('ncbigene:207');
-    expect(nonexistent.length).equal(0);
-    nonexistent = await getInteractions('ncbigene:207');
-    expect(nonexistent.length).equal(0);
-    nonexistent = await getNeighbouringNodes('ncbigene:207');
-    expect(nonexistent.length).equal(0);
+    expect(nonexistent).to.be.null;
   });
 
   it('Search for a non-existing gene in a non-empty database yields empty array', async function () {
@@ -184,10 +180,6 @@ describe('Tests for addNode, addEdge and seachByGeneId', function () {
       'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
 
     let nonexistent = await searchByGeneId('ncbigene:217');
-    expect(nonexistent.length).equal(0);
-    nonexistent = await getInteractions('ncbigene:217');
-    expect(nonexistent.length).equal(0);
-    nonexistent = await getNeighbouringNodes('ncbigene:217');
-    expect(nonexistent.length).equal(0);
+    expect(nonexistent).to.be.null;
   });
 });

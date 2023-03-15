@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import rdbFix from 'rethinkdb-fixtures';
 import r from 'rethinkdb';
+import _ from 'lodash';
 
 import { loadDoc } from '../src/server/routes/api/document/index.js';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
@@ -20,7 +21,7 @@ let testDb;
 const dbName = 'factoid-neo4j-test';
 const dbTables = ['document', 'element'];
 
-describe('Tests for searchByGeneId', function () {
+describe('04. Tests for searchByGeneId', function () {
 
   before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
     await initDriver();
@@ -64,8 +65,18 @@ describe('Tests for searchByGeneId', function () {
 
   it('Search for KANK1', async function () {
     let kank1 = 'ncbigene:23189';
-    const res = await searchByGeneId(kank1);
+    expect(await searchByGeneId(kank1)).to.not.be.null;
+    let edges = await getInteractions(kank1);
+    expect(edges.length).equal(3);
+    expect(_.find(edges, { id: 'd7b2a15d-43bf-4494-815b-a77e08cea59c' })).to.be.not.undefined;
+    expect(_.find(edges, { id: 'e56263d8-d5b6-4812-bc2f-8d905a66f0f9' })).to.be.not.undefined;
+    expect(_.find(edges, { id: '5a374667-a51d-4aa3-bf93-526fe203b04e' })).to.be.not.undefined;
 
+    let nodes = await getNeighbouringNodes(kank1);
+    expect(nodes.length).equal(3);
+    expect(_.find(nodes, { id: 'ncbigene:59274', name: 'TLNRD1' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:7094', name: 'TLN1' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:83660', name: 'TLN2' })).to.be.not.undefined;
   });
 
   it('Search for TLN1', async function () {
@@ -77,13 +88,11 @@ describe('Tests for searchByGeneId', function () {
   it('Search for TLNRD1', async function () {
     let tlnrd1 = 'ncbigene:59274';
     const res = await searchByGeneId(tlnrd1);
-
   });
 
   it('Search for MAPK6', async function () {
     let mapk6 = 'ncbigene:5597';
-    const res = await searchByGeneId(mapk6);
-    expect(res).to.be.null;
+    expect(await searchByGeneId(mapk6)).to.be.null;
     expect(await getInteractions(mapk6)).to.be.null;
     expect(await getNeighbouringNodes(mapk6)).to.be.null;
   });

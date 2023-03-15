@@ -98,7 +98,7 @@ export async function getNeighbouringNodes(id) {
     let record = await searchByGeneId(id);
     if (record) {
         return record.map(row => {
-            return row.get('m');
+            return row.get('m').properties;
         });
     }
     return null;
@@ -112,7 +112,7 @@ export async function getInteractions(id) {
     let record = await searchByGeneId(id);
     if (record) {
         return record.map(row => {
-            return row.get('r');
+            return row.get('r').properties;
         });
     }
     return null;

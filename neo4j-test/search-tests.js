@@ -63,6 +63,13 @@ describe('04. Tests for searchByGeneId', function () {
     await rdbConn.close();
   });
 
+  it('Search for MAPK6', async function () {
+    let mapk6 = 'ncbigene:5597';
+    expect(await searchByGeneId(mapk6)).to.be.null;
+    expect(await getInteractions(mapk6)).to.be.null;
+    expect(await getNeighbouringNodes(mapk6)).to.be.null;
+  });
+
   it('Search for KANK1', async function () {
     let kank1 = 'ncbigene:23189';
     expect(await searchByGeneId(kank1)).to.not.be.null;
@@ -102,14 +109,22 @@ describe('04. Tests for searchByGeneId', function () {
 
   it('Search for TLNRD1', async function () {
     let tlnrd1 = 'ncbigene:59274';
-    const res = await searchByGeneId(tlnrd1);
-  });
+    expect(await searchByGeneId(tlnrd1)).to.not.be.null;
+    let edges = await getInteractions(tlnrd1);
+    expect(edges.length).equal(5);
+    expect(_.find(edges, { id: 'd5d9fbcc-a1d9-4026-b1d3-d4a97faff36b' })).to.be.not.undefined;
+    expect(_.find(edges, { id: '13ab91d1-ee5f-46ca-a1ea-82ce72a938f4' })).to.be.not.undefined;
+    expect(_.find(edges, { id: 'd7b2a15d-43bf-4494-815b-a77e08cea59c' })).to.be.not.undefined;
+    expect(_.find(edges, { id: 'eec84ebe-eece-4143-b406-cd99cdbe2e43' })).to.be.not.undefined;
+    expect(_.find(edges, { id: 'e59c16c4-11e8-4755-8e2f-f88fe4a73b30' })).to.be.not.undefined;
 
-  it('Search for MAPK6', async function () {
-    let mapk6 = 'ncbigene:5597';
-    expect(await searchByGeneId(mapk6)).to.be.null;
-    expect(await getInteractions(mapk6)).to.be.null;
-    expect(await getNeighbouringNodes(mapk6)).to.be.null;
+    let nodes = await getNeighbouringNodes(tlnrd1);
+    expect(nodes.length).equal(5);
+    expect(_.find(nodes, { id: 'ncbigene:59274', name: 'TLNRD1' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:23189', name: 'KANK1' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:60', name: 'ACTB' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:54518', name: 'APBB1IP' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:65059', name: 'RAPH1' })).to.be.not.undefined;
   });
 
 });

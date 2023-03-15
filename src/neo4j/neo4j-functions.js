@@ -1,5 +1,6 @@
 import { giveConnectedInfoByGeneId, makeNodeQuery, makeRelationshipQuery } from './query-strings';
 import { getDriver } from './neo4j-driver';
+import _ from 'lodash';
 
 /**
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
@@ -97,9 +98,9 @@ export async function searchByGeneId(id) {
 export async function getNeighbouringNodes(id) {
     let record = await searchByGeneId(id);
     if (record) {
-        return record.map(row => {
+        return _.uniqBy(record.map(row => {
             return row.get('m').properties;
-        });
+        }), node => node.id);
     }
     return null;
 }
@@ -111,9 +112,9 @@ export async function getNeighbouringNodes(id) {
 export async function getInteractions(id) {
     let record = await searchByGeneId(id);
     if (record) {
-        return record.map(row => {
+        return _.uniqBy(record.map(row => {
             return row.get('r').properties;
-        });
+        }), edge => edge.id);
     }
     return null;
 }

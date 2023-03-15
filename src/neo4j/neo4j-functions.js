@@ -96,12 +96,12 @@ export async function searchByGeneId(id) {
  */
 export async function getNeighbouringNodes(id) {
     let record = await searchByGeneId(id);
-    if (record.length == 0) {
-        return record;
+    if (record) {
+        return record.map(row => {
+            return row.get('m');
+        });
     }
-    return record.map(row => {
-        return row.get('m');
-    });
+    return null;
 }
 
 /**
@@ -110,10 +110,10 @@ export async function getNeighbouringNodes(id) {
  */
 export async function getInteractions(id) {
     let record = await searchByGeneId(id);
-    if (record.length == 0) {
-        return record;
+    if (record) {
+        return record.map(row => {
+            return row.get('r');
+        });
     }
-    return record.map(row => {
-        return row.get('r');
-    });
+    return null;
 }

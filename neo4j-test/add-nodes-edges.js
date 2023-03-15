@@ -3,7 +3,7 @@ import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
 import { addEdge, addNode, getInteractions, getNeighbouringNodes, searchByGeneId } from '../src/neo4j/neo4j-functions';
 import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
 
-describe('Tests for addNode, addEdge and seachByGeneId', function () {
+describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
 
   before('Should create a driver instance and connect to server', async function () {
     await initDriver();
@@ -163,8 +163,9 @@ describe('Tests for addNode, addEdge and seachByGeneId', function () {
   });
 
   it('Search for a gene in an empty database yields empty array', async function () {
-    let nonexistent = await searchByGeneId('ncbigene:207');
-    expect(nonexistent).to.be.null;
+    expect(await searchByGeneId('ncbigene:207')).to.be.null;
+    expect(await getInteractions('ncbigene:207')).to.be.null;
+    expect(await getNeighbouringNodes('ncbigene:207')).to.be.null;
   });
 
   it('Search for a non-existing gene in a non-empty database yields empty array', async function () {
@@ -179,7 +180,8 @@ describe('Tests for addNode, addEdge and seachByGeneId', function () {
       '34767444',
       'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
 
-    let nonexistent = await searchByGeneId('ncbigene:217');
-    expect(nonexistent).to.be.null;
+    expect(await searchByGeneId('ncbigene:217')).to.be.null;
+    expect(await getInteractions('ncbigene:217')).to.be.null;
+    expect(await getNeighbouringNodes('ncbigene:217')).to.be.null;
   });
 });

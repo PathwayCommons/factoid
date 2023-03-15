@@ -4,7 +4,7 @@ import r from 'rethinkdb';
 
 import { loadDoc } from '../src/server/routes/api/document/index.js';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
-import { searchByGeneId } from '../src/neo4j/neo4j-functions.js';
+import { searchByGeneId, getInteractions, getNeighbouringNodes } from '../src/neo4j/neo4j-functions.js';
 import { addDocumentToNeo4j } from '../src/neo4j/neo4j-document.js';
 import { deleteAllNodesAndEdges } from '../src/neo4j/test-functions.js';
 
@@ -64,16 +64,19 @@ describe('Tests for searchByGeneId', function () {
 
   it('Search for KANK1', async function () {
     let kank1 = 'ncbigene:23189';
+    const res = await searchByGeneId(kank1);
 
   });
 
   it('Search for TLN1', async function () {
     let tln1 = 'ncbigene:7094';
+    const res = await searchByGeneId(tln1);
 
   });
 
   it('Search for TLNRD1', async function () {
     let tlnrd1 = 'ncbigene:59274';
+    const res = await searchByGeneId(tlnrd1);
 
   });
 
@@ -81,6 +84,8 @@ describe('Tests for searchByGeneId', function () {
     let mapk6 = 'ncbigene:5597';
     const res = await searchByGeneId(mapk6);
     expect(res).to.be.null;
+    expect(await getInteractions(mapk6)).to.be.null;
+    expect(await getNeighbouringNodes(mapk6)).to.be.null;
   });
 
 });

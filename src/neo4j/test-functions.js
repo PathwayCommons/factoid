@@ -16,7 +16,6 @@ export async function getNode(id) {
       node = null;
     }
   } catch (error) {
-    console.error(error);
     throw error;
   } finally {
     await session.close();
@@ -47,7 +46,6 @@ export async function getEdge(id) {
       edge = null;
     }
   } catch (error) {
-    console.error(error);
     throw error;
   } finally {
     await session.close();
@@ -64,7 +62,6 @@ export async function deleteAllNodesAndEdges() {
       return tx.run(deleteAll);
     });
   } catch (error) {
-    console.error(error);
     throw error;
   } finally {
     await session.close();
@@ -83,7 +80,6 @@ export async function getNumNodes() {
     });
     num = result.records[0].get(0).toNumber();
   } catch (error) {
-    console.error(error);
     throw error;
   } finally {
     await session.close();
@@ -102,7 +98,6 @@ export async function getNumEdges() {
     });
     num = result.records[0].get(0).toNumber();
   } catch (error) {
-    console.error(error);
     throw error;
   } finally {
     await session.close();

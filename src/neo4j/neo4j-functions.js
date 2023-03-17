@@ -1,5 +1,6 @@
 import { giveConnectedInfoByGeneId, makeNodeQuery, makeRelationshipQuery } from './query-strings';
 import { getDriver } from './neo4j-driver';
+import _ from 'lodash';
 
 /**
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
@@ -18,7 +19,6 @@ export async function addNode(id, name) {
             });
         });
     } catch (error) {
-        console.error(error);
         throw error;
     } finally {
         await session.close();
@@ -55,7 +55,6 @@ export async function addEdge(id, type, sourceId, targetId, xref, doi, pmid, art
             });
         });
     } catch (error) {
-        console.error(error);
         throw error;
     } finally {
         await session.close();
@@ -67,7 +66,7 @@ export async function addEdge(id, type, sourceId, targetId, xref, doi, pmid, art
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
  * @returns An object with 2 fields: relationships (array) and neighbouring nodes (array) or null
  */
-export async function searchByGeneId(id) {
+export async function searchByMoleculeId(id) {
     const driver = getDriver();
     let session;
     let record;
@@ -76,13 +75,12 @@ export async function searchByGeneId(id) {
         let result = await session.executeRead(tx => {
             return tx.run(giveConnectedInfoByGeneId, { id: id });
         });
-        if (result) {
+        if (result.records.length > 0) {
             record = result.records;
         } else {
             record = null;
         }
     } catch (error) {
-        console.error(error);
         throw error;
     } finally {
         await session.close();
@@ -95,13 +93,13 @@ export async function searchByGeneId(id) {
  * @returns an array of nodes that are neighbours to the specified gene
  */
 export async function getNeighbouringNodes(id) {
-    let record = await searchByGeneId(id);
-    if (record.length == 0) {
-        return record;
+    let record = await searchByMoleculeId(id);
+    if (record) {
+        return _.uniqBy(record.map(row => {
+            return row.get('m').properties;
+        }), node => node.id);
     }
-    return record.map(row => {
-        return row.get('m');
-    });
+    return null;
 }
 
 /**
@@ -109,11 +107,11 @@ export async function getNeighbouringNodes(id) {
  * @returns an array of relationships leading away from/leading to the specified gene
  */
 export async function getInteractions(id) {
-    let record = await searchByGeneId(id);
-    if (record.length == 0) {
-        return record;
+    let record = await searchByMoleculeId(id);
+    if (record) {
+        return _.uniqBy(record.map(row => {
+            return row.get('r').properties;
+        }), edge => edge.id);
     }
-    return record.map(row => {
-        return row.get('r');
-    });
+    return null;
 }

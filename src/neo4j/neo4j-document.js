@@ -59,6 +59,7 @@ export async function addDocumentToNeo4j(doc) {
 
       let edgeInfo;
       if (!source.isComplex() && !target.isComplex()) {
+        // TESTED
         edgeInfo = {
           id: e.id(),
           type: e.type(),

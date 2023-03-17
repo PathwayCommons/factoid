@@ -1,4 +1,4 @@
-import { giveConnectedInfoByGeneId, makeNodeQuery, makeEdgeQuery } from './query-strings';
+import { giveConnectedInfoByGeneId, makeNodeQuery, makeEdgeQuery, makeComplexEdgeQuery } from './query-strings';
 import { getDriver } from './neo4j-driver';
 import _ from 'lodash';
 
@@ -65,8 +65,24 @@ export async function addEdge(id, type, sourceId, targetId, participantTypes, xr
 }
 
 export async function addComplexEdge(id, sourceId, targetId, allParticipants) {
-    // TO DO
-    
+    // NOT TESTED
+    const driver = getDriver();
+    let session;
+    try {
+        session = driver.session({ database: "neo4j" });
+        await session.executeWrite(tx => {
+            return tx.run(makeEdgeQuery, {
+                id: id.toLowerCase(),
+                sourceId: sourceId.toLowerCase(),
+                targetId: targetId.toLowerCase(),
+                allParticipants: allParticipants
+            });
+        });
+    } catch (error) {
+        throw error;
+    } finally {
+        await session.close();
+    }
     return;
 }
 

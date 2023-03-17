@@ -1,4 +1,4 @@
-import { giveConnectedInfoByGeneId, makeNodeQuery, makeRelationshipQuery } from './query-strings';
+import { giveConnectedInfoByGeneId, makeNodeQuery, makeEdgeQuery } from './query-strings';
 import { getDriver } from './neo4j-driver';
 import _ from 'lodash';
 
@@ -31,23 +31,25 @@ export async function addNode(id, name) {
  * @param { String } type 
  * @param { String } sourceId in the form of "dbName:dbId", ex: "ncbigene:207"
  * @param { String } targetId in the form of "dbName:dbId", ex: "ncbigene:207"
+ * @param { String } participantTypes 'noncomplex-to-noncomplex', 'complex-to-noncomplex', etc
  * @param { String } xref document UUID
  * @param { String } doi 
  * @param { String } pmid 
  * @param { String } articleTitle 
  * @returns 
  */
-export async function addEdge(id, type, sourceId, targetId, xref, doi, pmid, articleTitle) {
+export async function addEdge(id, type, sourceId, targetId, participantTypes, xref, doi, pmid, articleTitle) {
     const driver = getDriver();
     let session;
     try {
         session = driver.session({ database: "neo4j" });
         await session.executeWrite(tx => {
-            return tx.run(makeRelationshipQuery, {
+            return tx.run(makeEdgeQuery, {
                 id: id.toLowerCase(),
                 type: type,
                 sourceId: sourceId.toLowerCase(),
                 targetId: targetId.toLowerCase(),
+                participantTypes: participantTypes.toLowerCase(),
                 xref: xref.toLowerCase(),
                 doi: doi,
                 pmid: pmid,
@@ -59,6 +61,12 @@ export async function addEdge(id, type, sourceId, targetId, xref, doi, pmid, art
     } finally {
         await session.close();
     }
+    return;
+}
+
+export async function addComplexEdge(id, sourceId, targetId, allParticipants) {
+    // TO DO
+    
     return;
 }
 

@@ -27,14 +27,22 @@ export async function addDocumentToNeo4j(doc) {
   //              b. Edge/Interaction
   let arrNodes = [];
   let arrEdges = [];
+  let arrComplexEdges = []; // Edges establishing a complex
+  let arrComplexInteractionEdges = []; // interactions between 1 or more complexes
+
   let docElements = doc.elements();
   for (const e of docElements) {
-    if (e.isEntity()) {
+    if (e.isEntity() && !e.isComplex()) {
       let nodeInfo = {
         id: `${e.association().dbPrefix}:${e.association().id}`,
         name: e.association().name
       };
       arrNodes.push(nodeInfo);
+    } else if (e.isEntity && e.isComplex()) {
+      let numEdgesNeeded = e.elements().length;
+
+      // TO DO: make a complex
+
     } else {
       let sourceUUId;
       let targetUUId;
@@ -45,12 +53,29 @@ export async function addDocumentToNeo4j(doc) {
         sourceUUId = e.elements()[0].id();
         targetUUId = e.elements()[1].id();
       }
-      let edgeInfo = {
-        id: e.id(),
-        type: e.type(),
-        sourceId: convertUUIDtoId(doc, sourceUUId),
-        targetId: convertUUIDtoId(doc, targetUUId)
-      };
+
+      let source = doc.get(sourceUUId);
+      let target = doc.get(targetUUId);
+
+      let edgeInfo;
+      if (!source.isComplex() && !target.isComplex()) {
+        edgeInfo = {
+          id: e.id(),
+          type: e.type(),
+          sourceId: convertUUIDtoId(doc, sourceUUId),
+          targetId: convertUUIDtoId(doc, targetUUId),
+          participantTypes: 'noncomplex-to-noncomplex'
+        };
+      } else if (source.isComplex() && !target.isComplex()) {
+        // TODO: sourceUUID is a complex and targetUUID is a noncomplex
+
+      } else if (!source.isComplex() && target.isComplex()) {
+        // TODO: sourceUUID is a noncomplex and targetUUID is a complex
+
+      } else {
+        // TODO: sourceUUID is a complex and targetUUID is a complex
+
+      }
       arrEdges.push(edgeInfo);
     }
   }
@@ -69,7 +94,7 @@ export async function addDocumentToNeo4j(doc) {
 
   // Step 3: Make all the edges
   for (const edge of arrEdges) {
-    await addEdge(edge.id, edge.type, edge.sourceId, edge.targetId,
+    await addEdge(edge.id, edge.type, edge.sourceId, edge.targetId, edge.participantTypes,
       docCitations.xref, docCitations.doi, docCitations.pmid, docCitations.articleTitle);
   }
 

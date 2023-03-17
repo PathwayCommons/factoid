@@ -19,7 +19,6 @@ export async function addNode(id, name) {
             });
         });
     } catch (error) {
-        console.error(error);
         throw error;
     } finally {
         await session.close();
@@ -56,7 +55,6 @@ export async function addEdge(id, type, sourceId, targetId, xref, doi, pmid, art
             });
         });
     } catch (error) {
-        console.error(error);
         throw error;
     } finally {
         await session.close();
@@ -83,7 +81,6 @@ export async function searchByMoleculeId(id) {
             record = null;
         }
     } catch (error) {
-        console.error(error);
         throw error;
     } finally {
         await session.close();

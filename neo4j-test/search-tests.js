@@ -5,7 +5,7 @@ import _ from 'lodash';
 
 import { loadDoc } from '../src/server/routes/api/document/index.js';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
-import { searchByGeneId, getInteractions, getNeighbouringNodes } from '../src/neo4j/neo4j-functions.js';
+import { searchByMoleculeId, getInteractions, getNeighbouringNodes } from '../src/neo4j/neo4j-functions.js';
 import { addDocumentToNeo4j } from '../src/neo4j/neo4j-document.js';
 import { deleteAllNodesAndEdges } from '../src/neo4j/test-functions.js';
 
@@ -21,7 +21,7 @@ let testDb;
 const dbName = 'factoid-neo4j-test';
 const dbTables = ['document', 'element'];
 
-describe('04. Tests for searchByGeneId', function () {
+describe('04. Tests for searchByMoleculeId', function () {
 
   before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
     await initDriver();
@@ -65,14 +65,14 @@ describe('04. Tests for searchByGeneId', function () {
 
   it('Search for MAPK6', async function () {
     let mapk6 = 'ncbigene:5597';
-    expect(await searchByGeneId(mapk6)).to.be.null;
+    expect(await searchByMoleculeId(mapk6)).to.be.null;
     expect(await getInteractions(mapk6)).to.be.null;
     expect(await getNeighbouringNodes(mapk6)).to.be.null;
   });
 
   it('Search for KANK1', async function () {
     let kank1 = 'ncbigene:23189';
-    expect(await searchByGeneId(kank1)).to.not.be.null;
+    expect(await searchByMoleculeId(kank1)).to.not.be.null;
     let edges = await getInteractions(kank1);
     expect(edges.length).equal(3);
     expect(_.find(edges, { id: 'd7b2a15d-43bf-4494-815b-a77e08cea59c', doi: '10.1083/jcb.202005214' })).to.be.not.undefined;
@@ -88,7 +88,7 @@ describe('04. Tests for searchByGeneId', function () {
 
   it('Search for TLN1', async function () {
     let tln1 = 'ncbigene:7094';
-    expect(await searchByGeneId(tln1)).to.not.be.null;
+    expect(await searchByMoleculeId(tln1)).to.not.be.null;
     let edges = await getInteractions(tln1);
     expect(edges.length).equal(6);
     expect(_.find(edges, { id: '028e7366-9779-4466-96ea-18a45bfe3f38', doi: '10.1016/j.str.2016.04.016' })).to.be.not.undefined;
@@ -109,7 +109,7 @@ describe('04. Tests for searchByGeneId', function () {
 
   it('Search for TLNRD1', async function () {
     let tlnrd1 = 'ncbigene:59274';
-    expect(await searchByGeneId(tlnrd1)).to.not.be.null;
+    expect(await searchByMoleculeId(tlnrd1)).to.not.be.null;
     let edges = await getInteractions(tlnrd1);
     expect(edges.length).equal(5);
     expect(_.find(edges, { id: 'd5d9fbcc-a1d9-4026-b1d3-d4a97faff36b', doi: '10.1083/jcb.202005214' })).to.be.not.undefined;

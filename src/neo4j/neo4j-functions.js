@@ -68,7 +68,7 @@ export async function addEdge(id, type, sourceId, targetId, xref, doi, pmid, art
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
  * @returns An object with 2 fields: relationships (array) and neighbouring nodes (array) or null
  */
-export async function searchByGeneId(id) {
+export async function searchByMoleculeId(id) {
     const driver = getDriver();
     let session;
     let record;
@@ -96,7 +96,7 @@ export async function searchByGeneId(id) {
  * @returns an array of nodes that are neighbours to the specified gene
  */
 export async function getNeighbouringNodes(id) {
-    let record = await searchByGeneId(id);
+    let record = await searchByMoleculeId(id);
     if (record) {
         return _.uniqBy(record.map(row => {
             return row.get('m').properties;
@@ -110,7 +110,7 @@ export async function getNeighbouringNodes(id) {
  * @returns an array of relationships leading away from/leading to the specified gene
  */
 export async function getInteractions(id) {
-    let record = await searchByGeneId(id);
+    let record = await searchByMoleculeId(id);
     if (record) {
         return _.uniqBy(record.map(row => {
             return row.get('r').properties;

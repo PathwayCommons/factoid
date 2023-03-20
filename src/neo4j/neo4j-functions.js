@@ -64,8 +64,31 @@ export async function addEdge(id, type, sourceId, targetId, participantTypes, xr
     return;
 }
 
-export async function addComplexEdge(id, sourceId, targetId, allParticipants) {
+/**
+ * @param { Array } arrParticipants Array of strings (ids of entities) sorted in alphabetical order
+ * @returns id in the form of 'dbNameA:dbIdA-dbNameB:dbIdB' etc.
+ */
+function makeComplexId(arrParticipants) {
+    let id = '';
+    for (let i = 0; i < arrParticipants.length; i++) {
+        id = id + arrParticipants[i];
+        if (i < arrParticipants.length - 1) {
+            id = id + '-';
+        }
+    }
+    return id;
+}
+
+/**
+ * Makes exactly one Complex edge
+ * @param { String } sourceId in the form of "dbName:dbId", ex: "ncbigene:207"
+ * @param { String } targetId in the form of "dbName:dbId", ex: "ncbigene:207"
+ * @param { Array } allParticipants Array of strings (ids of entities) sorted in alphabetical order
+ * @returns 
+ */
+export async function addComplexEdge(sourceId, targetId, allParticipants) {
     // NOT TESTED
+    const id = makeComplexId(allParticipants);
     const driver = getDriver();
     let session;
     try {

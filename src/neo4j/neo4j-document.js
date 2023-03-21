@@ -14,6 +14,14 @@ export function convertUUIDtoId(doc, id) {
   return 'node not found';
 }
 
+function makeComponent(complex, doc) {
+  const component = [];
+  for (const entry of complex.elements()) {
+    component.push(convertUUIDtoId(doc, entry.id()));
+  }
+  return component;
+}
+
 /**
  * This is a recursive function
  * @param { Int } i 
@@ -28,10 +36,7 @@ function complexEdgesMaker(i, doc, complex, arrOfEdges) {
     return arrOfEdges;
   }
 
-  const component = [];
-  for (const entry of complex.elements()) {
-    component.push(convertUUIDtoId(doc, entry.id()));
-  }
+  const component = makeComponent(complex, doc);
 
   while (i < complex.elements().length - 2) {
     const sourceUUId = complex.elements()[i].id();
@@ -105,11 +110,41 @@ export async function addDocumentToNeo4j(doc) {
           targetComplex: 'N/A'
         };
       } else if (source.isComplex() && !target.isComplex()) {
-        // TODO: sourceUUID is a complex and targetUUID is a noncomplex
+        // sourceUUID is a complex and targetUUID is a noncomplex
+        const sourceComplex = doc.get(sourceUUId);
+        const component = makeComponent(sourceComplex, doc);
 
+        for (let i = 0; i < e.elements().length - 1; i++) {
+          const complexElementSourceUUId = sourceComplex.elements()[i].id();
+          const edgeInfo = {
+            id: e.id(),
+            type: e.type(),
+            component: component,
+            sourceId: convertUUIDtoId(doc, complexElementSourceUUId),
+            targetId: convertUUIDtoId(doc, targetUUId),
+            sourceComplex: sourceComplex.id(),
+            targetComplex: 'N/A'
+          };
+          arrEdges.push(edgeInfo);
+        }
       } else if (!source.isComplex() && target.isComplex()) {
-        // TODO: sourceUUID is a noncomplex and targetUUID is a complex
+        // sourceUUID is a noncomplex and targetUUID is a complex
+        const targetComplex = doc.get(targetUUId);
+        const component = makeComponent(targetComplex, doc);
 
+        for (let i = 0; i < e.elements().length - 1; i++) {
+          const complexElementTargetUUId = targetComplex.elements()[i].id();
+          const edgeInfo = {
+            id: e.id(),
+            type: e.type(),
+            component: component,
+            sourceId: convertUUIDtoId(doc, sourceUUId),
+            targetId: convertUUIDtoId(doc, complexElementTargetUUId),
+            sourceComplex: 'N/A',
+            targetComplex: targetComplex.id()
+          };
+          arrEdges.push(edgeInfo);
+        }
       } else {
         // TODO: sourceUUID is a complex and targetUUID is a complex
 

@@ -63,9 +63,11 @@ export async function addDocumentToNeo4j(doc) {
         edgeInfo = {
           id: e.id(),
           type: e.type(),
+          component: [],
           sourceId: convertUUIDtoId(doc, sourceUUId),
           targetId: convertUUIDtoId(doc, targetUUId),
-          participantTypes: 'noncomplex-to-noncomplex'
+          sourceComplex: 'N/A',
+          targetComplex: 'N/A'
         };
       } else if (source.isComplex() && !target.isComplex()) {
         // TODO: sourceUUID is a complex and targetUUID is a noncomplex
@@ -95,7 +97,7 @@ export async function addDocumentToNeo4j(doc) {
 
   // Step 3: Make all the edges
   for (const edge of arrEdges) {
-    await addEdge(edge.id, edge.type, edge.sourceId, edge.targetId, edge.participantTypes,
+    await addEdge(edge.id, edge.type, edge.component, edge.sourceId, edge.targetId, edge.sourceComplex, edge.targetComplex,
       docCitations.xref, docCitations.doi, docCitations.pmid, docCitations.articleTitle);
   }
 

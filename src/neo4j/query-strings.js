@@ -7,9 +7,11 @@ export const makeEdgeQuery =
     MATCH (y:Molecule {id: $targetId})
     MERGE (x)-[r:INTERACTION {id: $id}]->(y)
     ON CREATE SET r.type = $type,
+    r.component = $component,
     r.sourceId = $sourceId,
     r.targetId = $targetId,
-    r.participantTypes = $participantTypes,
+    r.sourceComplex = $sourceComplex,
+    r.targetComplex = $targetComplex,
     r.xref = $xref,
     r.doi = $doi, 
     r.pmid = $pmid,

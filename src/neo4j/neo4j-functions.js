@@ -1,4 +1,4 @@
-import { giveConnectedInfoByGeneId, makeNodeQuery, makeEdgeQuery, makeComplexEdgeQuery } from './query-strings';
+import { giveConnectedInfoByGeneId, makeNodeQuery, makeEdgeQuery } from './query-strings';
 import { getDriver } from './neo4j-driver';
 import _ from 'lodash';
 
@@ -38,7 +38,7 @@ export async function addNode(id, name) {
  * @param { String } articleTitle 
  * @returns 
  */
-export async function addEdge(id, type, sourceId, targetId, participantTypes, xref, doi, pmid, articleTitle) {
+export async function addEdge(id, type, component, sourceId, targetId, sourceComplex, targetComplex, xref, doi, pmid, articleTitle) {
     const driver = getDriver();
     let session;
     try {
@@ -47,9 +47,11 @@ export async function addEdge(id, type, sourceId, targetId, participantTypes, xr
             return tx.run(makeEdgeQuery, {
                 id: id.toLowerCase(),
                 type: type,
+                component: component,
                 sourceId: sourceId.toLowerCase(),
                 targetId: targetId.toLowerCase(),
-                participantTypes: participantTypes.toLowerCase(),
+                sourceComplex: sourceComplex.toLowerCase(),
+                targetComplex: targetComplex.toLowerCase(),
                 xref: xref.toLowerCase(),
                 doi: doi,
                 pmid: pmid,

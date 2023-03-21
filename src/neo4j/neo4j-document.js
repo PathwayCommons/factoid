@@ -112,14 +112,13 @@ export async function addDocumentToNeo4j(doc) {
       } else if (source.isComplex() && !target.isComplex()) {
         // sourceUUID is a complex and targetUUID is a noncomplex
         const sourceComplex = doc.get(sourceUUId);
-        const component = makeComponent(sourceComplex, doc);
 
-        for (let i = 0; i < e.elements().length - 1; i++) {
+        for (let i = 0; i < sourceComplex.elements().length - 1; i++) {
           const complexElementSourceUUId = sourceComplex.elements()[i].id();
           const edgeInfo = {
             id: e.id(),
             type: e.type(),
-            component: component,
+            component: [],
             sourceId: convertUUIDtoId(doc, complexElementSourceUUId),
             targetId: convertUUIDtoId(doc, targetUUId),
             sourceComplex: sourceComplex.id(),
@@ -130,14 +129,13 @@ export async function addDocumentToNeo4j(doc) {
       } else if (!source.isComplex() && target.isComplex()) {
         // sourceUUID is a noncomplex and targetUUID is a complex
         const targetComplex = doc.get(targetUUId);
-        const component = makeComponent(targetComplex, doc);
 
-        for (let i = 0; i < e.elements().length - 1; i++) {
+        for (let i = 0; i < targetComplex.elements().length - 1; i++) {
           const complexElementTargetUUId = targetComplex.elements()[i].id();
           const edgeInfo = {
             id: e.id(),
             type: e.type(),
-            component: component,
+            component: [],
             sourceId: convertUUIDtoId(doc, sourceUUId),
             targetId: convertUUIDtoId(doc, complexElementTargetUUId),
             sourceComplex: 'N/A',
@@ -147,6 +145,8 @@ export async function addDocumentToNeo4j(doc) {
         }
       } else {
         // TODO: sourceUUID is a complex and targetUUID is a complex
+        const sourceComplex = doc.get(sourceUUId);
+        const targetComplex = doc.get(targetUUId);
 
       }
       arrEdges.push(edgeInfo);

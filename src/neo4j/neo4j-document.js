@@ -15,6 +15,44 @@ export function convertUUIDtoId(doc, id) {
 }
 
 /**
+ * This is a recursive function
+ * @param { Int } i 
+ * @param { Document } doc 
+ * @param { Document element } complex 
+ * @param { Array } arrOfEdges 
+ * @returns an array with all the info for the edges needed to represent complex
+ */
+function complexEdgesMaker(i, doc, complex, arrOfEdges) {
+  const nextIndex = i + 1;
+  if (i == complex.elements().length - 1) {
+    return arrOfEdges;
+  }
+
+  const component = [];
+  for (const entry of complex.elements()) {
+    component.push(convertUUIDtoId(doc, entry.id()));
+  }
+
+  while (i < complex.elements().length - 2) {
+    const sourceUUId = complex.elements()[i].id();
+    const targetUUId = complex.elements()[i + 1].id();
+    const edgeInfo = {
+      id: complex.id(),
+      type: complex.type(),
+      component: component,
+      sourceId: convertUUIDtoId(doc, sourceUUId),
+      targetId: convertUUIDtoId(doc, targetUUId),
+      sourceComplex: 'N/A',
+      targetComplex: 'N/A'
+    };
+    arrOfEdges.push(edgeInfo);
+  }
+
+  complexEdgesMaker(nextIndex, doc, complex, arrOfEdges);
+  return arrOfEdges;
+}
+
+/**
  * addDocumentToNeo4j takes a Document as a parameter and creates the associated nodes 
  * and edges in a Neo4j database
  * @param { Document } doc : a document model instance
@@ -27,9 +65,6 @@ export async function addDocumentToNeo4j(doc) {
   //              b. Edge/Interaction
   let arrNodes = [];
   let arrEdges = [];
-  let arrComplexEdges = []; // Edges establishing a complex
-  let arrComplexInteractionEdges = []; // interactions between 1 or more complexes
-
   let docElements = doc.elements();
   for (const e of docElements) {
     if (e.isEntity() && !e.isComplex()) {
@@ -39,10 +74,10 @@ export async function addDocumentToNeo4j(doc) {
       };
       arrNodes.push(nodeInfo);
     } else if (e.isEntity && e.isComplex()) {
-      let numEdgesNeeded = e.elements().length;
-
-      // TO DO: make a complex
-
+      // TODO: Push on the edges that will represent this complex e in arrEdges
+      // Untested
+      let complexEdges = complexEdgesMaker(0, doc, e, []);
+      arrEdges.push(...complexEdges);
     } else {
       let sourceUUId;
       let targetUUId;

@@ -33,8 +33,8 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
       [],
       'ncbigene:5597',
       'ncbigene:207',
-      'N/A',
-      'N/A',
+      '',
+      '',
       'a896d611-affe-4b45-a5e1-9bc560ffceab',
       '10.1126/sciadv.abi6439',
       '34767444',
@@ -45,8 +45,8 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     expect(edge.properties.type).to.equal('phosphorylation');
     expect(edge.properties.sourceId).to.equal('ncbigene:5597');
     expect(edge.properties.targetId).to.equal('ncbigene:207');
-    expect(edge.properties.sourceComplex).to.equal('n/a');
-    expect(edge.properties.targetComplex).to.equal('n/a');
+    expect(edge.properties.sourceComplex).to.equal('');
+    expect(edge.properties.targetComplex).to.equal('');
     expect(edge.properties.component).to.deep.equal([]);
     expect(edge.properties.xref).to.equal('a896d611-affe-4b45-a5e1-9bc560ffceab');
     expect(edge.properties.doi).to.equal('10.1126/sciadv.abi6439');
@@ -72,8 +72,8 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
       [],
       'ncbigene:5597',
       'ncbigene:207',
-      'N/A',
-      'N/A',
+      '',
+      '',
       'a896d611-affe-4b45-a5e1-9bc560ffceab',
       '10.1126/sciadv.abi6439',
       '34767444',
@@ -84,8 +84,8 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
       [],
       'ncbigene:5597',
       'ncbigene:207',
-      'N/A',
-      'N/A',
+      '',
+      '',
       'a896d611-affe-4b45-a5e1-9bc560ffceab',
       '10.1126/sciadv.abi6439',
       '34767444',
@@ -95,8 +95,8 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
       [],
       'nc7',
       'ncbigene:207',
-      'N/A',
-      'N/A',
+      '',
+      '',
       'a896d611-affe-4b45-a5e1-9bc560ffceab',
       '10.1126/sciadv.abi6439',
       '3444',
@@ -107,8 +107,8 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     expect(edge.properties.type).to.equal('phosphorylation');
     expect(edge.properties.sourceId).to.equal('ncbigene:5597');
     expect(edge.properties.targetId).to.equal('ncbigene:207');
-    expect(edge.properties.sourceComplex).to.equal('n/a');
-    expect(edge.properties.targetComplex).to.equal('n/a');
+    expect(edge.properties.sourceComplex).to.equal('');
+    expect(edge.properties.targetComplex).to.equal('');
     expect(edge.properties.component).to.deep.equal([]);
     expect(edge.properties.xref).to.equal('a896d611-affe-4b45-a5e1-9bc560ffceab');
     expect(edge.properties.doi).to.equal('10.1126/sciadv.abi6439');
@@ -124,8 +124,8 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
       [],
       'ncbigene:5597',
       'ncbigene:207',
-      'N/A',
-      'N/A',
+      '',
+      '',
       'a896d611-affe-4b45-a5e1-9bc560ffceab',
       '10.1126/sciadv.abi6439',
       '34767444',
@@ -137,8 +137,8 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     expect(mapk6Relationships[0].type).to.equal('phosphorylation');
     expect(mapk6Relationships[0].sourceId).to.equal('ncbigene:5597');
     expect(mapk6Relationships[0].targetId).to.equal('ncbigene:207');
-    expect(mapk6Relationships[0].sourceComplex).to.equal('n/a');
-    expect(mapk6Relationships[0].targetComplex).to.equal('n/a');
+    expect(mapk6Relationships[0].sourceComplex).to.equal('');
+    expect(mapk6Relationships[0].targetComplex).to.equal('');
     expect(mapk6Relationships[0].component).to.deep.equal([]);
     expect(mapk6Relationships[0].xref).to.equal('a896d611-affe-4b45-a5e1-9bc560ffceab');
     expect(mapk6Relationships[0].doi).to.equal('10.1126/sciadv.abi6439');
@@ -160,8 +160,8 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
       [],
       'ncbigene:5597',
       'ncbigene:207',
-      'N/A',
-      'N/A',
+      '',
+      '',
       'a896d611-affe-4b45-a5e1-9bc560ffceab',
       '10.1126/sciadv.abi6439',
       '34767444',
@@ -173,8 +173,8 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     expect(aktRelationships[0].type).to.equal('phosphorylation');
     expect(aktRelationships[0].sourceId).to.equal('ncbigene:5597');
     expect(aktRelationships[0].targetId).to.equal('ncbigene:207');
-    expect(aktRelationships[0].sourceComplex).to.equal('n/a');
-    expect(aktRelationships[0].targetComplex).to.equal('n/a');
+    expect(aktRelationships[0].sourceComplex).to.equal('');
+    expect(aktRelationships[0].targetComplex).to.equal('');
     expect(aktRelationships[0].component).to.deep.equal([]);
     expect(aktRelationships[0].xref).to.equal('a896d611-affe-4b45-a5e1-9bc560ffceab');
     expect(aktRelationships[0].doi).to.equal('10.1126/sciadv.abi6439');
@@ -202,8 +202,8 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
       [],
       'ncbigene:5597',
       'ncbigene:207',
-      'N/A',
-      'N/A',
+      '',
+      '',
       'a896d611-affe-4b45-a5e1-9bc560ffceab',
       '10.1126/sciadv.abi6439',
       '34767444',

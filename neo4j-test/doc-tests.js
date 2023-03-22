@@ -87,8 +87,8 @@ describe('03. Tests for Documents', function () {
       }
       expect(edge.type).to.equal('INTERACTION');
       expect(edge.properties.component).to.deep.equal([]);
-      expect(edge.properties.sourceComplex).to.equal('n/a');
-      expect(edge.properties.targetComplex).to.equal('n/a');
+      expect(edge.properties.sourceComplex).to.equal('');
+      expect(edge.properties.targetComplex).to.equal('');
       expect(edge.properties.xref).to.equal(myDoc.id());
       expect(edge.properties.xref).to.equal(myDoc.id());
       expect(edge.properties.doi).to.equal(myDoc.citation().doi);
@@ -134,8 +134,8 @@ describe('03. Tests for Documents', function () {
       }
       expect(edge.type).to.equal('INTERACTION');
       expect(edge.properties.component).to.deep.equal([]);
-      expect(edge.properties.sourceComplex).to.equal('n/a');
-      expect(edge.properties.targetComplex).to.equal('n/a');
+      expect(edge.properties.sourceComplex).to.equal('');
+      expect(edge.properties.targetComplex).to.equal('');
       expect(edge.properties.xref).to.equal(myDoc.id());
       expect(edge.properties.doi).to.equal(myDoc.citation().doi);
       expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
@@ -180,8 +180,8 @@ describe('03. Tests for Documents', function () {
       }
       expect(edge.type).to.equal('INTERACTION');
       expect(edge.properties.component).to.deep.equal([]);
-      expect(edge.properties.sourceComplex).to.equal('n/a');
-      expect(edge.properties.targetComplex).to.equal('n/a');
+      expect(edge.properties.sourceComplex).to.equal('');
+      expect(edge.properties.targetComplex).to.equal('');
       expect(edge.properties.xref).to.equal(myDoc.id());
       expect(edge.properties.doi).to.equal(myDoc.citation().doi);
       expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
@@ -226,8 +226,8 @@ describe('03. Tests for Documents', function () {
       }
       expect(edge.type).to.equal('INTERACTION');
       expect(edge.properties.component).to.deep.equal([]);
-      expect(edge.properties.sourceComplex).to.equal('n/a');
-      expect(edge.properties.targetComplex).to.equal('n/a');
+      expect(edge.properties.sourceComplex).to.equal('');
+      expect(edge.properties.targetComplex).to.equal('');
       expect(edge.properties.xref).to.equal(myDoc.id());
       expect(edge.properties.doi).to.equal(myDoc.citation().doi);
       expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
@@ -272,8 +272,8 @@ describe('03. Tests for Documents', function () {
       }
       expect(edge.type).to.equal('INTERACTION');
       expect(edge.properties.component).to.deep.equal([]);
-      expect(edge.properties.sourceComplex).to.equal('n/a');
-      expect(edge.properties.targetComplex).to.equal('n/a');
+      expect(edge.properties.sourceComplex).to.equal('');
+      expect(edge.properties.targetComplex).to.equal('');
       expect(edge.properties.xref).to.equal(myDoc.id());
       expect(edge.properties.doi).to.equal(myDoc.citation().doi);
       expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
@@ -318,8 +318,8 @@ describe('03. Tests for Documents', function () {
       }
       expect(edge.type).to.equal('INTERACTION');
       expect(edge.properties.component).to.deep.equal([]);
-      expect(edge.properties.sourceComplex).to.equal('n/a');
-      expect(edge.properties.targetComplex).to.equal('n/a');
+      expect(edge.properties.sourceComplex).to.equal('');
+      expect(edge.properties.targetComplex).to.equal('');
       expect(edge.properties.xref).to.equal(myDoc.id());
       expect(edge.properties.doi).to.equal(myDoc.citation().doi);
       expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);

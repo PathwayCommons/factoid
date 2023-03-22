@@ -94,6 +94,31 @@ const getAuthorAbbrev = AuthorList => {
 
 const getContacts = AuthorList => AuthorList.map( getContact ).filter( contact => !_.isEmpty( _.get( contact, 'email' ) ) );
 
+/**
+ * findOrcidIdentifier
+ * Helper to extract an ORCID accession from a string
+ *
+ * @param {string} raw the string to examine
+ * @returns ORCID accession, possibly null
+ */
+const findOrcidIdentifier = raw => {
+  let orcidId = null;
+  if( raw ){
+  const ORCID_REGEX = /\d{4}-\d{4}-\d{4}-\d{3}(\d|X)/g;
+    const matches = raw.match( ORCID_REGEX );
+    const hasMatch = !_.isEmpty( matches );
+    if( hasMatch ) orcidId = _.head( matches );
+  }
+  return orcidId;
+};
+
+const getAuthorOrcid = Author => {
+  const isOrcId = id => id['Source'] === 'ORCID';
+  const Identifier = _.get( Author, ['Identifier'] );
+  let raw =  _.get( _.find( Identifier, isOrcId ), ['id'] );
+  return findOrcidIdentifier( raw );
+};
+
 const getAuthorList = AuthorList => {
   return AuthorList.map( Author => {
     const { ForeName, LastName } = getAuthorNameParts( Author );
@@ -103,7 +128,8 @@ const getAuthorList = AuthorList => {
       LastName,
       email: _.head( getEmail( Author ) ) || null,
       abbrevName: getAbbrevAuthorName( Author ),
-      isCollectiveName: !_.isNull( _.get( Author, 'CollectiveName' ) )
+      isCollectiveName: !_.isNull( _.get( Author, 'CollectiveName' ) ),
+      orcid: getAuthorOrcid( Author )
     };
   });
 };
@@ -276,4 +302,4 @@ class ArticleIDError extends Error {
   }
 }
 
-export { getPubmedCitation, createPubmedArticle, ArticleIDError };
+export { getPubmedCitation, createPubmedArticle, ArticleIDError, findOrcidIdentifier };

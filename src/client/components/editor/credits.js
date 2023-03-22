@@ -1,6 +1,8 @@
 import h from 'react-hyperscript';
 import { Component } from 'react';
 import _ from 'lodash';
+import { ORCID_BASE_URL } from '../../../config';
+import { findOrcidIdentifier } from '../../../util/pubmed';
 
 export class Credits extends Component {
   constructor(props){
@@ -17,16 +19,16 @@ export class Credits extends Component {
 
     const profiles = document.authorProfiles() || [];
     const isContributingAuthor = author => author.name === authorName;
-    const authorLink = _.get(profiles.find(isContributingAuthor), ['orcid']);
+    const orcid = findOrcidIdentifier( _.get(profiles.find(isContributingAuthor), ['orcid']) ); // Backwards compatible with URI
 
     return h('div.editor-credits', [
       `Article summary created by `,
-      (authorLink ? 
-        h('a.plain-link', { href: authorLink, target: '_blank' }, authorName) 
+      (orcid ?
+        h('a.plain-link', { href: `${ORCID_BASE_URL}${orcid}`, target: '_blank' }, authorName)
         :
-        h('span', authorName) 
+        h('span', authorName)
       ),
-      authorLink ? h('span', [
+      orcid ? h('span', [
         h('span', ' '),
         h('i.icon.icon-orcid')
       ]) : null

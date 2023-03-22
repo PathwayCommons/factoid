@@ -72,6 +72,8 @@ export const NCBI_EUTILS_API_KEY = env('NCBI_EUTILS_API_KEY', 'b99e10ebe0f90d815
 export const INDRA_DB_BASE_URL = env('INDRA_DB_BASE_URL', 'https://db.indra.bio/');
 export const INDRA_ENGLISH_ASSEMBLER_URL = env('INDRA_ENGLISH_ASSEMBLER_URL', 'http://api.indra.bio:8000/assemblers/english');
 export const SEMANTIC_SEARCH_BASE_URL = env('SEMANTIC_SEARCH_BASE_URL', 'https://main.semanticsearch.baderlab.org/');
+export const ORCID_BASE_URL = env('ORCID_BASE_URL', 'https://orcid.org/');
+export const ORCID_PUBLIC_API_BASE_URL = env('ORCID_PUBLIC_API_BASE_URL', 'https://pub.orcid.org/v3.0/');
 
 // Links
 export const UNIPROT_LINK_BASE_URL = env('UNIPROT_LINK_BASE_URL', 'http://www.uniprot.org/uniprot/');
@@ -79,7 +81,7 @@ export const CHEBI_LINK_BASE_URL = env('CHEBI_LINK_BASE_URL', 'https://www.ebi.a
 export const PUBCHEM_LINK_BASE_URL = env('PUBCHEM_LINK_BASE_URL', 'https://pubchem.ncbi.nlm.nih.gov/compound/');
 export const NCBI_LINK_BASE_URL = env('NCBI_LINK_BASE_URL', 'https://www.ncbi.nlm.nih.gov/gene/');
 export const PUBMED_LINK_BASE_URL = env('PUBMED_LINK_BASE_URL', 'https://pubmed.ncbi.nlm.nih.gov/');
-export const DOI_LINK_BASE_URL = env('DOI_LINK_BASE_URL', 'https://www.doi.org/');
+export const DOI_LINK_BASE_URL = env('DOI_LINK_BASE_URL', 'https://doi.org/');
 export const GOOGLE_SCHOLAR_BASE_URL = env('GOOGLE_SCHOLAR_BASE_URL', 'https://scholar.google.com/scholar?q=');
 export const IDENTIFIERS_ORG_ID_BASE_URL = env('IDENTIFIERS_ORG_ID_BASE_URL', '	https://identifiers.org/');
 
@@ -137,4 +139,12 @@ export const MAX_STATEMENTS_ELEMENT = env('MAX_STATEMENTS_ELEMENT', 5);
 export const EVIDENCE_LIMIT =  env('EVIDENCE_LIMIT', 1);
 
 // google analytics
-export const GA_ID = env('GA_ID', 'UA-43341809-12');
+// google tag manager
+export const GTM_ID = env('GTM_ID', 'GTM-NV468LC');
+
+// Graph Database
+export const GRAPHDB_CONN = env('GRAPHDB_CONN', 'bolt://localhost:7687');
+export const GRAPHDB_USER = env('GRAPHDB_USER', undefined);
+export const GRAPHDB_PASS = env('GRAPHDB_PASS', undefined);
+export const GRAPHDB_DBNAME = env('GRAPHDB_DBNAME', 'factoid');
+

@@ -1,4 +1,4 @@
-FROM node:12.19.0
+FROM node:16.17.0
 
 # Allow user configuration of variable at build-time using --build-arg flag
 # See src/client-env-vars.json

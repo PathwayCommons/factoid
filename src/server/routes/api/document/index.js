@@ -9,7 +9,7 @@ import Twitter from 'twitter';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
 import url from 'url';
-import { URLSearchParams } from  'url';
+import { URLSearchParams } from 'url';
 import NodeCache from 'node-cache';
 
 import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
@@ -24,7 +24,8 @@ import { AdminPapersQueue, PCPapersQueue } from './related-papers-queue';
 import { createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
 import * as indra from './indra';
 import { get as groundingSearchGet } from '../element-association/grounding-search';
-import { BASE_URL,
+import {
+  BASE_URL,
   BIOPAX_CONVERTER_URL,
   GROUNDING_SEARCH_BASE_URL,
   API_KEY,
@@ -52,8 +53,9 @@ import { BASE_URL,
   BULK_DOWNLOADS_PATH,
   BIOPAX_DOWNLOADS_PATH,
   BIOPAX_IDMAP_DOWNLOADS_PATH,
-  MAX_DOC_RELATED_PAPERS
- } from '../../../../config';
+  ORCID_PUBLIC_API_BASE_URL,
+  DOI_LINK_BASE_URL
+} from '../../../../config';
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
 import { eLink, elink2UidList } from './pubmed/linkPubmed';
@@ -83,29 +85,29 @@ const twitterClient = new Twitter({
 });
 
 let newDoc = ({ docDb, eleDb, id, secret, provided }) => {
-  return new Document( _.assign( {}, docDb, {
+  return new Document(_.assign({}, docDb, {
     factoryOptions: eleDb,
-    data: _.assign( {}, { id, secret, provided } )
-  } ) );
+    data: _.assign({}, { id, secret, provided })
+  }));
 };
 
 let loadDoc = ({ docDb, eleDb, id, secret }) => {
   let doc = newDoc({ docDb, eleDb, id, secret });
 
-  return doc.load().then( () => doc );
+  return doc.load().then(() => doc);
 };
 
 let createSecret = ({ secret }) => {
   return (
-    tryPromise( () => loadTable('secret') )
-    .then(({ table, conn }) => table.insert({ id: secret }).run(conn))
+    tryPromise(() => loadTable('secret'))
+      .then(({ table, conn }) => table.insert({ id: secret }).run(conn))
   );
 };
 
 let deleteSecret = ({ secret }) => {
   return (
-    tryPromise( () => loadTable('secret') )
-    .then(({ table, conn }) => table.filter({ id: secret }).delete().run(conn))
+    tryPromise(() => loadTable('secret'))
+      .then(({ table, conn }) => table.filter({ id: secret }).delete().run(conn))
   );
 };
 
@@ -169,89 +171,110 @@ let deleteSecret = ({ secret }) => {
 let createDoc = ({ docDb, eleDb, id, secret, provided }) => {
   let doc = newDoc({ docDb, eleDb, id, secret, provided });
 
-  return doc.create().then( () => doc );
+  return doc.create().then(() => doc);
 };
 
 let tables = ['document', 'element'];
 
-let loadTable = name => db.accessTable( name );
+let loadTable = name => db.accessTable(name);
 
-let loadTables = () => Promise.all( tables.map( loadTable ) ).then( dbInfos => ({
+let loadTables = () => Promise.all(tables.map(loadTable)).then(dbInfos => ({
   docDb: dbInfos[0],
   eleDb: dbInfos[1]
-}) );
+}));
 
 let getDocJson = doc => doc.json();
 
-let deleteTableRows = async ( apiKey, secret ) => {
-  let clearRows = db => db.table.filter({ secret }).delete().run( db.conn );
-  return tryPromise( () => checkApiKey( apiKey ) )
-    .then( loadTables )
-    .then( ({ docDb, eleDb }) => Promise.all( [ docDb, eleDb ].map( clearRows ) ) );
+let deleteTableRows = async (apiKey, secret) => {
+  let clearRows = db => db.table.filter({ secret }).delete().run(db.conn);
+  return tryPromise(() => checkApiKey(apiKey))
+    .then(loadTables)
+    .then(({ docDb, eleDb }) => Promise.all([docDb, eleDb].map(clearRows)));
 };
 
 const DEFAULT_CORRESPONDENCE = {
   emails: []
 };
 
-const mapToUniprotIds = docTemplate => {
+const mapToUniprotIds = biopaxTemplate => {
   const updateGrounding = entityTemplate => {
-    if ( entityTemplate == null ) {
+    if (entityTemplate == null) {
       return Promise.resolve();
     }
 
-    let xref = entityTemplate.xref;
-    let { id, dbPrefix } = xref;
+    const handleComponents = () => {
+      const components = entityTemplate.components;
 
-    if ( dbPrefix !== 'ncbigene' ){
-      return Promise.resolve();
-    }
+      if (components == null) {
+        return Promise.resolve();
+      }
 
-    const opts = {
-      id: [
-        id
-      ],
-      dbfrom: dbPrefix,
-      dbto: 'uniprot'
+      return Promise.all(components.map(updateGrounding));
     };
 
-    return fetch( GROUNDING_SEARCH_BASE_URL + '/map', {
-      method: 'POST',
-      body: JSON.stringify( opts ),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    } )
-    .then( res => res.json() )
-    .then( res => {
-      let dbXref = _.get( res, [ 0, 'dbXrefs', 0 ] );
-      if ( dbXref ) {
-        xref.id = dbXref.id;
-        xref.db = dbXref.db;
-      }
-    } );
-  };
-  let intnTemplates = docTemplate.interactions;
-  let promises = intnTemplates.map( intnTemplate => {
-    let ppts = intnTemplate.participants;
-    return updateGrounding( intnTemplate.controller )
-      .then( () => updateGrounding( intnTemplate.source ) )
-      .then( () => updateGrounding( _.get( ppts, 0 ) ) )
-      .then( () => updateGrounding( _.get( ppts, 1 ) ) );
-  } );
+    const handleSelf = () => {
+      let xref = entityTemplate.xref;
 
-  let chunks = _.chunk( promises, 10 );
+      if (xref == null) {
+        return Promise.resolve();
+      }
+
+      let { id, dbPrefix } = xref;
+
+      if (dbPrefix !== 'ncbigene') {
+        return Promise.resolve();
+      }
+
+      const UNIPROT_DB_PREFIX = 'uniprot';
+      const opts = {
+        id: [
+          id
+        ],
+        dbfrom: dbPrefix,
+        dbto: UNIPROT_DB_PREFIX
+      };
+
+      return fetch(GROUNDING_SEARCH_BASE_URL + '/map', {
+        method: 'POST',
+        body: JSON.stringify(opts),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(res => res.json())
+        .then(res => {
+          let dbXref = _.get(res, [0, 'dbXrefs', 0]);
+          if (dbXref) {
+            xref.id = dbXref.id;
+            xref.db = dbXref.db;
+            xref.dbPrefix = opts.dbto;
+          }
+        });
+    };
+
+    return handleComponents().then(handleSelf);
+  };
+  let intnTemplates = biopaxTemplate.interactions;
+  let promises = intnTemplates.map(intnTemplate => {
+    let ppts = intnTemplate.participants;
+    return updateGrounding(intnTemplate.controller)
+      .then(() => updateGrounding(intnTemplate.source))
+      .then(() => updateGrounding(_.get(ppts, 0)))
+      .then(() => updateGrounding(_.get(ppts, 1)));
+  });
+
+  let chunks = _.chunk(promises, 10);
 
   const handleChunk = i => {
-    if ( i == chunks.length ) {
+    if (i == chunks.length) {
       return Promise.resolve();
     }
 
-    return Promise.all( chunks[i] ).then( () => handleChunk( i + 1 ) );
+    return Promise.all(chunks[i]).then(() => handleChunk(i + 1));
   };
 
-  return handleChunk( 0 )
-    .then( () => docTemplate );
+  return handleChunk(0)
+    .then(() => biopaxTemplate);
 };
 
 /**
@@ -266,37 +289,37 @@ const findEmailAddress = address => {
 
   const fromString = str => {
     let output = [];
-    const addr = str.replace(/,/g, ' ').match( emailRegex() );
-    if( addr ) output = addr;
+    const addr = str.replace(/,/g, ' ').match(emailRegex());
+    if (addr) output = addr;
     return output;
   };
   const fromPlainObject = obj => {
     let output = [];
-    if( _.has( obj, 'address' ) ) output = _.get( obj, 'address', '' ).match( emailRegex() );
+    if (_.has(obj, 'address')) output = _.get(obj, 'address', '').match(emailRegex());
     return output;
   };
   const fromArray = arr => {
-    const address = arr.map( elt => {
-      if( _.isString( elt ) ){
-        return fromString( elt );
-      } else if ( _.isPlainObject( elt ) ){
-        return fromPlainObject( elt );
+    const address = arr.map(elt => {
+      if (_.isString(elt)) {
+        return fromString(elt);
+      } else if (_.isPlainObject(elt)) {
+        return fromPlainObject(elt);
       } else {
         return null;
       }
     });
-    return _.uniq( _.compact( _.flatten( address ) ) );
+    return _.uniq(_.compact(_.flatten(address)));
   };
 
   const type = typeof address;
-  switch ( type ) {
+  switch (type) {
     case 'string':
-      return fromString( address );
+      return fromString(address);
     case 'object':
-      if( _.isArray( address ) ) {
-        return fromArray( address );
-      } else if ( _.isPlainObject( address ) ) {
-        return fromPlainObject( address );
+      if (_.isArray(address)) {
+        return fromArray(address);
+      } else if (_.isPlainObject(address)) {
+        return fromPlainObject(address);
       } else {
         throw new TypeError('Invalid address');
       }
@@ -309,121 +332,144 @@ const fillDocCorrespondence = async doc => {
   let address = [];
   const { authorEmail } = doc.provided();
   try {
-    address = findEmailAddress( authorEmail );
-    if( _.isEmpty( address ) ) throw new EmailError(`Unable to find email for '${authorEmail}'`, authorEmail);
+    address = findEmailAddress(authorEmail);
+    if (_.isEmpty(address)) throw new EmailError(`Unable to find email for '${authorEmail}'`, authorEmail);
     await doc.issues({ authorEmail: null });
-  } catch ( error ){
+  } catch (error) {
     await doc.issues({ authorEmail: { error, message: error.message } });
-    logger.error( `Error filling doc correspondence` );
-    logger.error( error );
+    logger.error(`Error filling doc correspondence`);
+    logger.error(error);
   } finally {
-    const emails = _.get( doc.correspondence(), 'emails' );
-    const data = _.defaults( { authorEmail: address, emails }, DEFAULT_CORRESPONDENCE );
-    await doc.correspondence( data );
+    const emails = _.get(doc.correspondence(), 'emails');
+    const data = _.defaults({ authorEmail: address, emails }, DEFAULT_CORRESPONDENCE);
+    await doc.correspondence(data);
   }
 };
 
 const fillDocArticle = async doc => {
   const { paperId } = doc.provided();
   try {
-    const pubmedRecord = await getPubmedArticle( paperId );
-    await doc.article( pubmedRecord );
+    const pubmedRecord = await getPubmedArticle(paperId);
+    await doc.article(pubmedRecord);
     await doc.issues({ paperId: null });
-  } catch ( error ) {
+  } catch (error) {
 
-    logger.error( `Error filling doc article` );
-    logger.error( error );
+    logger.error(`Error filling doc article`);
+    logger.error(error);
 
     // Only supply default when no previous retrieval (pmid is null)
     const { pmid } = doc.citation();
-    if( pmid == null ){
+    if (pmid == null) {
       const pubmedRecord = createPubmedArticle({ articleTitle: paperId });
-      await doc.article( pubmedRecord );
+      await doc.article(pubmedRecord);
       await doc.issues({ paperId: { error, message: error.message } });
     }
   }
 };
 
-const makeOrcidKey = ( s1, s2 ) => s1 + '_' + s2;
-
-const getOrcidUriMap = async doi => {
-  let url = `https://pub.orcid.org/v3.0/csv-search?q=`
-      + `doi%3D${doi}`;
-
-  const textToMap = text => {
-    let lines = text.split(/\r\n|\r|\n/);
-    let obj = {};
-    lines.forEach( ( line, i ) => {
-      if ( i == 0 ) {
-        return;
-      }
-      let vals = line.split(',');
-      let orcidUri = 'https://orcid.org/' + vals[ 0 ];
-      let givenNames = vals[ 2 ];
-      let familyName = vals[ 3 ];
-
-      if ( !givenNames || !familyName ) {
-        return;
-      }
-
-      let key = makeOrcidKey( givenNames, familyName );
-      obj[ key ] = orcidUri;
-    } );
-
-    return obj;
+/**
+ * searchOrcid
+ * Search the ORCID API using an article DOI
+ *
+ * @param {string} doi article DOI
+ * @returns A unique set of search {@link https://info.orcid.org/documentation/integration-guide/orcid-record/ records}
+ */
+const searchOrcid = async doi => {
+  const getDoiSearchUrl = doi => `${ORCID_PUBLIC_API_BASE_URL}expanded-search?q=doi-self:${doi}`;
+  const fetchJson = url => fetch(url, { headers: { 'accept': 'application/json' } });
+  const toJson = res => res.json();
+  const fetchAllJson = async urls => {
+    const responses = await Promise.all(urls.map(fetchJson));
+    return await Promise.all(responses.map(toJson));
+  };
+  const mergeExpandedResults = searchResults => {
+    const getSearchResult = response => response['expanded-result']; //possibly null
+    let records = _.compact(searchResults.map(getSearchResult));
+    return _.unionBy(...records, 'orcid-id');
   };
 
-  return fetch( url, { method: 'GET', headers: { 'accept': 'text/csv' } } )
-    .then( res => res.text() )
-    .then( textToMap )
-    .catch( error => {
-      logger.error( `Error finding Orcid URI: ${error.message}`);
-      return null;
-    } );
+  try {
+    // DOIs can be set by clients, with varying case (e.g. eLife vs elife)
+    let rawUrl = getDoiSearchUrl(doi);
+    let normalizedUrl = getDoiSearchUrl(doi.toLowerCase());
+    let urls = [rawUrl, normalizedUrl];
+
+    let expandedSearchResults = await fetchAllJson(urls);
+    let searchRecords = mergeExpandedResults(expandedSearchResults);
+    return searchRecords;
+
+  } catch (err) {
+    logger.error(`Error finding Orcid URI: ${err.message}`);
+    return null;
+  }
 };
 
+const findAllIndexes = (collection, key, val) => {
+  var indexes = [], i = -1;
+  while ((i = _.findIndex(collection, [key, val], i + 1)) != -1) {
+    indexes.push(i);
+  }
+  return indexes;
+};
+
+/**
+ * fillDocAuthorProfiles
+ * Supplement PubMed author ORCIDs from ORCID itself.
+ * Match by last name when unique, else by first and last names.
+ *
+ * @param {Object} doc Document
+ * @returns An array of author profile information
+ */
 const fillDocAuthorProfiles = async doc => {
   const citation = doc.citation();
-  const { authors, doi } = citation;
+  const { authors: { authorList }, doi } = citation;
 
-  let orcidUrisMap = await getOrcidUriMap( doi );
+  let orcidRecords = await searchOrcid(doi);
+  let authorProfiles = authorList
+    .map(author => {
+      let authorProfile = _.assign({}, author);
+      const { orcid, ForeName, LastName } = author;
+      if (orcid == null) {
+        let match;
+        const byLastName = ['family-names', LastName];
+        const byFirstLastNames = o => LastName == o['family-names'] && ForeName == o['given-names'];
+        let authorListIndices = findAllIndexes(authorList, 'LastName', LastName);
+        let lastNameIsUnique = authorListIndices.length == 1;
 
-  orcidUrisMap = orcidUrisMap || null;
-
-  let authorProfiles = authors.authorList.map( a => {
-    let key = makeOrcidKey( a.ForeName, a.LastName );
-    let orcid = orcidUrisMap[ key ] || null;
-    let authorProfile =  _.assignIn({}, a, { orcid });
-    return authorProfile;
-  });
-
-
-  await doc.authorProfiles( authorProfiles );
+        // Find by last name alone, if it is unique
+        match = lastNameIsUnique ?
+          _.find(orcidRecords, byLastName) :
+          _.find(orcidRecords, byFirstLastNames);
+        if (match) _.set(authorProfile, ['orcid'], match['orcid-id']);
+      }
+      return authorProfile;
+    });
+  await doc.authorProfiles(authorProfiles);
 };
 
 const fillDoc = async doc => {
-  await fillDocCorrespondence( doc );
-  await fillDocArticle( doc );
-  await fillDocAuthorProfiles( doc );
+  await fillDocCorrespondence(doc);
+  await fillDocArticle(doc);
+  await fillDocAuthorProfiles(doc);
   return doc;
 };
 
-const configureAndSendMail = async ( emailType, id, secret ) => {
+const configureAndSendMail = async (emailType, id, secret) => {
   let info;
   const { docDb, eleDb } = await loadTables();
-  const doc =  await loadDoc ({ docDb, eleDb, id, secret });
+  const doc = await loadDoc({ docDb, eleDb, id, secret });
 
   try {
-    const mailOpts =  await msgFactory( emailType, doc );
-    info =  await sendMail( mailOpts );
+    const mailOpts = await msgFactory(emailType, doc);
+    info = await sendMail(mailOpts);
 
-  } catch ( error ) {
-    logger.error( `Error sending email: ${error.message}`);
-    info = _.assign( {}, { error, date: new Date() });
+  } catch (error) {
+    logger.error(`Error sending email: ${error.message}`);
+    info = _.assign({}, { error, date: new Date() });
     throw error;
 
   } finally {
-    await updateCorrespondence( doc, info, emailType );
+    await updateCorrespondence(doc, info, emailType);
   }
 };
 
@@ -447,14 +493,15 @@ let handleResponseError = response => {
 };
 
 let getBiopaxFromTemplates = templates => {
-  return fetch( BIOPAX_CONVERTER_URL + 'json-to-biopax', {
+  return fetch(BIOPAX_CONVERTER_URL + 'json-to-biopax', {
     method: 'POST',
     body: JSON.stringify(templates),
     headers: {
       'Content-Type': 'application/json',
-      'Accept':'application/vnd.biopax.rdf+xml' }
-  } )
-  .then(handleResponseError);
+      'Accept': 'application/vnd.biopax.rdf+xml'
+    }
+  })
+    .then(handleResponseError);
 };
 
 let getNcbiIdfromRefSeqId = id => {
@@ -466,75 +513,75 @@ let getNcbiIdfromRefSeqId = id => {
   params.append('dbfrom', 'nuccore');
   params.append('linkname', 'nuccore_gene');
 
-  return fetch( NCBI_EUTILS_BASE_URL + 'elink.fcgi', {
+  return fetch(NCBI_EUTILS_BASE_URL + 'elink.fcgi', {
     'method': 'POST',
     'headers': {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     'body': params
-  } )
-  .then(handleResponseError)
-  .then( res => res.json() )
-  .then( js => _.get( js, ['ids', 0] ) );
+  })
+    .then(handleResponseError)
+    .then(res => res.json())
+    .then(js => _.get(js, ['ids', 0]));
 };
 
 let getNcbiIdfromHgncSymbol = symbol => {
-  return fetch( PC_URL + 'api/enrichment/validation', {
+  return fetch(PC_URL + 'api/enrichment/validation', {
     'method': 'POST',
     'headers': {
       'Content-Type': 'application/json'
     },
     'body': JSON.stringify({
-      'query': [ symbol ],
+      'query': [symbol],
       'namespace': 'ncbigene'
     })
-  } )
-  .then(handleResponseError)
-  .then( res => res.json() )
-  .then( js => {
-    let obj = _.get( js, 'alias' );
+  })
+    .then(handleResponseError)
+    .then(res => res.json())
+    .then(js => {
+      let obj = _.get(js, 'alias');
 
-    if ( obj ) {
-      return obj[symbol];
-    }
+      if (obj) {
+        return obj[symbol];
+      }
 
-    return null;
-  } );
+      return null;
+    });
 };
 
 let getNcbiIdFromUniprotId = id => {
   let namespace = 'uniprot';
-  return groundingSearchGet( { id, namespace } )
-    .then( res => {
-      let dbXref = _.find( res.dbXrefs, xref => xref.db == 'GeneID' );
-      return _.get( dbXref, 'id', null );
-    } );
+  return groundingSearchGet({ id, namespace })
+    .then(res => {
+      let dbXref = _.find(res.dbXrefs, xref => xref.db == 'GeneID');
+      return _.get(dbXref, 'id', null);
+    });
 };
 
-let searchByXref = ( xref ) => {
+let searchByXref = (xref) => {
   let { db, id } = xref;
   let getNcbiId;
-  if ( db == 'uniprot' ) {
+  if (db == 'uniprot') {
     getNcbiId = getNcbiIdFromUniprotId;
   }
-  else if ( db == 'refseq' ) {
+  else if (db == 'refseq') {
     getNcbiId = getNcbiIdfromRefSeqId;
   }
-  else if ( db == 'hgnc symbol' ) {
+  else if (db == 'hgnc symbol') {
     getNcbiId = getNcbiIdfromHgncSymbol;
   }
 
-  if ( getNcbiId != null ) {
+  if (getNcbiId != null) {
     try {
-      return getNcbiId( id ).then( ncbiId => {
-        if ( ncbiId == null ) {
-          return Promise.resolve( null );
+      return getNcbiId(id).then(ncbiId => {
+        if (ncbiId == null) {
+          return Promise.resolve(null);
         }
 
-        return groundingSearchGet( { id: ncbiId, namespace: 'ncbi' } );
-      } );
+        return groundingSearchGet({ id: ncbiId, namespace: 'ncbi' });
+      });
     }
-    catch( err ) {
+    catch (err) {
       logger.error(`Error searchByXref: ${err}`);
     }
   }
@@ -543,24 +590,26 @@ let searchByXref = ( xref ) => {
 };
 
 let getJsonFromBiopaxUrl = url => {
-  return fetch( BIOPAX_CONVERTER_URL + 'biopax-url-to-json', {
+  return fetch(BIOPAX_CONVERTER_URL + 'biopax-url-to-json', {
     method: 'POST',
     body: url,
     headers: {
       'Content-Type': 'text/plain',
-      'Accept':'application/json' }
-  } )
-  .then(handleResponseError);
+      'Accept': 'application/json'
+    }
+  })
+    .then(handleResponseError);
 };
 
 let getSbgnFromTemplates = templates => {
-  return fetch( BIOPAX_CONVERTER_URL + 'json-to-sbgn', {
+  return fetch(BIOPAX_CONVERTER_URL + 'json-to-sbgn', {
     method: 'POST',
     body: JSON.stringify(templates),
     headers: {
       'Content-Type': 'application/json',
-      'Accept':'application/xml' }
-  } )
+      'Accept': 'application/xml'
+    }
+  })
     .then(handleResponseError);
 };
 
@@ -575,53 +624,53 @@ const generateSitemap = () => {
   let tables;
 
   return (
-    tryPromise( () => loadTables() )
-    .then( tbls => {
-      tables = tbls;
-      return tables;
-    })
-    .then( tables => {
-      let t = tables.docDb;
-      let { table, conn, rethink: r } = t;
-      let q = table;
+    tryPromise(() => loadTables())
+      .then(tbls => {
+        tables = tbls;
+        return tables;
+      })
+      .then(tables => {
+        let t = tables.docDb;
+        let { table, conn, rethink: r } = t;
+        let q = table;
 
-      q = q.orderBy({ index: r.desc( 'createdDate' ) });
-      q = q.filter( r.row( 'status' ).eq( status ) );
-      q = q.pluck( ['id', 'secret'] );
-      return q.run( conn );
-    })
-    .then( cursor => cursor.toArray() )
-    .then( res => {
-      return Promise.all( res.map( docDbJson => {
-        let { id } = docDbJson;
-        let docOpts = _.assign( {}, tables, { id } );
-        return loadDoc( docOpts ).then( getDocJson );
-      }));
-    } )
-    .then( docs2Sitemap )
+        q = q.orderBy({ index: r.desc('createdDate') });
+        q = q.filter(r.row('status').eq(status));
+        q = q.pluck(['id', 'secret']);
+        return q.run(conn);
+      })
+      .then(cursor => cursor.toArray())
+      .then(res => {
+        return Promise.all(res.map(docDbJson => {
+          let { id } = docDbJson;
+          let docOpts = _.assign({}, tables, { id });
+          return loadDoc(docOpts).then(getDocJson);
+        }));
+      })
+      .then(docs2Sitemap)
   );
 };
 
 // TO REMOVE: debugging ONLY
-http.get('/search/:id', async function( req, res, next ){
+http.get('/search/:id', async function (req, res, next) {
 
   try {
     let output = [];
     const { id } = req.params;
     const { docDb, eleDb } = await loadTables();
-    const doc =  await loadDoc ({ docDb, eleDb, id });
+    const doc = await loadDoc({ docDb, eleDb, id });
     logger.info(`Testing search for doc ${doc.id()}`);
 
     const getRelPprsForEl = async el => {
-      let indraRes = await indra.search( el, doc );
+      let indraRes = await indra.search(el, doc);
       return indraRes;
     };
-    output = await Promise.all( doc.elements().map( getRelPprsForEl ) );
-    res.json( output );
+    output = await Promise.all(doc.elements().map(getRelPprsForEl));
+    res.json(output);
 
-  } catch ( err ) {
+  } catch (err) {
     logger.error(`Error in search ${err.message}`);
-    next( err );
+    next(err);
   }
 });
 
@@ -641,13 +690,13 @@ http.get('/search/:id', async function( req, res, next ){
  *          application/zip:
  *             description: Download a zip file containing each Document in various file formats.
  */
-http.get('/zip', function( req, res, next ){
+http.get('/zip', function (req, res, next) {
 
-  tryPromise( () => res.download( BULK_DOWNLOADS_PATH ) )
-    .catch( error => {
-      logger.error( 'Error retrieving bulk downloads (/zip)' );
-      logger.error( error );
-      next( error );
+  tryPromise(() => res.download(BULK_DOWNLOADS_PATH))
+    .catch(error => {
+      logger.error('Error retrieving bulk downloads (/zip)');
+      logger.error(error);
+      next(error);
     });
 });
 
@@ -671,21 +720,21 @@ http.get('/zip', function( req, res, next ){
  *          application/zip:
  *             description: Download a zip file containing each Document represented as BioPAX in owl file format.
  */
-http.get('/zip/biopax', function( req, res, next ){
-  const queryObject = url.parse( req.url, true ).query;
+http.get('/zip/biopax', function (req, res, next) {
+  const queryObject = url.parse(req.url, true).query;
   let filePath = BIOPAX_DOWNLOADS_PATH;
-  let idMapping = _.get( queryObject, 'idMapping' ) == 'true';
+  let idMapping = _.get(queryObject, 'idMapping') == 'true';
 
-  if ( idMapping ) {
+  if (idMapping) {
     filePath = BIOPAX_IDMAP_DOWNLOADS_PATH;
   }
 
-  tryPromise( () => res.download( filePath ))
-  .catch( error => {
-    logger.error( 'Error retrieving biopax download (/zip/biopax)' );
-    logger.error( error );
-    next( error );
-  });
+  tryPromise(() => res.download(filePath))
+    .catch(error => {
+      logger.error('Error retrieving biopax download (/zip/biopax)');
+      logger.error(error);
+      next(error);
+    });
 });
 
 /**
@@ -703,49 +752,49 @@ http.get('/zip/biopax', function( req, res, next ){
  *        content:
  *          application/json
  */
-http.get('/statistics', function( req, res, next ){
+http.get('/statistics', function (req, res, next) {
 
   const count = docs => {
 
-    const entityTypes = new Set( _.values( ENTITY_TYPE ) );
-    const isEntity = type => type && entityTypes.has( type );
+    const entityTypes = new Set(_.values(ENTITY_TYPE));
+    const isEntity = type => type && entityTypes.has(type);
     const isComplex = type => type === ENTITY_TYPE.COMPLEX;
 
     let numEntities = 0,
-        numComplexes = 0,
-        entityMap = new Map(),
-        orgEntityMap = new Map(),
-        numInteractions = 0,
-        entitySet = new Set(),
-        pmidSet = new Set();
+      numComplexes = 0,
+      entityMap = new Map(),
+      orgEntityMap = new Map(),
+      numInteractions = 0,
+      entitySet = new Set(),
+      pmidSet = new Set();
 
-    docs.forEach( ({ pmid, elements }) => {
+    docs.forEach(({ pmid, elements }) => {
       // ---------- Articles ---------- //
-      pmid && pmidSet.add( pmid );
+      pmid && pmidSet.add(pmid);
 
       // ---------- Model ------ //
 
-      elements.forEach( element => {
+      elements.forEach(element => {
         const { type, association } = element;
 
-        if ( isEntity( type ) ){
+        if (isEntity(type)) {
           numEntities++;
 
-          if( isComplex( type ) ) {
+          if (isComplex(type)) {
             numComplexes++;
 
           } else {
 
             let { dbPrefix, id, organismName } = association;
             let entityName = `${dbPrefix}_${id}`;
-            entitySet.add( entityName );
+            entitySet.add(entityName);
 
             // Count by organism
-            let orgEntityCount = orgEntityMap.has( organismName ) ? orgEntityMap.get( organismName ) : 0;
-            organismName && orgEntityMap.set( organismName, ++orgEntityCount );
+            let orgEntityCount = orgEntityMap.has(organismName) ? orgEntityMap.get(organismName) : 0;
+            organismName && orgEntityMap.set(organismName, ++orgEntityCount);
 
-            let entityCount = entityMap.has( entityName ) ? entityMap.get( entityName ) : 0;
-            entityMap.set( entityName, ++entityCount );
+            let entityCount = entityMap.has(entityName) ? entityMap.get(entityName) : 0;
+            entityMap.set(entityName, ++entityCount);
           }
 
         } else {
@@ -763,43 +812,43 @@ http.get('/statistics', function( req, res, next ){
         total: numEntities,
         unique: entitySet.size,
         complexes: numComplexes,
-        perOrganism: Object.fromEntries( orgEntityMap )
+        perOrganism: Object.fromEntries(orgEntityMap)
       },
       interactions: numInteractions
     });
   };
 
-  tryPromise( () => loadTables() )
-    .then( ({ docDb, eleDb }) => {
+  tryPromise(() => loadTables())
+    .then(({ docDb, eleDb }) => {
       let { table: dTable, conn, rethink: r } = docDb;
       let { table: eTable } = eleDb;
 
       return (
         dTable
           .filter({ 'status': DOCUMENT_STATUS_FIELDS.PUBLIC })
-          .map( function( document ){
-            return document.merge({ entries: document( 'entries' )( 'id' ) });
+          .map(function (document) {
+            return document.merge({ entries: document('entries')('id') });
           })
-          .merge( function( document ) {
+          .merge(function (document) {
             return {
-              elements: eTable.getAll( r.args( document( 'entries' ) ) )
-                .coerceTo( 'array' )
-                .pluck( 'id', 'association', 'type', 'name' )
+              elements: eTable.getAll(r.args(document('entries')))
+                .coerceTo('array')
+                .pluck('id', 'association', 'type', 'name')
             };
           })
-          .merge( function( document ) {
+          .merge(function (document) {
             return {
-              pmid: document('article')('PubmedData')('ArticleIdList').filter({ IdType: 'pubmed' })('id')(0).default( null )
+              pmid: document('article')('PubmedData')('ArticleIdList').filter({ IdType: 'pubmed' })('id')(0).default(null)
             };
           })
-          .pluck( 'elements', 'pmid' )
-          .run( conn )
+          .pluck('elements', 'pmid')
+          .run(conn)
       );
     })
-    .then( cursor => cursor.toArray() )
-    .then( count )
-    .then( results => res.json( results ) )
-    .catch( next );
+    .then(cursor => cursor.toArray())
+    .then(count)
+    .then(results => res.json(results))
+    .catch(next);
 });
 
 /**
@@ -1153,68 +1202,68 @@ http.get('/statistics', function( req, res, next ){
  */
 
 
-function getDocuments({ limit = 20, offset, status = [ DOCUMENT_STATUS_FIELDS.PUBLIC ], apiKey, ids }){
+function getDocuments({ limit = 20, offset, status = [DOCUMENT_STATUS_FIELDS.PUBLIC], apiKey, ids }) {
   let tables, total;
 
   return (
-    tryPromise( () => loadTables() )
-    .then( tbls => {
-      tables = tbls;
+    tryPromise(() => loadTables())
+      .then(tbls => {
+        tables = tbls;
 
-      return tables;
-    } )
-    .then( tables => {
-      let t = tables.docDb;
-      let { table, conn, rethink: r } = t;
-      let q = table;
-      let count;
+        return tables;
+      })
+      .then(tables => {
+        let t = tables.docDb;
+        let { table, conn, rethink: r } = t;
+        let q = table;
+        let count;
 
-      if( ids ){ // doc id must be in specified id list
-        q = q.getAll( r.args( ids ) );
+        if (ids) { // doc id must be in specified id list
+          q = q.getAll(r.args(ids));
 
-      } else if( status ){
-        const statuses =  _.intersection( _.values( DOCUMENT_STATUS_FIELDS ), status );
-        q = q.getAll( r.args( statuses ), { index: 'status' } );
-      }
+        } else if (status) {
+          const statuses = _.intersection(_.values(DOCUMENT_STATUS_FIELDS), status);
+          q = q.getAll(r.args(statuses), { index: 'status' });
+        }
 
-      count = q.count();
-      q = q.orderBy( r.desc('createdDate') );
+        count = q.count();
+        q = q.orderBy(r.desc('createdDate'));
 
-      if( !ids ){
-        if( offset ) q = q.skip( offset );
-        if( limit == 0 || limit ) q = q.limit( limit );
-      }
+        if (!ids) {
+          if (offset) q = q.skip(offset);
+          if (limit == 0 || limit) q = q.limit(limit);
+        }
 
-      q = q.pluck(['id', 'secret']);
+        q = q.pluck(['id', 'secret']);
 
-      return Promise.all([
-        count.run( conn ),
-        q.run( conn )
-      ]);
-    })
-    .then( ([ count, cursor ]) => {
-      total = count;
-      return cursor.toArray();
-    })
-    .then( res => {
-      try {
-        checkApiKey(apiKey);
+        return Promise.all([
+          count.run(conn),
+          q.run(conn)
+        ]);
+      })
+      .then(([count, cursor]) => {
+        total = count;
+        return cursor.toArray();
+      })
+      .then(res => {
+        try {
+          checkApiKey(apiKey);
 
-        return { res, haveSecretAccess: true };
-      } catch( err ){
-        return { res, haveSecretAccess: false };
-      }
-    } )
-    .then( ({res, haveSecretAccess}) => { // map ids to full doc json
-      return Promise.all(res.map(docDbJson => {
-        let { id } = docDbJson;
-        let secret = haveSecretAccess ? docDbJson.secret : undefined;
-        let docOpts = _.assign( {}, tables, { id, secret } );
+          return { res, haveSecretAccess: true };
+        } catch (err) {
+          return { res, haveSecretAccess: false };
+        }
+      })
+      .then(({ res, haveSecretAccess }) => { // map ids to full doc json
+        return Promise.all(res.map(docDbJson => {
+          let { id } = docDbJson;
+          let secret = haveSecretAccess ? docDbJson.secret : undefined;
+          let docOpts = _.assign({}, tables, { id, secret });
 
-        return loadDoc(docOpts).then(getDocJson);
-      }));
-    })
-    .then( results => ({ total, results }) )
+          return loadDoc(docOpts).then(getDocJson);
+        }));
+      })
+      .then(results => ({ total, results }))
   );
 }
 
@@ -1270,58 +1319,58 @@ const docCache = new NodeCache();
  *               items:
  *                 $ref: '#/components/Document'
  */
-http.get('/', async function( req, res, next ){
+http.get('/', async function (req, res, next) {
   let docJSON, count;
   const TTL = 60 * 60 * 24;
-  const csv2Array = par => _.uniq( _.compact( par.split(/\s*,\s*/) ) );
-  const noValues = array => array.every( p => _.isUndefined( p ) );
+  const csv2Array = par => _.uniq(_.compact(par.split(/\s*,\s*/)));
+  const noValues = array => array.every(p => _.isUndefined(p));
 
   try {
     let opts = {};
     let { limit, offset, apiKey, status, ids } = req.query;
-    const limitOnly = !_.isUndefined( limit ) && noValues( [ offset, apiKey, status, ids ] );
-    const limitIsInfinity = _.toNumber( limit ) === Number.POSITIVE_INFINITY;
-    const hasQueryParams = !noValues( [ limit, offset, apiKey, status, ids ] );
+    const limitOnly = !_.isUndefined(limit) && noValues([offset, apiKey, status, ids]);
+    const limitIsInfinity = _.toNumber(limit) === Number.POSITIVE_INFINITY;
+    const hasQueryParams = !noValues([limit, offset, apiKey, status, ids]);
 
-    if ( limitOnly && limitIsInfinity ) {
+    if (limitOnly && limitIsInfinity) {
       // Case: special limit 'Infinity' - get all public docs
-      _.set( opts, 'limit', null );
-      let hasValues = docCache.has( SEARCH_CACHE_KEY );
-      if( !hasValues ){
-        let { total, results } = await getDocuments( opts );
-        docCache.set( SEARCH_CACHE_KEY, { total, results }, TTL );
+      _.set(opts, 'limit', null);
+      let hasValues = docCache.has(SEARCH_CACHE_KEY);
+      if (!hasValues) {
+        let { total, results } = await getDocuments(opts);
+        docCache.set(SEARCH_CACHE_KEY, { total, results }, TTL);
       }
-      let { total, results } = docCache.get( SEARCH_CACHE_KEY );
+      let { total, results } = docCache.get(SEARCH_CACHE_KEY);
       count = total;
       docJSON = results;
 
-    } else if( hasQueryParams ) {
+    } else if (hasQueryParams) {
       // Case: some tailored request
-      if( limit ) limit = limitIsInfinity ? null : _.toInteger( limit );
-      if( offset ) offset = _.toInteger( offset );
-      if( ids || ids === '' ) ids = csv2Array( ids );
-      if( status || status === '' ) status = csv2Array( status );
-      _.assign( opts, { limit, offset, apiKey, status, ids } );
-      const { total, results } = await getDocuments( opts );
+      if (limit) limit = limitIsInfinity ? null : _.toInteger(limit);
+      if (offset) offset = _.toInteger(offset);
+      if (ids || ids === '') ids = csv2Array(ids);
+      if (status || status === '') status = csv2Array(status);
+      _.assign(opts, { limit, offset, apiKey, status, ids });
+      const { total, results } = await getDocuments(opts);
       count = total;
       docJSON = results;
 
     } else {
       // Case: no params, default
-      let hasValues = docCache.has( DOC_CACHE_KEY );
-      if( !hasValues ){
-        let { total, results } = await getDocuments( opts );
-        docCache.set( DOC_CACHE_KEY, { total, results }, TTL );
+      let hasValues = docCache.has(DOC_CACHE_KEY);
+      if (!hasValues) {
+        let { total, results } = await getDocuments(opts);
+        docCache.set(DOC_CACHE_KEY, { total, results }, TTL);
       }
-      let { total, results } = docCache.get( DOC_CACHE_KEY );
+      let { total, results } = docCache.get(DOC_CACHE_KEY);
       count = total;
       docJSON = results;
     }
     res.set({ 'X-Document-Count': count });
-    res.json( docJSON );
+    res.json(docJSON);
 
-  } catch( err ) {
-    next( err );
+  } catch (err) {
+    next(err);
   }
 
 });
@@ -1332,17 +1381,17 @@ http.get('/', async function( req, res, next ){
  * @param {*} id The public document ID (UUID).
  */
 const getDocumentJson = id => {
-  return ( tryPromise( loadTables )
-    .then( json => _.assign( {}, json, { id } ) )
-    .then( loadDoc )
-    .then( getDocJson )
+  return (tryPromise(loadTables)
+    .then(json => _.assign({}, json, { id }))
+    .then(loadDoc)
+    .then(getDocJson)
   );
 };
 
 const getDoc = id => {
-  return ( tryPromise( loadTables )
-    .then( json => _.assign( {}, json, { id } ) )
-    .then( loadDoc )
+  return (tryPromise(loadTables)
+    .then(json => _.assign({}, json, { id }))
+    .then(loadDoc)
   );
 };
 
@@ -1357,7 +1406,7 @@ const getDocumentImageBuffer = doc => {
   };
 
   const getPngImage = elesJson => {
-    return ( startCytosnap()
+    return (startCytosnap()
       .then(() => snap.shot({
         elements: elesJson,
         style: cyStylesheet,
@@ -1377,7 +1426,7 @@ const getDocumentImageBuffer = doc => {
 
   const convertToBuffer = base64 => Buffer.from(base64, 'base64');
 
-  return ( tryPromise(() => doc)
+  return (tryPromise(() => doc)
     .then(getElesJson)
     .then(getPngImage)
     .then(convertToBuffer)
@@ -1413,7 +1462,7 @@ const imageCache = new LRUCache({
  *       '500':
  *         $ref: '#/components/responses/Bad ID'
  */
-http.get('/(:id).png', function( req, res, next ){
+http.get('/(:id).png', function (req, res, next) {
   const id = req.params.id;
 
   res.setHeader('content-type', 'image/png');
@@ -1434,14 +1483,14 @@ http.get('/(:id).png', function( req, res, next ){
       const cache = imageCache.get(id);
       const canUseCache = imageCache.has(id) && cache.lastEditedDate === lastEditedDate;
 
-      if( canUseCache ){
+      if (canUseCache) {
         res.send(cache.img);
       } else {
         const cache = await fillCache(doc, lastEditedDate);
 
         res.send(cache.img);
       }
-    } catch(err){
+    } catch (err) {
       next(err);
     }
   };
@@ -1450,33 +1499,47 @@ http.get('/(:id).png', function( req, res, next ){
 });
 
 // tweet a document as a card with a caption (text)
-const tweetDoc = ( doc, text ) => {
+const tweetDoc = (doc, text) => {
   const id = doc.id();
   const url = `${BASE_URL}/document/${id}`;
   const status = `${text} ${url}`;
 
-  return  tryPromise( () => twitterClient.post( 'statuses/update', { status } ) )
-      .then( tweet =>  doc.setTweetMetadata( tweet ) );
+  return tryPromise(() => twitterClient.post('statuses/update', { status }))
+    .then(tweet => doc.setTweetMetadata(tweet));
 };
 
-const tryTweetingDoc = async ( doc, text ) => {
+// reply to document tweet with article link
+const tweetArticleReply = async doc => {
+  const { doi } = doc.citation();
+  if (!doi || !doc.hasTweet()) return;
+
+  const { id_str: in_reply_to_status_id } = doc.tweetMetadata();
+  const url = `${DOI_LINK_BASE_URL}${doi}`;
+  const status = `Read the paper: ${url}`;
+
+  await twitterClient.post('statuses/update', { status, in_reply_to_status_id });
+  return doc;
+};
+
+const tryTweetingDoc = async (doc, text) => {
 
   const shouldTweet = doc => {
     const alreadyTweeted = doc.hasTweet();
-    const readOnly = _.isNil( doc.secret() );
+    const readOnly = _.isNil(doc.secret());
     const isShareableDemo = doc.id() === DEMO_ID && DEMO_CAN_BE_SHARED;
-    return ( !alreadyTweeted && !readOnly ) || isShareableDemo;
+    return (!alreadyTweeted && !readOnly) || isShareableDemo;
   };
 
-  if ( shouldTweet( doc ) ) {
+  if (shouldTweet(doc)) {
     try {
-      if( !text ) text = truncateString( doc.toText(), MAX_TWEET_LENGTH );
-      await tweetDoc( doc, text );
-    } catch ( e ) {
-      logger.error( `Error attempting to Tweet: ${JSON.stringify(e)}` ); //swallow
+      if (!text) text = truncateString(doc.toText(), MAX_TWEET_LENGTH);
+      await tweetDoc(doc, text);
+      await tweetArticleReply(doc);
+    } catch (e) {
+      logger.error(`Error attempting to Tweet: ${JSON.stringify(e)}`); //swallow
     }
   } else {
-    logger.info( `This doc cannot be Tweeted at this time` );
+    logger.info(`This doc cannot be Tweeted at this time`);
   }
 
   return doc;
@@ -1521,17 +1584,17 @@ const tryTweetingDoc = async ( doc, text ) => {
  *       '500':
  *         description: Error
  */
-http.post('/:id/tweet', function( req, res, next ){
+http.post('/:id/tweet', function (req, res, next) {
   const id = req.params.id;
   const { text, secret } = _.assign({ text: '', secret: 'read-only-no-secret-specified' }, req.body);
 
   return (
-    tryPromise( () => loadTables() )
-    .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
-    .then( doc => tryTweetingDoc( doc, text) )
-    .then( getDocJson )
-    .then( json => res.json( json ) )
-    .catch( next )
+    tryPromise(() => loadTables())
+      .then(({ docDb, eleDb }) => loadDoc({ docDb, eleDb, id, secret }))
+      .then(doc => tryTweetingDoc(doc, text))
+      .then(getDocJson)
+      .then(json => res.json(json))
+      .catch(next)
   );
 });
 
@@ -1558,12 +1621,12 @@ http.post('/:id/tweet', function( req, res, next ){
  *       '500':
  *         description: Invalid API key
  */
-http.get('/api-key-verify', function( req, res, next ){
+http.get('/api-key-verify', function (req, res, next) {
   let apiKey = req.query.apiKey;
 
-  ( tryPromise( () => checkApiKey( apiKey ) )
-    .then( () => res.end() )
-    .catch( next )
+  (tryPromise(() => checkApiKey(apiKey))
+    .then(() => res.end())
+    .catch(next)
   );
 });
 
@@ -1592,17 +1655,17 @@ http.get('/api-key-verify', function( req, res, next ){
  *       '500':
  *         $ref: '#/components/responses/Bad ID'
  */
-http.get('/:id', function( req, res, next ){
+http.get('/:id', function (req, res, next) {
   let id = req.params.id;
 
-  ( tryPromise( () => getDocumentJson(id) )
-    .then( json => res.json( json ) )
-    .catch( next )
+  (tryPromise(() => getDocumentJson(id))
+    .then(json => res.json(json))
+    .catch(next)
   );
 });
 
 const checkApiKey = (apiKey) => {
-  if( API_KEY && apiKey != API_KEY ){
+  if (API_KEY && apiKey != API_KEY) {
     throw new Error(`The specified API key '${apiKey}' is incorrect`);
   }
 };
@@ -1613,7 +1676,7 @@ const getNovelInteractions = async doc => {
 };
 
 const emailRelatedPaperAuthors = async doc => {
-  if( doc.relatedPapersNotified() ){ return; } // bail out if already notified
+  if (doc.relatedPapersNotified()) { return; } // bail out if already notified
   const MAX_AGE_PAPER_YEARS = 5;
 
   const getContact = paper => _.get(paper, ['pubmed', 'authors', 'contacts', 0]);
@@ -1643,7 +1706,7 @@ const emailRelatedPaperAuthors = async doc => {
     const newDoc = await createEmptyDoc(fullName, email);
     const editorUrl = `${BASE_URL}${newDoc.privateUrl()}`;
 
-    const mailOpts =  await msgFactory(EMAIL_TYPE_REL_PPR_NOTIFICATION, doc, {
+    const mailOpts = await msgFactory(EMAIL_TYPE_REL_PPR_NOTIFICATION, doc, {
       to: EMAIL_RELPPRS_CONTACT ? email : EMAIL_ADMIN_ADDR, //must explicitly turn off
       name,
       paper,
@@ -1661,28 +1724,28 @@ const emailRelatedPaperAuthors = async doc => {
   // just send to all for now, as we already have a small cutoff at 30
   const notReviewPaper = async paper => {
     const reviewTypeUI = 'D016454';
-    const pubTypes = _.get( paper, ['pubmed', 'pubTypes'] );
-    const notReview = !_.find( pubTypes, ['UI', reviewTypeUI] );
+    const pubTypes = _.get(paper, ['pubmed', 'pubTypes']);
+    const notReview = !_.find(pubTypes, ['UI', reviewTypeUI]);
     return notReview;
   };
 
-  const publishedNYearsAgo = ( paper, years = MAX_AGE_PAPER_YEARS ) => {
+  const publishedNYearsAgo = (paper, years = MAX_AGE_PAPER_YEARS) => {
     const dateNow = new Date();
-    const dateYearsAgo = ( new Date() ).setFullYear( dateNow.getFullYear() - years );
-    const paperDate = new Date( _.get( paper, ['pubmed', 'ISODate'] ) );
-    return isWithinInterval( paperDate, { start: dateYearsAgo, end: dateNow } );
+    const dateYearsAgo = (new Date()).setFullYear(dateNow.getFullYear() - years);
+    const paperDate = new Date(_.get(paper, ['pubmed', 'ISODate']));
+    return isWithinInterval(paperDate, { start: dateYearsAgo, end: dateNow });
   };
 
-  const paperIsGoodFit = async paper => publishedNYearsAgo( paper ) && notReviewPaper( paper );
+  const paperIsGoodFit = async paper => publishedNYearsAgo(paper) && notReviewPaper(paper);
 
   const byPaperDate = (a, b) => {
-    const getISODate = p => _.get( p, ['pubmed', 'ISODate'] );
-    return new Date( getISODate( a ) ) - new Date( getISODate( b ) );
+    const getISODate = p => _.get(p, ['pubmed', 'ISODate']);
+    return new Date(getISODate(a)) - new Date(getISODate(b));
   };
 
   const getSendablePapers = async papers => {
     const isGoodFit = await Promise.all(papers.map(paperIsGoodFit));
-    return papers.filter((paper, i) => isGoodFit[i] && hasContact(paper)).sort( byPaperDate );
+    return papers.filter((paper, i) => isGoodFit[i] && hasContact(paper)).sort(byPaperDate);
   };
 
   const novelIntns = await getNovelInteractions(doc);
@@ -1719,24 +1782,24 @@ const emailRelatedPaperAuthors = async doc => {
  *       '500':
  *         $ref: '#/components/responses/500'
  */
-http.delete('/:secret', function(req, res, next){
+http.delete('/:secret', function (req, res, next) {
   let secret = req.params.secret;
   let { apiKey } = req.query;
-  deleteTableRows( apiKey, secret ).then( () => res.end() ).catch( next );
+  deleteTableRows(apiKey, secret).then(() => res.end()).catch(next);
 });
 
 // Attempt to verify; Idempotent
 const tryVerify = async doc => {
 
-  if( !doc.verified() ){
+  if (!doc.verified()) {
     let doVerify = false;
 
     const { authorEmail } = doc.correspondence();
     const { authors: { contacts } } = doc.citation();
-    const hasEmail = _.some( contacts, contact => !_.isEmpty( _.intersection( _.get( contact, 'email' ), authorEmail ) ) );
-    if( hasEmail ) doVerify = true;
+    const hasEmail = _.some(contacts, contact => !_.isEmpty(_.intersection(_.get(contact, 'email'), authorEmail)));
+    if (hasEmail) doVerify = true;
 
-    if( doVerify ) await doc.verified( true );
+    if (doVerify) await doc.verified(true);
   }
 
   return doc;
@@ -1774,89 +1837,89 @@ const tryVerify = async doc => {
  *       '500':
  *         description: Error
  */
-http.post('/', function( req, res, next ){
-  const provided = _.assign( {}, req.body );
+http.post('/', function (req, res, next) {
+  const provided = _.assign({}, req.body);
 
   const sendInviteNotification = async doc => {
     // Do not try send when there are email issues
-    const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
+    const hasIssue = (doc, key) => _.has(doc.issues(), key) && !_.isNull(_.get(doc.issues(), key));
     let emailType = EMAIL_TYPE_INVITE;
     const id = doc.id();
     const secret = doc.secret();
-    const hasAuthorEmailIssue = hasIssue( doc, 'authorEmail' );
-    if( !hasAuthorEmailIssue ) await configureAndSendMail( emailType, id, secret );
+    const hasAuthorEmailIssue = hasIssue(doc, 'authorEmail');
+    if (!hasAuthorEmailIssue) await configureAndSendMail(emailType, id, secret);
     return doc;
   };
 
   const handleInviteNotification = doc => {
-    const email = _.get( provided, 'authorEmail' );
-    if ( email ) {
-      return sendInviteNotification( doc ).then( () => doc );
+    const email = _.get(provided, 'authorEmail');
+    if (email) {
+      return sendInviteNotification(doc).then(() => doc);
     }
     return doc;
   };
 
   const sendJSON = doc => {
-    res.json( doc.json() );
+    res.json(doc.json());
     return doc;
   };
 
-  postDoc( provided )
-    .then( sendJSON )
-    .then( doc => {
-      if ( doc.secret() === DEMO_SECRET ){
+  postDoc(provided)
+    .then(sendJSON)
+    .then(doc => {
+      if (doc.secret() === DEMO_SECRET) {
         return doc;
       } else {
         return handleInviteNotification(doc)
-          .then( updateRelatedPapers );
+          .then(updateRelatedPapers);
       }
     })
-    .catch( next );
+    .catch(next);
 });
 
 const postDoc = provided => {
-  const { paperId, elements=[], performLayout, groundEls, authorName } = provided;
+  const { paperId, elements = [], performLayout, groundEls, authorName } = provided;
   const isDemo = paperId === DEMO_ID;
   const id = undefined;
-  const secret = isDemo ? DEMO_SECRET: uuid();
-  const fromAdmin = _.get( provided, 'fromAdmin', true );
+  const secret = isDemo ? DEMO_SECRET : uuid();
+  const fromAdmin = _.get(provided, 'fromAdmin', true);
 
   const elToXref = {};
   const elsToOmit = {};
   const isValidXref = xref => {
-    if ( xref == null || xref.org == null ) {
+    if (xref == null || xref.org == null) {
       return false;
     }
 
-    return Organism.fromId( Number( xref.org ) ) != Organism.OTHER;
+    return Organism.fromId(Number(xref.org)) != Organism.OTHER;
   };
   // pass for the entities
-  elements.forEach( el => {
+  elements.forEach(el => {
     let xref = el._xref;
-    if ( isValidXref( xref ) ) {
-      elToXref[ el.id ] = xref;
+    if (isValidXref(xref)) {
+      elToXref[el.id] = xref;
     }
-  } );
+  });
   // pass for the interactions
-  elements.forEach( el => {
+  elements.forEach(el => {
     let ppts = el.entries;
-    if ( !_.isNil( ppts ) ){
-      let pptIds = ppts.map( ppt => ppt.id );
-      let hasInvalidPPt = _.some( pptIds, pptId => !elToXref[ pptId ] );
-      if ( hasInvalidPPt ) {
-        [ el.id, ...pptIds ].forEach( elId => elsToOmit[ elId ] = true );
+    if (!_.isNil(ppts)) {
+      let pptIds = ppts.map(ppt => ppt.id);
+      let hasInvalidPPt = _.some(pptIds, pptId => !elToXref[pptId]);
+      if (hasInvalidPPt) {
+        [el.id, ...pptIds].forEach(elId => elsToOmit[elId] = true);
       }
     }
-  } );
+  });
 
-  _.remove( elements, el => elsToOmit[ el.id ] );
+  _.remove(elements, el => elsToOmit[el.id]);
 
-  const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
+  const setStatus = doc => tryPromise(() => doc.initiate()).then(() => doc);
   const handleDocCreation = ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided });
-  const addEls = doc => tryPromise( () => doc.fromJson( { elements } ) ).then( () => doc );
+  const addEls = doc => tryPromise(() => doc.fromJson({ elements })).then(() => doc);
   const handleLayout = doc => {
-    if ( performLayout ) {
-      return tryPromise( () => doc.applyLayout() ).then( () => doc );
+    if (performLayout) {
+      return tryPromise(() => doc.applyLayout()).then(() => doc);
     }
 
     return doc;
@@ -1866,91 +1929,91 @@ const postDoc = provided => {
       let entities = doc.entities();
       let entityIdsToRemove = new Set();
 
-      let entityPromises = entities.map( entity => {
+      let entityPromises = entities.map(entity => {
         let xref = elToXref[entity.id()];
-        if ( !xref ) {
+        if (!xref) {
           return Promise.resolve();
         }
 
-        return searchByXref( xref ).then( res => {
-          if( res ) {
-            return entity.associate( res ).then( () => entity.complete() );
+        return searchByXref(xref).then(res => {
+          if (res) {
+            return entity.associate(res).then(() => entity.complete());
           }
 
-          entityIdsToRemove.add( entity.id() );
+          entityIdsToRemove.add(entity.id());
           return Promise.resolve();
-        } );
-      } );
+        });
+      });
 
       const handleIdsToRemove = () => {
         let intnIdsToRemove = new Set();
 
-        entityIdsToRemove.forEach( entityId => {
-          elements.forEach( el => {
+        entityIdsToRemove.forEach(entityId => {
+          elements.forEach(el => {
             let ppts = el.entries;
-            if ( !_.isNil( ppts ) ){
-              let pptIds = ppts.map( ppt => ppt.id );
-              let includesEntity = _.includes( pptIds, entityId );
-              if ( includesEntity ) {
-                pptIds.forEach( pptId => entityIdsToRemove.add( pptId ) );
-                intnIdsToRemove.add( el.id );
+            if (!_.isNil(ppts)) {
+              let pptIds = ppts.map(ppt => ppt.id);
+              let includesEntity = _.includes(pptIds, entityId);
+              if (includesEntity) {
+                pptIds.forEach(pptId => entityIdsToRemove.add(pptId));
+                intnIdsToRemove.add(el.id);
               }
             }
-          } );
-        } );
+          });
+        });
 
-        const entityRemovePromises = [ ...entityIdsToRemove ].map( entityId => doc.remove( entityId ) );
-        const intnRemovePromises = [ ...intnIdsToRemove ].map( intnId => doc.remove( intnId ) );
+        const entityRemovePromises = [...entityIdsToRemove].map(entityId => doc.remove(entityId));
+        const intnRemovePromises = [...intnIdsToRemove].map(intnId => doc.remove(intnId));
 
-        return Promise.all( entityRemovePromises )
-          .then( () => Promise.all( intnRemovePromises ) );
+        return Promise.all(entityRemovePromises)
+          .then(() => Promise.all(intnRemovePromises));
       };
 
 
 
-      return Promise.all( entityPromises )
-        .then( handleIdsToRemove )
-        .then( () => {
+      return Promise.all(entityPromises)
+        .then(handleIdsToRemove)
+        .then(() => {
           let intns = doc.interactions();
-          let intnPromises = intns.map( intn => intn.complete() );
-          return Promise.all( intnPromises );
-        } );
+          let intnPromises = intns.map(intn => intn.complete());
+          return Promise.all(intnPromises);
+        });
     };
 
-    if ( groundEls ){
-      return tryPromise( () => perform() ).then( () => doc );
+    if (groundEls) {
+      return tryPromise(() => perform()).then(() => doc);
     }
 
     return doc;
   };
   const handleDocSource = doc => {
     let fcn = () => doc.setAsPcDoc();
-    if ( fromAdmin ){
+    if (fromAdmin) {
       fcn = () => doc.setAsAdminDoc();
     }
 
-    return fcn().then( () => doc );
+    return fcn().then(() => doc);
   };
   const handleAuthorName = doc => {
-    if ( !authorName ){
+    if (!authorName) {
       return doc;
     }
 
-    return doc.provided( { name: authorName } ).then( () => doc );
+    return doc.provided({ name: authorName }).then(() => doc);
   };
 
-  return tryPromise( () => createSecret({ secret }) )
-    .then( loadTables )
-    .then( handleDocCreation )
-    .then( setStatus )
-    .then( fillDoc )
-    .then( tryVerify )
-    .then( addEls )
-    .then( handleElGroundings )
-    .then( handleLayout )
-    .then( handleDocSource )
-    .then( handleAuthorName )
-    .catch( _.nop );
+  return tryPromise(() => createSecret({ secret }))
+    .then(loadTables)
+    .then(handleDocCreation)
+    .then(setStatus)
+    .then(fillDoc)
+    .then(tryVerify)
+    .then(addEls)
+    .then(handleElGroundings)
+    .then(handleLayout)
+    .then(handleDocSource)
+    .then(handleAuthorName)
+    .catch(_.nop);
 };
 
 /**
@@ -1977,27 +2040,27 @@ const postDoc = provided => {
  *     '500':
  *       description: Error
  */
-http.post('/from-url', function( req, res, next ){
+http.post('/from-url', function (req, res, next) {
 
-  const provided = _.assign( {}, req.body );
+  const provided = _.assign({}, req.body);
 
   const { url } = provided;
 
-  tryPromise( () => getJsonFromBiopaxUrl( url ) )
-    .then( response => response.json() )
-    .then( docsJSON => new Promise( () => {
-      let pmids = Object.keys( docsJSON );
-      pmids = pmids.filter( pmid => pmid != null );
+  tryPromise(() => getJsonFromBiopaxUrl(url))
+    .then(response => response.json())
+    .then(docsJSON => new Promise(() => {
+      let pmids = Object.keys(docsJSON);
+      pmids = pmids.filter(pmid => pmid != null);
       // TODO: which email address?
       let authorEmail = EMAIL_ADDRESS_ADMIN;
 
-      const updateAndSubmit = doc => updateRelatedPapers( doc ).then( () => doc.submit() );
-      const addToRelatedPapersQueue = doc => PCPapersQueue.addJob( () => updateAndSubmit( doc ) );
+      const updateAndSubmit = doc => updateRelatedPapers(doc).then(() => doc.submit());
+      const addToRelatedPapersQueue = doc => PCPapersQueue.addJob(() => updateAndSubmit(doc));
 
       const handleNewDoc = pmid => {
-        let docJSON = docsJSON[ pmid ];
-        const data = _.assign( {}, {
-          paperId: _.trim( pmid ),
+        let docJSON = docsJSON[pmid];
+        const data = _.assign({}, {
+          paperId: _.trim(pmid),
           authorEmail,
           elements: docJSON,
           performLayout: true,
@@ -2005,28 +2068,28 @@ http.post('/from-url', function( req, res, next ){
           fromAdmin: false
         });
 
-        return postDoc( data ).then( doc => {
-          if ( doc.interactions().length == 0 ) {
+        return postDoc(data).then(doc => {
+          if (doc.interactions().length == 0) {
             let secret = doc.secret();
-            return deleteTableRows( API_KEY, secret ).then( () => deleteSecret( { secret } ) );
+            return deleteTableRows(API_KEY, secret).then(() => deleteSecret({ secret }));
           }
 
-          return addToRelatedPapersQueue( doc );
-        } );
+          return addToRelatedPapersQueue(doc);
+        });
       };
 
       const processPmid = i => {
-        if ( i == pmids.length ) {
+        if (i == pmids.length) {
           return Promise.resolve();
         }
 
-        return handleNewDoc( pmids[ i ] ).then( () => processPmid( i + 1 ) );
+        return handleNewDoc(pmids[i]).then(() => processPmid(i + 1));
       };
 
-      processPmid( 0 )
-        .then( () => res.end() )
-        .catch( next );
-    } ) );
+      processPmid(0)
+        .then(() => res.end())
+        .catch(next);
+    }));
 });
 
 /**
@@ -2063,14 +2126,14 @@ http.post('/from-url', function( req, res, next ){
  *       '500':
  *         $ref: '#/components/responses/500'
  */
-http.post('/email/:id/:secret', function( req, res, next ){
+http.post('/email/:id/:secret', function (req, res, next) {
   const { id, secret } = req.params;
   const { apiKey, emailType } = req.query;
   return (
-    tryPromise( () => checkApiKey( apiKey ) )
-    .then( () => configureAndSendMail( emailType, id, secret ) )
-    .then( () => res.end() )
-    .catch( next )
+    tryPromise(() => checkApiKey(apiKey))
+      .then(() => configureAndSendMail(emailType, id, secret))
+      .then(() => res.end())
+      .catch(next)
   );
 });
 
@@ -2127,65 +2190,65 @@ http.post('/email/:id/:secret', function( req, res, next ){
  *       '500':
  *         $ref: '#/components/responses/500'
  */
-http.patch('/:id/:secret', function( req, res, next ){
+http.patch('/:id/:secret', function (req, res, next) {
   const { id, secret } = req.params;
 
   // Public criteria: non-empty; all entities complete
   const tryMakePublic = async doc => {
     const hasEles = doc => doc.elements().length > 0;
-    const hasIncompleteEles = doc => doc.elements().some( ele => !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX );
-    const shouldMakePublic = doc => hasEles( doc ) && !hasIncompleteEles( doc );
-    if( shouldMakePublic( doc ) ) await doc.makePublic();
+    const hasIncompleteEles = doc => doc.elements().some(ele => !ele.completed() && !ele.isInteraction() && ele.type() !== ENTITY_TYPE.COMPLEX);
+    const shouldMakePublic = doc => hasEles(doc) && !hasIncompleteEles(doc);
+    if (shouldMakePublic(doc)) await doc.makePublic();
     return;
   };
 
   const sendFollowUpNotification = async doc => {
-    await configureAndSendMail( EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret() );
-    await emailRelatedPaperAuthors( doc );
+    await configureAndSendMail(EMAIL_TYPE_FOLLOWUP, doc.id(), doc.secret());
+    await emailRelatedPaperAuthors(doc);
   };
 
   const onDocPublic = async doc => {
-    docCache.del( DOC_CACHE_KEY );
-    docCache.del( SEARCH_CACHE_KEY );
-    await AdminPapersQueue.addJob( async () => {
-      await updateRelatedPapers( doc );
-      await sendFollowUpNotification( doc );
-    } );
+    docCache.del(DOC_CACHE_KEY);
+    docCache.del(SEARCH_CACHE_KEY);
+    await AdminPapersQueue.addJob(async () => {
+      await updateRelatedPapers(doc);
+      await sendFollowUpNotification(doc);
+    });
   };
 
   const handleMakePublicRequest = async doc => {
-    await tryMakePublic( doc );
-    if( doc.isPublic() ) {
-      await tryTweetingDoc( doc );
-      onDocPublic( doc );
+    await tryMakePublic(doc);
+    if (doc.isPublic()) {
+      await tryTweetingDoc(doc);
+      onDocPublic(doc);
     }
   };
 
   const updateDoc = async doc => {
     const updates = req.body;
-    for( const update of updates ){
+    for (const update of updates) {
       const { op, path, value } = update;
 
-      switch ( path ) {
+      switch (path) {
         case 'status':
-          if( op === 'replace' && value === DOCUMENT_STATUS_FIELDS.PUBLIC ) await handleMakePublicRequest( doc );
+          if (op === 'replace' && value === DOCUMENT_STATUS_FIELDS.PUBLIC) await handleMakePublicRequest(doc);
           break;
         case 'article':
-          if( op === 'replace' ) {
-            await fillDocArticle( doc );
-            await fillDocAuthorProfiles( doc );
+          if (op === 'replace') {
+            await fillDocArticle(doc);
+            await fillDocAuthorProfiles(doc);
           }
           break;
         case 'correspondence':
-          if( op === 'replace' ){
-            await fillDocCorrespondence( doc );
-            await tryVerify( doc );
+          if (op === 'replace') {
+            await fillDocCorrespondence(doc);
+            await tryVerify(doc);
           }
           break;
         case 'relatedPapers':
-          if( op === 'replace' ){
-            await updateRelatedPapers( doc );
-            await emailRelatedPaperAuthors( doc );
+          if (op === 'replace') {
+            await updateRelatedPapers(doc);
+            await emailRelatedPaperAuthors(doc);
           }
           break;
       }
@@ -2195,29 +2258,29 @@ http.patch('/:id/:secret', function( req, res, next ){
   };
 
   return (
-    tryPromise( () => loadTables() )
-    .then( ({ docDb, eleDb }) => loadDoc ({ docDb, eleDb, id, secret }) )
-    .then( updateDoc )
-    .then( getDocJson )
-    .then( json => res.json( json ) )
-    .catch( next )
+    tryPromise(() => loadTables())
+      .then(({ docDb, eleDb }) => loadDoc({ docDb, eleDb, id, secret }))
+      .then(updateDoc)
+      .then(getDocJson)
+      .then(json => res.json(json))
+      .catch(next)
   );
 });
 
-function getBioPAX( id, idMapping = false, omitDbXref = true ){
-  return tryPromise( loadTables )
-    .then( json => _.assign( {}, json, { id } ) )
-    .then( loadDoc )
-    .then( doc => doc.toBiopaxTemplate( omitDbXref ) )
-    .then( template => {
-      if ( !idMapping ) {
+function getBioPAX(id, idMapping = false, omitDbXref = true) {
+  return tryPromise(loadTables)
+    .then(json => _.assign({}, json, { id }))
+    .then(loadDoc)
+    .then(doc => doc.toBiopaxTemplate(omitDbXref))
+    .then(template => {
+      if (!idMapping) {
         return template;
       }
 
-      return mapToUniprotIds( template );
-    } )
-    .then( getBiopaxFromTemplates )
-    .then( result => result.text() );
+      return mapToUniprotIds(template);
+    })
+    .then(getBiopaxFromTemplates)
+    .then(result => result.text());
 }
 
 /**
@@ -2247,26 +2310,26 @@ function getBioPAX( id, idMapping = false, omitDbXref = true ){
  *       '500':
  *         $ref: '#/components/responses/Bad ID'
  */
-http.get('/biopax/:id', function( req, res, next ){
+http.get('/biopax/:id', function (req, res, next) {
   let id = req.params.id;
-  const queryObject = url.parse( req.url, true ).query;
-  let idMapping = _.get( queryObject, 'idMapping' ) == 'true';
+  const queryObject = url.parse(req.url, true).query;
+  let idMapping = _.get(queryObject, 'idMapping') == 'true';
 
-  getBioPAX( id, idMapping )
-    .then( owl => res.send( owl ))
-    .catch( next );
+  getBioPAX(id, idMapping)
+    .then(owl => res.send(owl))
+    .catch(next);
 });
 
-function getSBGN( id ){
-  return tryPromise( loadTables )
-    .then( json => _.assign( {}, json, { id } ) )
-    .then( loadDoc )
-    .then( doc => doc.toBiopaxTemplate() )
-    .then( getSbgnFromTemplates )
-    .then( result => result.text() )
-    .catch( err => {
-      logger.error( `Error retrieving SBGN for id: ${id}`);
-      logger.error( err );
+function getSBGN(id) {
+  return tryPromise(loadTables)
+    .then(json => _.assign({}, json, { id }))
+    .then(loadDoc)
+    .then(doc => doc.toBiopaxTemplate())
+    .then(getSbgnFromTemplates)
+    .then(result => result.text())
+    .catch(err => {
+      logger.error(`Error retrieving SBGN for id: ${id}`);
+      logger.error(err);
     });
 }
 
@@ -2294,11 +2357,11 @@ function getSBGN( id ){
  *       '500':
  *         $ref: '#/components/responses/Bad ID'
  */
-http.get('/sbgn/:id', function( req, res, next ){
+http.get('/sbgn/:id', function (req, res, next) {
   let id = req.params.id;
-  getSBGN( id )
-    .then( xml => res.send( xml ))
-    .catch( next );
+  getSBGN(id)
+    .then(xml => res.send(xml))
+    .catch(next);
 });
 
 /**
@@ -2325,88 +2388,88 @@ http.get('/sbgn/:id', function( req, res, next ){
  *       '500':
  *         $ref: '#/components/responses/Bad ID'
  */
-http.get('/text/:id', function( req, res, next ){
+http.get('/text/:id', function (req, res, next) {
   let id = req.params.id;
-  tryPromise( loadTables )
-    .then( json => _.assign( {}, json, { id } ) )
-    .then( loadDoc )
-    .then( doc => doc.toText() )
-    .then( txt => res.send( txt ))
-    .catch( next );
+  tryPromise(loadTables)
+    .then(json => _.assign({}, json, { id }))
+    .then(loadDoc)
+    .then(doc => doc.toText())
+    .then(txt => res.send(txt))
+    .catch(next);
 });
 
 const updateRelatedPapers = async doc => {
-  await getRelPprsForDoc( doc );
-  await getRelatedPapersForNetwork( doc );
+  await getRelPprsForDoc(doc);
+  await getRelatedPapersForNetwork(doc);
   return doc;
 };
 
 const getRelPprsForDoc = async doc => {
   let relatedPapers = [];
   let referencedPapers = [];
-  const noRelatedPapers = _.isEmpty( doc.relatedPapers() );
+  const noRelatedPapers = _.isEmpty(doc.relatedPapers());
 
   try {
     logger.info(`Updating document-level related papers for doc ${doc.id()}`);
-    const getUid = result => _.get( result, 'uid' );
+    const getUid = result => _.get(result, 'uid');
     const { pmid } = doc.citation();
 
-    if( pmid == null ) throw new Error('Article pmid not available');
+    if (pmid == null) throw new Error('Article pmid not available');
 
-    const elinkResponse = await eLink( { id: [pmid] } );
+    const elinkResponse = await eLink({ id: [pmid] });
 
     // For .relatedPapers
-    const documents = elink2UidList( elinkResponse );
+    const documents = elink2UidList(elinkResponse);
     let uids;
     try {
       let rankedDocs = await indra.semanticSearch({
         query: { uid: pmid },
-        documents: documents.map( uid => ({ uid }) ),
+        documents: documents.map(uid => ({ uid })),
         top_k: MAX_DOC_RELATED_PAPERS
       });
-      uids = rankedDocs.map( getUid );
+      uids = rankedDocs.map(getUid);
 
-    } catch ( err ) {
+    } catch (err) {
       // Handling semantic search failures
       logger.error(`Bypassing semantic search for document ${doc.id()}`);
-      if( noRelatedPapers ){
+      if (noRelatedPapers) {
         // Use the unranked raw list of paper pmids
         uids = documents;
       } else {
         // Use existing related paper pmids, data will be refreshed
-        uids = doc.relatedPapers().map( ({ pmid }) => pmid );
+        uids = doc.relatedPapers().map(({ pmid }) => pmid);
       }
 
     } finally {
-      uids = _.take( uids, SEMANTIC_SEARCH_LIMIT );
+      uids = _.take(uids, SEMANTIC_SEARCH_LIMIT);
     }
 
     const relatedPapersResponse = await fetchPubmed({ uids });
-    relatedPapers = _.get( relatedPapersResponse, 'PubmedArticleSet', [] )
-      .map( getPubmedCitation )
-      .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
-    doc.relatedPapers( relatedPapers );
+    relatedPapers = _.get(relatedPapersResponse, 'PubmedArticleSet', [])
+      .map(getPubmedCitation)
+      .map(citation => ({ pmid: citation.pmid, pubmed: citation }));
+    doc.relatedPapers(relatedPapers);
 
     // For .referencedPapers
-    const referencedPaperUids = elink2UidList( elinkResponse, ['pubmed_pubmed_refs'], 100 );
-    if( referencedPaperUids.length ){
+    const referencedPaperUids = elink2UidList(elinkResponse, ['pubmed_pubmed_refs'], 100);
+    if (referencedPaperUids.length) {
       const referencedPapersResponse = await fetchPubmed({ uids: referencedPaperUids });
-      referencedPapers = _.get( referencedPapersResponse, 'PubmedArticleSet', [] )
-        .map( getPubmedCitation )
-        .map( citation => ({ pmid: citation.pmid, pubmed: citation }) );
+      referencedPapers = _.get(referencedPapersResponse, 'PubmedArticleSet', [])
+        .map(getPubmedCitation)
+        .map(citation => ({ pmid: citation.pmid, pubmed: citation }));
     }
 
-    doc.referencedPapers( referencedPapers );
+    doc.referencedPapers(referencedPapers);
     logger.info(`Finished updating document-level related papers`);
     return doc;
 
-  } catch ( err ){
+  } catch (err) {
     // Handling PubMed EUTILS failures
     logger.error(`Error getRelPprsForDoc: ${err}`);
 
     // Only supply default when no previous retrieval
-    if( _.isNil( doc.relatedPapers() ) ) doc.relatedPapers( relatedPapers );
-    if( _.isNil( doc.referencedPapers() ) ) doc.referencedPapers( referencedPapers );
+    if (_.isNil(doc.relatedPapers())) doc.relatedPapers(relatedPapers);
+    if (_.isNil(doc.referencedPapers())) doc.referencedPapers(referencedPapers);
 
     return doc;
   }
@@ -2415,36 +2478,39 @@ const getRelPprsForDoc = async doc => {
 
 const getRelatedPapersForNetwork = async doc => {
 
-    const elements = doc.elements();
-    logger.info(`Updating network-level related papers for doc ${doc.id()}`);
+  const elements = doc.elements();
+  logger.info(`Updating network-level related papers for doc ${doc.id()}`);
 
-    for ( const element of elements ) {
-      const hasRelatedPapers = !_.isEmpty( element.relatedPapers() );
-      let indraRes = [];
-      try {
-        indraRes = await indra.search( element, doc );
-        if ( element.isInteraction() ) {
-          if ( indraRes.length == 0 ) {
-            element.setNovel( true );
-          }
+  for (const element of elements) {
+    const hasRelatedPapers = !_.isEmpty(element.relatedPapers());
+    let indraRes = [];
+    try {
+      indraRes = await indra.search(element, doc);
+      if (element.isInteraction()) {
+        if (indraRes.length == 0) {
+          element.setNovel(true);
         }
-
-      } catch ( err ) {
-        // Handle searchDocuments failures
-        logger.error(`Failed searchDocuments for  ${element.id()}`);
-        if( hasRelatedPapers ) indraRes = element.relatedPapers();
       }
 
-      element.relatedPapers( indraRes );
+    } catch (err) {
+      // Handle searchDocuments failures
+      logger.error(`Failed searchDocuments for  ${element.id()}`);
+      if (hasRelatedPapers) indraRes = element.relatedPapers();
     }
 
-    logger.info(`Finished updating network-level related papers for doc`);
-    return doc;
+    element.relatedPapers(indraRes);
+  }
+
+  logger.info(`Finished updating network-level related papers for doc`);
+  return doc;
 };
 
 export default http;
-export { getDocumentJson,
+export {
+  getDocumentJson,
   loadTables, loadDoc, fillDocArticle, updateRelatedPapers,
+  fillDocAuthorProfiles,
   generateSitemap,
-  getDocuments, getSBGN, getBioPAX
+  getDocuments, getSBGN, getBioPAX,
+  mapToUniprotIds
 }; // allow access so page rendering can get the same data as the rest api

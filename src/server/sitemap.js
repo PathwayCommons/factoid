@@ -70,7 +70,7 @@ class Sitemap {
     this.docs.forEach( doc => {
       const url = eltFactory( 'url' );
       const loc = eltFactory( 'loc', {}, `${BASE_URL}${doc.publicUrl}` );
-      const lastmod = eltFactory( 'lastmod', {}, `${doc.lastEditedDate}` );
+      const lastmod = eltFactory( 'lastmod', {}, `${doc.lastEditedDate.toISOString()}` );
       const changefreq = eltFactory( 'changefreq', {}, this.changefreq );
       const priority = eltFactory( 'priority', {}, this.priority );
       const image = getImageElt( doc );

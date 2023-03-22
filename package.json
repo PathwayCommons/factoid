@@ -26,9 +26,10 @@
     "lint": "run-s lint:*",
     "fix": "run-s fix:*",
     "watch": "run-p watch:*",
-    "test": "mocha -r esm",
+    "test": "mocha -r esm --recursive",
     "test:travis": "run-s lint",
-    "ci": "run-s test lint"
+    "ci": "run-s test lint",
+    "neo4j": "node -r esm ./src/neo4j/test-temp-run.js"
   },
   "dependencies": {
     "@appsignal/express": "^0.5.1",
@@ -69,6 +70,7 @@
     "minisearch": "^3.0.2",
     "morgan": "^1.9.1",
     "mousetrap": "^1.6.1",
+    "neo4j-driver": "^5.5.0",
     "node-cache": "^5.1.2",
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.7",
@@ -119,6 +121,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "livereload": "^0.8.2",
     "mocha": "^3.5.3",
+    "nock": "^13.2.9",
     "nodemon": "^1.18.7",
     "npm-run-all": "^4.1.2",
     "postcss": "^6.0.23",
@@ -126,6 +129,7 @@
     "postcss-cssnext": "^3.1.0",
     "postcss-import": "^10.0.0",
     "postcss-url": "^7.3.2",
+    "rethinkdb-fixtures": "^0.1.1",
     "rimraf": "^2.6.2",
     "stylelint": "^8.4.0",
     "stylelint-config-standard": "^17.0.0",
@@ -133,7 +137,7 @@
     "webpack-bundle-analyzer": "^2.9.2"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=16.19.0"
   },
-  "version": "0.19.0"
+  "version": "0.22.1"
 }

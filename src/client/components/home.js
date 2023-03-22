@@ -248,7 +248,7 @@ class Home extends Component {
 
     if (query) {
       this.activateSearchMode();
-    
+
       this.debouncedSearch();
     } else {
       this.setState({ searchDocs: this.state.allDocs });
@@ -261,6 +261,8 @@ class Home extends Component {
 
   search() {
     const q = this.state.query;
+    if( !q ) return;
+
     const waitForFetch = () => this.docSearchFetch;
     const doQuery = () => this.docSearch.search(q);
 
@@ -324,17 +326,17 @@ class Home extends Component {
         let authorNames = authorList.map( a => a.name );
         const id = doc.id;
         const link = doc.publicUrl;
-    
+
         if( authorNames.length > 3 ){
           authorNames = authorNames.slice(0, 2).concat([ '...', authorNames[authorNames.length - 1] ]);
         }
-    
+
         const figureDiv = h('div.home-search-doc-figure', {
           style: {
             backgroundImage: `url('/api/document/${id}.png')`
           }
         });
-    
+
         return h('div.home-search-doc',  [
           h('a', {
             href: link,

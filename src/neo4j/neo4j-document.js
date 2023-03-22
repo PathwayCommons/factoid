@@ -148,6 +148,22 @@ export async function addDocumentToNeo4j(doc) {
         const sourceComplex = doc.get(sourceUUId);
         const targetComplex = doc.get(targetUUId);
 
+        for (let i = 0; i < sourceComplex.elements().length - 1; i++) {
+          for (let j = 0; j < targetComplex.elements().length - 1; j++) {
+            const complexElementSourceUUId = sourceComplex.elements()[i].id();
+            const targetElementSourceUUId = targetComplex.elements()[i].id();
+            const edgeInfo = {
+              id: e.id(),
+              type: e.type(),
+              component: [],
+              sourceId: convertUUIDtoId(doc, complexElementSourceUUId),
+              targetId: convertUUIDtoId(doc, targetElementSourceUUId),
+              sourceComplex: sourceComplex.id(),
+              targetComplex: targetComplex.id()
+            };
+            arrEdges.push(edgeInfo);
+          }
+        }
       }
       arrEdges.push(edgeInfo);
     }

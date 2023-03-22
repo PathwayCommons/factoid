@@ -48,7 +48,7 @@ export async function addDocumentToNeo4j(doc) {
       // Untested
       const complex = e;
       const component = makeComponent(complex, doc);
-      for (let i = 0; i < complex.elements().length - 2; i++) {
+      for (let i = 0; i < complex.elements().length - 1; i++) {
         for (let j = i + 1; j < complex.elements().length - 1; j++) {
           const sourceUUId = complex.elements()[i].id();
           const targetUUId = complex.elements()[j].id();

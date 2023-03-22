@@ -38,7 +38,7 @@ function complexEdgesMaker(i, doc, complex, arrOfEdges) {
 
   const component = makeComponent(complex, doc);
 
-  for (let j = i; j < complex.elements().length - 1; j++) {
+  for (let j = i; j < complex.elements().length - 2; j++) {
     const sourceUUId = complex.elements()[i].id();
     const targetUUId = complex.elements()[j + 1].id();
     const edgeInfo = {

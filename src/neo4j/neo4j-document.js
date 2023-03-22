@@ -54,7 +54,7 @@ export async function addDocumentToNeo4j(doc) {
           const targetUUId = complex.elements()[j].id();
           const edgeInfo = {
             id: complex.id(),
-            type: complex.type(),
+            type: 'binding',
             component: component,
             sourceId: convertUUIDtoId(doc, sourceUUId),
             targetId: convertUUIDtoId(doc, targetUUId),

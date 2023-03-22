@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
-import { addEdge, addNode, getInteractions, getNeighbouringNodes, searchByMoleculeId } from '../src/neo4j/neo4j-functions';
+import { addEdge, addNode, getInteractions, getNeighbouringNodes, neighbourhood } from '../src/neo4j/neo4j-functions';
 import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
 
 describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
@@ -189,7 +189,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
   });
 
   it('Search for a molecule in an empty database yields null', async function () {
-    expect(await searchByMoleculeId('ncbigene:207')).to.be.null;
+    expect(await neighbourhood('ncbigene:207')).to.be.null;
     expect(await getInteractions('ncbigene:207')).to.be.null;
     expect(await getNeighbouringNodes('ncbigene:207')).to.be.null;
   });
@@ -209,7 +209,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
       '34767444',
       'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
 
-    expect(await searchByMoleculeId('ncbigene:217')).to.be.null;
+    expect(await neighbourhood('ncbigene:217')).to.be.null;
     expect(await getInteractions('ncbigene:217')).to.be.null;
     expect(await getNeighbouringNodes('ncbigene:217')).to.be.null;
   });

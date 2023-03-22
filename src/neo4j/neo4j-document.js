@@ -31,16 +31,15 @@ function makeComponent(complex, doc) {
  * @returns an array with all the info for the edges needed to represent complex
  */
 function complexEdgesMaker(i, doc, complex, arrOfEdges) {
-  const nextIndex = i + 1;
   if (i == complex.elements().length - 1) {
     return arrOfEdges;
   }
 
   const component = makeComponent(complex, doc);
 
-  for (let j = i; j < complex.elements().length - 2; j++) {
+  for (let j = i + 1; j < complex.elements().length - 1; j++) {
     const sourceUUId = complex.elements()[i].id();
-    const targetUUId = complex.elements()[j + 1].id();
+    const targetUUId = complex.elements()[j].id();
     const edgeInfo = {
       id: complex.id(),
       type: complex.type(),
@@ -52,8 +51,8 @@ function complexEdgesMaker(i, doc, complex, arrOfEdges) {
     };
     arrOfEdges.push(edgeInfo);
   }
-
-  complexEdgesMaker(nextIndex, doc, complex, arrOfEdges);
+  i++;
+  complexEdgesMaker(i, doc, complex, arrOfEdges);
   return arrOfEdges;
 }
 

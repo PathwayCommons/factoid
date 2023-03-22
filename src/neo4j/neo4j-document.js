@@ -23,40 +23,6 @@ function makeComponent(complex, doc) {
 }
 
 /**
- * This is a recursive function
- * @param { Int } i 
- * @param { Document } doc 
- * @param { Document element } complex 
- * @param { Array } arrOfEdges 
- * @returns an array with all the info for the edges needed to represent complex
- */
-function complexEdgesMaker(i, doc, complex, arrOfEdges) {
-  if (i == complex.elements().length - 1) {
-    return arrOfEdges;
-  }
-
-  const component = makeComponent(complex, doc);
-
-  for (let j = i + 1; j < complex.elements().length - 1; j++) {
-    const sourceUUId = complex.elements()[i].id();
-    const targetUUId = complex.elements()[j].id();
-    const edgeInfo = {
-      id: complex.id(),
-      type: complex.type(),
-      component: component,
-      sourceId: convertUUIDtoId(doc, sourceUUId),
-      targetId: convertUUIDtoId(doc, targetUUId),
-      sourceComplex: 'N/A',
-      targetComplex: 'N/A'
-    };
-    arrOfEdges.push(edgeInfo);
-  }
-  i++;
-  complexEdgesMaker(i, doc, complex, arrOfEdges);
-  return arrOfEdges;
-}
-
-/**
  * addDocumentToNeo4j takes a Document as a parameter and creates the associated nodes 
  * and edges in a Neo4j database
  * @param { Document } doc : a document model instance
@@ -80,8 +46,24 @@ export async function addDocumentToNeo4j(doc) {
     } else if (e.isEntity && e.isComplex()) {
       // TODO: Push on the edges that will represent this complex e in arrEdges
       // Untested
-      let complexEdges = complexEdgesMaker(0, doc, e, []);
-      arrEdges.push(...complexEdges);
+      const complex = e;
+      const component = makeComponent(complex, doc);
+      for (let i = 0; i < complex.elements.length - 2; i++) {
+        for (let j = i + 1; j < complex.elements().length - 1; j++) {
+          const sourceUUId = complex.elements()[i].id();
+          const targetUUId = complex.elements()[j].id();
+          const edgeInfo = {
+            id: complex.id(),
+            type: complex.type(),
+            component: component,
+            sourceId: convertUUIDtoId(doc, sourceUUId),
+            targetId: convertUUIDtoId(doc, targetUUId),
+            sourceComplex: 'N/A',
+            targetComplex: 'N/A'
+          };
+          arrEdges.push(edgeInfo);
+        }
+      }
     } else {
       let sourceUUId;
       let targetUUId;

@@ -90,7 +90,6 @@ describe('03. Tests for Documents', function () {
       expect(edge.properties.sourceComplex).to.equal('');
       expect(edge.properties.targetComplex).to.equal('');
       expect(edge.properties.xref).to.equal(myDoc.id());
-      expect(edge.properties.xref).to.equal(myDoc.id());
       expect(edge.properties.doi).to.equal(myDoc.citation().doi);
       expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
       expect(edge.properties.articleTitle).to.equal(myDoc.citation().title);

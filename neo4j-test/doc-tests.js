@@ -7,12 +7,12 @@ import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
 import { addDocumentToNeo4j, convertUUIDtoId } from '../src/neo4j/neo4j-document.js';
 import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
 
-import fixture from './testDoc.json';
-import goult1 from './doct_tests_1.json';
-import goult2 from './doct_tests_2.json';
-import goult3 from './doct_tests_3.json';
-import goult4 from './doct_tests_4.json';
-import goult5 from './doct_tests_5.json';
+import fixture from './document/testDoc.json';
+import goult1 from './document/doct_tests_1.json';
+import goult2 from './document/doct_tests_2.json';
+import goult3 from './document/doct_tests_3.json';
+import goult4 from './document/doct_tests_4.json';
+import goult5 from './document/doct_tests_5.json';
 
 let rdbConn;
 let dbFix;

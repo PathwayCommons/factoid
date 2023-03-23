@@ -20,7 +20,7 @@ let testDb;
 const dbName = 'factoid-neo4j-test';
 const dbTables = ['document', 'element']; // Match fixture (JSON) keys
 
-describe('Tests for Documents', function () {
+describe('03. Tests for Documents', function () {
 
   before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
     await initDriver();
@@ -61,35 +61,39 @@ describe('Tests for Documents', function () {
 
     let myDoc = fixtureDocs[0];
 
-    expect(await getNumNodes()).equal(0);
-    expect(await getNumEdges()).equal(0);
+    expect(await getNumNodes()).to.equal(0);
+    expect(await getNumEdges()).to.equal(0);
     await addDocumentToNeo4j(myDoc);
 
     let arrNodes = myDoc.elements().filter(ele => ele.isEntity());
     let arrEdges = myDoc.elements().filter(ele => !(ele.isEntity()));
 
-    expect(await getNumNodes()).equal(2);
+    expect(await getNumNodes()).to.equal(2);
     for (const n of arrNodes) {
       let id = `${n.association().dbPrefix}:${n.association().id}`;
-      expect(await getGeneName(id)).equal(`${n.association().name}`);
+      expect(await getGeneName(id)).to.equal(`${n.association().name}`);
     }
 
-    expect(await getNumEdges()).equal(1);
+    expect(await getNumEdges()).to.equal(1);
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
-      expect(edge.properties.type).equal(e.type());
+      expect(edge.properties.type).to.equal(e.type());
       if (e.association().getSource()) {
-        expect(edge.properties.sourceId).equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
-        expect(edge.properties.targetId).equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
       } else {
-        expect(edge.properties.sourceId).equal(convertUUIDtoId(myDoc, e.elements()[0].id()));
-        expect(edge.properties.targetId).equal(convertUUIDtoId(myDoc, e.elements()[1].id()));
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.elements()[0].id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.elements()[1].id()));
       }
-      expect(edge.type).equal('INTERACTION');
-      expect(edge.properties.xref).equal(myDoc.id());
-      expect(edge.properties.doi).equal(myDoc.citation().doi);
-      expect(edge.properties.pmid).equal(myDoc.citation().pmid);
-      expect(edge.properties.articleTitle).equal(myDoc.citation().title);
+      expect(edge.type).to.equal('INTERACTION');
+      expect(edge.properties.component).to.deep.equal([]);
+      expect(edge.properties.sourceComplex).to.equal('');
+      expect(edge.properties.targetComplex).to.equal('');
+      expect(edge.properties.xref).to.equal(myDoc.id());
+      expect(edge.properties.xref).to.equal(myDoc.id());
+      expect(edge.properties.doi).to.equal(myDoc.citation().doi);
+      expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
+      expect(edge.properties.articleTitle).to.equal(myDoc.citation().title);
     }
   });
 
@@ -104,35 +108,38 @@ describe('Tests for Documents', function () {
 
     let myDoc = fixtureDocs[0];
 
-    expect(await getNumNodes()).equal(0);
-    expect(await getNumEdges()).equal(0);
+    expect(await getNumNodes()).to.equal(0);
+    expect(await getNumEdges()).to.equal(0);
     await addDocumentToNeo4j(myDoc);
 
     let arrNodes = myDoc.elements().filter(ele => ele.isEntity());
     let arrEdges = myDoc.elements().filter(ele => !(ele.isEntity()));
 
-    expect(await getNumNodes()).equal(2);
+    expect(await getNumNodes()).to.equal(2);
     for (const n of arrNodes) {
       let id = `${n.association().dbPrefix}:${n.association().id}`;
-      expect(await getGeneName(id)).equal(`${n.association().name}`);
+      expect(await getGeneName(id)).to.equal(`${n.association().name}`);
     }
 
-    expect(await getNumEdges()).equal(1);
+    expect(await getNumEdges()).to.equal(1);
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
-      expect(edge.properties.type).equal(e.type());
+      expect(edge.properties.type).to.equal(e.type());
       if (e.association().getSource()) {
-        expect(edge.properties.sourceId).equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
-        expect(edge.properties.targetId).equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
       } else {
-        expect(edge.properties.sourceId).equal(convertUUIDtoId(myDoc, e.elements()[0].id()));
-        expect(edge.properties.targetId).equal(convertUUIDtoId(myDoc, e.elements()[1].id()));
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.elements()[0].id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.elements()[1].id()));
       }
-      expect(edge.type).equal('INTERACTION');
-      expect(edge.properties.xref).equal(myDoc.id());
-      expect(edge.properties.doi).equal(myDoc.citation().doi);
-      expect(edge.properties.pmid).equal(myDoc.citation().pmid);
-      expect(edge.properties.articleTitle).equal(myDoc.citation().title);
+      expect(edge.type).to.equal('INTERACTION');
+      expect(edge.properties.component).to.deep.equal([]);
+      expect(edge.properties.sourceComplex).to.equal('');
+      expect(edge.properties.targetComplex).to.equal('');
+      expect(edge.properties.xref).to.equal(myDoc.id());
+      expect(edge.properties.doi).to.equal(myDoc.citation().doi);
+      expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
+      expect(edge.properties.articleTitle).to.equal(myDoc.citation().title);
     }
   });
 
@@ -147,35 +154,38 @@ describe('Tests for Documents', function () {
 
     let myDoc = fixtureDocs[0];
 
-    expect(await getNumNodes()).equal(0);
-    expect(await getNumEdges()).equal(0);
+    expect(await getNumNodes()).to.equal(0);
+    expect(await getNumEdges()).to.equal(0);
     await addDocumentToNeo4j(myDoc);
 
     let arrNodes = myDoc.elements().filter(ele => ele.isEntity());
     let arrEdges = myDoc.elements().filter(ele => !(ele.isEntity()));
 
-    expect(await getNumNodes()).equal(3);
+    expect(await getNumNodes()).to.equal(3);
     for (const n of arrNodes) {
       let id = `${n.association().dbPrefix}:${n.association().id}`;
-      expect(await getGeneName(id)).equal(`${n.association().name}`);
+      expect(await getGeneName(id)).to.equal(`${n.association().name}`);
     }
 
-    expect(await getNumEdges()).equal(2);
+    expect(await getNumEdges()).to.equal(2);
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
-      expect(edge.properties.type).equal(e.type());
+      expect(edge.properties.type).to.equal(e.type());
       if (e.association().getSource()) {
-        expect(edge.properties.sourceId).equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
-        expect(edge.properties.targetId).equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
       } else {
-        expect(edge.properties.sourceId).equal(convertUUIDtoId(myDoc, e.elements()[0].id()));
-        expect(edge.properties.targetId).equal(convertUUIDtoId(myDoc, e.elements()[1].id()));
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.elements()[0].id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.elements()[1].id()));
       }
-      expect(edge.type).equal('INTERACTION');
-      expect(edge.properties.xref).equal(myDoc.id());
-      expect(edge.properties.doi).equal(myDoc.citation().doi);
-      expect(edge.properties.pmid).equal(myDoc.citation().pmid);
-      expect(edge.properties.articleTitle).equal(myDoc.citation().title);
+      expect(edge.type).to.equal('INTERACTION');
+      expect(edge.properties.component).to.deep.equal([]);
+      expect(edge.properties.sourceComplex).to.equal('');
+      expect(edge.properties.targetComplex).to.equal('');
+      expect(edge.properties.xref).to.equal(myDoc.id());
+      expect(edge.properties.doi).to.equal(myDoc.citation().doi);
+      expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
+      expect(edge.properties.articleTitle).to.equal(myDoc.citation().title);
     }
   });
 
@@ -190,35 +200,38 @@ describe('Tests for Documents', function () {
 
     let myDoc = fixtureDocs[0];
 
-    expect(await getNumNodes()).equal(0);
-    expect(await getNumEdges()).equal(0);
+    expect(await getNumNodes()).to.equal(0);
+    expect(await getNumEdges()).to.equal(0);
     await addDocumentToNeo4j(myDoc);
 
     let arrNodes = myDoc.elements().filter(ele => ele.isEntity());
     let arrEdges = myDoc.elements().filter(ele => !(ele.isEntity()));
 
-    expect(await getNumNodes()).equal(2);
+    expect(await getNumNodes()).to.equal(2);
     for (const n of arrNodes) {
       let id = `${n.association().dbPrefix}:${n.association().id}`;
-      expect(await getGeneName(id)).equal(`${n.association().name}`);
+      expect(await getGeneName(id)).to.equal(`${n.association().name}`);
     }
 
-    expect(await getNumEdges()).equal(2);
+    expect(await getNumEdges()).to.equal(2);
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
-      expect(edge.properties.type).equal(e.type());
+      expect(edge.properties.type).to.equal(e.type());
       if (e.association().getSource()) {
-        expect(edge.properties.sourceId).equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
-        expect(edge.properties.targetId).equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
       } else {
-        expect(edge.properties.sourceId).equal(convertUUIDtoId(myDoc, e.elements()[0].id()));
-        expect(edge.properties.targetId).equal(convertUUIDtoId(myDoc, e.elements()[1].id()));
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.elements()[0].id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.elements()[1].id()));
       }
-      expect(edge.type).equal('INTERACTION');
-      expect(edge.properties.xref).equal(myDoc.id());
-      expect(edge.properties.doi).equal(myDoc.citation().doi);
-      expect(edge.properties.pmid).equal(myDoc.citation().pmid);
-      expect(edge.properties.articleTitle).equal(myDoc.citation().title);
+      expect(edge.type).to.equal('INTERACTION');
+      expect(edge.properties.component).to.deep.equal([]);
+      expect(edge.properties.sourceComplex).to.equal('');
+      expect(edge.properties.targetComplex).to.equal('');
+      expect(edge.properties.xref).to.equal(myDoc.id());
+      expect(edge.properties.doi).to.equal(myDoc.citation().doi);
+      expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
+      expect(edge.properties.articleTitle).to.equal(myDoc.citation().title);
     }
   });
 
@@ -233,35 +246,38 @@ describe('Tests for Documents', function () {
 
     let myDoc = fixtureDocs[0];
 
-    expect(await getNumNodes()).equal(0);
-    expect(await getNumEdges()).equal(0);
+    expect(await getNumNodes()).to.equal(0);
+    expect(await getNumEdges()).to.equal(0);
     await addDocumentToNeo4j(myDoc);
 
     let arrNodes = myDoc.elements().filter(ele => ele.isEntity());
     let arrEdges = myDoc.elements().filter(ele => !(ele.isEntity()));
 
-    expect(await getNumNodes()).equal(4);
+    expect(await getNumNodes()).to.equal(4);
     for (const n of arrNodes) {
       let id = `${n.association().dbPrefix}:${n.association().id}`;
-      expect(await getGeneName(id)).equal(`${n.association().name}`);
+      expect(await getGeneName(id)).to.equal(`${n.association().name}`);
     }
 
-    expect(await getNumEdges()).equal(4);
+    expect(await getNumEdges()).to.equal(4);
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
-      expect(edge.properties.type).equal(e.type());
+      expect(edge.properties.type).to.equal(e.type());
       if (e.association().getSource()) {
-        expect(edge.properties.sourceId).equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
-        expect(edge.properties.targetId).equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
       } else {
-        expect(edge.properties.sourceId).equal(convertUUIDtoId(myDoc, e.elements()[0].id()));
-        expect(edge.properties.targetId).equal(convertUUIDtoId(myDoc, e.elements()[1].id()));
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.elements()[0].id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.elements()[1].id()));
       }
-      expect(edge.type).equal('INTERACTION');
-      expect(edge.properties.xref).equal(myDoc.id());
-      expect(edge.properties.doi).equal(myDoc.citation().doi);
-      expect(edge.properties.pmid).equal(myDoc.citation().pmid);
-      expect(edge.properties.articleTitle).equal(myDoc.citation().title);
+      expect(edge.type).to.equal('INTERACTION');
+      expect(edge.properties.component).to.deep.equal([]);
+      expect(edge.properties.sourceComplex).to.equal('');
+      expect(edge.properties.targetComplex).to.equal('');
+      expect(edge.properties.xref).to.equal(myDoc.id());
+      expect(edge.properties.doi).to.equal(myDoc.citation().doi);
+      expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
+      expect(edge.properties.articleTitle).to.equal(myDoc.citation().title);
     }
   });
 
@@ -276,8 +292,8 @@ describe('Tests for Documents', function () {
 
     let myDoc = fixtureDocs[0];
 
-    expect(await getNumNodes()).equal(0);
-    expect(await getNumEdges()).equal(0);
+    expect(await getNumNodes()).to.equal(0);
+    expect(await getNumEdges()).to.equal(0);
     await addDocumentToNeo4j(myDoc);
 
     let arrNodes = myDoc.elements().filter(ele => ele.isEntity());
@@ -286,25 +302,28 @@ describe('Tests for Documents', function () {
     expect(await getNumNodes()).equal(5);
     for (const n of arrNodes) {
       let id = `${n.association().dbPrefix}:${n.association().id}`;
-      expect(await getGeneName(id)).equal(`${n.association().name}`);
+      expect(await getGeneName(id)).to.equal(`${n.association().name}`);
     }
 
-    expect(await getNumEdges()).equal(5);
+    expect(await getNumEdges()).to.equal(5);
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
-      expect(edge.properties.type).equal(e.type());
+      expect(edge.properties.type).to.equal(e.type());
       if (e.association().getSource()) {
-        expect(edge.properties.sourceId).equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
-        expect(edge.properties.targetId).equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
       } else {
-        expect(edge.properties.sourceId).equal(convertUUIDtoId(myDoc, e.elements()[0].id()));
-        expect(edge.properties.targetId).equal(convertUUIDtoId(myDoc, e.elements()[1].id()));
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.elements()[0].id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.elements()[1].id()));
       }
-      expect(edge.type).equal('INTERACTION');
-      expect(edge.properties.xref).equal(myDoc.id());
-      expect(edge.properties.doi).equal(myDoc.citation().doi);
-      expect(edge.properties.pmid).equal(myDoc.citation().pmid);
-      expect(edge.properties.articleTitle).equal(myDoc.citation().title);
+      expect(edge.type).to.equal('INTERACTION');
+      expect(edge.properties.component).to.deep.equal([]);
+      expect(edge.properties.sourceComplex).to.equal('');
+      expect(edge.properties.targetComplex).to.equal('');
+      expect(edge.properties.xref).to.equal(myDoc.id());
+      expect(edge.properties.doi).to.equal(myDoc.citation().doi);
+      expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
+      expect(edge.properties.articleTitle).to.equal(myDoc.citation().title);
     }
   });
 

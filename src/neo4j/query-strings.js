@@ -2,17 +2,26 @@ export const makeNodeQuery =
     `MERGE (n:Molecule {id: $id})
     ON CREATE SET n.name = $name`;
 
-export const makeRelationshipQuery =
+export const makeEdgeQuery =
     `MATCH (x:Molecule {id: $sourceId})
     MATCH (y:Molecule {id: $targetId})
     MERGE (x)-[r:INTERACTION {id: $id}]->(y)
     ON CREATE SET r.type = $type,
+    r.component = $component,
+    r.sourceId = $sourceId,
+    r.targetId = $targetId,
+    r.sourceComplex = $sourceComplex,
+    r.targetComplex = $targetComplex,
     r.xref = $xref,
     r.doi = $doi, 
     r.pmid = $pmid,
-    r.articleTitle = $articleTitle,
-    r.sourceId = $sourceId,
-    r.targetId = $targetId`;
+    r.articleTitle = $articleTitle`;
+
+export const makeComplexEdgeQuery = 
+    `MATCH (x:Molecule {id: $sourceId})
+    MATCH (y:Molecule {id: $targetId})
+    MERGE (x)-[r:COMPLEX {id: $id}]->(y)
+    ON CREATE SET r.allParticipants = $allParticipants`;
 
 export const giveConnectedInfoByGeneId =
     `MATCH (n:Molecule {id: $id})<-[r]-(m)

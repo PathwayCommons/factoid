@@ -44,8 +44,6 @@ export async function addDocumentToNeo4j(doc) {
       };
       arrNodes.push(nodeInfo);
     } else if (e.isEntity && e.isComplex()) {
-      // TODO: Push on the edges that will represent this complex e in arrEdges
-      // Untested
       const complex = e;
       const component = makeComponent(complex, doc);
       for (let i = 0; i < complex.elements().length; i++) {
@@ -79,7 +77,6 @@ export async function addDocumentToNeo4j(doc) {
       let target = doc.get(targetUUId);
 
       if (!source.isComplex() && !target.isComplex()) {
-        // TESTED
         const edgeInfo = {
           id: e.id(),
           type: e.type(),
@@ -94,7 +91,7 @@ export async function addDocumentToNeo4j(doc) {
         // sourceUUID is a complex and targetUUID is a noncomplex
         const sourceComplex = doc.get(sourceUUId);
 
-        for (let i = 0; i < sourceComplex.elements().length - 1; i++) {
+        for (let i = 0; i < sourceComplex.elements().length; i++) {
           const complexElementSourceUUId = sourceComplex.elements()[i].id();
           const edgeInfo = {
             id: e.id(),
@@ -111,7 +108,7 @@ export async function addDocumentToNeo4j(doc) {
         // sourceUUID is a noncomplex and targetUUID is a complex
         const targetComplex = doc.get(targetUUId);
 
-        for (let i = 0; i < targetComplex.elements().length - 1; i++) {
+        for (let i = 0; i < targetComplex.elements().length; i++) {
           const complexElementTargetUUId = targetComplex.elements()[i].id();
           const edgeInfo = {
             id: e.id(),
@@ -125,12 +122,12 @@ export async function addDocumentToNeo4j(doc) {
           arrEdges.push(edgeInfo);
         }
       } else {
-        // TODO: sourceUUID is a complex and targetUUID is a complex
+        // sourceUUID is a complex and targetUUID is a complex
         const sourceComplex = doc.get(sourceUUId);
         const targetComplex = doc.get(targetUUId);
 
-        for (let i = 0; i < sourceComplex.elements().length - 1; i++) {
-          for (let j = 0; j < targetComplex.elements().length - 1; j++) {
+        for (let i = 0; i < sourceComplex.elements().length; i++) {
+          for (let j = 0; j < targetComplex.elements().length; j++) {
             const complexElementSourceUUId = sourceComplex.elements()[i].id();
             const targetElementSourceUUId = targetComplex.elements()[i].id();
             const edgeInfo = {

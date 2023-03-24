@@ -9,6 +9,7 @@ import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge,
 
 import complex1 from './document/complex_tests_1.json';
 import complex2 from './document/complex_tests_2.json';
+import complex3 from './document/complex_tests_3.json';
 
 let rdbConn;
 let dbFix;
@@ -159,5 +160,63 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(edge3.properties.component).to.deep.equal(['ncbigene:3303', 'ncbigene:7157', 'ncbigene:3326']);
     expect(edge3.properties.sourceComplex).to.equal('');
     expect(edge3.properties.targetComplex).to.equal('');
+  });
+
+  it('Two nodes in one complex, 1 node interacting with a non-complex', async function () {
+    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
+    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
+
+    const { document } = await dbFix.Insert(complex3);
+    const { docDb, eleDb } = await loadTables();
+    const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
+    const fixtureDocs = await Promise.all(document.map(loadDocs));
+
+    let myDoc = fixtureDocs[0];
+
+    expect(await getNumNodes()).to.equal(0);
+    expect(await getNumEdges()).to.equal(0);
+    await addDocumentToNeo4j(myDoc);
+
+    let arrNodes = myDoc.elements().filter(ele => ele.isEntity() && !ele.isComplex());
+    let arrEdges = myDoc.elements().filter(ele => !(ele.isEntity()));
+    let arrComplexEdges = myDoc.elements().filter(ele => ele.isComplex());
+
+    expect(await getNumNodes()).to.equal(3);
+    for (const n of arrNodes) {
+      let id = `${n.association().dbPrefix}:${n.association().id}`;
+      expect(await getGeneName(id)).to.equal(`${n.association().name}`);
+    }
+
+    expect(await getNumEdges()).to.equal(2);
+
+    expect(arrEdges.length).to.equal(1);
+    for (const e of arrEdges) {
+      let edge = await getEdge(e.id());
+      expect(edge.properties.type).to.equal(e.type());
+      if (e.association().getSource()) {
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
+      } else {
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.elements()[0].id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.elements()[1].id()));
+      }
+      expect(edge.type).to.equal('INTERACTION');
+      expect(edge.properties.component).to.deep.equal([]);
+      expect(edge.properties.sourceComplex).to.equal('');
+      expect(edge.properties.targetComplex).to.equal('');
+      expect(edge.properties.xref).to.equal(myDoc.id());
+      expect(edge.properties.doi).to.equal(myDoc.citation().doi);
+      expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
+      expect(edge.properties.articleTitle).to.equal(myDoc.citation().title);
+    }
+
+    expect(arrComplexEdges.length).to.equal(1); // There is one complex in the document, 1 edge
+    const complexId = arrComplexEdges[0].id();
+    const edge1 = await getComplexEdge('ncbigene:90550', 'ncbigene:27173', complexId);
+    expect(edge1.properties.type).to.equal('binding');
+    expect(edge1.type).to.equal('INTERACTION');
+    expect(edge1.properties.component).to.deep.equal(['ncbigene:90550', 'ncbigene:27173']);
+    expect(edge1.properties.sourceComplex).to.equal('');
+    expect(edge1.properties.targetComplex).to.equal('');
   });
 });

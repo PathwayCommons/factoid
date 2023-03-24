@@ -12,6 +12,7 @@ import complex2 from './document/complex_tests_2.json';
 import complex3 from './document/complex_tests_3.json';
 import complex4 from './document/complex_tests_4.json';
 import complex5 from './document/complex_tests_5.json';
+import complex6 from './document/complex_tests_6.json';
 
 let rdbConn;
 let dbFix;
@@ -339,5 +340,124 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(interactionEdge2.properties.component).to.deep.equal([]);
     expect(interactionEdge2.properties.sourceComplex).to.equal(complexId1);
     expect(interactionEdge2.properties.targetComplex).to.equal('');
+  });
+
+  it('One complex interacting with another complex', async function () {
+    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
+    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
+
+    const { document } = await dbFix.Insert(complex6);
+    const { docDb, eleDb } = await loadTables();
+    const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
+    const fixtureDocs = await Promise.all(document.map(loadDocs));
+
+    let myDoc = fixtureDocs[0];
+
+    expect(await getNumNodes()).to.equal(0);
+    expect(await getNumEdges()).to.equal(0);
+    await addDocumentToNeo4j(myDoc);
+
+    let arrNodes = myDoc.elements().filter(ele => ele.isEntity() && !ele.isComplex());
+    let arrEdges = myDoc.elements().filter(ele => !(ele.isEntity()));
+    let arrComplexEdges = myDoc.elements().filter(ele => ele.isComplex());
+
+    expect(await getNumNodes()).to.equal(5);
+    for (const n of arrNodes) {
+      let id = `${n.association().dbPrefix}:${n.association().id}`;
+      expect(await getGeneName(id)).to.equal(`${n.association().name}`);
+    }
+
+    expect(await getNumEdges()).to.equal(11);
+
+    expect(arrEdges.length).to.equal(2);
+
+    let edge = await getEdge('3b8e906f-d7ea-476b-a15c-4d383a603f22');
+    expect(edge.properties.type).to.equal('interaction');
+    expect(edge.properties.sourceId).to.equal('ncbigene:64112');
+    expect(edge.properties.targetId).to.equal('ncbigene:84557');
+    expect(edge.type).to.equal('INTERACTION');
+    expect(edge.properties.component).to.deep.equal([]);
+    expect(edge.properties.sourceComplex).to.equal('');
+    expect(edge.properties.targetComplex).to.equal('');
+    expect(edge.properties.xref).to.equal(myDoc.id());
+    expect(edge.properties.doi).to.equal(myDoc.citation().doi);
+    expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
+    expect(edge.properties.articleTitle).to.equal(myDoc.citation().title);
+
+
+    expect(arrComplexEdges.length).to.equal(2); // There are 2 complexes in this document
+    const complexId1 = arrComplexEdges[0].id();
+    const edge1 = await getComplexEdge('ncbigene:84557', 'ncbigene:64112', complexId1);
+    expect(edge1.properties.type).to.equal('binding');
+    expect(edge1.type).to.equal('INTERACTION');
+    expect(edge1.properties.component).to.deep.equal(['ncbigene:84557', 'ncbigene:64112']);
+    expect(edge1.properties.sourceComplex).to.equal('');
+    expect(edge1.properties.targetComplex).to.equal('');
+
+    const complexId2 = arrComplexEdges[1].id();
+    const edge2 = await getComplexEdge('ncbigene:9474', 'ncbigene:9140', complexId2);
+    expect(edge2.properties.type).to.equal('binding');
+    expect(edge2.type).to.equal('INTERACTION');
+    expect(edge2.properties.component).to.deep.equal(['ncbigene:9474', 'ncbigene:9140', 'ncbigene:55054']);
+    expect(edge2.properties.sourceComplex).to.equal('');
+    expect(edge2.properties.targetComplex).to.equal('');
+
+    const edge3 = await getComplexEdge('ncbigene:9474', 'ncbigene:55054', complexId2);
+    expect(edge3.properties.type).to.equal('binding');
+    expect(edge3.type).to.equal('INTERACTION');
+    expect(edge3.properties.component).to.deep.equal(['ncbigene:9474', 'ncbigene:9140', 'ncbigene:55054']);
+    expect(edge3.properties.sourceComplex).to.equal('');
+    expect(edge3.properties.targetComplex).to.equal('');
+
+    const edge4 = await getComplexEdge('ncbigene:9140', 'ncbigene:55054', complexId2);
+    expect(edge4.properties.type).to.equal('binding');
+    expect(edge4.type).to.equal('INTERACTION');
+    expect(edge4.properties.component).to.deep.equal(['ncbigene:9474', 'ncbigene:9140', 'ncbigene:55054']);
+    expect(edge4.properties.sourceComplex).to.equal('');
+    expect(edge4.properties.targetComplex).to.equal('');
+
+    const interactionEdgesId = '002147fb-ea3d-4b4c-a486-b968b317259a';
+
+    const interactionEdge1 = await getComplexEdge('ncbigene:64112', 'ncbigene:9474', interactionEdgesId);
+    expect(interactionEdge1.properties.type).to.equal('binding');
+    expect(interactionEdge1.type).to.equal('INTERACTION');
+    expect(interactionEdge1.properties.component).to.deep.equal([]);
+    expect(interactionEdge1.properties.sourceComplex).to.equal(complexId1);
+    expect(interactionEdge1.properties.targetComplex).to.equal(complexId2);
+
+    const interactionEdge2 = await getComplexEdge('ncbigene:64112', 'ncbigene:9140', interactionEdgesId);
+    expect(interactionEdge2.properties.type).to.equal('binding');
+    expect(interactionEdge2.type).to.equal('INTERACTION');
+    expect(interactionEdge2.properties.component).to.deep.equal([]);
+    expect(interactionEdge2.properties.sourceComplex).to.equal(complexId1);
+    expect(interactionEdge2.properties.targetComplex).to.equal(complexId2);
+
+    const interactionEdge3 = await getComplexEdge('ncbigene:64112', 'ncbigene:55054', interactionEdgesId);
+    expect(interactionEdge3.properties.type).to.equal('binding');
+    expect(interactionEdge3.type).to.equal('INTERACTION');
+    expect(interactionEdge3.properties.component).to.deep.equal([]);
+    expect(interactionEdge3.properties.sourceComplex).to.equal(complexId1);
+    expect(interactionEdge3.properties.targetComplex).to.equal(complexId2);
+
+    const interactionEdge4 = await getComplexEdge('ncbigene:84557', 'ncbigene:9474', interactionEdgesId);
+    expect(interactionEdge4.properties.type).to.equal('binding');
+    expect(interactionEdge4.type).to.equal('INTERACTION');
+    expect(interactionEdge4.properties.component).to.deep.equal([]);
+    expect(interactionEdge4.properties.sourceComplex).to.equal(complexId1);
+    expect(interactionEdge4.properties.targetComplex).to.equal(complexId2);
+
+    const interactionEdge5 = await getComplexEdge('ncbigene:84557', 'ncbigene:9140', interactionEdgesId);
+    expect(interactionEdge5.properties.type).to.equal('binding');
+    expect(interactionEdge5.type).to.equal('INTERACTION');
+    expect(interactionEdge5.properties.component).to.deep.equal([]);
+    expect(interactionEdge5.properties.sourceComplex).to.equal(complexId1);
+    expect(interactionEdge5.properties.targetComplex).to.equal(complexId2);
+
+    const interactionEdge6 = await getComplexEdge('ncbigene:84557', 'ncbigene:55054', interactionEdgesId);
+    expect(interactionEdge6.properties.type).to.equal('binding');
+    expect(interactionEdge6.type).to.equal('INTERACTION');
+    expect(interactionEdge6.properties.component).to.deep.equal([]);
+    expect(interactionEdge6.properties.sourceComplex).to.equal(complexId1);
+    expect(interactionEdge6.properties.targetComplex).to.equal(complexId2);
   });
 });

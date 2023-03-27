@@ -82,36 +82,6 @@ function makeComplexId(arrParticipants) {
 }
 
 /**
- * Makes exactly one Complex edge
- * @param { String } sourceId in the form of "dbName:dbId", ex: "ncbigene:207"
- * @param { String } targetId in the form of "dbName:dbId", ex: "ncbigene:207"
- * @param { Array } allParticipants Array of strings (ids of entities) sorted in alphabetical order
- * @returns 
- */
-export async function addComplexEdge(sourceId, targetId, allParticipants) {
-    // NOT TESTED
-    const id = makeComplexId(allParticipants);
-    const driver = getDriver();
-    let session;
-    try {
-        session = driver.session({ database: "neo4j" });
-        await session.executeWrite(tx => {
-            return tx.run(makeEdgeQuery, {
-                id: id.toLowerCase(),
-                sourceId: sourceId.toLowerCase(),
-                targetId: targetId.toLowerCase(),
-                allParticipants: allParticipants
-            });
-        });
-    } catch (error) {
-        throw error;
-    } finally {
-        await session.close();
-    }
-    return;
-}
-
-/**
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
  * @returns An object with 2 fields: relationships (array) and neighbouring nodes (array) or null
  */

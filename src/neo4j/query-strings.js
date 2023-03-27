@@ -17,12 +17,6 @@ export const makeEdgeQuery =
     r.pmid = $pmid,
     r.articleTitle = $articleTitle`;
 
-export const makeComplexEdgeQuery = 
-    `MATCH (x:Molecule {id: $sourceId})
-    MATCH (y:Molecule {id: $targetId})
-    MERGE (x)-[r:COMPLEX {id: $id}]->(y)
-    ON CREATE SET r.allParticipants = $allParticipants`;
-
 export const giveConnectedInfoByGeneId =
     `MATCH (n:Molecule {id: $id})<-[r]-(m)
     RETURN n, r, m

@@ -53,7 +53,7 @@ export async function getEdge(id) {
   return edge;
 }
 
-export async function getComplexEdge(sourceId, targetId, complexId) {
+export async function getEdgeByIdAndEndpoints(sourceId, targetId, complexId) {
   const driver = getDriver();
   let session;
   let edge;

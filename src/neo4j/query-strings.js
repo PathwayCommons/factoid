@@ -38,6 +38,10 @@ export const returnEdgeById =
     `MATCH(n)-[r {id: $id}]->(m)
     RETURN r`;
 
+export const returnEdgeByIdAndEndpoints =
+    `MATCH(n {id: $sourceId})-[r {id: $complexId}]->(m {id: $targetId})
+    RETURN r`;
+
 export const deleteAll = `MATCH (n) DETACH DELETE n`;
 
 export const numNodes = `MATCH (n) RETURN COUNT(*) as count`;

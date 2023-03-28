@@ -24,6 +24,15 @@ export const giveConnectedInfoByGeneId =
     MATCH (n:Molecule {id: $id})-[r]->(m)
     RETURN n, r, m`;
 
+export const giveConnectedInfoByGeneIdNoComplexes =
+    `MATCH (n:Molecule {id: $id})<-[r]-(m)
+    WHERE r.component = [] AND r.sourceComplex = '' AND r.targetComplex = ''
+    RETURN n, r, m
+    UNION
+    MATCH (n:Molecule {id: $id})-[r]->(m)
+    WHERE r.component = [] AND r.sourceComplex = '' AND r.targetComplex = ''
+    RETURN n, r, m`;
+
 export const returnGene =
     `MATCH (n {id: $id}) 
     RETURN n`;

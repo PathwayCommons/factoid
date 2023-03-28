@@ -224,7 +224,7 @@ const mapToUniprotIds = biopaxTemplate => {
       if ( dbPrefix !== 'ncbigene' ){
         return Promise.resolve();
       }
-      
+
       const UNIPROT_DB_PREFIX = 'uniprot';
       const opts = {
         id: [
@@ -1441,26 +1441,32 @@ http.get('/(:id).png', function( req, res, next ){
 
   res.setHeader('content-type', 'image/png');
 
-  const fillCache = async (doc, lastEditedDate) => {
-    const img = await getDocumentImageBuffer(doc);
-    const cache = { img, lastEditedDate };
+  const calcTtl = doc => {
+    const now = Date.now();
+    const lastEditedDate = doc.lastEditedDate();
+    return now - lastEditedDate;
+  };
 
-    imageCache.set(id, cache);
+  const fillCache = async doc => {
+    const img = await getDocumentImageBuffer(doc);
+    const cache = { img };
+    const ttl = calcTtl(doc);
+
+    imageCache.set(id, cache, {ttl});
 
     return cache;
   };
 
   const main = async () => {
     try {
-      const doc = await getDoc(id);
-      const lastEditedDate = '' + doc.lastEditedDate();
-      const cache = imageCache.get(id);
-      const canUseCache = imageCache.has(id) && cache.lastEditedDate === lastEditedDate;
+      const canUseCache = imageCache.has(id);
 
       if( canUseCache ){
+        const cache = imageCache.get(id);
         res.send(cache.img);
       } else {
-        const cache = await fillCache(doc, lastEditedDate);
+        const doc = await getDoc(id);
+        const cache = await fillCache(doc);
 
         res.send(cache.img);
       }

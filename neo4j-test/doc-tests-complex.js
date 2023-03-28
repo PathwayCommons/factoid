@@ -6,6 +6,7 @@ import { loadDoc } from '../src/server/routes/api/document/index.js';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
 import { addDocumentToNeo4j, convertUUIDtoId } from '../src/neo4j/neo4j-document.js';
 import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge, getEdgeByIdAndEndpoints } from '../src/neo4j/test-functions.js';
+import { neighbourhoodWithoutComplexes } from '../src/neo4j/neo4j-functions.js';
 
 import complex1 from './document/complex_tests_1.json';
 import complex2 from './document/complex_tests_2.json';
@@ -91,6 +92,9 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(edge1.properties.doi).to.equal(myDoc.citation().doi);
     expect(edge1.properties.pmid).to.equal(myDoc.citation().pmid);
     expect(edge1.properties.articleTitle).to.equal(myDoc.citation().title);
+
+    expect(await neighbourhoodWithoutComplexes('ncbigene:22882')).to.be.null;
+    expect(await neighbourhoodWithoutComplexes('ncbigene:3091')).to.be.null;
   });
 
   it('Three nodes in one complex, edges between them', async function () {
@@ -340,6 +344,10 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(interactionEdge2.properties.component).to.deep.equal([]);
     expect(interactionEdge2.properties.sourceComplex).to.equal(complexId1);
     expect(interactionEdge2.properties.targetComplex).to.equal('');
+
+    expect(await neighbourhoodWithoutComplexes('ncbigene:11335')).to.be.null;
+    expect(await neighbourhoodWithoutComplexes('ncbigene:648791')).to.be.null;
+    expect(await neighbourhoodWithoutComplexes('ncbigene:8737')).to.be.null;
   });
 
   it('One complex interacting with another complex', async function () {

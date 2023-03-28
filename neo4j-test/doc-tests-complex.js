@@ -256,6 +256,14 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(edge1.properties.component).to.deep.equal(['ncbigene:90550', 'ncbigene:27173']);
     expect(edge1.properties.sourceComplex).to.equal('');
     expect(edge1.properties.targetComplex).to.equal('');
+
+    const record = await neighbourhoodWithoutComplexes('ncbigene:27173');
+    const testNodes = record.map(row => row.get('m').properties);
+    expect(testNodes.length).to.equal(1);
+    expect(_.find(testNodes, { id: 'ncbigene:10059' })).to.be.not.undefined;
+    const testEdges = record.map(row => row.get('r').properties);
+    expect(testEdges.length).to.equal(1);
+    expect(_.find(testEdges, { id: 'abce49de-663c-4a5b-8bc5-de1ec79a63d7' })).to.be.not.undefined;
   });
 
   it('Two complexes, 1 node from each interacting with a node from the other complex', async function () {
@@ -322,6 +330,23 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(edge2.properties.component).to.deep.equal(['ncbigene:57599', 'ncbigene:7398']);
     expect(edge2.properties.sourceComplex).to.equal('');
     expect(edge2.properties.targetComplex).to.equal('');
+
+    let record = await neighbourhoodWithoutComplexes('ncbigene:55215');
+    let testNodes = record.map(row => row.get('m').properties);
+    expect(testNodes.length).to.equal(1);
+    expect(_.find(testNodes, { id: 'ncbigene:57599' })).to.be.not.undefined;
+    let testEdges = record.map(row => row.get('r').properties);
+    expect(testEdges.length).to.equal(1);
+    expect(_.find(testEdges, { id: 'b38116a2-5002-48b0-b156-32bcbff764a4' })).to.be.not.undefined;
+
+    record = await neighbourhoodWithoutComplexes('ncbigene:7398');
+    testNodes = record.map(row => row.get('m').properties);
+    expect(testNodes.length).to.equal(1);
+    expect(_.find(testNodes, { id: 'ncbigene:2177' })).to.be.not.undefined;
+    testEdges = record.map(row => row.get('r').properties);
+    expect(testEdges.length).to.equal(1);
+    expect(_.find(testEdges, { id: '8ee9fb94-b3b8-4212-bddc-d46f1a079164' })).to.be.not.undefined;
+
   });
 
   it('One complex interacting with one non-complex', async function () {
@@ -498,5 +523,16 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(interactionEdge6.properties.component).to.deep.equal([]);
     expect(interactionEdge6.properties.sourceComplex).to.equal(complexId1);
     expect(interactionEdge6.properties.targetComplex).to.equal(complexId2);
+
+    expect(await neighbourhoodWithoutComplexes('ncbigene:9474')).to.be.null;
+
+    const record = await neighbourhoodWithoutComplexes('ncbigene:64112');
+    const testNodes = record.map(row => row.get('m').properties);
+    expect(testNodes.length).to.equal(1);
+    expect(_.find(testNodes, { id: 'ncbigene:84557' })).to.not.be.undefined;
+    const testEdges = record.map(row => row.get('r').properties);
+    expect(testEdges.length).to.equal(1);
+    expect(_.find(testEdges, { id: '3b8e906f-d7ea-476b-a15c-4d383a603f22'})).to.not.be.undefined;
+
   });
 });

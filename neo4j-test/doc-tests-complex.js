@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import rdbFix from 'rethinkdb-fixtures';
 import r from 'rethinkdb';
+import _ from 'lodash';
 
 import { loadDoc } from '../src/server/routes/api/document/index.js';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
@@ -167,6 +168,36 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(edge3.properties.component).to.deep.equal(['ncbigene:3303', 'ncbigene:7157', 'ncbigene:3326']);
     expect(edge3.properties.sourceComplex).to.equal('');
     expect(edge3.properties.targetComplex).to.equal('');
+
+    let record = await neighbourhoodWithoutComplexes('ncbigene:3303');
+    let testNodes = record.map(row => row.get('m').properties);
+    expect(testNodes.length).to.equal(2);
+    expect(_.find(testNodes, { id: 'ncbigene:7157' })).to.be.not.undefined;
+    expect(_.find(testNodes, { id: 'ncbigene:3326' })).to.be.not.undefined;
+    let testEdges = record.map(row => row.get('r').properties);
+    expect(testEdges.length).to.equal(2);
+    expect(_.find(testEdges, { id: 'b6e4c90d-4870-4c64-8abf-b6e16b0738f7' })).to.be.not.undefined;
+    expect(_.find(testEdges, { id: '7ba76f35-faaa-4622-ae37-5aff0d802eed' })).to.be.not.undefined;
+
+    record = await neighbourhoodWithoutComplexes('ncbigene:7157');
+    testNodes = record.map(row => row.get('m').properties);
+    expect(_.find(testNodes, { id: 'ncbigene:3303' })).to.be.not.undefined;
+    expect(_.find(testNodes, { id: 'ncbigene:3326' })).to.be.not.undefined;
+    expect(testNodes.length).to.equal(2);
+    testEdges = record.map(row => row.get('r').properties);
+    expect(testEdges.length).to.equal(2);
+    expect(_.find(testEdges, { id: 'b6e4c90d-4870-4c64-8abf-b6e16b0738f7' })).to.be.not.undefined;
+    expect(_.find(testEdges, { id: 'eb40318c-9a0e-45f6-a81e-21836fd9e9e3' })).to.be.not.undefined;
+
+    record = await neighbourhoodWithoutComplexes('ncbigene:3326');
+    testNodes = record.map(row => row.get('m').properties);
+    expect(testNodes.length).to.equal(2);
+    expect(_.find(testNodes, { id: 'ncbigene:7157' })).to.be.not.undefined;
+    expect(_.find(testNodes, { id: 'ncbigene:3303' })).to.be.not.undefined;
+    testEdges = record.map(row => row.get('r').properties);
+    expect(testEdges.length).to.equal(2);
+    expect(_.find(testEdges, { id: '7ba76f35-faaa-4622-ae37-5aff0d802eed' })).to.be.not.undefined;
+    expect(_.find(testEdges, { id: 'eb40318c-9a0e-45f6-a81e-21836fd9e9e3' })).to.be.not.undefined;
   });
 
   it('Two nodes in one complex, 1 node interacting with a non-complex', async function () {

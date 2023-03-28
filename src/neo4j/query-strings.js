@@ -1,10 +1,10 @@
 export const makeNodeQuery =
-    `MERGE (n:Molecule {id: $id})
+    `MERGE (n:Entity {id: $id})
     ON CREATE SET n.name = $name`;
 
 export const makeEdgeQuery =
-    `MATCH (x:Molecule {id: $sourceId})
-    MATCH (y:Molecule {id: $targetId})
+    `MATCH (x:Entity {id: $sourceId})
+    MATCH (y:Entity {id: $targetId})
     MERGE (x)-[r:INTERACTION {id: $id}]->(y)
     ON CREATE SET r.type = $type,
     r.component = $component,
@@ -18,18 +18,18 @@ export const makeEdgeQuery =
     r.articleTitle = $articleTitle`;
 
 export const giveConnectedInfoByGeneId =
-    `MATCH (n:Molecule {id: $id})<-[r]-(m)
+    `MATCH (n:Entity {id: $id})<-[r]-(m)
     RETURN n, r, m
     UNION
-    MATCH (n:Molecule {id: $id})-[r]->(m)
+    MATCH (n:Entity {id: $id})-[r]->(m)
     RETURN n, r, m`;
 
 export const giveConnectedInfoByGeneIdNoComplexes =
-    `MATCH (n:Molecule {id: $id})<-[r]-(m)
+    `MATCH (n:Entity {id: $id})<-[r]-(m)
     WHERE r.component = [] AND r.sourceComplex = '' AND r.targetComplex = ''
     RETURN n, r, m
     UNION
-    MATCH (n:Molecule {id: $id})-[r]->(m)
+    MATCH (n:Entity {id: $id})-[r]->(m)
     WHERE r.component = [] AND r.sourceComplex = '' AND r.targetComplex = ''
     RETURN n, r, m`;
 

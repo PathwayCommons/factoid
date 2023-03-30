@@ -1,7 +1,6 @@
 import r from 'rethinkdb';
-import NodeCache from 'node-cache';
-import { getDocuments } from '../server/routes/api/document';
-import { loadDoc } from '../server/routes/api/document';
+import _ from 'lodash';
+import { getDocuments, loadDoc } from '../server/routes/api/document';
 
 import { addNode, addEdge } from './neo4j-functions';
 
@@ -175,15 +174,19 @@ export async function addDocumentToNeo4j(doc) {
 
 export async function addAllDocumentsToNeo4j() {
   try {
-    const { total, results } = await getDocuments({ limit: 2 });
+    let opts = {};
+    _.set(opts, 'limit', null);
+    const { total, results } = await getDocuments(opts);
     console.log(`Found ${total} documents`);
+    console.log(results.length);
 
-    const documents = await Promise.all(results.map(loadDoc));
+    /*const documents = await Promise.all(results.map(loadDoc));
     console.log(documents.length);
 
     for (const doc in documents) {
       await addDocumentToNeo4j(doc);
-    }
+    }*/
+    process.exit();
   } catch (err) {
     console.error(err);
   }

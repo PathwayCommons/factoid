@@ -1,3 +1,8 @@
+import r from 'rethinkdb';
+import NodeCache from 'node-cache';
+import { getDocuments } from '../server/routes/api/document';
+import { loadDoc } from '../server/routes/api/document';
+
 import { addNode, addEdge } from './neo4j-functions';
 
 /**
@@ -166,3 +171,24 @@ export async function addDocumentToNeo4j(doc) {
 
   return;
 }
+
+
+export async function addAllDocumentsToNeo4j() {
+  try {
+    const { total, results } = await getDocuments({ limit: 2 });
+    console.log(`Found ${total} documents`);
+
+    const documents = await Promise.all(results.map(loadDoc));
+    console.log(documents.length);
+
+    for (const doc in documents) {
+      await addDocumentToNeo4j(doc);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+
+  return;
+}
+
+addAllDocumentsToNeo4j();

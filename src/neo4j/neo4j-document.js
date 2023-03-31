@@ -1,5 +1,4 @@
 import r from 'rethinkdb';
-import _ from 'lodash';
 import { getDocuments, loadDoc } from '../server/routes/api/document';
 
 import { addNode, addEdge } from './neo4j-functions';
@@ -171,13 +170,12 @@ export async function addDocumentToNeo4j(doc) {
   return;
 }
 
-
 export async function addAllDocumentsToNeo4j() {
   let rdbConn;
   let testDb;
   const dbName = 'factoid';
   const dbTables = ['document', 'element'];
-  const opts = { limit: 3, offset: 0 };
+  const opts = { limit: null, offset: 0 };
 
   try {
     const { total, results } = await getDocuments(opts);
@@ -191,16 +189,12 @@ export async function addAllDocumentsToNeo4j() {
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
 
-    const fixtureDocs = await Promise.all(results.map(loadDocs));
-    for (let doc of fixtureDocs) {
+    const arrDocs = await Promise.all(results.map(loadDocs));
+    for (let doc of arrDocs) {
       await addDocumentToNeo4j(doc);
     }
-
     process.exit();
   } catch (err) {
-    console.error(err);
+    throw (err);
   }
-
-  return;
 }
-

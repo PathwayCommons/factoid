@@ -173,19 +173,29 @@ export async function addDocumentToNeo4j(doc) {
 
 
 export async function addAllDocumentsToNeo4j() {
+  let rdbConn;
+  let testDb;
+  const dbName = 'factoid';
+  const dbTables = ['document', 'element'];
+  const opts = { limit: 3, offset: 0 };
+
   try {
-    let opts = {};
-    _.set(opts, 'limit', null);
     const { total, results } = await getDocuments(opts);
     console.log(`Found ${total} documents`);
-    console.log(results.length);
 
-    /*const documents = await Promise.all(results.map(loadDoc));
-    console.log(documents.length);
+    rdbConn = await r.connect({ host: 'localhost', db: dbName });
+    testDb = r.db(dbName);
 
-    for (const doc in documents) {
+    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
+    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
+    const { docDb, eleDb } = await loadTables();
+    const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
+
+    const fixtureDocs = await Promise.all(results.map(loadDocs));
+    for (let doc of fixtureDocs) {
       await addDocumentToNeo4j(doc);
-    }*/
+    }
+
     process.exit();
   } catch (err) {
     console.error(err);
@@ -194,4 +204,3 @@ export async function addAllDocumentsToNeo4j() {
   return;
 }
 
-addAllDocumentsToNeo4j();

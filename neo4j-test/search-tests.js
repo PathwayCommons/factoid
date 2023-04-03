@@ -197,12 +197,44 @@ describe('04. Tests for search functions', function () {
 
   it('Search for Goult 4 document', async function () {
     const doc4Id = 'a48ccff1-e647-462d-89fd-fb323f3410f3';
+    const results = await get(doc4Id);
 
+    const nodes = _.uniqBy(results.map(row => {
+      return row.get('n').properties;
+    }), edge => edge.id);
+    expect(nodes.length).to.equal(4);
+    expect(_.find(nodes, { id: 'ncbigene:7094', name: 'TLN1' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:23189', name: 'KANK1' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:83660', name: 'TLN2' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:25959', name: 'KANK2' })).to.be.not.undefined;
+
+    const edges = _.uniqBy(results.map(row => {
+      return row.get('r').properties;
+    }), edge => edge.id);
+    expect(edges.length).to.equal(4);
+    expect(_.find(edges, { id: 'e56263d8-d5b6-4812-bc2f-8d905a66f0f9', doi: '10.7554/eLife.18124' })).to.be.not.undefined;
+    expect(_.find(edges, { id: '013b7e2a-7240-4668-b628-2653c60f47e9', doi: '10.7554/eLife.18124' })).to.be.not.undefined;
+    expect(_.find(edges, { id: '5a374667-a51d-4aa3-bf93-526fe203b04e', doi: '10.7554/eLife.18124' })).to.be.not.undefined;
+    expect(_.find(edges, { id: '651326eb-3d90-40be-a8d7-2ece04e82226', doi: '10.7554/eLife.18124' })).to.be.not.undefined;
   });
 
   it('Search for Goult 5 document', async function () {
     const doc5Id = '63008749-2c2b-4863-8e73-386c851feb6a';
+    const results = await get(doc5Id);
 
+    const nodes = _.uniqBy(results.map(row => {
+      return row.get('n').properties;
+    }), edge => edge.id);
+    expect(nodes.length).to.equal(2);
+    expect(_.find(nodes, { id: 'ncbigene:7094', name: 'TLN1' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:983', name: 'CDK1' })).to.be.not.undefined;
+
+    const edges = _.uniqBy(results.map(row => {
+      return row.get('r').properties;
+    }), edge => edge.id);
+    expect(edges.length).to.equal(2);
+    expect(_.find(edges, { id: '3e7c85db-c2a3-4a1f-b96e-6d187c6ab93b', doi: '10.1016/j.jbc.2021.100837' })).to.be.not.undefined;
+    expect(_.find(edges, { id: 'e39d0a06-5b02-44e3-9c36-27cc1f9ac08c', doi: '10.1016/j.jbc.2021.100837' })).to.be.not.undefined;
   });
 
 });

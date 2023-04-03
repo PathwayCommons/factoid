@@ -1,24 +1,33 @@
 export const makeNodeQuery =
-    `MERGE (gene:Gene {id: $id})
-    ON CREATE SET gene.name = $name`;
+    `MERGE (n:Molecule {id: $id})
+    ON CREATE SET n.name = $name`;
 
-export const makeRelationshipQuery =
-    `MATCH (x:Gene {id: $sourceId})
-    MATCH (y:Gene {id: $targetId})
+export const makeEdgeQuery =
+    `MATCH (x:Molecule {id: $sourceId})
+    MATCH (y:Molecule {id: $targetId})
     MERGE (x)-[r:INTERACTION {id: $id}]->(y)
     ON CREATE SET r.type = $type,
+    r.component = $component,
+    r.sourceId = $sourceId,
+    r.targetId = $targetId,
+    r.sourceComplex = $sourceComplex,
+    r.targetComplex = $targetComplex,
     r.xref = $xref,
     r.doi = $doi, 
     r.pmid = $pmid,
-    r.articleTitle = $articleTitle,
-    r.sourceId = $sourceId,
-    r.targetId = $targetId`;
+    r.articleTitle = $articleTitle`;
+
+export const makeComplexEdgeQuery = 
+    `MATCH (x:Molecule {id: $sourceId})
+    MATCH (y:Molecule {id: $targetId})
+    MERGE (x)-[r:COMPLEX {id: $id}]->(y)
+    ON CREATE SET r.allParticipants = $allParticipants`;
 
 export const giveConnectedInfoByGeneId =
-    `MATCH (n:Gene {id: $id})<-[r]-(m)
+    `MATCH (n:Molecule {id: $id})<-[r]-(m)
     RETURN n, r, m
     UNION
-    MATCH (n:Gene {id: $id})-[r]->(m)
+    MATCH (n:Molecule {id: $id})-[r]->(m)
     RETURN n, r, m`;
 
 export const returnGene =
@@ -27,6 +36,10 @@ export const returnGene =
 
 export const returnEdgeById =
     `MATCH(n)-[r {id: $id}]->(m)
+    RETURN r`;
+
+export const returnEdgeByIdAndEndpoints =
+    `MATCH(n {id: $sourceId})-[r {id: $complexId}]->(m {id: $targetId})
     RETURN r`;
 
 export const deleteAll = `MATCH (n) DETACH DELETE n`;

@@ -1,4 +1,4 @@
-import { giveConnectedInfoByGeneId, makeNodeQuery, makeEdgeQuery } from './query-strings';
+import { giveConnectedInfoByGeneId, makeNodeQuery, makeEdgeQuery, giveConnectedInfoByGeneIdNoComplexes } from './query-strings';
 import { getDriver } from './neo4j-driver';
 import _ from 'lodash';
 
@@ -67,51 +67,6 @@ export async function addEdge(id, type, component, sourceId, targetId, sourceCom
 }
 
 /**
- * @param { Array } arrParticipants Array of strings (ids of entities) sorted in alphabetical order
- * @returns id in the form of 'dbNameA:dbIdA-dbNameB:dbIdB' etc.
- */
-function makeComplexId(arrParticipants) {
-    let id = '';
-    for (let i = 0; i < arrParticipants.length; i++) {
-        id = id + arrParticipants[i];
-        if (i < arrParticipants.length - 1) {
-            id = id + '-';
-        }
-    }
-    return id;
-}
-
-/**
- * Makes exactly one Complex edge
- * @param { String } sourceId in the form of "dbName:dbId", ex: "ncbigene:207"
- * @param { String } targetId in the form of "dbName:dbId", ex: "ncbigene:207"
- * @param { Array } allParticipants Array of strings (ids of entities) sorted in alphabetical order
- * @returns 
- */
-export async function addComplexEdge(sourceId, targetId, allParticipants) {
-    // NOT TESTED
-    const id = makeComplexId(allParticipants);
-    const driver = getDriver();
-    let session;
-    try {
-        session = driver.session({ database: "neo4j" });
-        await session.executeWrite(tx => {
-            return tx.run(makeEdgeQuery, {
-                id: id.toLowerCase(),
-                sourceId: sourceId.toLowerCase(),
-                targetId: targetId.toLowerCase(),
-                allParticipants: allParticipants
-            });
-        });
-    } catch (error) {
-        throw error;
-    } finally {
-        await session.close();
-    }
-    return;
-}
-
-/**
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
  * @returns An object with 2 fields: relationships (array) and neighbouring nodes (array) or null
  */
@@ -163,4 +118,26 @@ export async function getInteractions(id) {
         }), edge => edge.id);
     }
     return null;
+}
+
+export async function neighbourhoodWithoutComplexes(id) {
+    const driver = getDriver();
+    let session;
+    let record;
+    try {
+        session = driver.session({ database: "neo4j" });
+        let result = await session.executeRead(tx => {
+            return tx.run(giveConnectedInfoByGeneIdNoComplexes, { id: id });
+        });
+        if (result.records.length > 0) {
+            record = result.records;
+        } else {
+            record = null;
+        }
+    } catch (error) {
+        throw error;
+    } finally {
+        await session.close();
+    }
+    return record;
 }

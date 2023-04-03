@@ -1,5 +1,5 @@
 version: "3.8"
-services: 
+services:
   graphdb:
     image: neo4j:${GRAPHDB_IMAGE_TAG:-latest}
     restart: unless-stopped
@@ -18,11 +18,24 @@ services:
       NEO4J_PLUGINS: '["apoc"]'
     networks:
       - graphdb-config-network
+  db:
+    image: pathwaycommons/rethinkdb-docker:${RETHINKDB_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    container_name: db
+    ports:
+      - "8080:8080"
+      - "28015:28015"
+      - "29015:29015"
+    volumes:
+      - db-data:/data
+    networks:
+      - graphdb-config-network
 
 volumes:
   graphdb-data:
   graphdb-plugins:
-  
+  db-data:
+
 networks:
   graphdb-config-network:
     driver: bridge

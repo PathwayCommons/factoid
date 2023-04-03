@@ -4,7 +4,6 @@ import neo4j from 'neo4j-driver';
 import { closeDriver, getDriver, initDriver } from '../src/neo4j/neo4j-driver.js';
 
 describe('01. Initiate Driver', () => {
-
   it('initDriver Should initialize and return a driver', () => {
     const driver = initDriver();
     expect(driver).an.instanceof(neo4j.Driver);

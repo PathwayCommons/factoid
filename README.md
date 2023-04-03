@@ -97,6 +97,8 @@ Demo:
 
 Sharing:
 
+- `DOCUMENT_IMAGE_CACHE_SIZE` : number of images to cache in memory
+- `DOCUMENT_IMAGE_PLL_LIMIT` : max number of images to be generated in parallel (expensive)
 - `DOCUMENT_IMAGE_WIDTH` : tweet card image width
 - `DOCUMENT_IMAGE_HEIGHT` : tweet card image height
 - `DOCUMENT_IMAGE_PADDING` : padding around tweet card image (prevents twitter cropping issues)

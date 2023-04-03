@@ -11,6 +11,7 @@ import emailRegex from 'email-regex';
 import url from 'url';
 import { URLSearchParams } from  'url';
 import NodeCache from 'node-cache';
+import pLimit from './p-limit';
 
 import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
 import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
@@ -54,8 +55,11 @@ import { BASE_URL,
   BIOPAX_DOWNLOADS_PATH,
   BIOPAX_IDMAP_DOWNLOADS_PATH,
   ORCID_PUBLIC_API_BASE_URL,
-  DOI_LINK_BASE_URL
+  DOI_LINK_BASE_URL,
+  DOCUMENT_IMAGE_PLL_LIMIT
  } from '../../../../config';
+
+
 
 import { ENTITY_TYPE } from '../../../../model/element/entity-type';
 import { eLink, elink2UidList } from './pubmed/linkPubmed';
@@ -224,7 +228,7 @@ const mapToUniprotIds = biopaxTemplate => {
       if ( dbPrefix !== 'ncbigene' ){
         return Promise.resolve();
       }
-      
+
       const UNIPROT_DB_PREFIX = 'uniprot';
       const opts = {
         id: [
@@ -1407,6 +1411,12 @@ const getDocumentImageBuffer = doc => {
   );
 };
 
+const imgLimit = pLimit(DOCUMENT_IMAGE_PLL_LIMIT);
+
+const getDocumentImageBufferRatedLimited = doc => {
+  return imgLimit(() => getDocumentImageBuffer(doc));
+};
+
 const imageCache = new LRUCache({
   max: DOCUMENT_IMAGE_CACHE_SIZE
 });
@@ -1441,26 +1451,32 @@ http.get('/(:id).png', function( req, res, next ){
 
   res.setHeader('content-type', 'image/png');
 
-  const fillCache = async (doc, lastEditedDate) => {
-    const img = await getDocumentImageBuffer(doc);
-    const cache = { img, lastEditedDate };
+  const calcTtl = doc => {
+    const now = Date.now();
+    const lastEditedDate = doc.lastEditedDate();
+    return now - lastEditedDate;
+  };
 
-    imageCache.set(id, cache);
+  const fillCache = async doc => {
+    const img = await getDocumentImageBufferRatedLimited(doc);
+    const cache = { img };
+    const ttl = calcTtl(doc);
+
+    imageCache.set(id, cache, {ttl});
 
     return cache;
   };
 
   const main = async () => {
     try {
-      const doc = await getDoc(id);
-      const lastEditedDate = '' + doc.lastEditedDate();
-      const cache = imageCache.get(id);
-      const canUseCache = imageCache.has(id) && cache.lastEditedDate === lastEditedDate;
+      const canUseCache = imageCache.has(id);
 
       if( canUseCache ){
+        const cache = imageCache.get(id);
         res.send(cache.img);
       } else {
-        const cache = await fillCache(doc, lastEditedDate);
+        const doc = await getDoc(id);
+        const cache = await fillCache(doc);
 
         res.send(cache.img);
       }

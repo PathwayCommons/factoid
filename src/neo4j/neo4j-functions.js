@@ -21,8 +21,6 @@ export async function addNode(id, name) {
                 name: name
             });
         });
-    } catch (error) {
-        throw error;
     } finally {
         await session.close();
     }
@@ -61,8 +59,6 @@ export async function addEdge(id, type, component, sourceId, targetId, sourceCom
                 articleTitle: articleTitle
             });
         });
-    } catch (error) {
-        throw error;
     } finally {
         await session.close();
     }
@@ -88,8 +84,6 @@ export async function neighbourhood(id) {
         } else {
             record = null;
         }
-    } catch (error) {
-        throw error;
     } finally {
         await session.close();
     }
@@ -138,8 +132,6 @@ export async function neighbourhoodWithoutComplexes(id) {
         } else {
             record = null;
         }
-    } catch (error) {
-        throw error;
     } finally {
         await session.close();
     }
@@ -166,8 +158,6 @@ export async function get(id) { // UNTESTED
         } else {
             record = null;
         }
-    } catch (error) {
-        throw error;
     } finally {
         await session.close();
     }

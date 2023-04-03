@@ -5,7 +5,7 @@ import _ from 'lodash';
 
 import { loadDoc } from '../src/server/routes/api/document/index.js';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
-import { neighbourhood, getInteractions, getNeighbouringNodes } from '../src/neo4j/neo4j-functions.js';
+import { neighbourhood, getInteractions, getNeighbouringNodes, get } from '../src/neo4j/neo4j-functions.js';
 import { addDocumentToNeo4j } from '../src/neo4j/neo4j-document.js';
 import { deleteAllNodesAndEdges } from '../src/neo4j/test-functions.js';
 
@@ -125,6 +125,49 @@ describe('04. Tests for search functions', function () {
     expect(_.find(nodes, { id: 'ncbigene:60', name: 'ACTB' })).to.be.not.undefined;
     expect(_.find(nodes, { id: 'ncbigene:54518', name: 'APBB1IP' })).to.be.not.undefined;
     expect(_.find(nodes, { id: 'ncbigene:65059', name: 'RAPH1' })).to.be.not.undefined;
+  });
+
+  it('Search for document that does not exist', async function () {
+    const nonDocId = 'a896d611-affe-4b45-a5e1-9bc560ffceab';
+    expect(await get(nonDocId)).to.be.null;
+  });
+
+  it('Search for Goult 1 document', async function () {
+    const doc1Id = 'df9348dc-2126-45ff-a379-138b5589bcc8';
+    const results = await get(doc1Id);
+
+    const nodes = _.uniqBy(results.map(row => {
+      return row.get('n').properties;
+    }), edge => edge.id);
+    expect(nodes.length).to.equal(2);
+    expect(_.find(nodes, { id: 'ncbigene:55612', name: 'FERMT1' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:1956', name: 'EGFR' })).to.be.not.undefined;
+
+    const edges = _.uniqBy(results.map(row => {
+      return row.get('r').properties;
+    }), edge => edge.id);
+    expect(edges.length).to.equal(1);
+    expect(_.find(edges, { id: 'f4b557ff-2219-45a8-bffb-5b7691e6b6bd', doi: '10.1016/j.jid.2018.08.020' })).to.be.not.undefined;
+  });
+
+  it('Search for Goult 2 document', async function () {
+    const doc2Id = 'de1b09bf-0104-4d9e-a862-a3bb91d6aade';
+
+  });
+
+  it('Search for Goult 3 document', async function () {
+    const doc3Id = '65781dc0-4605-4887-a6dd-d13ae63cd9ba';
+
+  });
+
+  it('Search for Goult 4 document', async function () {
+    const doc4Id = 'a48ccff1-e647-462d-89fd-fb323f3410f3';
+
+  });
+
+  it('Search for Goult 5 document', async function () {
+    const doc5Id = '63008749-2c2b-4863-8e73-386c851feb6a';
+
   });
 
 });

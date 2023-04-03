@@ -152,12 +152,47 @@ describe('04. Tests for search functions', function () {
 
   it('Search for Goult 2 document', async function () {
     const doc2Id = 'de1b09bf-0104-4d9e-a862-a3bb91d6aade';
+    const results = await get(doc2Id);
 
+    const nodes = _.uniqBy(results.map(row => {
+      return row.get('n').properties;
+    }), edge => edge.id);
+    expect(nodes.length).to.equal(3);
+    expect(_.find(nodes, { id: 'ncbigene:7094', name: 'TLN1' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:10395', name: 'DLC1' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:5829', name: 'PXN' })).to.be.not.undefined;
+
+    const edges = _.uniqBy(results.map(row => {
+      return row.get('r').properties;
+    }), edge => edge.id);
+    expect(edges.length).to.equal(2);
+    expect(_.find(edges, { id: '028e7366-9779-4466-96ea-18a45bfe3f38', doi: '10.1016/j.str.2016.04.016' })).to.be.not.undefined;
+    expect(_.find(edges, { id: '80a4d403-8bc1-4ddb-a4f9-5227e87ef6fa', doi: '10.1016/j.str.2016.04.016' })).to.be.not.undefined;
   });
 
   it('Search for Goult 3 document', async function () {
     const doc3Id = '65781dc0-4605-4887-a6dd-d13ae63cd9ba';
+    const results = await get(doc3Id);
 
+    const nodes = _.uniqBy(results.map(row => {
+      return row.get('n').properties;
+    }), edge => edge.id);
+    expect(nodes.length).to.equal(5);
+    expect(_.find(nodes, { id: 'ncbigene:59274', name: 'TLNRD1' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:60', name: 'ACTB' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:54518', name: 'APBB1IP' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:23189', name: 'KANK1' })).to.be.not.undefined;
+    expect(_.find(nodes, { id: 'ncbigene:65059', name: 'RAPH1' })).to.be.not.undefined;
+
+    const edges = _.uniqBy(results.map(row => {
+      return row.get('r').properties;
+    }), edge => edge.id);
+    expect(edges.length).to.equal(5);
+    expect(_.find(edges, { id: 'd5d9fbcc-a1d9-4026-b1d3-d4a97faff36b', doi: '10.1083/jcb.202005214' })).to.be.not.undefined;
+    expect(_.find(edges, { id: '13ab91d1-ee5f-46ca-a1ea-82ce72a938f4', doi: '10.1083/jcb.202005214' })).to.be.not.undefined;
+    expect(_.find(edges, { id: 'd7b2a15d-43bf-4494-815b-a77e08cea59c', doi: '10.1083/jcb.202005214' })).to.be.not.undefined;
+    expect(_.find(edges, { id: 'eec84ebe-eece-4143-b406-cd99cdbe2e43', doi: '10.1083/jcb.202005214' })).to.be.not.undefined;
+    expect(_.find(edges, { id: 'e59c16c4-11e8-4755-8e2f-f88fe4a73b30', doi: '10.1083/jcb.202005214' })).to.be.not.undefined;
   });
 
   it('Search for Goult 4 document', async function () {

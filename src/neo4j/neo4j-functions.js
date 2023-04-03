@@ -1,4 +1,7 @@
-import { giveConnectedInfoByGeneId, makeNodeQuery, makeEdgeQuery, giveConnectedInfoByGeneIdNoComplexes } from './query-strings';
+import {
+    giveConnectedInfoByGeneId, makeNodeQuery, makeEdgeQuery,
+    giveConnectedInfoByGeneIdNoComplexes, giveConnectedInfoForDocument
+} from './query-strings';
 import { getDriver } from './neo4j-driver';
 import _ from 'lodash';
 
@@ -68,7 +71,8 @@ export async function addEdge(id, type, component, sourceId, targetId, sourceCom
 
 /**
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
- * @returns An object with 2 fields: relationships (array) and neighbouring nodes (array) or null
+ * @returns null if node not in database, array of objects with
+ * fields for the nodes and edges otherwise
  */
 export async function neighbourhood(id) {
     const driver = getDriver();
@@ -128,6 +132,34 @@ export async function neighbourhoodWithoutComplexes(id) {
         session = driver.session({ database: "neo4j" });
         let result = await session.executeRead(tx => {
             return tx.run(giveConnectedInfoByGeneIdNoComplexes, { id: id });
+        });
+        if (result.records.length > 0) {
+            record = result.records;
+        } else {
+            record = null;
+        }
+    } catch (error) {
+        throw error;
+    } finally {
+        await session.close();
+    }
+    return record;
+}
+
+/**
+ * Get the graph pertaining to a specific factoid document
+ * @param { String } id factoid UUID for document
+ * @returns null if document does not exist in database, array of objects with
+ * fields for the nodes and edges otherwise
+ */
+export async function get(id) { // UNTESTED
+    const driver = getDriver();
+    let session;
+    let record;
+    try {
+        session = driver.session({ database: "neo4j" });
+        let result = await session.executeRead(tx => {
+            return tx.run(giveConnectedInfoForDocument, { id: id });
         });
         if (result.records.length > 0) {
             record = result.records;

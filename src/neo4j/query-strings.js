@@ -33,6 +33,13 @@ export const giveConnectedInfoByGeneIdNoComplexes =
     WHERE r.component = [] AND r.sourceComplex = '' AND r.targetComplex = ''
     RETURN n, r, m`;
 
+export const giveConnectedInfoForDocument =
+    `MATCH (n)<-[r {xref: $id}]-(m)
+    RETURN n, r, m
+    UNION
+    MATCH (n)-[r {xref: $id}]->(m)
+    RETURN n, r, m`;
+
 export const returnGene =
     `MATCH (n {id: $id}) 
     RETURN n`;

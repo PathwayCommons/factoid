@@ -5,6 +5,8 @@ import {
 import { getDriver } from './neo4j-driver';
 import _ from 'lodash';
 
+const dbName = 'neo4j';
+
 /**
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
  * @param { String } name 
@@ -14,7 +16,7 @@ export async function addNode(id, name) {
     const driver = getDriver();
     let session;
     try {
-        session = driver.session({ database: "neo4j" });
+        session = driver.session({ database: dbName });
         await session.executeWrite(tx => {
             return tx.run(makeNodeQuery, {
                 id: id.toLowerCase(),
@@ -43,7 +45,7 @@ export async function addEdge(id, type, component, sourceId, targetId, sourceCom
     const driver = getDriver();
     let session;
     try {
-        session = driver.session({ database: "neo4j" });
+        session = driver.session({ database: dbName });
         await session.executeWrite(tx => {
             return tx.run(makeEdgeQuery, {
                 id: id.toLowerCase(),
@@ -75,7 +77,7 @@ export async function neighbourhood(id) {
     let session;
     let record;
     try {
-        session = driver.session({ database: "neo4j" });
+        session = driver.session({ database: dbName });
         let result = await session.executeRead(tx => {
             return tx.run(giveConnectedInfoByGeneId, { id: id });
         });
@@ -123,7 +125,7 @@ export async function neighbourhoodWithoutComplexes(id) {
     let session;
     let record;
     try {
-        session = driver.session({ database: "neo4j" });
+        session = driver.session({ database: dbName });
         let result = await session.executeRead(tx => {
             return tx.run(giveConnectedInfoByGeneIdNoComplexes, { id: id });
         });
@@ -149,7 +151,7 @@ export async function get(id) { // UNTESTED
     let session;
     let record;
     try {
-        session = driver.session({ database: "neo4j" });
+        session = driver.session({ database: dbName });
         let result = await session.executeRead(tx => {
             return tx.run(giveConnectedInfoForDocument, { id: id });
         });

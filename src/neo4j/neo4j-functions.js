@@ -72,14 +72,18 @@ export async function addEdge(id, type, component, sourceId, targetId, sourceCom
  * @returns null if node not in database, array of objects with
  * fields for the nodes and edges otherwise
  */
-export async function neighbourhood(id) {
+export async function neighbourhood(id, withComplexes = true) {
     const driver = getDriver();
     let session;
     let record;
     try {
         session = driver.session({ database: dbName });
         let result = await session.executeRead(tx => {
-            return tx.run(giveConnectedInfoByGeneId, { id: id });
+            if (withComplexes) {
+                return tx.run(giveConnectedInfoByGeneId, { id: id });
+            } else {
+                return tx.run(giveConnectedInfoByGeneIdNoComplexes, { id: id });
+            }
         });
         if (result.records.length > 0) {
             record = result.records;
@@ -146,7 +150,7 @@ export async function neighbourhoodWithoutComplexes(id) {
  * @returns null if document does not exist in database, array of objects with
  * fields for the nodes and edges otherwise
  */
-export async function get(id) { // UNTESTED
+export async function get(id) {
     const driver = getDriver();
     let session;
     let record;

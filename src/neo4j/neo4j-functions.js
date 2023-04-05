@@ -147,8 +147,8 @@ export async function neighbourhoodReadable(id, withComplexes = true) {
 /**
  * Get the graph pertaining to a specific factoid document
  * @param { String } id factoid UUID for document
- * @returns null if document does not exist in database, array of objects with
- * fields for the nodes and edges otherwise
+ * @returns null if document does not exist in database, object with 2 fields (one for nodes and one for
+ * edges) otherwise
  */
 export async function get(id) {
     const driver = getDriver();

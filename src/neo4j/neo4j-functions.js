@@ -120,15 +120,26 @@ export async function getNeighbouringNodes(id, withComplexes = true) {
 export async function getInteractions(id, withComplexes = true) {
     let record = await neighbourhood(id, withComplexes);
     if (record) {
-        if (withComplexes) {
-            return _.uniqBy(record.map(row => {
-                return row.get('r').properties;
-            }), edge => edge.id);
-        } else {
-            return record.map(row => {
-                return row.get('r').properties;
-            });
-        }
+        return record.map(row => {
+            return row.get('r').properties;
+        });
+    }
+    return null;
+}
+
+/**
+ * @param {*} id in the form of "dbName:dbId", ex: "ncbigene:207"
+ * @param { Boolean } withComplexes default true to show complexes
+ * @returns null if id not found in database, object with 2 fields (one for neighbouring nodes and one for
+ * edges) otherwise
+ */
+export async function neighbourhoodReadable(id, withComplexes = true) {
+    let record = await neighbourhood(id, withComplexes);
+    if (record) {
+        return {
+            neighbouringNodes: _.uniqBy(record.map(row => { return row.get('m').properties; }), edge => edge.id),
+            edges: record.map(row => { return row.get('r').properties; })
+        };
     }
     return null;
 }

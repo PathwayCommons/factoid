@@ -99,28 +99,36 @@ export async function neighbourhood(id, withComplexes = true) {
 
 /**
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
+ * @param { Boolean } withComplexes default true to show complexes
  * @returns an array of nodes that are neighbours to the specified gene
  */
-export async function getNeighbouringNodes(id) {
-    let record = await neighbourhood(id);
+export async function getNeighbouringNodes(id, withComplexes = true) {
+    let record = await neighbourhood(id, withComplexes);
     if (record) {
         return _.uniqBy(record.map(row => {
             return row.get('m').properties;
-        }), node => node.id);
+        }), edge => edge.id);
     }
     return null;
 }
 
 /**
  * @param {*} id in the form of "dbName:dbId", ex: "ncbigene:207"
+ * @param { Boolean } withComplexes default true to show complexes
  * @returns an array of relationships leading away from/leading to the specified gene
  */
-export async function getInteractions(id) {
-    let record = await neighbourhood(id);
+export async function getInteractions(id, withComplexes = true) {
+    let record = await neighbourhood(id, withComplexes);
     if (record) {
-        return _.uniqBy(record.map(row => {
-            return row.get('r').properties;
-        }), edge => edge.id);
+        if (withComplexes) {
+            return _.uniqBy(record.map(row => {
+                return row.get('r').properties;
+            }), edge => edge.id);
+        } else {
+            return record.map(row => {
+                return row.get('r').properties;
+            });
+        }
     }
     return null;
 }

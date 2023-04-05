@@ -150,7 +150,6 @@ tryPromise( () => {
       .then( () => db.guaranteeIndex( 'document', 'status' ) )
       .then( log('Set up index for document') )
       .then( setupGraphDbFeeds )
-      .then( log('Set up change graph db feeds') )
     ;
   };
 

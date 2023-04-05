@@ -6,13 +6,23 @@ import { initDriver } from '../../../../neo4j/neo4j-driver';
 import { addDocumentToNeo4j } from '../../../../neo4j';
 
 const handleDocChange = async (err, item) => {
+
+  if ( err ) logger.error('Error encountered in graph db change feeds');
+
   const new_val = _.get( item, ['new_val'] );
   const { id, secret } = _.pick( new_val, ['id', 'secret'] );
 
   const { docDb, eleDb } = await loadTables();
   const doc = await loadDoc({ docDb, eleDb, id, secret });
-  logger.debug( `doc id: ${doc.id()}` );
-  await addDocumentToNeo4j( doc );
+
+  try {
+    await addDocumentToNeo4j( doc );
+    logger.info( `Added doc to graph DB: ${doc.id()}` );
+
+  } catch ( err ) {
+    logger.error( `Failed to add doc to graph DB: ${doc.id()}` );
+    logger.error( err );
+  }
 };
 
 // Configure Changefeeds for the document table
@@ -40,13 +50,24 @@ const docChangefeeds = async () => {
   cursor.each( handleDocChange );
 };
 
+const tryInitDriver = async () => {
+  const driver = initDriver();
+  const serverInfo = await driver.getServerInfo(); // will throw if not connected
+  logger.debug( `Connected to graph db at ${serverInfo.address}` );
+};
+
 /**
  * setupGraphDbFeeds
  * Set up listeners for the specified Changefeeds
  */
 const setupGraphDbFeeds = async () => {
-  initDriver();
-  await docChangefeeds();
+  try {
+    await tryInitDriver();
+    await docChangefeeds();
+  } catch ( err ) { // swallow
+    logger.error( `Could not connect to graph db` );
+    logger.error( err );
+  }
 };
 
 export default setupGraphDbFeeds;

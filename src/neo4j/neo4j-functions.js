@@ -69,6 +69,7 @@ export async function addEdge(id, type, component, sourceId, targetId, sourceCom
 
 /**
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
+ * @param { Boolean } withComplexes default true to show complexes
  * @returns null if node not in database, array of objects with
  * fields for the nodes and edges otherwise
  */
@@ -122,26 +123,6 @@ export async function getInteractions(id) {
         }), edge => edge.id);
     }
     return null;
-}
-
-export async function neighbourhoodWithoutComplexes(id) {
-    const driver = getDriver();
-    let session;
-    let record;
-    try {
-        session = driver.session({ database: dbName });
-        let result = await session.executeRead(tx => {
-            return tx.run(giveConnectedInfoByGeneIdNoComplexes, { id: id });
-        });
-        if (result.records.length > 0) {
-            record = result.records;
-        } else {
-            record = null;
-        }
-    } finally {
-        await session.close();
-    }
-    return record;
 }
 
 /**

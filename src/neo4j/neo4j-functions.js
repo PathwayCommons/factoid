@@ -160,7 +160,12 @@ export async function get(id) {
             return tx.run(giveConnectedInfoForDocument, { id: id });
         });
         if (result.records.length > 0) {
-            record = result.records;
+            record = {
+                nodes: _.unionBy(result.records.map(row => { return row.get('n').properties; }),
+                    result.records.map(row => { return row.get('m').properties; }),
+                    node => node.id),
+                edges: result.records.map(row => { return row.get('r').properties; })
+            };
         } else {
             record = null;
         }

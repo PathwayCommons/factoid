@@ -1,6 +1,5 @@
 import { numNodes, numEdges, deleteAll, returnEdgeById, returnEdgeByIdAndEndpoints, returnGene } from './query-strings';
 import { guaranteeSession } from './neo4j-driver';
-import { GRAPHDB_DBNAME } from '../config';
 
 export async function getNode(id) {
   let session;

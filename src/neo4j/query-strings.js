@@ -7,6 +7,7 @@ export const makeEdgeQuery =
     MATCH (y:Entity {id: $targetId})
     MERGE (x)-[r:INTERACTION {id: $id}]->(y)
     ON CREATE SET r.type = $type,
+    r.group = $group,
     r.component = $component,
     r.sourceId = $sourceId,
     r.targetId = $targetId,

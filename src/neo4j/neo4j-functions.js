@@ -41,7 +41,7 @@ export async function addNode(id, name) {
  * @param { String } articleTitle 
  * @returns 
  */
-export async function addEdge(id, type, component, sourceId, targetId, sourceComplex, targetComplex, xref, doi, pmid, articleTitle) {
+export async function addEdge(id, type, group, component, sourceId, targetId, sourceComplex, targetComplex, xref, doi, pmid, articleTitle) {
     const driver = getDriver();
     let session;
     try {
@@ -49,7 +49,8 @@ export async function addEdge(id, type, component, sourceId, targetId, sourceCom
         await session.executeWrite(tx => {
             return tx.run(makeEdgeQuery, {
                 id: id.toLowerCase(),
-                type: type,
+                type: type.toLowerCase(),
+                group: group.toLowerCase(),
                 component: component,
                 sourceId: sourceId.toLowerCase(),
                 targetId: targetId.toLowerCase(),

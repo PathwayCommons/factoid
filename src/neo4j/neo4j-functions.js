@@ -2,11 +2,8 @@ import {
     giveConnectedInfoByGeneId, makeNodeQuery, makeEdgeQuery,
     giveConnectedInfoByGeneIdNoComplexes, giveConnectedInfoForDocument
 } from './query-strings';
-import { getDriver } from './neo4j-driver';
+import { guaranteeSession } from './neo4j-driver';
 import _ from 'lodash';
-import { GRAPHDB_DBNAME } from '../config';
-
-const sessionConfig = { database: GRAPHDB_DBNAME };
 
 /**
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
@@ -14,10 +11,9 @@ const sessionConfig = { database: GRAPHDB_DBNAME };
  * @returns
  */
 export async function addNode(id, name) {
-    const driver = getDriver();
     let session;
     try {
-        session = driver.session(sessionConfig);
+        session = guaranteeSession();
         await session.executeWrite(tx => {
             return tx.run(makeNodeQuery, {
                 id: id.toLowerCase(),
@@ -43,10 +39,9 @@ export async function addNode(id, name) {
  * @returns
  */
 export async function addEdge(id, type, component, sourceId, targetId, sourceComplex, targetComplex, xref, doi, pmid, articleTitle) {
-    const driver = getDriver();
     let session;
     try {
-        session = driver.session(sessionConfig);
+        session = guaranteeSession();
         await session.executeWrite(tx => {
             return tx.run(makeEdgeQuery, {
                 id: id.toLowerCase(),
@@ -74,11 +69,10 @@ export async function addEdge(id, type, component, sourceId, targetId, sourceCom
  * fields for the nodes and edges otherwise
  */
 export async function neighbourhood(id) {
-    const driver = getDriver();
     let session;
     let record;
     try {
-        session = driver.session(sessionConfig);
+        session = guaranteeSession();
         let result = await session.executeRead(tx => {
             return tx.run(giveConnectedInfoByGeneId, { id: id });
         });
@@ -122,11 +116,10 @@ export async function getInteractions(id) {
 }
 
 export async function neighbourhoodWithoutComplexes(id) {
-    const driver = getDriver();
     let session;
     let record;
     try {
-        session = driver.session(sessionConfig);
+        session = guaranteeSession();
         let result = await session.executeRead(tx => {
             return tx.run(giveConnectedInfoByGeneIdNoComplexes, { id: id });
         });
@@ -148,11 +141,10 @@ export async function neighbourhoodWithoutComplexes(id) {
  * fields for the nodes and edges otherwise
  */
 export async function get(id) { // UNTESTED
-    const driver = getDriver();
     let session;
     let record;
     try {
-        session = driver.session(sessionConfig);
+        session = guaranteeSession();
         let result = await session.executeRead(tx => {
             return tx.run(giveConnectedInfoForDocument, { id: id });
         });

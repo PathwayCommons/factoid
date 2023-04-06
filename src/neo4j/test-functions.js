@@ -1,15 +1,12 @@
 import { numNodes, numEdges, deleteAll, returnEdgeById, returnEdgeByIdAndEndpoints, returnGene } from './query-strings';
-import { getDriver } from './neo4j-driver';
+import { guaranteeSession } from './neo4j-driver';
 import { GRAPHDB_DBNAME } from '../config';
 
-const sessionConfig = { database: GRAPHDB_DBNAME };
-
 export async function getNode(id) {
-  const driver = getDriver();
   let session;
   let node;
   try {
-    session = driver.session(sessionConfig);
+    session = guaranteeSession();
     let result = await session.executeRead(tx => {
       return tx.run(returnGene, { id: id });
     });
@@ -35,11 +32,10 @@ export async function getGeneName(id) {
 }
 
 export async function getEdge(id) {
-  const driver = getDriver();
   let session;
   let edge;
   try {
-    session = driver.session(sessionConfig);
+    session = guaranteeSession();
     let result = await session.executeRead(tx => {
       return tx.run(returnEdgeById, { id: id });
     });
@@ -57,11 +53,10 @@ export async function getEdge(id) {
 }
 
 export async function getEdgeByIdAndEndpoints(sourceId, targetId, complexId) {
-  const driver = getDriver();
   let session;
   let edge;
   try {
-    session = driver.session(sessionConfig);
+    session = guaranteeSession();
     let result = await session.executeRead(tx => {
       return tx.run(returnEdgeByIdAndEndpoints,
         { sourceId: sourceId, targetId: targetId, complexId: complexId });
@@ -80,10 +75,9 @@ export async function getEdgeByIdAndEndpoints(sourceId, targetId, complexId) {
 }
 
 export async function deleteAllNodesAndEdges() {
-  const driver = getDriver();
   let session;
   try {
-    session = driver.session(sessionConfig);
+    session = guaranteeSession();
     await session.executeWrite(tx => {
       return tx.run(deleteAll);
     });
@@ -96,11 +90,10 @@ export async function deleteAllNodesAndEdges() {
 }
 
 export async function getNumNodes() {
-  const driver = getDriver();
   let session;
   let num;
   try {
-    session = driver.session(sessionConfig);
+    session = guaranteeSession();
     let result = await session.executeRead(tx => {
       return tx.run(numNodes);
     });
@@ -114,11 +107,10 @@ export async function getNumNodes() {
 }
 
 export async function getNumEdges() {
-  const driver = getDriver();
   let session;
   let num;
   try {
-    session = driver.session(sessionConfig);
+    session = guaranteeSession();
     let result = await session.executeRead(tx => {
       return tx.run(numEdges);
     });

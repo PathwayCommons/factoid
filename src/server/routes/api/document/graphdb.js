@@ -7,19 +7,20 @@ import { addDocumentToNeo4j } from '../../../../neo4j';
 
 const handleDocChange = async (err, item) => {
 
-  if ( err ) logger.error('Error encountered in graph db change feeds');
+  if ( err ){
+    logger.error('Error encountered in db');
+    return;
+  }
 
   const new_val = _.get( item, ['new_val'] );
   const { id, secret } = _.pick( new_val, ['id', 'secret'] );
-
   const { docDb, eleDb } = await loadTables();
   const doc = await loadDoc({ docDb, eleDb, id, secret });
 
   try {
     await addDocumentToNeo4j( doc );
     logger.info( `Added doc to graph DB: ${doc.id()}` );
-
-  } catch ( err ) {
+  } catch ( err ) { // swallow
     logger.error( `Failed to add doc to graph DB: ${doc.id()}` );
     logger.error( err );
   }
@@ -47,13 +48,21 @@ const docChangefeeds = async () => {
    .filter( docFilter )
    .run( conn );
 
-  cursor.each( handleDocChange );
+  return cursor;
 };
 
 const tryInitDriver = async () => {
-  const driver = initDriver();
-  const serverInfo = await driver.getServerInfo(); // will throw if not connected
-  logger.debug( `Connected to graph db at ${serverInfo.address}` );
+  let serverInfo = null;
+  try {
+    const driver = initDriver();
+    serverInfo = await driver.getServerInfo(); // throw Neo4JError if not connected
+    const { address, agent } = serverInfo;
+    logger.debug( `Connected to graph db: ${address} [${agent}]` );
+    return serverInfo;
+  } catch ( err ) {
+    logger.error( 'Unable to access graph db' );
+    return serverInfo;
+  }
 };
 
 /**
@@ -61,13 +70,11 @@ const tryInitDriver = async () => {
  * Set up listeners for the specified Changefeeds
  */
 const setupGraphDbFeeds = async () => {
-  try {
-    await tryInitDriver();
-    await docChangefeeds();
-  } catch ( err ) { // swallow
-    logger.error( `Could not connect to graph db` );
-    logger.error( err );
-  }
+  const serverInfo = await tryInitDriver();
+  if( !serverInfo ) return;
+
+  const cursor = await docChangefeeds();
+  cursor.each( handleDocChange );
 };
 
 export default setupGraphDbFeeds;

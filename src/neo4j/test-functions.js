@@ -1,12 +1,15 @@
 import { numNodes, numEdges, deleteAll, returnEdgeById, returnEdgeByIdAndEndpoints, returnGene } from './query-strings';
 import { getDriver } from './neo4j-driver';
+import { GRAPHDB_DBNAME } from '../config';
+
+const sessionConfig = { database: GRAPHDB_DBNAME };
 
 export async function getNode(id) {
   const driver = getDriver();
   let session;
   let node;
   try {
-    session = driver.session({ database: "neo4j" });
+    session = driver.session(sessionConfig);
     let result = await session.executeRead(tx => {
       return tx.run(returnGene, { id: id });
     });
@@ -36,7 +39,7 @@ export async function getEdge(id) {
   let session;
   let edge;
   try {
-    session = driver.session({ database: 'neo4j' });
+    session = driver.session(sessionConfig);
     let result = await session.executeRead(tx => {
       return tx.run(returnEdgeById, { id: id });
     });
@@ -58,9 +61,9 @@ export async function getEdgeByIdAndEndpoints(sourceId, targetId, complexId) {
   let session;
   let edge;
   try {
-    session = driver.session({ database: 'neo4j' });
+    session = driver.session(sessionConfig);
     let result = await session.executeRead(tx => {
-      return tx.run(returnEdgeByIdAndEndpoints, 
+      return tx.run(returnEdgeByIdAndEndpoints,
         { sourceId: sourceId, targetId: targetId, complexId: complexId });
     });
     if (result.records.length > 0) {
@@ -80,7 +83,7 @@ export async function deleteAllNodesAndEdges() {
   const driver = getDriver();
   let session;
   try {
-    session = driver.session({ database: "neo4j" });
+    session = driver.session(sessionConfig);
     await session.executeWrite(tx => {
       return tx.run(deleteAll);
     });
@@ -97,7 +100,7 @@ export async function getNumNodes() {
   let session;
   let num;
   try {
-    session = driver.session({ database: "neo4j" });
+    session = driver.session(sessionConfig);
     let result = await session.executeRead(tx => {
       return tx.run(numNodes);
     });
@@ -115,7 +118,7 @@ export async function getNumEdges() {
   let session;
   let num;
   try {
-    session = driver.session({ database: "neo4j" });
+    session = driver.session(sessionConfig);
     let result = await session.executeRead(tx => {
       return tx.run(numEdges);
     });

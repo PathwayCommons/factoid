@@ -4,19 +4,20 @@ import {
 } from './query-strings';
 import { getDriver } from './neo4j-driver';
 import _ from 'lodash';
+import { GRAPHDB_DBNAME } from '../config';
 
-const dbName = 'neo4j';
+const sessionConfig = { database: GRAPHDB_DBNAME };
 
 /**
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
- * @param { String } name 
- * @returns 
+ * @param { String } name
+ * @returns
  */
 export async function addNode(id, name) {
     const driver = getDriver();
     let session;
     try {
-        session = driver.session({ database: dbName });
+        session = driver.session(sessionConfig);
         await session.executeWrite(tx => {
             return tx.run(makeNodeQuery, {
                 id: id.toLowerCase(),
@@ -31,21 +32,21 @@ export async function addNode(id, name) {
 
 /**
  * @param { String } id interaction element's UUID (NOT document id)
- * @param { String } type 
+ * @param { String } type
  * @param { String } sourceId in the form of "dbName:dbId", ex: "ncbigene:207"
  * @param { String } targetId in the form of "dbName:dbId", ex: "ncbigene:207"
  * @param { String } participantTypes 'noncomplex-to-noncomplex', 'complex-to-noncomplex', etc
  * @param { String } xref document UUID
- * @param { String } doi 
- * @param { String } pmid 
- * @param { String } articleTitle 
- * @returns 
+ * @param { String } doi
+ * @param { String } pmid
+ * @param { String } articleTitle
+ * @returns
  */
 export async function addEdge(id, type, component, sourceId, targetId, sourceComplex, targetComplex, xref, doi, pmid, articleTitle) {
     const driver = getDriver();
     let session;
     try {
-        session = driver.session({ database: dbName });
+        session = driver.session(sessionConfig);
         await session.executeWrite(tx => {
             return tx.run(makeEdgeQuery, {
                 id: id.toLowerCase(),
@@ -77,7 +78,7 @@ export async function neighbourhood(id) {
     let session;
     let record;
     try {
-        session = driver.session({ database: dbName });
+        session = driver.session(sessionConfig);
         let result = await session.executeRead(tx => {
             return tx.run(giveConnectedInfoByGeneId, { id: id });
         });
@@ -125,7 +126,7 @@ export async function neighbourhoodWithoutComplexes(id) {
     let session;
     let record;
     try {
-        session = driver.session({ database: dbName });
+        session = driver.session(sessionConfig);
         let result = await session.executeRead(tx => {
             return tx.run(giveConnectedInfoByGeneIdNoComplexes, { id: id });
         });
@@ -151,7 +152,7 @@ export async function get(id) { // UNTESTED
     let session;
     let record;
     try {
-        session = driver.session({ database: dbName });
+        session = driver.session(sessionConfig);
         let result = await session.executeRead(tx => {
             return tx.run(giveConnectedInfoForDocument, { id: id });
         });

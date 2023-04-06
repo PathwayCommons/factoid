@@ -137,7 +137,7 @@ export async function neighbourhoodReadable(id, withComplexes = true) {
     let record = await neighbourhood(id, withComplexes);
     if (record) {
         return {
-            neighbouringNodes: _.uniqBy(record.map(row => { return row.get('m').properties; }), edge => edge.id),
+            nodes: _.uniqBy(record.map(row => { return row.get('m').properties; }), edge => edge.id),
             edges: record.map(row => { return row.get('r').properties; })
         };
     }

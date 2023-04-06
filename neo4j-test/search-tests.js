@@ -87,10 +87,10 @@ describe('04. Tests for search functions', function () {
     expect(_.find(nodes, { id: 'ncbigene:83660', name: 'TLN2' })).to.be.not.undefined;
 
     const record = await neighbourhoodReadable(kank1);
-    expect(record.neighbouringNodes.length).equal(3);
-    expect(_.find(record.neighbouringNodes, { id: 'ncbigene:59274', name: 'TLNRD1' })).to.be.not.undefined;
-    expect(_.find(record.neighbouringNodes, { id: 'ncbigene:7094', name: 'TLN1' })).to.be.not.undefined;
-    expect(_.find(record.neighbouringNodes, { id: 'ncbigene:83660', name: 'TLN2' })).to.be.not.undefined;
+    expect(record.nodes.length).equal(3);
+    expect(_.find(record.nodes, { id: 'ncbigene:59274', name: 'TLNRD1' })).to.be.not.undefined;
+    expect(_.find(record.nodes, { id: 'ncbigene:7094', name: 'TLN1' })).to.be.not.undefined;
+    expect(_.find(record.nodes, { id: 'ncbigene:83660', name: 'TLN2' })).to.be.not.undefined;
 
     expect(record.edges.length).equal(3);
     expect(_.find(record.edges, { id: 'd7b2a15d-43bf-4494-815b-a77e08cea59c', doi: '10.1083/jcb.202005214' })).to.be.not.undefined;
@@ -127,12 +127,12 @@ describe('04. Tests for search functions', function () {
     expect(_.find(record.edges, { id: '3e7c85db-c2a3-4a1f-b96e-6d187c6ab93b', doi: '10.1016/j.jbc.2021.100837' })).to.be.not.undefined;
     expect(_.find(record.edges, { id: 'e39d0a06-5b02-44e3-9c36-27cc1f9ac08c', doi: '10.1016/j.jbc.2021.100837' })).to.be.not.undefined;
 
-    expect(record.neighbouringNodes.length).equal(5);
-    expect(_.find(record.neighbouringNodes, { id: 'ncbigene:5829', name: 'PXN' })).to.be.not.undefined;
-    expect(_.find(record.neighbouringNodes, { id: 'ncbigene:983', name: 'CDK1' })).to.be.not.undefined;
-    expect(_.find(record.neighbouringNodes, { id: 'ncbigene:10395', name: 'DLC1' })).to.be.not.undefined;
-    expect(_.find(record.neighbouringNodes, { id: 'ncbigene:23189', name: 'KANK1' })).to.be.not.undefined;
-    expect(_.find(record.neighbouringNodes, { id: 'ncbigene:25959', name: 'KANK2' })).to.be.not.undefined;
+    expect(record.nodes.length).equal(5);
+    expect(_.find(record.nodes, { id: 'ncbigene:5829', name: 'PXN' })).to.be.not.undefined;
+    expect(_.find(record.nodes, { id: 'ncbigene:983', name: 'CDK1' })).to.be.not.undefined;
+    expect(_.find(record.nodes, { id: 'ncbigene:10395', name: 'DLC1' })).to.be.not.undefined;
+    expect(_.find(record.nodes, { id: 'ncbigene:23189', name: 'KANK1' })).to.be.not.undefined;
+    expect(_.find(record.nodes, { id: 'ncbigene:25959', name: 'KANK2' })).to.be.not.undefined;
   });
 
   it('Search for TLNRD1', async function () {
@@ -162,12 +162,12 @@ describe('04. Tests for search functions', function () {
     expect(_.find(record.edges, { id: 'eec84ebe-eece-4143-b406-cd99cdbe2e43', doi: '10.1083/jcb.202005214' })).to.be.not.undefined;
     expect(_.find(record.edges, { id: 'e59c16c4-11e8-4755-8e2f-f88fe4a73b30', doi: '10.1083/jcb.202005214' })).to.be.not.undefined;
 
-    expect(record.neighbouringNodes.length).equal(5);
-    expect(_.find(record.neighbouringNodes, { id: 'ncbigene:59274', name: 'TLNRD1' })).to.be.not.undefined;
-    expect(_.find(record.neighbouringNodes, { id: 'ncbigene:23189', name: 'KANK1' })).to.be.not.undefined;
-    expect(_.find(record.neighbouringNodes, { id: 'ncbigene:60', name: 'ACTB' })).to.be.not.undefined;
-    expect(_.find(record.neighbouringNodes, { id: 'ncbigene:54518', name: 'APBB1IP' })).to.be.not.undefined;
-    expect(_.find(record.neighbouringNodes, { id: 'ncbigene:65059', name: 'RAPH1' })).to.be.not.undefined;
+    expect(record.nodes.length).equal(5);
+    expect(_.find(record.nodes, { id: 'ncbigene:59274', name: 'TLNRD1' })).to.be.not.undefined;
+    expect(_.find(record.nodes, { id: 'ncbigene:23189', name: 'KANK1' })).to.be.not.undefined;
+    expect(_.find(record.nodes, { id: 'ncbigene:60', name: 'ACTB' })).to.be.not.undefined;
+    expect(_.find(record.nodes, { id: 'ncbigene:54518', name: 'APBB1IP' })).to.be.not.undefined;
+    expect(_.find(record.nodes, { id: 'ncbigene:65059', name: 'RAPH1' })).to.be.not.undefined;
   });
 
   it('Search for document that does not exist', async function () {

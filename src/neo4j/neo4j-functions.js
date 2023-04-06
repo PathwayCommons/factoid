@@ -69,17 +69,22 @@ export async function addEdge(id, type, component, sourceId, targetId, sourceCom
 
 /**
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
+ * @param { Boolean } withComplexes default true to show complexes
  * @returns null if node not in database, array of objects with
  * fields for the nodes and edges otherwise
  */
-export async function neighbourhood(id) {
+export async function neighbourhood(id, withComplexes = true) {
     const driver = getDriver();
     let session;
     let record;
     try {
         session = driver.session({ database: dbName });
         let result = await session.executeRead(tx => {
-            return tx.run(giveConnectedInfoByGeneId, { id: id });
+            if (withComplexes) {
+                return tx.run(giveConnectedInfoByGeneId, { id: id });
+            } else {
+                return tx.run(giveConnectedInfoByGeneIdNoComplexes, { id: id });
+            }
         });
         if (result.records.length > 0) {
             record = result.records;
@@ -94,59 +99,58 @@ export async function neighbourhood(id) {
 
 /**
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
+ * @param { Boolean } withComplexes default true to show complexes
  * @returns an array of nodes that are neighbours to the specified gene
  */
-export async function getNeighbouringNodes(id) {
-    let record = await neighbourhood(id);
+export async function getNeighbouringNodes(id, withComplexes = true) {
+    let record = await neighbourhood(id, withComplexes);
     if (record) {
         return _.uniqBy(record.map(row => {
             return row.get('m').properties;
-        }), node => node.id);
+        }), edge => edge.id);
     }
     return null;
 }
 
 /**
  * @param {*} id in the form of "dbName:dbId", ex: "ncbigene:207"
+ * @param { Boolean } withComplexes default true to show complexes
  * @returns an array of relationships leading away from/leading to the specified gene
  */
-export async function getInteractions(id) {
-    let record = await neighbourhood(id);
+export async function getInteractions(id, withComplexes = true) {
+    let record = await neighbourhood(id, withComplexes);
     if (record) {
-        return _.uniqBy(record.map(row => {
+        return record.map(row => {
             return row.get('r').properties;
-        }), edge => edge.id);
+        });
     }
     return null;
 }
 
-export async function neighbourhoodWithoutComplexes(id) {
-    const driver = getDriver();
-    let session;
-    let record;
-    try {
-        session = driver.session({ database: dbName });
-        let result = await session.executeRead(tx => {
-            return tx.run(giveConnectedInfoByGeneIdNoComplexes, { id: id });
-        });
-        if (result.records.length > 0) {
-            record = result.records;
-        } else {
-            record = null;
-        }
-    } finally {
-        await session.close();
+/**
+ * @param {*} id in the form of "dbName:dbId", ex: "ncbigene:207"
+ * @param { Boolean } withComplexes default true to show complexes
+ * @returns null if id not found in database, object with 2 fields (one for neighbouring nodes and one for
+ * edges) otherwise
+ */
+export async function neighbourhoodReadable(id, withComplexes = true) {
+    let record = await neighbourhood(id, withComplexes);
+    if (record) {
+        return {
+            nodes: _.uniqBy(record.map(row => { return row.get('m').properties; }), edge => edge.id),
+            edges: record.map(row => { return row.get('r').properties; })
+        };
     }
-    return record;
+    return null;
 }
 
 /**
  * Get the graph pertaining to a specific factoid document
  * @param { String } id factoid UUID for document
- * @returns null if document does not exist in database, array of objects with
- * fields for the nodes and edges otherwise
+ * @returns null if document does not exist in database, object with 2 fields (one for nodes and one for
+ * edges) otherwise
  */
-export async function get(id) { // UNTESTED
+export async function get(id) {
     const driver = getDriver();
     let session;
     let record;
@@ -156,7 +160,12 @@ export async function get(id) { // UNTESTED
             return tx.run(giveConnectedInfoForDocument, { id: id });
         });
         if (result.records.length > 0) {
-            record = result.records;
+            record = {
+                nodes: _.unionBy(result.records.map(row => { return row.get('n').properties; }),
+                    result.records.map(row => { return row.get('m').properties; }),
+                    node => node.id),
+                edges: result.records.map(row => { return row.get('r').properties; })
+            };
         } else {
             record = null;
         }

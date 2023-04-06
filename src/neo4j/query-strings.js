@@ -34,10 +34,7 @@ export const giveConnectedInfoByGeneIdNoComplexes =
     RETURN n, r, m`;
 
 export const giveConnectedInfoForDocument =
-    `MATCH (n)<-[r {xref: $id}]-(m)
-    RETURN n, r, m
-    UNION
-    MATCH (n)-[r {xref: $id}]->(m)
+    `MATCH (n)-[r {xref: $id}]->(m)
     RETURN n, r, m`;
 
 export const returnGene =

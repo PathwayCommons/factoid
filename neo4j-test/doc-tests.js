@@ -78,6 +78,7 @@ describe('03. Tests for Documents', function () {
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
       expect(edge.properties.type).to.equal(e.type());
+      expect(edge.properties.group).to.equal(e.association().getSign().value);
       if (e.association().getSource()) {
         expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
         expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
@@ -124,6 +125,7 @@ describe('03. Tests for Documents', function () {
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
       expect(edge.properties.type).to.equal(e.type());
+      expect(edge.properties.group).to.equal(e.association().getSign().value);
       if (e.association().getSource()) {
         expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
         expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
@@ -170,6 +172,7 @@ describe('03. Tests for Documents', function () {
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
       expect(edge.properties.type).to.equal(e.type());
+      expect(edge.properties.group).to.equal(e.association().getSign().value);
       if (e.association().getSource()) {
         expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
         expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
@@ -216,6 +219,7 @@ describe('03. Tests for Documents', function () {
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
       expect(edge.properties.type).to.equal(e.type());
+      expect(edge.properties.group).to.equal(e.association().getSign().value);
       if (e.association().getSource()) {
         expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
         expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
@@ -262,6 +266,7 @@ describe('03. Tests for Documents', function () {
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
       expect(edge.properties.type).to.equal(e.type());
+      expect(edge.properties.group).to.equal(e.association().getSign().value);
       if (e.association().getSource()) {
         expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
         expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
@@ -308,6 +313,7 @@ describe('03. Tests for Documents', function () {
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
       expect(edge.properties.type).to.equal(e.type());
+      expect(edge.properties.group).to.equal(e.association().getSign().value);
       if (e.association().getSource()) {
         expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
         expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));

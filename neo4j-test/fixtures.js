@@ -123,6 +123,3 @@ async function writeData(data){
   await writeFile(OUT_FILE, formatJSON(data));
 }
 
-// Run this
-makeFixture().then( writeData );
-

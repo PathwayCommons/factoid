@@ -7,7 +7,7 @@ import { loadDoc } from '../src/server/routes/api/document/index.js';
 import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
 import { addDocumentToNeo4j, convertUUIDtoId } from '../src/neo4j/neo4j-document.js';
 import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge, getEdgeByIdAndEndpoints } from '../src/neo4j/test-functions.js';
-import { neighbourhoodWithoutComplexes } from '../src/neo4j/neo4j-functions.js';
+import { neighbourhood } from '../src/neo4j/neo4j-functions.js';
 
 import complex1 from './document/complex_tests_1.json';
 import complex2 from './document/complex_tests_2.json';
@@ -94,8 +94,8 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(edge1.properties.pmid).to.equal(myDoc.citation().pmid);
     expect(edge1.properties.articleTitle).to.equal(myDoc.citation().title);
 
-    expect(await neighbourhoodWithoutComplexes('ncbigene:22882')).to.be.null;
-    expect(await neighbourhoodWithoutComplexes('ncbigene:3091')).to.be.null;
+    expect(await neighbourhood('ncbigene:22882', false)).to.be.null;
+    expect(await neighbourhood('ncbigene:3091', false)).to.be.null;
   });
 
   it('Three nodes in one complex, edges between them', async function () {
@@ -169,7 +169,7 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(edge3.properties.sourceComplex).to.equal('');
     expect(edge3.properties.targetComplex).to.equal('');
 
-    let record = await neighbourhoodWithoutComplexes('ncbigene:3303');
+    let record = await neighbourhood('ncbigene:3303', false);
     let testNodes = record.map(row => row.get('m').properties);
     expect(testNodes.length).to.equal(2);
     expect(_.find(testNodes, { id: 'ncbigene:7157' })).to.be.not.undefined;
@@ -179,7 +179,7 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(_.find(testEdges, { id: 'b6e4c90d-4870-4c64-8abf-b6e16b0738f7' })).to.be.not.undefined;
     expect(_.find(testEdges, { id: '7ba76f35-faaa-4622-ae37-5aff0d802eed' })).to.be.not.undefined;
 
-    record = await neighbourhoodWithoutComplexes('ncbigene:7157');
+    record = await neighbourhood('ncbigene:7157', false);
     testNodes = record.map(row => row.get('m').properties);
     expect(_.find(testNodes, { id: 'ncbigene:3303' })).to.be.not.undefined;
     expect(_.find(testNodes, { id: 'ncbigene:3326' })).to.be.not.undefined;
@@ -189,7 +189,7 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(_.find(testEdges, { id: 'b6e4c90d-4870-4c64-8abf-b6e16b0738f7' })).to.be.not.undefined;
     expect(_.find(testEdges, { id: 'eb40318c-9a0e-45f6-a81e-21836fd9e9e3' })).to.be.not.undefined;
 
-    record = await neighbourhoodWithoutComplexes('ncbigene:3326');
+    record = await neighbourhood('ncbigene:3326', false);
     testNodes = record.map(row => row.get('m').properties);
     expect(testNodes.length).to.equal(2);
     expect(_.find(testNodes, { id: 'ncbigene:7157' })).to.be.not.undefined;
@@ -257,7 +257,7 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(edge1.properties.sourceComplex).to.equal('');
     expect(edge1.properties.targetComplex).to.equal('');
 
-    const record = await neighbourhoodWithoutComplexes('ncbigene:27173');
+    const record = await neighbourhood('ncbigene:27173', false);
     const testNodes = record.map(row => row.get('m').properties);
     expect(testNodes.length).to.equal(1);
     expect(_.find(testNodes, { id: 'ncbigene:10059' })).to.be.not.undefined;
@@ -331,7 +331,7 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(edge2.properties.sourceComplex).to.equal('');
     expect(edge2.properties.targetComplex).to.equal('');
 
-    let record = await neighbourhoodWithoutComplexes('ncbigene:55215');
+    let record = await neighbourhood('ncbigene:55215', false);
     let testNodes = record.map(row => row.get('m').properties);
     expect(testNodes.length).to.equal(1);
     expect(_.find(testNodes, { id: 'ncbigene:57599' })).to.be.not.undefined;
@@ -339,7 +339,7 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(testEdges.length).to.equal(1);
     expect(_.find(testEdges, { id: 'b38116a2-5002-48b0-b156-32bcbff764a4' })).to.be.not.undefined;
 
-    record = await neighbourhoodWithoutComplexes('ncbigene:7398');
+    record = await neighbourhood('ncbigene:7398', false);
     testNodes = record.map(row => row.get('m').properties);
     expect(testNodes.length).to.equal(1);
     expect(_.find(testNodes, { id: 'ncbigene:2177' })).to.be.not.undefined;
@@ -401,9 +401,9 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(interactionEdge2.properties.sourceComplex).to.equal(complexId1);
     expect(interactionEdge2.properties.targetComplex).to.equal('');
 
-    expect(await neighbourhoodWithoutComplexes('ncbigene:11335')).to.be.null;
-    expect(await neighbourhoodWithoutComplexes('ncbigene:648791')).to.be.null;
-    expect(await neighbourhoodWithoutComplexes('ncbigene:8737')).to.be.null;
+    expect(await neighbourhood('ncbigene:11335', false)).to.be.null;
+    expect(await neighbourhood('ncbigene:648791', false)).to.be.null;
+    expect(await neighbourhood('ncbigene:8737', false)).to.be.null;
   });
 
   it('One complex interacting with another complex', async function () {
@@ -524,9 +524,9 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(interactionEdge6.properties.sourceComplex).to.equal(complexId1);
     expect(interactionEdge6.properties.targetComplex).to.equal(complexId2);
 
-    expect(await neighbourhoodWithoutComplexes('ncbigene:9474')).to.be.null;
+    expect(await neighbourhood('ncbigene:9474', false)).to.be.null;
 
-    const record = await neighbourhoodWithoutComplexes('ncbigene:64112');
+    const record = await neighbourhood('ncbigene:64112', false);
     const testNodes = record.map(row => row.get('m').properties);
     expect(testNodes.length).to.equal(1);
     expect(_.find(testNodes, { id: 'ncbigene:84557' })).to.not.be.undefined;

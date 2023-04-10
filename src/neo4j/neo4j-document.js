@@ -1,4 +1,4 @@
-import { addNode, addEdge } from './neo4j-functions';
+import { createConstraint, addNode, addEdge } from './neo4j-functions';
 
 /**
  * @param { Document } doc : document model instance
@@ -9,7 +9,7 @@ import { addNode, addEdge } from './neo4j-functions';
 export function convertUUIDtoId(doc, id) {
   let node = doc.get(id);
   if (node) {
-    return `${node.association().dbPrefix}:${node.association().id}`;
+    return `${node.association().dbPrefix.toLowerCase()}:${node.association().id}`;
   }
   return 'node not found';
 }
@@ -29,6 +29,8 @@ function makeComponent(complex, doc) {
  * @returns 
  */
 export async function addDocumentToNeo4j(doc) {
+
+  await createConstraint();
 
   // Step 1: Sort each element in a document into one of two categories
   //              a. Node/Gene

@@ -1,5 +1,10 @@
+export const constraint = `CREATE CONSTRAINT FOR (x:Entity) REQUIRE x.id IS UNIQUE`;
+
 export const makeNodeQuery =
-    `MERGE (n:Entity {id: $id})
+    `MATCH (n:Entity {id: $id})
+    WITH collect(n) AS nodes
+    CALL apoc.lock.nodes(nodes)
+    MERGE (n:Entity {id: $id})
     ON CREATE SET n.name = $name`;
 
 export const makeEdgeQuery =

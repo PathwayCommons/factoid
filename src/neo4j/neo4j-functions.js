@@ -1,9 +1,23 @@
 import {
-    giveConnectedInfoByGeneId, makeNodeQuery, makeEdgeQuery,
+    constraint, giveConnectedInfoByGeneId, makeNodeQuery, makeEdgeQuery,
     giveConnectedInfoByGeneIdNoComplexes, giveConnectedInfoForDocument
 } from './query-strings';
 import { guaranteeSession } from './neo4j-driver';
 import _ from 'lodash';
+
+
+export async function createConstraint() {
+    let session;
+    try {
+        session = guaranteeSession();
+        await session.executeWrite(tx => {
+            return tx.run(constraint);
+        });
+    } finally {
+        await session.close();
+    }
+    return;
+}
 
 /**
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"

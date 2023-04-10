@@ -53,6 +53,7 @@ export async function addDocumentToNeo4j(doc) {
           const edgeInfo = {
             id: complex.id(),
             type: 'binding',
+            group: '',
             component: component,
             sourceId: convertUUIDtoId(doc, sourceUUId),
             targetId: convertUUIDtoId(doc, targetUUId),
@@ -80,6 +81,7 @@ export async function addDocumentToNeo4j(doc) {
         const edgeInfo = {
           id: e.id(),
           type: e.type(),
+          group: e.association().getSign().value,
           component: [],
           sourceId: convertUUIDtoId(doc, sourceUUId),
           targetId: convertUUIDtoId(doc, targetUUId),
@@ -96,6 +98,7 @@ export async function addDocumentToNeo4j(doc) {
           const edgeInfo = {
             id: e.id(),
             type: e.type(),
+            group: e.association().getSign().value,
             component: [],
             sourceId: convertUUIDtoId(doc, complexElementSourceUUId),
             targetId: convertUUIDtoId(doc, targetUUId),
@@ -113,6 +116,7 @@ export async function addDocumentToNeo4j(doc) {
           const edgeInfo = {
             id: e.id(),
             type: e.type(),
+            group: e.association().getSign().value,
             component: [],
             sourceId: convertUUIDtoId(doc, sourceUUId),
             targetId: convertUUIDtoId(doc, complexElementTargetUUId),
@@ -133,6 +137,7 @@ export async function addDocumentToNeo4j(doc) {
             const edgeInfo = {
               id: e.id(),
               type: e.type(),
+              group: e.association().getSign().value,
               component: [],
               sourceId: convertUUIDtoId(doc, complexElementSourceUUId),
               targetId: convertUUIDtoId(doc, targetElementSourceUUId),
@@ -160,7 +165,7 @@ export async function addDocumentToNeo4j(doc) {
 
   // Step 3: Make all the edges
   for (const edge of arrEdges) {
-    await addEdge(edge.id, edge.type, edge.component, edge.sourceId, edge.targetId, edge.sourceComplex, edge.targetComplex,
+    await addEdge(edge.id, edge.type, edge.group, edge.component, edge.sourceId, edge.targetId, edge.sourceComplex, edge.targetComplex,
       docCitations.xref, docCitations.doi, docCitations.pmid, docCitations.articleTitle);
   }
 

@@ -30,6 +30,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     await addNode('ncbigene:5597', 'MAPK6');
     await addEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b',
       'phosphorylation',
+      'positive',
       [],
       'ncbigene:5597',
       'ncbigene:207',
@@ -43,6 +44,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     let edge = await getEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b');
     expect(edge.type).to.equal('INTERACTION');
     expect(edge.properties.type).to.equal('phosphorylation');
+    expect(edge.properties.group).to.equal('positive');
     expect(edge.properties.sourceId).to.equal('ncbigene:5597');
     expect(edge.properties.targetId).to.equal('ncbigene:207');
     expect(edge.properties.sourceComplex).to.equal('');
@@ -69,6 +71,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     await addNode('ncbigene:5597', 'MAPK6');
     await addEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b',
       'phosphorylation',
+      'positive',
       [],
       'ncbigene:5597',
       'ncbigene:207',
@@ -81,6 +84,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     expect(await getNumEdges()).equal(1);
     await addEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b',
       'phosphorylation',
+      'positive',
       [],
       'ncbigene:5597',
       'ncbigene:207',
@@ -92,6 +96,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
       'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
     await addEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b',
       'This is a dummy type',
+      'positive',
       [],
       'nc7',
       'ncbigene:207',
@@ -105,6 +110,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     let edge = await getEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b');
     expect(edge.type).to.equal('INTERACTION');
     expect(edge.properties.type).to.equal('phosphorylation');
+    expect(edge.properties.group).to.equal('positive');
     expect(edge.properties.sourceId).to.equal('ncbigene:5597');
     expect(edge.properties.targetId).to.equal('ncbigene:207');
     expect(edge.properties.sourceComplex).to.equal('');
@@ -121,6 +127,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     await addNode('ncbigene:5597', 'MAPK6');
     await addEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b',
       'phosphorylation',
+      'positive',
       [],
       'ncbigene:5597',
       'ncbigene:207',
@@ -135,6 +142,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
 
     expect(mapk6Relationships.length).to.equal(1);
     expect(mapk6Relationships[0].type).to.equal('phosphorylation');
+    expect(mapk6Relationships[0].group).to.equal('positive');
     expect(mapk6Relationships[0].sourceId).to.equal('ncbigene:5597');
     expect(mapk6Relationships[0].targetId).to.equal('ncbigene:207');
     expect(mapk6Relationships[0].sourceComplex).to.equal('');
@@ -157,6 +165,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     await addNode('ncbigene:5597', 'MAPK6');
     await addEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b',
       'phosphorylation',
+      'positive',
       [],
       'ncbigene:5597',
       'ncbigene:207',
@@ -171,6 +180,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
 
     expect(aktRelationships.length).to.equal(1);
     expect(aktRelationships[0].type).to.equal('phosphorylation');
+    expect(aktRelationships[0].group).to.equal('positive');
     expect(aktRelationships[0].sourceId).to.equal('ncbigene:5597');
     expect(aktRelationships[0].targetId).to.equal('ncbigene:207');
     expect(aktRelationships[0].sourceComplex).to.equal('');
@@ -199,6 +209,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     await addNode('ncbigene:5597', 'MAPK6');
     await addEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b',
       'phosphorylation',
+      'positive',
       [],
       'ncbigene:5597',
       'ncbigene:207',

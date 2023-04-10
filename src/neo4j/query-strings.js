@@ -1,4 +1,4 @@
-export const constraint = `CREATE CONSTRAINT FOR (x:Entity) REQUIRE x.id IS UNIQUE`;
+export const constraint = `CREATE CONSTRAINT IF NOT EXISTS FOR (x:Entity) REQUIRE x.id IS UNIQUE`;
 
 export const makeNodeQuery =
     `MATCH (n:Entity {id: $id})

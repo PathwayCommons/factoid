@@ -5,7 +5,6 @@ import {
 import { guaranteeSession } from './neo4j-driver';
 import _ from 'lodash';
 
-
 export async function createConstraint() {
     let session;
     try {

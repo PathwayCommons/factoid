@@ -1,4 +1,4 @@
-import { addNode, addEdge } from './neo4j-functions';
+import { createConstraint, addNode, addEdge } from './neo4j-functions';
 
 /**
  * @param { Document } doc : document model instance
@@ -29,6 +29,8 @@ function makeComponent(complex, doc) {
  * @returns 
  */
 export async function addDocumentToNeo4j(doc) {
+
+  await createConstraint();
 
   // Step 1: Sort each element in a document into one of two categories
   //              a. Node/Gene

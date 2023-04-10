@@ -9,7 +9,7 @@ import { createConstraint, addNode, addEdge } from './neo4j-functions';
 export function convertUUIDtoId(doc, id) {
   let node = doc.get(id);
   if (node) {
-    return `${node.association().dbPrefix}:${node.association().id}`;
+    return `${node.association().dbPrefix.toLowerCase()}:${node.association().id}`;
   }
   return 'node not found';
 }

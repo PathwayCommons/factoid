@@ -12,16 +12,15 @@ const handleDocChange = async (err, item) => {
     return;
   }
 
-  const new_val = _.get( item, ['new_val'] );
-  const { id, secret } = _.pick( new_val, ['id', 'secret'] );
-  const { docDb, eleDb } = await loadTables();
-  const doc = await loadDoc({ docDb, eleDb, id, secret });
-
   try {
+    const new_val = _.get( item, ['new_val'] );
+    const { id, secret } = _.pick( new_val, ['id', 'secret'] );
+    const { docDb, eleDb } = await loadTables();
+    const doc = await loadDoc({ docDb, eleDb, id, secret });
     await addDocumentToNeo4j( doc );
     logger.info( `Added doc to graph DB: ${doc.id()}` );
   } catch ( err ) { // swallow
-    logger.error( `Failed to add doc to graph DB: ${doc.id()}` );
+    logger.error( 'Failed to add doc to graph DB' );
     logger.error( err );
   }
 };
@@ -32,23 +31,25 @@ const docChangefeeds = async () => {
     includeTypes: true,
   };
 
-  const { docDb } = await loadTables();
-  const { rethink: r, conn, table } = docDb;
+  try {
+    const { docDb } = await loadTables();
+    const { rethink: r, conn, table } = docDb;
 
-  // Database restore of doc with public status
-  const toPublicStatusFromNull = r.row( 'new_val' )( 'status' ).eq( 'public' )
-    .and( r.row( 'old_val' ).eq( null ) );
-  // Status changed to 'public'
-  const toPublicStatusFromOtherStatus = r.row( 'new_val' )( 'status' ).eq( 'public' )
-    .and( r.row( 'old_val' )( 'status' ).ne( 'public' ) );
+    // Status changed to 'public'
+    const toPublicStatusFromOtherStatus = r.row( 'new_val' )( 'status' ).eq( 'public' )
+      .and( r.row( 'old_val' )( 'status' ).ne( 'public' ) );
 
-  const docFilter = toPublicStatusFromNull.or( toPublicStatusFromOtherStatus );
+    const docFilter = toPublicStatusFromOtherStatus;
 
-  const cursor = await table.changes( docOpts )
-   .filter( docFilter )
-   .run( conn );
+    const cursor = await table.changes( docOpts )
+     .filter( docFilter )
+     .run( conn );
 
-  return cursor;
+    return cursor;
+  } catch ( err ) { //swallow
+    logger.error( 'Failed to add docChangeFeeds' );
+    logger.error( err );
+  }
 };
 
 const tryInitDriver = async () => {

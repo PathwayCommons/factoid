@@ -13,6 +13,7 @@ import goult2 from './document/doct_tests_2.json';
 import goult3 from './document/doct_tests_3.json';
 import goult4 from './document/doct_tests_4.json';
 import goult5 from './document/doct_tests_5.json';
+import orphans from './document/orphaned_nodes_1.json';
 
 let rdbConn;
 let dbFix;
@@ -70,7 +71,7 @@ describe('03. Tests for Documents', function () {
 
     expect(await getNumNodes()).to.equal(2);
     for (const n of arrNodes) {
-      let id = `${n.association().dbPrefix}:${n.association().id}`;
+      let id = `${n.association().dbPrefix.toLowerCase()}:${n.association().id}`;
       expect(await getGeneName(id)).to.equal(`${n.association().name}`);
     }
 
@@ -117,7 +118,7 @@ describe('03. Tests for Documents', function () {
 
     expect(await getNumNodes()).to.equal(2);
     for (const n of arrNodes) {
-      let id = `${n.association().dbPrefix}:${n.association().id}`;
+      let id = `${n.association().dbPrefix.toLowerCase()}:${n.association().id}`;
       expect(await getGeneName(id)).to.equal(`${n.association().name}`);
     }
 
@@ -164,7 +165,7 @@ describe('03. Tests for Documents', function () {
 
     expect(await getNumNodes()).to.equal(3);
     for (const n of arrNodes) {
-      let id = `${n.association().dbPrefix}:${n.association().id}`;
+      let id = `${n.association().dbPrefix.toLowerCase()}:${n.association().id}`;
       expect(await getGeneName(id)).to.equal(`${n.association().name}`);
     }
 
@@ -211,7 +212,7 @@ describe('03. Tests for Documents', function () {
 
     expect(await getNumNodes()).to.equal(2);
     for (const n of arrNodes) {
-      let id = `${n.association().dbPrefix}:${n.association().id}`;
+      let id = `${n.association().dbPrefix.toLowerCase()}:${n.association().id}`;
       expect(await getGeneName(id)).to.equal(`${n.association().name}`);
     }
 
@@ -258,7 +259,7 @@ describe('03. Tests for Documents', function () {
 
     expect(await getNumNodes()).to.equal(4);
     for (const n of arrNodes) {
-      let id = `${n.association().dbPrefix}:${n.association().id}`;
+      let id = `${n.association().dbPrefix.toLowerCase()}:${n.association().id}`;
       expect(await getGeneName(id)).to.equal(`${n.association().name}`);
     }
 
@@ -305,11 +306,58 @@ describe('03. Tests for Documents', function () {
 
     expect(await getNumNodes()).equal(5);
     for (const n of arrNodes) {
-      let id = `${n.association().dbPrefix}:${n.association().id}`;
+      let id = `${n.association().dbPrefix.toLowerCase()}:${n.association().id}`;
       expect(await getGeneName(id)).to.equal(`${n.association().name}`);
     }
 
     expect(await getNumEdges()).to.equal(5);
+    for (const e of arrEdges) {
+      let edge = await getEdge(e.id());
+      expect(edge.properties.type).to.equal(e.type());
+      expect(edge.properties.group).to.equal(e.association().getSign().value);
+      if (e.association().getSource()) {
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.association().getSource().id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.association().getTarget().id()));
+      } else {
+        expect(edge.properties.sourceId).to.equal(convertUUIDtoId(myDoc, e.elements()[0].id()));
+        expect(edge.properties.targetId).to.equal(convertUUIDtoId(myDoc, e.elements()[1].id()));
+      }
+      expect(edge.type).to.equal('INTERACTION');
+      expect(edge.properties.component).to.deep.equal([]);
+      expect(edge.properties.sourceComplex).to.equal('');
+      expect(edge.properties.targetComplex).to.equal('');
+      expect(edge.properties.xref).to.equal(myDoc.id());
+      expect(edge.properties.doi).to.equal(myDoc.citation().doi);
+      expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
+      expect(edge.properties.articleTitle).to.equal(myDoc.citation().title);
+    }
+  });
+
+  it('Add the elements of orphaned nodes dummy doc to Neo4j db', async function () {
+    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
+    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
+
+    const { document } = await dbFix.Insert(orphans);
+    const { docDb, eleDb } = await loadTables();
+    const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
+    const fixtureDocs = await Promise.all(document.map(loadDocs));
+
+    let myDoc = fixtureDocs[0];
+
+    expect(await getNumNodes()).to.equal(0);
+    expect(await getNumEdges()).to.equal(0);
+    await addDocumentToNeo4j(myDoc);
+
+    let arrNodes = myDoc.elements().filter(ele => ele.isEntity());
+    let arrEdges = myDoc.elements().filter(ele => !(ele.isEntity()));
+
+    expect(await getNumNodes()).to.equal(3);
+    for (const n of arrNodes) {
+      let id = `${n.association().dbPrefix.toLowerCase()}:${n.association().id}`;
+      expect(await getGeneName(id)).to.equal(`${n.association().name}`);
+    }
+
+    expect(await getNumEdges()).to.equal(3);
     for (const e of arrEdges) {
       let edge = await getEdge(e.id());
       expect(edge.properties.type).to.equal(e.type());

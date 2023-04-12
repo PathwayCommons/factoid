@@ -3,9 +3,8 @@ import _ from 'lodash';
 import logger from '../../../logger';
 import { loadDoc, loadTables } from './index';
 import { initDriver } from '../../../../neo4j/neo4j-driver';
-import { addDocumentToNeo4j } from '../../../../neo4j';
+import { addDocumentToNeo4j, deleteAllNodesAndEdges } from '../../../../neo4j';
 import Document from '../../../../model/document';
-import { guaranteeSession } from '../../../../neo4j/neo4j-driver';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
@@ -107,36 +106,17 @@ const docsToRefresh = async () => {
 };
 
 const populateGraphDb = async () => {
-  logger.debug( `Calling populateGraphDb` );
-
   try {
     const docs = await docsToRefresh();
     for ( const doc of docs ) {
       await addDocumentToNeo4j( doc );
     }
     lastUpdateTime( Date.now() );
-    
+
   } catch ( err ) { // swallow
     logger.error( 'Failed to populate graph DB from factoid' );
     logger.error( err );
   }
-};
-
-const clearGraphDb = async () => {
-  logger.debug( `Calling clearGraphDb` );
-  // replace with something like 'deleteAllNodesAndEdges'
-  let session;
-  try {
-    session = guaranteeSession();
-    await session.executeWrite(tx => {
-      return tx.run(`MATCH (n) DETACH DELETE n`);
-    });
-  } catch (error) {
-    throw error;
-  } finally {
-    await session.close();
-  }
-  return;
 };
 
 /**
@@ -156,19 +136,19 @@ export const refreshGraphDB = async refreshPeriodMinutes => {
     logger.debug( `lastUpdateTime: ${lastUpdateTime()}` );      
 
     if( lastUpdateTime() == null ){
-      logger.debug( `lastUpdateTime() == null` );      
+      logger.debug( `lastUpdateTime() is null` );      
       shouldRefresh = true;
     } else {
       const timeSinceLastUpdate = Date.now() - lastUpdateTime();
       shouldRefresh = timeSinceLastUpdate > minutesToMs( refreshPeriodMinutes );
-      logger.debug( `Checking timeSinceLastUpdate: ${timeSinceLastUpdate}` );
-      logger.debug( `minutesToMs( refreshPeriodMinutes ): ${minutesToMs( refreshPeriodMinutes )}` );
+      logger.debug( `Checking time since last update: ${timeSinceLastUpdate}` );
+      logger.debug( `Update when last update time passes: ${minutesToMs( refreshPeriodMinutes )}` );
     }
 
-    logger.debug( `Checking Graph DB refresh status: ${shouldRefresh}` );
+    logger.debug( `Should refresh Graph DB?: ${shouldRefresh}` );
 
     if ( shouldRefresh ){
-      await clearGraphDb();
+      await deleteAllNodesAndEdges();
       await populateGraphDb();
     }
   } catch ( err ) {

@@ -73,13 +73,13 @@ const tryInitDriver = async () => {
  * setupGraphDbFeeds
  * Set up listeners for the specified Changefeeds
  */
-const setupGraphDbFeeds = async () => {
+async function setupGraphDbFeeds() {
   const serverInfo = await tryInitDriver();
   if( !serverInfo ) return;
 
   const cursor = await docChangefeeds();
   cursor.each( handleDocChange );
-};
+}
 
 
 let mtime = null; // milliseconds
@@ -126,7 +126,7 @@ const populateGraphDb = async () => {
  *
  * @param {Number} refreshPeriodMinutes The time, in minutes, between successive refreshes
  */
-export const refreshGraphDB = async refreshPeriodMinutes => {
+async function refreshGraphDB( refreshPeriodMinutes ){
   const SECONDS_PER_MINUTE = 60;
   const MILLISECONDS_PER_SECOND = 1000;
   const minutesToMs = m => m * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
@@ -154,6 +154,9 @@ export const refreshGraphDB = async refreshPeriodMinutes => {
   } catch ( err ) {
     logger.error(`Error in Document update ${err}`);
   }
-};
+}
 
-export default setupGraphDbFeeds;
+export {
+  setupGraphDbFeeds,
+  refreshGraphDB
+};

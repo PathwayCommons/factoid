@@ -21,7 +21,7 @@ import updateCron from './update-cron';
 import { Appsignal } from '@appsignal/nodejs';
 import { expressMiddleware as asExpressMiddleware, expressErrorHandler as asExpressErrorHandler } from '@appsignal/express';
 import { initExportTasks } from './routes/api/document/export';
-import setupGraphDbFeeds from './routes/api/document/graphdb';
+import { setupGraphDbFeeds, refreshGraphDB } from './routes/api/document/graphdb';
 
 let app = express();
 let server = http.createServer(app);
@@ -150,6 +150,7 @@ tryPromise( () => {
       .then( () => db.guaranteeIndex( 'document', 'status' ) )
       .then( log('Set up index for document') )
       .then( setupGraphDbFeeds )
+      .then( refreshGraphDB )
     ;
   };
 

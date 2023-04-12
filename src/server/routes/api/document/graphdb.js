@@ -114,6 +114,8 @@ const populateGraphDb = async () => {
     for ( const doc of docs ) {
       await addDocumentToNeo4j( doc );
     }
+    lastUpdateTime( Date.now() );
+    
   } catch ( err ) { // swallow
     logger.error( 'Failed to populate graph DB from factoid' );
     logger.error( err );
@@ -151,11 +153,16 @@ export const refreshGraphDB = async refreshPeriodMinutes => {
 
   try {
     let shouldRefresh = false;
+    logger.debug( `lastUpdateTime: ${lastUpdateTime()}` );      
+
     if( lastUpdateTime() == null ){
+      logger.debug( `lastUpdateTime() == null` );      
       shouldRefresh = true;
     } else {
       const timeSinceLastUpdate = Date.now() - lastUpdateTime();
       shouldRefresh = timeSinceLastUpdate > minutesToMs( refreshPeriodMinutes );
+      logger.debug( `Checking timeSinceLastUpdate: ${timeSinceLastUpdate}` );
+      logger.debug( `minutesToMs( refreshPeriodMinutes ): ${minutesToMs( refreshPeriodMinutes )}` );
     }
 
     logger.debug( `Checking Graph DB refresh status: ${shouldRefresh}` );

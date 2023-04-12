@@ -3,12 +3,12 @@ import { refreshGraphDB } from './routes/api/document/graphdb';
 
 import {
   DOCUMENT_CRON_UPDATE_PERIOD_DAYS,
-  GRAPHDB_CRON_UPDATE_PERIOD_MINUTES
+  GRAPHDB_CRON_REFRESH_PERIOD_MINUTES
 } from '../config';
 
 const updateCron = async () => {
   await documentUpdate( DOCUMENT_CRON_UPDATE_PERIOD_DAYS );
-  await refreshGraphDB( GRAPHDB_CRON_UPDATE_PERIOD_MINUTES );
+  await refreshGraphDB( GRAPHDB_CRON_REFRESH_PERIOD_MINUTES );
 };
 
 export default updateCron;

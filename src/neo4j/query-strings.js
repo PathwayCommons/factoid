@@ -8,7 +8,10 @@ export const makeNodeQuery =
     ON CREATE SET n.name = $name`;
 
 export const makeEdgeQuery =
-    `MATCH (x:Entity {id: $sourceId})
+    `MATCH (x:Entity {id: $sourceId})-[r:INTERACTION]->(y:Entity {id: $targetId})
+    WITH collect(r) AS relationships
+    CALL apoc.lock.rels(relationships)
+    MATCH (x:Entity {id: $sourceId})
     MATCH (y:Entity {id: $targetId})
     MERGE (x)-[r:INTERACTION {id: $id}]->(y)
     ON CREATE SET r.type = $type,

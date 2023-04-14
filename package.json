@@ -29,7 +29,7 @@
     "test": "mocha -r esm --recursive",
     "test:travis": "run-s lint",
     "ci": "run-s test lint",
-    "neo4j": "node -r esm ./src/neo4j/test-temp-run.js"
+    "neo4j-test": "node --require esm node_modules/mocha/bin/_mocha -u tdd --timeout 999999 --colors neo4j-test"
   },
   "dependencies": {
     "@appsignal/express": "^0.5.1",

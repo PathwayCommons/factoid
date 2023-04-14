@@ -20,6 +20,7 @@ Our data is licensed under [CC0](https://creativecommons.org/publicdomain/zero/1
 
 - [Node.js](https://nodejs.org/en/) >=10
 - [RethinkDB](http://rethinkdb.com/) ^2.3.0
+- [Neo4j](https://neo4j.com/docs/operations-manual/current/installation/) ^5.4.0 and a compatible version of [APOC](https://neo4j.com/labs/apoc/5/installation/)
 
 ## Configuration
 

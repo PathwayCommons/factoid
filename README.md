@@ -169,6 +169,7 @@ The following environment variables should always be set in production instances
 - `npm run clean` : clean the project
 - `npm run watch` : watch mode (debug mode enabled, auto rebuild, livereload)
 - `npm test` : run tests
+- `npm run neo4j-test`: run Neo4j graph database tests
 - `npm run lint` : lint the project
 - `npm run fix` : fix minor linting errors (ones that can be automatically fixed)
 
@@ -183,6 +184,9 @@ All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm te
 The tests expect `rethinkdb` to be running on `localhost` on the default port (28015).
 
 [Chai](http://chaijs.com/) is included to make the tests easier to read and write.
+
+To run Neo4j Graph Database tests: `npm run neo4j-test`
+This test suite expects `neo4j` to be running on `localhost` on the port 7687 in addition to `rethinkdb` on port 28015.
 
 Notes:
 

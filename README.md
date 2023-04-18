@@ -160,6 +160,17 @@ The following environment variables should always be set in production instances
 - `APPSIGNAL_PUSH_API_KEY` : AppSignal API key
 - `APPSIGNAL_APP_ENV` : used to indicate which instance is running (e.g 'master', 'production', 'unstable')
 
+The following lines should be present in the `neo4j.conf` file of `~/neo4j-community-5.X.X/conf`:
+- `server.default_advertised_address=localhost`
+- `server.default_listen_address=0.0.0.0`
+- `server.bolt.enabled=true`
+- `server.bolt.tls_level=DISABLED`
+- `server.bolt.listen_address=:7687`
+- `server.bolt.advertised_address=:7687`
+- `server.http.enabled=true`
+- `server.http.listen_address=:7474`
+- `server.http.advertised_address=:7474`
+
 ## Run targets
 
 - `npm start` : start the server
@@ -187,7 +198,7 @@ The tests expect `rethinkdb` to be running on `localhost` on the default port (2
 [Chai](http://chaijs.com/) is included to make the tests easier to read and write.
 
 To run Neo4j Graph Database tests: `npm run neo4j-test`
-This test suite expects `neo4j` to be running on `localhost` on the port 7687 in addition to `rethinkdb` on port 28015.
+This test suite expects the `neo4j` graph database to be running.
 
 Notes:
 

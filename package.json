@@ -28,8 +28,7 @@
     "watch": "run-p watch:*",
     "test": "mocha -r esm --recursive",
     "test:travis": "run-s lint",
-    "ci": "run-s test lint",
-    "neo4j-test": "node --require esm node_modules/mocha/bin/_mocha -u tdd --timeout 999999 --colors neo4j-test"
+    "ci": "run-s test lint"
   },
   "dependencies": {
     "@appsignal/express": "^0.5.1",

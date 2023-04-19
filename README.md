@@ -20,7 +20,21 @@ Our data is licensed under [CC0](https://creativecommons.org/publicdomain/zero/1
 
 - [Node.js](https://nodejs.org/en/) >=10
 - [RethinkDB](http://rethinkdb.com/) ^2.3.0
-- [Neo4j](https://neo4j.com/docs/operations-manual/current/installation/) ^5.4.0 and a compatible version of [APOC](https://neo4j.com/labs/apoc/5/installation/)
+
+## Required software for Graph Database if Docker not used
+- [Neo4j](https://neo4j.com/docs/operations-manual/current/installation/) ^5.4.0 
+- [APOC](https://neo4j.com/labs/apoc/5/installation/) ^5.4.0
+
+The following lines should be present in the `neo4j.conf` file of `~/neo4j-community-5.X.X/conf`:
+- `server.default_advertised_address=localhost`
+- `server.default_listen_address=0.0.0.0`
+- `server.bolt.enabled=true`
+- `server.bolt.tls_level=DISABLED`
+- `server.bolt.listen_address=:7687`
+- `server.bolt.advertised_address=:7687`
+- `server.http.enabled=true`
+- `server.http.listen_address=:7474`
+- `server.http.advertised_address=:7474`
 
 ## Configuration
 
@@ -160,16 +174,6 @@ The following environment variables should always be set in production instances
 - `APPSIGNAL_PUSH_API_KEY` : AppSignal API key
 - `APPSIGNAL_APP_ENV` : used to indicate which instance is running (e.g 'master', 'production', 'unstable')
 
-The following lines should be present in the `neo4j.conf` file of `~/neo4j-community-5.X.X/conf`:
-- `server.default_advertised_address=localhost`
-- `server.default_listen_address=0.0.0.0`
-- `server.bolt.enabled=true`
-- `server.bolt.tls_level=DISABLED`
-- `server.bolt.listen_address=:7687`
-- `server.bolt.advertised_address=:7687`
-- `server.http.enabled=true`
-- `server.http.listen_address=:7474`
-- `server.http.advertised_address=:7474`
 
 ## Run targets
 
@@ -196,9 +200,6 @@ All files `/test` will be run by [Mocha](https://mochajs.org/).  You can `npm te
 The tests expect `rethinkdb` to be running on `localhost` on the default port (28015).
 
 [Chai](http://chaijs.com/) is included to make the tests easier to read and write.
-
-To run Neo4j Graph Database tests: `npm run neo4j-test`
-This test suite expects the `neo4j` graph database to be running.
 
 Notes:
 

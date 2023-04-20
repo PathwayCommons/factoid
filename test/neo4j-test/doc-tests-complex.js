@@ -6,8 +6,8 @@ import _ from 'lodash';
 import { loadDoc } from '../../src/server/routes/api/document/index.js';
 import { initDriver, closeDriver } from '../../src/neo4j/neo4j-driver.js';
 import { addDocumentToNeo4j, convertUUIDtoId } from '../../src/neo4j/neo4j-document.js';
-import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge, getEdgeByIdAndEndpoints } from '../../src/neo4j/test-functions.js';
-import { neighbourhood } from '../../src/neo4j/neo4j-functions.js';
+import { getGeneName, getNumNodes, getNumEdges, getEdge, getEdgeByIdAndEndpoints } from '../../src/neo4j/test-functions.js';
+import { deleteAllNodesAndEdges, neighbourhood } from '../../src/neo4j/neo4j-functions.js';
 
 import complex1 from './document/complex_tests_1.json';
 import complex2 from './document/complex_tests_2.json';
@@ -24,8 +24,11 @@ const dbTables = ['document', 'element']; // Match fixture (JSON) keys
 
 describe('Neo4j Tests for Documents with Complexes', function () {
 
+  let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
+  let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
+
   /*before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
-    await initDriver();
+    initDriver();
 
     rdbConn = await r.connect({ host: 'localhost', db: dbName });
     const exists = await r.dbList().contains(dbName).run(rdbConn);
@@ -53,9 +56,6 @@ describe('Neo4j Tests for Documents with Complexes', function () {
   });
 
   it('Two nodes in one complex', async function () {
-    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
-    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
-
     const { document } = await dbFix.Insert(complex1);
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
@@ -100,9 +100,6 @@ describe('Neo4j Tests for Documents with Complexes', function () {
   });
 
   it('Three nodes in one complex, edges between them', async function () {
-    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
-    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
-
     const { document } = await dbFix.Insert(complex2);
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
@@ -206,9 +203,6 @@ describe('Neo4j Tests for Documents with Complexes', function () {
   });
 
   it('Two nodes in one complex, 1 node interacting with a non-complex', async function () {
-    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
-    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
-
     const { document } = await dbFix.Insert(complex3);
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
@@ -274,9 +268,6 @@ describe('Neo4j Tests for Documents with Complexes', function () {
   });
 
   it('Two complexes, 1 node from each interacting with a node from the other complex', async function () {
-    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
-    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
-
     const { document } = await dbFix.Insert(complex4);
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
@@ -360,9 +351,6 @@ describe('Neo4j Tests for Documents with Complexes', function () {
   });
 
   it('One complex interacting with one non-complex', async function () {
-    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
-    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
-
     const { document } = await dbFix.Insert(complex5);
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
@@ -420,9 +408,6 @@ describe('Neo4j Tests for Documents with Complexes', function () {
   });
 
   it('One complex interacting with another complex', async function () {
-    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
-    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
-
     const { document } = await dbFix.Insert(complex6);
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
@@ -556,7 +541,7 @@ describe('Neo4j Tests for Documents with Complexes', function () {
     expect(_.find(testNodes, { id: 'ncbigene:84557' })).to.not.be.undefined;
     const testEdges = record.map(row => row.get('r').properties);
     expect(testEdges.length).to.equal(1);
-    expect(_.find(testEdges, { id: '3b8e906f-d7ea-476b-a15c-4d383a603f22'})).to.not.be.undefined;
-
+    expect(_.find(testEdges, { id: '3b8e906f-d7ea-476b-a15c-4d383a603f22' })).to.not.be.undefined;
   });*/
+
 });

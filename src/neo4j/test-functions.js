@@ -1,4 +1,4 @@
-import { numNodes, numEdges, deleteAll, returnEdgeById, returnEdgeByIdAndEndpoints, returnGene } from './query-strings';
+import { numNodes, numEdges, returnEdgeById, returnEdgeByIdAndEndpoints, returnGene } from './query-strings';
 import { guaranteeSession } from './neo4j-driver';
 
 export async function getNode(id) {
@@ -71,21 +71,6 @@ export async function getEdgeByIdAndEndpoints(sourceId, targetId, complexId) {
     await session.close();
   }
   return edge;
-}
-
-export async function deleteAllNodesAndEdges() {
-  let session;
-  try {
-    session = guaranteeSession();
-    await session.executeWrite(tx => {
-      return tx.run(deleteAll);
-    });
-  } catch (error) {
-    throw error;
-  } finally {
-    await session.close();
-  }
-  return;
 }
 
 export async function getNumNodes() {

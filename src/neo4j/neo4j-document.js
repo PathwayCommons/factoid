@@ -30,6 +30,7 @@ function makeComponent(complex, doc) {
 /**
  * addDocumentToNeo4j takes a Document as a parameter and creates the associated nodes 
  * and edges in a Neo4j database
+ * 
  * @param { Document } doc : a document model instance
  * @returns 
  */

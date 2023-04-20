@@ -171,5 +171,5 @@ export async function addDocumentToNeo4j(doc) {
       docCitations.xref, docCitations.doi, docCitations.pmid, docCitations.articleTitle);
   }
 
-  return;
+  return null;
 }

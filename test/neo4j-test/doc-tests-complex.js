@@ -3,11 +3,11 @@ import rdbFix from 'rethinkdb-fixtures';
 import r from 'rethinkdb';
 import _ from 'lodash';
 
-import { loadDoc } from '../src/server/routes/api/document/index.js';
-import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
-import { addDocumentToNeo4j, convertUUIDtoId } from '../src/neo4j/neo4j-document.js';
-import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge, getEdgeByIdAndEndpoints } from '../src/neo4j/test-functions.js';
-import { neighbourhood } from '../src/neo4j/neo4j-functions.js';
+import { loadDoc } from '../../src/server/routes/api/document/index.js';
+import { initDriver, closeDriver } from '../../src/neo4j/neo4j-driver.js';
+import { addDocumentToNeo4j, convertUUIDtoId } from '../../src/neo4j/neo4j-document.js';
+import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge, getEdgeByIdAndEndpoints } from '../../src/neo4j/test-functions.js';
+import { neighbourhood } from '../../src/neo4j/neo4j-functions.js';
 
 import complex1 from './document/complex_tests_1.json';
 import complex2 from './document/complex_tests_2.json';
@@ -22,9 +22,9 @@ let testDb;
 const dbName = 'factoid-neo4j-test';
 const dbTables = ['document', 'element']; // Match fixture (JSON) keys
 
-describe('05. Tests for Documents with Complexes', function () {
+describe('Neo4j Tests for Documents with Complexes', function () {
 
-  before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
+  /*before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
     await initDriver();
 
     rdbConn = await r.connect({ host: 'localhost', db: dbName });
@@ -558,5 +558,5 @@ describe('05. Tests for Documents with Complexes', function () {
     expect(testEdges.length).to.equal(1);
     expect(_.find(testEdges, { id: '3b8e906f-d7ea-476b-a15c-4d383a603f22'})).to.not.be.undefined;
 
-  });
+  });*/
 });

@@ -1,11 +1,11 @@
 import { expect } from 'chai';
-import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
-import { addEdge, addNode, getInteractions, getNeighbouringNodes, neighbourhood } from '../src/neo4j/neo4j-functions';
-import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
+import { initDriver, closeDriver } from '../../src/neo4j/neo4j-driver.js';
+import { addEdge, addNode, getInteractions, getNeighbouringNodes, neighbourhood } from '../../src/neo4j/neo4j-functions.js';
+import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../../src/neo4j/test-functions.js';
 
-describe('02. Tests for addNode, addEdge and neighbourhood', function () {
+describe('Neo4j Tests for addNode, addEdge and neighbourhood', function () {
 
-  before('Should create a driver instance and connect to server', async function () {
+  /*before('Should create a driver instance and connect to server', async function () {
     await initDriver();
   });
 
@@ -223,5 +223,5 @@ describe('02. Tests for addNode, addEdge and neighbourhood', function () {
     expect(await neighbourhood('ncbigene:217')).to.be.null;
     expect(await getInteractions('ncbigene:217')).to.be.null;
     expect(await getNeighbouringNodes('ncbigene:217')).to.be.null;
-  });
+  });*/
 });

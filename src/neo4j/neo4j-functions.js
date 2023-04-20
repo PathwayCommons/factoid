@@ -15,7 +15,7 @@ export async function createConstraint() {
     } finally {
         await session.close();
     }
-    return;
+    return null;
 }
 
 /**
@@ -36,7 +36,7 @@ export async function addNode(id, name) {
     } finally {
         await session.close();
     }
-    return;
+    return null;
 }
 
 /**
@@ -74,7 +74,7 @@ export async function addEdge(id, type, group, component, sourceId, targetId, so
     } finally {
         await session.close();
     }
-    return;
+    return null;
 }
 
 /**

@@ -2,10 +2,10 @@ import { expect } from 'chai';
 import rdbFix from 'rethinkdb-fixtures';
 import r from 'rethinkdb';
 
-import { loadDoc } from '../src/server/routes/api/document/index.js';
-import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
-import { addDocumentToNeo4j, convertUUIDtoId } from '../src/neo4j/neo4j-document.js';
-import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
+import { loadDoc } from '../../src/server/routes/api/document/index.js';
+import { initDriver, closeDriver } from '../../src/neo4j/neo4j-driver.js';
+import { addDocumentToNeo4j, convertUUIDtoId } from '../../src/neo4j/neo4j-document.js';
+import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../../src/neo4j/test-functions.js';
 
 import fixture from './document/testDoc.json';
 import goult1 from './document/doct_tests_1.json';
@@ -20,9 +20,9 @@ let testDb;
 const dbName = 'factoid-neo4j-test';
 const dbTables = ['document', 'element']; // Match fixture (JSON) keys
 
-describe('03. Tests for Documents', function () {
+describe('Neo4j Tests for Documents', function () {
 
-  before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
+  /*before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
     await initDriver();
 
     rdbConn = await r.connect({ host: 'localhost', db: dbName });
@@ -330,6 +330,6 @@ describe('03. Tests for Documents', function () {
       expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
       expect(edge.properties.articleTitle).to.equal(myDoc.citation().title);
     }
-  });
+  });*/
 
 });

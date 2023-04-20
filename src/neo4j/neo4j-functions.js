@@ -1,6 +1,7 @@
 import {
     constraint, giveConnectedInfoByGeneId, makeNodeQuery, makeEdgeQuery,
-    giveConnectedInfoByGeneIdNoComplexes, giveConnectedInfoForDocument
+    giveConnectedInfoByGeneIdNoComplexes, giveConnectedInfoForDocument, 
+    deleteAll
 } from './query-strings';
 import { guaranteeSession } from './neo4j-driver';
 import _ from 'lodash';
@@ -196,4 +197,23 @@ export async function get(id) {
         await session.close();
     }
     return record;
+}
+
+/**
+ * Remove all nodes and edges from the database
+ * @returns Promise<>
+ */
+export async function deleteAllNodesAndEdges() {
+    let session;
+    try {
+        session = guaranteeSession();
+        await session.executeWrite(tx => {
+            return tx.run(deleteAll);
+        });
+    } catch (error) {
+        throw error;
+    } finally {
+        await session.close();
+    }
+    return;
 }

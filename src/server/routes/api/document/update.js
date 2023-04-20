@@ -161,7 +161,9 @@ const update = async updatePeriodDays => {
   try {
     let shouldUpdate = false;
     if( lastUpdateTime() == null ){
-      shouldUpdate = true;
+      // Pass on update following initialization
+      const timeToNextUpdate = Date.now() + daysToMs( updatePeriodDays );
+      lastUpdateTime( timeToNextUpdate );
     } else {
       const timeSinceLastUpdate = Date.now() - lastUpdateTime();
       shouldUpdate = timeSinceLastUpdate > daysToMs( updatePeriodDays );

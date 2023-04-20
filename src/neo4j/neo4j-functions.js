@@ -5,6 +5,11 @@ import {
 import { guaranteeSession } from './neo4j-driver';
 import _ from 'lodash';
 
+/**
+ * Sets a constraint that all nodes must have unique ids in Neo4j graph db
+ * 
+ * @returns 
+ */
 export async function createConstraint() {
     let session;
     try {
@@ -19,6 +24,8 @@ export async function createConstraint() {
 }
 
 /**
+ * Makes one node in Neo4j graph database
+ * 
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
  * @param { String } name
  * @returns
@@ -40,6 +47,8 @@ export async function addNode(id, name) {
 }
 
 /**
+ * Makes one relationship (edge) in Neo4j graph database
+ * 
  * @param { String } id interaction element's UUID (NOT document id)
  * @param { String } type
  * @param { String } sourceId in the form of "dbName:dbId", ex: "ncbigene:207"
@@ -78,6 +87,8 @@ export async function addEdge(id, type, group, component, sourceId, targetId, so
 }
 
 /**
+ * Given a node's id, finds the immediate nodes and edges connected to it
+ * 
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
  * @param { Boolean } withComplexes default true to show complexes
  * @returns null if node not in database, array of objects with
@@ -137,6 +148,9 @@ export async function getInteractions(id, withComplexes = true) {
 }
 
 /**
+ * Returns the results of neighbourhood function in the format of an object
+ * with 2 fields (one for neighbouring nodes and one for edges)
+ * 
  * @param {*} id in the form of "dbName:dbId", ex: "ncbigene:207"
  * @param { Boolean } withComplexes default true to show complexes
  * @returns null if id not found in database, object with 2 fields (one for neighbouring nodes and one for
@@ -155,6 +169,7 @@ export async function neighbourhoodReadable(id, withComplexes = true) {
 
 /**
  * Get the graph pertaining to a specific factoid document
+ * 
  * @param { String } id factoid UUID for document
  * @returns null if document does not exist in database, object with 2 fields (one for nodes and one for
  * edges) otherwise

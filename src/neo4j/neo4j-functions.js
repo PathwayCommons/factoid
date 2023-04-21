@@ -1,10 +1,10 @@
+import _ from 'lodash';
+import { guaranteeSession } from './neo4j-driver.js';
 import {
     constraint, giveConnectedInfoByGeneId, makeNodeQuery, makeEdgeQuery,
-    giveConnectedInfoByGeneIdNoComplexes, giveConnectedInfoForDocument, 
+    giveConnectedInfoByGeneIdNoComplexes, giveConnectedInfoForDocument,
     deleteAll
-} from './query-strings';
-import { guaranteeSession } from './neo4j-driver';
-import _ from 'lodash';
+} from './query-strings.js';
 
 /**
  * Sets a constraint that all nodes must have unique ids in Neo4j graph db
@@ -207,13 +207,13 @@ export async function deleteAllNodesAndEdges() {
     let session;
     try {
         session = guaranteeSession();
-        await session.executeWrite(tx => {
-            return tx.run(deleteAll);
+        await session.executeWrite(async tx => {
+            return await tx.run(deleteAll);
         });
     } catch (error) {
         throw error;
     } finally {
         await session.close();
     }
-    return;
+    return null;
 }

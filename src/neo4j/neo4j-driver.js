@@ -1,5 +1,5 @@
 import neo4j from 'neo4j-driver';
-import { GRAPHDB_CONN, GRAPHDB_USER, GRAPHDB_PASS, GRAPHDB_DBNAME } from '../config';
+import { GRAPHDB_CONN, GRAPHDB_USER, GRAPHDB_PASS, GRAPHDB_DBNAME } from '../config.js';
 const DEFAULT_SESSION_CONFIG = { database: GRAPHDB_DBNAME };
 
 let driver;

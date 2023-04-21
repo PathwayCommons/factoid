@@ -1,5 +1,5 @@
-import { numNodes, numEdges, returnEdgeById, returnEdgeByIdAndEndpoints, returnGene } from './query-strings';
-import { guaranteeSession } from './neo4j-driver';
+import { numNodes, numEdges, returnEdgeById, returnEdgeByIdAndEndpoints, returnGene } from './query-strings.js';
+import { guaranteeSession } from './neo4j-driver.js';
 
 export async function getNode(id) {
   let session;

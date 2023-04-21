@@ -1,4 +1,4 @@
-import { createConstraint, addNode, addEdge } from './neo4j-functions';
+import { createConstraint, addNode, addEdge } from './neo4j-functions.js';
 
 /**
  * @param { Document } doc : document model instance

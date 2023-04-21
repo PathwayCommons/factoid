@@ -1,6 +1,13 @@
 import { numNodes, numEdges, returnEdgeById, returnEdgeByIdAndEndpoints, returnGene } from './query-strings.js';
 import { guaranteeSession } from './neo4j-driver.js';
 
+/**
+ * Given a node id, find the node in Neo4j DB and return 
+ * To see name: getNode(id).properties.name
+ * 
+ * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
+ * @returns null, or record of a node 
+ */
 export async function getNode(id) {
   let session;
   let node;
@@ -22,6 +29,12 @@ export async function getNode(id) {
   return node;
 }
 
+/**
+ * Given a node id, find the node name in Neo4j DB and return
+ * 
+ * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
+ * @returns null, or String
+ */
 export async function getGeneName(id) {
   let node = await getNode(id);
   if (node) {
@@ -30,6 +43,13 @@ export async function getGeneName(id) {
   return null;
 }
 
+/**
+ * Given an edge id, find the edge in Neo4j DB and return
+ * To see type: getEdge(id).properties.type, etc.
+ * 
+ * @param { String } id in the form of factoid UUID
+ * @returns null, or record of an edge. 
+ */
 export async function getEdge(id) {
   let session;
   let edge;
@@ -51,6 +71,15 @@ export async function getEdge(id) {
   return edge;
 }
 
+/**
+ * Given an edge id, find the edge in Neo4j DB and return
+ * To see type: getEdgeByIdAndEndpoints(id).properties.type, etc.
+ * 
+ * @param { String } sourceId in the form of "dbName:dbId", ex: "ncbigene:207"
+ * @param { String } targetId in the form of "dbName:dbId", ex: "ncbigene:207"
+ * @param { String } complexId in the form of factoid UUID
+ * @returns 
+ */
 export async function getEdgeByIdAndEndpoints(sourceId, targetId, complexId) {
   let session;
   let edge;
@@ -73,6 +102,11 @@ export async function getEdgeByIdAndEndpoints(sourceId, targetId, complexId) {
   return edge;
 }
 
+/**
+ * Return number of nodes present in Neo4j DB
+ * 
+ * @returns Int
+ */
 export async function getNumNodes() {
   let session;
   let num;
@@ -90,6 +124,11 @@ export async function getNumNodes() {
   return num;
 }
 
+/**
+ * Return number of edges present in Neo4j DB
+ * 
+ * @returns Int
+ */
 export async function getNumEdges() {
   let session;
   let num;

@@ -15,8 +15,8 @@ export async function createConstraint() {
     let session;
     try {
         session = guaranteeSession();
-        await session.executeWrite(tx => {
-            return tx.run(constraint);
+        await session.executeWrite(async tx => {
+            return await tx.run(constraint);
         });
     } finally {
         await session.close();
@@ -35,8 +35,8 @@ export async function addNode(id, name) {
     let session;
     try {
         session = guaranteeSession();
-        await session.executeWrite(tx => {
-            return tx.run(makeNodeQuery, {
+        await session.executeWrite(async tx => {
+            return await tx.run(makeNodeQuery, {
                 id: id.toLowerCase(),
                 name: name
             });
@@ -65,8 +65,8 @@ export async function addEdge(id, type, group, component, sourceId, targetId, so
     let session;
     try {
         session = guaranteeSession();
-        await session.executeWrite(tx => {
-            return tx.run(makeEdgeQuery, {
+        await session.executeWrite(async tx => {
+            return await tx.run(makeEdgeQuery, {
                 id: id.toLowerCase(),
                 type: type.toLowerCase(),
                 group: group.toLowerCase(),
@@ -100,11 +100,11 @@ export async function neighbourhood(id, withComplexes = true) {
     let record;
     try {
         session = guaranteeSession();
-        let result = await session.executeRead(tx => {
+        let result = await session.executeRead(async tx => {
             if (withComplexes) {
-                return tx.run(giveConnectedInfoByGeneId, { id: id });
+                return await tx.run(giveConnectedInfoByGeneId, { id: id });
             } else {
-                return tx.run(giveConnectedInfoByGeneIdNoComplexes, { id: id });
+                return await tx.run(giveConnectedInfoByGeneIdNoComplexes, { id: id });
             }
         });
         if (result.records.length > 0) {
@@ -180,8 +180,8 @@ export async function get(id) {
     let record;
     try {
         session = guaranteeSession();
-        let result = await session.executeRead(tx => {
-            return tx.run(giveConnectedInfoForDocument, { id: id });
+        let result = await session.executeRead(async tx => {
+            return await tx.run(giveConnectedInfoForDocument, { id: id });
         });
         if (result.records.length > 0) {
             record = {

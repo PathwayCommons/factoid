@@ -33,6 +33,27 @@ let protein = (m, searchTerms, includeOrganism = true) => {
   ];
 };
 
+let entity = (m, searchTerms, includeOrganism = true) => {
+  return [
+    includeOrganism ? h('div.entity-info-section', [
+      h('span.entity-info-title', 'Organism'),
+      h('span', m.organismName)
+    ]) : null,
+    m.summary ?
+      h('div.entity-info-section', [
+        h('span.entity-info-title', 'Summary'),
+        h('span', m.summary)
+      ]): null,
+    h('div.entity-info-section', !m.shortSynonyms ? [] : [
+      h('span.entity-info-title', 'Synonyms'),
+      ...m.shortSynonyms.map( name => h('span.entity-info-alt-name', [
+        h(Highlighter, { text: name, terms: searchTerms })
+      ])),
+      m.shortSynonyms.length === 0 ? '-' : ''
+    ])
+  ];
+};
+
 let ggp = protein;
 let dna = protein;
 let rna = protein;
@@ -96,6 +117,6 @@ let modification = (mod, onEdit) => h('div.entity-info-section.entity-info-mod-s
   ])
 ]);
 
-export const assocDisp = { ggp, dna, rna, protein, modification, chemical, complex, link };
+export const assocDisp = { ggp, dna, rna, protein, modification, chemical, complex, link, entity };
 
 export default assocDisp;

@@ -7,7 +7,7 @@ import * as conf from '../util/conf.js';
 describe('Neo4j Tests for addNode, addEdge and neighbourhood', function () {
   this.timeout(conf.defaultTimeout);
 
-  /*before('Should create a driver instance and connect to server', function () {
+  before('Should create a driver instance and connect to server', function () {
     initDriver();
   });
 
@@ -225,6 +225,6 @@ describe('Neo4j Tests for addNode, addEdge and neighbourhood', function () {
     expect(await neighbourhood('ncbigene:217')).to.be.null;
     expect(await getInteractions('ncbigene:217')).to.be.null;
     expect(await getNeighbouringNodes('ncbigene:217')).to.be.null;
-  });*/
+  });
 
 });

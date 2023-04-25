@@ -24,7 +24,7 @@ const dbTables = ['document', 'element'];
 describe('Neo4j Tests for Search Functions', function () {
   this.timeout(conf.defaultTimeout);
 
-  /*before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
+  before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
     initDriver();
 
     rdbConn = await r.connect({ host: 'localhost', db: dbName });
@@ -259,6 +259,6 @@ describe('Neo4j Tests for Search Functions', function () {
     expect(edges.length).to.equal(2);
     expect(_.find(edges, { id: '3e7c85db-c2a3-4a1f-b96e-6d187c6ab93b', doi: '10.1016/j.jbc.2021.100837' })).to.be.not.undefined;
     expect(_.find(edges, { id: 'e39d0a06-5b02-44e3-9c36-27cc1f9ac08c', doi: '10.1016/j.jbc.2021.100837' })).to.be.not.undefined;
-  });*/
+  });
 
 });

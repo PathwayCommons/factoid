@@ -26,7 +26,7 @@ describe('Neo4j Tests for Documents', function () {
   let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
   let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
 
-  /*before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
+  before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
     initDriver();
 
     rdbConn = await r.connect({ host: 'localhost', db: dbName });
@@ -316,6 +316,6 @@ describe('Neo4j Tests for Documents', function () {
       expect(edge.properties.pmid).to.equal(myDoc.citation().pmid);
       expect(edge.properties.articleTitle).to.equal(myDoc.citation().title);
     }
-  });*/
+  });
 
 });

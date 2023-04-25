@@ -27,7 +27,7 @@ describe('Neo4j Tests for Documents with Complexes', function () {
   let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
   let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
 
-  /*before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
+  before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
     initDriver();
 
     rdbConn = await r.connect({ host: 'localhost', db: dbName });
@@ -542,6 +542,6 @@ describe('Neo4j Tests for Documents with Complexes', function () {
     const testEdges = record.map(row => row.get('r').properties);
     expect(testEdges.length).to.equal(1);
     expect(_.find(testEdges, { id: '3b8e906f-d7ea-476b-a15c-4d383a603f22' })).to.not.be.undefined;
-  });*/
+  });
 
 });

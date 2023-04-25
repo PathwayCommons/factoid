@@ -185,7 +185,6 @@ The following environment variables should always be set in production instances
 - `npm run clean` : clean the project
 - `npm run watch` : watch mode (debug mode enabled, auto rebuild, livereload)
 - `npm test` : run tests
-- `npm run neo4j-test`: run Neo4j graph database tests
 - `npm run lint` : lint the project
 - `npm run fix` : fix minor linting errors (ones that can be automatically fixed)
 

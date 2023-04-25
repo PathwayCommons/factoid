@@ -1460,9 +1460,9 @@ http.get('/(:id).png', function( req, res, next ){
   const fillCache = async doc => {
     const img = await getDocumentImageBufferRatedLimited(doc);
     const cache = { img };
-    const ttl = calcTtl(doc);
+    const maxAge = calcTtl(doc);
 
-    imageCache.set(id, cache, {ttl});
+    imageCache.set(id, cache, maxAge);
 
     return cache;
   };

@@ -13,8 +13,8 @@ export async function getNode(id) {
   let node;
   try {
     session = guaranteeSession();
-    let result = await session.executeRead(tx => {
-      return tx.run(returnGene, { id: id });
+    let result = await session.executeRead(async tx => {
+      return await tx.run(returnGene, { id: id });
     });
     if (result.records.length > 0) {
       node = result.records[0].get('n');
@@ -55,8 +55,8 @@ export async function getEdge(id) {
   let edge;
   try {
     session = guaranteeSession();
-    let result = await session.executeRead(tx => {
-      return tx.run(returnEdgeById, { id: id });
+    let result = await session.executeRead(async tx => {
+      return await tx.run(returnEdgeById, { id: id });
     });
     if (result.records.length > 0) {
       edge = result.records[0].get('r');
@@ -85,8 +85,8 @@ export async function getEdgeByIdAndEndpoints(sourceId, targetId, complexId) {
   let edge;
   try {
     session = guaranteeSession();
-    let result = await session.executeRead(tx => {
-      return tx.run(returnEdgeByIdAndEndpoints,
+    let result = await session.executeRead(async tx => {
+      return await tx.run(returnEdgeByIdAndEndpoints,
         { sourceId: sourceId, targetId: targetId, complexId: complexId });
     });
     if (result.records.length > 0) {
@@ -112,8 +112,8 @@ export async function getNumNodes() {
   let num;
   try {
     session = guaranteeSession();
-    let result = await session.executeRead(tx => {
-      return tx.run(numNodes);
+    let result = await session.executeRead(async tx => {
+      return await tx.run(numNodes);
     });
     num = result.records[0].get(0).toNumber();
   } catch (error) {
@@ -134,8 +134,8 @@ export async function getNumEdges() {
   let num;
   try {
     session = guaranteeSession();
-    let result = await session.executeRead(tx => {
-      return tx.run(numEdges);
+    let result = await session.executeRead(async tx => {
+      return await tx.run(numEdges);
     });
     num = result.records[0].get(0).toNumber();
   } catch (error) {

@@ -175,7 +175,6 @@ The following environment variables should always be set in production instances
 - `APPSIGNAL_PUSH_API_KEY` : AppSignal API key
 - `APPSIGNAL_APP_ENV` : used to indicate which instance is running (e.g 'master', 'production', 'unstable')
 
-
 ## Run targets
 
 - `npm start` : start the server

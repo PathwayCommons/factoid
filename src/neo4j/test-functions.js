@@ -10,20 +10,22 @@ import { guaranteeSession } from './neo4j-driver.js';
  */
 export async function getNode(id) {
   let session;
+  let transaction;
   let node;
   try {
     session = guaranteeSession();
-    let result = await session.executeRead(async tx => {
-      return await tx.run(returnGene, { id: id });
-    });
+    transaction = session.beginTransaction();
+    const result = await transaction.run(returnGene, { id: id });
     if (result.records.length > 0) {
       node = result.records[0].get('n');
     } else {
       node = null;
     }
+    await transaction.commit();
   } catch (error) {
     throw error;
   } finally {
+    await transaction.close();
     await session.close();
   }
   return node;
@@ -52,20 +54,22 @@ export async function getGeneName(id) {
  */
 export async function getEdge(id) {
   let session;
+  let transaction;
   let edge;
   try {
     session = guaranteeSession();
-    let result = await session.executeRead(async tx => {
-      return await tx.run(returnEdgeById, { id: id });
-    });
+    transaction = session.beginTransaction();
+    let result = await transaction.run(returnEdgeById, { id: id });
     if (result.records.length > 0) {
       edge = result.records[0].get('r');
     } else {
       edge = null;
     }
+    await transaction.commit();
   } catch (error) {
     throw error;
   } finally {
+    await transaction.close();
     await session.close();
   }
   return edge;
@@ -82,21 +86,23 @@ export async function getEdge(id) {
  */
 export async function getEdgeByIdAndEndpoints(sourceId, targetId, complexId) {
   let session;
+  let transaction;
   let edge;
   try {
     session = guaranteeSession();
-    let result = await session.executeRead(async tx => {
-      return await tx.run(returnEdgeByIdAndEndpoints,
-        { sourceId: sourceId, targetId: targetId, complexId: complexId });
-    });
+    transaction = session.beginTransaction();
+    let result = await transaction.run(returnEdgeByIdAndEndpoints,
+      { sourceId: sourceId, targetId: targetId, complexId: complexId });
     if (result.records.length > 0) {
       edge = result.records[0].get('r');
     } else {
       edge = null;
     }
+    await transaction.commit();
   } catch (error) {
     throw error;
   } finally {
+    await transaction.close();
     await session.close();
   }
   return edge;
@@ -109,16 +115,18 @@ export async function getEdgeByIdAndEndpoints(sourceId, targetId, complexId) {
  */
 export async function getNumNodes() {
   let session;
+  let transaction;
   let num;
   try {
     session = guaranteeSession();
-    let result = await session.executeRead(async tx => {
-      return await tx.run(numNodes);
-    });
+    transaction = session.beginTransaction();
+    let result = await transaction.run(numNodes);
     num = result.records[0].get(0).toNumber();
+    await transaction.commit();
   } catch (error) {
     throw error;
   } finally {
+    await transaction.close();
     await session.close();
   }
   return num;
@@ -131,16 +139,18 @@ export async function getNumNodes() {
  */
 export async function getNumEdges() {
   let session;
+  let transaction;
   let num;
   try {
     session = guaranteeSession();
-    let result = await session.executeRead(async tx => {
-      return await tx.run(numEdges);
-    });
+    transaction = session.beginTransaction();
+    let result = await transaction.run(numEdges);
     num = result.records[0].get(0).toNumber();
+    await transaction.commit();
   } catch (error) {
     throw error;
   } finally {
+    await transaction.close();
     await session.close();
   }
   return num;

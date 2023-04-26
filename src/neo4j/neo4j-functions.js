@@ -13,12 +13,14 @@ import {
  */
 export async function createConstraint() {
     let session;
+    let transaction;
     try {
         session = guaranteeSession();
-        await session.executeWrite(async tx => {
-            return await tx.run(constraint);
-        });
+        transaction = session.beginTransaction();
+        await transaction.run(constraint);
+        await transaction.commit();
     } finally {
+        await transaction.close();
         await session.close();
     }
     return null;
@@ -33,15 +35,17 @@ export async function createConstraint() {
  */
 export async function addNode(id, name) {
     let session;
+    let transaction;
     try {
         session = guaranteeSession();
-        await session.executeWrite(async tx => {
-            return await tx.run(makeNodeQuery, {
-                id: id.toLowerCase(),
-                name: name
-            });
+        transaction = session.beginTransaction();
+        await transaction.run(makeNodeQuery, {
+            id: id.toLowerCase(),
+            name: name
         });
+        await transaction.commit();
     } finally {
+        await transaction.close();
         await session.close();
     }
     return null;
@@ -63,25 +67,27 @@ export async function addNode(id, name) {
  */
 export async function addEdge(id, type, group, component, sourceId, targetId, sourceComplex, targetComplex, xref, doi, pmid, articleTitle) {
     let session;
+    let transaction;
     try {
         session = guaranteeSession();
-        await session.executeWrite(async tx => {
-            return await tx.run(makeEdgeQuery, {
-                id: id.toLowerCase(),
-                type: type.toLowerCase(),
-                group: group.toLowerCase(),
-                component: component,
-                sourceId: sourceId.toLowerCase(),
-                targetId: targetId.toLowerCase(),
-                sourceComplex: sourceComplex.toLowerCase(),
-                targetComplex: targetComplex.toLowerCase(),
-                xref: xref.toLowerCase(),
-                doi: doi,
-                pmid: pmid,
-                articleTitle: articleTitle
-            });
+        transaction = session.beginTransaction();
+        await transaction.run(makeEdgeQuery, {
+            id: id.toLowerCase(),
+            type: type.toLowerCase(),
+            group: group.toLowerCase(),
+            component: component,
+            sourceId: sourceId.toLowerCase(),
+            targetId: targetId.toLowerCase(),
+            sourceComplex: sourceComplex.toLowerCase(),
+            targetComplex: targetComplex.toLowerCase(),
+            xref: xref.toLowerCase(),
+            doi: doi,
+            pmid: pmid,
+            articleTitle: articleTitle
         });
+        await transaction.commit();
     } finally {
+        await transaction.close();
         await session.close();
     }
     return null;
@@ -97,22 +103,25 @@ export async function addEdge(id, type, group, component, sourceId, targetId, so
  */
 export async function neighbourhood(id, withComplexes = true) {
     let session;
+    let transaction;
+    let result;
     let record;
     try {
         session = guaranteeSession();
-        let result = await session.executeRead(async tx => {
-            if (withComplexes) {
-                return await tx.run(giveConnectedInfoByGeneId, { id: id });
-            } else {
-                return await tx.run(giveConnectedInfoByGeneIdNoComplexes, { id: id });
-            }
-        });
+        transaction = session.beginTransaction();
+        if (withComplexes) {
+            result = await transaction.run(giveConnectedInfoByGeneId, { id: id });
+        } else {
+            result = await transaction.run(giveConnectedInfoByGeneIdNoComplexes, { id: id });
+        }
         if (result.records.length > 0) {
             record = result.records;
         } else {
             record = null;
         }
+        await transaction.commit();
     } finally {
+        await transaction.close();
         await session.close();
     }
     return record;
@@ -177,12 +186,12 @@ export async function neighbourhoodReadable(id, withComplexes = true) {
  */
 export async function get(id) {
     let session;
+    let transaction;
     let record;
     try {
         session = guaranteeSession();
-        let result = await session.executeRead(async tx => {
-            return await tx.run(giveConnectedInfoForDocument, { id: id });
-        });
+        transaction = session.beginTransaction();
+        let result = await transaction.run(giveConnectedInfoForDocument, { id: id });
         if (result.records.length > 0) {
             record = {
                 nodes: _.unionBy(result.records.map(row => { return row.get('n').properties; }),
@@ -193,7 +202,9 @@ export async function get(id) {
         } else {
             record = null;
         }
+        await transaction.commit();
     } finally {
+        await transaction.close();
         await session.close();
     }
     return record;
@@ -205,14 +216,16 @@ export async function get(id) {
  */
 export async function deleteAllNodesAndEdges() {
     let session;
+    let transaction;
     try {
         session = guaranteeSession();
-        await session.executeWrite(async tx => {
-            return await tx.run(deleteAll);
-        });
+        transaction = session.beginTransaction();
+        await transaction.run(deleteAll);
+        await transaction.commit();
     } catch (error) {
         throw error;
     } finally {
+        await transaction.close();
         await session.close();
     }
     return null;

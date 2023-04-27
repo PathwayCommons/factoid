@@ -2,10 +2,11 @@ import { expect } from 'chai';
 import rdbFix from 'rethinkdb-fixtures';
 import r from 'rethinkdb';
 
-import { loadDoc } from '../src/server/routes/api/document/index.js';
-import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
-import { addDocumentToNeo4j, convertUUIDtoId } from '../src/neo4j/neo4j-document.js';
-import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
+import { loadDoc } from '../../src/server/routes/api/document/index.js';
+import { deleteAllNodesAndEdges } from '../../src/neo4j/neo4j-functions.js';
+import { initDriver, closeDriver } from '../../src/neo4j/neo4j-driver.js';
+import { addDocumentToNeo4j, convertUUIDtoId } from '../../src/neo4j/neo4j-document.js';
+import { getGeneName, getNumNodes, getNumEdges, getEdge } from '../../src/neo4j/test-functions.js';
 
 import fixture from './document/testDoc.json';
 import goult1 from './document/doct_tests_1.json';
@@ -20,10 +21,13 @@ let testDb;
 const dbName = 'factoid-neo4j-test';
 const dbTables = ['document', 'element']; // Match fixture (JSON) keys
 
-describe('03. Tests for Documents', function () {
+describe('Neo4j Tests for Documents', function () {
+
+  let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
+  let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
 
   before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
-    await initDriver();
+    initDriver();
 
     rdbConn = await r.connect({ host: 'localhost', db: dbName });
     const exists = await r.dbList().contains(dbName).run(rdbConn);
@@ -51,9 +55,6 @@ describe('03. Tests for Documents', function () {
   });
 
   it('Add the elements of MAPK6-AKT1 dummy doc to Neo4j db', async function () {
-    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
-    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
-
     const { document } = await dbFix.Insert(fixture);
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
@@ -98,9 +99,6 @@ describe('03. Tests for Documents', function () {
   });
 
   it('Add the elements of Goult 1 doc to Neo4j db', async function () {
-    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
-    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
-
     const { document } = await dbFix.Insert(goult1);
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
@@ -145,9 +143,6 @@ describe('03. Tests for Documents', function () {
   });
 
   it('Add the elements of Goult 2 doc to Neo4j db', async function () {
-    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
-    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
-
     const { document } = await dbFix.Insert(goult2);
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
@@ -192,9 +187,6 @@ describe('03. Tests for Documents', function () {
   });
 
   it('Add the elements of Goult 3 doc to Neo4j db', async function () {
-    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
-    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
-
     const { document } = await dbFix.Insert(goult3);
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
@@ -239,9 +231,6 @@ describe('03. Tests for Documents', function () {
   });
 
   it('Add the elements of Goult 4 doc to Neo4j db', async function () {
-    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
-    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
-
     const { document } = await dbFix.Insert(goult4);
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });
@@ -286,9 +275,6 @@ describe('03. Tests for Documents', function () {
   });
 
   it('Add the elements of Goult 5 doc to Neo4j db', async function () {
-    let loadTable = name => ({ rethink: r, conn: rdbConn, db: testDb, table: testDb.table(name) });
-    let loadTables = () => Promise.all(dbTables.map(loadTable)).then(dbInfos => ({ docDb: dbInfos[0], eleDb: dbInfos[1] }));
-
     const { document } = await dbFix.Insert(goult5);
     const { docDb, eleDb } = await loadTables();
     const loadDocs = ({ id, secret }) => loadDoc({ docDb, eleDb, id, secret });

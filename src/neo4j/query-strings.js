@@ -1,3 +1,5 @@
+// The following string templates are Cypher query strings
+
 export const constraint = `CREATE CONSTRAINT IF NOT EXISTS FOR (x:Entity) REQUIRE x.id IS UNIQUE`;
 
 export const makeNodeQuery =

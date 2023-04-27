@@ -1,46 +1,59 @@
+import _ from 'lodash';
+import { guaranteeSession } from './neo4j-driver.js';
 import {
     constraint, giveConnectedInfoByGeneId, makeNodeQuery, makeEdgeQuery,
-    giveConnectedInfoByGeneIdNoComplexes, giveConnectedInfoForDocument, 
+    giveConnectedInfoByGeneIdNoComplexes, giveConnectedInfoForDocument,
     deleteAll
-} from './query-strings';
-import { guaranteeSession } from './neo4j-driver';
-import _ from 'lodash';
+} from './query-strings.js';
 
+/**
+ * Sets a constraint that all nodes must have unique ids in Neo4j graph db
+ * 
+ * @returns 
+ */
 export async function createConstraint() {
     let session;
+    let transaction;
     try {
         session = guaranteeSession();
-        await session.executeWrite(tx => {
-            return tx.run(constraint);
-        });
+        transaction = session.beginTransaction();
+        await transaction.run(constraint);
+        await transaction.commit();
     } finally {
+        await transaction.close();
         await session.close();
     }
-    return;
+    return null;
 }
 
 /**
+ * Makes one node in Neo4j graph database
+ * 
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
  * @param { String } name
  * @returns
  */
 export async function addNode(id, name) {
     let session;
+    let transaction;
     try {
         session = guaranteeSession();
-        await session.executeWrite(tx => {
-            return tx.run(makeNodeQuery, {
-                id: id.toLowerCase(),
-                name: name
-            });
+        transaction = session.beginTransaction();
+        await transaction.run(makeNodeQuery, {
+            id: id.toLowerCase(),
+            name: name
         });
+        await transaction.commit();
     } finally {
+        await transaction.close();
         await session.close();
     }
-    return;
+    return null;
 }
 
 /**
+ * Makes one relationship (edge) in Neo4j graph database
+ * 
  * @param { String } id interaction element's UUID (NOT document id)
  * @param { String } type
  * @param { String } sourceId in the form of "dbName:dbId", ex: "ncbigene:207"
@@ -54,31 +67,35 @@ export async function addNode(id, name) {
  */
 export async function addEdge(id, type, group, component, sourceId, targetId, sourceComplex, targetComplex, xref, doi, pmid, articleTitle) {
     let session;
+    let transaction;
     try {
         session = guaranteeSession();
-        await session.executeWrite(tx => {
-            return tx.run(makeEdgeQuery, {
-                id: id.toLowerCase(),
-                type: type.toLowerCase(),
-                group: group.toLowerCase(),
-                component: component,
-                sourceId: sourceId.toLowerCase(),
-                targetId: targetId.toLowerCase(),
-                sourceComplex: sourceComplex.toLowerCase(),
-                targetComplex: targetComplex.toLowerCase(),
-                xref: xref.toLowerCase(),
-                doi: doi,
-                pmid: pmid,
-                articleTitle: articleTitle
-            });
+        transaction = session.beginTransaction();
+        await transaction.run(makeEdgeQuery, {
+            id: id.toLowerCase(),
+            type: type.toLowerCase(),
+            group: group.toLowerCase(),
+            component: component,
+            sourceId: sourceId.toLowerCase(),
+            targetId: targetId.toLowerCase(),
+            sourceComplex: sourceComplex.toLowerCase(),
+            targetComplex: targetComplex.toLowerCase(),
+            xref: xref.toLowerCase(),
+            doi: doi,
+            pmid: pmid,
+            articleTitle: articleTitle
         });
+        await transaction.commit();
     } finally {
+        await transaction.close();
         await session.close();
     }
-    return;
+    return null;
 }
 
 /**
+ * Given a node's id, finds the immediate nodes and edges connected to it
+ * 
  * @param { String } id in the form of "dbName:dbId", ex: "ncbigene:207"
  * @param { Boolean } withComplexes default true to show complexes
  * @returns null if node not in database, array of objects with
@@ -86,22 +103,25 @@ export async function addEdge(id, type, group, component, sourceId, targetId, so
  */
 export async function neighbourhood(id, withComplexes = true) {
     let session;
+    let transaction;
+    let result;
     let record;
     try {
         session = guaranteeSession();
-        let result = await session.executeRead(tx => {
-            if (withComplexes) {
-                return tx.run(giveConnectedInfoByGeneId, { id: id });
-            } else {
-                return tx.run(giveConnectedInfoByGeneIdNoComplexes, { id: id });
-            }
-        });
+        transaction = session.beginTransaction();
+        if (withComplexes) {
+            result = await transaction.run(giveConnectedInfoByGeneId, { id: id });
+        } else {
+            result = await transaction.run(giveConnectedInfoByGeneIdNoComplexes, { id: id });
+        }
         if (result.records.length > 0) {
             record = result.records;
         } else {
             record = null;
         }
+        await transaction.commit();
     } finally {
+        await transaction.close();
         await session.close();
     }
     return record;
@@ -138,6 +158,9 @@ export async function getInteractions(id, withComplexes = true) {
 }
 
 /**
+ * Returns the results of neighbourhood function in the format of an object
+ * with 2 fields (one for neighbouring nodes and one for edges)
+ * 
  * @param {*} id in the form of "dbName:dbId", ex: "ncbigene:207"
  * @param { Boolean } withComplexes default true to show complexes
  * @returns null if id not found in database, object with 2 fields (one for neighbouring nodes and one for
@@ -156,18 +179,19 @@ export async function neighbourhoodReadable(id, withComplexes = true) {
 
 /**
  * Get the graph pertaining to a specific factoid document
+ * 
  * @param { String } id factoid UUID for document
  * @returns null if document does not exist in database, object with 2 fields (one for nodes and one for
  * edges) otherwise
  */
 export async function get(id) {
     let session;
+    let transaction;
     let record;
     try {
         session = guaranteeSession();
-        let result = await session.executeRead(tx => {
-            return tx.run(giveConnectedInfoForDocument, { id: id });
-        });
+        transaction = session.beginTransaction();
+        let result = await transaction.run(giveConnectedInfoForDocument, { id: id });
         if (result.records.length > 0) {
             record = {
                 nodes: _.unionBy(result.records.map(row => { return row.get('n').properties; }),
@@ -178,7 +202,9 @@ export async function get(id) {
         } else {
             record = null;
         }
+        await transaction.commit();
     } finally {
+        await transaction.close();
         await session.close();
     }
     return record;
@@ -190,15 +216,17 @@ export async function get(id) {
  */
 export async function deleteAllNodesAndEdges() {
     let session;
+    let transaction;
     try {
         session = guaranteeSession();
-        await session.executeWrite(tx => {
-            return tx.run(deleteAll);
-        });
+        transaction = session.beginTransaction();
+        await transaction.run(deleteAll);
+        await transaction.commit();
     } catch (error) {
         throw error;
     } finally {
+        await transaction.close();
         await session.close();
     }
-    return;
+    return null;
 }

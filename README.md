@@ -21,6 +21,21 @@ Our data is licensed under [CC0](https://creativecommons.org/publicdomain/zero/1
 - [Node.js](https://nodejs.org/en/) >=10
 - [RethinkDB](http://rethinkdb.com/) ^2.3.0
 
+## Required software for Graph Database if Docker not used
+- [Neo4j](https://neo4j.com/docs/operations-manual/current/installation/) ^5.4.0 
+- [APOC](https://neo4j.com/labs/apoc/5/installation/) ^5.4.0
+
+The following lines should be present in the `neo4j.conf` file of `~/neo4j-community-5.X.X/conf`:
+- `server.default_advertised_address=localhost`
+- `server.default_listen_address=0.0.0.0`
+- `server.bolt.enabled=true`
+- `server.bolt.tls_level=DISABLED`
+- `server.bolt.listen_address=:7687`
+- `server.bolt.advertised_address=:7687`
+- `server.http.enabled=true`
+- `server.http.listen_address=:7474`
+- `server.http.advertised_address=:7474`
+
 ## Configuration
 
 The following environment variables can be used to configure the server:

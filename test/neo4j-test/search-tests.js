@@ -2,12 +2,12 @@ import { expect } from 'chai';
 import rdbFix from 'rethinkdb-fixtures';
 import r from 'rethinkdb';
 import _ from 'lodash';
+import * as conf from '../util/conf.js';
 
-import { loadDoc } from '../src/server/routes/api/document/index.js';
-import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
-import { neighbourhood, neighbourhoodReadable, getInteractions, getNeighbouringNodes, get } from '../src/neo4j/neo4j-functions.js';
-import { addDocumentToNeo4j } from '../src/neo4j/neo4j-document.js';
-import { deleteAllNodesAndEdges } from '../src/neo4j/test-functions.js';
+import { loadDoc } from '../../src/server/routes/api/document/index.js';
+import { initDriver, closeDriver } from '../../src/neo4j/neo4j-driver.js';
+import { deleteAllNodesAndEdges, neighbourhood, neighbourhoodReadable, getInteractions, getNeighbouringNodes, get } from '../../src/neo4j/neo4j-functions.js';
+import { addDocumentToNeo4j } from '../../src/neo4j/neo4j-document.js';
 
 import goult1 from './document/doct_tests_1.json';
 import goult2 from './document/doct_tests_2.json';
@@ -21,10 +21,11 @@ let testDb;
 const dbName = 'factoid-neo4j-test';
 const dbTables = ['document', 'element'];
 
-describe('04. Tests for search functions', function () {
+describe('Neo4j Tests for Search Functions', function () {
+  this.timeout(conf.defaultTimeout);
 
   before('Create a Neo4j driver instance and connect to server. Connect to RDB', async function () {
-    await initDriver();
+    initDriver();
 
     rdbConn = await r.connect({ host: 'localhost', db: dbName });
     const exists = await r.dbList().contains(dbName).run(rdbConn);

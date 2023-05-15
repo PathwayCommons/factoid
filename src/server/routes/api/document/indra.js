@@ -76,7 +76,9 @@ const semanticSearch = params => {
 // MIRIAM registry names https://registry.identifiers.org/registry/
 const DB_NAMES = Object.freeze({
   DB_NAME_HGNC: 'HGNC',
-  DB_NAME_CHEBI: 'ChEBI'
+  DB_NAME_CHEBI: 'ChEBI',
+  DB_NAME_NCBI_GENE: 'NCBI Gene',
+  DB_NAME_FAMPLEX: 'FamPlex',
 });
 
 // See https://indra.readthedocs.io/en/latest/modules/statements.html for database formats
@@ -86,7 +88,8 @@ const getDocuments = ( templates, queryDoc ) => {
       let agent;
       let xref = getXref( t );
       if ( xref ) {
-        agent = sanitizeId(xref.id) + '@' + xref.db.toUpperCase();
+        const { db, id } = xref;
+        agent = `${id}@${db}`;
       }
       else {
         agent = t.name + '@TEXT';
@@ -108,17 +111,19 @@ const getDocuments = ( templates, queryDoc ) => {
     };
 
     const getXref = t => {
-      let name = t.dbName;
+      let { dbName, namespace, id } = t;
       let xref = null;
 
-      if ( name == DB_NAMES.DB_NAME_CHEBI ) {
-        xref = {
-          id: t.id,
-          db: name
-        };
-      }
-      else {
-        xref = _.find( t.dbXrefs, ['db', DB_NAMES.DB_NAME_HGNC] );
+      switch ( dbName ) {
+        case DB_NAMES.DB_NAME_NCBI_GENE:
+          xref = _.find( t.dbXrefs, ['db', DB_NAMES.DB_NAME_HGNC] );
+          if( xref ) {
+            let { db, id: hgnc_id } = xref;
+            xref = { id: sanitizeId( hgnc_id ), db };
+          }
+          break;
+        default:
+          xref = { id, db: namespace.toUpperCase() };
       }
 
       return xref;

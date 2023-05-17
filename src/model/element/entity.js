@@ -207,13 +207,14 @@ class Entity extends Element {
     let name = this.name() || '';
     let xref = this.getBiopaxXref( omitDbXref );
     let orgId = _.get( this.association(), ['organism'] );
+    let memberXrefs = _.get( this.association(), ['memberXrefs'], null );
     let organism = null;
 
     if ( orgId ) {
       organism = { id: orgId, db: 'taxonomy' };
     }
 
-    let entity = { type, name, xref, organism };
+    let entity = { type, name, xref, organism, memberXrefs };
 
     if ( type == ENTITY_TYPE.COMPLEX ) {
       entity.components = this.participants().map( p => p.toBiopaxTemplate( omitDbXref ) );

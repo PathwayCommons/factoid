@@ -365,6 +365,11 @@ class EntityInfo extends DataComponent {
     let doc = p.document;
     let children = [];
 
+    const citation = doc.citation();
+    const { pmid } = citation;
+
+    const hasPubmedMetadata = pmid != null;
+
     let Loader = ({ loading = true }) => h('div.entity-info-matches-loading' + (loading ? '.entity-info-matches-loading-active' : ''), [
       loading ? h('i.icon.icon-spinner') : h('i.material-icons', 'remove')
     ]);
@@ -596,6 +601,9 @@ class EntityInfo extends DataComponent {
       assocDisp.link(m)
     );
 
+    const relPprs = s.element.relatedPapers();
+    const hasRelatedPapers = relPprs != null && relPprs.length > 0;
+
     if( !doc.editable() ){
       if( assoc == null ){
         const type = s.element.type();
@@ -604,9 +612,16 @@ class EntityInfo extends DataComponent {
         if( isComplex(s.element.type()) ){
           const entityNames = s.element.participants().map(ppt => ppt.name());
           children.push( h('div.entity-info-assoc', targetFromAssoc({ type, name, entityNames }, true )) );
-          children.push( h('div.entity-info-related-papers', [
-            h(RelatedPapers, { document, source: s.element })
-          ]) );
+          
+          if (hasRelatedPapers) {
+            children.push( h('div.entity-info-reld-papers-title', `Recommended articles`) );
+
+            children.push( h('div.entity-info-related-papers', [
+              h(RelatedPapers, { document, source: s.element })
+            ]) );
+          } else {
+            children.push( h('div.editor-coming-soon-placeholder', `Biofactoid is looking for more information about this article from PubMed and pathway databases.  This information will appear here as soon as it is available.`) );
+          }
         } else {
           children.push( h('div.entity-info-no-assoc', [
             h('div.element-info-message.element-info-no-data', [
@@ -618,11 +633,15 @@ class EntityInfo extends DataComponent {
       } else {
         children.push( h('div.entity-info-assoc', allAssoc( assoc, true, false )) );
 
-        children.push( h('div.entity-info-reld-papers-title', `Recommended articles`) );
+        if (hasRelatedPapers) {
+          children.push( h('div.entity-info-reld-papers-title', `Recommended articles`) );
 
-        children.push( h('div.entity-info-related-papers', [
-          h(RelatedPapers, { document, source: s.element })
-        ]) );
+          children.push( h('div.entity-info-related-papers', [
+            h(RelatedPapers, { document, source: s.element })
+          ]) );
+        } else if(!doc.editable()) {
+          children.push( h('div.editor-coming-soon-placeholder', `Biofactoid is looking for more information about this article from PubMed and pathway databases.  This information will appear here as soon as it is available.`) );
+        }
       }
     } else {
       let placeholder;

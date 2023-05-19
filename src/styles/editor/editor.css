@@ -221,6 +221,7 @@
 .editor-read-only .editor-graph {
   right: 0;
   bottom: 50%;
+  margin-bottom: 2em;
 }
 
 .editor-explore-share {
@@ -375,6 +376,13 @@
   justify-content: center;
 }
 
+.editor-caption-text {
+  display: inline-block;
+  background: cyan;
+  background: rgba(255, 255, 255, 0.666);
+  border-radius: 0.25em;
+}
+
 .editor-read-only .editor-caption {
   bottom: 50vh;
   margin: 0.5em;
@@ -392,6 +400,17 @@
   &:not(:focus, :hover) {
     border-color: transparent;
   }
+}
+
+.editor-coming-soon-placeholder {
+  text-align: center;
+  height: 14em;
+  /* background-color: cyan; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  padding: 0 25%;
 }
 
 @media (min-width: 1000px) {

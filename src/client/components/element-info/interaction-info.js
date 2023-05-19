@@ -212,7 +212,9 @@ class InteractionInfo extends DataComponent {
 
     if( stage === STAGES.COMPLETED || !doc.editable() ){
       let showEditButton = doc.editable();
-      let showRelatedPapers = !doc.editable();
+      const relPprs = el.relatedPapers();
+      const hasRelatedPapers = relPprs != null && relPprs.length > 0;
+      let showRelatedPapers = !doc.editable() && hasRelatedPapers;
       let assoc = el.association();
       let summaryChildren = [];
 
@@ -230,17 +232,13 @@ class InteractionInfo extends DataComponent {
       }
 
       if( showRelatedPapers ){
-        // summaryChildren.push( h('div.interaction-info-carousel-title', 'Recommended articles') );
-
-        // summaryChildren.push( h('div.interaction-info-carousel', [
-        //   h(Carousel, { content: CAROUSEL_CONTENT.ABSTRACT })
-        // ]) );
-
         summaryChildren.push( h('div.interaction-info-reld-papers-title', 'Recommended articles') );
         
         summaryChildren.push( h('div.interaction-info-related-papers', [
           h(RelatedPapers, { document, source: el })
         ]) );
+      } else if(!doc.editable()) {
+        summaryChildren.push( h('div.editor-coming-soon-placeholder', `Biofactoid is looking for more information about this article from PubMed and pathway databases.  This information will appear here as soon as it is available.`) );
       }
 
       children.push( h('div.interaction-info-summary', summaryChildren) );

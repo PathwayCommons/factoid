@@ -22,7 +22,7 @@ Our data is licensed under [CC0](https://creativecommons.org/publicdomain/zero/1
 - [RethinkDB](http://rethinkdb.com/) ^2.3.0
 
 ## Required software for Graph Database if Docker not used
-- [Neo4j](https://neo4j.com/docs/operations-manual/current/installation/) ^5.4.0 
+- [Neo4j](https://neo4j.com/docs/operations-manual/current/installation/) ^5.4.0
 - [APOC](https://neo4j.com/labs/apoc/5/installation/) ^5.4.0
 
 The following lines should be present in the `neo4j.conf` file of `~/neo4j-community-5.X.X/conf`:
@@ -163,10 +163,11 @@ The following environment variables should always be set in production instances
 - `BASE_URL` : the production url
 - `API_KEY` : set to a uuid that you keep secret (used in management panel)
 - `TWITTER_ACCOUNT_NAME` : twitter account visible on card
-- `TWITTER_CONSUMER_KEY` : twitter api key
-- `TWITTER_CONSUMER_SECRET` : twitter api secret
-- `TWITTER_ACCESS_TOKEN_KEY` : twitter app key
+- `TWITTER_API_KEY` : twitter api key
+- `TWITTER_API_KEY_SECRET` : twitter api secret
+- `TWITTER_ACCESS_TOKEN` : twitter app key
 - `TWITTER_ACCESS_TOKEN_SECRET` : twitter app secret
+- `TWITTER_BEARER_TOKEN`: twitter bearer token
 - `NCBI_EUTILS_API_KEY`: the API key for pathwaycommons account
 - `EMAIL_ENABLED`: `true` for Mailjet support
 - `SMTP_HOST`: Mailjet host name

@@ -5,7 +5,7 @@ import _ from 'lodash';
 import uuid from 'uuid';
 import fetch from 'node-fetch';
 import cytosnap from 'cytosnap';
-import Twitter from 'twitter';
+import { TwitterApi } from 'twitter-api-v2';
 import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
 import url from 'url';
@@ -33,10 +33,11 @@ import { BASE_URL,
   DEMO_SECRET,
   DOCUMENT_IMAGE_WIDTH,
   DOCUMENT_IMAGE_HEIGHT,
-  TWITTER_CONSUMER_KEY,
-  TWITTER_CONSUMER_SECRET,
-  TWITTER_ACCESS_TOKEN_KEY,
+  TWITTER_API_KEY,
+  TWITTER_API_KEY_SECRET,
+  TWITTER_ACCESS_TOKEN,
   TWITTER_ACCESS_TOKEN_SECRET,
+  TWITTER_BEARER_TOKEN,
   MAX_TWEET_LENGTH,
   DEMO_CAN_BE_SHARED,
   DOCUMENT_IMAGE_PADDING,
@@ -81,12 +82,13 @@ const snapStartPromise = snap.start();
 
 const startCytosnap = () => snapStartPromise;
 
-const twitterClient = new Twitter({
-  consumer_key: TWITTER_CONSUMER_KEY,
-  consumer_secret: TWITTER_CONSUMER_SECRET,
-  access_token_key: TWITTER_ACCESS_TOKEN_KEY,
-  access_token_secret: TWITTER_ACCESS_TOKEN_SECRET,
-});
+const twitterClient = new TwitterApi({
+  appKey: TWITTER_API_KEY,
+  appSecret: TWITTER_API_KEY_SECRET,
+  accessToken: TWITTER_ACCESS_TOKEN,
+  accessSecret: TWITTER_ACCESS_TOKEN_SECRET,
+  bearerToken: TWITTER_BEARER_TOKEN
+}).readWrite;
 
 let newDoc = ({ docDb, eleDb, id, secret, provided }) => {
   return new Document( _.assign( {}, docDb, {
@@ -1488,14 +1490,15 @@ http.get('/(:id).png', function( req, res, next ){
   main();
 });
 
-// tweet a document as a card with a caption (text)
-const tweetDoc = ( doc, text ) => {
+// tweet a thread: document as a card with a caption (text); article link //TODO
+const tweetDoc = async ( doc, text ) => {
   const id = doc.id();
   const url = `${BASE_URL}/document/${id}`;
   const status = `${text} ${url}`;
 
-  return  tryPromise( () => twitterClient.post( 'statuses/update', { status } ) )
-      .then( tweet =>  doc.setTweetMetadata( tweet ) );
+  const tweetOpts = { text: status };
+  const { data: { id: id_str } } = await twitterClient.v2.tweet(tweetOpts);
+  return doc.setTweetMetadata({ id_str });
 };
 
 // reply to document tweet with article link
@@ -1507,7 +1510,7 @@ const tweetArticleReply = async doc => {
   const url = `${DOI_LINK_BASE_URL}${doi}`;
   const status = `Read the paper: ${url}`;
 
-  await twitterClient.post( 'statuses/update', { status, in_reply_to_status_id } );
+  await twitterClient.v2.reply(status, in_reply_to_status_id);
   return doc;
 };
 

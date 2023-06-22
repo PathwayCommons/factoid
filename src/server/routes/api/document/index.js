@@ -37,7 +37,6 @@ import { BASE_URL,
   TWITTER_API_KEY_SECRET,
   TWITTER_ACCESS_TOKEN,
   TWITTER_ACCESS_TOKEN_SECRET,
-  TWITTER_BEARER_TOKEN,
   MAX_TWEET_LENGTH,
   DEMO_CAN_BE_SHARED,
   DOCUMENT_IMAGE_PADDING,
@@ -86,8 +85,7 @@ const twitterClient = new TwitterApi({
   appKey: TWITTER_API_KEY,
   appSecret: TWITTER_API_KEY_SECRET,
   accessToken: TWITTER_ACCESS_TOKEN,
-  accessSecret: TWITTER_ACCESS_TOKEN_SECRET,
-  bearerToken: TWITTER_BEARER_TOKEN
+  accessSecret: TWITTER_ACCESS_TOKEN_SECRET
 }).readWrite;
 
 let newDoc = ({ docDb, eleDb, id, secret, provided }) => {

@@ -1488,7 +1488,7 @@ http.get('/(:id).png', function( req, res, next ){
   main();
 });
 
-// tweet a thread: document as a card with a caption (text); article link //TODO
+// tweet a document as a card with a caption (text)
 const tweetDoc = async ( doc, text ) => {
   const id = doc.id();
   const url = `${BASE_URL}/document/${id}`;

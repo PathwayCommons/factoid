@@ -167,7 +167,6 @@ The following environment variables should always be set in production instances
 - `TWITTER_API_KEY_SECRET` : twitter api secret
 - `TWITTER_ACCESS_TOKEN` : twitter app key
 - `TWITTER_ACCESS_TOKEN_SECRET` : twitter app secret
-- `TWITTER_BEARER_TOKEN`: twitter bearer token
 - `NCBI_EUTILS_API_KEY`: the API key for pathwaycommons account
 - `EMAIL_ENABLED`: `true` for Mailjet support
 - `SMTP_HOST`: Mailjet host name

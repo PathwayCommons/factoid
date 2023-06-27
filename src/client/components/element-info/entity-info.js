@@ -365,11 +365,6 @@ class EntityInfo extends DataComponent {
     let doc = p.document;
     let children = [];
 
-    // const citation = doc.citation();
-    // const { pmid } = citation;
-
-    // const hasPubmedMetadata = pmid != null;
-
     let Loader = ({ loading = true }) => h('div.entity-info-matches-loading' + (loading ? '.entity-info-matches-loading-active' : ''), [
       loading ? h('i.icon.icon-spinner') : h('i.material-icons', 'remove')
     ]);

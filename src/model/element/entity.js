@@ -220,7 +220,9 @@ class Entity extends Element {
       entity.components = this.participants().map( p => p.toBiopaxTemplate( omitDbXref ) );
 
     } else if ( type == ENTITY_TYPE.NAMED_COMPLEX ) {
-      // `namedComplex` shall be defined directly, e.g. UnificationXref
+      // `namedComplex` has no components, defined directly, e.g. UnificationXref
+      entity.type = ENTITY_TYPE.COMPLEX;
+      entity.components = [];
       let componentXrefs = _.get( this.association(), ['componentXrefs'], null );
       if(componentXrefs) entity.componentXrefs = componentXrefs;
 

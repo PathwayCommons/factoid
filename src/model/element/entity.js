@@ -207,17 +207,28 @@ class Entity extends Element {
     let name = this.name() || '';
     let xref = this.getBiopaxXref( omitDbXref );
     let orgId = _.get( this.association(), ['organism'] );
-    let memberXrefs = _.get( this.association(), ['memberXrefs'], null );
     let organism = null;
 
     if ( orgId ) {
       organism = { id: orgId, db: 'taxonomy' };
     }
 
-    let entity = { type, name, xref, organism, memberXrefs };
+    let entity = { type, name, xref, organism };
 
     if ( type == ENTITY_TYPE.COMPLEX ) {
+      // `complex` shall be defined by components
       entity.components = this.participants().map( p => p.toBiopaxTemplate( omitDbXref ) );
+
+    } else if ( type == ENTITY_TYPE.NAMED_COMPLEX ) {
+      // `namedComplex` defined directly, e.g. UnificationXref
+      entity.type = ENTITY_TYPE.COMPLEX;
+      let componentXrefs = _.get( this.association(), ['componentXrefs'], null );
+      if(componentXrefs) entity.componentXrefs = componentXrefs;
+
+    } else {
+      // restricted to subclasses of physical entity
+      let memberXrefs = _.get( this.association(), ['memberXrefs'], null );
+      if(memberXrefs) entity.memberXrefs = memberXrefs;
     }
 
     return entity;

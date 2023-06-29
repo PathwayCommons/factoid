@@ -7,6 +7,11 @@ const { IDENTIFIERS_ORG_ID_BASE_URL } = require('../../../config');
 
 let protein = (m, searchTerms, includeOrganism = true) => {
   return [
+    m.summary ?
+    h('div.entity-info-section', [
+      h('span.entity-info-title', 'Summary'),
+      h('span', m.summary)
+    ]): null,
     includeOrganism ? h('div.entity-info-section', [
       h('span.entity-info-title', 'Organism'),
       h('span', m.organismName)
@@ -36,6 +41,7 @@ let protein = (m, searchTerms, includeOrganism = true) => {
 let ggp = protein;
 let dna = protein;
 let rna = protein;
+let namedComplex = protein;
 
 let chemical = (m, searchTerms) => {
   return [
@@ -96,6 +102,6 @@ let modification = (mod, onEdit) => h('div.entity-info-section.entity-info-mod-s
   ])
 ]);
 
-export const assocDisp = { ggp, dna, rna, protein, modification, chemical, complex, link };
+export const assocDisp = { ggp, dna, rna, protein, modification, chemical, complex, link, namedComplex };
 
 export default assocDisp;

@@ -7,7 +7,8 @@ const ENTITY_TYPE = Object.freeze({
   RNA: 'rna',
   PROTEIN: 'protein',
   CHEMICAL: 'chemical',
-  COMPLEX: 'complex'
+  COMPLEX: 'complex',
+  NAMED_COMPLEX: 'namedComplex'
 });
 
 const NCBI_GENE_TYPE = Object.freeze({

@@ -39,11 +39,12 @@ export const APPSIGNAL_APP_NAME = env('APPSIGNAL_APP_NAME', 'Biofactoid');
 export const APPSIGNAL_APP_ENV = env('APPSIGNAL_APP_ENV', 'development');
 
 // CRON jobs
-export const CRON_SCHEDULE = env('CRON_SCHEDULE', '0 1 * * *');
+export const CRON_SCHEDULE = env('CRON_SCHEDULE', '0 * * * *');
 export const DOCUMENT_CRON_UPDATE_PERIOD_DAYS = env('DOCUMENT_CRON_UPDATE_PERIOD_DAYS', 7);
 export const DOCUMENT_CRON_CREATED_AGE_DAYS = env('DOCUMENT_CRON_CREATED_AGE_DAYS', undefined);
 export const DOCUMENT_CRON_REFRESH_ENABLED = env('DOCUMENT_CRON_REFRESH_ENABLED', true);
 export const DOCUMENT_CRON_UNEDITED_DAYS = env('DOCUMENT_CRON_UNEDITED_DAYS', 30);
+export const GRAPHDB_CRON_REFRESH_PERIOD_MINUTES = env('GRAPHDB_CRON_REFRESH_PERIOD_MINUTES', 1440);
 
 // Connect to localhost
 export const SOCKET_HOST = env('SOCKET_HOST', isClient() ? window.location.hostname : 'localhost');
@@ -114,9 +115,9 @@ export const DOCUMENT_IMAGE_PLL_LIMIT = env('DOCUMENT_IMAGE_PLL_LIMIT', 1);
 export const DOCUMENT_IMAGE_WIDTH = env('DOCUMENT_IMAGE_WIDTH', 2400);
 export const DOCUMENT_IMAGE_HEIGHT = env('DOCUMENT_IMAGE_HEIGHT', 1200);
 export const DOCUMENT_IMAGE_PADDING = env('DOCUMENT_IMAGE_PADDING', 50);
-export const TWITTER_CONSUMER_KEY = env('TWITTER_CONSUMER_KEY', 'SPECIFY_IN_YOUR_ENV');
-export const TWITTER_CONSUMER_SECRET = env('TWITTER_CONSUMER_SECRET', 'SPECIFY_IN_YOUR_ENV');
-export const TWITTER_ACCESS_TOKEN_KEY = env('TWITTER_ACCESS_TOKEN_KEY', 'SPECIFY_IN_YOUR_ENV');
+export const TWITTER_API_KEY = env('TWITTER_API_KEY', 'SPECIFY_IN_YOUR_ENV');
+export const TWITTER_API_KEY_SECRET = env('TWITTER_API_KEY_SECRET', 'SPECIFY_IN_YOUR_ENV');
+export const TWITTER_ACCESS_TOKEN = env('TWITTER_ACCESS_TOKEN', 'SPECIFY_IN_YOUR_ENV');
 export const TWITTER_ACCESS_TOKEN_SECRET = env('TWITTER_ACCESS_TOKEN_SECRET', 'SPECIFY_IN_YOUR_ENV');
 export const TWITTER_ACCOUNT_NAME = env('TWITTER_ACCOUNT_NAME', 'biofactoid');
 export const MAX_TWEET_LENGTH = env('MAX_TWEET_LENGTH', 150);
@@ -144,5 +145,5 @@ export const GTM_ID = env('GTM_ID', 'GTM-NV468LC');
 export const GRAPHDB_CONN = env('GRAPHDB_CONN', 'bolt://localhost:7687');
 export const GRAPHDB_USER = env('GRAPHDB_USER', undefined);
 export const GRAPHDB_PASS = env('GRAPHDB_PASS', undefined);
-export const GRAPHDB_DBNAME = env('GRAPHDB_DBNAME', 'factoid');
+export const GRAPHDB_DBNAME = env('GRAPHDB_DBNAME', 'neo4j');
 

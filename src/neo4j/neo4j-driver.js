@@ -1,5 +1,6 @@
 import neo4j from 'neo4j-driver';
-import { GRAPHDB_CONN, GRAPHDB_USER, GRAPHDB_PASS } from '../config';
+import { GRAPHDB_CONN, GRAPHDB_USER, GRAPHDB_PASS, GRAPHDB_DBNAME } from '../config.js';
+const DEFAULT_SESSION_CONFIG = { database: GRAPHDB_DBNAME };
 
 let driver;
 
@@ -33,4 +34,15 @@ export function getDriver() {
  */
 export async function closeDriver() {
   return driver && driver.close();
+}
+
+/**
+ * Convenience function for accessing a session
+ *
+ * @param {object} sessionConfig additional configuration
+ * @returns A neo4j driver {@link https://neo4j.com/docs/api/javascript-driver/current/class/lib6/session.js~Session.html Session} instance
+ */
+export function guaranteeSession( sessionConfig = DEFAULT_SESSION_CONFIG ) {
+  if ( !driver ) initDriver();
+  return driver.session( sessionConfig );
 }

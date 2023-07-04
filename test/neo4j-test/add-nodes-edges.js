@@ -1,12 +1,14 @@
 import { expect } from 'chai';
-import { initDriver, closeDriver } from '../src/neo4j/neo4j-driver.js';
-import { addEdge, addNode, getInteractions, getNeighbouringNodes, neighbourhood } from '../src/neo4j/neo4j-functions';
-import { deleteAllNodesAndEdges, getGeneName, getNumNodes, getNumEdges, getEdge } from '../src/neo4j/test-functions.js';
+import { initDriver, closeDriver } from '../../src/neo4j/neo4j-driver.js';
+import { deleteAllNodesAndEdges, addEdge, addNode, getInteractions, getNeighbouringNodes, neighbourhood } from '../../src/neo4j/neo4j-functions.js';
+import { getGeneName, getNumNodes, getNumEdges, getEdge } from '../../src/neo4j/test-functions.js';
+import * as conf from '../util/conf.js';
 
-describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
+describe('Neo4j Tests for addNode, addEdge and neighbourhood', function () {
+  this.timeout(conf.defaultTimeout);
 
-  before('Should create a driver instance and connect to server', async function () {
-    await initDriver();
+  before('Should create a driver instance and connect to server', function () {
+    initDriver();
   });
 
   after('Close driver', async function () {
@@ -30,6 +32,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     await addNode('ncbigene:5597', 'MAPK6');
     await addEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b',
       'phosphorylation',
+      'positive',
       [],
       'ncbigene:5597',
       'ncbigene:207',
@@ -43,6 +46,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     let edge = await getEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b');
     expect(edge.type).to.equal('INTERACTION');
     expect(edge.properties.type).to.equal('phosphorylation');
+    expect(edge.properties.group).to.equal('positive');
     expect(edge.properties.sourceId).to.equal('ncbigene:5597');
     expect(edge.properties.targetId).to.equal('ncbigene:207');
     expect(edge.properties.sourceComplex).to.equal('');
@@ -53,7 +57,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     expect(edge.properties.pmid).to.equal('34767444');
     expect(edge.properties.articleTitle).to.equal('MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
   });
-
+ 
   it('Making a duplicate node fails', async function () {
     await addNode('ncbigene:207', 'AKT');
     await addNode('ncbigene:5597', 'MAPK6');
@@ -63,12 +67,13 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     expect(await getNumNodes()).to.equal(2);
     expect(await getGeneName('ncbigene:5597')).to.equal('MAPK6');
   });
-
+ 
   it('Making a duplicate edge fails', async function () {
     await addNode('ncbigene:207', 'AKT');
     await addNode('ncbigene:5597', 'MAPK6');
     await addEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b',
       'phosphorylation',
+      'positive',
       [],
       'ncbigene:5597',
       'ncbigene:207',
@@ -81,6 +86,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     expect(await getNumEdges()).equal(1);
     await addEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b',
       'phosphorylation',
+      'positive',
       [],
       'ncbigene:5597',
       'ncbigene:207',
@@ -92,6 +98,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
       'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
     await addEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b',
       'This is a dummy type',
+      'positive',
       [],
       'nc7',
       'ncbigene:207',
@@ -105,6 +112,7 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     let edge = await getEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b');
     expect(edge.type).to.equal('INTERACTION');
     expect(edge.properties.type).to.equal('phosphorylation');
+    expect(edge.properties.group).to.equal('positive');
     expect(edge.properties.sourceId).to.equal('ncbigene:5597');
     expect(edge.properties.targetId).to.equal('ncbigene:207');
     expect(edge.properties.sourceComplex).to.equal('');
@@ -115,12 +123,13 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     expect(edge.properties.pmid).to.equal('34767444');
     expect(edge.properties.articleTitle).to.equal('MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
   });
-
-  it('Ensure searchGeneById works as expected for MAPK6', async function () {
+ 
+  it('Ensure neighbourhood works as expected for MAPK6', async function () {
     await addNode('ncbigene:207', 'AKT');
     await addNode('ncbigene:5597', 'MAPK6');
     await addEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b',
       'phosphorylation',
+      'positive',
       [],
       'ncbigene:5597',
       'ncbigene:207',
@@ -130,11 +139,12 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
       '10.1126/sciadv.abi6439',
       '34767444',
       'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
-
+ 
     let mapk6Relationships = await getInteractions('ncbigene:5597');
-
+ 
     expect(mapk6Relationships.length).to.equal(1);
     expect(mapk6Relationships[0].type).to.equal('phosphorylation');
+    expect(mapk6Relationships[0].group).to.equal('positive');
     expect(mapk6Relationships[0].sourceId).to.equal('ncbigene:5597');
     expect(mapk6Relationships[0].targetId).to.equal('ncbigene:207');
     expect(mapk6Relationships[0].sourceComplex).to.equal('');
@@ -144,19 +154,20 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     expect(mapk6Relationships[0].doi).to.equal('10.1126/sciadv.abi6439');
     expect(mapk6Relationships[0].pmid).to.equal('34767444');
     expect(mapk6Relationships[0].articleTitle).to.equal('MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
-
+ 
     let mapk6NeighbouringNodes = await getNeighbouringNodes('ncbigene:5597');
-
+ 
     expect(mapk6NeighbouringNodes.length).to.equal(1);
     expect(mapk6NeighbouringNodes[0].id).to.equal('ncbigene:207');
     expect(mapk6NeighbouringNodes[0].name).to.equal('AKT');
   });
-
-  it('Ensure searchGeneById works as expected for AKT', async function () {
+ 
+  it('Ensure neighbourhood works as expected for AKT', async function () {
     await addNode('ncbigene:207', 'AKT');
     await addNode('ncbigene:5597', 'MAPK6');
     await addEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b',
       'phosphorylation',
+      'positive',
       [],
       'ncbigene:5597',
       'ncbigene:207',
@@ -166,11 +177,12 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
       '10.1126/sciadv.abi6439',
       '34767444',
       'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
-
+ 
     let aktRelationships = await getInteractions('ncbigene:207');
-
+ 
     expect(aktRelationships.length).to.equal(1);
     expect(aktRelationships[0].type).to.equal('phosphorylation');
+    expect(aktRelationships[0].group).to.equal('positive');
     expect(aktRelationships[0].sourceId).to.equal('ncbigene:5597');
     expect(aktRelationships[0].targetId).to.equal('ncbigene:207');
     expect(aktRelationships[0].sourceComplex).to.equal('');
@@ -180,25 +192,26 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
     expect(aktRelationships[0].doi).to.equal('10.1126/sciadv.abi6439');
     expect(aktRelationships[0].pmid).to.equal('34767444');
     expect(aktRelationships[0].articleTitle).to.equal('MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
-
+ 
     let aktNeighbouringNodes = await getNeighbouringNodes('ncbigene:207');
-
+ 
     expect(aktNeighbouringNodes.length).to.equal(1);
     expect(aktNeighbouringNodes[0].id).to.equal('ncbigene:5597');
     expect(aktNeighbouringNodes[0].name).to.equal('MAPK6');
   });
-
+ 
   it('Search for a molecule in an empty database yields null', async function () {
     expect(await neighbourhood('ncbigene:207')).to.be.null;
     expect(await getInteractions('ncbigene:207')).to.be.null;
     expect(await getNeighbouringNodes('ncbigene:207')).to.be.null;
   });
-
+ 
   it('Search for a non-existing molecule in a non-empty database yields null', async function () {
     await addNode('ncbigene:207', 'AKT');
     await addNode('ncbigene:5597', 'MAPK6');
     await addEdge('01ef22cc-2a8e-46d4-9060-6bf1c273869b',
       'phosphorylation',
+      'positive',
       [],
       'ncbigene:5597',
       'ncbigene:207',
@@ -208,9 +221,10 @@ describe('02. Tests for addNode, addEdge and seachByGeneId', function () {
       '10.1126/sciadv.abi6439',
       '34767444',
       'MAPK6-AKT signaling promotes tumor growth and resistance to mTOR kinase blockade.');
-
+ 
     expect(await neighbourhood('ncbigene:217')).to.be.null;
     expect(await getInteractions('ncbigene:217')).to.be.null;
     expect(await getNeighbouringNodes('ncbigene:217')).to.be.null;
   });
+
 });

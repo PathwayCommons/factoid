@@ -1,12 +1,23 @@
+// The following string templates are Cypher query strings
+
+export const constraint = `CREATE CONSTRAINT IF NOT EXISTS FOR (x:Entity) REQUIRE x.id IS UNIQUE`;
+
 export const makeNodeQuery =
-    `MERGE (n:Entity {id: $id})
+    `MATCH (n:Entity {id: $id})
+    WITH collect(n) AS nodes
+    CALL apoc.lock.nodes(nodes)
+    MERGE (n:Entity {id: $id})
     ON CREATE SET n.name = $name`;
 
 export const makeEdgeQuery =
-    `MATCH (x:Entity {id: $sourceId})
+    `MATCH (x:Entity {id: $sourceId})-[r:INTERACTION]->(y:Entity {id: $targetId})
+    WITH collect(r) AS relationships
+    CALL apoc.lock.rels(relationships)
+    MATCH (x:Entity {id: $sourceId})
     MATCH (y:Entity {id: $targetId})
     MERGE (x)-[r:INTERACTION {id: $id}]->(y)
     ON CREATE SET r.type = $type,
+    r.group = $group,
     r.component = $component,
     r.sourceId = $sourceId,
     r.targetId = $targetId,
@@ -31,6 +42,10 @@ export const giveConnectedInfoByGeneIdNoComplexes =
     UNION
     MATCH (n:Entity {id: $id})-[r]->(m)
     WHERE r.component = [] AND r.sourceComplex = '' AND r.targetComplex = ''
+    RETURN n, r, m`;
+
+export const giveConnectedInfoForDocument =
+    `MATCH (n)-[r {xref: $id}]->(m)
     RETURN n, r, m`;
 
 export const returnGene =

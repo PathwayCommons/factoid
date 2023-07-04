@@ -21,6 +21,21 @@ Our data is licensed under [CC0](https://creativecommons.org/publicdomain/zero/1
 - [Node.js](https://nodejs.org/en/) >=10
 - [RethinkDB](http://rethinkdb.com/) ^2.3.0
 
+## Required software for Graph Database if Docker not used
+- [Neo4j](https://neo4j.com/docs/operations-manual/current/installation/) ^5.4.0
+- [APOC](https://neo4j.com/labs/apoc/5/installation/) ^5.4.0
+
+The following lines should be present in the `neo4j.conf` file of `~/neo4j-community-5.X.X/conf`:
+- `server.default_advertised_address=localhost`
+- `server.default_listen_address=0.0.0.0`
+- `server.bolt.enabled=true`
+- `server.bolt.tls_level=DISABLED`
+- `server.bolt.listen_address=:7687`
+- `server.bolt.advertised_address=:7687`
+- `server.http.enabled=true`
+- `server.http.listen_address=:7474`
+- `server.http.advertised_address=:7474`
+
 ## Configuration
 
 The following environment variables can be used to configure the server:
@@ -40,6 +55,7 @@ CRON:
 - `DOCUMENT_CRON_CREATED_AGE_DAYS` : Only Documents created fewer than this many days will be selecte for update. When undefined (default), ignores filtering on creation date.
 - `DOCUMENT_CRON_REFRESH_ENABLED` : Flag to enable existing Document metadata to be refreshed (e.g. PubMed UID) (default true).
 - `DOCUMENT_CRON_UNEDITED_DAYS` : Number of days since Documemt was last edited; criteria for trashing
+- `GRAPHDB_CRON_REFRESH_PERIOD_MINUTES` : Minimum time (minutes) between refreshes of graph DB data
 
 Database:
 
@@ -147,9 +163,9 @@ The following environment variables should always be set in production instances
 - `BASE_URL` : the production url
 - `API_KEY` : set to a uuid that you keep secret (used in management panel)
 - `TWITTER_ACCOUNT_NAME` : twitter account visible on card
-- `TWITTER_CONSUMER_KEY` : twitter api key
-- `TWITTER_CONSUMER_SECRET` : twitter api secret
-- `TWITTER_ACCESS_TOKEN_KEY` : twitter app key
+- `TWITTER_API_KEY` : twitter api key
+- `TWITTER_API_KEY_SECRET` : twitter api secret
+- `TWITTER_ACCESS_TOKEN` : twitter app key
 - `TWITTER_ACCESS_TOKEN_SECRET` : twitter app secret
 - `NCBI_EUTILS_API_KEY`: the API key for pathwaycommons account
 - `EMAIL_ENABLED`: `true` for Mailjet support

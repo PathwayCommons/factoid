@@ -1,4 +1,4 @@
-import { addNode, addEdge } from './neo4j-functions';
+import { createConstraint, addNode, addEdge } from './neo4j-functions.js';
 
 /**
  * @param { Document } doc : document model instance
@@ -7,13 +7,18 @@ import { addNode, addEdge } from './neo4j-functions';
  *            if found, 'node not found' otherwise
  */
 export function convertUUIDtoId(doc, id) {
-  let node = doc.get(id);
+  const node = doc.get(id);
   if (node) {
-    return `${node.association().dbPrefix}:${node.association().id}`;
+    return `${node.association().dbPrefix.toLowerCase()}:${node.association().id}`;
   }
   return 'node not found';
 }
 
+/**
+ * @param { Entity } complex : a Complex entity from the doc
+ * @param { Document } doc : a document model instance
+ * @returns an array of the entity ids that form said complex
+ */
 function makeComponent(complex, doc) {
   const component = [];
   for (const entry of complex.elements()) {
@@ -25,10 +30,13 @@ function makeComponent(complex, doc) {
 /**
  * addDocumentToNeo4j takes a Document as a parameter and creates the associated nodes 
  * and edges in a Neo4j database
+ * 
  * @param { Document } doc : a document model instance
  * @returns 
  */
 export async function addDocumentToNeo4j(doc) {
+
+  await createConstraint();
 
   // Step 1: Sort each element in a document into one of two categories
   //              a. Node/Gene
@@ -38,7 +46,7 @@ export async function addDocumentToNeo4j(doc) {
   let docElements = doc.elements();
   for (const e of docElements) {
     if (e.isEntity() && !e.isComplex()) {
-      let nodeInfo = {
+      const nodeInfo = {
         id: `${e.association().dbPrefix}:${e.association().id}`,
         name: e.association().name
       };
@@ -53,6 +61,7 @@ export async function addDocumentToNeo4j(doc) {
           const edgeInfo = {
             id: complex.id(),
             type: 'binding',
+            group: '',
             component: component,
             sourceId: convertUUIDtoId(doc, sourceUUId),
             targetId: convertUUIDtoId(doc, targetUUId),
@@ -80,6 +89,7 @@ export async function addDocumentToNeo4j(doc) {
         const edgeInfo = {
           id: e.id(),
           type: e.type(),
+          group: e.association().getSign().value,
           component: [],
           sourceId: convertUUIDtoId(doc, sourceUUId),
           targetId: convertUUIDtoId(doc, targetUUId),
@@ -96,6 +106,7 @@ export async function addDocumentToNeo4j(doc) {
           const edgeInfo = {
             id: e.id(),
             type: e.type(),
+            group: e.association().getSign().value,
             component: [],
             sourceId: convertUUIDtoId(doc, complexElementSourceUUId),
             targetId: convertUUIDtoId(doc, targetUUId),
@@ -113,6 +124,7 @@ export async function addDocumentToNeo4j(doc) {
           const edgeInfo = {
             id: e.id(),
             type: e.type(),
+            group: e.association().getSign().value,
             component: [],
             sourceId: convertUUIDtoId(doc, sourceUUId),
             targetId: convertUUIDtoId(doc, complexElementTargetUUId),
@@ -133,6 +145,7 @@ export async function addDocumentToNeo4j(doc) {
             const edgeInfo = {
               id: e.id(),
               type: e.type(),
+              group: e.association().getSign().value,
               component: [],
               sourceId: convertUUIDtoId(doc, complexElementSourceUUId),
               targetId: convertUUIDtoId(doc, targetElementSourceUUId),
@@ -146,7 +159,7 @@ export async function addDocumentToNeo4j(doc) {
     }
   }
 
-  let docCitations = {
+  const docCitations = {
     xref: doc.id(),
     doi: doc.citation().doi ? doc.citation().doi : 'not found',
     pmid: doc.citation().pmid ? doc.citation().pmid : 'not found',
@@ -160,9 +173,9 @@ export async function addDocumentToNeo4j(doc) {
 
   // Step 3: Make all the edges
   for (const edge of arrEdges) {
-    await addEdge(edge.id, edge.type, edge.component, edge.sourceId, edge.targetId, edge.sourceComplex, edge.targetComplex,
+    await addEdge(edge.id, edge.type, edge.group, edge.component, edge.sourceId, edge.targetId, edge.sourceComplex, edge.targetComplex,
       docCitations.xref, docCitations.doi, docCitations.pmid, docCitations.articleTitle);
   }
 
-  return;
+  return null;
 }

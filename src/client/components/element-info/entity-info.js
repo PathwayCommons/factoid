@@ -612,7 +612,6 @@ class EntityInfo extends DataComponent {
         if( isComplex(s.element.type()) ){
           const entityNames = s.element.participants().map(ppt => ppt.name());
           children.push( h('div.entity-info-assoc', targetFromAssoc({ type, name, entityNames }, true )) );
-          
           if (hasRelatedPapers) {
             children.push( h('div.entity-info-reld-papers-title', `Recommended articles`) );
 

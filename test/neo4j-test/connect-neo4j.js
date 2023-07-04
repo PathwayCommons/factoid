@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import neo4j from 'neo4j-driver';
 
-import { closeDriver, getDriver, initDriver } from '../src/neo4j/neo4j-driver.js';
+import { closeDriver, getDriver, initDriver } from '../../src/neo4j/neo4j-driver.js';
 
-describe('01. Initiate Driver', () => {
+describe('Neo4j Initiate Driver', () => {
   it('initDriver Should initialize and return a driver', () => {
     const driver = initDriver();
     expect(driver).an.instanceof(neo4j.Driver);

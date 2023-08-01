@@ -1,0 +1,251 @@
+{
+  "indexed": {
+    "date-parts": [
+      [
+        2023,
+        7,
+        20
+      ]
+    ],
+    "date-time": "2023-07-20T04:46:29Z",
+    "timestamp": 1689828389164
+  },
+  "posted": {
+    "date-parts": [
+      [
+        2023,
+        7,
+        19
+      ]
+    ]
+  },
+  "group-title": "elife",
+  "reference-count": 0,
+  "publisher": "eLife Sciences Publications, Ltd",
+  "license": [
+    {
+      "start": {
+        "date-parts": [
+          [
+            2023,
+            7,
+            19
+          ]
+        ],
+        "date-time": "2023-07-19T00:00:00Z",
+        "timestamp": 1689724800000
+      },
+      "content-version": "unspecified",
+      "delay-in-days": 0,
+      "URL": "http:\/\/creativecommons.org\/licenses\/by\/4.0\/"
+    }
+  ],
+  "content-domain": {
+    "domain": [],
+    "crossmark-restriction": false
+  },
+  "short-container-title": [],
+  "DOI": "10.7554\/elife.87468.2",
+  "type": "posted-content",
+  "created": {
+    "date-parts": [
+      [
+        2023,
+        7,
+        19
+      ]
+    ],
+    "date-time": "2023-07-19T13:20:50Z",
+    "timestamp": 1689772850000
+  },
+  "source": "Crossref",
+  "is-referenced-by-count": 0,
+  "title": [
+    "Structural and mechanistic insights into the MCM8\/9 helicase complex"
+  ],
+  "prefix": "10.7554",
+  "author": [
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0002-7079-0293",
+      "authenticated-orcid": false,
+      "given": "Zhuangfeng",
+      "family": "Weng",
+      "sequence": "first",
+      "affiliation": [
+        {
+          "name": "Shenzhen Key Laboratory for Systems Medicine in Inflammatory Diseases, School of Medicine, Shenzhen Campus of Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+        }
+      ]
+    },
+    {
+      "given": "Jiefu",
+      "family": "Zheng",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Shenzhen Key Laboratory for Systems Medicine in Inflammatory Diseases, School of Medicine, Shenzhen Campus of Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+        }
+      ]
+    },
+    {
+      "given": "Yiyi",
+      "family": "Zhou",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Shenzhen Key Laboratory for Systems Medicine in Inflammatory Diseases, School of Medicine, Shenzhen Campus of Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+        }
+      ]
+    },
+    {
+      "given": "Zuer",
+      "family": "Lu",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "State Key Laboratory of Protein and Plant Gene Research, School of Life Sciences, Peking University, Beijing, China"
+        }
+      ]
+    },
+    {
+      "given": "Yixi",
+      "family": "Wu",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Shenzhen Key Laboratory for Systems Medicine in Inflammatory Diseases, School of Medicine, Shenzhen Campus of Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+        }
+      ]
+    },
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0001-5711-2618",
+      "authenticated-orcid": false,
+      "given": "Dongyi",
+      "family": "Xu",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "State Key Laboratory of Protein and Plant Gene Research, School of Life Sciences, Peking University, Beijing, China"
+        }
+      ]
+    },
+    {
+      "given": "Huanhuan",
+      "family": "Li",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Department of Colorectal Surgery, The Sixth Affiliated Hospital, Sun Yat-sen University, Guangdong Institute of Gastroenterology, Guangdong Provincial Key Laboratory of Colorectal and Pelvic Floor Diseases, Guangzhou, Guangdong 510655, China"
+        }
+      ]
+    },
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0002-1803-3121",
+      "authenticated-orcid": false,
+      "given": "Huanhuan",
+      "family": "Liang",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Pharmaceutical Sciences (Shenzhen), Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+        }
+      ]
+    },
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0002-1835-0397",
+      "authenticated-orcid": false,
+      "given": "Yingfang",
+      "family": "Liu",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Shenzhen Key Laboratory for Systems Medicine in Inflammatory Diseases, School of Medicine, Shenzhen Campus of Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+        },
+        {
+          "name": "Department of Colorectal Surgery, The Sixth Affiliated Hospital, Sun Yat-sen University, Guangdong Institute of Gastroenterology, Guangdong Provincial Key Laboratory of Colorectal and Pelvic Floor Diseases, Guangzhou, Guangdong 510655, China"
+        }
+      ]
+    }
+  ],
+  "member": "4374",
+  "container-title": [],
+  "original-title": [],
+  "deposited": {
+    "date-parts": [
+      [
+        2023,
+        7,
+        19
+      ]
+    ],
+    "date-time": "2023-07-19T13:32:39Z",
+    "timestamp": 1689773559000
+  },
+  "score": 1,
+  "resource": {
+    "primary": {
+      "URL": "https:\/\/elifesciences.org\/reviewed-preprints\/87468v2"
+    }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+    "date-parts": [
+      [
+        2023,
+        7,
+        19
+      ]
+    ]
+  },
+  "references-count": 0,
+  "URL": "http:\/\/dx.doi.org\/10.7554\/elife.87468.2",
+  "relation": {
+    "has-version": [
+      {
+        "id-type": "doi",
+        "id": "10.7554\/eLife.87468.1",
+        "asserted-by": "subject"
+      }
+    ],
+    "is-version-of": [
+      {
+        "id-type": "doi",
+        "id": "10.1101\/2022.01.26.477944",
+        "asserted-by": "subject"
+      }
+    ],
+    "has-review": [
+      {
+        "id-type": "doi",
+        "id": "10.7554\/eLife.87468.2.sa1",
+        "asserted-by": "object"
+      },
+      {
+        "id-type": "doi",
+        "id": "10.7554\/eLife.87468.2.sa0",
+        "asserted-by": "object"
+      },
+      {
+        "id-type": "doi",
+        "id": "10.7554\/eLife.87468.2.sa3",
+        "asserted-by": "object"
+      },
+      {
+        "id-type": "doi",
+        "id": "10.7554\/eLife.87468.2.sa2",
+        "asserted-by": "object"
+      }
+    ]
+  },
+  "published": {
+    "date-parts": [
+      [
+        2023,
+        7,
+        19
+      ]
+    ]
+  },
+  "subtype": "preprint"
+}

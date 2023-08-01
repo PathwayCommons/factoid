@@ -1,0 +1,999 @@
+{
+  "indexed": {
+    "date-parts": [
+      [
+        2023,
+        6,
+        7
+      ]
+    ],
+    "date-time": "2023-06-07T17:53:03Z",
+    "timestamp": 1686160383423
+  },
+  "reference-count": 44,
+  "publisher": "eLife Sciences Publications, Ltd",
+  "license": [
+    {
+      "start": {
+        "date-parts": [
+          [
+            2021,
+            12,
+            3
+          ]
+        ],
+        "date-time": "2021-12-03T00:00:00Z",
+        "timestamp": 1638489600000
+      },
+      "content-version": "vor",
+      "delay-in-days": 0,
+      "URL": "http:\/\/creativecommons.org\/licenses\/by\/4.0\/"
+    },
+    {
+      "start": {
+        "date-parts": [
+          [
+            2021,
+            12,
+            3
+          ]
+        ],
+        "date-time": "2021-12-03T00:00:00Z",
+        "timestamp": 1638489600000
+      },
+      "content-version": "am",
+      "delay-in-days": 0,
+      "URL": "http:\/\/creativecommons.org\/licenses\/by\/4.0\/"
+    },
+    {
+      "start": {
+        "date-parts": [
+          [
+            2021,
+            12,
+            3
+          ]
+        ],
+        "date-time": "2021-12-03T00:00:00Z",
+        "timestamp": 1638489600000
+      },
+      "content-version": "tdm",
+      "delay-in-days": 0,
+      "URL": "http:\/\/creativecommons.org\/licenses\/by\/4.0\/"
+    }
+  ],
+  "funder": [
+    {
+      "DOI": "10.13039\/100000051",
+      "name": "National Human Genome Research Institute",
+      "doi-asserted-by": "publisher",
+      "award": [
+        "U41 HG006623"
+      ]
+    },
+    {
+      "DOI": "10.13039\/100000051",
+      "name": "National Human Genome Research Institute",
+      "doi-asserted-by": "publisher",
+      "award": [
+        "U41 HG003751"
+      ]
+    },
+    {
+      "DOI": "10.13039\/100000051",
+      "name": "National Human Genome Research Institute",
+      "doi-asserted-by": "publisher",
+      "award": [
+        "R01 HG009979"
+      ]
+    },
+    {
+      "DOI": "10.13039\/100000057",
+      "name": "National Institute of General Medical Sciences",
+      "doi-asserted-by": "publisher",
+      "award": [
+        "P41 GM103504"
+      ]
+    },
+    {
+      "DOI": "10.13039\/100000185",
+      "name": "Defense Advanced Research Projects Agency",
+      "doi-asserted-by": "publisher",
+      "award": [
+        "Big Mechanism"
+      ]
+    },
+    {
+      "DOI": "10.13039\/100000185",
+      "name": "Defense Advanced Research Projects Agency",
+      "doi-asserted-by": "publisher",
+      "award": [
+        "Communicating with Computers"
+      ]
+    },
+    {
+      "DOI": "10.13039\/100000185",
+      "name": "Defense Advanced Research Projects Agency",
+      "doi-asserted-by": "publisher",
+      "award": [
+        "ARO W911NF-14-C-0119"
+      ]
+    },
+    {
+      "DOI": "10.13039\/100000185",
+      "name": "Defense Advanced Research Projects Agency",
+      "doi-asserted-by": "publisher",
+      "award": [
+        "ARO W911NF-15-1-054"
+      ]
+    }
+  ],
+  "content-domain": {
+    "domain": [
+      "elifesciences.org"
+    ],
+    "crossmark-restriction": false
+  },
+  "short-container-title": [],
+  "accepted": {
+    "date-parts": [
+      [
+        2021,
+        12,
+        2
+      ]
+    ]
+  },
+  "abstract": "<jats:p>Making the knowledge contained in scientific papers machine-readable and formally computable would allow researchers to take full advantage of this information by enabling integration with other knowledge sources to support data analysis and interpretation. Here we describe Biofactoid, a web-based platform that allows scientists to specify networks of interactions between genes, their products, and chemical compounds, and then translates this information into a representation suitable for computational analysis, search and discovery. We also report the results of a pilot study to encourage the wide adoption of Biofactoid by the scientific community.<\/jats:p>",
+  "DOI": "10.7554\/elife.68292",
+  "type": "journal-article",
+  "created": {
+    "date-parts": [
+      [
+        2021,
+        12,
+        3
+      ]
+    ],
+    "date-time": "2021-12-03T13:02:15Z",
+    "timestamp": 1638536535000
+  },
+  "update-policy": "http:\/\/dx.doi.org\/10.7554\/elife.68292",
+  "source": "Crossref",
+  "is-referenced-by-count": 7,
+  "title": [
+    "Author-sourced capture of pathway knowledge in computable form using Biofactoid"
+  ],
+  "prefix": "10.7554",
+  "volume": "10",
+  "author": [
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0002-8912-5699",
+      "authenticated-orcid": true,
+      "given": "Jeffrey V",
+      "family": "Wong",
+      "sequence": "first",
+      "affiliation": [
+        {
+          "name": "The Donnelly Centre, University of Toronto",
+          "place": [
+            "Toronto, Canada"
+          ]
+        }
+      ]
+    },
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0003-0169-0480",
+      "authenticated-orcid": true,
+      "given": "Max",
+      "family": "Franz",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "The Donnelly Centre, University of Toronto",
+          "place": [
+            "Toronto, Canada"
+          ]
+        }
+      ]
+    },
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0002-7556-093X",
+      "authenticated-orcid": true,
+      "given": "Metin Can",
+      "family": "Siper",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Computational Biology Program, Oregon Health and Science University",
+          "place": [
+            "Portland, United States"
+          ]
+        }
+      ]
+    },
+    {
+      "given": "Dylan",
+      "family": "Fong",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "The Donnelly Centre, University of Toronto",
+          "place": [
+            "Toronto, Canada"
+          ]
+        }
+      ]
+    },
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0002-4915-6642",
+      "authenticated-orcid": true,
+      "given": "Funda",
+      "family": "Durupinar",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Computer Science Department, University of Massachusetts Boston",
+          "place": [
+            "Boston, United States"
+          ]
+        }
+      ]
+    },
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0003-4650-6181",
+      "authenticated-orcid": true,
+      "given": "Christian",
+      "family": "Dallago",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Department of Cell Biology, Harvard Medical School",
+          "place": [
+            "Boston, United States"
+          ]
+        },
+        {
+          "name": "Department of Systems Biology, Harvard Medical School",
+          "place": [
+            "Boston, United States"
+          ]
+        },
+        {
+          "name": "Department of Informatics, Technische Universität München",
+          "place": [
+            "Garching, Germany"
+          ]
+        }
+      ]
+    },
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0001-5709-371X",
+      "authenticated-orcid": true,
+      "given": "Augustin",
+      "family": "Luna",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Department of Cell Biology, Harvard Medical School",
+          "place": [
+            "Boston, United States"
+          ]
+        },
+        {
+          "name": "Department of Data Sciences, Dana-Farber Cancer Institute",
+          "place": [
+            "Boston, United States"
+          ]
+        },
+        {
+          "name": "Broad Institute, Massachusetts Institute of Technology, Harvard University",
+          "place": [
+            "Boston, United States"
+          ]
+        }
+      ]
+    },
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0001-9621-5046",
+      "authenticated-orcid": true,
+      "given": "John",
+      "family": "Giorgi",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "The Donnelly Centre, University of Toronto",
+          "place": [
+            "Toronto, Canada"
+          ]
+        }
+      ]
+    },
+    {
+      "given": "Igor",
+      "family": "Rodchenkov",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "The Donnelly Centre, University of Toronto",
+          "place": [
+            "Toronto, Canada"
+          ]
+        }
+      ]
+    },
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0002-0239-5259",
+      "authenticated-orcid": true,
+      "given": "Özgün",
+      "family": "Babur",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Computer Science Department, University of Massachusetts Boston",
+          "place": [
+            "Boston, United States"
+          ]
+        }
+      ]
+    },
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0001-6095-2466",
+      "authenticated-orcid": true,
+      "given": "John A",
+      "family": "Bachman",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Laboratory of Systems Pharmacology, Harvard Medical School",
+          "place": [
+            "Boston, United States"
+          ]
+        }
+      ]
+    },
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0001-9439-5346",
+      "authenticated-orcid": true,
+      "given": "Benjamin M",
+      "family": "Gyori",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Laboratory of Systems Pharmacology, Harvard Medical School",
+          "place": [
+            "Boston, United States"
+          ]
+        }
+      ]
+    },
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0002-3663-7113",
+      "authenticated-orcid": true,
+      "given": "Emek",
+      "family": "Demir",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Computational Biology Program, Oregon Health and Science University",
+          "place": [
+            "Portland, United States"
+          ]
+        }
+      ]
+    },
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0003-0185-8861",
+      "authenticated-orcid": true,
+      "given": "Gary D",
+      "family": "Bader",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "The Donnelly Centre, University of Toronto",
+          "place": [
+            "Toronto, Canada"
+          ]
+        },
+        {
+          "name": "Department of Computer Science, Department of Molecular Genetics, University of Toronto",
+          "place": [
+            "Toronto, United States"
+          ]
+        },
+        {
+          "name": "The Lunenfeld-Tanenbaum Research Institute, Mount Sinai Hospital",
+          "place": [
+            "Toronto, Canada"
+          ]
+        },
+        {
+          "name": "Princess Margaret Cancer Centre, University Health Network",
+          "place": [
+            "Toronto, Canada"
+          ]
+        }
+      ]
+    },
+    {
+      "ORCID": "http:\/\/orcid.org\/0000-0001-6059-6270",
+      "authenticated-orcid": true,
+      "given": "Chris",
+      "family": "Sander",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Department of Data Sciences, Dana-Farber Cancer Institute",
+          "place": [
+            "Boston, United States"
+          ]
+        },
+        {
+          "name": "Broad Institute, Massachusetts Institute of Technology, Harvard University",
+          "place": [
+            "Boston, United States"
+          ]
+        }
+      ]
+    }
+  ],
+  "member": "4374",
+  "published-online": {
+    "date-parts": [
+      [
+        2021,
+        12,
+        3
+      ]
+    ]
+  },
+  "reference": [
+    {
+      "key": "bib1",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.14806\/ej.21.0.803",
+      "article-title": "Longevity of Biological Databases",
+      "volume": "21",
+      "author": "Attwood",
+      "year": "2015",
+      "journal-title": "EMBnet.Journal"
+    },
+    {
+      "key": "bib2",
+      "doi-asserted-by": "publisher",
+      "first-page": "D504",
+      "DOI": "10.1093\/nar\/gkj126",
+      "article-title": "Pathguide: a pathway resource list",
+      "volume": "34",
+      "author": "Bader",
+      "year": "2006",
+      "journal-title": "Nucleic Acids Research"
+    },
+    {
+      "key": "bib3",
+      "doi-asserted-by": "publisher",
+      "first-page": "235",
+      "DOI": "10.1093\/nar\/28.1.235",
+      "article-title": "The Protein Data Bank",
+      "volume": "28",
+      "author": "Berman",
+      "year": "2000",
+      "journal-title": "Nucleic Acids Research"
+    },
+    {
+      "key": "bib4",
+      "doi-asserted-by": "publisher",
+      "first-page": "2215",
+      "DOI": "10.1002\/asi.23329",
+      "article-title": "Growth rates of modern science: a bibliometric analysis based on the number of publications and cited references",
+      "volume": "66",
+      "author": "Bornmann",
+      "year": "2015",
+      "journal-title": "Journal of the Association for Information Science and Technology"
+    },
+    {
+      "key": "bib5",
+      "doi-asserted-by": "publisher",
+      "first-page": "D36",
+      "DOI": "10.1093\/nar\/gku1055",
+      "article-title": "Gene: a gene-centered information resource at NCBI",
+      "volume": "43",
+      "author": "Brown",
+      "year": "2015",
+      "journal-title": "Nucleic Acids Research"
+    },
+    {
+      "key": "bib6",
+      "doi-asserted-by": "publisher",
+      "first-page": "1171",
+      "DOI": "10.1016\/j.febslet.2008.02.071",
+      "article-title": "Linking entries in protein interaction database to structured text: the FEBS Letters experiment",
+      "volume": "582",
+      "author": "Ceol",
+      "year": "2008",
+      "journal-title": "FEBS Letters"
+    },
+    {
+      "key": "bib7",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.1186\/1471-2105-7-497",
+      "article-title": "cPath: open source software for collecting, storing, and querying biological pathways",
+      "volume": "7",
+      "author": "Cerami",
+      "year": "2006",
+      "journal-title": "BMC Bioinformatics"
+    },
+    {
+      "key": "bib8",
+      "doi-asserted-by": "publisher",
+      "first-page": "1322",
+      "DOI": "10.1038\/ni.3540",
+      "article-title": "An essential role for the IL-2 receptor in Treg cell function",
+      "volume": "17",
+      "author": "Chinen",
+      "year": "2016",
+      "journal-title": "Nature Immunology"
+    },
+    {
+      "key": "bib9",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.1371\/journal.pone.0156983",
+      "article-title": "Life science’s average publishable unit (APU) has increased over the past two decades",
+      "volume": "11",
+      "author": "Cordero",
+      "year": "2016",
+      "journal-title": "PLOS ONE"
+    },
+    {
+      "key": "bib10",
+      "doi-asserted-by": "publisher",
+      "first-page": "935",
+      "DOI": "10.1038\/nbt.1666",
+      "article-title": "The BioPAX community standard for pathway data sharing",
+      "volume": "28",
+      "author": "Demir",
+      "year": "2010",
+      "journal-title": "Nature Biotechnology"
+    },
+    {
+      "key": "bib11",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.1371\/journal.pcbi.1003194",
+      "article-title": "Using biological pathway data with paxtools",
+      "volume": "9",
+      "author": "Demir",
+      "year": "2013",
+      "journal-title": "PLOS Computational Biology"
+    },
+    {
+      "key": "bib12",
+      "doi-asserted-by": "publisher",
+      "first-page": "309",
+      "DOI": "10.1093\/bioinformatics\/btv557",
+      "article-title": "Cytoscape.js: a graph theory library for visualisation and analysis",
+      "volume": "32",
+      "author": "Franz",
+      "year": "2016",
+      "journal-title": "Bioinformatics"
+    },
+    {
+      "key": "bib13",
+      "doi-asserted-by": "publisher",
+      "article-title": "Proceedings of the 9th ACM Symposium on Document Engineering - DocEng ’09. Presented at the the 9th ACM symposium",
+      "author": "Fraser",
+      "year": "2009",
+      "unstructured": "Fraser N. 2009. Proceedings of the 9th ACM Symposium on Document Engineering - DocEng ’09. Presented at the the 9th ACM symposium. Differential synchronization.",
+      "DOI": "10.1145\/1600193.1600198"
+    },
+    {
+      "key": "bib14",
+      "doi-asserted-by": "publisher",
+      "first-page": "D1049",
+      "DOI": "10.1093\/nar\/gku1179",
+      "article-title": "Gene Ontology Consortium: going forward",
+      "volume": "43",
+      "author": "Gene Ontology Consortium",
+      "year": "2015",
+      "journal-title": "Nucleic Acids Research"
+    },
+    {
+      "key": "bib15",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.1038\/447142a",
+      "article-title": "Structured digital abstract makes text mining easy",
+      "volume": "447",
+      "author": "Gerstein",
+      "year": "2007",
+      "journal-title": "Nature"
+    },
+    {
+      "key": "bib16",
+      "doi-asserted-by": "publisher",
+      "first-page": "4087",
+      "DOI": "10.1093\/bioinformatics\/bty449",
+      "article-title": "Transfer learning for biomedical named entity recognition with neural networks",
+      "volume": "34",
+      "author": "Giorgi",
+      "year": "2018",
+      "journal-title": "Bioinformatics"
+    },
+    {
+      "key": "bib17",
+      "article-title": "End-to-end named entity recognition and relation extraction using pre-trained language models",
+      "volume-title": "arXiv",
+      "author": "Giorgi",
+      "year": "2019",
+      "unstructured": "Giorgi J, Wang X, Sahar N, Shin WY, Bader GD, Wang B. 2019. End-to-end named entity recognition and relation extraction using pre-trained language models. arXiv. https:\/\/arxiv.org\/abs\/1912.13415."
+    },
+    {
+      "key": "bib18",
+      "doi-asserted-by": "publisher",
+      "first-page": "280",
+      "DOI": "10.1093\/bioinformatics\/btz504",
+      "article-title": "Towards reliable named entity recognition in the biomedical domain",
+      "volume": "36",
+      "author": "Giorgi",
+      "year": "2020",
+      "journal-title": "Bioinformatics"
+    },
+    {
+      "key": "bib19",
+      "doi-asserted-by": "publisher",
+      "article-title": "Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing",
+      "author": "Giorgi",
+      "year": "2021",
+      "unstructured": "Giorgi J, Nitski O, Wang B, Bader G. 2021. Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing. DeCLUTR: Deep contrastive learning for unsupervised textual representations.",
+      "DOI": "10.18653\/v1\/2021.acl-long.72"
+    },
+    {
+      "key": "bib20",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.15252\/msb.20177651",
+      "article-title": "From word models to executable models of signaling networks using automated assembly",
+      "volume": "13",
+      "author": "Gyori",
+      "year": "2017",
+      "journal-title": "Molecular Systems Biology"
+    },
+    {
+      "key": "bib21",
+      "doi-asserted-by": "publisher",
+      "first-page": "D1214",
+      "DOI": "10.1093\/nar\/gkv1031",
+      "article-title": "ChEBI in 2016: Improved services and an expanding collection of metabolites",
+      "volume": "44",
+      "author": "Hastings",
+      "year": "2016",
+      "journal-title": "Nucleic Acids Research"
+    },
+    {
+      "key": "bib22",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.3389\/frma.2018.00018",
+      "article-title": "25 years of molecular biology databases: a study of proliferation, impact, and maintenance",
+      "volume": "3",
+      "author": "Imker",
+      "year": "2018",
+      "journal-title": "Frontiers in Research Metrics and Analytics"
+    },
+    {
+      "key": "bib23",
+      "doi-asserted-by": "publisher",
+      "first-page": "D498",
+      "DOI": "10.1093\/nar\/gkz1031",
+      "article-title": "The reactome pathway knowledgebase",
+      "volume": "48",
+      "author": "Jassal",
+      "year": "2020",
+      "journal-title": "Nucleic Acids Research"
+    },
+    {
+      "key": "bib24",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.1371\/journal.pcbi.1002375",
+      "article-title": "Ten years of pathway analysis: current approaches and outstanding challenges",
+      "volume": "8",
+      "author": "Khatri",
+      "year": "2012",
+      "journal-title": "PLOS Computational Biology"
+    },
+    {
+      "key": "bib25",
+      "doi-asserted-by": "publisher",
+      "first-page": "21",
+      "DOI": "10.1007\/978-1-4939-7737-6_2",
+      "article-title": "An introduction to the Saccharomyces Genome Database (SGD)",
+      "volume": "1757",
+      "author": "Lang",
+      "year": "2018",
+      "journal-title": "Methods in Molecular Biology"
+    },
+    {
+      "key": "bib26",
+      "doi-asserted-by": "publisher",
+      "first-page": "735",
+      "DOI": "10.1038\/nbt.1558",
+      "article-title": "The systems biology graphical notation",
+      "volume": "27",
+      "author": "Le Novère",
+      "year": "2009",
+      "journal-title": "Nature Biotechnology"
+    },
+    {
+      "key": "bib27",
+      "doi-asserted-by": "publisher",
+      "first-page": "4129",
+      "DOI": "10.1016\/j.febslet.2010.08.026",
+      "article-title": "The FEBS Letters SDA corpus: a collection of protein interaction articles with high quality annotations for the BioCreative II.5 online challenge and the text mining community",
+      "volume": "584",
+      "author": "Leitner",
+      "year": "2010",
+      "journal-title": "FEBS Letters"
+    },
+    {
+      "key": "bib28",
+      "doi-asserted-by": "publisher",
+      "first-page": "1021",
+      "DOI": "10.1038\/nmeth.4471",
+      "article-title": "SourceData: a semantic platform for curating and searching figures",
+      "volume": "14",
+      "author": "Liechti",
+      "year": "2017",
+      "journal-title": "Nature Methods"
+    },
+    {
+      "key": "bib29",
+      "doi-asserted-by": "publisher",
+      "first-page": "445",
+      "DOI": "10.1038\/nature13108",
+      "article-title": "Epigenomic alterations define lethal CIMP-positive ependymomas of infancy",
+      "volume": "506",
+      "author": "Mack",
+      "year": "2014",
+      "journal-title": "Nature"
+    },
+    {
+      "key": "bib30",
+      "doi-asserted-by": "publisher",
+      "first-page": "276",
+      "DOI": "10.11613\/BM.2012.031",
+      "article-title": "Interrater reliability: the kappa statistic",
+      "volume": "22",
+      "author": "McHugh",
+      "year": "2012",
+      "journal-title": "Biochemia Medica"
+    },
+    {
+      "key": "bib31",
+      "doi-asserted-by": "publisher",
+      "volume-title": "User Centered System Design: New Perspectives on Human-Computer Interaction",
+      "author": "Norman",
+      "year": "1986",
+      "DOI": "10.1201\/b15703"
+    },
+    {
+      "key": "bib32",
+      "volume-title": "The Design of Everyday Things",
+      "author": "Norman",
+      "year": "2001"
+    },
+    {
+      "key": "bib33",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.1038\/s41597-020-0477-8",
+      "article-title": "COVID-19 Disease Map, building a computational repository of SARS-CoV-2 virus-host interaction mechanisms",
+      "volume": "7",
+      "author": "Ostaszewski",
+      "year": "2020",
+      "journal-title": "Scientific Data"
+    },
+    {
+      "key": "bib34",
+      "doi-asserted-by": "publisher",
+      "first-page": "302",
+      "DOI": "10.1016\/j.cels.2015.10.001",
+      "article-title": "NDEx, the Network Data Exchange",
+      "volume": "1",
+      "author": "Pratt",
+      "year": "2015",
+      "journal-title": "Cell Systems"
+    },
+    {
+      "key": "bib35",
+      "doi-asserted-by": "publisher",
+      "first-page": "D489",
+      "DOI": "10.1093\/nar\/gkz946",
+      "article-title": "Pathway Commons 2019 Update: integration, analysis and exploration of pathway data",
+      "volume": "48",
+      "author": "Rodchenkov",
+      "year": "2020",
+      "journal-title": "Nucleic Acids Research"
+    },
+    {
+      "key": "bib36",
+      "doi-asserted-by": "publisher",
+      "first-page": "107",
+      "DOI": "10.1038\/nature13483",
+      "article-title": "DNA-damage-induced differentiation of leukaemic cells as an anti-cancer barrier",
+      "volume": "514",
+      "author": "Santos",
+      "year": "2014",
+      "journal-title": "Nature"
+    },
+    {
+      "key": "bib37",
+      "doi-asserted-by": "publisher",
+      "first-page": "2498",
+      "DOI": "10.1101\/gr.1239303",
+      "article-title": "Cytoscape: a software environment for integrated models of biomolecular interaction networks",
+      "volume": "13",
+      "author": "Shannon",
+      "year": "2003",
+      "journal-title": "Genome Research"
+    },
+    {
+      "key": "bib38",
+      "doi-asserted-by": "publisher",
+      "first-page": "D661",
+      "DOI": "10.1093\/nar\/gkx1064",
+      "article-title": "WikiPathways: a multifaceted pathway database bridging metabolomics to other omics research",
+      "volume": "46",
+      "author": "Slenter",
+      "year": "2018",
+      "journal-title": "Nucleic Acids Research"
+    },
+    {
+      "key": "bib39",
+      "doi-asserted-by": "publisher",
+      "first-page": "D362",
+      "DOI": "10.1093\/nar\/gkw937",
+      "article-title": "The STRING database in 2017: quality-controlled protein-protein association networks, made broadly accessible",
+      "volume": "45",
+      "author": "Szklarczyk",
+      "year": "2017",
+      "journal-title": "Nucleic Acids Research"
+    },
+    {
+      "key": "bib40",
+      "doi-asserted-by": "publisher",
+      "DOI": "10.1093\/database\/bay098",
+      "article-title": "Large-scale automated machine reading discovers new cancer-driving mechanisms",
+      "volume": "2018",
+      "author": "Valenzuela-Escárcega",
+      "year": "2018",
+      "journal-title": "Database"
+    },
+    {
+      "key": "bib41",
+      "doi-asserted-by": "publisher",
+      "first-page": "2016",
+      "DOI": "10.1093\/bioinformatics\/bts270",
+      "article-title": "Software support for SBGN maps: SBGN-ML and LibSBGN",
+      "volume": "28",
+      "author": "van Iersel",
+      "year": "2012",
+      "journal-title": "Bioinformatics"
+    },
+    {
+      "key": "bib42",
+      "doi-asserted-by": "publisher",
+      "first-page": "823",
+      "DOI": "10.1016\/j.molcel.2019.06.008",
+      "article-title": "SENP1-Sirt3 signaling controls mitochondrial protein acetylation and metabolism",
+      "volume": "75",
+      "author": "Wang",
+      "year": "2019",
+      "journal-title": "Molecular Cell"
+    },
+    {
+      "key": "bib43",
+      "doi-asserted-by": "publisher",
+      "first-page": "844",
+      "DOI": "10.1016\/j.molcel.2019.03.021",
+      "article-title": "Regulation of UCP1 and mitochondrial metabolism in brown adipose tissue by reversible succinylation",
+      "volume": "74",
+      "author": "Wang",
+      "year": "2019",
+      "journal-title": "Molecular Cell"
+    },
+    {
+      "key": "bib44",
+      "doi-asserted-by": "publisher",
+      "first-page": "D173",
+      "DOI": "10.1093\/nar\/gkj158",
+      "article-title": "Database resources of the National Center for Biotechnology Information",
+      "volume": "34",
+      "author": "Wheeler",
+      "year": "2006",
+      "journal-title": "Nucleic Acids Research"
+    }
+  ],
+  "container-title": [
+    "eLife"
+  ],
+  "original-title": [],
+  "language": "en",
+  "link": [
+    {
+      "URL": "https:\/\/cdn.elifesciences.org\/articles\/68292\/elife-68292-v2.pdf",
+      "content-type": "application\/pdf",
+      "content-version": "vor",
+      "intended-application": "text-mining"
+    },
+    {
+      "URL": "https:\/\/cdn.elifesciences.org\/articles\/68292\/elife-68292-v2.xml",
+      "content-type": "application\/xml",
+      "content-version": "vor",
+      "intended-application": "text-mining"
+    }
+  ],
+  "deposited": {
+    "date-parts": [
+      [
+        2021,
+        12,
+        17
+      ]
+    ],
+    "date-time": "2021-12-17T12:00:24Z",
+    "timestamp": 1639742424000
+  },
+  "score": 1,
+  "resource": {
+    "primary": {
+      "URL": "https:\/\/elifesciences.org\/articles\/68292"
+    }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+    "date-parts": [
+      [
+        2021,
+        12,
+        3
+      ]
+    ]
+  },
+  "references-count": 44,
+  "alternative-id": [
+    "10.7554\/eLife.68292"
+  ],
+  "URL": "http:\/\/dx.doi.org\/10.7554\/elife.68292",
+  "archive": [
+    "CLOCKSS"
+  ],
+  "relation": {
+    "has-preprint": [
+      {
+        "id-type": "doi",
+        "id": "10.1101\/2021.03.10.382333",
+        "asserted-by": "subject"
+      }
+    ]
+  },
+  "ISSN": [
+    "2050-084X"
+  ],
+  "issn-type": [
+    {
+      "value": "2050-084X",
+      "type": "electronic"
+    }
+  ],
+  "subject": [
+    "General Immunology and Microbiology",
+    "General Biochemistry, Genetics and Molecular Biology",
+    "General Medicine",
+    "General Neuroscience"
+  ],
+  "published": {
+    "date-parts": [
+      [
+        2021,
+        12,
+        3
+      ]
+    ]
+  }
+}

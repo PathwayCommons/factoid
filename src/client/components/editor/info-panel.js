@@ -72,13 +72,13 @@ export class InfoPanel extends Component {
     const retractedPubType = _.find( citation.pubTypes, ['UI', 'D016441'] );
     const retractFlag = retractedPubType ? h('span.editor-info-flag.super-salient-button.danger', retractedPubType.value) : null;
 
-    const hasPubmedMetadata = pmid != null;
+    const hasArticleMetadata = pmid != null || doi != null;
 
     return h('div.editor-info-panel', [
       h('div.editor-info-flags', [ retractFlag ]),
-      
+
       h('div.editor-info-title', title),
-      
+
       h('div.editor-info-authors', _.flatten(authorProfiles.map((a, i) => {
         let orcid = findOrcidIdentifier( a.orcid ); // Backwards compatible with URI
         if ( orcid ) {
@@ -94,12 +94,12 @@ export class InfoPanel extends Component {
           i !== authorProfiles.length - 1 ? h('span.editor-info-author-spacer', ', ') : null
         ];
       }))),
-      
+
       h(Credits, { controller, bus, document }),
 
-      hasPubmedMetadata ? h('div.editor-info-links', [
+      hasArticleMetadata ? h('div.editor-info-links', [
         h( doi ? 'a.editor-info-link.plain-link': 'div.editor-info-link', doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` }: {}, reference),
-        h('a.editor-info-link.plain-link', { target: '_blank', href: `${PUBMED_LINK_BASE_URL}${pmid}` }, 'PubMed'),
+        pmid ? h('a.editor-info-link.plain-link', { target: '_blank', href: `${PUBMED_LINK_BASE_URL}${pmid}` }, 'PubMed') : null,
         h('a.editor-info-link.plain-link', { target: '_blank', href: `${GOOGLE_SCHOLAR_BASE_URL}${ doi ?  doi : ( "\u0022" + title + "\u0022") }` }, 'Google Scholar')
       ]) : null,
 
@@ -114,7 +114,7 @@ export class InfoPanel extends Component {
         ])
       ]) : null,
 
-      !hasPubmedMetadata && !document.editable() ? h('div.editor-coming-soon-placeholder', `Biofactoid is looking for more information about this article from PubMed and pathway databases.  This information will appear here as soon as it is available.`) : null
+      !hasArticleMetadata && !document.editable() ? h('div.editor-coming-soon-placeholder', `Biofactoid is looking for more information about this article from PubMed and pathway databases.  This information will appear here as soon as it is available.`) : null
     ]);
   }
 }

@@ -88,6 +88,7 @@ Services:
 - `ORCID_BASE_URL` : url for [ORCID](https://orcid.org/) website
 - `ORCID_PUBLIC_API_BASE_URL` : url for version of [ORCID](https://orcid.org/) public API
 - `NO_ABSTRACT_HANDLING` : labels directing how to sort documents missing query text. 'text' (default): autogenerate text from templates; 'date': sort by date and ignore text.
+- `CROSSREF_API_BASE_URL` : url for [Crossref Unified Resource API](https://api.crossref.org/)
 
 Links:
 

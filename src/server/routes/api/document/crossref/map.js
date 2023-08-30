@@ -122,13 +122,47 @@ const getJournal = record => {
   return Journal;
 };
 
+const getPublicationTypeList = record => {
+  // Publication Types: https://www.nlm.nih.gov/mesh/pubtypes.html
+  // MeSH Publication Formats: https://meshb.nlm.nih.gov/record/ui?ui=D052180
+  // CrossRef work types: https://api.crossref.org/v1/types
+  const CRTYPE_MESH_MAP = new Map([
+    ['preprint', {
+      UI: 'D000076942',
+      value: 'Preprint'
+    }],
+    ['journal-article', {
+      UI: 'D016428',
+      value: 'Journal Article'
+    }],
+    ['dataset', {
+      UI: 'D064886',
+      value: 'Dataset'
+    }],
+    ['proceedings', {
+      UI: 'D016423',
+      value: 'Congress'
+    }],
+    ['dissertation', {
+      UI: 'D019478',
+      value: 'Academic Dissertation'
+    }]
+  ]);
+  const { type, subtype } = record;
+  let itemType = subtype || type;
+  let PublicationType = CRTYPE_MESH_MAP.get( itemType );
+  let PublicationTypeList = _.compact([ PublicationType ]);
+  return PublicationTypeList;
+};
+
 const getMedlineCitation = record => {
   const { abstract, title, author } = record;
   const Abstract = getAbstract( abstract );
   const ArticleTitle = _.head ( title );
   const AuthorList = asAuthorList( author );
   const Journal = getJournal( record );
-  const MedlineCitation = { Article: { Abstract, ArticleTitle, AuthorList, Journal } };
+  const PublicationTypeList = getPublicationTypeList( record );
+  const MedlineCitation = { Article: { Abstract, ArticleTitle, AuthorList, Journal, PublicationTypeList } };
   return MedlineCitation;
 };
 

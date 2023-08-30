@@ -1,2 +1,2 @@
-export * from './util.js';
+export * from './map.js';
 export * from './works.js';

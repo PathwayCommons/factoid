@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { expect } from 'chai';
 
-import { asPubMedArticle } from '../../src/server/routes/api/document/crossRef/index.js';
+import { toPubMedArticle } from '../../src/server/routes/api/document/crossref/map.js';
 import work_doi_1 from './10.7554_eLife.87468.2_noabstract.json';
 import work_doi_2 from './10.7554_eLife.87468.2.json';
 import work_doi_3 from './10.1101_2023.04.12.536510.json';
@@ -16,7 +16,7 @@ describe('util', function(){
     describe('type: posted-content, subtype: preprint', function(){
 
       describe('PubmedData', () => {
-        const { PubmedData } = asPubMedArticle( work_doi_2 );
+        const { PubmedData } = toPubMedArticle( work_doi_2 );
         it('Should correctly map ArticleIdList (DOI)', () => {
           const { ArticleIdList } = PubmedData;
           expect( _.some( ArticleIdList, ['id', '10.7554/elife.87468.2'] ) ).to.be.true;
@@ -27,11 +27,11 @@ describe('util', function(){
 
         describe('Text fields (ArticleTitle, Abstract)', () => {
           it('Should correctly map missing Abstract', () => {
-            const { MedlineCitation: { Article: { Abstract } } } = asPubMedArticle( work_doi_1 );
+            const { MedlineCitation: { Article: { Abstract } } } = toPubMedArticle( work_doi_1 );
             expect( Abstract ).to.be.null;
           });
           it('Should correctly map Abstract and ArticleTitle', () => {
-            const { MedlineCitation } = asPubMedArticle( work_doi_2 );
+            const { MedlineCitation } = toPubMedArticle( work_doi_2 );
             const { Article } = MedlineCitation;
             const expectedTitle = 'Structural and mechanistic insights into the MCM8/9 helicase complex';
             const expectedAbstractStart = 'MCM8 and MCM9 form a functional helicase complex (MCM8/9) that plays an essential role in DNA homologous recombination repair for DNA double-strand break.';
@@ -42,14 +42,14 @@ describe('util', function(){
             expect( Abstract.endsWith( expectedAbstractEnd ) ).to.be.true;
           });
           it('Should correctly drop markup in Abstract', () => {
-            const { MedlineCitation: { Article: { Abstract } } } = asPubMedArticle( work_doi_4 );
+            const { MedlineCitation: { Article: { Abstract } } } = toPubMedArticle( work_doi_4 );
             const expectedAbstractStart = 'Abstract. Background. The advent of functional genomic techniques and next generation sequencing has improved the characterization of the non-protein coding regions of the genome.';
             expect( Abstract.startsWith( expectedAbstractStart ) ).to.be.true;
           });
         }); // Text fields
 
         describe('AuthorList', () => {
-          const { MedlineCitation: { Article: { AuthorList } } } = asPubMedArticle( work_doi_3 );
+          const { MedlineCitation: { Article: { AuthorList } } } = toPubMedArticle( work_doi_3 );
           it('Should correctly map CollectiveName', () => {
             const name = '23andMe Research Team';
             const hasName = _.some(AuthorList, ['CollectiveName', name ]);
@@ -67,7 +67,7 @@ describe('util', function(){
 
         describe('Journal', () => {
           describe('publisher: eLife Sciences Publications, Ltd', () => {
-            const { MedlineCitation: { Article: { Journal }} } = asPubMedArticle( work_doi_2 );
+            const { MedlineCitation: { Article: { Journal }} } = toPubMedArticle( work_doi_2 );
             it('Should correctly map Journal title', () => {
               const { Title, JournalIssue: { PubDate } } = Journal;
               expect( Title.toLowerCase() ).to.equal( 'elife' );
@@ -88,7 +88,7 @@ describe('util', function(){
       describe('article 1', () => {
 
         describe('MedlineCitation > Article', () => {
-          const { MedlineCitation: { Article } } = asPubMedArticle( work_doi_5 );
+          const { MedlineCitation: { Article } } = toPubMedArticle( work_doi_5 );
 
           describe('Text fields (ArticleTitle, Abstract)', () => {
             it('Should correctly map Abstract and ArticleTitle', () => {
@@ -135,7 +135,7 @@ describe('util', function(){
       describe('article 2', () => {
 
         describe('MedlineCitation > Article', () => {
-          const { MedlineCitation: { Article } } = asPubMedArticle( work_doi_6 );
+          const { MedlineCitation: { Article } } = toPubMedArticle( work_doi_6 );
 
           describe('Text fields (ArticleTitle, Abstract)', () => {
             it('Should correctly map Abstract and ArticleTitle', () => {

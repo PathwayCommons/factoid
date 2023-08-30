@@ -140,14 +140,14 @@ const getPubmedData = record => {
 };
 
 /**
- * asPubMedArticle
+ * toPubMedArticle
  *
  * Map a CrossRef work to a [PubMedArticle]{@link https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_230101.dtd}.
  *
  * @param {object} record the CrossRef message/item
  * @return object consistent with PubMedArticle schema
  */
-const asPubMedArticle = record => {
+const toPubMedArticle = record => {
   const defaults = createPubmedArticle({});
   const MedlineCitation = getMedlineCitation( record );
   const PubmedData = getPubmedData( record );
@@ -156,4 +156,4 @@ const asPubMedArticle = record => {
   return PubMedArticle;
 };
 
-export { asPubMedArticle };
+export { toPubMedArticle };

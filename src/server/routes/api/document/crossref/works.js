@@ -25,7 +25,7 @@ const paperId2Type = paperId => {
 };
 
 /**
- * bestMatch
+ * match
  *
  * In case scores tie, works are prioritized by creation time
  *
@@ -34,7 +34,7 @@ const paperId2Type = paperId => {
  * @param {object} hits search hit items
  * @returns
  */
-const bestMatch = ( paperId, IdType, hits ) => {
+const match = ( paperId, IdType, hits ) => {
   let match;
 
   const orderByCreation = works => {
@@ -95,7 +95,7 @@ const isSupported = work => {
 };
 
 /**
- * findCrossRefWork
+ * find
  *
  * Find a matching Work from CrossRef. Shall interpret an input as:
  *   1. Digital Object Identifier (doi)
@@ -104,7 +104,7 @@ const isSupported = work => {
  * @param {string} paperId Contains or references a single article
  * @return {Object} matching Work
  */
-const findCrossRefWork = async paperId => {
+const find = async paperId => {
   const isValidRecord = work => isSupported(work);
   try {
     let hits, match;
@@ -133,4 +133,4 @@ const findCrossRefWork = async paperId => {
   }
 };
 
-export { findCrossRefWork, bestMatch };
+export { find, match };

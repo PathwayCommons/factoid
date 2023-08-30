@@ -12,7 +12,7 @@ import work_doi_7 from './10.3030_101067344.json';
 
 describe('map', function(){
 
-  describe('asPubMedArticle', function(){
+  describe('toPubMedArticle', function(){
 
     describe('type: posted-content, subtype: preprint', function(){
 

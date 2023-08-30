@@ -274,7 +274,8 @@ const createPubmedArticle = ({ articleTitle = null, journalName = null, publicat
             },
             Volume: null
           }
-        }
+        },
+        PublicationTypeList: []
       },
       ChemicalList: [],
       InvestigatorList: [],

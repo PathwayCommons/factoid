@@ -5,24 +5,8 @@ import { search, get } from './api.js';
 
 const ID_TYPE = Object.freeze({
   DOI: 'doi',
-  TITLE: 'title'
+  TERM: 'term'
 });
-
-const ALLOWABLE_TYPES = new Set([
-  'posted-content'
-]);
-const ALLOWABLE_SUBTYPES = new Set([
-  'preprint'
-]);
-
-const paperId2Type = paperId => {
-  // 99.3% of CrossRef DOIs (https://www.crossref.org/blog/dois-and-matching-regular-expressions/)
-  const doiRegex = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i;
-  let IdType = ID_TYPE.TITLE;
-  const isDoiLike = doiRegex.test( paperId );
-  if( isDoiLike ) IdType = ID_TYPE.DOI;
-  return IdType;
-};
 
 /**
  * match
@@ -35,8 +19,6 @@ const paperId2Type = paperId => {
  * @returns
  */
 const match = ( paperId, IdType, hits ) => {
-  let match;
-
   const orderByCreation = works => {
     const byCreated = ( a, b ) => b.created.timestamp - a.created.timestamp;
 
@@ -62,7 +44,7 @@ const match = ( paperId, IdType, hits ) => {
           hasMatch = true;
         }
         break;
-      case ID_TYPE.TITLE:
+      case ID_TYPE.TERM:
         if( sanitize(title.join(' ')).includes( sanitize(paperId) ) ){
           hasMatch = true;
         }
@@ -76,22 +58,7 @@ const match = ( paperId, IdType, hits ) => {
   const matches = hits.filter( workMatchesPaperId );
   // Order based on score, then created date
   const ordered = orderByCreation( matches );
-  match = _.head( ordered );
-  return match;
-};
-
-/**
- * isSupported
- *
- * Check if the work is a supported type, subtype
- *
- * @param {object} work A CrossRef message item
- * @returns true if supported
- */
-const isSupported = work => {
-  const { type, subtype } = work;
-  const isOk = ALLOWABLE_TYPES.has(type) && ALLOWABLE_SUBTYPES.has( subtype );
-  return isOk;
+  return _.head( ordered );
 };
 
 /**
@@ -99,30 +66,52 @@ const isSupported = work => {
  *
  * Find a matching Work from CrossRef. Shall interpret an input as:
  *   1. Digital Object Identifier (doi)
- *   2. The exact (or partial) title
+ *   2. Plain text (titles, authors, ISSNs and publication years)
  *
  * @param {string} paperId Contains or references a single article
  * @return {Object} matching Work
  */
 const find = async paperId => {
-  const isValidRecord = work => isSupported(work);
+  const VALID_TYPES = new Set([ 'posted-content' ]);
+  const VALID_SUBTYPES = new Set([ 'preprint' ]);
+
+  const paperId2Type = paperId => {
+    // 99.3% of CrossRef DOIs (https://www.crossref.org/blog/dois-and-matching-regular-expressions/)
+    const doiRegex = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i;
+    let IdType = ID_TYPE.TERM;
+    const isDoiLike = doiRegex.test( paperId );
+    if( isDoiLike ) IdType = ID_TYPE.DOI;
+    return IdType;
+  };
+  const isSupported = work => {
+    let ok;
+    const { type, subtype } = work;
+    if( subtype ){
+      ok = VALID_SUBTYPES.has( subtype );
+    } else {
+      ok = VALID_TYPES.has( type );
+    }
+    return ok;
+  };
+
   try {
-    let hits, match;
+    let hits, m;
     const IdType = paperId2Type( paperId );
 
-    if( IdType === ID_TYPE.TITLE ){
-      const type = Array.from( ALLOWABLE_TYPES ).join(',');
+    if( IdType === ID_TYPE.TERM ){
+      const type = Array.from( VALID_TYPES ).join(',');
       const filter = `type:${type}`;
       const works = await search( paperId, { filter } );
       hits = works.searchHits;
+
     } else if (IdType === ID_TYPE.DOI){
       const work =  await get( paperId );
       hits = [work];
     }
 
-    match = await match( paperId, IdType, hits );
-    if( isValidRecord( match ) ){
-      return match;
+    m = match( paperId, IdType, hits );
+    if( isSupported( m ) ){
+      return m;
     } else {
       throw new Error(`Unable to find a CrossRef Work for '${paperId}`);
     }
@@ -133,4 +122,4 @@ const find = async paperId => {
   }
 };
 
-export { find, match };
+export { find, match, ID_TYPE };

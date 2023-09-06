@@ -1,0 +1,1613 @@
+[
+  {
+    "indexed": {
+      "date-parts": [
+        [
+          2023,
+          7,
+          20
+        ]
+      ],
+      "date-time": "2023-07-20T04:46:29Z",
+      "timestamp": 1689828389164
+    },
+    "posted": {
+      "date-parts": [
+        [
+          2023,
+          7,
+          19
+        ]
+      ]
+    },
+    "group-title": "elife",
+    "reference-count": 0,
+    "publisher": "eLife Sciences Publications, Ltd",
+    "license": [
+      {
+        "start": {
+          "date-parts": [
+            [
+              2023,
+              7,
+              19
+            ]
+          ],
+          "date-time": "2023-07-19T00:00:00Z",
+          "timestamp": 1689724800000
+        },
+        "content-version": "unspecified",
+        "delay-in-days": 0,
+        "URL": "http:\/\/creativecommons.org\/licenses\/by\/4.0\/"
+      }
+    ],
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "abstract": "<jats:p>MCM8 and MCM9 form a functional helicase complex (MCM8\/9) that plays an essential role in DNA homologous recombination repair for DNA double-strand break. However, the structural characterization of MCM8\/9 for DNA binding\/unwinding remains unclear. Here, we report structures of the MCM8\/9 complex using cryo-electron microscopy single particle analysis. The structures reveal that MCM8\/9 is arranged into a heterohexamer through a three-fold symmetry axis, creating a central channel that accommodates DNA. Multiple characteristic hairpins from the N-terminal oligosaccharide\/oligonucleotide (OB) domains of MCM8\/9 protrude into the central channel and serve to unwind the duplex DNA. When activated by HROB, the structure of MCM8\/9’s N-tier ring converts its symmetry from C3 to C1 with a conformational change that expands the MCM8\/9’s trimer interface. Moreover, our structural dynamic analyses revealed that the flexible C-tier ring exhibited rotary motions relative to the N-tier ring, which is required for the unwinding ability of MCM8\/9. In summary, our structural and biochemistry study provide a basis for understanding the DNA unwinding mechanism of MCM8\/9 helicase in homologous recombination.<\/jats:p>",
+    "DOI": "10.7554\/elife.87468.2",
+    "type": "posted-content",
+    "created": {
+      "date-parts": [
+        [
+          2023,
+          7,
+          19
+        ]
+      ],
+      "date-time": "2023-07-19T13:20:50Z",
+      "timestamp": 1689772850000
+    },
+    "source": "Crossref",
+    "is-referenced-by-count": 0,
+    "title": [
+      "Structural and mechanistic insights into the MCM8\/9 helicase complex"
+    ],
+    "prefix": "10.7554",
+    "author": [
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-7079-0293",
+        "authenticated-orcid": false,
+        "given": "Zhuangfeng",
+        "family": "Weng",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Shenzhen Key Laboratory for Systems Medicine in Inflammatory Diseases, School of Medicine, Shenzhen Campus of Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+          }
+        ]
+      },
+      {
+        "given": "Jiefu",
+        "family": "Zheng",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Shenzhen Key Laboratory for Systems Medicine in Inflammatory Diseases, School of Medicine, Shenzhen Campus of Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+          }
+        ]
+      },
+      {
+        "given": "Yiyi",
+        "family": "Zhou",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Shenzhen Key Laboratory for Systems Medicine in Inflammatory Diseases, School of Medicine, Shenzhen Campus of Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+          }
+        ]
+      },
+      {
+        "given": "Zuer",
+        "family": "Lu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "State Key Laboratory of Protein and Plant Gene Research, School of Life Sciences, Peking University, Beijing, China"
+          }
+        ]
+      },
+      {
+        "given": "Yixi",
+        "family": "Wu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Shenzhen Key Laboratory for Systems Medicine in Inflammatory Diseases, School of Medicine, Shenzhen Campus of Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+          }
+        ]
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0001-5711-2618",
+        "authenticated-orcid": false,
+        "given": "Dongyi",
+        "family": "Xu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "State Key Laboratory of Protein and Plant Gene Research, School of Life Sciences, Peking University, Beijing, China"
+          }
+        ]
+      },
+      {
+        "given": "Huanhuan",
+        "family": "Li",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Colorectal Surgery, The Sixth Affiliated Hospital, Sun Yat-sen University, Guangdong Institute of Gastroenterology, Guangdong Provincial Key Laboratory of Colorectal and Pelvic Floor Diseases, Guangzhou, Guangdong 510655, China"
+          }
+        ]
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-1803-3121",
+        "authenticated-orcid": false,
+        "given": "Huanhuan",
+        "family": "Liang",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Pharmaceutical Sciences (Shenzhen), Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+          }
+        ]
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-1835-0397",
+        "authenticated-orcid": false,
+        "given": "Yingfang",
+        "family": "Liu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Shenzhen Key Laboratory for Systems Medicine in Inflammatory Diseases, School of Medicine, Shenzhen Campus of Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+          },
+          {
+            "name": "Department of Colorectal Surgery, The Sixth Affiliated Hospital, Sun Yat-sen University, Guangdong Institute of Gastroenterology, Guangdong Provincial Key Laboratory of Colorectal and Pelvic Floor Diseases, Guangzhou, Guangdong 510655, China"
+          }
+        ]
+      }
+    ],
+    "member": "4374",
+    "deposited": {
+      "date-parts": [
+        [
+          2023,
+          7,
+          19
+        ]
+      ],
+      "date-time": "2023-07-19T13:32:39Z",
+      "timestamp": 1689773559000
+    },
+    "score": 49.35006,
+    "resource": {
+      "primary": {
+        "URL": "https:\/\/elifesciences.org\/reviewed-preprints\/87468v2"
+      }
+    },
+    "issued": {
+      "date-parts": [
+        [
+          2023,
+          7,
+          19
+        ]
+      ]
+    },
+    "references-count": 0,
+    "URL": "http:\/\/dx.doi.org\/10.7554\/elife.87468.2",
+    "relation": {
+      "has-version": [
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.87468.1",
+          "asserted-by": "subject"
+        }
+      ],
+      "is-version-of": [
+        {
+          "id-type": "doi",
+          "id": "10.1101\/2022.01.26.477944",
+          "asserted-by": "subject"
+        }
+      ],
+      "has-review": [
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.87468.2.sa1",
+          "asserted-by": "object"
+        },
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.87468.2.sa0",
+          "asserted-by": "object"
+        },
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.87468.2.sa3",
+          "asserted-by": "object"
+        },
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.87468.2.sa2",
+          "asserted-by": "object"
+        }
+      ]
+    },
+    "published": {
+      "date-parts": [
+        [
+          2023,
+          7,
+          19
+        ]
+      ]
+    },
+    "subtype": "preprint"
+  },
+  {
+    "indexed": {
+      "date-parts": [
+        [
+          2023,
+          7,
+          20
+        ]
+      ],
+      "date-time": "2023-07-20T04:16:20Z",
+      "timestamp": 1689826580457
+    },
+    "posted": {
+      "date-parts": [
+        [
+          2023,
+          7,
+          19
+        ]
+      ]
+    },
+    "group-title": "elife",
+    "reference-count": 0,
+    "publisher": "eLife Sciences Publications, Ltd",
+    "license": [
+      {
+        "start": {
+          "date-parts": [
+            [
+              2023,
+              7,
+              19
+            ]
+          ],
+          "date-time": "2023-07-19T00:00:00Z",
+          "timestamp": 1689724800000
+        },
+        "content-version": "unspecified",
+        "delay-in-days": 0,
+        "URL": "http:\/\/creativecommons.org\/licenses\/by\/4.0\/"
+      }
+    ],
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "abstract": "<jats:p>MCM8 and MCM9 form a functional helicase complex (MCM8\/9) that plays an essential role in DNA homologous recombination repair for DNA double-strand break. However, the structural characterization of MCM8\/9 for DNA binding\/unwinding remains unclear. Here, we report structures of the MCM8\/9 complex using cryo-electron microscopy single particle analysis. The structures reveal that MCM8\/9 is arranged into a heterohexamer through a three-fold symmetry axis, creating a central channel that accommodates DNA. Multiple characteristic hairpins from the N-terminal oligosaccharide\/oligonucleotide (OB) domains of MCM8\/9 protrude into the central channel and serve to unwind the duplex DNA. When activated by HROB, the structure of MCM8\/9’s N-tier ring converts its symmetry from C3 to C1 with a conformational change that expands the MCM8\/9’s trimer interface. Moreover, our structural dynamic analyses revealed that the flexible C-tier ring exhibited rotary motions relative to the N-tier ring, which is required for the unwinding ability of MCM8\/9. In summary, our structural and biochemistry study provide a basis for understanding the DNA unwinding mechanism of MCM8\/9 helicase in homologous recombination.<\/jats:p>",
+    "DOI": "10.7554\/elife.87468",
+    "type": "posted-content",
+    "created": {
+      "date-parts": [
+        [
+          2023,
+          5,
+          11
+        ]
+      ],
+      "date-time": "2023-05-11T08:09:55Z",
+      "timestamp": 1683792595000
+    },
+    "source": "Crossref",
+    "is-referenced-by-count": 0,
+    "title": [
+      "Structural and mechanistic insights into the MCM8\/9 helicase complex"
+    ],
+    "prefix": "10.7554",
+    "author": [
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-7079-0293",
+        "authenticated-orcid": false,
+        "given": "Zhuangfeng",
+        "family": "Weng",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Shenzhen Key Laboratory for Systems Medicine in Inflammatory Diseases, School of Medicine, Shenzhen Campus of Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+          }
+        ]
+      },
+      {
+        "given": "Jiefu",
+        "family": "Zheng",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Shenzhen Key Laboratory for Systems Medicine in Inflammatory Diseases, School of Medicine, Shenzhen Campus of Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+          }
+        ]
+      },
+      {
+        "given": "Yiyi",
+        "family": "Zhou",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Shenzhen Key Laboratory for Systems Medicine in Inflammatory Diseases, School of Medicine, Shenzhen Campus of Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+          }
+        ]
+      },
+      {
+        "given": "Zuer",
+        "family": "Lu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "State Key Laboratory of Protein and Plant Gene Research, School of Life Sciences, Peking University, Beijing, China"
+          }
+        ]
+      },
+      {
+        "given": "Yixi",
+        "family": "Wu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Shenzhen Key Laboratory for Systems Medicine in Inflammatory Diseases, School of Medicine, Shenzhen Campus of Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+          }
+        ]
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0001-5711-2618",
+        "authenticated-orcid": false,
+        "given": "Dongyi",
+        "family": "Xu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "State Key Laboratory of Protein and Plant Gene Research, School of Life Sciences, Peking University, Beijing, China"
+          }
+        ]
+      },
+      {
+        "given": "Huanhuan",
+        "family": "Li",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Colorectal Surgery, The Sixth Affiliated Hospital, Sun Yat-sen University, Guangdong Institute of Gastroenterology, Guangdong Provincial Key Laboratory of Colorectal and Pelvic Floor Diseases, Guangzhou, Guangdong 510655, China"
+          }
+        ]
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-1803-3121",
+        "authenticated-orcid": false,
+        "given": "Huanhuan",
+        "family": "Liang",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Pharmaceutical Sciences (Shenzhen), Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+          }
+        ]
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-1835-0397",
+        "authenticated-orcid": false,
+        "given": "Yingfang",
+        "family": "Liu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Shenzhen Key Laboratory for Systems Medicine in Inflammatory Diseases, School of Medicine, Shenzhen Campus of Sun Yat-sen University, Shenzhen, Guangdong 518107, China"
+          },
+          {
+            "name": "Department of Colorectal Surgery, The Sixth Affiliated Hospital, Sun Yat-sen University, Guangdong Institute of Gastroenterology, Guangdong Provincial Key Laboratory of Colorectal and Pelvic Floor Diseases, Guangzhou, Guangdong 510655, China"
+          }
+        ]
+      }
+    ],
+    "member": "4374",
+    "deposited": {
+      "date-parts": [
+        [
+          2023,
+          7,
+          19
+        ]
+      ],
+      "date-time": "2023-07-19T13:34:34Z",
+      "timestamp": 1689773674000
+    },
+    "score": 49.35006,
+    "resource": {
+      "primary": {
+        "URL": "https:\/\/elifesciences.org\/reviewed-preprints\/87468"
+      }
+    },
+    "issued": {
+      "date-parts": [
+        [
+          2023,
+          7,
+          19
+        ]
+      ]
+    },
+    "references-count": 0,
+    "URL": "http:\/\/dx.doi.org\/10.7554\/elife.87468",
+    "relation": {
+      "has-version": [
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.87468.1",
+          "asserted-by": "subject"
+        }
+      ],
+      "is-same-as": [
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.87468.2",
+          "asserted-by": "subject"
+        }
+      ],
+      "is-version-of": [
+        {
+          "id-type": "doi",
+          "id": "10.1101\/2022.01.26.477944",
+          "asserted-by": "subject"
+        }
+      ]
+    },
+    "published": {
+      "date-parts": [
+        [
+          2023,
+          7,
+          19
+        ]
+      ]
+    },
+    "subtype": "preprint"
+  },
+  {
+    "indexed": {
+      "date-parts": [
+        [
+          2023,
+          6,
+          16
+        ]
+      ],
+      "date-time": "2023-06-16T04:37:19Z",
+      "timestamp": 1686890239368
+    },
+    "posted": {
+      "date-parts": [
+        [
+          2023,
+          5,
+          11
+        ]
+      ]
+    },
+    "group-title": "elife",
+    "reference-count": 0,
+    "publisher": "eLife Sciences Publications, Ltd",
+    "license": [
+      {
+        "start": {
+          "date-parts": [
+            [
+              2023,
+              5,
+              11
+            ]
+          ],
+          "date-time": "2023-05-11T00:00:00Z",
+          "timestamp": 1683763200000
+        },
+        "content-version": "unspecified",
+        "delay-in-days": 0,
+        "URL": "http:\/\/creativecommons.org\/licenses\/by\/4.0\/"
+      }
+    ],
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "abstract": "<jats:p>MCM8 and MCM9 form a functional helicase complex (MCM8\/9) that plays an essential role in DNA homologous recombination repair for DNA double-strand break. However, the structural characterization of MCM8\/9 for DNA binding\/unwinding remains unclear. Here, we report structures of the MCM8\/9 complex using cryo-electron microscopy single particle analysis. The structures reveal that MCM8\/9 is arranged through a three-fold symmetry axis to form a heterohexamer with a central channel to accommodate DNA. Multiple characteristic hairpins from the N-terminal oligosaccharide\/oligonucleotide (OB) domains of MCM8\/9 protrude into the central channel and serve to unwind the duplex DNA. When activated by HROB, the structure of MCM8\/9’s N-tier ring converts its symmetry from C3 to C1 with a conformational change that expands the MCM8\/9’s trimer interface. Moreover, structural dynamic analyses revealed that the flexible C-tier ring exhibited rotary motions relative to the N-tier ring, which is required for the unwinding ability of MCM8\/9. In summary, our structural and biochemistry study provide a basis for the DNA unwinding mechanism of MCM8\/9 helicase in homologous recombination.<\/jats:p>",
+    "DOI": "10.7554\/elife.87468.1",
+    "type": "posted-content",
+    "created": {
+      "date-parts": [
+        [
+          2023,
+          5,
+          11
+        ]
+      ],
+      "date-time": "2023-05-11T08:09:03Z",
+      "timestamp": 1683792543000
+    },
+    "source": "Crossref",
+    "is-referenced-by-count": 1,
+    "title": [
+      "Structural and mechanistic insights into the MCM8\/9 helicase complex"
+    ],
+    "prefix": "10.7554",
+    "author": [
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-7079-0293",
+        "authenticated-orcid": false,
+        "given": "Zhuangfeng",
+        "family": "Weng",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "School of Medicine, Shenzhen Campus of Sun Yat-sen University"
+          }
+        ]
+      },
+      {
+        "given": "Jiefu",
+        "family": "Zheng",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "School of Medicine, Shenzhen Campus of Sun Yat-sen University"
+          }
+        ]
+      },
+      {
+        "given": "Yiyi",
+        "family": "Zhou",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "School of Medicine, Shenzhen Campus of Sun Yat-sen University"
+          }
+        ]
+      },
+      {
+        "given": "Zuer",
+        "family": "Lu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "State Key Laboratory of Protein and Plant Gene Research, School of Life Sciences, Peking University"
+          }
+        ]
+      },
+      {
+        "given": "Yixi",
+        "family": "Wu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "School of Medicine, Shenzhen Campus of Sun Yat-sen University"
+          }
+        ]
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0001-5711-2618",
+        "authenticated-orcid": false,
+        "given": "Dongyi",
+        "family": "Xu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "State Key Laboratory of Protein and Plant Gene Research, School of Life Sciences, Peking University"
+          }
+        ]
+      },
+      {
+        "given": "Huanhuan",
+        "family": "Li",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Colorectal Surgery, The Sixth Affiliated Hospital, Sun Yat-sen University, Guangdong Institute of Gastroenterology, Guangdong Provincial Key Laboratory of Colorectal and Pelvic Floor Diseases"
+          }
+        ]
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-1803-3121",
+        "authenticated-orcid": false,
+        "given": "Huanhuan",
+        "family": "Liang",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Pharmaceutical Sciences (Shenzhen), Sun Yat-sen University"
+          }
+        ]
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-1835-0397",
+        "authenticated-orcid": false,
+        "given": "Yingfang",
+        "family": "Liu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "School of Medicine, Shenzhen Campus of Sun Yat-sen University"
+          },
+          {
+            "name": "Department of Colorectal Surgery, The Sixth Affiliated Hospital, Sun Yat-sen University, Guangdong Institute of Gastroenterology, Guangdong Provincial Key Laboratory of Colorectal and Pelvic Floor Diseases"
+          }
+        ]
+      }
+    ],
+    "member": "4374",
+    "deposited": {
+      "date-parts": [
+        [
+          2023,
+          5,
+          11
+        ]
+      ],
+      "date-time": "2023-05-11T08:09:04Z",
+      "timestamp": 1683792544000
+    },
+    "score": 49.35006,
+    "resource": {
+      "primary": {
+        "URL": "https:\/\/elifesciences.org\/reviewed-preprints\/87468v1"
+      }
+    },
+    "issued": {
+      "date-parts": [
+        [
+          2023,
+          5,
+          11
+        ]
+      ]
+    },
+    "references-count": 0,
+    "URL": "http:\/\/dx.doi.org\/10.7554\/elife.87468.1",
+    "relation": {
+      "is-version-of": [
+        {
+          "id-type": "doi",
+          "id": "10.1101\/2022.01.26.477944",
+          "asserted-by": "subject"
+        }
+      ],
+      "has-review": [
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.87468.1.sa0",
+          "asserted-by": "object"
+        },
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.87468.1.sa1",
+          "asserted-by": "object"
+        },
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.87468.1.sa2",
+          "asserted-by": "object"
+        }
+      ]
+    },
+    "published": {
+      "date-parts": [
+        [
+          2023,
+          5,
+          11
+        ]
+      ]
+    },
+    "subtype": "preprint"
+  },
+  {
+    "institution": [
+      {
+        "name": "bioRxiv"
+      }
+    ],
+    "indexed": {
+      "date-parts": [
+        [
+          2023,
+          6,
+          14
+        ]
+      ],
+      "date-time": "2023-06-14T04:10:20Z",
+      "timestamp": 1686715820466
+    },
+    "posted": {
+      "date-parts": [
+        [
+          2022,
+          1,
+          27
+        ]
+      ]
+    },
+    "group-title": "Biophysics",
+    "reference-count": 54,
+    "publisher": "Cold Spring Harbor Laboratory",
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "accepted": {
+      "date-parts": [
+        [
+          2023,
+          6,
+          8
+        ]
+      ]
+    },
+    "abstract": "<jats:title>Abstract<\/jats:title><jats:p>MCM8 and MCM9 form a functional helicase complex (MCM8\/9) that plays an essential role in DNA homologous recombination repair for DNA double-strand break. However, the structural characterization of MCM8\/9 for DNA binding\/unwinding remains unclear. Here, we report structures of the MCM8\/9 complex using cryo-electron microscopy single particle analysis. The structures reveal that MCM8\/9 is arranged into a heterohexamer through a three-fold symmetry axis, creating a central channel that accommodates DNA. Multiple characteristic hairpins from the N-terminal oligosaccharide\/oligonucleotide (OB) domains of MCM8\/9 protrude into the central channel and serve to unwind the duplex DNA. When activated by HROB, the structure of MCM8\/9’s N-tier ring converts its symmetry from<jats:italic>C3<\/jats:italic>to<jats:italic>C1<\/jats:italic>with a conformational change that expands the MCM8\/9’s trimer interface. Moreover, our structural dynamic analyses revealed that the flexible C-tier ring exhibited rotary motions relative to the N-tier ring, which is required for the unwinding ability of MCM8\/9. In summary, our structural and biochemistry study provide a basis for understanding the DNA unwinding mechanism of MCM8\/9 helicase in homologous recombination.<\/jats:p>",
+    "DOI": "10.1101\/2022.01.26.477944",
+    "type": "posted-content",
+    "created": {
+      "date-parts": [
+        [
+          2022,
+          1,
+          28
+        ]
+      ],
+      "date-time": "2022-01-28T03:45:11Z",
+      "timestamp": 1643341511000
+    },
+    "source": "Crossref",
+    "is-referenced-by-count": 0,
+    "title": [
+      "Structural and mechanistic insights into the MCM8\/9 helicase complex"
+    ],
+    "prefix": "10.1101",
+    "author": [
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-7079-0293",
+        "authenticated-orcid": false,
+        "given": "Zhuangfeng",
+        "family": "Weng",
+        "sequence": "first",
+        "affiliation": []
+      },
+      {
+        "given": "Jiefu",
+        "family": "Zheng",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Yiyi",
+        "family": "Zhou",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Zuer",
+        "family": "Lu",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Yixi",
+        "family": "Wu",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0001-5711-2618",
+        "authenticated-orcid": false,
+        "given": "Dongyi",
+        "family": "Xu",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Huanhuan",
+        "family": "Li",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-1803-3121",
+        "authenticated-orcid": false,
+        "given": "Huanhuan",
+        "family": "Liang",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-1835-0397",
+        "authenticated-orcid": false,
+        "given": "Yingfang",
+        "family": "Liu",
+        "sequence": "additional",
+        "affiliation": []
+      }
+    ],
+    "member": "246",
+    "reference": [
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.1",
+        "doi-asserted-by": "crossref",
+        "unstructured": "Brosh, R.M., Jr. and Matson, S.W . (2020) History of DNA Helicases. Genes (Basel), 11.",
+        "DOI": "10.3390\/genes11030255"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.2",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1146\/annurev-genet-051710-150955"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.3",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.ceb.2006.02.006"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.4",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1042\/BCJ20200065"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.5",
+        "doi-asserted-by": "crossref",
+        "first-page": "316",
+        "DOI": "10.1038\/nsmb.3372",
+        "article-title": "Structural basis of Mcm2-7 replicative helicase loading by ORC-Cdc6 and Cdt1",
+        "volume": "24",
+        "year": "2017",
+        "journal-title": "Nature structural & molecular biology"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.6",
+        "doi-asserted-by": "crossref",
+        "first-page": "704",
+        "DOI": "10.1038\/s41586-019-1768-0",
+        "article-title": "Mechanism of head-to-head MCM double-hexamer formation revealed by cryo-EM",
+        "volume": "575",
+        "year": "2019",
+        "journal-title": "Nature"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.7",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/nature14685"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.8",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/ncomms10708"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.9",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1101\/gad.242404.114"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.10",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1073\/pnas.1712537114"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.11",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1073\/pnas.1620500114"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.12",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.celrep.2019.07.104"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.13",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/nature25787"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.14",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1007\/978-94-007-4572-8_6"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.15",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1093\/nar\/gkm1160"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.16",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1073\/pnas.0809192106"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.17",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.molcel.2012.05.047"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.18",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.molcel.2012.05.048"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.19",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1111\/cas.13941"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.20",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.jbc.2021.100355"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.21",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1128\/MCB.01503-12"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.22",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/ncomms8744"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.23",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1101\/gad.329508.119"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.24",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/s41467-020-16718-3"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.25",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1073\/pnas.0808037105"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.26",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.dnarep.2019.02.003"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.27",
+        "doi-asserted-by": "crossref",
+        "first-page": "1171",
+        "DOI": "10.1016\/j.str.2021.05.006",
+        "article-title": "Structural study of the N-terminal domain of human MCM8\/9 complex",
+        "volume": "29",
+        "year": "2021",
+        "journal-title": "Structure"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.28",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/nsb893"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.29",
+        "doi-asserted-by": "crossref",
+        "first-page": "217",
+        "DOI": "10.1038\/nsmb.3170",
+        "article-title": "Structure of the eukaryotic replicative CMG helicase suggests a pumpjack motion for translocation",
+        "volume": "23",
+        "year": "2016",
+        "journal-title": "Nature structural & molecular biology"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.30",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1073\/pnas.98.1.54"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.31",
+        "doi-asserted-by": "crossref",
+        "first-page": "831",
+        "DOI": "10.1016\/j.molcel.2015.07.010",
+        "article-title": "MCM9 Is Required for Mammalian DNA Mismatch Repair",
+        "volume": "59",
+        "year": "2015",
+        "journal-title": "Mol Cell"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.32",
+        "doi-asserted-by": "crossref",
+        "first-page": "122",
+        "DOI": "10.1038\/s41594-018-0024-x",
+        "article-title": "The ring-shaped hexameric helicases that function at DNA replication forks",
+        "volume": "25",
+        "year": "2018",
+        "journal-title": "Nature structural & molecular biology"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.33",
+        "doi-asserted-by": "crossref",
+        "first-page": "145",
+        "DOI": "10.1007\/978-1-0716-0966-8_7",
+        "article-title": "Multi-body Refinement of Cryo-EM Images in RELION",
+        "volume": "2215",
+        "year": "2021",
+        "journal-title": "Methods in molecular biology (Clifton, N.J.)"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.34",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/s41467-019-09836-0"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.35",
+        "doi-asserted-by": "crossref",
+        "unstructured": "Singh, S.K. , Gui, M. , Koh, F. , Yip, M.C. and Brown, A . (2020) Structure and activation mechanism of the BBSome membrane protein trafficking complex. eLife, 9.",
+        "DOI": "10.7554\/eLife.53322"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.36",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.4161\/cc.24670"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.37",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.cell.2004.12.010"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.38",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1006\/jmbi.2000.4132"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.39",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/S0022-2836(02)00711-8"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.40",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.jmb.2006.01.091"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.41",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.molcel.2020.04.012"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.42",
+        "doi-asserted-by": "crossref",
+        "first-page": "51",
+        "DOI": "10.1038\/s41467-018-07938-9",
+        "article-title": "Structure of BAI1\/ELMO2 complex reveals an action mechanism of adhesion GPCRs via ELMO family scaffolds",
+        "volume": "10",
+        "year": "2019",
+        "journal-title": "Nat Commun"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.43",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.jsb.2005.07.007"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.44",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/nmeth.4169"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.45",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/s41592-020-00990-8"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.46",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1093\/NAR\/GKAB1061"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.47",
+        "first-page": "861",
+        "article-title": "Macromolecular structure determination using X-rays, neutrons and electrons: recent developments in Phenix. Acta crystallographica. Section D",
+        "volume": "75",
+        "year": "2019",
+        "journal-title": "Structural biology"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.48",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.jsb.2012.09.006"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.49",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/nmeth.4193"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.50",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.jsb.2015.11.003"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.51",
+        "doi-asserted-by": "crossref",
+        "unstructured": "Nakane, T. , Kimanius, D. , Lindahl, E. and Scheres, S.H . (2018) Characterisation of molecular motions in cryo-EM single-particle data by multi-body refinement in RELION. eLife, 7.",
+        "DOI": "10.7554\/eLife.36861"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.52",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1002\/jcc.20084"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.53",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1107\/S0907444910007493"
+      },
+      {
+        "key": "2023061220350440000_2022.01.26.477944v3.54",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1107\/S0907444912001308"
+      }
+    ],
+    "link": [
+      {
+        "URL": "https:\/\/syndication.highwire.org\/content\/doi\/10.1101\/2022.01.26.477944",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "deposited": {
+      "date-parts": [
+        [
+          2023,
+          6,
+          13
+        ]
+      ],
+      "date-time": "2023-06-13T03:35:22Z",
+      "timestamp": 1686627322000
+    },
+    "score": 49.35006,
+    "resource": {
+      "primary": {
+        "URL": "http:\/\/biorxiv.org\/lookup\/doi\/10.1101\/2022.01.26.477944"
+      }
+    },
+    "issued": {
+      "date-parts": [
+        [
+          2022,
+          1,
+          27
+        ]
+      ]
+    },
+    "references-count": 54,
+    "URL": "http:\/\/dx.doi.org\/10.1101\/2022.01.26.477944",
+    "relation": {
+      "has-version": [
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.87468.1",
+          "asserted-by": "object"
+        }
+      ]
+    },
+    "published": {
+      "date-parts": [
+        [
+          2022,
+          1,
+          27
+        ]
+      ]
+    },
+    "subtype": "preprint"
+  },
+  {
+    "institution": [
+      {
+        "name": "bioRxiv"
+      }
+    ],
+    "indexed": {
+      "date-parts": [
+        [
+          2022,
+          10,
+          29
+        ]
+      ],
+      "date-time": "2022-10-29T05:05:20Z",
+      "timestamp": 1667019920065
+    },
+    "posted": {
+      "date-parts": [
+        [
+          2021,
+          12,
+          8
+        ]
+      ]
+    },
+    "group-title": "Cell Biology",
+    "reference-count": 47,
+    "publisher": "Cold Spring Harbor Laboratory",
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "accepted": {
+      "date-parts": [
+        [
+          2021,
+          12,
+          8
+        ]
+      ]
+    },
+    "abstract": "<jats:title>Abstract<\/jats:title><jats:p>The minichromosome maintenance (MCM) 8\/9 helicase is a AAA<jats:sup>+<\/jats:sup> complex involved in DNA replication-associated repair. Despite high sequence homology to the MCM2-7 helicase, an active role for MCM8\/9 has remained elusive. We interrogated fork progression in cells lacking MCM8 or 9 and find there is a functional partitioning. Loss of MCM8 or 9 slows overall replication speed and increases markers of genomic damage and fork instability, further compounded upon treatment with hydroxyurea. MCM8\/9 acts upstream and antagonizes the recruitment of BRCA1 in nontreated conditions. However, upon treatment with fork stalling agents, MCM9 recruits Rad51 to protect and remodel persistently stalled forks. The helicase function of MCM8\/9 aids in normal replication fork progression, but upon excessive stalling, MCM8\/9 directs additional stabilizers to protect forks from degradation. This evidence defines novel multifunctional roles for MCM8\/9 in promoting normal replication fork progression and promoting genome integrity following stress.<\/jats:p>",
+    "DOI": "10.1101\/2021.12.08.471807",
+    "type": "posted-content",
+    "created": {
+      "date-parts": [
+        [
+          2021,
+          12,
+          9
+        ]
+      ],
+      "date-time": "2021-12-09T04:10:14Z",
+      "timestamp": 1639023014000
+    },
+    "source": "Crossref",
+    "is-referenced-by-count": 0,
+    "title": [
+      "A novel multi-functional role for the MCM8\/9 helicase complex in maintaining fork integrity during replication stress"
+    ],
+    "prefix": "10.1101",
+    "author": [
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0003-2062-1253",
+        "authenticated-orcid": false,
+        "given": "Wezley C.",
+        "family": "Griffin",
+        "sequence": "first",
+        "affiliation": []
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0003-0845-5352",
+        "authenticated-orcid": false,
+        "given": "David R.",
+        "family": "McKinzey",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-3220-4783",
+        "authenticated-orcid": false,
+        "given": "Kathleen N.",
+        "family": "Klinzing",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Rithvik",
+        "family": "Baratam",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0001-7054-8475",
+        "authenticated-orcid": false,
+        "given": "Michael A.",
+        "family": "Trakselis",
+        "sequence": "additional",
+        "affiliation": []
+      }
+    ],
+    "member": "246",
+    "reference": [
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.1",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.semcancer.2018.11.009"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.2",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.molcel.2021.05.024"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.3",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.yexcr.2014.09.030"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.4",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.semcdb.2014.04.035"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.5",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.tibs.2019.03.011"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.6",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.bbagen.2009.03.020"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.7",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/s41586-021-03779-7"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.8",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.15252\/embr.201846263"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.9",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/nrm2450"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.10",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/s41594-018-0075-z"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.11",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.molcel.2017.11.022"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.12",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.4161\/cc.28212"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.13",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1002\/1873-3468.12556"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.14",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1172\/JCI78473"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.15",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.ajhg.2014.11.002"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.16",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1210\/jc.2016-2565"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.17",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/s41525-021-00242-4"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.18",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.dnarep.2019.02.003"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.19",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.molcel.2012.05.048"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.20",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1073\/pnas.1113524108"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.21",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/ncomms8744"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.22",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.molcel.2008.07.001"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.23",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.4161\/cc.24310"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.24",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1128\/MCB.01503-12"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.25",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.cell.2004.12.010"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.26",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1093\/nar\/gkg136"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.27",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1101\/gad.297663.117"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.28",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.molcel.2015.07.030"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.29",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.3390\/biom3010039"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.30",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.jbc.2021.100355"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.31",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.molcel.2012.05.047"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.32",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/leu.2010.6"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.33",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1002\/em.21944"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.34",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.molcel.2017.09.036"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.35",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.ccr.2012.05.015"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.36",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.molcel.2020.04.031"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.37",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1101\/cshperspect.a016600"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.38",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/s41467-017-01180-5"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.39",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.semcdb.2020.07.004"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.40",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/s41467-017-01164-5"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.41",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1083\/jcb.201406100"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.42",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/onc.2017.123"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.43",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1111\/cas.13941"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.44",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1073\/pnas.1002175107"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.45",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/s41580-020-0218-z"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.46",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/bs.mie.2017.03.019"
+      },
+      {
+        "key": "2021121008351052000_2021.12.08.471807v1.47",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.molcel.2018.09.014"
+      }
+    ],
+    "link": [
+      {
+        "URL": "https:\/\/syndication.highwire.org\/content\/doi\/10.1101\/2021.12.08.471807",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "deposited": {
+      "date-parts": [
+        [
+          2022,
+          10,
+          28
+        ]
+      ],
+      "date-time": "2022-10-28T19:52:42Z",
+      "timestamp": 1666986762000
+    },
+    "score": 29.027645,
+    "resource": {
+      "primary": {
+        "URL": "http:\/\/biorxiv.org\/lookup\/doi\/10.1101\/2021.12.08.471807"
+      }
+    },
+    "issued": {
+      "date-parts": [
+        [
+          2021,
+          12,
+          8
+        ]
+      ]
+    },
+    "references-count": 47,
+    "URL": "http:\/\/dx.doi.org\/10.1101\/2021.12.08.471807",
+    "relation": {
+      "is-preprint-of": [
+        {
+          "id-type": "doi",
+          "id": "10.1038\/s41467-022-32583-8",
+          "asserted-by": "subject"
+        }
+      ]
+    },
+    "published": {
+      "date-parts": [
+        [
+          2021,
+          12,
+          8
+        ]
+      ]
+    },
+    "subtype": "preprint"
+  }
+]

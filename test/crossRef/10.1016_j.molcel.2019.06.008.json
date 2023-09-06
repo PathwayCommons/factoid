@@ -1,0 +1,1137 @@
+{
+  "indexed": {
+    "date-parts": [
+      [
+        2023,
+        7,
+        22
+      ]
+    ],
+    "date-time": "2023-07-22T11:29:35Z",
+    "timestamp": 1690025375837
+  },
+  "reference-count": 65,
+  "publisher": "Elsevier BV",
+  "issue": "4",
+  "license": [
+    {
+      "start": {
+        "date-parts": [
+          [
+            2019,
+            8,
+            1
+          ]
+        ],
+        "date-time": "2019-08-01T00:00:00Z",
+        "timestamp": 1564617600000
+      },
+      "content-version": "tdm",
+      "delay-in-days": 0,
+      "URL": "https:\/\/www.elsevier.com\/tdm\/userlicense\/1.0\/"
+    },
+    {
+      "start": {
+        "date-parts": [
+          [
+            2020,
+            8,
+            22
+          ]
+        ],
+        "date-time": "2020-08-22T00:00:00Z",
+        "timestamp": 1598054400000
+      },
+      "content-version": "vor",
+      "delay-in-days": 387,
+      "URL": "http:\/\/www.elsevier.com\/open-access\/userlicense\/1.0\/"
+    }
+  ],
+  "funder": [
+    {
+      "DOI": "10.13039\/501100001809",
+      "name": "National Natural Science Foundation of China",
+      "doi-asserted-by": "publisher",
+      "award": [
+        "81730082",
+        "91229202",
+        "81430069",
+        "31600664",
+        "81700701"
+      ]
+    },
+    {
+      "DOI": "10.13039\/501100012166",
+      "name": "National Basic Research Program of China",
+      "doi-asserted-by": "publisher",
+      "award": [
+        "2013CB910902"
+      ]
+    },
+    {
+      "name": "High-Level Local University Construction Project of Shanghai Jiao Tong University School of Medicine",
+      "award": [
+        "18zxy004"
+      ]
+    },
+    {
+      "name": "Shanghai Committee of Science and Technology",
+      "award": [
+        "15ZR1424500",
+        "11DZ2260200"
+      ]
+    },
+    {
+      "DOI": "10.13039\/501100003395",
+      "name": "Shanghai Municipal Education Commission",
+      "doi-asserted-by": "publisher",
+      "award": [
+        "2017-01-07-00-01-E00050",
+        "ZZjdyx15003"
+      ]
+    },
+    {
+      "name": "Shanghai Jiao Tong University School of Medicine",
+      "award": [
+        "14XJ10001"
+      ]
+    },
+    {
+      "name": "Shanghai Jiao Tong University School of Medicine",
+      "award": [
+        "BXJ201802"
+      ]
+    }
+  ],
+  "content-domain": {
+    "domain": [
+      "cell.com",
+      "elsevier.com",
+      "sciencedirect.com"
+    ],
+    "crossmark-restriction": true
+  },
+  "short-container-title": [
+    "Molecular Cell"
+  ],
+  "published-print": {
+    "date-parts": [
+      [
+        2019,
+        8
+      ]
+    ]
+  },
+  "DOI": "10.1016\/j.molcel.2019.06.008",
+  "type": "journal-article",
+  "created": {
+    "date-parts": [
+      [
+        2019,
+        7,
+        10
+      ]
+    ],
+    "date-time": "2019-07-10T14:32:49Z",
+    "timestamp": 1562769169000
+  },
+  "page": "823-834.e5",
+  "update-policy": "http:\/\/dx.doi.org\/10.1016\/elsevier_cm_policy",
+  "source": "Crossref",
+  "is-referenced-by-count": 90,
+  "title": [
+    "SENP1-Sirt3 Signaling Controls Mitochondrial Protein Acetylation and Metabolism"
+  ],
+  "prefix": "10.1016",
+  "volume": "75",
+  "author": [
+    {
+      "given": "Tianshi",
+      "family": "Wang",
+      "sequence": "first",
+      "affiliation": []
+    },
+    {
+      "given": "Ying",
+      "family": "Cao",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Quan",
+      "family": "Zheng",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Jun",
+      "family": "Tu",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Wei",
+      "family": "Zhou",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Jianli",
+      "family": "He",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Jie",
+      "family": "Zhong",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Yalan",
+      "family": "Chen",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Jiqiu",
+      "family": "Wang",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Rong",
+      "family": "Cai",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Yong",
+      "family": "Zuo",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Bo",
+      "family": "Wei",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Qiuju",
+      "family": "Fan",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Jie",
+      "family": "Yang",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Yicheng",
+      "family": "Wu",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Jing",
+      "family": "Yi",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Dali",
+      "family": "Li",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Mingyao",
+      "family": "Liu",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Chuangui",
+      "family": "Wang",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Aiwu",
+      "family": "Zhou",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Yu",
+      "family": "Li",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Xuefeng",
+      "family": "Wu",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Wen",
+      "family": "Yang",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Y. Eugene",
+      "family": "Chin",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Guoqiang",
+      "family": "Chen",
+      "sequence": "additional",
+      "affiliation": []
+    },
+    {
+      "given": "Jinke",
+      "family": "Cheng",
+      "sequence": "additional",
+      "affiliation": []
+    }
+  ],
+  "member": "78",
+  "reference": [
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib1",
+      "doi-asserted-by": "crossref",
+      "first-page": "231",
+      "DOI": "10.1016\/j.tibs.2015.12.006",
+      "article-title": "Mechanisms and Dynamics of Protein Acetylation in Mitochondria",
+      "volume": "41",
+      "author": "Baeza",
+      "year": "2016",
+      "journal-title": "Trends Biochem. Sci."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib2",
+      "doi-asserted-by": "crossref",
+      "first-page": "2986",
+      "DOI": "10.1038\/onc.2011.37",
+      "article-title": "SirT3 suppresses hypoxia inducible factor 1α and tumor growth by inhibiting mitochondrial ROS production",
+      "volume": "30",
+      "author": "Bell",
+      "year": "2011",
+      "journal-title": "Oncogene"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib3",
+      "doi-asserted-by": "crossref",
+      "first-page": "87",
+      "DOI": "10.1007\/s10059-009-0110-3",
+      "article-title": "Identification of GATA2 and AP-1 Activator elements within the enhancer VNTR occurring in intron 5 of the human SIRT3 gene",
+      "volume": "28",
+      "author": "Bellizzi",
+      "year": "2009",
+      "journal-title": "Mol. Cells"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib4",
+      "doi-asserted-by": "crossref",
+      "first-page": "524",
+      "DOI": "10.1172\/JCI36703",
+      "article-title": "Disruption of the Ang II type 1 receptor promotes longevity in mice",
+      "volume": "119",
+      "author": "Benigni",
+      "year": "2009",
+      "journal-title": "J. Clin. Invest."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib5",
+      "doi-asserted-by": "crossref",
+      "first-page": "33837",
+      "DOI": "10.1074\/jbc.M113.510354",
+      "article-title": "Sirtuin 3 (SIRT3) protein regulates long-chain acyl-CoA dehydrogenase by deacetylating conserved lysines near the active site",
+      "volume": "288",
+      "author": "Bharathi",
+      "year": "2013",
+      "journal-title": "J. Biol. Chem."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib6",
+      "doi-asserted-by": "crossref",
+      "first-page": "748",
+      "DOI": "10.1038\/embor.2009.86",
+      "article-title": "MAPL is a new mitochondrial SUMO E3 ligase that regulates mitochondrial fission",
+      "volume": "10",
+      "author": "Braschi",
+      "year": "2009",
+      "journal-title": "EMBO Rep."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib7",
+      "doi-asserted-by": "crossref",
+      "first-page": "1255",
+      "DOI": "10.1126\/science.aam9080",
+      "article-title": "Dopamine oxidation mediates mitochondrial and lysosomal dysfunction in Parkinson’s disease",
+      "volume": "357",
+      "author": "Burbulla",
+      "year": "2017",
+      "journal-title": "Science"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib8",
+      "doi-asserted-by": "crossref",
+      "first-page": "44464",
+      "DOI": "10.1074\/jbc.M112.422626",
+      "article-title": "SUMO-specific protease 1 regulates mitochondrial biogenesis through PGC-1α",
+      "volume": "287",
+      "author": "Cai",
+      "year": "2012",
+      "journal-title": "J. Biol. Chem."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib9",
+      "doi-asserted-by": "crossref",
+      "first-page": "717",
+      "DOI": "10.1074\/mcp.M116.062125",
+      "article-title": "Proteome-wide Mapping of Endogenous SUMOylation Sites in Mouse Testis",
+      "volume": "16",
+      "author": "Cai",
+      "year": "2017",
+      "journal-title": "Mol. Cell. Proteomics"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib10",
+      "doi-asserted-by": "crossref",
+      "first-page": "838",
+      "DOI": "10.1016\/j.cmet.2012.04.022",
+      "article-title": "The NAD(+) precursor nicotinamide riboside enhances oxidative metabolism and protects against high-fat diet-induced obesity",
+      "volume": "15",
+      "author": "Cantó",
+      "year": "2012",
+      "journal-title": "Cell Metab."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib11",
+      "doi-asserted-by": "crossref",
+      "first-page": "497",
+      "DOI": "10.1016\/j.cmet.2018.01.016",
+      "article-title": "The Mitochondrial Acylome Emerges: Proteomics, Regulation by Sirtuins, and Metabolic and Disease Implications",
+      "volume": "27",
+      "author": "Carrico",
+      "year": "2018",
+      "journal-title": "Cell Metab."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib12",
+      "doi-asserted-by": "crossref",
+      "first-page": "521",
+      "DOI": "10.1042\/BJ20110702",
+      "article-title": "PPARα-LXR as a novel metabolostatic signalling axis in skeletal muscle that acts to optimize substrate selection in response to nutrient status",
+      "volume": "437",
+      "author": "Caton",
+      "year": "2011",
+      "journal-title": "Biochem. J."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib13",
+      "doi-asserted-by": "crossref",
+      "first-page": "722",
+      "DOI": "10.1016\/j.cell.2016.09.052",
+      "article-title": "MOF Acetyl Transferase Regulates Transcription and Respiration in Mitochondria",
+      "volume": "167",
+      "author": "Chatterjee",
+      "year": "2016",
+      "journal-title": "Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib14",
+      "doi-asserted-by": "crossref",
+      "first-page": "584",
+      "DOI": "10.1016\/j.cell.2007.08.045",
+      "article-title": "SUMO-specific protease 1 is essential for stabilization of HIF1alpha during hypoxia",
+      "volume": "131",
+      "author": "Cheng",
+      "year": "2007",
+      "journal-title": "Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib15",
+      "doi-asserted-by": "crossref",
+      "first-page": "637",
+      "DOI": "10.1016\/j.cmet.2015.03.007",
+      "article-title": "SIRT3 mediates multi-tissue coupling for metabolic fuel switching",
+      "volume": "21",
+      "author": "Dittenhafer-Reed",
+      "year": "2015",
+      "journal-title": "Cell Metab."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib16",
+      "doi-asserted-by": "crossref",
+      "first-page": "806",
+      "DOI": "10.1126\/science.1207861",
+      "article-title": "Sirt5 is a NAD-dependent protein lysine demalonylase and desuccinylase",
+      "volume": "334",
+      "author": "Du",
+      "year": "2011",
+      "journal-title": "Science"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib17",
+      "doi-asserted-by": "crossref",
+      "first-page": "534",
+      "DOI": "10.1016\/j.molcel.2013.12.026",
+      "article-title": "Tyr phosphorylation of PDP1 toggles recruitment between ACAT1 and SIRT3 to regulate the pyruvate dehydrogenase complex",
+      "volume": "53",
+      "author": "Fan",
+      "year": "2014",
+      "journal-title": "Mol. Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib18",
+      "doi-asserted-by": "crossref",
+      "first-page": "416",
+      "DOI": "10.1016\/j.ccr.2011.02.014",
+      "article-title": "SIRT3 opposes reprogramming of cancer cell metabolism through HIF1α destabilization",
+      "volume": "19",
+      "author": "Finley",
+      "year": "2011",
+      "journal-title": "Cancer Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib19",
+      "doi-asserted-by": "crossref",
+      "first-page": "177",
+      "DOI": "10.1016\/j.cell.2006.06.025",
+      "article-title": "OPA1 controls apoptotic cristae remodeling independently from mitochondrial fusion",
+      "volume": "126",
+      "author": "Frezza",
+      "year": "2006",
+      "journal-title": "Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib20",
+      "doi-asserted-by": "crossref",
+      "first-page": "1633",
+      "DOI": "10.1021\/pr2008384",
+      "article-title": "Mitochondrial acetylome analysis in a mouse model of alcohol-induced liver injury utilizing SIRT3 knockout mice",
+      "volume": "11",
+      "author": "Fritz",
+      "year": "2012",
+      "journal-title": "J. Proteome Res."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib21",
+      "doi-asserted-by": "crossref",
+      "first-page": "851",
+      "DOI": "10.1016\/j.molcel.2011.12.005",
+      "article-title": "The cAMP\/PKA pathway rapidly activates SIRT1 to promote fatty acid oxidation independently of changes in NAD(+)",
+      "volume": "44",
+      "author": "Gerhart-Hines",
+      "year": "2011",
+      "journal-title": "Mol. Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib22",
+      "doi-asserted-by": "crossref",
+      "first-page": "16958",
+      "DOI": "10.1074\/jbc.M110.202390",
+      "article-title": "Peroxisome proliferator-activated receptor-gamma coactivator-1alpha controls transcription of the Sirt3 gene, an essential component of the thermogenic brown adipocyte phenotype",
+      "volume": "286",
+      "author": "Giralt",
+      "year": "2011",
+      "journal-title": "J. Biol. Chem."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib23",
+      "doi-asserted-by": "crossref",
+      "first-page": "108",
+      "DOI": "10.1016\/j.tibs.2010.09.003",
+      "article-title": "Regulation of intermediary metabolism by protein acetylation",
+      "volume": "36",
+      "author": "Guan",
+      "year": "2011",
+      "journal-title": "Trends Biochem. Sci."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib24",
+      "doi-asserted-by": "crossref",
+      "first-page": "253",
+      "DOI": "10.1146\/annurev.pathol.4.110807.092250",
+      "article-title": "Mammalian sirtuins: biological insights and disease relevance",
+      "volume": "5",
+      "author": "Haigis",
+      "year": "2010",
+      "journal-title": "Annu. Rev. Pathol."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib25",
+      "doi-asserted-by": "crossref",
+      "first-page": "226",
+      "DOI": "10.1016\/j.cmet.2014.07.001",
+      "article-title": "Making proteins in the powerhouse",
+      "volume": "20",
+      "author": "Hällberg",
+      "year": "2014",
+      "journal-title": "Cell Metab."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib26",
+      "doi-asserted-by": "crossref",
+      "first-page": "139",
+      "DOI": "10.1016\/j.molcel.2011.01.002",
+      "article-title": "Sirt3 promotes the urea cycle and fatty acid oxidation during dietary restriction",
+      "volume": "41",
+      "author": "Hallows",
+      "year": "2011",
+      "journal-title": "Mol. Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib27",
+      "doi-asserted-by": "crossref",
+      "first-page": "357",
+      "DOI": "10.1016\/j.cmet.2014.01.010",
+      "article-title": "The protein import machinery of mitochondria-a regulatory hub in metabolism, stress, and disease",
+      "volume": "19",
+      "author": "Harbauer",
+      "year": "2014",
+      "journal-title": "Cell Metab."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib28",
+      "doi-asserted-by": "crossref",
+      "first-page": "467",
+      "DOI": "10.1016\/j.tem.2012.07.004",
+      "article-title": "Mitochondrial sirtuins: regulators of protein acylation and metabolism",
+      "volume": "23",
+      "author": "He",
+      "year": "2012",
+      "journal-title": "Trends Endocrinol. Metab."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib29",
+      "doi-asserted-by": "crossref",
+      "first-page": "186",
+      "DOI": "10.1016\/j.molcel.2012.10.024",
+      "article-title": "Calorie restriction and SIRT3 trigger global reprogramming of the mitochondrial protein acetylome",
+      "volume": "49",
+      "author": "Hebert",
+      "year": "2013",
+      "journal-title": "Mol. Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib30",
+      "doi-asserted-by": "crossref",
+      "first-page": "121",
+      "DOI": "10.1038\/nature08778",
+      "article-title": "SIRT3 regulates mitochondrial fatty-acid oxidation by reversible enzyme deacetylation",
+      "volume": "464",
+      "author": "Hirschey",
+      "year": "2010",
+      "journal-title": "Nature"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib31",
+      "doi-asserted-by": "crossref",
+      "first-page": "267",
+      "DOI": "10.1101\/sqb.2011.76.010850",
+      "article-title": "SIRT3 regulates mitochondrial protein acetylation and intermediary metabolism",
+      "volume": "76",
+      "author": "Hirschey",
+      "year": "2011",
+      "journal-title": "Cold Spring Harb. Symp. Quant. Biol."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib32",
+      "doi-asserted-by": "crossref",
+      "first-page": "177",
+      "DOI": "10.1016\/j.molcel.2011.07.019",
+      "article-title": "SIRT3 deficiency and mitochondrial protein hyperacetylation accelerate the development of the metabolic syndrome",
+      "volume": "44",
+      "author": "Hirschey",
+      "year": "2011",
+      "journal-title": "Mol. Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib33",
+      "doi-asserted-by": "crossref",
+      "first-page": "24394",
+      "DOI": "10.1074\/jbc.M109.014928",
+      "article-title": "Crystal structures of human SIRT3 displaying substrate-induced conformational changes",
+      "volume": "284",
+      "author": "Jin",
+      "year": "2009",
+      "journal-title": "J. Biol. Chem."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib34",
+      "doi-asserted-by": "crossref",
+      "first-page": "681",
+      "DOI": "10.1038\/nature21408",
+      "article-title": "LACTB is a tumour suppressor that modulates lipid metabolism and cell state",
+      "volume": "543",
+      "author": "Keckesova",
+      "year": "2017",
+      "journal-title": "Nature"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib35",
+      "doi-asserted-by": "crossref",
+      "first-page": "41",
+      "DOI": "10.1016\/j.ccr.2009.11.023",
+      "article-title": "SIRT3 is a mitochondria-localized tumor suppressor required for maintenance of mitochondrial integrity and metabolism during stress",
+      "volume": "17",
+      "author": "Kim",
+      "year": "2010",
+      "journal-title": "Cancer Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib36",
+      "doi-asserted-by": "crossref",
+      "first-page": "e11707",
+      "DOI": "10.1371\/journal.pone.0011707",
+      "article-title": "Sirtuin 3, a new target of PGC-1alpha, plays an important role in the suppression of ROS and mitochondrial biogenesis",
+      "volume": "5",
+      "author": "Kong",
+      "year": "2010",
+      "journal-title": "PLoS ONE"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib37",
+      "doi-asserted-by": "crossref",
+      "first-page": "17312",
+      "DOI": "10.1074\/jbc.M117.778720",
+      "article-title": "Obesity and aging diminish sirtuin 1 (SIRT1)-mediated deacetylation of SIRT3, leading to hyperacetylation and decreased activity and stability of SIRT3",
+      "volume": "292",
+      "author": "Kwon",
+      "year": "2017",
+      "journal-title": "J. Biol. Chem."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib38",
+      "doi-asserted-by": "crossref",
+      "first-page": "502",
+      "DOI": "10.1016\/j.cell.2018.08.040",
+      "article-title": "Acetate Production from Glucose and Coupling to Mitochondrial Metabolism in Mammals",
+      "volume": "175",
+      "author": "Liu",
+      "year": "2018",
+      "journal-title": "Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib39",
+      "doi-asserted-by": "crossref",
+      "first-page": "187",
+      "DOI": "10.1016\/j.cell.2018.04.017",
+      "article-title": "PNPT1 Release from Mitochondria during Apoptosis Triggers Decay of Poly(A) RNAs",
+      "volume": "174",
+      "author": "Liu",
+      "year": "2018",
+      "journal-title": "Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib40",
+      "doi-asserted-by": "crossref",
+      "first-page": "1615",
+      "DOI": "10.1016\/j.cell.2014.11.046",
+      "article-title": "Sirtuin 4 is a lipoamidase regulating pyruvate dehydrogenase complex activity",
+      "volume": "159",
+      "author": "Mathias",
+      "year": "2014",
+      "journal-title": "Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib41",
+      "doi-asserted-by": "crossref",
+      "first-page": "633",
+      "DOI": "10.1016\/j.celrep.2014.09.025",
+      "article-title": "Hypothalamic PGC-1α protects against high-fat diet exposure by regulating ERα",
+      "volume": "9",
+      "author": "Morselli",
+      "year": "2014",
+      "journal-title": "Cell Rep."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib42",
+      "doi-asserted-by": "crossref",
+      "first-page": "560",
+      "DOI": "10.1016\/j.cell.2009.02.026",
+      "article-title": "SIRT5 Deacetylates carbamoyl phosphate synthetase 1 and regulates the urea cycle",
+      "volume": "137",
+      "author": "Nakagawa",
+      "year": "2009",
+      "journal-title": "Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib43",
+      "doi-asserted-by": "crossref",
+      "first-page": "1375",
+      "DOI": "10.1016\/j.chembiol.2013.09.019",
+      "article-title": "Crystal structures of Sirt3 complexes with 4′-bromo-resveratrol reveal binding sites and inhibition mechanism",
+      "volume": "20",
+      "author": "Nguyen",
+      "year": "2013",
+      "journal-title": "Chem. Biol."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib44",
+      "doi-asserted-by": "crossref",
+      "first-page": "13653",
+      "DOI": "10.1073\/pnas.222538099",
+      "article-title": "SIRT3, a human SIR2 homologue, is an NAD-dependent deacetylase localized to mitochondria",
+      "volume": "99",
+      "author": "Onyango",
+      "year": "2002",
+      "journal-title": "Proc. Natl. Acad. Sci. USA"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib45",
+      "doi-asserted-by": "crossref",
+      "first-page": "662",
+      "DOI": "10.1016\/j.cmet.2010.11.015",
+      "article-title": "Calorie restriction reduces oxidative stress by SIRT3-mediated SOD2 activation",
+      "volume": "12",
+      "author": "Qiu",
+      "year": "2010",
+      "journal-title": "Cell Metab."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib46",
+      "doi-asserted-by": "crossref",
+      "first-page": "920",
+      "DOI": "10.1101\/gad.1527307",
+      "article-title": "SirT3 is a nuclear NAD+-dependent histone deacetylase that translocates to the mitochondria upon cellular stress",
+      "volume": "21",
+      "author": "Scher",
+      "year": "2007",
+      "journal-title": "Genes Dev."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib47",
+      "doi-asserted-by": "crossref",
+      "first-page": "10224",
+      "DOI": "10.1073\/pnas.0603968103",
+      "article-title": "Reversible lysine acetylation controls the activity of the mitochondrial enzyme acetyl-CoA synthetase 2",
+      "volume": "103",
+      "author": "Schwer",
+      "year": "2006",
+      "journal-title": "Proc. Natl. Acad. Sci. USA"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib48",
+      "doi-asserted-by": "crossref",
+      "first-page": "604",
+      "DOI": "10.1111\/j.1474-9726.2009.00503.x",
+      "article-title": "Calorie restriction alters mitochondrial protein acetylation",
+      "volume": "8",
+      "author": "Schwer",
+      "year": "2009",
+      "journal-title": "Aging Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib49",
+      "doi-asserted-by": "crossref",
+      "first-page": "654",
+      "DOI": "10.1016\/j.cmet.2010.11.003",
+      "article-title": "SIRT3 deacetylates mitochondrial 3-hydroxy-3-methylglutaryl CoA synthase 2 and regulates ketone body production",
+      "volume": "12",
+      "author": "Shimazu",
+      "year": "2010",
+      "journal-title": "Cell Metab."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib50",
+      "doi-asserted-by": "crossref",
+      "first-page": "e50545",
+      "DOI": "10.1371\/journal.pone.0050545",
+      "article-title": "Proteomic investigations of lysine acetylation identify diverse substrates of mitochondrial deacetylase sirt3",
+      "volume": "7",
+      "author": "Sol",
+      "year": "2012",
+      "journal-title": "PLoS ONE"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib51",
+      "doi-asserted-by": "crossref",
+      "first-page": "802",
+      "DOI": "10.1016\/j.cell.2010.10.002",
+      "article-title": "Sirt3 mediates reduction of oxidative damage and prevention of age-related hearing loss under caloric restriction",
+      "volume": "143",
+      "author": "Someya",
+      "year": "2010",
+      "journal-title": "Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib52",
+      "doi-asserted-by": "crossref",
+      "first-page": "745",
+      "DOI": "10.1038\/s41556-018-0124-1",
+      "article-title": "The multifaceted contributions of mitochondria to cellular metabolism",
+      "volume": "20",
+      "author": "Spinelli",
+      "year": "2018",
+      "journal-title": "Nat. Cell Biol."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib53",
+      "doi-asserted-by": "crossref",
+      "first-page": "605",
+      "DOI": "10.1016\/j.cmet.2014.03.014",
+      "article-title": "Lysine glutarylation is a protein posttranslational modification regulated by SIRT5",
+      "volume": "19",
+      "author": "Tan",
+      "year": "2014",
+      "journal-title": "Cell Metab."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib54",
+      "doi-asserted-by": "crossref",
+      "first-page": "893",
+      "DOI": "10.1016\/j.molcel.2010.12.013",
+      "article-title": "Sirt3-mediated deacetylation of evolutionarily conserved lysine 122 regulates MnSOD activity in response to stress",
+      "volume": "40",
+      "author": "Tao",
+      "year": "2010",
+      "journal-title": "Mol. Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib55",
+      "doi-asserted-by": "crossref",
+      "first-page": "12153",
+      "DOI": "10.1074\/jbc.M117.791715",
+      "article-title": "Prolonged fasting suppresses mitochondrial NLRP3 inflammasome assembly and activation via SIRT3-mediated activation of superoxide dismutase 2",
+      "volume": "292",
+      "author": "Traba",
+      "year": "2017",
+      "journal-title": "J. Biol. Chem."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib56",
+      "first-page": "164309",
+      "article-title": "Powering the immune system: mitochondria in immune function and deficiency",
+      "volume": "2014",
+      "author": "Walker",
+      "year": "2014",
+      "journal-title": "J. Immunol. Res."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib57",
+      "doi-asserted-by": "crossref",
+      "first-page": "30",
+      "DOI": "10.1038\/s41392-018-0024-7",
+      "article-title": "Metabolite sensing and signaling in cell metabolism",
+      "volume": "3",
+      "author": "Wang",
+      "year": "2018",
+      "journal-title": "Signal Transduct. Target. Ther."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib58",
+      "doi-asserted-by": "crossref",
+      "first-page": "1004",
+      "DOI": "10.1126\/science.1179687",
+      "article-title": "Acetylation of metabolic enzymes coordinates carbon source utilization and metabolic flux",
+      "volume": "327",
+      "author": "Wang",
+      "year": "2010",
+      "journal-title": "Science"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib59",
+      "doi-asserted-by": "crossref",
+      "first-page": "439",
+      "DOI": "10.1083\/jcb.200610042",
+      "article-title": "Bax\/Bak promote sumoylation of DRP1 and its stable association with mitochondria during apoptotic cell death",
+      "volume": "177",
+      "author": "Wasiak",
+      "year": "2007",
+      "journal-title": "J. Cell Biol."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib60",
+      "doi-asserted-by": "crossref",
+      "first-page": "1582",
+      "DOI": "10.1038\/nprot.2009.151",
+      "article-title": "Isolation of mitochondria-associated membranes and mitochondria from animal tissues and cells",
+      "volume": "4",
+      "author": "Wieckowski",
+      "year": "2009",
+      "journal-title": "Nat. Protoc."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib61",
+      "doi-asserted-by": "crossref",
+      "first-page": "985",
+      "DOI": "10.1016\/j.cell.2016.10.016",
+      "article-title": "Mitochondrial Sirtuin Network Reveals Dynamic SIRT3-Dependent Deacetylation in Response to Membrane Depolarization",
+      "volume": "167",
+      "author": "Yang",
+      "year": "2016",
+      "journal-title": "Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib62",
+      "doi-asserted-by": "crossref",
+      "first-page": "41",
+      "DOI": "10.1016\/S0092-8674(02)01250-3",
+      "article-title": "Molecular chaperones Hsp90 and Hsp70 deliver preproteins to the mitochondrial import receptor Tom70",
+      "volume": "112",
+      "author": "Young",
+      "year": "2003",
+      "journal-title": "Cell"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib63",
+      "doi-asserted-by": "crossref",
+      "first-page": "14078",
+      "DOI": "10.1074\/jbc.M112.355206",
+      "article-title": "SIRT3 protein deacetylates isocitrate dehydrogenase 2 (IDH2) and regulates mitochondrial redox status",
+      "volume": "287",
+      "author": "Yu",
+      "year": "2012",
+      "journal-title": "J. Biol. Chem."
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib64",
+      "doi-asserted-by": "crossref",
+      "first-page": "1000",
+      "DOI": "10.1126\/science.1179689",
+      "article-title": "Regulation of cellular metabolism by protein lysine acetylation",
+      "volume": "327",
+      "author": "Zhao",
+      "year": "2010",
+      "journal-title": "Science"
+    },
+    {
+      "key": "10.1016\/j.molcel.2019.06.008_bib65",
+      "doi-asserted-by": "crossref",
+      "first-page": "1546",
+      "DOI": "10.1016\/j.cell.2018.09.041",
+      "article-title": "Mitochondrial One-Carbon Pathway Supports Cytosolic Folate Integrity in Cancer Cells",
+      "volume": "175",
+      "author": "Zheng",
+      "year": "2018",
+      "journal-title": "Cell"
+    }
+  ],
+  "container-title": [
+    "Molecular Cell"
+  ],
+  "original-title": [],
+  "language": "en",
+  "link": [
+    {
+      "URL": "https:\/\/api.elsevier.com\/content\/article\/PII:S1097276519304411?httpAccept=text\/xml",
+      "content-type": "text\/xml",
+      "content-version": "vor",
+      "intended-application": "text-mining"
+    },
+    {
+      "URL": "https:\/\/api.elsevier.com\/content\/article\/PII:S1097276519304411?httpAccept=text\/plain",
+      "content-type": "text\/plain",
+      "content-version": "vor",
+      "intended-application": "text-mining"
+    }
+  ],
+  "deposited": {
+    "date-parts": [
+      [
+        2020,
+        9,
+        1
+      ]
+    ],
+    "date-time": "2020-09-01T04:10:16Z",
+    "timestamp": 1598933416000
+  },
+  "score": 1,
+  "resource": {
+    "primary": {
+      "URL": "https:\/\/linkinghub.elsevier.com\/retrieve\/pii\/S1097276519304411"
+    }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+    "date-parts": [
+      [
+        2019,
+        8
+      ]
+    ]
+  },
+  "references-count": 65,
+  "journal-issue": {
+    "issue": "4",
+    "published-print": {
+      "date-parts": [
+        [
+          2019,
+          8
+        ]
+      ]
+    }
+  },
+  "alternative-id": [
+    "S1097276519304411"
+  ],
+  "URL": "http:\/\/dx.doi.org\/10.1016\/j.molcel.2019.06.008",
+  "relation": {},
+  "ISSN": [
+    "1097-2765"
+  ],
+  "issn-type": [
+    {
+      "value": "1097-2765",
+      "type": "print"
+    }
+  ],
+  "subject": [
+    "Cell Biology",
+    "Molecular Biology"
+  ],
+  "published": {
+    "date-parts": [
+      [
+        2019,
+        8
+      ]
+    ]
+  },
+  "assertion": [
+    {
+      "value": "Elsevier",
+      "name": "publisher",
+      "label": "This article is maintained by"
+    },
+    {
+      "value": "SENP1-Sirt3 Signaling Controls Mitochondrial Protein Acetylation and Metabolism",
+      "name": "articletitle",
+      "label": "Article Title"
+    },
+    {
+      "value": "Molecular Cell",
+      "name": "journaltitle",
+      "label": "Journal Title"
+    },
+    {
+      "value": "https:\/\/doi.org\/10.1016\/j.molcel.2019.06.008",
+      "name": "articlelink",
+      "label": "CrossRef DOI link to publisher maintained version"
+    },
+    {
+      "value": "article",
+      "name": "content_type",
+      "label": "Content Type"
+    },
+    {
+      "value": "© 2019 Elsevier Inc.",
+      "name": "copyright",
+      "label": "Copyright"
+    }
+  ]
+}

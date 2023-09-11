@@ -1,4 +1,4 @@
-import on from './on-key';
+// import on from './on-key';
 import * as defs from './defs';
 import _ from 'lodash';
 import { isInteractionNode, getCyLayoutOpts } from '../../../../util';
@@ -31,6 +31,6 @@ export default function( { bus, cy, document } ){
     lastLayout.run();
   };
 
-  on('r', layout);
+  // on('r', layout);
   bus.on('layout', layout);
 }

@@ -54,19 +54,28 @@ const match = ( paperId, IdType, hits ) => {
 };
 
 /**
- * find
+ * findPreprint
  *
- * Find a matching Work from CrossRef. Shall interpret an input as:
+ * Find a matching preprint from CrossRef.
+ * Restricted to particular publishers
+ * Shall interpret an input as:
  *   1. Digital Object Identifier (doi)
  *   2. Plain text (titles, authors, ISSNs and publication years)
  *
  * @param {string} paperId Contains or references a single article
  * @return {Object} matching Work
  */
-const find = async paperId => {
+const findPreprint = async paperId => {
   const VALID_TYPES = new Set([ 'posted-content' ]);
   const VALID_SUBTYPES = new Set([ 'preprint' ]);
-
+  const VALID_PUBLISHERS = new Set([
+    'Cold Spring Harbor Laboratory',
+    'eLife Sciences Publications, Ltd',
+    'Research Square Platform LLC'
+  ]);
+  const isPreprint = ({ type, subtype }) => VALID_SUBTYPES.has( subtype ) && VALID_TYPES.has( type );
+  const isRecognizedPublisher = ({ publisher }) => VALID_PUBLISHERS.has( publisher );
+  const isSupported = w => isPreprint( w ) && isRecognizedPublisher( w );
   const paperId2Type = paperId => {
     // 99.3% of CrossRef DOIs (https://www.crossref.org/blog/dois-and-matching-regular-expressions/)
     const doiRegex = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i;
@@ -74,16 +83,6 @@ const find = async paperId => {
     const isDoiLike = doiRegex.test( paperId );
     if( isDoiLike ) IdType = ID_TYPE.DOI;
     return IdType;
-  };
-  const isSupported = work => {
-    let ok;
-    const { type, subtype } = work;
-    if( subtype ){
-      ok = VALID_SUBTYPES.has( subtype );
-    } else {
-      ok = VALID_TYPES.has( type );
-    }
-    return ok;
   };
 
   try {
@@ -102,10 +101,11 @@ const find = async paperId => {
     }
 
     m = match( paperId, IdType, hits );
+
     if( isSupported( m ) ){
       return m;
     } else {
-      throw new Error(`Unable to find a CrossRef Work for '${paperId}`);
+      throw new Error(`Unable to find a CrossRef preprint for '${paperId}`);
     }
 
   } catch( err ) {
@@ -114,4 +114,4 @@ const find = async paperId => {
   }
 };
 
-export { find, match, ID_TYPE };
+export { findPreprint, match, ID_TYPE };

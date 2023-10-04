@@ -1,43 +1,22 @@
 import logger from '../../../logger';
-import { DEMO_SECRET, DOCUMENT_CRON_CREATED_AGE_DAYS, DOCUMENT_CRON_REFRESH_ENABLED, DOCUMENT_CRON_UNEDITED_DAYS } from '../../../../config';
+import {
+  DEMO_SECRET,
+  DOCUMENT_CRON_STALE_PERIOD,
+  DOCUMENT_CRON_UPDATE_PERIOD
+} from '../../../../config';
 import { loadTables, loadDoc, fillDocArticle, fillDocAuthorProfiles } from  './index';
 import Document from '../../../../model/document';
+import { Timer, toSeconds } from '../../../../util/time.js';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
-const DEFAULT_DOCUMENT_CREATED_START_DATE = new Date( 0 );
 
-const HOURS_PER_DAY = 24;
-const MINUTES_PER_HOUR = 60;
-const SECONDS_PER_MINUTE = 60;
-const MILLISECONDS_PER_SECOND = 1000;
-
-const daysToMs = d => d * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
-const daysToSec = d => d * HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE;
-const dateFromToday = days => {
-  const now = Date.now();
-  const offset = daysToMs( days );
-  return new Date( now + offset );
-};
-
-let mtime = null; // milliseconds
-const lastUpdateTime = t => {
-  if( !t ){
-    return mtime;
-  } else {
-    mtime = t;
-  }
-};
+const timer = new Timer( DOCUMENT_CRON_UPDATE_PERIOD );
 
 const docsToUpdate = async () => {
 
   const tables = await loadTables();
   const { docDb, eleDb } = tables;
   let { table: q, conn, rethink: r } = docDb;
-  const toTime = field => r.branch(
-    r.typeOf( r.row( field ) ).eq( 'STRING' ), r.ISO8601( r.row( field ) ),
-    r.typeOf( r.row( field ) ).eq( 'NUMBER' ), r.epochTime( r.row( field ) ),
-    r.row( field ) // 'PTYPE<TIME>'
-  );
 
   q = q.orderBy({ index: r.desc( 'createdDate' ) });
 
@@ -49,19 +28,6 @@ const docsToUpdate = async () => {
 
   // Filter: Only those with a paper id provided
   q = q.filter( r.row( 'provided' ).hasFields( 'paperId' ) );
-
-  // Filter: Include when created less than  days ago
-  let startDate = DOCUMENT_CRON_CREATED_AGE_DAYS ? dateFromToday( -1 * DOCUMENT_CRON_CREATED_AGE_DAYS ) : DEFAULT_DOCUMENT_CREATED_START_DATE;
-  q = q.filter( toTime( 'createdDate' ).during( startDate, new Date() ) );
-
-  // Filter: Include when article is missing metadata (implied vis a vis missing pmid)
-  if( !DOCUMENT_CRON_REFRESH_ENABLED ){
-    q = q.filter(
-      r.not(
-        r.row( 'article' )( 'PubmedData' )( 'ArticleIdList' ).contains( ArticleId => ArticleId('IdType').eq('pubmed') )
-      )
-    );
-  }
 
   q = q.pluck([ 'id', 'secret' ]);
 
@@ -94,7 +60,6 @@ const updateArticle = async () => {
       await Promise.all( chunk.map( fillDocArticle ) );
       await Promise.all( chunk.map( fillDocAuthorProfiles ) );
     }
-    lastUpdateTime( Date.now() );
 
   } catch ( err ) {
     logger.error(`Error in Article update ${err}`);
@@ -111,21 +76,20 @@ const docsToTrash = async () => {
     r.typeOf( r.row( field ) ).eq( 'NUMBER' ), r.epochTime( r.row( field ) ),
     r.row( field )
   );
-  const editedMoreThanDaysAgo = d => r.now().sub( toTime( 'lastEditedDate' ) ).gt( daysToSec( d ) );
+
+  const isStale = r.now().sub( toTime( 'lastEditedDate' ) ).gt( toSeconds( DOCUMENT_CRON_STALE_PERIOD ) );
 
   // Predicates: demo docs
   const isDemo = r.row( 'secret' ).eq( DEMO_SECRET );
-  const demoNotRecentlyEdited = editedMoreThanDaysAgo( DOCUMENT_CRON_UNEDITED_DAYS );
-  const isOldDemo = isDemo.and( demoNotRecentlyEdited );
+  const isOldDemo = isDemo.and( isStale );
 
   // Predicates: Initiated docs
   const isInitiated = r.row( 'status' ).eq( DOCUMENT_STATUS_FIELDS.INITIATED );
-  const initiatedNotRecentlyEdited = editedMoreThanDaysAgo( DOCUMENT_CRON_UNEDITED_DAYS );
   const noPubMedId = r.not( r.row( 'article' )( 'PubmedData' )( 'ArticleIdList' ).contains( ArticleId => ArticleId('IdType').eq('pmid') ) );
   const noEntries = r.row('entries').count().eq( 0 );
   const isOldEmptyInitated = isDemo.not()
     .and( isInitiated )
-    .and( initiatedNotRecentlyEdited )
+    .and( isStale )
     .and( noPubMedId )
     .and( noEntries );
 
@@ -151,30 +115,23 @@ const trashDocs = async () => {
 };
 
 /**
- * update
- *
  * Update Document data
- *
- * @param {Number} updatePeriodDays The time, in days, between successive updates
  */
-const update = async updatePeriodDays => {
-  try {
-    let shouldUpdate = false;
-    if( lastUpdateTime() == null ){
-      // Pass on update following initialization
-      const timeToNextUpdate = Date.now() + daysToMs( updatePeriodDays );
-      lastUpdateTime( timeToNextUpdate );
-    } else {
-      const timeSinceLastUpdate = Date.now() - lastUpdateTime();
-      shouldUpdate = timeSinceLastUpdate > daysToMs( updatePeriodDays );
-    }
+const update = async () => {
+  logger.debug('update check');
+  logger.debug(`timer.delay: ${timer.delay}`);
+  logger.debug(`timer.last: ${timer.last}`);
+  if ( !timer.hasElapsed() ) return;
 
-    if ( shouldUpdate ){
-      await updateArticle();
-      await trashDocs();
-    }
+  try {
+    logger.debug('firing an update');
+    await updateArticle();
+    await trashDocs();
   } catch ( err ) {
     logger.error(`Error in Document update ${err}`);
+  } finally {
+    timer.reset();
+    logger.debug(`resetting timer.last: ${timer.last}`);
   }
 };
 

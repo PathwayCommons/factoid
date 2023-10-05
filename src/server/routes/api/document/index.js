@@ -65,6 +65,7 @@ import { ENTITY_TYPE } from '../../../../model/element/entity-type';
 import { eLink, elink2UidList } from './pubmed/linkPubmed';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import { docs2Sitemap } from '../../../sitemap';
+import { findPreprint, toPubMedArticle } from './crossRef/index.js';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 const DOC_CACHE_KEY = 'documents';
 const SEARCH_CACHE_KEY = 'search';
@@ -351,23 +352,26 @@ const fillDocCorrespondence = async doc => {
 };
 
 const fillDocArticle = async doc => {
+  let record;
   const { paperId } = doc.provided();
+  const { pmid, doi } = doc.citation();
+  const id = pmid || doi || paperId;
   try {
-    const pubmedRecord = await getPubmedArticle( paperId );
-    await doc.article( pubmedRecord );
-    await doc.issues({ paperId: null });
-  } catch ( error ) {
-
-    logger.error( `Error filling doc article` );
-    logger.error( error );
-
-    // Only supply default when no previous retrieval (pmid is null)
-    const { pmid } = doc.citation();
-    if( pmid == null ){
-      const pubmedRecord = createPubmedArticle({ articleTitle: paperId });
-      await doc.article( pubmedRecord );
-      await doc.issues({ paperId: { error, message: error.message } });
+    try {
+      record = await getPubmedArticle( id );
+    } catch ( error ) {
+      const result = await findPreprint( id );
+      record = toPubMedArticle( result );
     }
+    await doc.issues({ paperId: null });
+
+  } catch ( error ) {
+    logger.error( `Error filling doc article: ${error}` );
+    record = createPubmedArticle({ articleTitle: paperId });
+    await doc.issues({ paperId: { error, message: error.message } });
+
+  } finally {
+    await doc.article( record );
   }
 };
 

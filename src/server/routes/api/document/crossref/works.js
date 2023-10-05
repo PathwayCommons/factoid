@@ -19,15 +19,7 @@ const ID_TYPE = Object.freeze({
  * @returns
  */
 const match = ( paperId, IdType, hits ) => {
-  const orderByCreation = works => {
-    const byCreated = ( a, b ) => b.created.timestamp - a.created.timestamp;
-
-    let ordered = works;
-    const top = _.head( works );
-    if( top ) ordered = works.filter( h => h.score === top.score );
-    return ordered.sort( byCreated );
-  };
-
+  const byCreated = ( a, b ) => b.created.timestamp - a.created.timestamp;
   const sanitize = raw => {
     const trimmed = _.trim( raw , ' .');
     const lower = _.toLower( trimmed );
@@ -56,9 +48,9 @@ const match = ( paperId, IdType, hits ) => {
 
   // Filter hits based on match to title (partial), DOI (exact
   const matches = hits.filter( workMatchesPaperId );
-  // Order based on score, then created date
-  const ordered = orderByCreation( matches );
-  return _.head( ordered );
+  // Order by created date
+  matches.sort( byCreated );
+  return _.head( matches );
 };
 
 /**

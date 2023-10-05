@@ -1,0 +1,1268 @@
+[
+  {
+    "indexed": {
+      "date-parts": [
+        [
+          2023,
+          9,
+          29
+        ]
+      ],
+      "date-time": "2023-09-29T05:16:07Z",
+      "timestamp": 1695964567283
+    },
+    "posted": {
+      "date-parts": [
+        [
+          2023,
+          9,
+          28
+        ]
+      ]
+    },
+    "group-title": "elife",
+    "reference-count": 0,
+    "publisher": "eLife Sciences Publications, Ltd",
+    "license": [
+      {
+        "start": {
+          "date-parts": [
+            [
+              2023,
+              9,
+              28
+            ]
+          ],
+          "date-time": "2023-09-28T00:00:00Z",
+          "timestamp": 1695859200000
+        },
+        "content-version": "unspecified",
+        "delay-in-days": 0,
+        "URL": "http:\/\/creativecommons.org\/licenses\/by\/4.0\/"
+      }
+    ],
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "abstract": "<jats:p>Suppressive function of regulatory T (Treg) cells is dependent on signaling of their antigen receptors triggered by cognate self, dietary or microbial antigens in the form of peptide-MHC class II complexes. However, it remains largely unknown whether distinct or shared repertoires of Treg TCR are mobilized in response to different challenges in the same tissue or the same challenge in different tissues. Here we used a fixed TCRβ chain FoxP3-GFP mouse model to analyze conventional (eCD4) and regulatory (eTreg) effector TCRα repertoires in response to six distinct antigenic challenges to the lung and skin. For both subsets, we observed challenge-specific clonal expansion yielding homologous TCRα clusters within and across animals and exposure sites, which were reflected in the draining lymph nodes but not systemically. Some clusters were shared across cancer challenges, suggesting response to common tumor-associated antigens. For most challenges, eCD4 and eTreg clonal response did not overlap, indicating the distinct origin of the two cell subsets. At the same time, we observed such overlap at the sites of certain tumor challenges. The overlaps included dominant responding TCRα motif and characteristic iNKT TCRα, suggesting the tumor-induced eCD4-eTreg plasticity. Our TCRα repertoire analysis also demonstrated that distinct antigenic specificities are characteristic for eTreg cells residing in particular lymphatic tissues, regardless of the challenge, revealing the homing-specific, antigen-specific resident Treg populations. Altogether, our study highlights both challenge-specific and tissue-specific responses of Treg cells associated with distinct clonal expansions.<\/jats:p>",
+    "DOI": "10.7554\/elife.89382.1",
+    "type": "posted-content",
+    "created": {
+      "date-parts": [
+        [
+          2023,
+          9,
+          28
+        ]
+      ],
+      "date-time": "2023-09-28T13:30:12Z",
+      "timestamp": 1695907812000
+    },
+    "source": "Crossref",
+    "is-referenced-by-count": 0,
+    "title": [
+      "Convergence, plasticity, and tissue residence of regulatory T cell response via TCR repertoire prism"
+    ],
+    "prefix": "10.7554",
+    "author": [
+      {
+        "given": "T.O.",
+        "family": "Nakonechnaya",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Institute of Translational Medicine, Pirogov Russian National Research Medical University, Moscow, Russian Federation"
+          },
+          {
+            "name": "Genomics of Adaptive Immunity Department, Shemyakin and Ovchinnikov Institute of Bioorganic Chemistry, Moscow, Russian Federation"
+          }
+        ]
+      },
+      {
+        "given": "B.",
+        "family": "Moltedo",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Howard Hughes Medical Institute and Immunology Program, Sloan Kettering Institute and Ludwig Center at Memorial Sloan Kettering Cancer Center, New York, NY, USA"
+          }
+        ]
+      },
+      {
+        "given": "E.V.",
+        "family": "Putintseva",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Genomics of Adaptive Immunity Department, Shemyakin and Ovchinnikov Institute of Bioorganic Chemistry, Moscow, Russian Federation"
+          }
+        ]
+      },
+      {
+        "given": "S.",
+        "family": "Leyn",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Genomics of Adaptive Immunity Department, Shemyakin and Ovchinnikov Institute of Bioorganic Chemistry, Moscow, Russian Federation"
+          }
+        ]
+      },
+      {
+        "given": "D.A.",
+        "family": "Bolotin",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Institute of Translational Medicine, Pirogov Russian National Research Medical University, Moscow, Russian Federation"
+          },
+          {
+            "name": "Genomics of Adaptive Immunity Department, Shemyakin and Ovchinnikov Institute of Bioorganic Chemistry, Moscow, Russian Federation"
+          }
+        ]
+      },
+      {
+        "given": "O.V.",
+        "family": "Britanova",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Institute of Translational Medicine, Pirogov Russian National Research Medical University, Moscow, Russian Federation"
+          },
+          {
+            "name": "Genomics of Adaptive Immunity Department, Shemyakin and Ovchinnikov Institute of Bioorganic Chemistry, Moscow, Russian Federation"
+          }
+        ]
+      },
+      {
+        "given": "M.",
+        "family": "Shugay",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Institute of Translational Medicine, Pirogov Russian National Research Medical University, Moscow, Russian Federation"
+          },
+          {
+            "name": "Genomics of Adaptive Immunity Department, Shemyakin and Ovchinnikov Institute of Bioorganic Chemistry, Moscow, Russian Federation"
+          }
+        ]
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0003-0430-790X",
+        "authenticated-orcid": false,
+        "given": "D.M.",
+        "family": "Chudakov",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Institute of Translational Medicine, Pirogov Russian National Research Medical University, Moscow, Russian Federation"
+          },
+          {
+            "name": "Genomics of Adaptive Immunity Department, Shemyakin and Ovchinnikov Institute of Bioorganic Chemistry, Moscow, Russian Federation"
+          },
+          {
+            "name": "Abu Dhabi Stem Cells Center, Abu Dhabi, United Arab Emirates"
+          },
+          {
+            "name": "Central European Institute of Technology, Brno, Czech Republic"
+          }
+        ]
+      }
+    ],
+    "member": "4374",
+    "deposited": {
+      "date-parts": [
+        [
+          2023,
+          9,
+          28
+        ]
+      ],
+      "date-time": "2023-09-28T13:30:19Z",
+      "timestamp": 1695907819000
+    },
+    "score": 78.50932,
+    "resource": {
+      "primary": {
+        "URL": "https:\/\/elifesciences.org\/reviewed-preprints\/89382v1"
+      }
+    },
+    "issued": {
+      "date-parts": [
+        [
+          2023,
+          9,
+          28
+        ]
+      ]
+    },
+    "references-count": 0,
+    "URL": "http:\/\/dx.doi.org\/10.7554\/elife.89382.1",
+    "relation": {
+      "is-version-of": [
+        {
+          "id-type": "doi",
+          "id": "10.1101\/2023.06.15.544726",
+          "asserted-by": "subject"
+        }
+      ],
+      "has-review": [
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.89382.1.sa2",
+          "asserted-by": "object"
+        },
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.89382.1.sa3",
+          "asserted-by": "object"
+        },
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.89382.1.sa0",
+          "asserted-by": "object"
+        },
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.89382.1.sa1",
+          "asserted-by": "object"
+        }
+      ]
+    },
+    "published": {
+      "date-parts": [
+        [
+          2023,
+          9,
+          28
+        ]
+      ]
+    },
+    "subtype": "preprint"
+  },
+  {
+    "institution": [
+      {
+        "name": "bioRxiv"
+      }
+    ],
+    "indexed": {
+      "date-parts": [
+        [
+          2023,
+          6,
+          22
+        ]
+      ],
+      "date-time": "2023-06-22T04:37:18Z",
+      "timestamp": 1687408638447
+    },
+    "posted": {
+      "date-parts": [
+        [
+          2023,
+          6,
+          15
+        ]
+      ]
+    },
+    "group-title": "Immunology",
+    "reference-count": 31,
+    "publisher": "Cold Spring Harbor Laboratory",
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "accepted": {
+      "date-parts": [
+        [
+          2023,
+          6,
+          19
+        ]
+      ]
+    },
+    "abstract": "<jats:title>Summary<\/jats:title><jats:p>Suppressive function of regulatory T (Treg) cells is dependent on signaling of their antigen receptors triggered by cognate self, dietary or microbial antigens in the form of peptide-MHC class II complexes. However, it remains largely unknown whether distinct or shared repertoires of Treg TCR are mobilized in response to different challenges in the same tissue or the same challenge in different tissues. Here we used a fixed TCRβ chain FoxP3-GFP mouse model to analyze conventional (eCD4) and regulatory (eT<jats:sub>reg<\/jats:sub>) effector TCRα repertoires in response to six distinct antigenic challenges to the lung and skin. For both subsets, we observed challenge-specific clonal expansion yielding homologous TCRα clusters within and across animals and exposure sites, which were reflected in the draining lymph nodes but not systemically. Some clusters were shared across cancer challenges, suggesting response to common tumor-associated antigens. For most challenges, eCD4 and eT<jats:sub>reg<\/jats:sub>clonal response did not overlap, indicating the distinct origin of the two cell subsets. At the same time, we observed such overlap at the sites of certain tumor challenges. The overlaps included dominant responding TCRα motif and characteristic iNKT TCRα, suggesting the tumor-induced eCD4-eT<jats:sub>reg<\/jats:sub>plasticity. Our TCRα repertoire analysis also demonstrated that distinct antigenic specificities are characteristic for eT<jats:sub>reg<\/jats:sub>cells residing in particular lymphatic tissues, regardless of the challenge, revealing the homing-specific, antigen-specific resident Treg populations. Altogether, our study highlights both challenge-specific and tissue-specific responses of Treg cells associated with distinct clonal expansions.<\/jats:p><jats:sec><jats:title>Graphical abstract<\/jats:title><jats:fig id=\"ufig1\" position=\"float\" fig-type=\"figure\" orientation=\"portrait\"><jats:graphic xmlns:xlink=\"http:\/\/www.w3.org\/1999\/xlink\" xlink:href=\"544726v2_ufig1\" position=\"float\" orientation=\"portrait\" \/><\/jats:fig><\/jats:sec>",
+    "DOI": "10.1101\/2023.06.15.544726",
+    "type": "posted-content",
+    "created": {
+      "date-parts": [
+        [
+          2023,
+          6,
+          15
+        ]
+      ],
+      "date-time": "2023-06-15T16:55:19Z",
+      "timestamp": 1686848119000
+    },
+    "source": "Crossref",
+    "is-referenced-by-count": 0,
+    "title": [
+      "Convergence, plasticity, and tissue residence of regulatory T cell response via TCR repertoire prism"
+    ],
+    "prefix": "10.1101",
+    "author": [
+      {
+        "given": "T.O.",
+        "family": "Nakonechnaya",
+        "sequence": "first",
+        "affiliation": []
+      },
+      {
+        "given": "B.",
+        "family": "Moltedo",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "E.V.",
+        "family": "Putintseva",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "S.",
+        "family": "Leyn",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "D.A.",
+        "family": "Bolotin",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "O.V.",
+        "family": "Britanova",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "M.",
+        "family": "Shugay",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0003-0430-790X",
+        "authenticated-orcid": false,
+        "given": "D.M.",
+        "family": "Chudakov",
+        "sequence": "additional",
+        "affiliation": []
+      }
+    ],
+    "member": "246",
+    "reference": [
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.1",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.immuni.2012.07.009"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.2",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.cmet.2019.09.010"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.3",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/nature25500"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.4",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1084\/jem.20052056"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.5",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.immuni.2021.08.014"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.6",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.cell.2016.09.050"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.7",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1128\/JVI.05685-11"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.8",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.cell.2015.08.021"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.9",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1371\/journal.ppat.1006345"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.10",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/ni.3004"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.11",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.3389\/fimmu.2018.00635"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.12",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1073\/pnas.2023739118"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.13",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/nri3667"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.14",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/s41586-021-03531-1"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.15",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1111\/imr.12173"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.16",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1073\/pnas.0608907103"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.17",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/528S132a"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.18",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1111\/imm.12857"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.19",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1073\/pnas.2003170117"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.20",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/nmeth.2960"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.21",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/nmeth.3364"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.22",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.4049\/jimmunol.1000423"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.23",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1371\/journal.pcbi.1004503"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.24",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.4049\/jimmunol.1203140"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.25",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.4049\/jimmunol.1102281"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.26",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.4049\/jimmunol.1000359"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.27",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/s41590-019-0578-8"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.28",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1084\/jem.20130762"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.29",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1002\/0471142735.im1912s55"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.30",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1084\/jem.20181442"
+      },
+      {
+        "key": "2023062109301048000_2023.06.15.544726v2.31",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.3389\/fimmu.2019.02159"
+      }
+    ],
+    "link": [
+      {
+        "URL": "https:\/\/syndication.highwire.org\/content\/doi\/10.1101\/2023.06.15.544726",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "deposited": {
+      "date-parts": [
+        [
+          2023,
+          6,
+          21
+        ]
+      ],
+      "date-time": "2023-06-21T20:01:10Z",
+      "timestamp": 1687377670000
+    },
+    "score": 78.47391,
+    "resource": {
+      "primary": {
+        "URL": "http:\/\/biorxiv.org\/lookup\/doi\/10.1101\/2023.06.15.544726"
+      }
+    },
+    "issued": {
+      "date-parts": [
+        [
+          2023,
+          6,
+          15
+        ]
+      ]
+    },
+    "references-count": 31,
+    "URL": "http:\/\/dx.doi.org\/10.1101\/2023.06.15.544726",
+    "published": {
+      "date-parts": [
+        [
+          2023,
+          6,
+          15
+        ]
+      ]
+    },
+    "subtype": "preprint"
+  },
+  {
+    "indexed": {
+      "date-parts": [
+        [
+          2023,
+          9,
+          29
+        ]
+      ],
+      "date-time": "2023-09-29T05:18:01Z",
+      "timestamp": 1695964681955
+    },
+    "posted": {
+      "date-parts": [
+        [
+          2023,
+          9,
+          28
+        ]
+      ]
+    },
+    "group-title": "elife",
+    "reference-count": 0,
+    "publisher": "eLife Sciences Publications, Ltd",
+    "license": [
+      {
+        "start": {
+          "date-parts": [
+            [
+              2023,
+              9,
+              28
+            ]
+          ],
+          "date-time": "2023-09-28T00:00:00Z",
+          "timestamp": 1695859200000
+        },
+        "content-version": "unspecified",
+        "delay-in-days": 0,
+        "URL": "http:\/\/creativecommons.org\/licenses\/by\/4.0\/"
+      }
+    ],
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "abstract": "<jats:p>Suppressive function of regulatory T (Treg) cells is dependent on signaling of their antigen receptors triggered by cognate self, dietary or microbial antigens in the form of peptide-MHC class II complexes. However, it remains largely unknown whether distinct or shared repertoires of Treg TCR are mobilized in response to different challenges in the same tissue or the same challenge in different tissues. Here we used a fixed TCRβ chain FoxP3-GFP mouse model to analyze conventional (eCD4) and regulatory (eTreg) effector TCRα repertoires in response to six distinct antigenic challenges to the lung and skin. For both subsets, we observed challenge-specific clonal expansion yielding homologous TCRα clusters within and across animals and exposure sites, which were reflected in the draining lymph nodes but not systemically. Some clusters were shared across cancer challenges, suggesting response to common tumor-associated antigens. For most challenges, eCD4 and eTreg clonal response did not overlap, indicating the distinct origin of the two cell subsets. At the same time, we observed such overlap at the sites of certain tumor challenges. The overlaps included dominant responding TCRα motif and characteristic iNKT TCRα, suggesting the tumor-induced eCD4-eTreg plasticity. Our TCRα repertoire analysis also demonstrated that distinct antigenic specificities are characteristic for eTreg cells residing in particular lymphatic tissues, regardless of the challenge, revealing the homing-specific, antigen-specific resident Treg populations. Altogether, our study highlights both challenge-specific and tissue-specific responses of Treg cells associated with distinct clonal expansions.<\/jats:p>",
+    "DOI": "10.7554\/elife.89382",
+    "type": "posted-content",
+    "created": {
+      "date-parts": [
+        [
+          2023,
+          9,
+          28
+        ]
+      ],
+      "date-time": "2023-09-28T13:38:43Z",
+      "timestamp": 1695908323000
+    },
+    "source": "Crossref",
+    "is-referenced-by-count": 0,
+    "title": [
+      "Convergence, plasticity, and tissue residence of regulatory T cell response via TCR repertoire prism"
+    ],
+    "prefix": "10.7554",
+    "author": [
+      {
+        "given": "T.O.",
+        "family": "Nakonechnaya",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Institute of Translational Medicine, Pirogov Russian National Research Medical University, Moscow, Russian Federation"
+          },
+          {
+            "name": "Genomics of Adaptive Immunity Department, Shemyakin and Ovchinnikov Institute of Bioorganic Chemistry, Moscow, Russian Federation"
+          }
+        ]
+      },
+      {
+        "given": "B.",
+        "family": "Moltedo",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Howard Hughes Medical Institute and Immunology Program, Sloan Kettering Institute and Ludwig Center at Memorial Sloan Kettering Cancer Center, New York, NY, USA"
+          }
+        ]
+      },
+      {
+        "given": "E.V.",
+        "family": "Putintseva",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Genomics of Adaptive Immunity Department, Shemyakin and Ovchinnikov Institute of Bioorganic Chemistry, Moscow, Russian Federation"
+          }
+        ]
+      },
+      {
+        "given": "S.",
+        "family": "Leyn",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Genomics of Adaptive Immunity Department, Shemyakin and Ovchinnikov Institute of Bioorganic Chemistry, Moscow, Russian Federation"
+          }
+        ]
+      },
+      {
+        "given": "D.A.",
+        "family": "Bolotin",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Institute of Translational Medicine, Pirogov Russian National Research Medical University, Moscow, Russian Federation"
+          },
+          {
+            "name": "Genomics of Adaptive Immunity Department, Shemyakin and Ovchinnikov Institute of Bioorganic Chemistry, Moscow, Russian Federation"
+          }
+        ]
+      },
+      {
+        "given": "O.V.",
+        "family": "Britanova",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Institute of Translational Medicine, Pirogov Russian National Research Medical University, Moscow, Russian Federation"
+          },
+          {
+            "name": "Genomics of Adaptive Immunity Department, Shemyakin and Ovchinnikov Institute of Bioorganic Chemistry, Moscow, Russian Federation"
+          }
+        ]
+      },
+      {
+        "given": "M.",
+        "family": "Shugay",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Institute of Translational Medicine, Pirogov Russian National Research Medical University, Moscow, Russian Federation"
+          },
+          {
+            "name": "Genomics of Adaptive Immunity Department, Shemyakin and Ovchinnikov Institute of Bioorganic Chemistry, Moscow, Russian Federation"
+          }
+        ]
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0003-0430-790X",
+        "authenticated-orcid": false,
+        "given": "D.M.",
+        "family": "Chudakov",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Institute of Translational Medicine, Pirogov Russian National Research Medical University, Moscow, Russian Federation"
+          },
+          {
+            "name": "Genomics of Adaptive Immunity Department, Shemyakin and Ovchinnikov Institute of Bioorganic Chemistry, Moscow, Russian Federation"
+          },
+          {
+            "name": "Abu Dhabi Stem Cells Center, Abu Dhabi, United Arab Emirates"
+          },
+          {
+            "name": "Central European Institute of Technology, Brno, Czech Republic"
+          }
+        ]
+      }
+    ],
+    "member": "4374",
+    "deposited": {
+      "date-parts": [
+        [
+          2023,
+          9,
+          28
+        ]
+      ],
+      "date-time": "2023-09-28T13:38:49Z",
+      "timestamp": 1695908329000
+    },
+    "score": 78.416336,
+    "resource": {
+      "primary": {
+        "URL": "https:\/\/elifesciences.org\/reviewed-preprints\/89382"
+      }
+    },
+    "issued": {
+      "date-parts": [
+        [
+          2023,
+          9,
+          28
+        ]
+      ]
+    },
+    "references-count": 0,
+    "URL": "http:\/\/dx.doi.org\/10.7554\/elife.89382",
+    "relation": {
+      "is-same-as": [
+        {
+          "id-type": "doi",
+          "id": "10.7554\/eLife.89382.1",
+          "asserted-by": "subject"
+        }
+      ],
+      "is-version-of": [
+        {
+          "id-type": "doi",
+          "id": "10.1101\/2023.06.15.544726",
+          "asserted-by": "subject"
+        }
+      ]
+    },
+    "published": {
+      "date-parts": [
+        [
+          2023,
+          9,
+          28
+        ]
+      ]
+    },
+    "subtype": "preprint"
+  },
+  {
+    "institution": [
+      {
+        "name": "bioRxiv"
+      }
+    ],
+    "indexed": {
+      "date-parts": [
+        [
+          2022,
+          4,
+          6
+        ]
+      ],
+      "date-time": "2022-04-06T06:53:05Z",
+      "timestamp": 1649227985602
+    },
+    "posted": {
+      "date-parts": [
+        [
+          2021,
+          5,
+          14
+        ]
+      ]
+    },
+    "group-title": "Immunology",
+    "reference-count": 27,
+    "publisher": "Cold Spring Harbor Laboratory",
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "accepted": {
+      "date-parts": [
+        [
+          2021,
+          5,
+          14
+        ]
+      ]
+    },
+    "abstract": "<jats:title>Abstract<\/jats:title><jats:p>Temporal analysis of the T cell receptor (TCR) repertoire has been used to monitor treatment-induced changes in antigen-specific T cells in patients with cancer. However, the lack of experimental models that allow temporal analysis of the TCR repertoire in the same individual in a homogeneous population limits the understanding of the causal relationship between changes in TCR repertoire and antitumor responses. A bilateral tumor model, where tumor cells were inoculated bilaterally into the backs of mice, could be used for temporal analysis of the TCR repertoire. This study examined the prerequisite for this strategy: the TCR repertoire is conserved between bilateral tumors with the same growth rate. Bilateral tumors with equivalent size and draining lymph nodes (dLNs) were collected 13 days after tumor inoculation to analyze the TCR repertoire of CD4<jats:sup>+<\/jats:sup> and CD8<jats:sup>+<\/jats:sup> T cells. The tumor-infiltrating T cell clones were highly conserved between the bilateral tumors, and the extent of clonal expansion was equivalent. In addition, the similarity between the bilateral tumors was equivalent to heterogeneity on one side of the tumor. The similarity of the TCR repertoire in the bilateral dLNs was markedly lower than that in the tumor, suggesting that tumor-reactive T cell clones induced independently in each dLN integrated during recirculation and then infiltrated the tumor. These findings suggest that our bilateral tumor model is suitable for temporal monitoring of the TCR repertoire to evaluate temporal and treatment-induced changes in tumor-reactive T cell clones.<\/jats:p><jats:sec><jats:title>Significance Statement<\/jats:title><jats:p>The bilateral subcutaneous tumor model, where tumor cells were inoculated bilaterally into the backs of mice, is a promising model for temporal analysis of the antitumor response in cancer immunotherapy. This study demonstrated a highly conserved TCR repertoire in bilateral tumors and provided the basis for using a bilateral tumor model for evaluating temporal and treatment-induced changes in tumor-responsive T cell clones in individual mice. In humans, accurate statistical analysis is hampered by various background factors, including cancer type and stage and history of treatment. Moreover, temporal tumor biopsy in patients is highly invasive. Our bilateral tumor model overcomes these clinical issues and is expected to be a valuable tool for the development of novel immune monitoring and therapeutic strategies.<\/jats:p><\/jats:sec>",
+    "DOI": "10.1101\/2021.05.13.443732",
+    "type": "posted-content",
+    "created": {
+      "date-parts": [
+        [
+          2021,
+          5,
+          14
+        ]
+      ],
+      "date-time": "2021-05-14T18:25:32Z",
+      "timestamp": 1621016732000
+    },
+    "source": "Crossref",
+    "is-referenced-by-count": 1,
+    "title": [
+      "T cell receptor (TCR) repertoire analysis reveals a highly conserved TCR repertoire in a bilateral tumor mouse model"
+    ],
+    "prefix": "10.1101",
+    "author": [
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0003-2931-8250",
+        "authenticated-orcid": false,
+        "given": "Mikiya",
+        "family": "Tsunoda",
+        "sequence": "first",
+        "affiliation": []
+      },
+      {
+        "given": "Hiroyasu",
+        "family": "Aoki",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Haruka",
+        "family": "Shimizu",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Shigeyuki",
+        "family": "Shichino",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Kouji",
+        "family": "Matsushima",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Satoshi",
+        "family": "Ueha",
+        "sequence": "additional",
+        "affiliation": []
+      }
+    ],
+    "member": "246",
+    "reference": [
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.1",
+        "first-page": "1",
+        "article-title": "The hallmarks of successful anticancer immunotherapy",
+        "volume": "10",
+        "year": "2018",
+        "journal-title": "Sci. Transl. Med"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.2",
+        "doi-asserted-by": "crossref",
+        "unstructured": "A. Ribas , J. D. Wolchok , Cancer immunotherapy using checkpoint blockade. Science (80-.). 359 (2018).",
+        "DOI": "10.1126\/science.aar4060"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.3",
+        "doi-asserted-by": "crossref",
+        "unstructured": "J. Y. Kim , et al., Hyperprogressive disease during anti-PD-1 (PDCD1) \/ PD-L1 (CD274) therapy: A systematic review and meta-analysis. Cancers (Basel). 11 (2019).",
+        "DOI": "10.3390\/cancers11111699"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.4",
+        "doi-asserted-by": "crossref",
+        "unstructured": "M. A. Postow , R. Sidlow , M. D. Hellmann , Immune-Related Adverse Events Associated with Immune Checkpoint Blockade. N. Engl. J. Med. 378 (2018).",
+        "DOI": "10.1056\/NEJMra1703481"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.5",
+        "doi-asserted-by": "crossref",
+        "unstructured": "S. L. Topalian , J. M. Taube , R. A. Anders , D. M. Pardoll , Mechanism-driven biomarkers to guide immune checkpoint blockade in cancer therapy. Nat. Rev. Cancer 16 (2016).",
+        "DOI": "10.1038\/nrc.2016.36"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.6",
+        "doi-asserted-by": "crossref",
+        "unstructured": "G. V. Masucci , et al., Validation of biomarkers to predict response to immunotherapy in cancer: Volume I - pre-analytical and analytical validation. J. Immunother. Cancer 4 (2016).",
+        "DOI": "10.1186\/s40425-016-0178-1"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.7",
+        "doi-asserted-by": "crossref",
+        "unstructured": "H. O. Alsaab , et al., PD-1 and PD-L1 checkpoint signaling inhibition for cancer immunotherapy: mechanism, combinations, and clinical outcome. Front. Pharmacol. 8 (2017).",
+        "DOI": "10.3389\/fphar.2017.00561"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.8",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1158\/2326-6066.CIR-16-0001"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.9",
+        "doi-asserted-by": "crossref",
+        "unstructured": "A. Gros , et al., PD-1 identifies the patient-specific CD8+ tumor-reactive repertoire infiltrating human tumors. J. Clin. Invest. 124 (2014).",
+        "DOI": "10.1172\/JCI73639"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.10",
+        "doi-asserted-by": "crossref",
+        "unstructured": "E. Rosati , et al., Overview of methodologies for T-cell receptor repertoire analysis. BMC Biotechnol. 17 (2017).",
+        "DOI": "10.1186\/s12896-017-0379-9"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.11",
+        "doi-asserted-by": "crossref",
+        "unstructured": "X. Liu , J. Wu , History, applications, and challenges of immune repertoire research. Cell Biol. Toxicol. 34 (2018).",
+        "DOI": "10.1007\/s10565-018-9426-0"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.12",
+        "doi-asserted-by": "crossref",
+        "first-page": "102100",
+        "DOI": "10.1016\/j.isci.2021.102100",
+        "article-title": "A T cell repertoire timestamp is at the core of responsiveness to CTLA-4 blockade",
+        "volume": "24",
+        "year": "2021",
+        "journal-title": "iScience"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.13",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1158\/2326-6066.CIR-17-0134"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.14",
+        "doi-asserted-by": "crossref",
+        "unstructured": "H. Aoki , et al., TCR repertoire analysis reveals mobilization of novel CD8+T cell clones into the cancer-immunity cycle following anti-CD4 antibody administration. Front. Immunol. 10 (2019).",
+        "DOI": "10.3389\/fimmu.2018.03185"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.15",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.immuni.2013.07.012"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.16",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1186\/s40425-019-0677-y"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.17",
+        "doi-asserted-by": "crossref",
+        "unstructured": "R. M. Zemek , et al., Bilateral murine tumor models for characterizing the response to immune checkpoint blockade. Nat. Protoc. 15 (2020).",
+        "DOI": "10.1038\/s41596-020-0299-3"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.18",
+        "doi-asserted-by": "crossref",
+        "unstructured": "I. X. Chen , et al., A bilateral tumor model identifies transcriptional programs associated with patient response to immune checkpoint blockade. Proc. Natl. Acad. Sci. U. S. A. 117 (2020).",
+        "DOI": "10.1073\/pnas.2002806117"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.19",
+        "doi-asserted-by": "crossref",
+        "first-page": "284",
+        "DOI": "10.1016\/j.copbio.2020.07.010",
+        "article-title": "T-cell repertoire analysis and metrics of diversity and clonality",
+        "volume": "65",
+        "year": "2020",
+        "journal-title": "Curr. Opin. Biotechnol"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.20",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.3389\/fonc.2020.00442"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.21",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/s41568-019-0116-x"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.22",
+        "doi-asserted-by": "crossref",
+        "unstructured": "H. Aoki , et al., Transient Depletion of CD4 + Cells Induces Remodeling of the TCR Repertoire in Gastrointestinal Cancer. Cancer Immunol. Res. (2021) https:\/\/doi.org\/10.1158\/2326-6066.cir-20-0989. in press.",
+        "DOI": "10.1158\/2326-6066.CIR-20-0989"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.23",
+        "doi-asserted-by": "crossref",
+        "unstructured": "K. G. Anderson , et al., Intravascular staining for discrimination of vascular and tissue leukocytes. Nat. Protoc. 9 (2014).",
+        "DOI": "10.1038\/nprot.2014.005"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.24",
+        "doi-asserted-by": "crossref",
+        "unstructured": "M. Martin , Cutadapt removes adapter sequences from high-throughput sequencing reads. EMBnet.journal 17 (2011).",
+        "DOI": "10.14806\/ej.17.1.200"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.25",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1093\/bioinformatics\/btr026"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.26",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/nmeth.3364"
+      },
+      {
+        "key": "2021051706350623000_2021.05.13.443732v1.27",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1371\/journal.pcbi.1004584"
+      }
+    ],
+    "link": [
+      {
+        "URL": "https:\/\/syndication.highwire.org\/content\/doi\/10.1101\/2021.05.13.443732",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "deposited": {
+      "date-parts": [
+        [
+          2021,
+          5,
+          17
+        ]
+      ],
+      "date-time": "2021-05-17T13:35:33Z",
+      "timestamp": 1621258533000
+    },
+    "score": 29.955812,
+    "resource": {
+      "primary": {
+        "URL": "http:\/\/biorxiv.org\/lookup\/doi\/10.1101\/2021.05.13.443732"
+      }
+    },
+    "issued": {
+      "date-parts": [
+        [
+          2021,
+          5,
+          14
+        ]
+      ]
+    },
+    "references-count": 27,
+    "URL": "http:\/\/dx.doi.org\/10.1101\/2021.05.13.443732",
+    "published": {
+      "date-parts": [
+        [
+          2021,
+          5,
+          14
+        ]
+      ]
+    },
+    "subtype": "preprint"
+  },
+  {
+    "institution": [
+      {
+        "name": "Authorea, Inc."
+      }
+    ],
+    "indexed": {
+      "date-parts": [
+        [
+          2022,
+          4,
+          1
+        ]
+      ],
+      "date-time": "2022-04-01T20:16:55Z",
+      "timestamp": 1648844215476
+    },
+    "posted": {
+      "date-parts": [
+        [
+          2020,
+          10,
+          12
+        ]
+      ]
+    },
+    "group-title": "Preprints",
+    "reference-count": 0,
+    "publisher": "Authorea, Inc.",
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "accepted": {
+      "date-parts": [
+        [
+          2020,
+          10,
+          12
+        ]
+      ]
+    },
+    "DOI": "10.22541\/au.160253866.69339145\/v1",
+    "type": "posted-content",
+    "created": {
+      "date-parts": [
+        [
+          2020,
+          10,
+          12
+        ]
+      ],
+      "date-time": "2020-10-12T21:37:51Z",
+      "timestamp": 1602538671000
+    },
+    "source": "Crossref",
+    "is-referenced-by-count": 0,
+    "title": [
+      "Possible involvement of regulatory T cell abnormalities and variational usage of TCR repertoire in children with autoimmune neutropenia"
+    ],
+    "prefix": "10.22541",
+    "author": [
+      {
+        "given": "Satoshi",
+        "family": "Goda",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Hiroshima University Faculty of Medicine Graduate School of Biomedical and Health Sciences"
+          }
+        ]
+      },
+      {
+        "given": "Seiichi",
+        "family": "Hayakawa",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Hiroshima University Faculty of Medicine Graduate School of Biomedical and Health Sciences"
+          }
+        ]
+      },
+      {
+        "given": "Shuhei",
+        "family": "Karakawa",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Hiroshima University Faculty of Medicine Graduate School of Biomedical and Health Sciences"
+          }
+        ]
+      },
+      {
+        "given": "Satoshi",
+        "family": "Okada",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Hiroshima University Faculty of Medicine Graduate School of Biomedical and Health Sciences"
+          }
+        ]
+      },
+      {
+        "given": "Hiroshi",
+        "family": "Kawaguchi",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Hiroshima University Faculty of Medicine Graduate School of Biomedical and Health Sciences"
+          }
+        ]
+      },
+      {
+        "given": "Masao",
+        "family": "Kobayashi",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Hiroshima University Faculty of Medicine Graduate School of Biomedical and Health Sciences"
+          }
+        ]
+      }
+    ],
+    "member": "9829",
+    "deposited": {
+      "date-parts": [
+        [
+          2020,
+          10,
+          12
+        ]
+      ],
+      "date-time": "2020-10-12T21:37:52Z",
+      "timestamp": 1602538672000
+    },
+    "score": 29.4628,
+    "resource": {
+      "primary": {
+        "URL": "https:\/\/www.authorea.com\/users\/366558\/articles\/486273-possible-involvement-of-regulatory-t-cell-abnormalities-and-variational-usage-of-tcr-repertoire-in-children-with-autoimmune-neutropenia?commit=ab1ee55f958b9152b324b4292af5c58f0d80c3ad"
+      }
+    },
+    "issued": {
+      "date-parts": [
+        [
+          2020,
+          10,
+          12
+        ]
+      ]
+    },
+    "references-count": 0,
+    "URL": "http:\/\/dx.doi.org\/10.22541\/au.160253866.69339145\/v1",
+    "published": {
+      "date-parts": [
+        [
+          2020,
+          10,
+          12
+        ]
+      ]
+    },
+    "subtype": "preprint"
+  }
+]

@@ -6,6 +6,7 @@ import work_query_1 from './work_query_1.json';
 import work_query_2 from './work_query_2.json';
 import work_query_3 from './work_query_3.json';
 import work_query_4 from './work_query_4.json';
+import work_query_5 from './work_query_5.json';
 
 describe('works', function(){
 
@@ -86,6 +87,16 @@ describe('works', function(){
 
       it('Should return the most recent match when score is tied', () => {
         const m = match( paperId, ID_TYPE.TERM, work_query_4 );
+        expect( m.DOI ).to.equal( paperDOI );
+      });
+    });
+
+    describe('Prioritizing search with nearly-identical scores', () => {
+      let paperId = 'Convergence, plasticity, and tissue residence of regulatory T cell response via TCR repertoire prism';
+      let paperDOI = '10.7554/elife.89382';
+
+      it('Should return the most recent match when score is nearly tied', () => {
+        const m = match( paperId, ID_TYPE.TERM, work_query_5 );
         expect( m.DOI ).to.equal( paperDOI );
       });
     });

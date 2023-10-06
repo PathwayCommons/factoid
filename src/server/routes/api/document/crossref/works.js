@@ -2,6 +2,7 @@ import _ from 'lodash';
 import logger from '../../../../logger';
 
 import { search, get } from './api.js';
+import { toPubMedArticle } from './map';
 
 const ID_TYPE = Object.freeze({
   DOI: 'doi',
@@ -103,7 +104,7 @@ const findPreprint = async paperId => {
     m = match( paperId, IdType, hits );
 
     if( isSupported( m ) ){
-      return m;
+      return toPubMedArticle( m );
     } else {
       throw new Error(`Unable to find a CrossRef preprint for '${paperId}`);
     }

@@ -65,7 +65,7 @@ import { ENTITY_TYPE } from '../../../../model/element/entity-type';
 import { eLink, elink2UidList } from './pubmed/linkPubmed';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import { docs2Sitemap } from '../../../sitemap';
-import { findPreprint, toPubMedArticle } from './crossRef/index.js';
+import { findPreprint } from './crossRef/index.js';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 const DOC_CACHE_KEY = 'documents';
 const SEARCH_CACHE_KEY = 'search';
@@ -352,27 +352,49 @@ const fillDocCorrespondence = async doc => {
 };
 
 const fillDocArticle = async doc => {
-  let record;
+  const isFulfilled = r => r.status === "fulfilled";
   const { paperId } = doc.provided();
   const { pmid, doi } = doc.citation();
   const id = pmid || doi || paperId;
-  try {
-    try {
-      record = await getPubmedArticle( id );
-    } catch ( error ) {
-      const result = await findPreprint( id );
-      record = toPubMedArticle( result );
-    }
+
+  const [ pm, cr, df ] = await Promise.allSettled([
+    getPubmedArticle( id ),
+    findPreprint( id ),
+    createPubmedArticle({ articleTitle: paperId })
+  ]);
+
+  let record = df.value;
+
+  if ( isFulfilled( pm ) && !isFulfilled( cr ) ){
+    // Case: A publication
+    record = pm.value;
     await doc.issues({ paperId: null });
 
-  } catch ( error ) {
-    logger.error( `Error filling doc article: ${error}` );
-    record = createPubmedArticle({ articleTitle: paperId });
-    await doc.issues({ paperId: { error, message: error.message } });
+  } else if ( !isFulfilled( pm ) && isFulfilled( cr ) ) {
+    // Case: Preprint not indexed by PubMed
+    record = cr.value;
+    await doc.issues({ paperId: null });
 
-  } finally {
-    await doc.article( record );
+  } else if ( isFulfilled( pm ) && isFulfilled( cr ) ) {
+    const pmCitation = getPubmedCitation( pm.value );
+    const crCitation = getPubmedCitation( cr.value );
+    if( pmCitation.doi === crCitation.doi ){
+      // Case: Same preprint in PubMed and CrossRef - use PubMed
+      record = pm.value;
+    } else {
+      // Case: Different preprints returned by PubMed and CrossRef
+      // //TODO When can this happen?????
+      record = cr.value;
+    }
+    await doc.issues({ paperId: null });
+  } else {
+    record = df.value;
+    const { reason: { message } } = pm;
+    const error = new Error( message );
+    await doc.issues({ paperId: { error, message } });
   }
+
+  await doc.article( record );
 };
 
 /**

@@ -70,10 +70,13 @@ describe('map', function(){
           describe('publisher: eLife Sciences Publications, Ltd', () => {
             const { MedlineCitation: { Article: { Journal }} } = toPubMedArticle( work_doi_2 );
             it('Should correctly map Journal title', () => {
-              const { Title, JournalIssue: { PubDate } } = Journal;
+              const { Title } = Journal;
               expect( Title.toLowerCase() ).to.equal( 'elife' );
+            });
+            it('Should correctly map PubDate', () => {
+              const { JournalIssue: { PubDate } } = Journal;
               expect( PubDate.Year ).to.equal( '2023' );
-              expect( PubDate.Month ).to.equal( '7' );
+              expect( PubDate.Month ).to.equal( 'Jul' );
               expect( PubDate.Day ).to.equal( '19' );
             });
           }); // eLife Reviewed Preprint
@@ -134,12 +137,15 @@ describe('map', function(){
               expect( value ).to.equal( '1097-2765' );
             });
             it('Should correctly map JournalIssue', () => {
-              const { Journal: { JournalIssue: { PubDate, Issue, Volume } } } = Article;
-              expect( PubDate.Year === '2019' ).to.be.true;
-              expect( PubDate.Month === '8' ).to.be.true;
-              expect( PubDate.Day ).to.be.null;
+              const { Journal: { JournalIssue: { Issue, Volume } } } = Article;
               expect( Issue ).to.equal( '4' );
               expect( Volume ).to.equal( '75' );
+            });
+            it('Should correctly map PubDate', () => {
+              const { Journal: { JournalIssue: { PubDate } } } = Article;
+              expect( PubDate.Year === '2019' ).to.be.true;
+              expect( PubDate.Month === 'Aug' ).to.be.true;
+              expect( PubDate.Day ).to.be.null;
             });
           }); // Journal
 
@@ -200,12 +206,15 @@ describe('map', function(){
               expect( value ).to.equal( '2050-084X' );
             });
             it('Should correctly map JournalIssue', () => {
-              const { Journal: { JournalIssue: { PubDate, Issue, Volume } } } = Article;
-              expect( PubDate.Year ).to.equal( '2021' );
-              expect( PubDate.Month ).to.equal( '12' );
-              expect( PubDate.Day ).to.equal( '3' );
+              const { Journal: { JournalIssue: { Issue, Volume } } } = Article;
               expect( Issue ).to.be.null;
               expect( Volume ).to.equal( '10' );
+            });
+            it('Should correctly map PubDate', () => {
+              const { Journal: { JournalIssue: { PubDate } } } = Article;
+              expect( PubDate.Year ).to.equal( '2021' );
+              expect( PubDate.Month ).to.equal( 'Dec' );
+              expect( PubDate.Day ).to.equal( '3' );
             });
           }); // Journal
 

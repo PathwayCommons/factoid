@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { format } from 'date-fns';
 import { createPubmedArticle } from '../../../../../util/pubmed';
 
 /**
@@ -67,7 +68,18 @@ const getPubDate = record => {
   let date = posted || published || created;
   let { 'date-parts': dateParts } = date;
   date = _.flattenDeep(dateParts);
-  date.forEach( (v, i) => PubDate[dateElts[i]] = v + '' );
+
+  date.forEach( (v, i) => {
+    if( i == 1 ){
+      // Convert month value to three letter format
+      const dateWithOffset = [...date];
+      --dateWithOffset[i];
+      const d = new Date(...dateWithOffset);
+      v = format( d, 'LLL' );
+    }
+    PubDate[dateElts[i]] = v + '';
+  });
+
   return PubDate;
 };
 

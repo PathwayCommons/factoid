@@ -353,6 +353,8 @@ const fillDocCorrespondence = async doc => {
 
 const fillDocArticle = async doc => {
   const isFulfilled = r => r.status === "fulfilled";
+  const hasPmid = r => r.pmid;
+  const byISODate = ( a, b ) => ( a.ISODate < b.ISODate ) ? -1 : ( ( a.ISODate > b.ISODate ) ? 1 : 0 );
   const { paperId } = doc.provided();
   const { pmid, doi } = doc.citation();
   const id = pmid || doi || paperId;
@@ -376,22 +378,23 @@ const fillDocArticle = async doc => {
     await doc.issues({ paperId: null });
 
   } else if ( isFulfilled( pm ) && isFulfilled( cr ) ) {
+    record = pm.value;
     const pmCitation = getPubmedCitation( pm.value );
     const crCitation = getPubmedCitation( cr.value );
-    if( pmCitation.doi === crCitation.doi ){
-      // Case: Same preprint in PubMed and CrossRef - use PubMed
-      record = pm.value;
-    } else {
-      // Case: Different preprints returned by PubMed and CrossRef
-      // //TODO When can this happen?????
-      record = cr.value;
+    const different = pmCitation.doi !== crCitation.doi;
+    if( different ){
+      // Case: Get most recent item
+      const sorted = [ pmCitation, crCitation ].sort( byISODate );
+      const latest = _.last( sorted );
+      if( !hasPmid( latest ) ){
+        record = cr.value;
+      }
     }
     await doc.issues({ paperId: null });
   } else {
     record = df.value;
-    const { reason: { message } } = pm;
-    const error = new Error( message );
-    await doc.issues({ paperId: { error, message } });
+    const { reason: error } = pm;
+    await doc.issues({ paperId: { error, message: error.message } });
   }
 
   await doc.article( record );

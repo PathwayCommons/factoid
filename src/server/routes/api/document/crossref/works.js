@@ -4,6 +4,7 @@ import logger from '../../../../logger';
 import { search, get } from './api.js';
 import { toPubMedArticle } from './map';
 import { isDoi } from '../../../../../util';
+import { ArticleIDError } from '../../../../../util/pubmed';
 
 const ID_TYPE = Object.freeze({
   DOI: 'doi',
@@ -106,12 +107,12 @@ const findPreprint = async paperId => {
     if( isSupported( m ) ){
       return toPubMedArticle( m );
     } else {
-      throw new Error(`Unable to find a CrossRef preprint for '${paperId}`);
+      throw new ArticleIDError( `Unrecognized paperId '${paperId}'`, paperId );
     }
 
   } catch( err ) {
     logger.error( `${err.name}: ${err.message}` );
-    throw new Error( `Unrecognized paperId '${paperId}'`, paperId );
+    throw err;
   }
 };
 

@@ -3,6 +3,7 @@ import logger from '../../../../logger';
 
 import { search, get } from './api.js';
 import { toPubMedArticle } from './map';
+import { isDoi } from '../../../../../util';
 
 const ID_TYPE = Object.freeze({
   DOI: 'doi',
@@ -79,9 +80,8 @@ const findPreprint = async paperId => {
   const isSupported = w => isPreprint( w ) && isRecognizedPublisher( w );
   const paperId2Type = paperId => {
     // 99.3% of CrossRef DOIs (https://www.crossref.org/blog/dois-and-matching-regular-expressions/)
-    const doiRegex = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i;
     let IdType = ID_TYPE.TERM;
-    const isDoiLike = doiRegex.test( paperId );
+    const isDoiLike = isDoi( paperId );
     if( isDoiLike ) IdType = ID_TYPE.DOI;
     return IdType;
   };

@@ -78,7 +78,7 @@ const findPreprint = async paperId => {
   ]);
   const isPreprint = ({ type, subtype }) => VALID_SUBTYPES.has( subtype ) && VALID_TYPES.has( type );
   const isRecognizedPublisher = ({ publisher }) => VALID_PUBLISHERS.has( publisher );
-  const isSupported = w => isPreprint( w ) && isRecognizedPublisher( w );
+  const isSupported = w => !_.isUndefined( w ) && isPreprint( w ) && isRecognizedPublisher( w );
   const paperId2Type = paperId => {
     // 99.3% of CrossRef DOIs (https://www.crossref.org/blog/dois-and-matching-regular-expressions/)
     let IdType = ID_TYPE.TERM;

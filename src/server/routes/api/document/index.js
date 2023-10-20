@@ -13,7 +13,7 @@ import { URLSearchParams } from  'url';
 import NodeCache from 'node-cache';
 import pLimit from './p-limit';
 
-import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
+import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString, HTTPStatusError } from '../../../../util';
 import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
@@ -22,7 +22,7 @@ import db from '../../../db';
 import logger from '../../../logger';
 import { getPubmedArticle } from './pubmed';
 import { AdminPapersQueue, PCPapersQueue } from './related-papers-queue';
-import { createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
+import { ArticleIDError, createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
 import * as indra from './indra';
 import { get as groundingSearchGet } from '../element-association/grounding-search';
 import { BASE_URL,
@@ -352,7 +352,9 @@ const fillDocCorrespondence = async doc => {
 };
 
 const fillDocArticle = async doc => {
-  const isFulfilled = r => r.status === "fulfilled";
+  const isFound = ({ status }) => status === 'fulfilled';
+  const notFound = ({ status, reason }) => status === 'rejected' && reason.name === ArticleIDError.name;
+  const byStatusError = ({ status, reason }) => status === 'rejected' && reason.name === HTTPStatusError.name;
   const hasPmid = r => r.pmid;
   const byISODate = ( a, b ) => ( a.ISODate < b.ISODate ) ? -1 : ( ( a.ISODate > b.ISODate ) ? 1 : 0 );
   const { paperId } = doc.provided();
@@ -367,17 +369,17 @@ const fillDocArticle = async doc => {
 
   let record = df.value;
 
-  if ( isFulfilled( pm ) && !isFulfilled( cr ) ){
+  if ( isFound( pm ) && notFound( cr ) ){
     // Case: A publication
     record = pm.value;
     await doc.issues({ paperId: null });
 
-  } else if ( !isFulfilled( pm ) && isFulfilled( cr ) ) {
+  } else if ( notFound( pm ) && isFound( cr ) ) {
     // Case: Preprint not indexed by PubMed
     record = cr.value;
     await doc.issues({ paperId: null });
 
-  } else if ( isFulfilled( pm ) && isFulfilled( cr ) ) {
+  } else if ( isFound( pm ) && isFound( cr ) ) {
     record = pm.value;
     const pmCitation = getPubmedCitation( pm.value );
     const crCitation = getPubmedCitation( cr.value );
@@ -391,9 +393,17 @@ const fillDocArticle = async doc => {
       }
     }
     await doc.issues({ paperId: null });
+
   } else {
-    record = df.value;
-    const { reason: error } = pm;
+    let error;
+    const withHttpErr = [ pm, cr ].find( byStatusError );
+    if( withHttpErr ){
+      // HTTPStatusError occurred
+      error = withHttpErr.reason;
+    } else {
+      // Not found
+      error = pm.reason || cr.reason;
+    }
     await doc.issues({ paperId: { error, message: error.message } });
   }
 

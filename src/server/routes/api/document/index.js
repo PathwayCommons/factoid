@@ -13,7 +13,7 @@ import { URLSearchParams } from  'url';
 import NodeCache from 'node-cache';
 import pLimit from './p-limit';
 
-import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString } from '../../../../util';
+import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString, HTTPStatusError } from '../../../../util';
 import { msgFactory, updateCorrespondence, EmailError } from '../../../email';
 import sendMail from '../../../email-transport';
 import Document from '../../../../model/document';
@@ -22,7 +22,7 @@ import db from '../../../db';
 import logger from '../../../logger';
 import { getPubmedArticle } from './pubmed';
 import { AdminPapersQueue, PCPapersQueue } from './related-papers-queue';
-import { createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
+import { ArticleIDError, createPubmedArticle, getPubmedCitation } from '../../../../util/pubmed';
 import * as indra from './indra';
 import { get as groundingSearchGet } from '../element-association/grounding-search';
 import { BASE_URL,
@@ -65,6 +65,7 @@ import { ENTITY_TYPE } from '../../../../model/element/entity-type';
 import { eLink, elink2UidList } from './pubmed/linkPubmed';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import { docs2Sitemap } from '../../../sitemap';
+import { findPreprint } from './crossRef/index.js';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 const DOC_CACHE_KEY = 'documents';
 const SEARCH_CACHE_KEY = 'search';
@@ -351,24 +352,62 @@ const fillDocCorrespondence = async doc => {
 };
 
 const fillDocArticle = async doc => {
+  const isFound = ({ status }) => status === 'fulfilled';
+  const notFound = ({ status, reason }) => status === 'rejected' && reason.name === ArticleIDError.name;
+  const byStatusError = ({ status, reason }) => status === 'rejected' && reason.name === HTTPStatusError.name;
+  const hasPmid = r => r.pmid;
+  const byISODate = ( a, b ) => ( a.ISODate < b.ISODate ) ? -1 : ( ( a.ISODate > b.ISODate ) ? 1 : 0 );
   const { paperId } = doc.provided();
-  try {
-    const pubmedRecord = await getPubmedArticle( paperId );
-    await doc.article( pubmedRecord );
+  const { pmid, doi } = doc.citation();
+  const id = pmid || doi || paperId;
+
+  const [ pm, cr, df ] = await Promise.allSettled([
+    getPubmedArticle( id ),
+    findPreprint( id ),
+    createPubmedArticle({ articleTitle: paperId })
+  ]);
+
+  let record = df.value;
+
+  if ( isFound( pm ) && notFound( cr ) ){
+    // Case: A publication
+    record = pm.value;
     await doc.issues({ paperId: null });
-  } catch ( error ) {
 
-    logger.error( `Error filling doc article` );
-    logger.error( error );
+  } else if ( notFound( pm ) && isFound( cr ) ) {
+    // Case: Preprint not indexed by PubMed
+    record = cr.value;
+    await doc.issues({ paperId: null });
 
-    // Only supply default when no previous retrieval (pmid is null)
-    const { pmid } = doc.citation();
-    if( pmid == null ){
-      const pubmedRecord = createPubmedArticle({ articleTitle: paperId });
-      await doc.article( pubmedRecord );
-      await doc.issues({ paperId: { error, message: error.message } });
+  } else if ( isFound( pm ) && isFound( cr ) ) {
+    record = pm.value;
+    const pmCitation = getPubmedCitation( pm.value );
+    const crCitation = getPubmedCitation( cr.value );
+    const different = pmCitation.doi !== crCitation.doi;
+    if( different ){
+      // Case: Get most recent item
+      const sorted = [ pmCitation, crCitation ].sort( byISODate );
+      const latest = _.last( sorted );
+      if( !hasPmid( latest ) ){
+        record = cr.value;
+      }
     }
+    await doc.issues({ paperId: null });
+
+  } else {
+    let error;
+    const withHttpErr = [ pm, cr ].find( byStatusError );
+    if( withHttpErr ){
+      // HTTPStatusError occurred
+      error = withHttpErr.reason;
+    } else {
+      // Not found
+      error = pm.reason || cr.reason;
+    }
+    await doc.issues({ paperId: { error, message: error.message } });
   }
+
+  await doc.article( record );
 };
 
 /**

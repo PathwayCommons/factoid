@@ -99,12 +99,12 @@ const getPubmedArticle = async paperId => {
       if( PubmedArticle ){
         return PubmedArticle;
       } else {
-        throw new Error(`Unable to retrieve a PubmedArticle for '${paperId}`);
+        throw new ArticleIDError( `Unrecognized paperId '${paperId}'`, paperId );
       }
 
     } catch( err ) {
       logger.error( `${err.name}: ${err.message}` );
-      throw new ArticleIDError( `Unrecognized paperId '${paperId}'`, paperId );
+      throw err;
     }
   }
 };

@@ -65,7 +65,7 @@ import { ENTITY_TYPE } from '../../../../model/element/entity-type';
 import { eLink, elink2UidList } from './pubmed/linkPubmed';
 import { fetchPubmed } from './pubmed/fetchPubmed';
 import { docs2Sitemap } from '../../../sitemap';
-import { findPreprint } from './crossRef/index.js';
+import { findPreprint } from './crossref/index.js';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 const DOC_CACHE_KEY = 'documents';
 const SEARCH_CACHE_KEY = 'search';

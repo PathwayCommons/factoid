@@ -507,7 +507,20 @@ class DocumentManagementDocumentComponent extends React.Component {
             checked: _.get( DOCUMENT_STATUS_FIELDS, typeVal ) === doc.status(),
             onChange: e => {
               let newlySelectedStatus = _.get( DOCUMENT_STATUS_FIELDS, e.target.value );
-              doc.status( newlySelectedStatus );
+              switch ( newlySelectedStatus ) {
+                case DOCUMENT_STATUS_FIELDS.INITIATED:
+                  doc.initiate();
+                  break;
+                case DOCUMENT_STATUS_FIELDS.SUBMITTED:
+                  doc.submit();
+                  break;
+                case DOCUMENT_STATUS_FIELDS.PUBLIC:
+                  doc.makePublic();
+                  break;
+                case DOCUMENT_STATUS_FIELDS.TRASHED:
+                  doc.trash();
+                  break;
+              }
             }
           }),
           h('label', {

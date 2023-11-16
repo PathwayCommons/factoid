@@ -225,6 +225,19 @@ class Element {
   json(){
     return _.assign({}, _.pick( this.syncher.get(), ['id', 'secret'].concat( _.keys(DEFAULTS) ) ) );
   }
+
+  locked(){
+    return this.syncher.locked();
+  }
+
+  lock(){
+    return this.syncher.lock( this.secret() );
+  }
+
+  unlock(){
+    return this.syncher.unlock( this.secret() );
+  }
+
 }
 
 mixin( Element.prototype, EventEmitterMixin.prototype );

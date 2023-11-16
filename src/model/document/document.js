@@ -506,9 +506,15 @@ class Document {
   }
 
   static statusFields(){ return DOCUMENT_STATUS_FIELDS; }
-  initiate(){ return this.status( DOCUMENT_STATUS_FIELDS.INITIATED ); }
+  initiate(){
+    this.unlockElements();
+    this.status( DOCUMENT_STATUS_FIELDS.INITIATED );
+  }
   initiated(){ return this.status() === DOCUMENT_STATUS_FIELDS.INITIATED ? true : false; }
-  submit(){ return this.status( DOCUMENT_STATUS_FIELDS.SUBMITTED ); }
+  submit(){
+    this.lockElements();
+    this.status( DOCUMENT_STATUS_FIELDS.SUBMITTED );
+  }
   submitted(){ return this.status() === DOCUMENT_STATUS_FIELDS.SUBMITTED ? true : false; }
   makePublic(){ return this.status( DOCUMENT_STATUS_FIELDS.PUBLIC ); }
   isPublic(){ return this.status() === DOCUMENT_STATUS_FIELDS.PUBLIC ? true : false; }
@@ -615,6 +621,14 @@ class Document {
       handleEls(),
       addOrganisms()
     ]);
+  }
+
+  lockElements(){
+    return this.elements().map( el => el.lock() );
+  }
+
+  unlockElements(){
+    return this.elements().map( el => el.unlock() );
   }
 }
 

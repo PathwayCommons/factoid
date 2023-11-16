@@ -2556,6 +2556,7 @@ const getRelatedPapersForNetwork = async doc => {
 
       const newPprs = _.uniq( _.concat(pprs, _.shuffle(docPprs)), getPmid );
 
+      // potentially disabled on lock
       await el.relatedPapers(newPprs);
     }) );
     logger.info(`Finished updating network-level related papers for doc`);

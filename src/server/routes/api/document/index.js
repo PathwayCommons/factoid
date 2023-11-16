@@ -2514,6 +2514,7 @@ const getRelatedPapersForNetwork = async doc => {
     const toTemplate = el => el.toSearchTemplate();
 
     const getRelPprsForEl = async el => {
+      await el.unlock();
       const hasRelatedPapers = !_.isEmpty( el.relatedPapers() );
       const template = toTemplate(el);
 
@@ -2527,7 +2528,7 @@ const getRelatedPapersForNetwork = async doc => {
         indraRes = await indra.searchDocuments({ templates, doc });
         if ( el.isInteraction() ) {
           if ( indraRes.length == 0 ) {
-            el.setNovel( true );
+            await el.setNovel( true );
           }
         }
 
@@ -2537,7 +2538,8 @@ const getRelatedPapersForNetwork = async doc => {
         if( hasRelatedPapers ) indraRes = el.relatedPapers();
       }
 
-      el.relatedPapers( indraRes );
+      await el.relatedPapers( indraRes );
+      await el.lock();
     };
 
     let elChunks = _.chunk( els, 1 );
@@ -2557,7 +2559,9 @@ const getRelatedPapersForNetwork = async doc => {
       const newPprs = _.uniq( _.concat(pprs, _.shuffle(docPprs)), getPmid );
 
       // potentially disabled on lock
+      await el.unlock();
       await el.relatedPapers(newPprs);
+      await el.lock();
     }) );
     logger.info(`Finished updating network-level related papers for doc`);
     return doc;

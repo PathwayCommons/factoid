@@ -702,14 +702,21 @@ const blankDocumentJson = () => {
     const provided = {};
     return createDoc({ docDb, eleDb, id, secret, provided });
   };
-  const setStatus = doc => doc.initiate().then( () => doc );
-  const stubArticle = doc => {
-    const article = createPubmedArticle({});
-    return doc.article( article ).then( () => doc );
+  const setStatus = async doc => {
+    await doc.initiate();
+    return doc;
   };
-  const stubCorrespondence = doc => {
+  const stubArticle = async doc => {
+    const article = createPubmedArticle({});
+    const error = new ArticleIDError('Blank paperId');
+    await doc.article( article );
+    await doc.issues({ paperId: { error, message: error.message } });
+    return doc;
+  };
+  const stubCorrespondence = async doc => {
     const error = new EmailError('Blank email');
-    return doc.issues({ authorEmail: { error, message: error.message } }).then( () => doc );
+    await doc.issues({ authorEmail: { error, message: error.message } });
+    return doc;
   };
 
   return tryPromise( () => createSecret({ secret }) )

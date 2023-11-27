@@ -696,19 +696,28 @@ const generateSitemap = () => {
  * as the POST /api/document/ route.
  */
 const blankDocumentJson = () => {
-  const id = undefined;
   const secret = uuid();
-  const provided = {};
-  const article = createPubmedArticle({});
-  const handleDocCreation = ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided });
-  const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
-  const fillBlankArticle = doc => tryPromise( () => doc.article( article ) ).then( () => doc );
+  const handleDocCreation = ({ docDb, eleDb }) => {
+    const id = undefined;
+    const provided = {};
+    return createDoc({ docDb, eleDb, id, secret, provided });
+  };
+  const setStatus = doc => doc.initiate().then( () => doc );
+  const stubArticle = doc => {
+    const article = createPubmedArticle({});
+    return doc.article( article ).then( () => doc );
+  };
+  const stubCorrespondence = doc => {
+    const error = new EmailError('Blank email');
+    return doc.issues({ authorEmail: { error, message: error.message } }).then( () => doc );
+  };
 
   return tryPromise( () => createSecret({ secret }) )
     .then( loadTables )
     .then( handleDocCreation )
-    .then( fillBlankArticle )
     .then( setStatus )
+    .then( stubArticle )
+    .then( stubCorrespondence )
     .then( getDocJson );
 };
 

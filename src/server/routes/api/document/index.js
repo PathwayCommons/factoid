@@ -692,6 +692,27 @@ const generateSitemap = () => {
 };
 
 /**
+ * Create a new, blank document JSON representation, with the same format and caveats
+ * as the POST /api/document/ route.
+ */
+const blankDocumentJson = () => {
+  const id = undefined;
+  const secret = uuid();
+  const provided = {};
+  const article = createPubmedArticle({});
+  const handleDocCreation = ({ docDb, eleDb }) => createDoc({ docDb, eleDb, id, secret, provided });
+  const setStatus = doc => tryPromise( () => doc.initiate() ).then( () => doc );
+  const fillBlankArticle = doc => tryPromise( () => doc.article( article ) ).then( () => doc );
+
+  return tryPromise( () => createSecret({ secret }) )
+    .then( loadTables )
+    .then( handleDocCreation )
+    .then( fillBlankArticle )
+    .then( setStatus )
+    .then( getDocJson );
+};
+
+/**
  * @swagger
  *
  * /api/document/zip:
@@ -2569,7 +2590,7 @@ const getRelatedPapersForNetwork = async doc => {
 };
 
 export default http;
-export { getDocumentJson,
+export { getDocumentJson, blankDocumentJson,
   loadTables, loadDoc, fillDocArticle, updateRelatedPapers,
   fillDocAuthorProfiles,
   generateSitemap,

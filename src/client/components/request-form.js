@@ -40,10 +40,10 @@ class RequestForm extends Component {
 
       if(titleEl){
         focusDomElement(titleEl);
-      } 
+      }
     }, 50);
 
-    this.onCloseCTA = () => this.reset();
+    this.onCloseCTA = () => {};
     this.onOpenCTA = () => this.focusTitle();
   }
 

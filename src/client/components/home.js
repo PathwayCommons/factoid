@@ -1,7 +1,6 @@
 import h from 'react-hyperscript';
 import { Component } from 'react';
 import Popover from './popover/popover';
-import RequestForm from './request-form';
 import { makeClassList } from '../dom';
 import EventEmitter from 'eventemitter3';
 import { Carousel, CAROUSEL_CONTENT } from './carousel';
@@ -277,24 +276,7 @@ class Home extends Component {
   }
 
   render(){
-    const CTAPopover = props => {
-      return h(Popover, {
-        tippy: {
-          html: h(RequestForm, {
-            bus: this.bus,
-            submitBtnText: 'Create my article profile'
-          }),
-          onHidden: () => this.bus.emit('closecta'),
-          placement: props.placement || 'top'
-        }
-      }, props.children || []);
-    };
-
-    // const CTA = () => {
-    //   return h(CTAPopover, [
-    //     h('button.home-cta-button.salient-button', 'Get started')
-    //   ]);
-    // };
+    const CTA = h('a', { href: 'document/new', target: '_blank' },[ h('button.home-intro-cta', 'Add my article') ]);
 
     const ContactPopover = (props) => {
       return h(Popover, {
@@ -412,11 +394,7 @@ class Home extends Component {
             ]),
             ` supported by their results, letting researchers explore a firsthand account of an article’s findings and connect to related articles and knowledge. `
           ]),
-          h(CTAPopover, {
-            placement: 'bottom'
-          }, [
-            h('button.home-intro-cta', 'Add my article')
-          ])
+          CTA
         ]),
         h('div.home-intro-figure'),
         h('div.home-explore#home-explore', [
@@ -426,11 +404,7 @@ class Home extends Component {
       ]),
       h('div.home-section.home-fluid-section.home-intro-figure-sm-alt-section', [
         h('div.home-intro-figure-sm-alt'),
-        h(CTAPopover, {
-          placement: 'bottom'
-        }, [
-          h('button.home-intro-cta', 'Add my article')
-        ])
+        CTA
       ]),
       h('div.home-section.home-fluid-section', [
         h('div.home-fluid-section-copy', [
@@ -470,11 +444,7 @@ class Home extends Component {
           h('h3', `Don’t let your research get left behind`),
           h('p', `Research is increasingly online, interactive, and interconnected. Biofactoid helps you connect your research to the world.`),
           h('p.home-cta-p', [
-            h(CTAPopover, {
-              placement: 'bottom'
-            }, [
-              h('button.home-cta-alt-button', 'Add my article')
-            ]),
+            CTA,
             h('a', {
               target: '_blank',
               href: `/document/${SAMPLE_DOC_ID}`
@@ -498,11 +468,7 @@ class Home extends Component {
             ])
           ]),
           h('p.home-cta-p', [
-            h(CTAPopover, {
-              placement: 'bottom'
-            }, [
-              h('button.home-cta-alt-button', 'Add my article')
-            ]),
+            CTA,
             h('a', {
               target: '_blank',
               href: `/document/${SAMPLE_DOC_ID}`
@@ -522,11 +488,7 @@ class Home extends Component {
           h('h3', `Easy sharing `),
           h('p', `Want your colleagues to know about an interesting report? Share an interactive graphical abstract via social media or email with just a click.`),
           h('p.home-cta-p', [
-            h(CTAPopover, {
-              placement: 'bottom'
-            }, [
-              h('button.home-cta-alt-button', 'Add my article')
-            ]),
+            CTA,
             h('a', {
               target: '_blank',
               href: `/document/${SAMPLE_DOC_ID}`
@@ -540,11 +502,7 @@ class Home extends Component {
             h('div.home-fluid-section-phone-aoi')
           ]),
           h('p.home-cta-p', [
-            h(CTAPopover, {
-              placement: 'bottom'
-            }, [
-              h('button.home-cta-alt-button', 'Add my article')
-            ]),
+            CTA,
             h('a', {
               target: '_blank',
               href: `/document/${SAMPLE_DOC_ID}`

@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { parse as dateParse } from 'date-fns';
+import { isDoi } from './is';
 
 const NUM_AUTHORS_SHOWING = 4;
 
@@ -209,6 +210,34 @@ const getReferenceString = Journal => {
 
 const getArticleId = ( PubmedArticle, IdType ) => _.get( _.find( _.get( PubmedArticle, ['PubmedData', 'ArticleIdList'], [] ), [ 'IdType', IdType ] ), 'id', null );
 
+// Format each CommentsCorrections as { type, [pmid, doi, text (default)] }
+const getRelations = MedlineCitation => {
+
+  let extractDOI = str => {
+    let doi;
+    const re = /^doi: (10\.\d{4,9}\/[-._;()/:A-Z0-9]+)/i;
+    const found = str.match( re );
+    if( found ) doi = found[1];
+    return doi;
+  };
+  let relations = [];
+  const CommentsCorrectionsList = _.get( MedlineCitation, ['CommentsCorrectionsList'] );
+  if ( CommentsCorrectionsList ){ // backwards compatibility
+    relations = CommentsCorrectionsList.map( CommentsCorrections => {
+      const { RefSource, RefType, PMID } = CommentsCorrections;
+      const relation = { source: RefSource, type: RefType };
+      if (PMID){
+        _.set( relation, 'pmid', PMID );
+      } else {
+        const doi = extractDOI(RefSource);
+        if( doi ) _.set( relation, 'doi', doi );
+      }
+      return relation;
+    });
+  }
+  return relations;
+};
+
 /**
  * getPubmedCitation
  *
@@ -224,9 +253,11 @@ const getArticleId = ( PubmedArticle, IdType ) => _.get( _.find( _.get( PubmedAr
  * @return {String} result.doi
  * @return {String} result.pubTypes
  * @return {String} result.ISODate ({ year, month, day })
+ * @return {String} result.relations
  */
 const getPubmedCitation = PubmedArticle => {
   const Article = _.get( PubmedArticle, ['MedlineCitation','Article'] ); //required
+  const MedlineCitation = _.get( PubmedArticle, ['MedlineCitation'] ); //required
   const Journal = _.get( Article, ['Journal'] ); //required
   const AuthorList = _.get( Article, ['AuthorList'] ); //optional
 
@@ -238,8 +269,9 @@ const getPubmedCitation = PubmedArticle => {
   const doi = getArticleId( PubmedArticle, 'doi' );
   const pubTypes = _.get( Article, 'PublicationTypeList' ); //required
   const { ISODate } = getPubDate( _.get( Article, ['Journal', 'JournalIssue'] ) );
+  const relations = getRelations( MedlineCitation );
 
-  return { title, authors, reference, abstract, pmid, doi, pubTypes, ISODate };
+  return { title, authors, reference, abstract, pmid, doi, pubTypes, ISODate, relations };
 };
 
 /**
@@ -280,7 +312,8 @@ const createPubmedArticle = ({ articleTitle = null, journalName = null, publicat
       ChemicalList: [],
       InvestigatorList: [],
       KeywordList: [],
-      MeshheadingList: []
+      MeshheadingList: [],
+      CommentsCorrectionsList: []
     },
     PubmedData: {
       ArticleIdList: [],

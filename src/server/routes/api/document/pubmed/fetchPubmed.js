@@ -295,6 +295,43 @@ const getInvestigatorList = MedlineCitation => {
   return getElementsByName( InvestigatorList, 'Investigator' ).map( getInvestigator );
 };
 
+// <!ELEMENT	RefSource (#PCDATA) >
+// <!ELEMENT	PMID (#PCDATA) >
+// <!ATTLIST	PMID
+// 		    Version CDATA #REQUIRED >
+// <!ELEMENT	Note (#PCDATA) >
+//
+// <!ELEMENT	CommentsCorrections (RefSource,PMID?,Note?) >
+// <!ATTLIST	CommentsCorrections
+// 		     RefType (AssociatedDataset |
+// 		             AssociatedPublication |
+// 		             CommentIn | CommentOn |
+// 		             CorrectedandRepublishedIn | CorrectedandRepublishedFrom |
+// 		             ErratumIn | ErratumFor |
+// 		             ExpressionOfConcernIn | ExpressionOfConcernFor |
+// 		             RepublishedIn | RepublishedFrom |
+// 		             RetractedandRepublishedIn | RetractedandRepublishedFrom |
+// 		             RetractionIn | RetractionOf |
+// 		             UpdateIn | UpdateOf |
+// 		             SummaryForPatientsIn |
+// 		             OriginalReportIn |
+// 		             ReprintIn | ReprintOf |
+// 		             Cites)      #REQUIRED    >
+const getCommentsCorrections = CommentsCorrections => {
+  const RefSource = getElementText( getElementByName( CommentsCorrections, 'RefSource' ) );
+  const RefType = getElementAttribute( CommentsCorrections, 'RefType' );
+  const out = { RefSource, RefType };
+  let PMID = getElementByName( CommentsCorrections, 'PMID' );
+  if ( PMID ) _.set(out, 'PMID', getElementText( PMID ));
+  return out;
+};
+
+// <!ELEMENT	CommentsCorrectionsList (CommentsCorrections+) >
+const getCommentsCorrectionsList = MedlineCitation => {
+  const CommentsCorrectionsList = getElementByName( MedlineCitation, 'CommentsCorrectionsList' );
+  return getElementsByName( CommentsCorrectionsList, 'CommentsCorrections' ).map( getCommentsCorrections );
+};
+
 const getMedlineCitation = PubmedArticle => {
   //<!ELEMENT	MedlineCitation
   //    (PMID, DateCompleted?, DateRevised?, Article,
@@ -316,13 +353,15 @@ const getMedlineCitation = PubmedArticle => {
   const KeywordList = getElementByName( MedlineCitation, 'KeywordList' ) ? getKeywordList( MedlineCitation ): [];
   const MeshheadingList = getElementByName( MedlineCitation, 'MeshHeadingList' ) ? getMeshheadingList( MedlineCitation ): [];
   const InvestigatorList = getElementByName( MedlineCitation, 'InvestigatorList' ) ? getInvestigatorList( MedlineCitation ): [];
+  const CommentsCorrectionsList = getElementByName( MedlineCitation, 'CommentsCorrectionsList' ) ? getCommentsCorrectionsList( MedlineCitation ): [];
 
   return {
     Article,
     ChemicalList,
     KeywordList,
     MeshheadingList,
-    InvestigatorList
+    InvestigatorList,
+    CommentsCorrectionsList
   };
 
 };

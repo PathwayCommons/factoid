@@ -1,0 +1,265 @@
+<?xml version="1.0" ?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2023//EN" "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_230101.dtd">
+<PubmedArticleSet>
+  <PubmedArticle>
+    <MedlineCitation Status="PubMed-not-MEDLINE" Owner="NLM" IndexingMethod="Automated">
+      <PMID Version="1">36747776</PMID>
+      <DateRevised>
+        <Year>2023</Year>
+        <Month>10</Month>
+        <Day>19</Day>
+      </DateRevised>
+      <Article PubModel="Electronic">
+        <Journal>
+          <JournalIssue CitedMedium="Internet">
+            <PubDate>
+              <Year>2023</Year>
+              <Month>Jan</Month>
+              <Day>28</Day>
+            </PubDate>
+          </JournalIssue>
+          <Title>bioRxiv : the preprint server for biology</Title>
+          <ISOAbbreviation>bioRxiv</ISOAbbreviation>
+        </Journal>
+        <ArticleTitle>Structure and dynamics of the essential endogenous mycobacterial polyketide synthase Pks13.</ArticleTitle>
+        <ELocationID EIdType="pii" ValidYN="Y">2023.01.27.525930</ELocationID>
+        <ELocationID EIdType="doi" ValidYN="Y">10.1101/2023.01.27.525930</ELocationID>
+        <Abstract>
+          <AbstractText>
+            <i>Mycobacterium tuberculosis</i> is currently the leading cause of death by any bacterial infection<sup>1</sup>. The mycolic acid layer of the cell wall is essential for viability and virulence, and the enzymes responsible for its synthesis are therefore front line targets for antimycobacterial drug development<sup>2,3</sup>. Polyketide synthase 13 (Pks13) is a module comprised of a closely symmetric parallel dimer of chains, each encoding several enzymatic and transport functions, that carries out the condensation of two different very long chain fatty acids to produce mycolic acids that are essential components of the mycobacterial cell wall. Consequently individual enzymatic domains of Pks13 are targets for antimycobacterial drug development<sup>4</sup>. To understand this machinery, we sought to determine the structure and domain trajectories of the dimeric multi-enzyme Pks13, a 2&#xd7;198,426 Dalton complex, from protein purified endogenously from mycobacteria under normal growth conditions, to capture it with normal substrates bound trapped 'in action'. Structures of the multi-domain assembly revealed by cryogenic electron microscopy (cryoEM) define the ketosynthase (KS), linker, and acyltransferase (AT) domains, each at atomic resolution (1.8&#xc5;), with bound substrates defined at 2.4&#xc5; and 2.9&#xc5; resolution. Image classification reveals two distinct structures with alternate locations of the N-terminal acyl carrier protein (termed ACP1a, ACP1b) seen at 3.6&#xc5; and 4.6&#xc5; resolution respectively. These two structures suggest plausible intermediate states, related by a ~60&#xc5; movement of ACP1, on the pathway for substrate delivery from the fatty acyl-ACP ligase (FadD32) to the ketosynthase domain. The linking sequence between ACP1 and the KS includes an 11 amino acid sequence with 6 negatively charged side chains that lies in different positively charged grooves on the KS in ACP1a versus ACP1b structures. This charge complementarity between the extended chain and the grooves suggests some stabilization of these two distinct orientations. Other domains are visible at lower resolution and indicate flexibility relative to the KS-AT core. The chemical structures of three bound endogenous long chain fatty acid substrates with their proximal regions defined in the structures were determined by electrospray ionization mass spectrometry. The domain proximities were probed by chemical cross-linking and identified by mass spectrometry. These were incorporated into integrative structure modeling to define multiple domain configurations that transport the very long fatty acid chains throughout the multistep Pks13 mediated synthetic pathway.</AbstractText>
+        </Abstract>
+        <AuthorList CompleteYN="Y">
+          <Author ValidYN="Y">
+            <LastName>Kim</LastName>
+            <ForeName>Sun Kyung</ForeName>
+            <Initials>SK</Initials>
+            <Identifier Source="ORCID">0000-0001-8821-6663</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Department of Biochemistry and Biophysics, University of California San Francisco, San Francisco, CA 94143, U.S.A.</Affiliation>
+            </AffiliationInfo>
+            <AffiliationInfo>
+              <Affiliation>These authors contributed equally.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Dickinson</LastName>
+            <ForeName>Miles Sasha</ForeName>
+            <Initials>MS</Initials>
+            <Identifier Source="ORCID">0000-0002-8016-1570</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Department of Biochemistry and Biophysics, University of California San Francisco, San Francisco, CA 94143, U.S.A.</Affiliation>
+            </AffiliationInfo>
+            <AffiliationInfo>
+              <Affiliation>Chemistry and Chemical Biology Graduate Program, University of California San Francisco, San Francisco, CA 94143, U.S.A.</Affiliation>
+            </AffiliationInfo>
+            <AffiliationInfo>
+              <Affiliation>These authors contributed equally.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Finer-Moore</LastName>
+            <ForeName>Janet</ForeName>
+            <Initials>J</Initials>
+            <Identifier Source="ORCID">0000-0001-8172-0998</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Department of Biochemistry and Biophysics, University of California San Francisco, San Francisco, CA 94143, U.S.A.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Guan</LastName>
+            <ForeName>Ziqiang</ForeName>
+            <Initials>Z</Initials>
+            <Identifier Source="ORCID">0000-0002-8082-3423</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Department of Biochemistry, Duke University Medical Center, Durham, NC 27710.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Kaake</LastName>
+            <ForeName>Robyn M</ForeName>
+            <Initials>RM</Initials>
+            <Identifier Source="ORCID">0000-0002-8341-3067</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Gladstone Institute of Data Science and Biotechnology, J. David Gladstone Institutes, San Francisco, California, U.S.A.</Affiliation>
+            </AffiliationInfo>
+            <AffiliationInfo>
+              <Affiliation>Department of Cellular and Molecular Pharmacology, University of California, San Francisco, San Francisco, California, U.S.A.</Affiliation>
+            </AffiliationInfo>
+            <AffiliationInfo>
+              <Affiliation>Quantitative Biosciences Institute, University of California, San Francisco, San Francisco, California, U.S.A.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Echeverria</LastName>
+            <ForeName>Ignacia</ForeName>
+            <Initials>I</Initials>
+            <Identifier Source="ORCID">0000-0003-4717-1467</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Gladstone Institute of Data Science and Biotechnology, J. David Gladstone Institutes, San Francisco, California, U.S.A.</Affiliation>
+            </AffiliationInfo>
+            <AffiliationInfo>
+              <Affiliation>Department of Bioengineering and Therapeutic sciences.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Chen</LastName>
+            <ForeName>Jen</ForeName>
+            <Initials>J</Initials>
+            <Identifier Source="ORCID">0000-0001-8026-031X</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Department of Biochemistry and Biophysics, University of California San Francisco, San Francisco, CA 94143, U.S.A.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Pulido</LastName>
+            <ForeName>Ernst H</ForeName>
+            <Initials>EH</Initials>
+            <Identifier Source="ORCID">0000-0002-3616-9743</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Gladstone Institute of Data Science and Biotechnology, J. David Gladstone Institutes, San Francisco, California, U.S.A.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Sali</LastName>
+            <ForeName>Andrej</ForeName>
+            <Initials>A</Initials>
+            <Identifier Source="ORCID">0000-0003-0435-6197</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Department of Bioengineering and Therapeutic sciences.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Krogan</LastName>
+            <ForeName>Nevan J</ForeName>
+            <Initials>NJ</Initials>
+            <Identifier Source="ORCID">0000-0003-4902-337X</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Gladstone Institute of Data Science and Biotechnology, J. David Gladstone Institutes, San Francisco, California, U.S.A.</Affiliation>
+            </AffiliationInfo>
+            <AffiliationInfo>
+              <Affiliation>Department of Cellular and Molecular Pharmacology, University of California, San Francisco, San Francisco, California, U.S.A.</Affiliation>
+            </AffiliationInfo>
+            <AffiliationInfo>
+              <Affiliation>Quantitative Biosciences Institute, University of California, San Francisco, San Francisco, California, U.S.A.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Rosenberg</LastName>
+            <ForeName>Oren S</ForeName>
+            <Initials>OS</Initials>
+            <Identifier Source="ORCID">0000-0002-5736-4388</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Department of Biochemistry and Biophysics, University of California San Francisco, San Francisco, CA 94143, U.S.A.</Affiliation>
+            </AffiliationInfo>
+            <AffiliationInfo>
+              <Affiliation>Department of Medicine, Division of Infectious Diseases, University of California, San Francisco, San Francisco, U.S.A.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Stroud</LastName>
+            <ForeName>Robert M</ForeName>
+            <Initials>RM</Initials>
+            <Identifier Source="ORCID">0000-0003-2083-5665</Identifier>
+            <AffiliationInfo>
+              <Affiliation>Department of Biochemistry and Biophysics, University of California San Francisco, San Francisco, CA 94143, U.S.A.</Affiliation>
+            </AffiliationInfo>
+            <AffiliationInfo>
+              <Affiliation>Chemistry and Chemical Biology Graduate Program, University of California San Francisco, San Francisco, CA 94143, U.S.A.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+        </AuthorList>
+        <Language>eng</Language>
+        <GrantList CompleteYN="Y">
+          <Grant>
+            <GrantID>R37 GM024485</GrantID>
+            <Acronym>GM</Acronym>
+            <Agency>NIGMS NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>R01 GM024485</GrantID>
+            <Acronym>GM</Acronym>
+            <Agency>NIGMS NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>R01 GM083960</GrantID>
+            <Acronym>GM</Acronym>
+            <Agency>NIGMS NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>R01 AI128214</GrantID>
+            <Acronym>AI</Acronym>
+            <Agency>NIAID NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>P01 AI095208</GrantID>
+            <Acronym>AI</Acronym>
+            <Agency>NIAID NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+          <Grant>
+            <GrantID>P41 GM109824</GrantID>
+            <Acronym>GM</Acronym>
+            <Agency>NIGMS NIH HHS</Agency>
+            <Country>United States</Country>
+          </Grant>
+        </GrantList>
+        <PublicationTypeList>
+          <PublicationType UI="D000076942">Preprint</PublicationType>
+        </PublicationTypeList>
+        <ArticleDate DateType="Electronic">
+          <Year>2023</Year>
+          <Month>01</Month>
+          <Day>28</Day>
+        </ArticleDate>
+      </Article>
+      <MedlineJournalInfo>
+        <Country>United States</Country>
+        <MedlineTA>bioRxiv</MedlineTA>
+        <NlmUniqueID>101680187</NlmUniqueID>
+      </MedlineJournalInfo>
+      <CommentsCorrectionsList>
+        <CommentsCorrections RefType="UpdateIn">
+          <RefSource>Nat Struct Mol Biol. 2023 Mar;30(3):296-308</RefSource>
+          <PMID Version="1">36782050</PMID>
+        </CommentsCorrections>
+      </CommentsCorrectionsList>
+      <CoiStatement>Competing interests: The Krogan Laboratory has received research support from Vir Biotechnology, F. Hoffmann-La Roche, and Rezo Therapeutics. Nevan Krogan has financially compensated consulting agreements with the Icahn School of Medicine at Mount Sinai, New York, Maze Therapeutics, Interline Therapeutics, Rezo Therapeutics, GEn1E Lifesciences, Inc. and Twist Bioscience Corp. He is on the Board of Directors of Rezo Therapeutics and is a shareholder in Tenaya Therapeutics, Maze Therapeutics, Rezo Therapeutics, and Interline Therapeutics.</CoiStatement>
+    </MedlineCitation>
+    <PubmedData>
+      <History>
+        <PubMedPubDate PubStatus="pubmed">
+          <Year>2023</Year>
+          <Month>2</Month>
+          <Day>8</Day>
+          <Hour>6</Hour>
+          <Minute>0</Minute>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="medline">
+          <Year>2023</Year>
+          <Month>2</Month>
+          <Day>8</Day>
+          <Hour>6</Hour>
+          <Minute>1</Minute>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="entrez">
+          <Year>2023</Year>
+          <Month>2</Month>
+          <Day>7</Day>
+          <Hour>1</Hour>
+          <Minute>58</Minute>
+        </PubMedPubDate>
+      </History>
+      <PublicationStatus>epublish</PublicationStatus>
+      <ArticleIdList>
+        <ArticleId IdType="pubmed">36747776</ArticleId>
+        <ArticleId IdType="pmc">PMC9900942</ArticleId>
+        <ArticleId IdType="doi">10.1101/2023.01.27.525930</ArticleId>
+        <ArticleId IdType="pii">2023.01.27.525930</ArticleId>
+      </ArticleIdList>
+    </PubmedData>
+  </PubmedArticle>
+</PubmedArticleSet>

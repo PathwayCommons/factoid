@@ -1,0 +1,1739 @@
+<?xml version="1.0" ?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2023//EN" "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_230101.dtd">
+<PubmedArticleSet>
+	<PubmedArticle>
+		<MedlineCitation Status="Publisher" Owner="NLM" IndexingMethod="Automated">
+			<PMID Version="1">37819053</PMID>
+			<DateRevised>
+				<Year>2023</Year>
+				<Month>10</Month>
+				<Day>13</Day>
+			</DateRevised>
+			<Article PubModel="Electronic">
+				<Journal>
+					<ISSN IssnType="Electronic">2050-084X</ISSN>
+					<JournalIssue CitedMedium="Internet">
+						<Volume>12</Volume>
+						<PubDate>
+							<Year>2023</Year>
+							<Month>Oct</Month>
+							<Day>11</Day>
+						</PubDate>
+					</JournalIssue>
+					<Title>eLife</Title>
+					<ISOAbbreviation>Elife</ISOAbbreviation>
+				</Journal>
+				<ArticleTitle>RNA-binding deficient TDP-43 drives cognitive decline in a mouse model of TDP-43 proteinopathy.</ArticleTitle>
+				<ELocationID EIdType="pii" ValidYN="Y">RP85921</ELocationID>
+				<ELocationID EIdType="doi" ValidYN="Y">10.7554/eLife.85921</ELocationID>
+				<Abstract>
+					<AbstractText>TDP-43 proteinopathies including frontotemporal lobar degeneration (FTLD) and amyotrophic lateral sclerosis (ALS) are neurodegenerative disorders characterized by aggregation and mislocalization of the nucleic acid-binding protein TDP-43 and subsequent neuronal dysfunction. Here, we developed endogenous models of sporadic TDP-43 proteinopathy based on the principle that disease-associated TDP-43 acetylation at lysine 145 (K145) alters TDP-43 conformation, impairs RNA-binding capacity, and induces downstream mis-regulation of target genes. Expression of acetylation-mimic TDP-43
+						<sup>K145Q</sup> resulted in stress-induced nuclear TDP-43 foci and loss of TDP-43 function in primary mouse and human-induced pluripotent stem cell (hiPSC)-derived cortical neurons. Mice harboring the TDP-43
+						<sup>K145Q</sup> mutation recapitulated key hallmarks of FTLD, including progressive TDP-43 phosphorylation and insolubility, TDP-43 mis-localization, transcriptomic and splicing alterations, and cognitive dysfunction. Our study supports a model in which TDP-43 acetylation drives neuronal dysfunction and cognitive decline through aberrant splicing and transcription of critical genes that regulate synaptic plasticity and stress response signaling. The neurodegenerative cascade initiated by TDP-43 acetylation recapitulates many aspects of human FTLD and provides a new paradigm to further interrogate TDP-43 proteinopathies.
+					</AbstractText>
+					<CopyrightInformation>&#xa9; 2023, Necarsulmer et al.</CopyrightInformation>
+				</Abstract>
+				<AuthorList CompleteYN="Y">
+					<Author ValidYN="Y">
+						<LastName>Necarsulmer</LastName>
+						<ForeName>Julie C</ForeName>
+						<Initials>JC</Initials>
+						<Identifier Source="ORCID">0000-0002-0669-2023</Identifier>
+						<AffiliationInfo>
+							<Affiliation>Department of Cell Biology and Physiology, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Department of Neurology, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Simon</LastName>
+						<ForeName>Jeremy M</ForeName>
+						<Initials>JM</Initials>
+						<Identifier Source="ORCID">0000-0003-3906-1663</Identifier>
+						<AffiliationInfo>
+							<Affiliation>UNC Neuroscience Center, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Carolina Institute for Developmental Disabilities, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Department of Genetics, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Evangelista</LastName>
+						<ForeName>Baggio A</ForeName>
+						<Initials>BA</Initials>
+						<AffiliationInfo>
+							<Affiliation>Department of Cell Biology and Physiology, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Department of Neurology, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Chen</LastName>
+						<ForeName>Youjun</ForeName>
+						<Initials>Y</Initials>
+						<AffiliationInfo>
+							<Affiliation>Department of Neurology, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Tian</LastName>
+						<ForeName>Xu</ForeName>
+						<Initials>X</Initials>
+						<AffiliationInfo>
+							<Affiliation>Department of Neurology, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Nafees</LastName>
+						<ForeName>Sara</ForeName>
+						<Initials>S</Initials>
+						<AffiliationInfo>
+							<Affiliation>Department of Neurology, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Marquez</LastName>
+						<ForeName>Ariana B</ForeName>
+						<Initials>AB</Initials>
+						<AffiliationInfo>
+							<Affiliation>Human Pluripotent Stem Cell Core, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Jiang</LastName>
+						<ForeName>Huijun</ForeName>
+						<Initials>H</Initials>
+						<AffiliationInfo>
+							<Affiliation>Department of Biostatistics, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Wang</LastName>
+						<ForeName>Ping</ForeName>
+						<Initials>P</Initials>
+						<AffiliationInfo>
+							<Affiliation>Department of Neurology, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Ajit</LastName>
+						<ForeName>Deepa</ForeName>
+						<Initials>D</Initials>
+						<AffiliationInfo>
+							<Affiliation>Department of Neurology, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Nikolova</LastName>
+						<ForeName>Viktoriya D</ForeName>
+						<Initials>VD</Initials>
+						<AffiliationInfo>
+							<Affiliation>Carolina Institute for Developmental Disabilities, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Department of Psychiatry, The University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Harper</LastName>
+						<ForeName>Kathryn M</ForeName>
+						<Initials>KM</Initials>
+						<Identifier Source="ORCID">0000-0002-6297-0032</Identifier>
+						<AffiliationInfo>
+							<Affiliation>Carolina Institute for Developmental Disabilities, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Department of Psychiatry, The University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Ezzell</LastName>
+						<ForeName>J Ashley</ForeName>
+						<Initials>JA</Initials>
+						<Identifier Source="ORCID">0000-0002-5142-4685</Identifier>
+						<AffiliationInfo>
+							<Affiliation>Department of Cell Biology &amp; Physiology, Histology Research Core Facility, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Lin</LastName>
+						<ForeName>Feng-Chang</ForeName>
+						<Initials>FC</Initials>
+						<AffiliationInfo>
+							<Affiliation>Department of Biostatistics, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Beltran</LastName>
+						<ForeName>Adriana S</ForeName>
+						<Initials>AS</Initials>
+						<AffiliationInfo>
+							<Affiliation>Department of Genetics, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Human Pluripotent Stem Cell Core, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Department of Pharmacology, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Moy</LastName>
+						<ForeName>Sheryl S</ForeName>
+						<Initials>SS</Initials>
+						<AffiliationInfo>
+							<Affiliation>Carolina Institute for Developmental Disabilities, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Department of Psychiatry, The University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Cohen</LastName>
+						<ForeName>Todd J</ForeName>
+						<Initials>TJ</Initials>
+						<Identifier Source="ORCID">0000-0002-4099-0278</Identifier>
+						<AffiliationInfo>
+							<Affiliation>Department of Cell Biology and Physiology, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Department of Neurology, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>UNC Neuroscience Center, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Department of Biochemistry and Biophysics, University of North Carolina, Chapel Hill, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+				</AuthorList>
+				<Language>eng</Language>
+				<DataBankList CompleteYN="Y">
+					<DataBank>
+						<DataBankName>GEO</DataBankName>
+						<AccessionNumberList>
+							<AccessionNumber>GSE216294</AccessionNumber>
+							<AccessionNumber>GSE163122</AccessionNumber>
+							<AccessionNumber>GSE27218</AccessionNumber>
+						</AccessionNumberList>
+					</DataBank>
+				</DataBankList>
+				<GrantList CompleteYN="Y">
+					<Grant>
+						<GrantID>R01NS105981</GrantID>
+						<Acronym>NS</Acronym>
+						<Agency>NINDS NIH HHS</Agency>
+						<Country>United States</Country>
+					</Grant>
+					<Grant>
+						<GrantID>F31NS122242</GrantID>
+						<Acronym>NS</Acronym>
+						<Agency>NINDS NIH HHS</Agency>
+						<Country>United States</Country>
+					</Grant>
+					<Grant>
+						<GrantID>P30NS045892</GrantID>
+						<Acronym>NS</Acronym>
+						<Agency>NINDS NIH HHS</Agency>
+						<Country>United States</Country>
+					</Grant>
+					<Grant>
+						<GrantID>F30AG072786</GrantID>
+						<Acronym>AG</Acronym>
+						<Agency>NIA NIH HHS</Agency>
+						<Country>United States</Country>
+					</Grant>
+					<Grant>
+						<GrantID>1T32GM133364-01A1</GrantID>
+						<Acronym>GM</Acronym>
+						<Agency>NIGMS NIH HHS</Agency>
+						<Country>United States</Country>
+					</Grant>
+					<Grant>
+						<GrantID>5T32GM008719-19</GrantID>
+						<Acronym>GM</Acronym>
+						<Agency>NIGMS NIH HHS</Agency>
+						<Country>United States</Country>
+					</Grant>
+					<Grant>
+						<GrantID>UM1TR004406</GrantID>
+						<Acronym>TR</Acronym>
+						<Agency>NCATS NIH HHS</Agency>
+						<Country>United States</Country>
+					</Grant>
+				</GrantList>
+				<PublicationTypeList>
+					<PublicationType UI="D016428">Journal Article</PublicationType>
+				</PublicationTypeList>
+				<ArticleDate DateType="Electronic">
+					<Year>2023</Year>
+					<Month>10</Month>
+					<Day>11</Day>
+				</ArticleDate>
+			</Article>
+			<MedlineJournalInfo>
+				<Country>England</Country>
+				<MedlineTA>Elife</MedlineTA>
+				<NlmUniqueID>101579614</NlmUniqueID>
+				<ISSNLinking>2050-084X</ISSNLinking>
+			</MedlineJournalInfo>
+			<CitationSubset>IM</CitationSubset>
+			<CommentsCorrectionsList>
+				<CommentsCorrections RefType="UpdateOf">
+					<RefSource>doi: 10.21203/rs.3.rs-2200020/v3</RefSource>
+				</CommentsCorrections>
+				<CommentsCorrections RefType="UpdateOf">
+					<RefSource>doi: 10.7554/eLife.85921.1</RefSource>
+				</CommentsCorrections>
+				<CommentsCorrections RefType="UpdateOf">
+					<RefSource>doi: 10.7554/eLife.85921.2</RefSource>
+				</CommentsCorrections>
+			</CommentsCorrectionsList>
+			<KeywordList Owner="NOTNLM">
+				<Keyword MajorTopicYN="N">TDP-43</Keyword>
+				<Keyword MajorTopicYN="N">cell biology</Keyword>
+				<Keyword MajorTopicYN="N">human</Keyword>
+				<Keyword MajorTopicYN="N">mouse</Keyword>
+				<Keyword MajorTopicYN="N">mouse model</Keyword>
+				<Keyword MajorTopicYN="N">neurodegeneration</Keyword>
+				<Keyword MajorTopicYN="N">neuroscience</Keyword>
+				<Keyword MajorTopicYN="N">proteinopathy</Keyword>
+			</KeywordList>
+			<CoiStatement>JN, JS, BE, YC, XT, SN, AM, HJ, PW, DA, VN, KH, JE, FL, AB, SM, TC No competing interests declared</CoiStatement>
+		</MedlineCitation>
+		<PubmedData>
+			<History>
+				<PubMedPubDate PubStatus="medline">
+					<Year>2023</Year>
+					<Month>10</Month>
+					<Day>11</Day>
+					<Hour>14</Hour>
+					<Minute>44</Minute>
+				</PubMedPubDate>
+				<PubMedPubDate PubStatus="pubmed">
+					<Year>2023</Year>
+					<Month>10</Month>
+					<Day>11</Day>
+					<Hour>14</Hour>
+					<Minute>44</Minute>
+				</PubMedPubDate>
+				<PubMedPubDate PubStatus="entrez">
+					<Year>2023</Year>
+					<Month>10</Month>
+					<Day>11</Day>
+					<Hour>8</Hour>
+					<Minute>56</Minute>
+				</PubMedPubDate>
+			</History>
+			<PublicationStatus>epublish</PublicationStatus>
+			<ArticleIdList>
+				<ArticleId IdType="pubmed">37819053</ArticleId>
+				<ArticleId IdType="pmc">PMC10567115</ArticleId>
+				<ArticleId IdType="doi">10.7554/eLife.85921</ArticleId>
+				<ArticleId IdType="pii">85921</ArticleId>
+			</ArticleIdList>
+			<ReferenceList>
+				<Reference>
+					<Citation>Agrawal S, Jain M, Yang W-Z, Yuan HS. Frontotemporal dementia-linked P112H mutation of TDP-43 induces protein structural change and impairs its RNA binding function. Protein Science. 2021;30:350&#x2013;365. doi: 10.1002/pro.3990.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1002/pro.3990</ArticleId>
+						<ArticleId IdType="pmc">PMC7784771</ArticleId>
+						<ArticleId IdType="pubmed">33151007</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Alam J, Scheper W. Targeting neuronal MAPK14/p38&#x3b1; activity to modulate autophagy in the Alzheimer disease brain. Autophagy. 2016;12:2516&#x2013;2520. doi: 10.1080/15548627.2016.1238555.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1080/15548627.2016.1238555</ArticleId>
+						<ArticleId IdType="pmc">PMC5173254</ArticleId>
+						<ArticleId IdType="pubmed">27715387</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Anderson KR, Haeussler M, Watanabe C, Janakiraman V, Lund J, Modrusan Z, Stinson J, Bei Q, Buechler A, Yu C, Thamminana SR, Tam L, Sowick M-A, Alcantar T, O&#x2019;Neil N, Li J, Ta L, Lima L, Roose-Girma M, Rairdan X, Durinck S, Warming S. CRISPR off-target analysis in genetically engineered rats and mice. Nature Methods. 2018;15:512&#x2013;514. doi: 10.1038/s41592-018-0011-5.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41592-018-0011-5</ArticleId>
+						<ArticleId IdType="pmc">PMC6558654</ArticleId>
+						<ArticleId IdType="pubmed">29786090</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Arnold ES, Ling S-C, Huelga SC, Lagier-Tourenne C, Polymenidou M, Ditsworth D, Kordasiewicz HB, McAlonis-Downes M, Platoshyn O, Parone PA, Da Cruz S, Clutario KM, Swing D, Tessarollo L, Marsala M, Shaw CE, Yeo GW, Cleveland DW. ALS-linked TDP-43 mutations produce aberrant RNA splicing and adult-onset motor neuron disease without aggregation or loss of nuclear TDP-43. PNAS. 2013;110:E736&#x2013;E745. doi: 10.1073/pnas.1222809110.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1073/pnas.1222809110</ArticleId>
+						<ArticleId IdType="pmc">PMC3581922</ArticleId>
+						<ArticleId IdType="pubmed">23382207</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Arnold WD, Sheth KA, Wier CG, Kissel JT, Burghes AH, Kolb SJ. Electrophysiological Motor Unit Number Estimation (MUNE) Measuring Compound Muscle Action Potential (CMAP) in Mouse Hindlimb Muscles. Journal of Visualized Experiments. 2015;25:52899. doi: 10.3791/52899.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.3791/52899</ArticleId>
+						<ArticleId IdType="pmc">PMC4676269</ArticleId>
+						<ArticleId IdType="pubmed">26436455</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ash PEA, Zhang Y-J, Roberts CM, Saldi T, Hutter H, Buratti E, Petrucelli L, Link CD. Neurotoxic effects of TDP-43 overexpression in C. elegans. Human Molecular Genetics. 2010;19:3206&#x2013;3218. doi: 10.1093/hmg/ddq230.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/hmg/ddq230</ArticleId>
+						<ArticleId IdType="pmc">PMC2908471</ArticleId>
+						<ArticleId IdType="pubmed">20530643</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ayala YM, Zago P, D&#x2019;Ambrogio A, Xu Y-F, Petrucelli L, Buratti E, Baralle FE. Structural determinants of the cellular localization and shuttling of TDP-43. Journal of Cell Science. 2008;121:3778&#x2013;3785. doi: 10.1242/jcs.038950.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1242/jcs.038950</ArticleId>
+						<ArticleId IdType="pubmed">18957508</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ayala YM, De Conti L, Avenda&#xf1;o-V&#xe1;zquez SE, Dhir A, Romano M, D&#x2019;Ambrogio A, Tollervey J, Ule J, Baralle M, Buratti E, Baralle FE. TDP-43 regulates its mRNA levels through a negative feedback loop. The EMBO Journal. 2011;30:277&#x2013;288. doi: 10.1038/emboj.2010.310.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/emboj.2010.310</ArticleId>
+						<ArticleId IdType="pmc">PMC3025456</ArticleId>
+						<ArticleId IdType="pubmed">21131904</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Baker M, Mackenzie IR, Pickering-Brown SM, Gass J, Rademakers R, Lindholm C, Snowden J, Adamson J, Sadovnick AD, Rollinson S, Cannon A, Dwosh E, Neary D, Melquist S, Richardson A, Dickson D, Berger Z, Eriksen J, Robinson T, Zehr C, Dickey CA, Crook R, McGowan E, Mann D, Boeve B, Feldman H, Hutton M. Mutations in progranulin cause tau-negative frontotemporal dementia linked to chromosome 17. Nature. 2006;442:916&#x2013;919. doi: 10.1038/nature05016.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nature05016</ArticleId>
+						<ArticleId IdType="pubmed">16862116</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Banfi S, Servadio A, Chung MY, Kwiatkowski TJ, McCall AE, Duvick LA, Shen Y, Roth EJ, Orr HT, Zoghbi HY. Identification and characterization of the gene causing type 1 spinocerebellar ataxia. Nature Genetics. 1994;7:513&#x2013;520. doi: 10.1038/ng0894-513.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/ng0894-513</ArticleId>
+						<ArticleId IdType="pubmed">7951322</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Battaglia RA, Beltran AS, Delic S, Dumitru R, Robinson JA, Kabiraj P, Herring LE, Madden VJ, Ravinder N, Willems E, Newman RA, Quinlan RA, Goldman JE, Perng M-D, Inagaki M, Snider NT. Site-specific phosphorylation and caspase cleavage of GFAP are new markers of Alexander disease severity. eLife. 2019;8:e47789. doi: 10.7554/eLife.47789.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.7554/eLife.47789</ArticleId>
+						<ArticleId IdType="pmc">PMC6927689</ArticleId>
+						<ArticleId IdType="pubmed">31682229</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Beffert U, Weeber EJ, Durudas A, Qiu S, Masiulis I, Sweatt JD, Li W-P, Adelmann G, Frotscher M, Hammer RE, Herz J. Modulation of synaptic plasticity and memory by Reelin involves differential splicing of the lipoprotein receptor Apoer2. Neuron. 2005;47:567&#x2013;579. doi: 10.1016/j.neuron.2005.07.007.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.neuron.2005.07.007</ArticleId>
+						<ArticleId IdType="pubmed">16102539</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Beltran AA, Molina SG, Marquez A, Munoz LJ, Olivares JF, Beltran AS. Generation of an induced pluripotent stem cell line (UNCCi002-A) from A healthy donor using A non-integration system to study Cerebral Cavernous Malformation (CCM) Stem Cell Research. 2021;54:102421. doi: 10.1016/j.scr.2021.102421.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.scr.2021.102421</ArticleId>
+						<ArticleId IdType="pubmed">34130156</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Berning BA, Walker AK. The Pathobiology of TDP-43 C-Terminal Fragments in ALS and FTLD. Frontiers in Neuroscience. 2019;13:335. doi: 10.3389/fnins.2019.00335.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.3389/fnins.2019.00335</ArticleId>
+						<ArticleId IdType="pmc">PMC6470282</ArticleId>
+						<ArticleId IdType="pubmed">31031584</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Besser LM, Teylan MA, Nelson PT. Limbic Predominant Age-Related TDP-43 Encephalopathy (LATE): Clinical and Neuropathological Associations. Journal of Neuropathology &amp; Experimental Neurology. 2020;79:305&#x2013;313. doi: 10.1093/jnen/nlz126.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/jnen/nlz126</ArticleId>
+						<ArticleId IdType="pmc">PMC7036651</ArticleId>
+						<ArticleId IdType="pubmed">31845964</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Bock C, Kiskinis E, Verstappen G, Gu H, Boulting G, Smith ZD, Ziller M, Croft GF, Amoroso MW, Oakley DH, Gnirke A, Eggan K, Meissner A. Reference Maps of Human ES and iPS Cell Variation Enable High-Throughput Characterization of Pluripotent Cell Lines. Cell. 2011;144:439&#x2013;452. doi: 10.1016/j.cell.2010.12.032.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.cell.2010.12.032</ArticleId>
+						<ArticleId IdType="pmc">PMC3063454</ArticleId>
+						<ArticleId IdType="pubmed">21295703</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Brown A-L, Wilkins OG, Keuss MJ, Hill SE, Zanovello M, Lee WC, Bampton A, Lee FCY, Masino L, Qi YA, Bryce-Smith S, Gatt A, Hallegger M, Fagegaltier D, Phatnani H, NYGC ALS Consortium. Newcombe J, Gustavsson EK, Seddighi S, Reyes JF, Coon SL, Ramos D, Schiavo G, Fisher EMC, Raj T, Secrier M, Lashley T, Ule J, Buratti E, Humphrey J, Ward ME, Fratta P. TDP-43 loss and ALS-risk SNPs drive mis-splicing and depletion of UNC13A. Nature. 2022;603:131&#x2013;137. doi: 10.1038/s41586-022-04436-3.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41586-022-04436-3</ArticleId>
+						<ArticleId IdType="pmc">PMC8891020</ArticleId>
+						<ArticleId IdType="pubmed">35197628</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Budini M, Buratti E. TDP-43 autoregulation: implications for disease. Journal of Molecular Neuroscience. 2011;45:473&#x2013;479. doi: 10.1007/s12031-011-9573-8.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s12031-011-9573-8</ArticleId>
+						<ArticleId IdType="pubmed">21681666</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Budini M, Buratti E, Stuani C, Guarnaccia C, Romano V, De Conti L, Baralle FE. Cellular model of TAR DNA-binding protein 43 (TDP-43) aggregation based on its C-terminal Gln/Asn-rich region. The Journal of Biological Chemistry. 2012;287:7512&#x2013;7525. doi: 10.1074/jbc.M111.288720.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1074/jbc.M111.288720</ArticleId>
+						<ArticleId IdType="pmc">PMC3293573</ArticleId>
+						<ArticleId IdType="pubmed">22235134</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Buratti E, Baralle FE. The multiple roles of TDP-43 in pre-mRNA processing and gene expression regulation. RNA Biology. 2010;7:420&#x2013;429. doi: 10.4161/rna.7.4.12205.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.4161/rna.7.4.12205</ArticleId>
+						<ArticleId IdType="pubmed">20639693</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Buratti E, Baralle FE. TDP-43: gumming up neurons through protein-protein and protein-RNA interactions. Trends in Biochemical Sciences. 2012;37:237&#x2013;247. doi: 10.1016/j.tibs.2012.03.003.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.tibs.2012.03.003</ArticleId>
+						<ArticleId IdType="pubmed">22534659</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Buratti E. TDP-43 post-translational modifications in health and disease. Expert Opinion on Therapeutic Targets. 2018;22:279&#x2013;293. doi: 10.1080/14728222.2018.1439923.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1080/14728222.2018.1439923</ArticleId>
+						<ArticleId IdType="pubmed">29431050</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Burrell JR, Kiernan MC, Vucic S, Hodges JR. Motor neuron dysfunction in frontotemporal dementia. Brain. 2011;134:2582&#x2013;2594. doi: 10.1093/brain/awr195.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/brain/awr195</ArticleId>
+						<ArticleId IdType="pubmed">21840887</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Burrell JR, Halliday GM, Kril JJ, Ittner LM, G&#xf6;tz J, Kiernan MC, Hodges JR. The frontotemporal dementia-motor neuron disease continuum. The Lancet. 2016;388:919&#x2013;931. doi: 10.1016/S0140-6736(16)00737-6.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/S0140-6736(16)00737-6</ArticleId>
+						<ArticleId IdType="pubmed">26987909</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Cairns NJ, Neumann M, Bigio EH, Holm IE, Troost D, Hatanpaa KJ, Foong C, White CL, Schneider JA, Kretzschmar HA, Carter D, Taylor-Reinwald L, Paulsmeyer K, Strider J, Gitcho M, Goate AM, Morris JC, Mishra M, Kwong LK, Stieber A, Xu Y, Forman MS, Trojanowski JQ, Lee VMY, Mackenzie IRA. TDP-43 in familial and sporadic frontotemporal lobar degeneration with ubiquitin inclusions. The American Journal of Pathology. 2007;171:227&#x2013;240. doi: 10.2353/ajpath.2007.070182.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.2353/ajpath.2007.070182</ArticleId>
+						<ArticleId IdType="pmc">PMC1941578</ArticleId>
+						<ArticleId IdType="pubmed">17591968</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Calabrese V, Mancuso C, Calvani M, Rizzarelli E, Butterfield DA, Giuffrida Stella AM. Nitric oxide in the central nervous system: neuroprotection versus neurotoxicity. Nature Reviews Neuroscience. 2007;8:766&#x2013;775. doi: 10.1038/nrn2214.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nrn2214</ArticleId>
+						<ArticleId IdType="pubmed">17882254</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Carlo AS, Nykjaer A, Willnow TE. Sorting receptor sortilin-a culprit in cardiovascular and neurological diseases. Journal of Molecular Medicine. 2014;92:905&#x2013;911. doi: 10.1007/s00109-014-1152-3.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s00109-014-1152-3</ArticleId>
+						<ArticleId IdType="pubmed">24838608</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Carola V, D&#x2019;Olimpio F, Brunamonti E, Mangia F, Renzi P. Evaluation of the elevated plus-maze and open-field tests for the assessment of anxiety-related behaviour in inbred mice. Behavioural Brain Research. 2002;134:49&#x2013;57. doi: 10.1016/s0166-4328(01)00452-1.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/s0166-4328(01)00452-1</ArticleId>
+						<ArticleId IdType="pubmed">12191791</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Carpenter AE, Jones TR, Lamprecht MR, Clarke C, Kang IH, Friman O, Guertin DA, Chang JH, Lindquist RA, Moffat J, Golland P, Sabatini DM. CellProfiler: image analysis software for identifying and quantifying cell phenotypes. Genome Biology. 2006;7:R100. doi: 10.1186/gb-2006-7-10-r100.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/gb-2006-7-10-r100</ArticleId>
+						<ArticleId IdType="pmc">PMC1794559</ArticleId>
+						<ArticleId IdType="pubmed">17076895</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Cascella R, Capitini C, Fani G, Dobson CM, Cecchi C, Chiti F. Quantification of the Relative Contributions of Loss-of-function and Gain-of-function Mechanisms in TAR DNA-binding Protein 43 (TDP-43) Proteinopathies. The Journal of Biological Chemistry. 2016;291:19437&#x2013;19448. doi: 10.1074/jbc.M116.737726.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1074/jbc.M116.737726</ArticleId>
+						<ArticleId IdType="pmc">PMC5016682</ArticleId>
+						<ArticleId IdType="pubmed">27445339</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Chambers SM, Fasano CA, Papapetrou EP, Tomishima M, Sadelain M, Studer L. Highly efficient neural conversion of human ES and iPS cells by dual inhibition of SMAD signaling. Nature Biotechnology. 2009;27:275&#x2013;280. doi: 10.1038/nbt.1529.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nbt.1529</ArticleId>
+						<ArticleId IdType="pmc">PMC2756723</ArticleId>
+						<ArticleId IdType="pubmed">19252484</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Chen C, Kim JJ, Thompson RF, Tonegawa S. Hippocampal lesions impair contextual fear conditioning in two strains of mice. Behavioral Neuroscience. 1996;110:1177&#x2013;1180. doi: 10.1037//0735-7044.110.5.1177.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1037//0735-7044.110.5.1177</ArticleId>
+						<ArticleId IdType="pubmed">8919020</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Chen H-J, Topp SD, Hui HS, Zacco E, Katarya M, McLoughlin C, King A, Smith BN, Troakes C, Pastore A, Shaw CE. RRM adjacent TARDBP mutations disrupt RNA binding and enhance TDP-43 proteinopathy. Brain. 2019;142:3753&#x2013;3770. doi: 10.1093/brain/awz313.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/brain/awz313</ArticleId>
+						<ArticleId IdType="pmc">PMC6885686</ArticleId>
+						<ArticleId IdType="pubmed">31605140</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Chen-Plotkin AS, Geser F, Plotkin JB, Clark CM, Kwong LK, Yuan W, Grossman M, Van Deerlin VM, Trojanowski JQ, Lee VM-Y. Variations in the progranulin gene affect global gene expression in frontotemporal lobar degeneration. Human Molecular Genetics. 2008;17:1349&#x2013;1362. doi: 10.1093/hmg/ddn023.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/hmg/ddn023</ArticleId>
+						<ArticleId IdType="pmc">PMC2900863</ArticleId>
+						<ArticleId IdType="pubmed">18223198</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Chhangani D, Mart&#xed;n-Pe&#xf1;a A, Rincon-Limas DE. Molecular, functional, and pathological aspects of TDP-43 fragmentation. iScience. 2021;24:102459. doi: 10.1016/j.isci.2021.102459.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.isci.2021.102459</ArticleId>
+						<ArticleId IdType="pmc">PMC8113996</ArticleId>
+						<ArticleId IdType="pubmed">34013172</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Chiang C-H, Grauffel C, Wu L-S, Kuo P-H, Doudeva LG, Lim C, Shen C-KJ, Yuan HS. Structural analysis of disease-related TDP-43 D169G mutation: linking enhanced stability and caspase cleavage efficiency to protein accumulation. Scientific Reports. 2016;6:21581. doi: 10.1038/srep21581.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/srep21581</ArticleId>
+						<ArticleId IdType="pmc">PMC4756693</ArticleId>
+						<ArticleId IdType="pubmed">26883171</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Chong C-M, Ai N, Ke M, Tan Y, Huang Z, Li Y, Lu J-H, Ge W, Su H. Roles of Nitric Oxide Synthase Isoforms in Neurogenesis. Molecular Neurobiology. 2018;55:2645&#x2013;2652. doi: 10.1007/s12035-017-0513-7.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s12035-017-0513-7</ArticleId>
+						<ArticleId IdType="pubmed">28421538</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Cohen TJ, Lee VMY, Trojanowski JQ. TDP-43 functions and pathogenic mechanisms implicated in TDP-43 proteinopathies. Trends in Molecular Medicine. 2011;17:659&#x2013;667. doi: 10.1016/j.molmed.2011.06.004.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.molmed.2011.06.004</ArticleId>
+						<ArticleId IdType="pmc">PMC3202652</ArticleId>
+						<ArticleId IdType="pubmed">21783422</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Cohen TJ, Hwang AW, Unger T, Trojanowski JQ, Lee VMY. Redox signalling directly regulates TDP-43 via cysteine oxidation and disulphide cross-linking. The EMBO Journal. 2012;31:1241&#x2013;1252. doi: 10.1038/emboj.2011.471.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/emboj.2011.471</ArticleId>
+						<ArticleId IdType="pmc">PMC3297986</ArticleId>
+						<ArticleId IdType="pubmed">22193716</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Cohen TJ, Hwang AW, Restrepo CR, Yuan C-X, Trojanowski JQ, Lee VMY. An acetylation switch controls TDP-43 function and aggregation propensity. Nature Communications. 2015;6:5845. doi: 10.1038/ncomms6845.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/ncomms6845</ArticleId>
+						<ArticleId IdType="pmc">PMC4407365</ArticleId>
+						<ArticleId IdType="pubmed">25556531</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Colombrita C, Zennaro E, Fallini C, Weber M, Sommacal A, Buratti E, Silani V, Ratti A. TDP-43 is recruited to stress granules in conditions of oxidative insult. Journal of Neurochemistry. 2009;111:1051&#x2013;1061. doi: 10.1111/j.1471-4159.2009.06383.x.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1111/j.1471-4159.2009.06383.x</ArticleId>
+						<ArticleId IdType="pubmed">19765185</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Concordet JP, Haeussler M. CRISPOR: intuitive guide selection for CRISPR/Cas9 genome editing experiments and screens. Nucleic Acids Research. 2018;46:W242&#x2013;W245. doi: 10.1093/nar/gky354.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/nar/gky354</ArticleId>
+						<ArticleId IdType="pmc">PMC6030908</ArticleId>
+						<ArticleId IdType="pubmed">29762716</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Conway JR, Lex A, Gehlenborg N. UpSetR: an R package for the visualization of intersecting sets and their properties. Bioinformatics. 2017;33:2938&#x2013;2940. doi: 10.1093/bioinformatics/btx364.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/bioinformatics/btx364</ArticleId>
+						<ArticleId IdType="pmc">PMC5870712</ArticleId>
+						<ArticleId IdType="pubmed">28645171</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Curzon P, Rustay NR, Browman KE. In: Methods of Behavior Analysis in Neuroscience. Buccafusco JJ, editor. CRC Press/Taylor &amp; Francis; 2009. Cued and Contextual fear conditioning for rodents.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1201/NOE1420052343</ArticleId>
+						<ArticleId IdType="pubmed">21204331</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Cuttler K, Hassan M, Carr J, Cloete R, Bardien S. Emerging evidence implicating a role for neurexins in neurodegenerative and neuropsychiatric disorders. Open Biology. 2021;11:210091. doi: 10.1098/rsob.210091.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1098/rsob.210091</ArticleId>
+						<ArticleId IdType="pmc">PMC8492176</ArticleId>
+						<ArticleId IdType="pubmed">34610269</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>de Boer EMJ, Orie VK, Williams T, Baker MR, De Oliveira HM, Polvikoski T, Silsby M, Menon P, van den Bos M, Halliday GM, van den Berg LH, Van Den Bosch L, van Damme P, Kiernan MC, van Es MA, Vucic S. TDP-43 proteinopathies: a new wave of neurodegenerative diseases. Journal of Neurology, Neurosurgery &amp; Psychiatry. 2021;92:86&#x2013;95. doi: 10.1136/jnnp-2020-322983.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1136/jnnp-2020-322983</ArticleId>
+						<ArticleId IdType="pmc">PMC7803890</ArticleId>
+						<ArticleId IdType="pubmed">33177049</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Dewey CM, Cenik B, Sephton CF, Dries DR, Mayer P, Good SK, Johnson BA, Herz J, Yu G. TDP-43 is directed to stress granules by sorbitol, a novel physiological osmotic and oxidative stressor. Molecular and Cellular Biology. 2011;31:1098&#x2013;1108. doi: 10.1128/MCB.01279-10.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1128/MCB.01279-10</ArticleId>
+						<ArticleId IdType="pmc">PMC3067820</ArticleId>
+						<ArticleId IdType="pubmed">21173160</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Diaper DC, Adachi Y, Sutcliffe B, Humphrey DM, Elliott CJH, Stepto A, Ludlow ZN, Vanden Broeck L, Callaerts P, Dermaut B, Al-Chalabi A, Shaw CE, Robinson IM, Hirth F. Loss and gain of Drosophila TDP-43 impair synaptic efficacy and motor control leading to age-related neurodegeneration by loss-of-function phenotypes. Human Molecular Genetics. 2013;22:1539&#x2013;1557. doi: 10.1093/hmg/ddt005.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/hmg/ddt005</ArticleId>
+						<ArticleId IdType="pmc">PMC3605831</ArticleId>
+						<ArticleId IdType="pubmed">23307927</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Dobin A, Davis CA, Schlesinger F, Drenkow J, Zaleski C, Jha S, Batut P, Chaisson M, Gingeras TR. STAR: ultrafast universal RNA-seq aligner. Bioinformatics. 2013;29:15&#x2013;21. doi: 10.1093/bioinformatics/bts635.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/bioinformatics/bts635</ArticleId>
+						<ArticleId IdType="pmc">PMC3530905</ArticleId>
+						<ArticleId IdType="pubmed">23104886</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Doench JG, Fusi N, Sullender M, Hegde M, Vaimberg EW, Donovan KF, Smith I, Tothova Z, Wilen C, Orchard R, Virgin HW, Listgarten J, Root DE. Optimized sgRNA design to maximize activity and minimize off-target effects of CRISPR-Cas9. Nature Biotechnology. 2016;34:184&#x2013;191. doi: 10.1038/nbt.3437.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nbt.3437</ArticleId>
+						<ArticleId IdType="pmc">PMC4744125</ArticleId>
+						<ArticleId IdType="pubmed">26780180</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Doll SG, Meshkin H, Bryer AJ, Li F, Ko Y-H, Lokareddy RK, Gillilan RE, Gupta K, Perilla JR, Cingolani G. Recognition of the TDP-43 nuclear localization signal by importin &#x3b1;1/&#x3b2;. Cell Reports. 2022;39:111007. doi: 10.1016/j.celrep.2022.111007.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.celrep.2022.111007</ArticleId>
+						<ArticleId IdType="pmc">PMC9290431</ArticleId>
+						<ArticleId IdType="pubmed">35767952</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Duan Y, Wang S-H, Song J, Mironova Y, Ming G, Kolodkin AL, Giger RJ. Semaphorin 5A inhibits synaptogenesis in early postnatal- and adult-born hippocampal dentate granule cells. eLife. 2014;3:e04390. doi: 10.7554/eLife.04390.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.7554/eLife.04390</ArticleId>
+						<ArticleId IdType="pmc">PMC4236683</ArticleId>
+						<ArticleId IdType="pubmed">25313870</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Duan L, Zaepfel BL, Aksenova V, Dasso M, Rothstein JD, Kalab P, Hayes LR. Nuclear RNA binding regulates TDP-43 nuclear localization and passive nuclear export. Cell Reports. 2022;40:111106. doi: 10.1016/j.celrep.2022.111106.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.celrep.2022.111106</ArticleId>
+						<ArticleId IdType="pmc">PMC9345261</ArticleId>
+						<ArticleId IdType="pubmed">35858577</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ebert T, Tran N, Schurgers L, Stenvinkel P, Shiels PG. Ageing - Oxidative stress, PTMs and disease. Molecular Aspects of Medicine. 2022;86:101099. doi: 10.1016/j.mam.2022.101099.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.mam.2022.101099</ArticleId>
+						<ArticleId IdType="pubmed">35689974</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ebstein SY, Yagudayeva I, Shneider NA. Mutant TDP-43 Causes Early-Stage Dose-Dependent Motor Neuron Degeneration in a TARDBP Knockin Mouse Model of ALS. Cell Reports. 2019;26:364&#x2013;373. doi: 10.1016/j.celrep.2018.12.045.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.celrep.2018.12.045</ArticleId>
+						<ArticleId IdType="pubmed">30625319</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Fran&#xe7;ois-Moutal L, Perez-Miller S, Scott DD, Miranda VG, Mollasalehi N, Khanna M. Structural Insights Into TDP-43 and Effects of Post-translational Modifications. Frontiers in Molecular Neuroscience. 2019;12:301. doi: 10.3389/fnmol.2019.00301.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.3389/fnmol.2019.00301</ArticleId>
+						<ArticleId IdType="pmc">PMC6934062</ArticleId>
+						<ArticleId IdType="pubmed">31920533</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Fratta P, Sivakumar P, Humphrey J, Lo K, Ricketts T, Oliveira H, Brito-Armas JM, Kalmar B, Ule A, Yu Y, Birsa N, Bodo C, Collins T, Conicella AE, Mejia Maza A, Marrero-Gagliardi A, Stewart M, Mianne J, Corrochano S, Emmett W, Codner G, Groves M, Fukumura R, Gondo Y, Lythgoe M, Pauws E, Peskett E, Stanier P, Teboul L, Hallegger M, Calvo A, Chi&#xf2; A, Isaacs AM, Fawzi NL, Wang E, Housman DE, Baralle F, Greensmith L, Buratti E, Plagnol V, Fisher EM, Acevedo-Arozena A. Mice with endogenous TDP-43 mutations exhibit gain of splicing function and characteristics of amyotrophic lateral sclerosis. The EMBO Journal. 2018;37:e98684. doi: 10.15252/embj.201798684.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.15252/embj.201798684</ArticleId>
+						<ArticleId IdType="pmc">PMC5983119</ArticleId>
+						<ArticleId IdType="pubmed">29764981</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Gao J, Wang L, Huntley ML, Perry G, Wang X. Pathomechanisms of TDP-43 in neurodegeneration. Journal of Neurochemistry. 2018;146:7&#x2013;20. doi: 10.1111/jnc.14327.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1111/jnc.14327</ArticleId>
+						<ArticleId IdType="pmc">PMC6110993</ArticleId>
+						<ArticleId IdType="pubmed">29486049</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Garcia Morato J, Hans F, von Zweydorf F, Feederle R, Els&#xe4;sser SJ, Skodras AA, Gloeckner CJ, Buratti E, Neumann M, Kahle PJ. Sirtuin-1 sensitive lysine-136 acetylation drives phase separation and pathological aggregation of TDP-43. Nature Communications. 2022;13:1223. doi: 10.1038/s41467-022-28822-7.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41467-022-28822-7</ArticleId>
+						<ArticleId IdType="pmc">PMC8907366</ArticleId>
+						<ArticleId IdType="pubmed">35264561</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Gasset-Rosa F, Lu S, Yu H, Chen C, Melamed Z, Guo L, Shorter J, Da Cruz S, Cleveland DW. Cytoplasmic TDP-43 De-mixing Independent of Stress Granules Drives Inhibition of Nuclear Import, Loss of Nuclear TDP-43, and Cell Death. Neuron. 2019;102:339&#x2013;357. doi: 10.1016/j.neuron.2019.02.038.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.neuron.2019.02.038</ArticleId>
+						<ArticleId IdType="pmc">PMC6548321</ArticleId>
+						<ArticleId IdType="pubmed">30853299</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Gerrits E, Giannini LAA, Brouwer N, Melhem S, Seilhean D, Le Ber I, Brainbank Neuro-CEB Neuropathology Network. Kamermans A, Kooij G, de Vries HE, Boddeke EWGM, Seelaar H, van Swieten JC, Eggen BJL. Neurovascular dysfunction in GRN-associated frontotemporal dementia identified by single-nucleus RNA sequencing of human cerebral cortex. Nature Neuroscience. 2022;25:1034&#x2013;1048. doi: 10.1038/s41593-022-01124-3.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41593-022-01124-3</ArticleId>
+						<ArticleId IdType="pubmed">35879464</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Geser F, Martinez-Lage M, Robinson J, Uryu K, Neumann M, Brandmeir NJ, Xie SX, Kwong LK, Elman L, McCluskey L, Clark CM, Malunda J, Miller BL, Zimmerman EA, Qian J, Van Deerlin V, Grossman M, Lee VM-Y, Trojanowski JQ. Clinical and pathological continuum of multisystem TDP-43 proteinopathies. Archives of Neurology. 2009;66:180&#x2013;189. doi: 10.1001/archneurol.2008.558.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1001/archneurol.2008.558</ArticleId>
+						<ArticleId IdType="pmc">PMC2774117</ArticleId>
+						<ArticleId IdType="pubmed">19204154</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Geser F, Lee VMY, Trojanowski JQ. Amyotrophic lateral sclerosis and frontotemporal lobar degeneration: A spectrum of TDP-43 proteinopathies. Neuropathology. 2010;30:103&#x2013;112. doi: 10.1111/j.1440-1789.2009.01091.x.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1111/j.1440-1789.2009.01091.x</ArticleId>
+						<ArticleId IdType="pmc">PMC3131978</ArticleId>
+						<ArticleId IdType="pubmed">20102519</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Giesert F, Hofmann A, B&#xfc;rger A, Zerle J, Kloos K, Hafen U, Ernst L, Zhang J, Vogt-Weisenhorn DM, Wurst W. Expression analysis of Lrrk1, Lrrk2 and Lrrk2 splice variants in mice. PLOS ONE. 2013;8:e63778. doi: 10.1371/journal.pone.0063778.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1371/journal.pone.0063778</ArticleId>
+						<ArticleId IdType="pmc">PMC3651128</ArticleId>
+						<ArticleId IdType="pubmed">23675505</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Giordana MT, Ferrero P, Grifoni S, Pellerino A, Naldi A, Montuschi A. Dementia and cognitive impairment in amyotrophic lateral sclerosis: A review. Neurological Sciences. 2011;32:9&#x2013;16. doi: 10.1007/s10072-010-0439-6.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s10072-010-0439-6</ArticleId>
+						<ArticleId IdType="pubmed">20953810</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Gitcho MA, Bigio EH, Mishra M, Johnson N, Weintraub S, Mesulam M, Rademakers R, Chakraverty S, Cruchaga C, Morris JC, Goate AM, Cairns NJ. TARDBP 3&#x2019;-UTR variant in autopsy-confirmed frontotemporal lobar degeneration with TDP-43 proteinopathy. Acta Neuropathologica. 2009;118:633&#x2013;645. doi: 10.1007/s00401-009-0571-7.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s00401-009-0571-7</ArticleId>
+						<ArticleId IdType="pmc">PMC2783457</ArticleId>
+						<ArticleId IdType="pubmed">19618195</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>G&#xf3;mez-Nieto R, Hormigo S, L&#xf3;pez DE. Prepulse inhibition of the auditory startle reflex assessment as a hallmark of brainstem sensorimotor gating mechanisms. Brain Sciences. 2020;10:639. doi: 10.3390/brainsci10090639.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.3390/brainsci10090639</ArticleId>
+						<ArticleId IdType="pmc">PMC7563436</ArticleId>
+						<ArticleId IdType="pubmed">32947873</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Greaves CV, Rohrer JD. An update on genetic frontotemporal dementia. Journal of Neurology. 2019;266:2075&#x2013;2086. doi: 10.1007/s00415-019-09363-4.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s00415-019-09363-4</ArticleId>
+						<ArticleId IdType="pmc">PMC6647117</ArticleId>
+						<ArticleId IdType="pubmed">31119452</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Grese ZR, Bastos AC, Mamede LD, French RL, Miller TM, Ayala YM. Specific RNA interactions promote TDP-43 multivalent phase separation and maintain liquid properties. EMBO Reports. 2021;22:e53632. doi: 10.15252/embr.202153632.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.15252/embr.202153632</ArticleId>
+						<ArticleId IdType="pmc">PMC8647020</ArticleId>
+						<ArticleId IdType="pubmed">34787357</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Gruijs da Silva LA, Simonetti F, Hutten S, Riemenschneider H, Sternburg EL, Pietrek LM, Gebel J, D&#xf6;tsch V, Edbauer D, Hummer G, Stelzl LS, Dormann D. Disease&#x2010;linked TDP&#x2010;43 hyperphosphorylation suppresses TDP&#x2010;43 condensation and aggregation. The EMBO Journal. 2022;41:e108443. doi: 10.15252/embj.2021108443.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.15252/embj.2021108443</ArticleId>
+						<ArticleId IdType="pmc">PMC9016352</ArticleId>
+						<ArticleId IdType="pubmed">35112738</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Gu Z, Eils R, Schlesner M. Complex heatmaps reveal patterns and correlations in multidimensional genomic data. Bioinformatics. 2016;32:2847&#x2013;2849. doi: 10.1093/bioinformatics/btw313.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/bioinformatics/btw313</ArticleId>
+						<ArticleId IdType="pubmed">27207943</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Gu Z, H&#xfc;bschmann D. simplifyEnrichment: a bioconductor package for clustering and visualizing functional enrichment results. Genomics, Proteomics &amp; Bioinformatics. 2023;21:190&#x2013;202. doi: 10.1016/j.gpb.2022.04.008.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.gpb.2022.04.008</ArticleId>
+						<ArticleId IdType="pmc">PMC10373083</ArticleId>
+						<ArticleId IdType="pubmed">35680096</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Guix FX, Uribesalgo I, Coma M, Mu&#xf1;oz FJ. The physiology and pathophysiology of nitric oxide in the brain. Progress in Neurobiology. 2005;76:126&#x2013;152. doi: 10.1016/j.pneurobio.2005.06.001.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.pneurobio.2005.06.001</ArticleId>
+						<ArticleId IdType="pubmed">16115721</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Haeussler M, Sch&#xf6;nig K, Eckert H, Eschstruth A, Miann&#xe9; J, Renaud J-B, Schneider-Maunoury S, Shkumatava A, Teboul L, Kent J, Joly J-S, Concordet J-P. Evaluation of off-target and on-target scoring algorithms and integration into the guide RNA selection tool CRISPOR. Genome Biology. 2016;17:148. doi: 10.1186/s13059-016-1012-2.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/s13059-016-1012-2</ArticleId>
+						<ArticleId IdType="pmc">PMC4934014</ArticleId>
+						<ArticleId IdType="pubmed">27380939</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Hallegger M, Chakrabarti AM, Lee FCY, Lee BL, Amalietti AG, Odeh HM, Copley KE, Rubien JD, Portz B, Kuret K, Huppertz I, Rau F, Patani R, Fawzi NL, Shorter J, Luscombe NM, Ule J. TDP-43 condensation properties specify its RNA-binding and regulatory repertoire. Cell. 2021;184:4680&#x2013;4696. doi: 10.1016/j.cell.2021.07.018.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.cell.2021.07.018</ArticleId>
+						<ArticleId IdType="pmc">PMC8445024</ArticleId>
+						<ArticleId IdType="pubmed">34380047</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Halliday G, Bigio EH, Cairns NJ, Neumann M, Mackenzie IRA, Mann DMA. Mechanisms of disease in frontotemporal lobar degeneration: gain of function versus loss of function effects. Acta Neuropathologica. 2012;124:373&#x2013;382. doi: 10.1007/s00401-012-1030-4.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s00401-012-1030-4</ArticleId>
+						<ArticleId IdType="pmc">PMC3445027</ArticleId>
+						<ArticleId IdType="pubmed">22878865</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Hardingham N, Dachtler J, Fox K. The role of nitric oxide in pre-synaptic plasticity and homeostasis. Frontiers in Cellular Neuroscience. 2013;7:190. doi: 10.3389/fncel.2013.00190.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.3389/fncel.2013.00190</ArticleId>
+						<ArticleId IdType="pmc">PMC3813972</ArticleId>
+						<ArticleId IdType="pubmed">24198758</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Hasan R, Humphrey J, Bettencourt C, Newcombe J, NYGC ALS Consortium. Lashley T, Fratta P, Raj T. Transcriptomic analysis of frontotemporal lobar degeneration with TDP-43 pathology reveals cellular alterations across multiple brain regions. Acta Neuropathologica. 2022;143:383&#x2013;401. doi: 10.1007/s00401-021-02399-9.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s00401-021-02399-9</ArticleId>
+						<ArticleId IdType="pubmed">34961893</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Hinrich AJ, Jodelka FM, Chang JL, Brutman D, Bruno AM, Briggs CA, James BD, Stutzmann GE, Bennett DA, Miller SA, Rigo F, Marr RA, Hastings ML. Therapeutic correction of ApoER2 splicing in Alzheimer&#x2019;s disease mice using antisense oligonucleotides. EMBO Molecular Medicine. 2016;8:328&#x2013;345. doi: 10.15252/emmm.201505846.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.15252/emmm.201505846</ArticleId>
+						<ArticleId IdType="pmc">PMC4818756</ArticleId>
+						<ArticleId IdType="pubmed">26902204</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Hogan DB, Jett&#xe9; N, Fiest KM, Roberts JI, Pearson D, Smith EE, Roach P, Kirk A, Pringsheim T, Maxwell CJ. The prevalence and incidence of frontotemporal dementia: a systematic review. The Canadian Journal of Neurological Sciences. Le Journal Canadien Des Sciences Neurologiques. 2016;43 Suppl 1:S96&#x2013;S109. doi: 10.1017/cjn.2016.25.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1017/cjn.2016.25</ArticleId>
+						<ArticleId IdType="pubmed">27307130</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Hu F, Padukkavidana T, V&#xe6;gter CB, Brady OA, Zheng Y, Mackenzie IR, Feldman HH, Nykjaer A, Strittmatter SM. Sortilin-mediated endocytosis determines levels of the frontotemporal dementia protein, progranulin. Neuron. 2010;68:654&#x2013;667. doi: 10.1016/j.neuron.2010.09.034.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.neuron.2010.09.034</ArticleId>
+						<ArticleId IdType="pmc">PMC2990962</ArticleId>
+						<ArticleId IdType="pubmed">21092856</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Huang SL, Wu LS, Lee M, Chang CW, Cheng WC, Fang YS, Chen YR, Cheng PL, Shen CKJ. A robust TDP-43 knock-in mouse model of ALS. Acta Neuropathologica Communications. 2020;8:3. doi: 10.1186/s40478-020-0881-5.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/s40478-020-0881-5</ArticleId>
+						<ArticleId IdType="pmc">PMC6975031</ArticleId>
+						<ArticleId IdType="pubmed">31964415</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Humphrey J, Emmett W, Fratta P, Isaacs AM, Plagnol V. Quantitative analysis of cryptic splicing associated with TDP-43 depletion. BMC Medical Genomics. 2017;10:38. doi: 10.1186/s12920-017-0274-1.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/s12920-017-0274-1</ArticleId>
+						<ArticleId IdType="pmc">PMC5446763</ArticleId>
+						<ArticleId IdType="pubmed">28549443</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Igaz LM, Kwong LK, Xu Y, Truax AC, Uryu K, Neumann M, Clark CM, Elman LB, Miller BL, Grossman M, McCluskey LF, Trojanowski JQ, Lee VM-Y. Enrichment of C-terminal fragments in TAR DNA-binding protein-43 cytoplasmic inclusions in brain but not in spinal cord of frontotemporal lobar degeneration and amyotrophic lateral sclerosis. The American Journal of Pathology. 2008;173:182&#x2013;194. doi: 10.2353/ajpath.2008.080003.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.2353/ajpath.2008.080003</ArticleId>
+						<ArticleId IdType="pmc">PMC2438296</ArticleId>
+						<ArticleId IdType="pubmed">18535185</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Igaz LM, Kwong LK, Lee EB, Chen-Plotkin A, Swanson E, Unger T, Malunda J, Xu Y, Winton MJ, Trojanowski JQ, Lee VM-Y. Dysregulation of the ALS-associated gene TDP-43 leads to neuronal death and degeneration in mice. The Journal of Clinical Investigation. 2011;121:726&#x2013;738. doi: 10.1172/JCI44867.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1172/JCI44867</ArticleId>
+						<ArticleId IdType="pmc">PMC3026736</ArticleId>
+						<ArticleId IdType="pubmed">21206091</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Jung JS, Zhang KD, Wang Z, McMurray M, Tkaczuk A, Ogawa Y, Hertzano R, Coate TM. Semaphorin-5B controls spiral ganglion neuron branch refinement during development. The Journal of Neuroscience. 2019;39:6425&#x2013;6438. doi: 10.1523/JNEUROSCI.0113-19.2019.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1523/JNEUROSCI.0113-19.2019</ArticleId>
+						<ArticleId IdType="pmc">PMC6697390</ArticleId>
+						<ArticleId IdType="pubmed">31209173</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kantor DB, Chivatakarn O, Peer KL, Oster SF, Inatani M, Hansen MJ, Flanagan JG, Yamaguchi Y, Sretavan DW, Giger RJ, Kolodkin AL. Semaphorin 5A is a bifunctional axon guidance cue regulated by heparan and chondroitin sulfate proteoglycans. Neuron. 2004;44:961&#x2013;975. doi: 10.1016/j.neuron.2004.12.002.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.neuron.2004.12.002</ArticleId>
+						<ArticleId IdType="pubmed">15603739</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kassambara A. Ggplot2&#x2019; based publication ready plots. Ggplot2 2020</Citation>
+				</Reference>
+				<Reference>
+					<Citation>Kawakami I, Arai T, Hasegawa M. The basis of clinicopathological heterogeneity in TDP-43 proteinopathy. Acta Neuropathologica. 2019;138:751&#x2013;770. doi: 10.1007/s00401-019-02077-x.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s00401-019-02077-x</ArticleId>
+						<ArticleId IdType="pmc">PMC6800885</ArticleId>
+						<ArticleId IdType="pubmed">31555895</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Keating SS, Bademosi AT, San Gil R, Walker AK. Aggregation-prone TDP-43 sequesters and drives pathological transitions of free nuclear TDP-43. Cellular and Molecular Life Sciences. 2023;80:95. doi: 10.1007/s00018-023-04739-2.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s00018-023-04739-2</ArticleId>
+						<ArticleId IdType="pmc">PMC10023653</ArticleId>
+						<ArticleId IdType="pubmed">36930291</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kim JJ, Jung MW. Neural circuits and mechanisms involved in Pavlovian fear conditioning: A critical review. Neuroscience and Biobehavioral Reviews. 2006;30:188&#x2013;202. doi: 10.1016/j.neubiorev.2005.06.005.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.neubiorev.2005.06.005</ArticleId>
+						<ArticleId IdType="pmc">PMC4342048</ArticleId>
+						<ArticleId IdType="pubmed">16120461</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Knowles DA. Leafviz: A Standalone version of the Leafcutter shiny App. Leafviz 2022</Citation>
+				</Reference>
+				<Reference>
+					<Citation>Kolberg L, Raudvere U, Kuzmin I, Vilo J, Peterson H. gprofiler2 -- an R package for gene list functional enrichment analysis and namespace conversion toolset g:Profiler. F1000Research. 2020;9:709. doi: 10.12688/f1000research.24956.2.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.12688/f1000research.24956.2</ArticleId>
+						<ArticleId IdType="pmc">PMC7859841</ArticleId>
+						<ArticleId IdType="pubmed">33564394</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kraemer BC, Schuck T, Wheeler JM, Robinson LC, Trojanowski JQ, Lee VMY, Schellenberg GD. Loss of murine TDP-43 disrupts motor function and plays an essential role in embryogenesis. Acta Neuropathologica. 2010;119:409&#x2013;419. doi: 10.1007/s00401-010-0659-0.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s00401-010-0659-0</ArticleId>
+						<ArticleId IdType="pmc">PMC2880609</ArticleId>
+						<ArticleId IdType="pubmed">20198480</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Krassowski M, Arts M, Lagger C. Krassowski/complex-upset. V1.3.3Zenodo. 2021 doi: 10.5281/zenodo.5762625.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.5281/zenodo.5762625</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kuo PH, Chiang CH, Wang YT, Doudeva LG, Yuan HS. The crystal structure of TDP-43 RRM1-DNA complex reveals the specific recognition for UG- and TG-rich nucleic acids. Nucleic Acids Research. 2014;42:4712&#x2013;4722. doi: 10.1093/nar/gkt1407.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/nar/gkt1407</ArticleId>
+						<ArticleId IdType="pmc">PMC3985631</ArticleId>
+						<ArticleId IdType="pubmed">24464995</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>LaClair KD, Donde A, Ling JP, Jeong YH, Chhabra R, Martin LJ, Wong PC. Depletion of TDP-43 decreases fibril and plaque &#x3b2;-amyloid and exacerbates neurodegeneration in an Alzheimer&#x2019;s mouse model. Acta Neuropathologica. 2016;132:859&#x2013;873. doi: 10.1007/s00401-016-1637-y.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s00401-016-1637-y</ArticleId>
+						<ArticleId IdType="pmc">PMC5131701</ArticleId>
+						<ArticleId IdType="pubmed">27785573</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Lacognata V, D&#x2019;Agata V, Cavalcanti F, Cavallaro S. Splicing: is there an alternative contribution to Parkinson&#x2019;s disease? Neurogenetics. 2015;16:245&#x2013;263. doi: 10.1007/s10048-015-0449-x.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s10048-015-0449-x</ArticleId>
+						<ArticleId IdType="pmc">PMC4573652</ArticleId>
+						<ArticleId IdType="pubmed">25980689</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Lee EB, Lee VMY, Trojanowski JQ. Gains or losses: molecular mechanisms of TDP43-mediated neurodegeneration. Nature Reviews. Neuroscience. 2011;13:38&#x2013;50. doi: 10.1038/nrn3121.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nrn3121</ArticleId>
+						<ArticleId IdType="pmc">PMC3285250</ArticleId>
+						<ArticleId IdType="pubmed">22127299</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Li H-Y, Yeh P-A, Chiu H-C, Tang C-Y, Tu BP. Hyperphosphorylation as a defense mechanism to reduce TDP-43 aggregation. PLOS ONE. 2011;6:e23075. doi: 10.1371/journal.pone.0023075.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1371/journal.pone.0023075</ArticleId>
+						<ArticleId IdType="pmc">PMC3151276</ArticleId>
+						<ArticleId IdType="pubmed">21850253</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Li YI, Knowles DA, Humphrey J, Barbeira AN, Dickinson SP, Im HK, Pritchard JK. Annotation-free quantification of RNA splicing using LeafCutter. Nature Genetics. 2018;50:151&#x2013;158. doi: 10.1038/s41588-017-0004-9.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41588-017-0004-9</ArticleId>
+						<ArticleId IdType="pmc">PMC5742080</ArticleId>
+						<ArticleId IdType="pubmed">29229983</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ling JP, Pletnikova O, Troncoso JC, Wong PC. TDP-43 repression of nonconserved cryptic exons is compromised in ALS-FTD. Science. 2015;349:650&#x2013;655. doi: 10.1126/science.aab0983.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1126/science.aab0983</ArticleId>
+						<ArticleId IdType="pmc">PMC4825810</ArticleId>
+						<ArticleId IdType="pubmed">26250685</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Lord SJ, Velle KB, Mullins RD, Fritz-Laylin LK. SuperPlots: Communicating reproducibility and variability in cell biology. Journal of Cell Biology. 2020;219:e202001064. doi: 10.1083/jcb.202001064.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1083/jcb.202001064</ArticleId>
+						<ArticleId IdType="pmc">PMC7265319</ArticleId>
+						<ArticleId IdType="pubmed">32346721</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Lou E, Fujisawa S, Morozov A, Barlas A, Romin Y, Dogan Y, Gholami S, Moreira AL, Manova-Todorova K, Moore MAS. Tunneling nanotubes provide a unique conduit for intercellular transfer of cellular contents in human malignant pleural mesothelioma. PLOS ONE. 2012;7:e33093. doi: 10.1371/journal.pone.0033093.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1371/journal.pone.0033093</ArticleId>
+						<ArticleId IdType="pmc">PMC3302868</ArticleId>
+						<ArticleId IdType="pubmed">22427958</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Love MI, Huber W, Anders S. Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2. Genome Biology. 2014;15:550. doi: 10.1186/s13059-014-0550-8.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/s13059-014-0550-8</ArticleId>
+						<ArticleId IdType="pmc">PMC4302049</ArticleId>
+						<ArticleId IdType="pubmed">25516281</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Lukavsky PJ, Daujotyte D, Tollervey JR, Ule J, Stuani C, Buratti E, Baralle FE, Damberger FF, Allain FH-T. Molecular basis of UG-rich RNA recognition by the human splicing factor TDP-43. Nature Structural &amp; Molecular Biology. 2013;20:1443&#x2013;1449. doi: 10.1038/nsmb.2698.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nsmb.2698</ArticleId>
+						<ArticleId IdType="pubmed">24240615</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ma XR, Prudencio M, Koike Y, Vatsavayai SC, Kim G, Harbinski F, Briner A, Rodriguez CM, Guo C, Akiyama T, Schmidt HB, Cummings BB, Wyatt DW, Kurylo K, Miller G, Mekhoubad S, Sallee N, Mekonnen G, Ganser L, Rubien JD, Jansen-West K, Cook CN, Pickles S, Oskarsson B, Graff-Radford NR, Boeve BF, Knopman DS, Petersen RC, Dickson DW, Shorter J, Myong S, Green EM, Seeley WW, Petrucelli L, Gitler AD. TDP-43 represses cryptic exon inclusion in the FTD&#x2013;ALS gene UNC13A. Nature. 2022;603:124&#x2013;130. doi: 10.1038/s41586-022-04424-7.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41586-022-04424-7</ArticleId>
+						<ArticleId IdType="pmc">PMC8891019</ArticleId>
+						<ArticleId IdType="pubmed">35197626</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Mackenzie IRA, Neumann M. Molecular neuropathology of frontotemporal dementia: insights into disease mechanisms from postmortem studies. Journal of Neurochemistry. 2016;138 Suppl 1:54&#x2013;70. doi: 10.1111/jnc.13588.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1111/jnc.13588</ArticleId>
+						<ArticleId IdType="pubmed">27306735</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Maharana S, Wang J, Papadopoulos DK, Richter D, Pozniakovsky A, Poser I, Bickle M, Rizk S, Guill&#xe9;n-Boixet J, Franzmann TM, Jahnel M, Marrone L, Chang Y-T, Sterneckert J, Tomancak P, Hyman AA, Alberti S. RNA buffers the phase separation behavior of prion-like RNA binding proteins. Science. 2018;360:918&#x2013;921. doi: 10.1126/science.aar7366.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1126/science.aar7366</ArticleId>
+						<ArticleId IdType="pmc">PMC6091854</ArticleId>
+						<ArticleId IdType="pubmed">29650702</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Manek R, Nelson T, Tseng E, Rodriguez-Lebron E. 5&#x2019;UTR-mediated regulation of Ataxin-1 expression. Neurobiology of Disease. 2020;134:104564. doi: 10.1016/j.nbd.2019.104564.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.nbd.2019.104564</ArticleId>
+						<ArticleId IdType="pubmed">31381977</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Mann JR, Gleixner AM, Mauna JC, Gomes E, DeChellis-Marks MR, Needham PG, Copley KE, Hurtle B, Portz B, Pyles NJ, Guo L, Calder CB, Wills ZP, Pandey UB, Kofler JK, Brodsky JL, Thathiah A, Shorter J, Donnelly CJ. RNA Binding Antagonizes Neurotoxic Phase Transitions of TDP-43. Neuron. 2019;102:321&#x2013;338. doi: 10.1016/j.neuron.2019.01.048.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.neuron.2019.01.048</ArticleId>
+						<ArticleId IdType="pmc">PMC6472983</ArticleId>
+						<ArticleId IdType="pubmed">30826182</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Mann JR, Donnelly CJ. RNA modulates physiological and neuropathological protein phase transitions. Neuron. 2021;109:2663&#x2013;2681. doi: 10.1016/j.neuron.2021.06.023.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.neuron.2021.06.023</ArticleId>
+						<ArticleId IdType="pmc">PMC8434763</ArticleId>
+						<ArticleId IdType="pubmed">34297914</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Marschner A, Kalisch R, Vervliet B, Vansteenwegen D, B&#xfc;chel C. Dissociable roles for the hippocampus and the amygdala in human cued versus context fear conditioning. The Journal of Neuroscience. 2008;28:9030&#x2013;9036. doi: 10.1523/JNEUROSCI.1651-08.2008.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1523/JNEUROSCI.1651-08.2008</ArticleId>
+						<ArticleId IdType="pmc">PMC6670865</ArticleId>
+						<ArticleId IdType="pubmed">18768697</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Martin M. Cutadapt removes adapter sequences from high-throughput sequencing reads. EMBnet.Journal. 2011;17:10. doi: 10.14806/ej.17.1.200.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.14806/ej.17.1.200</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Melamed Z, L&#xf3;pez-Erauskin J, Baughn MW, Zhang O, Drenner K, Sun Y, Freyermuth F, McMahon MA, Beccari MS, Artates JW, Ohkubo T, Rodriguez M, Lin N, Wu D, Bennett CF, Rigo F, Da Cruz S, Ravits J, Lagier-Tourenne C, Cleveland DW. Premature polyadenylation-mediated loss of stathmin-2 is a hallmark of TDP-43-dependent neurodegeneration. Nature Neuroscience. 2019;22:180&#x2013;190. doi: 10.1038/s41593-018-0293-z.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41593-018-0293-z</ArticleId>
+						<ArticleId IdType="pmc">PMC6348009</ArticleId>
+						<ArticleId IdType="pubmed">30643298</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Mena A, Ruiz-Salas JC, Puentes A, Dorado I, Ruiz-Veguilla M, De la Casa LG. Reduced prepulse inhibition as a biomarker of schizophrenia. Frontiers in Behavioral Neuroscience. 2016;10:202. doi: 10.3389/fnbeh.2016.00202.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.3389/fnbeh.2016.00202</ArticleId>
+						<ArticleId IdType="pmc">PMC5067522</ArticleId>
+						<ArticleId IdType="pubmed">27803654</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Meneses A, Koga S, O&#x2019;Leary J, Dickson DW, Bu G, Zhao N. TDP-43 Pathology in Alzheimer&#x2019;s Disease. Molecular Neurodegeneration. 2021;16:84. doi: 10.1186/s13024-021-00503-x.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/s13024-021-00503-x</ArticleId>
+						<ArticleId IdType="pmc">PMC8691026</ArticleId>
+						<ArticleId IdType="pubmed">34930382</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Mishra M, Paunesku T, Woloschak GE, Siddique T, Zhu L, Lin S, Greco K, Bigio EH. Gene expression analysis of frontotemporal lobar degeneration of the motor neuron disease type with ubiquitinated inclusions. Acta Neuropathologica. 2007;114:81&#x2013;94. doi: 10.1007/s00401-007-0240-7.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s00401-007-0240-7</ArticleId>
+						<ArticleId IdType="pubmed">17569064</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Mohagheghi F, Prudencio M, Stuani C, Cook C, Jansen-West K, Dickson DW, Petrucelli L, Buratti E. TDP-43 functions within a network of hnRNP proteins to inhibit the production of a truncated human SORT1 receptor. Human Molecular Genetics. 2016;25:534&#x2013;545. doi: 10.1093/hmg/ddv491.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/hmg/ddv491</ArticleId>
+						<ArticleId IdType="pmc">PMC4731020</ArticleId>
+						<ArticleId IdType="pubmed">26614389</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Motulsky HJ, Brown RE. Detecting outliers when fitting data with nonlinear regression - a new method based on robust nonlinear regression and the false discovery rate. BMC Bioinformatics. 2006;7:123. doi: 10.1186/1471-2105-7-123.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/1471-2105-7-123</ArticleId>
+						<ArticleId IdType="pmc">PMC1472692</ArticleId>
+						<ArticleId IdType="pubmed">16526949</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Nakashima-Yasuda H, Uryu K, Robinson J, Xie SX, Hurtig H, Duda JE, Arnold SE, Siderowf A, Grossman M, Leverenz JB, Woltjer R, Lopez OL, Hamilton R, Tsuang DW, Galasko D, Masliah E, Kaye J, Clark CM, Montine TJ, Lee VM-Y, Trojanowski JQ. Co-morbidity of TDP-43 proteinopathy in Lewy body related diseases. Acta Neuropathologica. 2007;114:221&#x2013;229. doi: 10.1007/s00401-007-0261-2.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s00401-007-0261-2</ArticleId>
+						<ArticleId IdType="pubmed">17653732</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Nelson PT, Dickson DW, Trojanowski JQ, Jack CR, Boyle PA, Arfanakis K, Rademakers R, Alafuzoff I, Attems J, Brayne C, Coyle-Gilchrist ITS, Chui HC, Fardo DW, Flanagan ME, Halliday G, Hokkanen SRK, Hunter S, Jicha GA, Katsumata Y, Kawas CH, Keene CD, Kovacs GG, Kukull WA, Levey AI, Makkinejad N, Montine TJ, Murayama S, Murray ME, Nag S, Rissman RA, Seeley WW, Sperling RA, White III CL, Yu L, Schneider JA. Limbic-predominant age-related TDP-43 encephalopathy (LATE): consensus working group report. Brain. 2019;142:1503&#x2013;1527. doi: 10.1093/brain/awz099.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/brain/awz099</ArticleId>
+						<ArticleId IdType="pmc">PMC6536849</ArticleId>
+						<ArticleId IdType="pubmed">31039256</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Neumann M, Sampathu DM, Kwong LK, Truax AC, Micsenyi MC, Chou TT, Bruce J, Schuck T, Grossman M, Clark CM, McCluskey LF, Miller BL, Masliah E, Mackenzie IR, Feldman H, Feiden W, Kretzschmar HA, Trojanowski JQ, Lee VM-Y. Ubiquitinated TDP-43 in frontotemporal lobar degeneration and amyotrophic lateral sclerosis. Science. 2006;314:130&#x2013;133. doi: 10.1126/science.1134108.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1126/science.1134108</ArticleId>
+						<ArticleId IdType="pubmed">17023659</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Neumann M, Kwong LK, Sampathu DM, Trojanowski JQ, Lee VMY. TDP-43 proteinopathy in frontotemporal lobar degeneration and amyotrophic lateral sclerosis: protein misfolding diseases without amyloidosis. Archives of Neurology. 2007;64:1388&#x2013;1394. doi: 10.1001/archneur.64.10.1388.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1001/archneur.64.10.1388</ArticleId>
+						<ArticleId IdType="pubmed">17923623</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Neumann M. Molecular neuropathology of TDP-43 proteinopathies. International Journal of Molecular Sciences. 2009;10:232&#x2013;246. doi: 10.3390/ijms10010232.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.3390/ijms10010232</ArticleId>
+						<ArticleId IdType="pmc">PMC2662455</ArticleId>
+						<ArticleId IdType="pubmed">19333444</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Neumann M, Kwong LK, Lee EB, Kremmer E, Flatley A, Xu Y, Forman MS, Troost D, Kretzschmar HA, Trojanowski JQ, Lee VM-Y. Phosphorylation of S409/410 of TDP-43 is a consistent feature in all sporadic and familial forms of TDP-43 proteinopathies. Acta Neuropathologica. 2009;117:137&#x2013;149. doi: 10.1007/s00401-008-0477-9.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s00401-008-0477-9</ArticleId>
+						<ArticleId IdType="pmc">PMC2693625</ArticleId>
+						<ArticleId IdType="pubmed">19125255</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ni J, Ren Y, Su T, Zhou J, Fu C, Lu Y, Li D, Zhao J, Li Y, Zhang Y, Fang Y, Liu N, Geng Y, Chen Y. Loss of TDP-43 function underlies hippocampal and cortical synaptic deficits in TDP-43 proteinopathies. Molecular Psychiatry. 2023;28:931&#x2013;945. doi: 10.1038/s41380-021-01346-0.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41380-021-01346-0</ArticleId>
+						<ArticleId IdType="pubmed">34697451</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Nicholls RE, Alarcon JM, Malleret G, Carroll RC, Grody M, Vronskaya S, Kandel ER. Transgenic mice lacking NMDAR-dependent LTD exhibit deficits in behavioral flexibility. Neuron. 2008;58:104&#x2013;117. doi: 10.1016/j.neuron.2008.01.039.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.neuron.2008.01.039</ArticleId>
+						<ArticleId IdType="pubmed">18400167</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>O&#x2019;Connor TP, Cockburn K, Wang W, Tapia L, Currie E, Bamji SX. Semaphorin 5B mediates synapse elimination in hippocampal neurons. Neural Development. 2009;4:18. doi: 10.1186/1749-8104-4-18.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/1749-8104-4-18</ArticleId>
+						<ArticleId IdType="pmc">PMC2696441</ArticleId>
+						<ArticleId IdType="pubmed">19463192</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Pallesen LT, Vaegter CB. Sortilin and SorLA regulate neuronal sorting of trophic and dementia-linked proteins. Molecular Neurobiology. 2012;45:379&#x2013;387. doi: 10.1007/s12035-012-8236-2.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s12035-012-8236-2</ArticleId>
+						<ArticleId IdType="pubmed">22297619</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Park SA, Ahn SI, Gallo JM. Tau mis-splicing in the pathogenesis of neurodegenerative disorders. BMB Reports. 2016;49:405&#x2013;413. doi: 10.5483/bmbrep.2016.49.8.084.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.5483/bmbrep.2016.49.8.084</ArticleId>
+						<ArticleId IdType="pmc">PMC5070727</ArticleId>
+						<ArticleId IdType="pubmed">27222125</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Patro R, Duggal G, Love MI, Irizarry RA, Kingsford C. Salmon provides fast and bias-aware quantification of transcript expression. Nature Methods. 2017;14:417&#x2013;419. doi: 10.1038/nmeth.4197.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nmeth.4197</ArticleId>
+						<ArticleId IdType="pmc">PMC5600148</ArticleId>
+						<ArticleId IdType="pubmed">28263959</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Pesiridis GS, Lee VMY, Trojanowski JQ. Mutations in TDP-43 link glycine-rich domain functions to amyotrophic lateral sclerosis. Human Molecular Genetics. 2009;18:R156&#x2013;R162. doi: 10.1093/hmg/ddp303.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/hmg/ddp303</ArticleId>
+						<ArticleId IdType="pmc">PMC2758707</ArticleId>
+						<ArticleId IdType="pubmed">19808791</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Pfaffl MW. A new mathematical model for relative quantification in real-time RT-PCR. Nucleic Acids Research. 2001;29:e45. doi: 10.1093/nar/29.9.e45.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/nar/29.9.e45</ArticleId>
+						<ArticleId IdType="pmc">PMC55695</ArticleId>
+						<ArticleId IdType="pubmed">11328886</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Phillips RG, LeDoux JE. Differential contribution of amygdala and hippocampus to cued and contextual fear conditioning. Behavioral Neuroscience. 1992;106:274&#x2013;285. doi: 10.1037//0735-7044.106.2.274.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1037//0735-7044.106.2.274</ArticleId>
+						<ArticleId IdType="pubmed">1590953</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Pinarbasi ES, Ca&#x11f;atay T, Fung HYJ, Li YC, Chook YM, Thomas PJ. Active nuclear import and passive nuclear export are the primary determinants of TDP-43 localization. Scientific Reports. 2018;8:7083. doi: 10.1038/s41598-018-25008-4.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41598-018-25008-4</ArticleId>
+						<ArticleId IdType="pmc">PMC5935693</ArticleId>
+						<ArticleId IdType="pubmed">29728608</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Polymenidou M, Lagier-Tourenne C, Hutt KR, Huelga SC, Moran J, Liang TY, Ling S-C, Sun E, Wancewicz E, Mazur C, Kordasiewicz H, Sedaghat Y, Donohue JP, Shiue L, Bennett CF, Yeo GW, Cleveland DW. Long pre-mRNA depletion and RNA missplicing contribute to neuronal vulnerability from loss of TDP-43. Nature Neuroscience. 2011;14:459&#x2013;468. doi: 10.1038/nn.2779.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nn.2779</ArticleId>
+						<ArticleId IdType="pmc">PMC3094729</ArticleId>
+						<ArticleId IdType="pubmed">21358643</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Poulopoulos M, Levy OA, Alcalay RN. The neuropathology of genetic Parkinson&#x2019;s disease. Movement Disorders. 2012;27:831&#x2013;842. doi: 10.1002/mds.24962.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1002/mds.24962</ArticleId>
+						<ArticleId IdType="pmc">PMC3383342</ArticleId>
+						<ArticleId IdType="pubmed">22451330</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Prudencio M, Jansen-West KR, Lee WC, Gendron TF, Zhang Y-J, Xu Y-F, Gass J, Stuani C, Stetler C, Rademakers R, Dickson DW, Buratti E, Petrucelli L. Misregulation of human sortilin splicing leads to the generation of a nonfunctional progranulin receptor. PNAS. 2012;109:21510&#x2013;21515. doi: 10.1073/pnas.1211577110.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1073/pnas.1211577110</ArticleId>
+						<ArticleId IdType="pmc">PMC3535614</ArticleId>
+						<ArticleId IdType="pubmed">23236149</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Prudencio M, Humphrey J, Pickles S, Brown A-L, Hill SE, Kachergus JM, Shi J, Heckman MG, Spiegel MR, Cook C, Song Y, Yue M, Daughrity LM, Carlomagno Y, Jansen-West K, de Castro CF, DeTure M, Koga S, Wang Y-C, Sivakumar P, Bodo C, Candalija A, Talbot K, Selvaraj BT, Burr K, Chandran S, Newcombe J, Lashley T, Hubbard I, Catalano D, Kim D, Propp N, Fennessey S, NYGC ALS Consortium. Fagegaltier D, Phatnani H, Secrier M, Fisher EM, Oskarsson B, van Blitterswijk M, Rademakers R, Graff-Radford NR, Boeve BF, Knopman DS, Petersen RC, Josephs KA, Thompson EA, Raj T, Ward M, Dickson DW, Gendron TF, Fratta P, Petrucelli L. Truncated stathmin-2 is a marker of TDP-43 pathology in frontotemporal dementia. The Journal of Clinical Investigation. 2020;130:6080&#x2013;6092. doi: 10.1172/JCI139741.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1172/JCI139741</ArticleId>
+						<ArticleId IdType="pmc">PMC7598060</ArticleId>
+						<ArticleId IdType="pubmed">32790644</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Raudvere U, Kolberg L, Kuzmin I, Arak T, Adler P, Peterson H, Vilo J. g:Profiler: a web server for functional enrichment analysis and conversions of gene lists (2019 update) Nucleic Acids Research. 2019;47:W191&#x2013;W198. doi: 10.1093/nar/gkz369.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/nar/gkz369</ArticleId>
+						<ArticleId IdType="pmc">PMC6602461</ArticleId>
+						<ArticleId IdType="pubmed">31066453</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>R Development Core Team  . Vienna, Austria: R Foundation for Statistical Computing; 2022. http://www.r-project.org</Citation>
+				</Reference>
+				<Reference>
+					<Citation>Reddy SS, Connor TE, Weeber EJ, Rebeck W. Similarities and differences in structure, expression, and functions of VLDLR and ApoER2. Molecular Neurodegeneration. 2011;6:30. doi: 10.1186/1750-1326-6-30.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/1750-1326-6-30</ArticleId>
+						<ArticleId IdType="pmc">PMC3113299</ArticleId>
+						<ArticleId IdType="pubmed">21554715</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ritchie ME, Phipson B, Wu D, Hu Y, Law CW, Shi W, Smyth GK. limma powers differential expression analyses for RNA-sequencing and microarray studies. Nucleic Acids Research. 2015;43:e47. doi: 10.1093/nar/gkv007.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/nar/gkv007</ArticleId>
+						<ArticleId IdType="pmc">PMC4402510</ArticleId>
+						<ArticleId IdType="pubmed">25605792</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Rosas I, Mart&#xed;nez C, Clarim&#xf3;n J, Lle&#xf3; A, Ill&#xe1;n-Gala I, Dols-Icardo O, Borroni B, Almeida MR, van der Zee J, Van Broeckhoven C, Bruni AC, Anfossi M, Bernardi L, Maletta R, Serpente M, Galimberti D, Scarpini E, Rossi G, Caroppo P, Benussi L, Ghidoni R, Binetti G, Nacmias B, Sorbi S, Piaceri I, Bagnoli S, Antonell A, S&#xe1;nchez-Valle R, De la Casa-Fages B, Grandas F, Diez-Fairen M, Pastor P, Ferrari R, &#xc1;lvarez V, Men&#xe9;ndez-Gonz&#xe1;lez M. Role for ATXN1, ATXN2, and HTT intermediate repeats in frontotemporal dementia and Alzheimer&#x2019;s disease. Neurobiology of Aging. 2020;87:139. doi: 10.1016/j.neurobiolaging.2019.10.017.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.neurobiolaging.2019.10.017</ArticleId>
+						<ArticleId IdType="pubmed">31810584</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Schindelin J, Arganda-Carreras I, Frise E, Kaynig V, Longair M, Pietzsch T, Preibisch S, Rueden C, Saalfeld S, Schmid B, Tinevez J-Y, White DJ, Hartenstein V, Eliceiri K, Tomancak P, Cardona A. Fiji: an open-source platform for biological-image analysis. Nature Methods. 2012;9:676&#x2013;682. doi: 10.1038/nmeth.2019.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nmeth.2019</ArticleId>
+						<ArticleId IdType="pmc">PMC3855844</ArticleId>
+						<ArticleId IdType="pubmed">22743772</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Seibenhener ML, Wooten MC. Use of the Open Field Maze to measure locomotor and anxiety-like behavior in mice. Journal of Visualized Experiments. 2015;6:e52434. doi: 10.3791/52434.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.3791/52434</ArticleId>
+						<ArticleId IdType="pmc">PMC4354627</ArticleId>
+						<ArticleId IdType="pubmed">25742564</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sekiguchi M, Sobue A, Kushima I, Wang C, Arioka Y, Kato H, Kodama A, Kubo H, Ito N, Sawahata M, Hada K, Ikeda R, Shinno M, Mizukoshi C, Tsujimura K, Yoshimi A, Ishizuka K, Takasaki Y, Kimura H, Xing J, Yu Y, Yamamoto M, Okada T, Shishido E, Inada T, Nakatochi M, Takano T, Kuroda K, Amano M, Aleksic B, Yamomoto T, Sakuma T, Aida T, Tanaka K, Hashimoto R, Arai M, Ikeda M, Iwata N, Shimamura T, Nagai T, Nabeshima T, Kaibuchi K, Yamada K, Mori D, Ozaki N. ARHGAP10, which encodes Rho GTPase-activating protein 10, is a novel gene for schizophrenia risk. Translational Psychiatry. 2020;10:247. doi: 10.1038/s41398-020-00917-z.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41398-020-00917-z</ArticleId>
+						<ArticleId IdType="pmc">PMC7376022</ArticleId>
+						<ArticleId IdType="pubmed">32699248</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Seto M, Mahoney ER, Dumitrescu L, Ramanan VK, Engelman CD, Deming Y, Albert M, Johnson SC, Zetterberg H, Blennow K, Vemuri P, Jefferson AL, Hohman TJ, Alzheimer&#x2019;s Disease Neuroimaging Initiative Exploring common genetic contributors to neuroprotection from amyloid pathology. Brain Communications. 2022;4:fcac066. doi: 10.1093/braincomms/fcac066.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/braincomms/fcac066</ArticleId>
+						<ArticleId IdType="pmc">PMC9006043</ArticleId>
+						<ArticleId IdType="pubmed">35425899</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sheen VL, Ganesh VS, Topcu M, Sebire G, Bodell A, Hill RS, Grant PE, Shugart YY, Imitola J, Khoury SJ, Guerrini R, Walsh CA. Mutations in ARFGEF2 implicate vesicle trafficking in neural progenitor proliferation and migration in the human cerebral cortex. Nature Genetics. 2004;36:69&#x2013;76. doi: 10.1038/ng1276.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/ng1276</ArticleId>
+						<ArticleId IdType="pubmed">14647276</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Shefner JM. Motor unit number estimation in human neurological diseases and animal models. Clinical Neurophysiology. 2001;112:955&#x2013;964. doi: 10.1016/s1388-2457(01)00520-x.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/s1388-2457(01)00520-x</ArticleId>
+						<ArticleId IdType="pubmed">11377252</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Shi Y, Kirwan P, Livesey FJ. Directed differentiation of human pluripotent stem cells to cerebral cortex neurons and neural networks. Nature Protocols. 2012;7:1836&#x2013;1846. doi: 10.1038/nprot.2012.116.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nprot.2012.116</ArticleId>
+						<ArticleId IdType="pubmed">22976355</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Shi F, He Y, Chen Y, Yin X, Sha X, Wang Y. Comparative analysis of multiple neurodegenerative diseases based on advanced epigenetic aging brain. Frontiers in Genetics. 2021;12:657636. doi: 10.3389/fgene.2021.657636.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.3389/fgene.2021.657636</ArticleId>
+						<ArticleId IdType="pmc">PMC8173158</ArticleId>
+						<ArticleId IdType="pubmed">34093653</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sieben A, Van Langenhove T, Engelborghs S, Martin JJ, Boon P, Cras P, De Deyn PP, Santens P, Van Broeckhoven C, Cruts M. The genetics and neuropathology of frontotemporal lobar degeneration. Acta Neuropathologica. 2012;124:353&#x2013;372. doi: 10.1007/s00401-012-1029-x.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/s00401-012-1029-x</ArticleId>
+						<ArticleId IdType="pmc">PMC3422616</ArticleId>
+						<ArticleId IdType="pubmed">22890575</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sierra-Mercado D, Padilla-Coreano N, Quirk GJ. Dissociable roles of prelimbic and infralimbic cortices, ventral hippocampus, and basolateral amygdala in the expression and extinction of conditioned fear. Neuropsychopharmacology. 2011;36:529&#x2013;538. doi: 10.1038/npp.2010.184.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/npp.2010.184</ArticleId>
+						<ArticleId IdType="pmc">PMC3005957</ArticleId>
+						<ArticleId IdType="pubmed">20962768</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sreedharan J, Blair IP, Tripathi VB, Hu X, Vance C, Rogelj B, Ackerley S, Durnall JC, Williams KL, Buratti E, Baralle F, de Belleroche J, Mitchell JD, Leigh PN, Al-Chalabi A, Miller CC, Nicholson G, Shaw CE. TDP-43 mutations in familial and sporadic amyotrophic lateral sclerosis. Science. 2008;319:1668&#x2013;1672. doi: 10.1126/science.1154584.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1126/science.1154584</ArticleId>
+						<ArticleId IdType="pmc">PMC7116650</ArticleId>
+						<ArticleId IdType="pubmed">18309045</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sternburg EL, Gruijs da Silva LA, Dormann D. Post-translational modifications on RNA-binding proteins: accelerators, brakes, or passengers in neurodegeneration? Trends in Biochemical Sciences. 2022;47:6&#x2013;22. doi: 10.1016/j.tibs.2021.07.004.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.tibs.2021.07.004</ArticleId>
+						<ArticleId IdType="pubmed">34366183</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Stirling DR, Swain-Bowden MJ, Lucas AM, Carpenter AE, Cimini BA, Goodman A. CellProfiler 4: improvements in speed, utility and usability. BMC Bioinformatics. 2021;22:433. doi: 10.1186/s12859-021-04344-9.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/s12859-021-04344-9</ArticleId>
+						<ArticleId IdType="pmc">PMC8431850</ArticleId>
+						<ArticleId IdType="pubmed">34507520</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Stribl C, Samara A, Tr&#xfc;mbach D, Peis R, Neumann M, Fuchs H, Gailus-Durner V, Hrab&#x11b; de Angelis M, Rathkolb B, Wolf E, Beckers J, Horsch M, Neff F, Kremmer E, Koob S, Reichert AS, Hans W, Rozman J, Klingenspor M, Aichler M, Walch AK, Becker L, Klopstock T, Glasl L, H&#xf6;lter SM, Wurst W, Floss T. Mitochondrial Dysfunction and Decrease in Body Weight of a Transgenic Knock-in Mouse Model for TDP-43. Journal of Biological Chemistry. 2014;289:10769&#x2013;10784. doi: 10.1074/jbc.M113.515940.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1074/jbc.M113.515940</ArticleId>
+						<ArticleId IdType="pmc">PMC4036193</ArticleId>
+						<ArticleId IdType="pubmed">24515116</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Stringer C, Wang T, Michaelos M, Pachitariu M. Cellpose: a generalist algorithm for cellular segmentation. Nature Methods. 2021;18:100&#x2013;106. doi: 10.1038/s41592-020-01018-x.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41592-020-01018-x</ArticleId>
+						<ArticleId IdType="pubmed">33318659</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Stringer C, Pachitariu M. Cellpose 2.0: How to Train Your Own Model. bioRxiv. 2022 doi: 10.1101/2022.04.01.486764.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1101/2022.04.01.486764</ArticleId>
+						<ArticleId IdType="pmc">PMC9718665</ArticleId>
+						<ArticleId IdType="pubmed">36344832</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sun L, Zhang J, Chen W, Chen Y, Zhang X, Yang M, Xiao M, Ma F, Yao Y, Ye M, Zhang Z, Chen K, Chen F, Ren Y, Ni S, Zhang X, Yan Z, Sun Z-R, Zhou H-M, Yang H, Xie S, Haque ME, Huang K, Yang Y. Attenuation of epigenetic regulator SMARCA4 and ERK-ETS signaling suppresses aging-related dopaminergic degeneration. Aging Cell. 2020;19:e13210. doi: 10.1111/acel.13210.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1111/acel.13210</ArticleId>
+						<ArticleId IdType="pmc">PMC7511865</ArticleId>
+						<ArticleId IdType="pubmed">32749068</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Tann JY, Wong LW, Sajikumar S, Ib&#xe1;&#xf1;ez CF. Abnormal TDP-43 function impairs activity-dependent BDNF secretion, synaptic plasticity, and cognitive behavior through altered Sortilin splicing. The EMBO Journal. 2019;38:e100989. doi: 10.15252/embj.2018100989.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.15252/embj.2018100989</ArticleId>
+						<ArticleId IdType="pmc">PMC6396160</ArticleId>
+						<ArticleId IdType="pubmed">30692134</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Telese F, Ma Q, Perez PM, Notani D, Oh S, Li W, Comoletti D, Ohgi KA, Taylor H, Rosenfeld MG. LRP8-Reelin-Regulated Neuronal Enhancer Signature Underlying Learning and Memory Formation. Neuron. 2015;86:696&#x2013;710. doi: 10.1016/j.neuron.2015.03.033.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.neuron.2015.03.033</ArticleId>
+						<ArticleId IdType="pmc">PMC4486257</ArticleId>
+						<ArticleId IdType="pubmed">25892301</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Tollervey JR, Curk T, Rogelj B, Briese M, Cereda M, Kayikci M, K&#xf6;nig J, Hortob&#xe1;gyi T, Nishimura AL, &#x17d;upunski V, Patani R, Chandran S, Rot G, Zupan B, Shaw CE, Ule J. Characterizing the RNA targets and position-dependent splicing regulation by TDP-43. Nature Neuroscience. 2011;14:452&#x2013;458. doi: 10.1038/nn.2778.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nn.2778</ArticleId>
+						<ArticleId IdType="pmc">PMC3108889</ArticleId>
+						<ArticleId IdType="pubmed">21358640</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Tom&#xe9; SO, Vandenberghe R, Ospitalieri S, Van Schoor E, Tousseyn T, Otto M, von Arnim CAF, Thal DR. Distinct molecular patterns of TDP-43 pathology in Alzheimer&#x2019;s disease: relationship with clinical phenotypes. Acta Neuropathologica Communications. 2020;8:61. doi: 10.1186/s40478-020-00934-5.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/s40478-020-00934-5</ArticleId>
+						<ArticleId IdType="pmc">PMC7189555</ArticleId>
+						<ArticleId IdType="pubmed">32349792</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Trabzuni D, Wray S, Vandrovcova J, Ramasamy A, Walker R, Smith C, Luk C, Gibbs JR, Dillman A, Hernandez DG, Arepalli S, Singleton AB, Cookson MR, Pittman AM, de Silva R, Weale ME, Hardy J, Ryten M. MAPT expression and splicing is differentially regulated by brain region: relation to genotype and implication for tauopathies. Human Molecular Genetics. 2012;21:4094&#x2013;4103. doi: 10.1093/hmg/dds238.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/hmg/dds238</ArticleId>
+						<ArticleId IdType="pmc">PMC3428157</ArticleId>
+						<ArticleId IdType="pubmed">22723018</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Truett GE, Heeger P, Mynatt RL, Truett AA, Walker JA, Warman ML. Preparation of PCR-quality mouse genomic DNA with hot sodium hydroxide and tris (HotSHOT) BioTechniques. 2000;29:52&#x2013;54. doi: 10.2144/00291bm09.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.2144/00291bm09</ArticleId>
+						<ArticleId IdType="pubmed">10907076</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ueki A, Goto K, Sato N, Iso H, Morita Y. Prepulse inhibition of acoustic startle response in mild cognitive impairment and mild dementia of Alzheimer type. Psychiatry and Clinical Neurosciences. 2006;60:55&#x2013;62. doi: 10.1111/j.1440-1819.2006.01460.x.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1111/j.1440-1819.2006.01460.x</ArticleId>
+						<ArticleId IdType="pubmed">16472359</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Vanden Broeck L, Callaerts P, Dermaut B. TDP-43-mediated neurodegeneration: towards a loss-of-function hypothesis? Trends in Molecular Medicine. 2014;20:66&#x2013;71. doi: 10.1016/j.molmed.2013.11.003.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.molmed.2013.11.003</ArticleId>
+						<ArticleId IdType="pubmed">24355761</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Vorhees CV, Williams MT. Morris water maze: procedures for assessing spatial and related forms of learning and memory. Nature Protocols. 2006;1:848&#x2013;858. doi: 10.1038/nprot.2006.116.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nprot.2006.116</ArticleId>
+						<ArticleId IdType="pmc">PMC2895266</ArticleId>
+						<ArticleId IdType="pubmed">17406317</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Wang X, Spandidos A, Wang H, Seed B. PrimerBank: a PCR primer database for quantitative gene expression analysis, 2012 update. Nucleic Acids Research. 2012;40:D1144&#x2013;D1149. doi: 10.1093/nar/gkr1013.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/nar/gkr1013</ArticleId>
+						<ArticleId IdType="pmc">PMC3245149</ArticleId>
+						<ArticleId IdType="pubmed">22086960</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Wang P, Wander CM, Yuan CX, Bereman MS, Cohen TJ. Acetylation-induced TDP-43 pathology is suppressed by an HSF1-dependent chaperone program. Nature Communications. 2017;8:1&#x2013;15. doi: 10.1038/s41467-017-00088-4.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41467-017-00088-4</ArticleId>
+						<ArticleId IdType="pmc">PMC5517419</ArticleId>
+						<ArticleId IdType="pubmed">28724966</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Waragai M, Ho G, Takamatsu Y, Sekiyama K, Sugama S, Takenouchi T, Masliah E, Hashimoto M. Importance of adiponectin activity in the pathogenesis of Alzheimer&#x2019;s disease. Annals of Clinical and Translational Neurology. 2017;4:591&#x2013;600. doi: 10.1002/acn3.436.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1002/acn3.436</ArticleId>
+						<ArticleId IdType="pmc">PMC5553221</ArticleId>
+						<ArticleId IdType="pubmed">28812049</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>White MA, Kim E, Duffy A, Adalbert R, Phillips BU, Peters OM, Stephenson J, Yang S, Massenzio F, Lin Z, Andrews S, Segonds-Pichon A, Metterville J, Saksida LM, Mead R, Ribchester RR, Barhomi Y, Serre T, Coleman MP, Fallon JR, Bussey TJ, Brown RH, Jr, Sreedharan J. Publisher Correction: TDP-43 gains function due to perturbed autoregulation in a Tardbp knock-in mouse model of ALS-FTD. Nature Neuroscience. 2018;21:552. doi: 10.1038/s41593-018-0160-y.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41593-018-0160-y</ArticleId>
+						<ArticleId IdType="pmc">PMC5884423</ArticleId>
+						<ArticleId IdType="pubmed">29556029</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Wickham H. Ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag; 2016.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/978-3-319-24277-4</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Wu L-S, Cheng W-C, Chen C-Y, Wu M-C, Wang Y-C, Tseng Y-H, Chuang T-J, Shen C-KJ. Transcriptomopathies of pre- and post-symptomatic frontotemporal dementia-like mice with TDP-43 depletion in forebrain neurons. Acta Neuropathologica Communications. 2019;7:50. doi: 10.1186/s40478-019-0674-x.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/s40478-019-0674-x</ArticleId>
+						<ArticleId IdType="pmc">PMC6440020</ArticleId>
+						<ArticleId IdType="pubmed">30922385</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Xu Y-F, Gendron TF, Zhang Y-J, Lin W-L, D&#x2019;Alton S, Sheng H, Casey MC, Tong J, Knight J, Yu X, Rademakers R, Boylan K, Hutton M, McGowan E, Dickson DW, Lewis J, Petrucelli L. Wild-type human TDP-43 expression causes TDP-43 phosphorylation, mitochondrial aggregation, motor deficits, and early mortality in transgenic mice. The Journal of Neuroscience. 2010;30:10851&#x2013;10859. doi: 10.1523/JNEUROSCI.1630-10.2010.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1523/JNEUROSCI.1630-10.2010</ArticleId>
+						<ArticleId IdType="pmc">PMC3056148</ArticleId>
+						<ArticleId IdType="pubmed">20702714</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Xu S-Y, Zhang Q-L, Zhang Q, Wan L, Jiang J, Tu T, Manavis J, Pan A, Cai Y, Yan X-X. Regional and cellular mapping of sortilin immunoreactivity in adult human brain. Frontiers in Neuroanatomy. 2019;13:31. doi: 10.3389/fnana.2019.00031.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.3389/fnana.2019.00031</ArticleId>
+						<ArticleId IdType="pmc">PMC6422922</ArticleId>
+						<ArticleId IdType="pubmed">30914927</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Yang C, Wang H, Qiao T, Yang B, Aliaga L, Qiu L, Tan W, Salameh J, McKenna-Yasek DM, Smith T, Peng L, Moore MJ, Brown RH, Jr, Cai H, Xu Z. Partial loss of TDP-43 function causes phenotypes of amyotrophic lateral sclerosis. PNAS. 2014;111:E1121&#x2013;E1129. doi: 10.1073/pnas.1322641111.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1073/pnas.1322641111</ArticleId>
+						<ArticleId IdType="pmc">PMC3970502</ArticleId>
+						<ArticleId IdType="pubmed">24616503</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Yang C, Qiao T, Yu J, Wang H, Guo Y, Salameh J, Metterville J, Parsi S, Yusuf I, Brown RH, Cai H, Xu Z, Pandey U. Low-level overexpression of wild type TDP-43 causes late-onset, progressive neurodegeneration and paralysis in mice. PLOS ONE. 2022;17:e0255710. doi: 10.1371/journal.pone.0255710.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1371/journal.pone.0255710</ArticleId>
+						<ArticleId IdType="pmc">PMC8812852</ArticleId>
+						<ArticleId IdType="pubmed">35113871</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Yu H, Lu S, Gasior K, Singh D, Vazquez-Sanchez S, Tapia O, Toprani D, Beccari MS, Yates JR, Da Cruz S, Newby JM, Lafarga M, Gladfelter AS, Villa E, Cleveland DW. HSP70 chaperones RNA-free TDP-43 into anisotropic intranuclear liquid spherical shells. Science. 2021;371:eabb4309. doi: 10.1126/science.abb4309.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1126/science.abb4309</ArticleId>
+						<ArticleId IdType="pmc">PMC8286096</ArticleId>
+						<ArticleId IdType="pubmed">33335017</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Zhu X, Rottkamp CA, Hartzler A, Sun Z, Takeda A, Boux H, Shimohama S, Perry G, Smith MA. Activation of MKK6, an upstream activator of p38, in Alzheimer&#x2019;s disease. Journal of Neurochemistry. 2001;79:311&#x2013;318. doi: 10.1046/j.1471-4159.2001.00597.x.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1046/j.1471-4159.2001.00597.x</ArticleId>
+						<ArticleId IdType="pubmed">11677259</ArticleId>
+					</ArticleIdList>
+				</Reference>
+			</ReferenceList>
+		</PubmedData>
+	</PubmedArticle>
+</PubmedArticleSet>

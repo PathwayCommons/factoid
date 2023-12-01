@@ -12,7 +12,11 @@ const TEST_PUBMED_DATA = new Map([
   ['29440426', 'pmid_29440426.xml'], // PubMedData
   ['30078747', 'pmid_30078747.xml'], // InvestigatorList
   ['30115697', 'pmid_30115697.xml'], // Markup; Identifier
-  ['31511694', 'pmid_31511694.xml']
+  ['31511694', 'pmid_31511694.xml'],
+  ['36747776', 'pmid_36747776.xml'], // UpdateIn (PMID)
+  ['36782050', 'pmid_36782050.xml'], // UpdateOf (PMID)
+  ['37819053', 'pmid_37819053.xml'],  // UpdateOf (no PMID)
+  ['9500320', 'pmid_9500320.xml']  // Various relations
 ]);
 
 const xml2jsOpts = {};
@@ -194,10 +198,10 @@ describe('fetchPubmed', function(){
                 });
 
                 it('Should have item with top-level attributes', () => {
-                  expect( Author ).to.have.nested.property( 'LastName' );
-                  expect( Author ).to.have.nested.property( 'ForeName' );
-                  expect( Author ).to.have.nested.property( 'Initials' );
-                  expect( Author ).to.have.nested.property( 'CollectiveName' );
+                  expect( Author ).to.have.property( 'LastName' );
+                  expect( Author ).to.have.property( 'ForeName' );
+                  expect( Author ).to.have.property( 'Initials' );
+                  expect( Author ).to.have.property( 'CollectiveName' );
                   expect( Author ).to.have.property( 'AffiliationInfo' );
                   expect( Author ).to.have.property( 'Identifier' );
                   if( !_.isEmpty( _.get( Author, 'AffiliationInfo' ) ) ){
@@ -215,8 +219,9 @@ describe('fetchPubmed', function(){
 
                   it('Should have item with top-level attributes', () => {
                     if( !_.isEmpty( Identifier ) ){
-                      expect( Identifier ).to.have.property( 'Identifier[0].Source' );
-                      expect( Identifier ).to.have.property( 'Identifier[0].id' );
+                      const ID = _.head( Identifier );
+                      expect( ID ).to.have.property( 'Source' );
+                      expect( ID ).to.have.property( 'id' );
                     }
                   });
 
@@ -361,6 +366,38 @@ describe('fetchPubmed', function(){
             }); // Investigator
 
           }); // InvestigatorList
+
+          describe( 'CommentsCorrectionsList', () => {
+
+            let CommentsCorrectionsList;
+            before( () => {
+              CommentsCorrectionsList = _.get( MedlineCitation, 'CommentsCorrectionsList' );
+            });
+
+            it('Attribute should exist', () => {
+              expect( MedlineCitation ).to.have.nested.property( 'CommentsCorrectionsList' );
+            });
+
+            it('Should consist of one item or empty', () => {
+              expect( Array.isArray( CommentsCorrectionsList ) ).to.be.true;
+            });
+
+            describe( 'CommentsCorrections', () => {
+
+              let CommentsCorrections;
+              before( () => {
+                CommentsCorrections = _.head( CommentsCorrectionsList );
+              });
+
+              it('Should have optional item with top-level attributes', () => {
+                if( CommentsCorrections ){
+                  expect( CommentsCorrections ).to.have.property( 'RefSource' );
+                  expect( CommentsCorrections ).to.have.property( 'RefType' );
+                }
+              });
+            });
+
+          }); // CommentsCorrectionsList
 
         });//MedlineCitation
 

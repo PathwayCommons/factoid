@@ -1,0 +1,825 @@
+<?xml version="1.0" ?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2023//EN" "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_230101.dtd">
+<PubmedArticleSet>
+	<PubmedArticle>
+		<MedlineCitation Status="MEDLINE" Owner="NLM" IndexingMethod="Automated">
+			<PMID Version="1">36782050</PMID>
+			<DateCompleted>
+				<Year>2023</Year>
+				<Month>03</Month>
+				<Day>21</Day>
+			</DateCompleted>
+			<DateRevised>
+				<Year>2023</Year>
+				<Month>11</Month>
+				<Day>16</Day>
+			</DateRevised>
+			<Article PubModel="Print-Electronic">
+				<Journal>
+					<ISSN IssnType="Electronic">1545-9985</ISSN>
+					<JournalIssue CitedMedium="Internet">
+						<Volume>30</Volume>
+						<Issue>3</Issue>
+						<PubDate>
+							<Year>2023</Year>
+							<Month>Mar</Month>
+						</PubDate>
+					</JournalIssue>
+					<Title>Nature structural &amp; molecular biology</Title>
+					<ISOAbbreviation>Nat Struct Mol Biol</ISOAbbreviation>
+				</Journal>
+				<ArticleTitle>Structure and dynamics of the essential endogenous mycobacterial polyketide synthase Pks13.</ArticleTitle>
+				<Pagination>
+					<StartPage>296</StartPage>
+					<EndPage>308</EndPage>
+					<MedlinePgn>296-308</MedlinePgn>
+				</Pagination>
+				<ELocationID EIdType="doi" ValidYN="Y">10.1038/s41594-022-00918-0</ELocationID>
+				<Abstract>
+					<AbstractText>The mycolic acid layer of the Mycobacterium tuberculosis cell wall is essential for viability and virulence, and the enzymes responsible for its synthesis are targets for antimycobacterial drug development. Polyketide synthase 13 (Pks13) is a module encoding several enzymatic and transport functions that carries out the condensation of two different long-chain fatty acids to produce mycolic acids. We determined structures by cryogenic-electron microscopy of dimeric multi-enzyme Pks13 purified from mycobacteria under normal growth conditions, captured with native substrates. Structures define the ketosynthase (KS), linker and acyl transferase (AT) domains at 1.8&#x2009;&#xc5; resolution and two alternative locations of the N-terminal acyl carrier protein. These structures suggest intermediate states on the pathway for substrate delivery to the KS domain. Other domains, visible at lower resolution, are flexible relative to the KS-AT core. The chemical structures of three bound endogenous long-chain fatty acid substrates were determined by electrospray ionization mass spectrometry.</AbstractText>
+					<CopyrightInformation>&#xa9; 2023. The Author(s), under exclusive licence to Springer Nature America, Inc.</CopyrightInformation>
+				</Abstract>
+				<AuthorList CompleteYN="Y">
+					<Author ValidYN="Y" EqualContrib="Y">
+						<LastName>Kim</LastName>
+						<ForeName>Sun Kyung</ForeName>
+						<Initials>SK</Initials>
+						<AffiliationInfo>
+							<Affiliation>Department of Biochemistry and Biophysics, University of California San Francisco, San Francisco, CA, USA.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y" EqualContrib="Y">
+						<LastName>Dickinson</LastName>
+						<ForeName>Miles Sasha</ForeName>
+						<Initials>MS</Initials>
+						<AffiliationInfo>
+							<Affiliation>Department of Biochemistry and Biophysics, University of California San Francisco, San Francisco, CA, USA.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Chemistry and Chemical Biology Graduate Program, University of California San Francisco, San Francisco, CA, USA.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Finer-Moore</LastName>
+						<ForeName>Janet</ForeName>
+						<Initials>J</Initials>
+						<AffiliationInfo>
+							<Affiliation>Department of Biochemistry and Biophysics, University of California San Francisco, San Francisco, CA, USA.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Guan</LastName>
+						<ForeName>Ziqiang</ForeName>
+						<Initials>Z</Initials>
+						<Identifier Source="ORCID">0000-0002-8082-3423</Identifier>
+						<AffiliationInfo>
+							<Affiliation>Department of Biochemistry, Duke University Medical Center, Durham, NC, USA.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Kaake</LastName>
+						<ForeName>Robyn M</ForeName>
+						<Initials>RM</Initials>
+						<Identifier Source="ORCID">0000-0002-8341-3067</Identifier>
+						<AffiliationInfo>
+							<Affiliation>Gladstone Institute of Data Science and Biotechnology, J. David Gladstone Institutes, San Francisco, CA, USA.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Department of Cellular and Molecular Pharmacology, University of California San Francisco, San Francisco, CA, USA.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Quantitative Biosciences Institute, University of California San Francisco, San Francisco, CA, USA.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Echeverria</LastName>
+						<ForeName>Ignacia</ForeName>
+						<Initials>I</Initials>
+						<AffiliationInfo>
+							<Affiliation>Department of Cellular and Molecular Pharmacology, University of California San Francisco, San Francisco, CA, USA.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Quantitative Biosciences Institute, University of California San Francisco, San Francisco, CA, USA.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Chen</LastName>
+						<ForeName>Jen</ForeName>
+						<Initials>J</Initials>
+						<AffiliationInfo>
+							<Affiliation>Department of Biochemistry and Biophysics, University of California San Francisco, San Francisco, CA, USA.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Pulido</LastName>
+						<ForeName>Ernst H</ForeName>
+						<Initials>EH</Initials>
+						<Identifier Source="ORCID">0000-0002-3616-9743</Identifier>
+						<AffiliationInfo>
+							<Affiliation>Gladstone Institute of Data Science and Biotechnology, J. David Gladstone Institutes, San Francisco, CA, USA.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Sali</LastName>
+						<ForeName>Andrej</ForeName>
+						<Initials>A</Initials>
+						<Identifier Source="ORCID">0000-0003-0435-6197</Identifier>
+						<AffiliationInfo>
+							<Affiliation>Department of Bioengineering and Therapeutic Sciences, University of California San Francisco, San Francisco, CA, USA.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Krogan</LastName>
+						<ForeName>Nevan J</ForeName>
+						<Initials>NJ</Initials>
+						<Identifier Source="ORCID">0000-0003-4902-337X</Identifier>
+						<AffiliationInfo>
+							<Affiliation>Gladstone Institute of Data Science and Biotechnology, J. David Gladstone Institutes, San Francisco, CA, USA.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Department of Cellular and Molecular Pharmacology, University of California San Francisco, San Francisco, CA, USA.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Quantitative Biosciences Institute, University of California San Francisco, San Francisco, CA, USA.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Rosenberg</LastName>
+						<ForeName>Oren S</ForeName>
+						<Initials>OS</Initials>
+						<Identifier Source="ORCID">0000-0002-5736-4388</Identifier>
+						<AffiliationInfo>
+							<Affiliation>Department of Biochemistry and Biophysics, University of California San Francisco, San Francisco, CA, USA. Oren.Rosenberg@ucsf.edu.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Department of Medicine, Division of Infectious Diseases, University of California San Francisco, San Francisco, CA, USA. Oren.Rosenberg@ucsf.edu.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Stroud</LastName>
+						<ForeName>Robert M</ForeName>
+						<Initials>RM</Initials>
+						<Identifier Source="ORCID">0000-0003-2083-5665</Identifier>
+						<AffiliationInfo>
+							<Affiliation>Department of Biochemistry and Biophysics, University of California San Francisco, San Francisco, CA, USA. stroud@msg.ucsf.edu.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Chemistry and Chemical Biology Graduate Program, University of California San Francisco, San Francisco, CA, USA. stroud@msg.ucsf.edu.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+				</AuthorList>
+				<Language>eng</Language>
+				<GrantList CompleteYN="Y">
+					<Grant>
+						<GrantID>R01 AI148366</GrantID>
+						<Acronym>AI</Acronym>
+						<Agency>NIAID NIH HHS</Agency>
+						<Country>United States</Country>
+					</Grant>
+					<Grant>
+						<GrantID>R01 GM024485</GrantID>
+						<Acronym>GM</Acronym>
+						<Agency>NIGMS NIH HHS</Agency>
+						<Country>United States</Country>
+					</Grant>
+					<Grant>
+						<GrantID>T32 GM136568</GrantID>
+						<Acronym>GM</Acronym>
+						<Agency>NIGMS NIH HHS</Agency>
+						<Country>United States</Country>
+					</Grant>
+					<Grant>
+						<GrantID>U19 AI135990</GrantID>
+						<Acronym>AI</Acronym>
+						<Agency>NIAID NIH HHS</Agency>
+						<Country>United States</Country>
+					</Grant>
+				</GrantList>
+				<PublicationTypeList>
+					<PublicationType UI="D016428">Journal Article</PublicationType>
+					<PublicationType UI="D052061">Research Support, N.I.H., Extramural</PublicationType>
+					<PublicationType UI="D013486">Research Support, U.S. Gov't, Non-P.H.S.</PublicationType>
+				</PublicationTypeList>
+				<ArticleDate DateType="Electronic">
+					<Year>2023</Year>
+					<Month>02</Month>
+					<Day>13</Day>
+				</ArticleDate>
+			</Article>
+			<MedlineJournalInfo>
+				<Country>United States</Country>
+				<MedlineTA>Nat Struct Mol Biol</MedlineTA>
+				<NlmUniqueID>101186374</NlmUniqueID>
+				<ISSNLinking>1545-9985</ISSNLinking>
+			</MedlineJournalInfo>
+			<ChemicalList>
+				<Chemical>
+					<RegistryNumber>79956-01-7</RegistryNumber>
+					<NameOfSubstance UI="D048630">Polyketide Synthases</NameOfSubstance>
+				</Chemical>
+				<Chemical>
+					<RegistryNumber>0</RegistryNumber>
+					<NameOfSubstance UI="D009171">Mycolic Acids</NameOfSubstance>
+				</Chemical>
+				<Chemical>
+					<RegistryNumber>0</RegistryNumber>
+					<NameOfSubstance UI="D005227">Fatty Acids</NameOfSubstance>
+				</Chemical>
+			</ChemicalList>
+			<CitationSubset>IM</CitationSubset>
+			<CommentsCorrectionsList>
+				<CommentsCorrections RefType="UpdateOf">
+					<RefSource>bioRxiv. 2023 Jan 28;:</RefSource>
+					<PMID Version="1">36747776</PMID>
+				</CommentsCorrections>
+			</CommentsCorrectionsList>
+			<MeshHeadingList>
+				<MeshHeading>
+					<DescriptorName UI="D048630" MajorTopicYN="Y">Polyketide Synthases</DescriptorName>
+					<QualifierName UI="Q000235" MajorTopicYN="N">genetics</QualifierName>
+					<QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
+				</MeshHeading>
+				<MeshHeading>
+					<DescriptorName UI="D009169" MajorTopicYN="Y">Mycobacterium tuberculosis</DescriptorName>
+					<QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
+				</MeshHeading>
+				<MeshHeading>
+					<DescriptorName UI="D009171" MajorTopicYN="N">Mycolic Acids</DescriptorName>
+					<QualifierName UI="Q000737" MajorTopicYN="N">chemistry</QualifierName>
+					<QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
+				</MeshHeading>
+				<MeshHeading>
+					<DescriptorName UI="D005227" MajorTopicYN="N">Fatty Acids</DescriptorName>
+					<QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
+				</MeshHeading>
+			</MeshHeadingList>
+			<CoiStatement>The Krogan Laboratory has received research support from Vir Biotechnology, F. Hoffmann-La Roche, and Rezo Therapeutics. Nevan Krogan has financially compensated consulting agreements with the Icahn School of Medicine at Mount Sinai, New York, Maze Therapeutics, Interline Therapeutics, Rezo Therapeutics, GEn1E Lifesciences, Inc. and Twist Bioscience Corp. He is on the Board of Directors of Rezo Therapeutics and is a shareholder in Tenaya Therapeutics, Maze Therapeutics, Rezo Therapeutics, and Interline Therapeutics.</CoiStatement>
+		</MedlineCitation>
+		<PubmedData>
+			<History>
+				<PubMedPubDate PubStatus="received">
+					<Year>2022</Year>
+					<Month>2</Month>
+					<Day>8</Day>
+				</PubMedPubDate>
+				<PubMedPubDate PubStatus="accepted">
+					<Year>2022</Year>
+					<Month>12</Month>
+					<Day>21</Day>
+				</PubMedPubDate>
+				<PubMedPubDate PubStatus="pubmed">
+					<Year>2023</Year>
+					<Month>2</Month>
+					<Day>15</Day>
+					<Hour>6</Hour>
+					<Minute>0</Minute>
+				</PubMedPubDate>
+				<PubMedPubDate PubStatus="medline">
+					<Year>2023</Year>
+					<Month>3</Month>
+					<Day>22</Day>
+					<Hour>6</Hour>
+					<Minute>0</Minute>
+				</PubMedPubDate>
+				<PubMedPubDate PubStatus="entrez">
+					<Year>2023</Year>
+					<Month>2</Month>
+					<Day>14</Day>
+					<Hour>0</Hour>
+					<Minute>2</Minute>
+				</PubMedPubDate>
+			</History>
+			<PublicationStatus>ppublish</PublicationStatus>
+			<ArticleIdList>
+				<ArticleId IdType="pubmed">36782050</ArticleId>
+				<ArticleId IdType="mid">NIHMS1865722</ArticleId>
+				<ArticleId IdType="pmc">PMC10312659</ArticleId>
+				<ArticleId IdType="doi">10.1038/s41594-022-00918-0</ArticleId>
+				<ArticleId IdType="pii">10.1038/s41594-022-00918-0</ArticleId>
+			</ArticleIdList>
+			<ReferenceList>
+				<Reference>
+					<Citation>Global Tuberculosis Report 2021. (World Health Organization, 2021).</Citation>
+				</Reference>
+				<Reference>
+					<Citation>Zuber B et al. Direct visualization of the outer membrane of mycobacteria and corynebacteria in their native state. J. Bacteriol 190, 5672&#x2013;5680 (2008).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC2519390</ArticleId>
+						<ArticleId IdType="pubmed">18567661</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Hoffmann C, Leis A, Niederweis M, Plitzko JM &amp; Engelhardt H Disclosure of the mycobacterial outer membrane: cryo-electron tomography and vitreous sections reveal the lipid bilayer structure. Proc. Natl. Acad. Sci. USA 105, 3963&#x2013;3967 (2008).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC2268800</ArticleId>
+						<ArticleId IdType="pubmed">18316738</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sani M et al. Direct visualization by cryo-EM of the mycobacterial capsular layer: a labile structure containing ESX-1-secreted proteins. PLoS Pathog. 6, e1000794 (2010).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC2832766</ArticleId>
+						<ArticleId IdType="pubmed">20221442</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Grzegorzewicz AE et al. Inhibition of mycolic acid transport across the Mycobacterium tuberculosis plasma membrane. Nat. Chem. Biol 8, 334&#x2013;341 (2012).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC3307863</ArticleId>
+						<ArticleId IdType="pubmed">22344175</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Harding E WHO global progress report on tuberculosis elimination. Lancet Respir. Med 8, 19 (2020).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">31706931</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ioerger TR et al. Identification of new drug targets and resistance mechanisms in Mycobacterium tuberculosis. PLoS One 8, e75245 (2013).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC3781026</ArticleId>
+						<ArticleId IdType="pubmed">24086479</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sacchettini JC, Rubin EJ &amp; Freundlich JS Drugs versus bugs: in pursuit of the persistent predator Mycobacterium tuberculosis. Nat. Rev. Microbiol 6, 41&#x2013;52 (2008).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">18079742</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Portevin D et al. A polyketide synthase catalyzes the last condensation step of mycolic acid biosynthesis in mycobacteria and related organisms. Proc. Natl. Acad. Sci. USA 101, 314&#x2013;319 (2004).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC314182</ArticleId>
+						<ArticleId IdType="pubmed">14695899</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Gavalda S et al. The Pks13/FadD32 crosstalk for the biosynthesis of mycolic acids in Mycobacterium tuberculosis. J. Biol. Chem 284, 19255&#x2013;19264 (2009).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC2740550</ArticleId>
+						<ArticleId IdType="pubmed">19436070</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Trivedi OA et al. Enzymic activation and transfer of fatty acids as acyl-adenylates in mycobacteria. Nature 428, 441&#x2013;445 (2004).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">15042094</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>L&#xe9;ger M et al. The dual function of the Mycobacterium tuberculosis FadD32 required for mycolic acid biosynthesis. Chem. Biol 16, 510&#x2013;519 (2009).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">19477415</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Marrakchi H, Lan&#xe9;elle M-A &amp; Daff&#xe9; M Mycolic acids: structures, biosynthesis, and beyond. Chem. Biol 21, 67&#x2013;85 (2014).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">24374164</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Herbst DA et al. The structural organization of substrate loading in iterative polyketide synthases. Nat. Chem. Biol 14, 474&#x2013;479 (2018).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC6196715</ArticleId>
+						<ArticleId IdType="pubmed">29610486</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Khosla C From active sites to machines: A challenge for enzyme chemists. Isr J Chem 59, 37&#x2013;40 (2019).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC6874407</ArticleId>
+						<ArticleId IdType="pubmed">31762490</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Meniche X et al. Subpolar addition of new cell wall is directed by DivIVA in mycobacteria. Proc. Natl. Acad. Sci. U. S. A 111, E3243&#x2013;51 (2014).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC4128124</ArticleId>
+						<ArticleId IdType="pubmed">25049412</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Aggarwal A et al. Development of a Novel Lead that Targets M. tuberculosis Polyketide Synthase 13. Cell 170, 249&#x2013;259.e25 (2017).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC5509550</ArticleId>
+						<ArticleId IdType="pubmed">28669536</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Pan H et al. Crystal structure of the priming beta-ketosynthase from the R1128 polyketide biosynthetic pathway. Structure 10, 1559&#x2013;1568 (2002).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">12429097</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Tang Y, Kim C-Y, Mathews II, Cane DE &amp; Khosla C The 2.7-Angstrom crystal structure of a 194-kDa homodimeric fragment of the 6-deoxyerythronolide B synthase. Proc. Natl. Acad. Sci. USA 103, 11124&#x2013;11129 (2006).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC1636687</ArticleId>
+						<ArticleId IdType="pubmed">16844787</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Barry CE et al. Mycolic acids: structure, biosynthesis and physiological functions. Prog. Lipid Res 37, 143&#x2013;179 (1998).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">9829124</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Byers DM &amp; Gong H Acyl carrier protein: structure-function relationships in a conserved multifunctional protein family. Biochem Cell Biol 85, 649&#x2013;662 (2007).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">18059524</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Robbins T, Kapilivsky J, Cane DE &amp; Khosla C Roles of conserved active site residues in the ketosynthase domain of an assembly line polyketide synthase. Biochemistry 55, 4476&#x2013;4484 (2016).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC5055053</ArticleId>
+						<ArticleId IdType="pubmed">27441852</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Pintilie G et al. Measurement of atom resolvability in cryo-EM maps with Q-scores. Nat. Methods 17, 328&#x2013;334 (2020).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC7446556</ArticleId>
+						<ArticleId IdType="pubmed">32042190</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Klaus M et al. Protein-Protein Interactions, Not Substrate Recognition, Dominate the Turnover of Chimeric Assembly Line Polyketide Synthases. J. Biol. Chem 291, 16404&#x2013;16415 (2016).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC4965586</ArticleId>
+						<ArticleId IdType="pubmed">27246853</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Krissinel E &amp; Henrick K Inference of macromolecular assemblies from crystalline state. J. Mol. Biol 372, 774&#x2013;797 (2007).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">17681537</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Berman HM et al. The protein data bank. Nucleic Acids Res. 28, 235&#x2013;242 (2000).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC102472</ArticleId>
+						<ArticleId IdType="pubmed">10592235</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Vernon RM et al. Pi-Pi contacts are an overlooked protein feature relevant to phase separation. Elife 7, (2018).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC5847340</ArticleId>
+						<ArticleId IdType="pubmed">29424691</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Lee D, Lee J &amp; Seok C What stabilizes close arginine pairing in proteins? Phys. Chem. Chem. Phys 15, 5844&#x2013;5853 (2013).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">23486862</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Bergeret F et al. Biochemical and structural study of the atypical acyltransferase domain from the mycobacterial polyketide synthase Pks13. J. Biol. Chem 287, 33675&#x2013;33690 (2012).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC3460465</ArticleId>
+						<ArticleId IdType="pubmed">22825853</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Gande R et al. Acyl-CoA carboxylases (accD2 and accD3), together with a unique polyketide synthase (Cg-pks), are key to mycolic acid biosynthesis in Corynebacterianeae such as Corynebacterium glutamicum and Mycobacterium tuberculosis. J. Biol. Chem 279, 44847&#x2013;44857 (2004).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">15308633</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Lucas X, Bauz&#xe1; A, Frontera A &amp; Qui&#xf1;onero D A thorough anion-&#x3c0; interaction study in biomolecules: on the importance of cooperativity effects. Chem. Sci 7, 1038&#x2013;1050 (2016).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC5967298</ArticleId>
+						<ArticleId IdType="pubmed">29899893</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Bon C et al. Solution structure of the type I polyketide synthase Pks13 from Mycobacterium tuberculosis. BMC Biol. 20, 147 (2022).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC9210659</ArticleId>
+						<ArticleId IdType="pubmed">35729566</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>George KM, Yuan Y, Sherman DR &amp; Barry CE The biosynthesis of cyclopropanated mycolic acids in Mycobacterium tuberculosis. Identification and functional analysis of CMAS-2. J. Biol. Chem 270, 27292&#x2013;27298 (1995).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">7592990</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Yuan Y &amp; Barry CE A common mechanism for the biosynthesis of methoxy and cyclopropyl mycolic acids in Mycobacterium tuberculosis. Proc. Natl. Acad. Sci. USA 93, 12828&#x2013;12833 (1996).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC24005</ArticleId>
+						<ArticleId IdType="pubmed">8917504</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Piersimoni L &amp; Sinz A Cross-linking/mass spectrometry at the crossroads. Anal. Bioanal. Chem 412, 5981&#x2013;5987 (2020).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC7442761</ArticleId>
+						<ArticleId IdType="pubmed">32472143</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kaake RM et al. A new in vivo cross-linking mass spectrometry platform to define protein-protein interactions in living cells. Mol. Cell Proteomics 13, 3533&#x2013;3543 (2014).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC4256503</ArticleId>
+						<ArticleId IdType="pubmed">25253489</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Merkley ED et al. Distance restraints from crosslinking mass spectrometry: mining a molecular dynamics simulation database to evaluate lysine-lysine distances. Protein Sci. 23, 747&#x2013;759 (2014).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC4093951</ArticleId>
+						<ArticleId IdType="pubmed">24639379</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kaake RM et al. Characterization of an A3G-VifHIV-1-CRL5-CBF&#x3b2; Structure Using a Cross-linking Mass Spectrometry Pipeline for Integrative Modeling of Host-Pathogen Complexes. Mol. Cell Proteomics 20, 100132 (2021).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC8459920</ArticleId>
+						<ArticleId IdType="pubmed">34389466</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sali A From integrative structural biology to cell biology. J. Biol. Chem 296, 100743 (2021).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC8203844</ArticleId>
+						<ArticleId IdType="pubmed">33957123</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Saltzberg DJ et al. Using Integrative Modeling Platform to compute, validate, and archive a model of a protein complex structure. Protein Sci. 30, 250&#x2013;261 (2021).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC7737781</ArticleId>
+						<ArticleId IdType="pubmed">33166013</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Saltzberg D et al. Modeling biological complexes using integrative modeling platform. Methods Mol. Biol 2022, 353&#x2013;377 (2019).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">31396911</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kim SJ et al. Integrative structure and functional anatomy of a nuclear pore complex. Nature 555, 475&#x2013;482 (2018).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC6022767</ArticleId>
+						<ArticleId IdType="pubmed">29539637</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Jumper J et al. Highly accurate protein structure prediction with AlphaFold. Nature 596, 583&#x2013;589 (2021).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC8371605</ArticleId>
+						<ArticleId IdType="pubmed">34265844</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Varadi M et al. AlphaFold Protein Structure Database: massively expanding the structural coverage of protein-sequence space with high-accuracy models. Nucleic Acids Res. 50, D439&#x2013;D444 (2022).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC8728224</ArticleId>
+						<ArticleId IdType="pubmed">34791371</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Russel D et al. Putting the pieces together: integrative modeling platform software for structure determination of macromolecular assemblies. PLoS Biol. 10, e1001244 (2012).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC3260315</ArticleId>
+						<ArticleId IdType="pubmed">22272186</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Tsai SC et al. Crystal Structure of the Macrocycle-forming Thioesterase Domain of Erythromycin Polyketide Synthase (DEBS TE). (2002).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC64940</ArticleId>
+						<ArticleId IdType="pubmed">11752428</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Gokulan K, Aggarwal A, Shipman L, Besra GS &amp; Sacchettini JC Mycobacterium tuberculosis acyl carrier protein synthase adopts two different pH-dependent structural conformations. Acta Crystallogr. Sect. D, Biol. Crystallogr 67, 657&#x2013;669 (2011).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC3270384</ArticleId>
+						<ArticleId IdType="pubmed">21697604</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Keatinge-Clay AT et al. Catalysis, specificity, and ACP docking site of Streptomyces coelicolor malonyl-CoA:ACP transacylase. Structure 11, 147&#x2013;154 (2003).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">12575934</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Tsai S-C, Lu H, Cane DE, Khosla C &amp; Stroud RM Insights into Channel Architecture and Substrate Specificity from Crystal Structures of Two Macrocycle-Forming Thioesterases of Modular Polyketide Synthases&#x2020; , &#x2021;. Biochemistry 41, 12598&#x2013;12606 (2002).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">12379102</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Mindrebo JT et al. Gating mechanism of elongating &#x3b2;-ketoacyl-ACP synthases. Nat. Commun 11, 1727 (2020).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC7138838</ArticleId>
+						<ArticleId IdType="pubmed">32265440</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Portevin D et al. The acyl-AMP ligase FadD32 and AccD4-containing acyl-CoA carboxylase are required for the synthesis of mycolic acids and essential for mycobacterial growth: identification of the carboxylation product and determination of the acyl-CoA carboxylase components. J. Biol. Chem 280, 8862&#x2013;8874 (2005).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">15632194</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>La Rosa V et al. MmpL3 is the cellular target of the antitubercular pyrrole derivative BM212. Antimicrob. Agents Chemother 56, 324&#x2013;331 (2012).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC3256021</ArticleId>
+						<ArticleId IdType="pubmed">22024828</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Poce G et al. Improved BM212 MmpL3 inhibitor analogue shows efficacy in acute murine model of tuberculosis infection. PLoS One 8, e56980 (2013).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC3578785</ArticleId>
+						<ArticleId IdType="pubmed">23437287</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>LaCava J, Jiang H &amp; Rout MP
+Protein Complex Affinity Capture from Cryomilled Mammalian Cells. J. Vis. Exp (2016). doi:http://10.3791/54518</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.3791/54518</ArticleId>
+						<ArticleId IdType="pmc">PMC5226390</ArticleId>
+						<ArticleId IdType="pubmed">28060343</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Zheng SQ et al. MotionCor2: anisotropic correction of beam-induced motion for improved cryo-electron microscopy. Nat. Methods 14, 331&#x2013;332 (2017).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC5494038</ArticleId>
+						<ArticleId IdType="pubmed">28250466</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Punjani A, Rubinstein JL, Fleet DJ &amp; Brubaker MA cryoSPARC: algorithms for rapid unsupervised cryo-EM structure determination. Nat. Methods 14, 290&#x2013;296 (2017).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">28165473</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Grant T, Rohou A &amp; Grigorieff N cisTEM, user-friendly software for single-particle image processing. Elife 7, e35383 (2018).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC5854467</ArticleId>
+						<ArticleId IdType="pubmed">29513216</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Terwilliger TC, Ludtke SJ, Read RJ, Adams PD &amp; Afonine PV Improvement of cryo-EM maps by density modification. Nat. Methods 17, 923&#x2013;927 (2020).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC7484085</ArticleId>
+						<ArticleId IdType="pubmed">32807957</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Afonine PV
+et al.
+Real-space refinement in Phenix for cryo-EM and crystallography. BioRxiv (2018). doi:http://10.1101/249607</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1101/249607</ArticleId>
+						<ArticleId IdType="pmc">PMC6096492</ArticleId>
+						<ArticleId IdType="pubmed">29872004</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Zivanov J et al. New tools for automated high-resolution cryo-EM structure determination in RELION-3. Elife 7, (2018).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC6250425</ArticleId>
+						<ArticleId IdType="pubmed">30412051</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Pettersen EF et al. UCSF Chimera&#x2014;a visualization system for exploratory research and analysis. J. Comput. Chem 25, 1605&#x2013;1612 (2004).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">15264254</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Goddard TD et al. UCSF ChimeraX: Meeting modern challenges in visualization and analysis. Protein Sci. 27, 14&#x2013;25 (2018).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC5734306</ArticleId>
+						<ArticleId IdType="pubmed">28710774</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Terwilliger TC, Sobolev OV, Afonine PV &amp; Adams PD Automated map sharpening by maximization of detail and connectivity. Acta Crystallogr. D Struct. Biol 74, 545&#x2013;559 (2018).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC6096490</ArticleId>
+						<ArticleId IdType="pubmed">29872005</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sanchez-Garcia R et al. DeepEMhancer: a deep learning solution for cryo-EM volume post-processing. Commun. Biol 4, 874 (2021).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC8282847</ArticleId>
+						<ArticleId IdType="pubmed">34267316</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kelley LA, Mezulis S, Yates CM, Wass MN &amp; Sternberg MJE The Phyre2 web portal for protein modeling, prediction and analysis. Nat. Protoc 10, 845&#x2013;858 (2015).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC5298202</ArticleId>
+						<ArticleId IdType="pubmed">25950237</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Emsley P, Lohkamp B, Scott WG &amp; Cowtan K Features and development of Coot. Acta Crystallogr. Sect. D, Biol. Crystallogr 66, 486&#x2013;501 (2010).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC2852313</ArticleId>
+						<ArticleId IdType="pubmed">20383002</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Croll TI ISOLDE: a physically realistic environment for model building into low-resolution electron-density maps. Acta Crystallogr. D Struct. Biol 74, 519&#x2013;530 (2018).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC6096486</ArticleId>
+						<ArticleId IdType="pubmed">29872003</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Afonine PV et al. Real-space refinement in PHENIX for cryo-EM and crystallography. Acta Crystallogr. D Struct. Biol 74, 531&#x2013;544 (2018).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC6096492</ArticleId>
+						<ArticleId IdType="pubmed">29872004</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Pravda L et al. MOLEonline: a web-based tool for analyzing channels, tunnels and pores (2018 update). Nucleic Acids Res. 46, W368&#x2013;W373 (2018).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC6030847</ArticleId>
+						<ArticleId IdType="pubmed">29718451</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Tan BK et al. Discovery of a cardiolipin synthase utilizing phosphatidylethanolamine and phosphatidylglycerol as substrates. Proc. Natl. Acad. Sci. USA 109, 16504&#x2013;16509 (2012).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC3478633</ArticleId>
+						<ArticleId IdType="pubmed">22988102</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kao A et al. Development of a novel cross-linking strategy for fast and accurate identification of cross-linked peptides of protein complexes. Mol. Cell Proteomics 10, M110.002212 (2011).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC3013449</ArticleId>
+						<ArticleId IdType="pubmed">20736410</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Chambers MC et al. A cross-platform toolkit for mass spectrometry and proteomics. Nat. Biotechnol 30, 918&#x2013;920 (2012).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC3471674</ArticleId>
+						<ArticleId IdType="pubmed">23051804</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kessner D, Chambers M, Burke R, Agus D &amp; Mallick P ProteoWizard: open source software for rapid proteomics tools development. Bioinformatics 24, 2534&#x2013;2536 (2008).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC2732273</ArticleId>
+						<ArticleId IdType="pubmed">18606607</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Perez-Riverol Y et al. The PRIDE database and related tools and resources in 2019: improving support for quantification data. Nucleic Acids Res. 47, D442&#x2013;D450 (2019).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC6323896</ArticleId>
+						<ArticleId IdType="pubmed">30395289</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Baker PR &amp; Chalkley RJ MS-viewer: a web-based spectral viewer for proteomics results. Mol. Cell Proteomics 13, 1392&#x2013;1396 (2014).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC4014294</ArticleId>
+						<ArticleId IdType="pubmed">24591702</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Alber F et al. Determining the architectures of macromolecular assemblies. Nature 450, 683&#x2013;694 (2007).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pubmed">18046405</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Viswanath S, Chemmama IE, Cimermancic P &amp; Sali A Assessing exhaustiveness of stochastic sampling for integrative modeling of macromolecular structures. Biophys. J 113, 2344&#x2013;2353 (2017).</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC5768525</ArticleId>
+						<ArticleId IdType="pubmed">29211988</ArticleId>
+					</ArticleIdList>
+				</Reference>
+			</ReferenceList>
+		</PubmedData>
+	</PubmedArticle>
+</PubmedArticleSet>

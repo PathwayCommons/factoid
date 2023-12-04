@@ -98,23 +98,23 @@ export class InfoPanel extends Component {
 
       h(Credits, { controller, bus, document }),
 
-      hasArticleId ? [
-        h('div.editor-info-links', [
-          h( doi ? 'a.editor-info-link.plain-link': 'div.editor-info-link', doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` }: {}, reference),
-          pmid ? h('a.editor-info-link.plain-link', { target: '_blank', href: `${PUBMED_LINK_BASE_URL}${pmid}` }, 'PubMed') : null,
-          h('a.editor-info-link.plain-link', { target: '_blank', href: `${GOOGLE_SCHOLAR_BASE_URL}${ doi ?  doi : ( "\u0022" + title + "\u0022") }` }, 'Google Scholar')
-        ]),
-        h('div.editor-info-main-sections', [
-          abstract ? h('div.editor-info-abstract-section.editor-info-main-section', [
-            h('div.editor-info-section-title', abstract ? 'Abstract': 'Summary'),
-            h('div.editor-info-abstract-content', abstract ? abstract : document.toText() )
-          ]) : null,
-          hasRelatedPapers ? h('div.editor-info-related-papers-section.editor-info-main-section', [
-            h('div.editor-info-section-title', 'Recommended articles'),
-            h('div.editor-info-related-papers', [ h(RelatedPapers, { document, source: document }) ])
-          ]) : null
-        ])
-      ] : !document.editable() ? h('div.editor-coming-soon-placeholder', `Biofactoid is looking for more information about this article from PubMed and pathway databases.  This information will appear here as soon as it is available.`) : null
+      h('div.editor-info-links', [
+        reference ? h( doi ? 'a.editor-info-link.plain-link': 'div.editor-info-link', doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` }: {}, reference) : null,
+        pmid ? h('a.editor-info-link.plain-link', { target: '_blank', href: `${PUBMED_LINK_BASE_URL}${pmid}` }, 'PubMed') : null,
+        h('a.editor-info-link.plain-link', { target: '_blank', href: `${GOOGLE_SCHOLAR_BASE_URL}${( "\u0022" + title + "\u0022") }`}, 'Google Scholar')
+      ]),
+      h('div.editor-info-main-sections', [
+        abstract ? h('div.editor-info-abstract-section.editor-info-main-section', [
+          h('div.editor-info-section-title', abstract ? 'Abstract': 'Summary'),
+          h('div.editor-info-abstract-content', abstract ? abstract : document.toText() )
+        ]) : null,
+        hasRelatedPapers ? h('div.editor-info-related-papers-section.editor-info-main-section', [
+          h('div.editor-info-section-title', 'Recommended articles'),
+          h('div.editor-info-related-papers', [ h(RelatedPapers, { document, source: document }) ])
+        ]) : null
+      ]),
+
+      !hasArticleId && !document.editable() ? h('div.editor-coming-soon-placeholder', `Biofactoid is looking for more information about this article from PubMed and pathway databases.  This information will appear here as soon as it is available.`) : null
     ]);
   }
 }

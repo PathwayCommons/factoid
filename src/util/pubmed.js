@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { parse as dateParse } from 'date-fns';
-import { isDoi } from './is';
 
 const NUM_AUTHORS_SHOWING = 4;
 

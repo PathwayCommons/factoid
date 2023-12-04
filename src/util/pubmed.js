@@ -210,7 +210,7 @@ const getReferenceString = Journal => {
 
 const getArticleId = ( PubmedArticle, IdType ) => _.get( _.find( _.get( PubmedArticle, ['PubmedData', 'ArticleIdList'], [] ), [ 'IdType', IdType ] ), 'id', null );
 
-// Format each CommentsCorrections as { type, [pmid, doi, text (default)] }
+// Format each CommentsCorrections as { type, value, [, id-type, id] }
 const getRelations = MedlineCitation => {
 
   let extractDOI = str => {
@@ -226,11 +226,12 @@ const getRelations = MedlineCitation => {
     relations = CommentsCorrectionsList.map( CommentsCorrections => {
       const { RefSource, RefType, PMID } = CommentsCorrections;
       const relation = { source: RefSource, type: RefType };
-      if (PMID){
-        _.set( relation, 'pmid', PMID );
+
+      if ( PMID ){
+        _.assign( relation, { 'id-type': 'pmid', id: PMID });
       } else {
-        const doi = extractDOI(RefSource);
-        if( doi ) _.set( relation, 'doi', doi );
+        const doi = extractDOI( RefSource );
+        if( doi ) _.assign( relation, { 'id-type': 'doi', id: doi });
       }
       return relation;
     });

@@ -72,7 +72,8 @@ export class InfoPanel extends Component {
     const retractedPubType = _.find( citation.pubTypes, ['UI', 'D016441'] );
     const retractFlag = retractedPubType ? h('span.editor-info-flag.super-salient-button.danger', retractedPubType.value) : null;
 
-    const hasArticleMetadata = pmid != null || doi != null;
+    const hasArticleId = pmid != null || doi != null;
+    const hasRelatedPapers = !_.isEmpty( document.relatedPapers() );
 
     return h('div.editor-info-panel', [
       h('div.editor-info-flags', [ retractFlag ]),
@@ -97,24 +98,23 @@ export class InfoPanel extends Component {
 
       h(Credits, { controller, bus, document }),
 
-      hasArticleMetadata ? h('div.editor-info-links', [
-        h( doi ? 'a.editor-info-link.plain-link': 'div.editor-info-link', doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` }: {}, reference),
-        pmid ? h('a.editor-info-link.plain-link', { target: '_blank', href: `${PUBMED_LINK_BASE_URL}${pmid}` }, 'PubMed') : null,
-        h('a.editor-info-link.plain-link', { target: '_blank', href: `${GOOGLE_SCHOLAR_BASE_URL}${ doi ?  doi : ( "\u0022" + title + "\u0022") }` }, 'Google Scholar')
-      ]) : null,
-
-      abstract ? h('div.editor-info-main-sections', [
-        h('div.editor-info-abstract-section.editor-info-main-section', [
-          h('div.editor-info-section-title', abstract ? 'Abstract': 'Summary'),
-          h('div.editor-info-abstract-content', abstract ? abstract : document.toText() )
+      hasArticleId ? [
+        h('div.editor-info-links', [
+          h( doi ? 'a.editor-info-link.plain-link': 'div.editor-info-link', doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` }: {}, reference),
+          pmid ? h('a.editor-info-link.plain-link', { target: '_blank', href: `${PUBMED_LINK_BASE_URL}${pmid}` }, 'PubMed') : null,
+          h('a.editor-info-link.plain-link', { target: '_blank', href: `${GOOGLE_SCHOLAR_BASE_URL}${ doi ?  doi : ( "\u0022" + title + "\u0022") }` }, 'Google Scholar')
         ]),
-        h('div.editor-info-related-papers-section.editor-info-main-section', [
-          h('div.editor-info-section-title', 'Recommended articles'),
-          h('div.editor-info-related-papers', [ h(RelatedPapers, { document, source: document }) ])
+        h('div.editor-info-main-sections', [
+          abstract ? h('div.editor-info-abstract-section.editor-info-main-section', [
+            h('div.editor-info-section-title', abstract ? 'Abstract': 'Summary'),
+            h('div.editor-info-abstract-content', abstract ? abstract : document.toText() )
+          ]) : null,
+          hasRelatedPapers ? h('div.editor-info-related-papers-section.editor-info-main-section', [
+            h('div.editor-info-section-title', 'Recommended articles'),
+            h('div.editor-info-related-papers', [ h(RelatedPapers, { document, source: document }) ])
+          ]) : null
         ])
-      ]) : null,
-
-      !hasArticleMetadata && !document.editable() ? h('div.editor-coming-soon-placeholder', `Biofactoid is looking for more information about this article from PubMed and pathway databases.  This information will appear here as soon as it is available.`) : null
+      ] : !document.editable() ? h('div.editor-coming-soon-placeholder', `Biofactoid is looking for more information about this article from PubMed and pathway databases.  This information will appear here as soon as it is available.`) : null
     ]);
   }
 }

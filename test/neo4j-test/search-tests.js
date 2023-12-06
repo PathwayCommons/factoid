@@ -18,7 +18,7 @@ import goult5 from './document/doct_tests_5.json';
 let rdbConn;
 let dbFix;
 let testDb;
-const dbName = 'factoid-neo4j-test';
+const dbName = 'factoid_neo4j_test';
 const dbTables = ['document', 'element'];
 
 describe('Neo4j Tests for Search Functions', function () {

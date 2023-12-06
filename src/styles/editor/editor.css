@@ -435,12 +435,12 @@
   }
 
   .editor-info-abstract-section {
-    width: 50%;
+    min-width: 50%;
     box-sizing: border-box;
     padding-right: 2em;
   }
 
-  .editor-info-related-papers-section {
+  /* .editor-info-related-papers-section {
     flex: 1 1;
-  }
+  } */
 }

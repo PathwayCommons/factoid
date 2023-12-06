@@ -51,10 +51,8 @@ General:
 CRON:
 
 - `CRON_SCHEDULE` : second (optional), minute, hour, day of month, month, day of week
-- `DOCUMENT_CRON_UPDATE_PERIOD_DAYS` : The minimum time between successive Document cron update calls
-- `DOCUMENT_CRON_CREATED_AGE_DAYS` : Only Documents created fewer than this many days will be selecte for update. When undefined (default), ignores filtering on creation date.
-- `DOCUMENT_CRON_REFRESH_ENABLED` : Flag to enable existing Document metadata to be refreshed (e.g. PubMed UID) (default true).
-- `DOCUMENT_CRON_UNEDITED_DAYS` : Number of days since Documemt was last edited; criteria for trashing
+- `DOCUMENT_CRON_UPDATE_PERIOD` : Milliseconds between successive Document cron update calls
+- `DOCUMENT_CRON_STALE_PERIOD` : Milliseconds since Documemt was last edited; criteria for trashing
 - `GRAPHDB_CRON_REFRESH_PERIOD_MINUTES` : Minimum time (minutes) between refreshes of graph DB data
 
 Database:
@@ -88,6 +86,7 @@ Services:
 - `ORCID_BASE_URL` : url for [ORCID](https://orcid.org/) website
 - `ORCID_PUBLIC_API_BASE_URL` : url for version of [ORCID](https://orcid.org/) public API
 - `NO_ABSTRACT_HANDLING` : labels directing how to sort documents missing query text. 'text' (default): autogenerate text from templates; 'date': sort by date and ignore text.
+- `CROSSREF_API_BASE_URL` : url for [Crossref Unified Resource API](https://api.crossref.org/)
 
 Links:
 

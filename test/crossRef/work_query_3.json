@@ -1,0 +1,3626 @@
+[
+  {
+    "indexed": {
+      "date-parts": [
+        [
+          2023,
+          4,
+          25
+        ]
+      ],
+      "date-time": "2023-04-25T08:53:41Z",
+      "timestamp": 1682412821724
+    },
+    "reference-count": 28,
+    "publisher": "Elsevier BV",
+    "license": [
+      {
+        "start": {
+          "date-parts": [
+            [
+              2021,
+              8,
+              1
+            ]
+          ],
+          "date-time": "2021-08-01T00:00:00Z",
+          "timestamp": 1627776000000
+        },
+        "content-version": "tdm",
+        "delay-in-days": 0,
+        "URL": "https:\/\/www.elsevier.com\/tdm\/userlicense\/1.0\/"
+      },
+      {
+        "start": {
+          "date-parts": [
+            [
+              2021,
+              5,
+              25
+            ]
+          ],
+          "date-time": "2021-05-25T00:00:00Z",
+          "timestamp": 1621900800000
+        },
+        "content-version": "vor",
+        "delay-in-days": 0,
+        "URL": "http:\/\/creativecommons.org\/licenses\/by-nc-nd\/4.0\/"
+      }
+    ],
+    "funder": [
+      {
+        "DOI": "10.13039\/501100007765",
+        "name": "Shenyang Science and Technology Bureau",
+        "doi-asserted-by": "publisher"
+      },
+      {
+        "DOI": "10.13039\/501100002858",
+        "name": "China Postdoctoral Science Foundation",
+        "doi-asserted-by": "publisher"
+      },
+      {
+        "DOI": "10.13039\/501100010018",
+        "name": "Liaoning Province Doctoral Start-up Foundation",
+        "doi-asserted-by": "publisher"
+      },
+      {
+        "DOI": "10.13039\/501100005047",
+        "name": "Liaoning Provincial Natural Science Foundation",
+        "doi-asserted-by": "publisher"
+      },
+      {
+        "DOI": "10.13039\/501100001809",
+        "name": "National Natural Science Foundation of China",
+        "doi-asserted-by": "publisher"
+      },
+      {
+        "DOI": "10.13039\/501100012580",
+        "name": "Natural Science Foundation of Tianjin Science and Technology Correspondent Project",
+        "doi-asserted-by": "publisher"
+      }
+    ],
+    "content-domain": {
+      "domain": [
+        "elsevier.com",
+        "sciencedirect.com"
+      ],
+      "crossmark-restriction": true
+    },
+    "short-container-title": [
+      "Free Radical Biology and Medicine"
+    ],
+    "published-print": {
+      "date-parts": [
+        [
+          2021,
+          8
+        ]
+      ]
+    },
+    "DOI": "10.1016\/j.freeradbiomed.2021.05.026",
+    "type": "journal-article",
+    "created": {
+      "date-parts": [
+        [
+          2021,
+          5,
+          18
+        ]
+      ],
+      "date-time": "2021-05-18T18:15:57Z",
+      "timestamp": 1621361757000
+    },
+    "page": "272-283",
+    "update-policy": "http:\/\/dx.doi.org\/10.1016\/elsevier_cm_policy",
+    "source": "Crossref",
+    "is-referenced-by-count": 4,
+    "title": [
+      "Selective intra-arterial brain cooling induces cerebral protection against ischemia\/reperfusion injury through SENP1-Sirt3 signaling"
+    ],
+    "prefix": "10.1016",
+    "volume": "171",
+    "author": [
+      {
+        "given": "Heng",
+        "family": "Cai",
+        "sequence": "first",
+        "affiliation": []
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-5147-1297",
+        "authenticated-orcid": false,
+        "given": "Xiyun",
+        "family": "Bian",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Liangyu",
+        "family": "Chen",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Nan",
+        "family": "Zhang",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Lili",
+        "family": "Li",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Wei",
+        "family": "Tang",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Xiaozhi",
+        "family": "Liu",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Zhiqing",
+        "family": "Li",
+        "sequence": "additional",
+        "affiliation": []
+      }
+    ],
+    "member": "78",
+    "reference": [
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib1",
+        "doi-asserted-by": "crossref",
+        "first-page": "252",
+        "DOI": "10.1056\/NEJMcp1917030",
+        "article-title": "Acute Ischemic stroke",
+        "volume": "383",
+        "author": "Powers",
+        "year": "2020",
+        "journal-title": "N. Engl. J. Med."
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib2",
+        "doi-asserted-by": "crossref",
+        "first-page": "1240",
+        "DOI": "10.1161\/STROKEAHA.119.027921",
+        "article-title": "Trends of r-tPA (recombinant tissue-type plasminogen activator) treatment and treatment-influencing factors in acute Ischemic stroke",
+        "volume": "51",
+        "author": "Marko",
+        "year": "2020",
+        "journal-title": "Stroke"
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib3",
+        "doi-asserted-by": "crossref",
+        "first-page": "129",
+        "DOI": "10.1136\/jnnp-2020-324283",
+        "article-title": "The future of neuroprotection in stroke",
+        "volume": "92",
+        "author": "Chamorro",
+        "year": "2021",
+        "journal-title": "J. Neurol. Neurosurg. Psychiatr."
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib4",
+        "doi-asserted-by": "crossref",
+        "first-page": "1415",
+        "DOI": "10.1177\/0271678X20903697",
+        "article-title": "Selective intra-arterial brain cooling improves long-term outcomes in a non-human primate model of embolic stroke: efficacy depending on reperfusion status",
+        "volume": "40",
+        "author": "Wu",
+        "year": "2020",
+        "journal-title": "J. Cerebr. Blood Flow Metabol. : Off. J.Int. Soc.Cerebr. Blood Flow.Metabol."
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib5",
+        "doi-asserted-by": "crossref",
+        "first-page": "125",
+        "DOI": "10.1227\/NEU.0000000000001088",
+        "article-title": "Transarterial regional brain hypothermia Inhibits acute aquaporin-4 surge and sequential microvascular events in Ischemia\/reperfusion Injury",
+        "volume": "79",
+        "author": "Kurisu",
+        "year": "2016",
+        "journal-title": "Neurosurgery"
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib6",
+        "first-page": "14728",
+        "volume": "vol. 91",
+        "author": "Zhang",
+        "year": "2019"
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib7",
+        "doi-asserted-by": "crossref",
+        "first-page": "157",
+        "DOI": "10.1007\/s12975-017-0567-x",
+        "article-title": "Protein modifications with ubiquitin as response to cerebral Ischemia-reperfusion Injury",
+        "volume": "9",
+        "author": "Hochrainer",
+        "year": "2018",
+        "journal-title": "Translational stroke research"
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib8",
+        "doi-asserted-by": "crossref",
+        "first-page": "1063",
+        "DOI": "10.1016\/j.bbrc.2019.04.079",
+        "article-title": "2-D08 as a SUMOylation inhibitor induced ROS accumulation mediates apoptosis of acute myeloid leukemia cells possibly through the deSUMOylation of NOX2",
+        "volume": "513",
+        "author": "Zhou",
+        "year": "2019",
+        "journal-title": "Biochem. Biophys. Res. Commun."
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib9",
+        "series-title": "Sirtuins' Control of Autophagy and Mitophagy in Cancer",
+        "author": "Aventaggiato",
+        "year": "2020"
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib10",
+        "doi-asserted-by": "crossref",
+        "first-page": "105497",
+        "DOI": "10.1016\/j.phrs.2021.105497",
+        "article-title": "Mechanistic insights into AMPK-SIRT3 positive feedback loop-mediated chondrocyte mitochondrial quality control in osteoarthritis pathogenesis",
+        "volume": "166",
+        "author": "Chen",
+        "year": "2021",
+        "journal-title": "Pharmacol. Res."
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib11",
+        "doi-asserted-by": "crossref",
+        "first-page": "1783",
+        "DOI": "10.1038\/jcbfm.2015.123",
+        "article-title": "Sirtuin 3 mediates neuroprotection of ketones against ischemic stroke",
+        "volume": "35",
+        "author": "Yin",
+        "year": "2015",
+        "journal-title": "J. Cerebr. Blood Flow Metabol. : Off. J.Int. Soc.Cerebr. Blood Flow.Metabol."
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib12",
+        "doi-asserted-by": "crossref",
+        "first-page": "3142",
+        "DOI": "10.1161\/STROKEAHA.120.030152",
+        "article-title": "Placental mitochondria therapy for cerebral Ischemia-reperfusion Injury in mice",
+        "volume": "51",
+        "author": "Nakamura",
+        "year": "2020",
+        "journal-title": "Stroke"
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib13",
+        "first-page": "460",
+        "volume": "vol. 22",
+        "author": "DeNardo",
+        "year": "2019"
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib14",
+        "unstructured": "Weng, W."
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib15",
+        "doi-asserted-by": "crossref",
+        "first-page": "196",
+        "DOI": "10.1016\/j.devcel.2019.11.012",
+        "article-title": "Low-level saturated fatty acid palmitate benefits liver cells by boosting mitochondrial metabolism via CDK1-SIRT3-CPT2 cascade",
+        "volume": "52",
+        "author": "Liu",
+        "year": "2020",
+        "journal-title": "Dev. Cell"
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib16",
+        "doi-asserted-by": "crossref",
+        "first-page": "144",
+        "DOI": "10.1186\/s13287-021-02166-3",
+        "article-title": "Mesenchymal stem cell-derived conditioned medium protects vascular grafts of brain-dead rats against in vitro ischemia\/reperfusion injury",
+        "volume": "12",
+        "author": "Korkmaz-Icöz",
+        "year": "2021",
+        "journal-title": "Stem Cell Res. Ther."
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib17",
+        "doi-asserted-by": "crossref",
+        "first-page": "823",
+        "DOI": "10.1016\/j.molcel.2019.06.008",
+        "article-title": "SENP1-Sirt3 signaling controls mitochondrial protein acetylation and metabolism",
+        "volume": "75",
+        "author": "Wang",
+        "year": "2019",
+        "journal-title": "Mol. Cell"
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib18",
+        "doi-asserted-by": "crossref",
+        "first-page": "e194",
+        "DOI": "10.1161\/CIR.0000000000000697",
+        "article-title": "Pediatric post-cardiac arrest Care: a scientific statement from the American heart association",
+        "volume": "140",
+        "author": "Topjian",
+        "year": "2019",
+        "journal-title": "Circulation"
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib19",
+        "doi-asserted-by": "crossref",
+        "first-page": "1103",
+        "DOI": "10.1542\/peds.108.5.1103",
+        "article-title": "Differences in brain temperature and cerebral blood flow during selective head versus whole-body cooling",
+        "volume": "108",
+        "author": "Laptook",
+        "year": "2001",
+        "journal-title": "Pediatrics"
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib20",
+        "doi-asserted-by": "crossref",
+        "first-page": "1365",
+        "DOI": "10.1177\/0271678X20925026",
+        "article-title": "Selective cerebral cooling for acute ischemic stroke",
+        "volume": "40",
+        "author": "Lyden",
+        "year": "2020",
+        "journal-title": "J. Cerebr. Blood Flow Metabol. : Off. J.Int. Soc.Cerebr. Blood Flow.Metabol."
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib21",
+        "doi-asserted-by": "crossref",
+        "first-page": "165",
+        "DOI": "10.1136\/neurintsurg-2011-010150",
+        "article-title": "Brain temperature changes during selective cooling with endovascular intracarotid cold saline infusion: simulation using human data fitted with an integrated mathematical model",
+        "volume": "5",
+        "author": "Neimark",
+        "year": "2013",
+        "journal-title": "J. Neurointerventional Surg."
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib22",
+        "doi-asserted-by": "crossref",
+        "first-page": "1115",
+        "DOI": "10.1161\/STROKEAHA.113.004315",
+        "article-title": "Small ubiquitin-like modifier 3-modified proteome regulated by brain ischemia in novel small ubiquitin-like modifier transgenic mice: putative protective proteins\/pathways",
+        "volume": "45",
+        "author": "Yang",
+        "year": "2014",
+        "journal-title": "Stroke"
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib23",
+        "volume": "vol. 6",
+        "author": "Ma",
+        "year": "2020"
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib24",
+        "doi-asserted-by": "crossref",
+        "first-page": "214",
+        "DOI": "10.1016\/j.ebiom.2019.03.035",
+        "article-title": "SUMOylation promotes survival and integration of neural stem cell grafts in ischemic stroke",
+        "volume": "42",
+        "author": "Bernstock",
+        "year": "2019",
+        "journal-title": "EBioMedicine"
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib25",
+        "doi-asserted-by": "crossref",
+        "first-page": "439",
+        "DOI": "10.1161\/CIRCRESAHA.119.315767",
+        "article-title": "Mitochondrial deacetylase Sirt3 reduces vascular dysfunction and hypertension while Sirt3 depletion in essential hypertension Is linked to vascular inflammation and oxidative stress",
+        "volume": "126",
+        "author": "Dikalova",
+        "year": "2020",
+        "journal-title": "Circ. Res."
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib26",
+        "doi-asserted-by": "crossref",
+        "first-page": "8315",
+        "DOI": "10.7150\/thno.45922",
+        "article-title": "Mitochondrial Sirtuin 3: new emerging biological function and therapeutic target",
+        "volume": "10",
+        "author": "Zhang",
+        "year": "2020",
+        "journal-title": "Theranostics"
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib27",
+        "doi-asserted-by": "crossref",
+        "first-page": "101107",
+        "DOI": "10.1016\/j.arr.2020.101107",
+        "article-title": "Oxidized nicotinamide adenine dinucleotide-dependent mitochondrial deacetylase sirtuin-3 as a potential therapeutic target of Parkinson's disease",
+        "volume": "62",
+        "author": "Zhou",
+        "year": "2020",
+        "journal-title": "Ageing Res. Rev."
+      },
+      {
+        "key": "10.1016\/j.freeradbiomed.2021.05.026_bib28",
+        "doi-asserted-by": "crossref",
+        "first-page": "117",
+        "DOI": "10.1089\/ars.2019.7825",
+        "article-title": "Neuroprotective effects of trilobatin, a novel naturally occurring Sirt3 agonist from lithocarpus polystachyus rehd., mitigate cerebral Ischemia\/reperfusion Injury: involvement of TLR4\/NF-κB and Nrf2\/Keap-1 signaling",
+        "volume": "33",
+        "author": "Gao",
+        "year": "2020",
+        "journal-title": "Antioxidants Redox Signal."
+      }
+    ],
+    "container-title": [
+      "Free Radical Biology and Medicine"
+    ],
+    "language": "en",
+    "link": [
+      {
+        "URL": "https:\/\/api.elsevier.com\/content\/article\/PII:S089158492100318X?httpAccept=text\/xml",
+        "content-type": "text\/xml",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https:\/\/api.elsevier.com\/content\/article\/PII:S089158492100318X?httpAccept=text\/plain",
+        "content-type": "text\/plain",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      }
+    ],
+    "deposited": {
+      "date-parts": [
+        [
+          2022,
+          12,
+          15
+        ]
+      ],
+      "date-time": "2022-12-15T10:12:23Z",
+      "timestamp": 1671099143000
+    },
+    "score": 25.663866,
+    "resource": {
+      "primary": {
+        "URL": "https:\/\/linkinghub.elsevier.com\/retrieve\/pii\/S089158492100318X"
+      }
+    },
+    "issued": {
+      "date-parts": [
+        [
+          2021,
+          8
+        ]
+      ]
+    },
+    "references-count": 28,
+    "alternative-id": [
+      "S089158492100318X"
+    ],
+    "URL": "http:\/\/dx.doi.org\/10.1016\/j.freeradbiomed.2021.05.026",
+    "ISSN": [
+      "0891-5849"
+    ],
+    "issn-type": [
+      {
+        "value": "0891-5849",
+        "type": "print"
+      }
+    ],
+    "subject": [
+      "Physiology (medical)",
+      "Biochemistry"
+    ],
+    "published": {
+      "date-parts": [
+        [
+          2021,
+          8
+        ]
+      ]
+    },
+    "assertion": [
+      {
+        "value": "Elsevier",
+        "name": "publisher",
+        "label": "This article is maintained by"
+      },
+      {
+        "value": "Selective intra-arterial brain cooling induces cerebral protection against ischemia\/reperfusion injury through SENP1-Sirt3 signaling",
+        "name": "articletitle",
+        "label": "Article Title"
+      },
+      {
+        "value": "Free Radical Biology and Medicine",
+        "name": "journaltitle",
+        "label": "Journal Title"
+      },
+      {
+        "value": "https:\/\/doi.org\/10.1016\/j.freeradbiomed.2021.05.026",
+        "name": "articlelink",
+        "label": "CrossRef DOI link to publisher maintained version"
+      },
+      {
+        "value": "article",
+        "name": "content_type",
+        "label": "Content Type"
+      },
+      {
+        "value": "© 2021 The Authors. Published by Elsevier Inc.",
+        "name": "copyright",
+        "label": "Copyright"
+      }
+    ]
+  },
+  {
+    "indexed": {
+      "date-parts": [
+        [
+          2023,
+          5,
+          4
+        ]
+      ],
+      "date-time": "2023-05-04T04:39:48Z",
+      "timestamp": 1683175188665
+    },
+    "reference-count": 43,
+    "publisher": "American Chemical Society (ACS)",
+    "issue": "9",
+    "license": [
+      {
+        "start": {
+          "date-parts": [
+            [
+              2023,
+              4,
+              24
+            ]
+          ],
+          "date-time": "2023-04-24T00:00:00Z",
+          "timestamp": 1682294400000
+        },
+        "content-version": "stm-asf",
+        "delay-in-days": 0,
+        "URL": "https:\/\/doi.org\/10.15223\/policy-029"
+      },
+      {
+        "start": {
+          "date-parts": [
+            [
+              2023,
+              4,
+              24
+            ]
+          ],
+          "date-time": "2023-04-24T00:00:00Z",
+          "timestamp": 1682294400000
+        },
+        "content-version": "stm-asf",
+        "delay-in-days": 0,
+        "URL": "https:\/\/doi.org\/10.15223\/policy-037"
+      },
+      {
+        "start": {
+          "date-parts": [
+            [
+              2023,
+              4,
+              24
+            ]
+          ],
+          "date-time": "2023-04-24T00:00:00Z",
+          "timestamp": 1682294400000
+        },
+        "content-version": "stm-asf",
+        "delay-in-days": 0,
+        "URL": "https:\/\/doi.org\/10.15223\/policy-045"
+      }
+    ],
+    "funder": [
+      {
+        "DOI": "10.13039\/501100002855",
+        "name": "Ministry of Science and Technology of the People's Republic of China",
+        "doi-asserted-by": "publisher",
+        "award": [
+          "2017YFC1200500",
+          "2018ZX10711001"
+        ]
+      },
+      {
+        "DOI": "10.13039\/501100001809",
+        "name": "National Natural Science Foundation of China",
+        "doi-asserted-by": "publisher",
+        "award": [
+          "81572048",
+          "81630062"
+        ]
+      },
+      {
+        "DOI": "10.13039\/501100004476",
+        "name": "Chinese Center for Disease Control and Prevention",
+        "doi-asserted-by": "publisher",
+        "award": [
+          "2019SKLID307",
+          "2019SKLID501",
+          "2019SKLID603"
+        ]
+      }
+    ],
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "short-container-title": [
+      "ACS Chem. Neurosci."
+    ],
+    "published-print": {
+      "date-parts": [
+        [
+          2023,
+          5,
+          3
+        ]
+      ]
+    },
+    "DOI": "10.1021\/acschemneuro.2c00786",
+    "type": "journal-article",
+    "created": {
+      "date-parts": [
+        [
+          2023,
+          4,
+          24
+        ]
+      ],
+      "date-time": "2023-04-24T11:06:38Z",
+      "timestamp": 1682334398000
+    },
+    "page": "1610-1621",
+    "source": "Crossref",
+    "is-referenced-by-count": 0,
+    "title": [
+      "Aberrant SENP1-SUMO-Sirt3 Signaling Causes the Disturbances of Mitochondrial Deacetylation and Oxidative Phosphorylation in Prion-Infected Animal and Cell Models"
+    ],
+    "prefix": "10.1021",
+    "volume": "14",
+    "author": [
+      {
+        "given": "Dong-Dong",
+        "family": "Chen",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "State Key Laboratory for Infectious Disease Prevention and Control, NHC Key Laboratory of Medical Virology and Viral Diseases, National Institute for Viral Disease Control and Prevention, Chinese Center for Disease Control and Prevention, Fujian Agriculture and Forestry University, Beijing 102206, China"
+          }
+        ]
+      },
+      {
+        "given": "Qi",
+        "family": "Shi",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "State Key Laboratory for Infectious Disease Prevention and Control, NHC Key Laboratory of Medical Virology and Viral Diseases, National Institute for Viral Disease Control and Prevention, Chinese Center for Disease Control and Prevention, Fujian Agriculture and Forestry University, Beijing 102206, China"
+          },
+          {
+            "name": "China Academy of Chinese Medical Sciences, Beijing 100091, China"
+          }
+        ]
+      },
+      {
+        "given": "Xin",
+        "family": "Liu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "State Key Laboratory for Infectious Disease Prevention and Control, NHC Key Laboratory of Medical Virology and Viral Diseases, National Institute for Viral Disease Control and Prevention, Chinese Center for Disease Control and Prevention, Fujian Agriculture and Forestry University, Beijing 102206, China"
+          }
+        ]
+      },
+      {
+        "given": "Dong-Lin",
+        "family": "Liang",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "State Key Laboratory for Infectious Disease Prevention and Control, NHC Key Laboratory of Medical Virology and Viral Diseases, National Institute for Viral Disease Control and Prevention, Chinese Center for Disease Control and Prevention, Fujian Agriculture and Forestry University, Beijing 102206, China"
+          }
+        ]
+      },
+      {
+        "given": "Yue-Zhang",
+        "family": "Wu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "State Key Laboratory for Infectious Disease Prevention and Control, NHC Key Laboratory of Medical Virology and Viral Diseases, National Institute for Viral Disease Control and Prevention, Chinese Center for Disease Control and Prevention, Fujian Agriculture and Forestry University, Beijing 102206, China"
+          }
+        ]
+      },
+      {
+        "given": "Qin",
+        "family": "Fan",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "State Key Laboratory for Infectious Disease Prevention and Control, NHC Key Laboratory of Medical Virology and Viral Diseases, National Institute for Viral Disease Control and Prevention, Chinese Center for Disease Control and Prevention, Fujian Agriculture and Forestry University, Beijing 102206, China"
+          }
+        ]
+      },
+      {
+        "given": "Kang",
+        "family": "Xiao",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "State Key Laboratory for Infectious Disease Prevention and Control, NHC Key Laboratory of Medical Virology and Viral Diseases, National Institute for Viral Disease Control and Prevention, Chinese Center for Disease Control and Prevention, Fujian Agriculture and Forestry University, Beijing 102206, China"
+          }
+        ]
+      },
+      {
+        "given": "Cao",
+        "family": "Chen",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "State Key Laboratory for Infectious Disease Prevention and Control, NHC Key Laboratory of Medical Virology and Viral Diseases, National Institute for Viral Disease Control and Prevention, Chinese Center for Disease Control and Prevention, Fujian Agriculture and Forestry University, Beijing 102206, China"
+          },
+          {
+            "name": "Center for Biosafety Mega-Science, Chinese Academy of Sciences, Wuhan 430071, China"
+          }
+        ]
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-1566-8447",
+        "authenticated-orcid": true,
+        "given": "Xiao-Ping",
+        "family": "Dong",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "State Key Laboratory for Infectious Disease Prevention and Control, NHC Key Laboratory of Medical Virology and Viral Diseases, National Institute for Viral Disease Control and Prevention, Chinese Center for Disease Control and Prevention, Fujian Agriculture and Forestry University, Beijing 102206, China"
+          },
+          {
+            "name": "Center for Biosafety Mega-Science, Chinese Academy of Sciences, Wuhan 430071, China"
+          },
+          {
+            "name": "China Academy of Chinese Medical Sciences, Beijing 100091, China"
+          },
+          {
+            "name": "Shanghai Institute of Infectious Disease and Biosafety, Shanghai 201517, China"
+          }
+        ]
+      }
+    ],
+    "member": "316",
+    "published-online": {
+      "date-parts": [
+        [
+          2023,
+          4,
+          24
+        ]
+      ]
+    },
+    "reference": [
+      {
+        "key": "ref1\/cit1",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.3389\/fnagi.2018.00336"
+      },
+      {
+        "key": "ref2\/cit2",
+        "first-page": "741",
+        "volume": "4",
+        "author": "Shi Q.",
+        "year": "2022",
+        "journal-title": "China CDC Weekly"
+      },
+      {
+        "key": "ref3\/cit3",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1186\/s40478-020-00915-8"
+      },
+      {
+        "key": "ref4\/cit4",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1080\/10715762.2016.1185519"
+      },
+      {
+        "key": "ref5\/cit5",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.neurobiolaging.2011.05.009"
+      },
+      {
+        "key": "ref6\/cit6",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1002\/jnr.23176"
+      },
+      {
+        "key": "ref7\/cit7",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/nature08778"
+      },
+      {
+        "key": "ref8\/cit8",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.cmet.2008.12.008"
+      },
+      {
+        "key": "ref9\/cit9",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/s41586-021-04059-0"
+      },
+      {
+        "key": "ref10\/cit10",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.cmet.2018.01.016"
+      },
+      {
+        "key": "ref11\/cit11",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.bbrc.2017.01.163"
+      },
+      {
+        "key": "ref12\/cit12",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.cmet.2015.03.007"
+      },
+      {
+        "key": "ref13\/cit13",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.molcel.2012.10.024"
+      },
+      {
+        "key": "ref14\/cit14",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/embor.2011.65"
+      },
+      {
+        "key": "ref15\/cit15",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1021\/acschemneuro.9b00341"
+      },
+      {
+        "key": "ref16\/cit16",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.molcel.2019.06.008"
+      },
+      {
+        "key": "ref17\/cit17",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1074\/jbc.R800050200"
+      },
+      {
+        "key": "ref18\/cit18",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.3967\/bes2022.094"
+      },
+      {
+        "key": "ref19\/cit19",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1007\/s12035-015-9464-z"
+      },
+      {
+        "key": "ref20\/cit20",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1007\/s12031-014-0459-4"
+      },
+      {
+        "key": "ref21\/cit21",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.cell.2009.08.005"
+      },
+      {
+        "key": "ref22\/cit22",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1074\/jbc.M007331200"
+      },
+      {
+        "key": "ref23\/cit23",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1073\/pnas.011578098"
+      },
+      {
+        "key": "ref24\/cit24",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1007\/s00430-013-0316-z"
+      },
+      {
+        "key": "ref25\/cit25",
+        "first-page": "2922",
+        "volume": "15",
+        "author": "Wang X.",
+        "year": "2001",
+        "journal-title": "Genes Dev."
+      },
+      {
+        "key": "ref26\/cit26",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1128\/MCB.01636-07"
+      },
+      {
+        "key": "ref27\/cit27",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1371\/journal.pone.0050545"
+      },
+      {
+        "key": "ref28\/cit28",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1074\/jbc.M008782200"
+      },
+      {
+        "key": "ref29\/cit29",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1074\/jbc.M004160200"
+      },
+      {
+        "key": "ref30\/cit30",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.jmb.2008.07.048"
+      },
+      {
+        "key": "ref31\/cit31",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1074\/jbc.M112.422626"
+      },
+      {
+        "key": "ref32\/cit32",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1371\/journal.pone.0011707"
+      },
+      {
+        "key": "ref33\/cit33",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1007\/s10059-009-0110-3"
+      },
+      {
+        "key": "ref34\/cit34",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1172\/JCI36703"
+      },
+      {
+        "key": "ref35\/cit35",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1042\/BJ20110702"
+      },
+      {
+        "key": "ref36\/cit36",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1242\/dev.175703"
+      },
+      {
+        "key": "ref37\/cit37",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.ibneur.2022.03.002"
+      },
+      {
+        "key": "ref38\/cit38",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1007\/978-3-319-50044-7_16"
+      },
+      {
+        "key": "ref39\/cit39",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.3390\/cells11172744"
+      },
+      {
+        "key": "ref40\/cit40",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1093\/emboj\/20.13.3351"
+      },
+      {
+        "key": "ref41\/cit41",
+        "first-page": "995",
+        "volume": "10",
+        "author": "Ye X.",
+        "year": "1995",
+        "journal-title": "Histol Histopathol"
+      },
+      {
+        "key": "ref42\/cit42",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1186\/1743-422X-9-63"
+      },
+      {
+        "key": "ref43\/cit43",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1126\/science.1073725"
+      }
+    ],
+    "container-title": [
+      "ACS Chemical Neuroscience"
+    ],
+    "language": "en",
+    "link": [
+      {
+        "URL": "https:\/\/pubs.acs.org\/doi\/pdf\/10.1021\/acschemneuro.2c00786",
+        "content-type": "application\/pdf",
+        "content-version": "vor",
+        "intended-application": "unspecified"
+      },
+      {
+        "URL": "https:\/\/pubs.acs.org\/doi\/pdf\/10.1021\/acschemneuro.2c00786",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "deposited": {
+      "date-parts": [
+        [
+          2023,
+          5,
+          3
+        ]
+      ],
+      "date-time": "2023-05-03T08:10:18Z",
+      "timestamp": 1683101418000
+    },
+    "score": 23.437887,
+    "resource": {
+      "primary": {
+        "URL": "https:\/\/pubs.acs.org\/doi\/10.1021\/acschemneuro.2c00786"
+      }
+    },
+    "issued": {
+      "date-parts": [
+        [
+          2023,
+          4,
+          24
+        ]
+      ]
+    },
+    "references-count": 43,
+    "journal-issue": {
+      "issue": "9",
+      "published-print": {
+        "date-parts": [
+          [
+            2023,
+            5,
+            3
+          ]
+        ]
+      }
+    },
+    "alternative-id": [
+      "10.1021\/acschemneuro.2c00786"
+    ],
+    "URL": "http:\/\/dx.doi.org\/10.1021\/acschemneuro.2c00786",
+    "ISSN": [
+      "1948-7193",
+      "1948-7193"
+    ],
+    "issn-type": [
+      {
+        "value": "1948-7193",
+        "type": "print"
+      },
+      {
+        "value": "1948-7193",
+        "type": "electronic"
+      }
+    ],
+    "subject": [
+      "Cell Biology",
+      "Cognitive Neuroscience",
+      "Physiology",
+      "Biochemistry",
+      "General Medicine"
+    ],
+    "published": {
+      "date-parts": [
+        [
+          2023,
+          4,
+          24
+        ]
+      ]
+    }
+  },
+  {
+    "indexed": {
+      "date-parts": [
+        [
+          2023,
+          7,
+          25
+        ]
+      ],
+      "date-time": "2023-07-25T08:02:30Z",
+      "timestamp": 1690272150754
+    },
+    "reference-count": 62,
+    "publisher": "Elsevier BV",
+    "issue": "2",
+    "license": [
+      {
+        "start": {
+          "date-parts": [
+            [
+              2022,
+              4,
+              1
+            ]
+          ],
+          "date-time": "2022-04-01T00:00:00Z",
+          "timestamp": 1648771200000
+        },
+        "content-version": "tdm",
+        "delay-in-days": 0,
+        "URL": "https:\/\/www.elsevier.com\/tdm\/userlicense\/1.0\/"
+      },
+      {
+        "start": {
+          "date-parts": [
+            [
+              2022,
+              3,
+              22
+            ]
+          ],
+          "date-time": "2022-03-22T00:00:00Z",
+          "timestamp": 1647907200000
+        },
+        "content-version": "vor",
+        "delay-in-days": 0,
+        "URL": "http:\/\/creativecommons.org\/licenses\/by-nc-nd\/4.0\/"
+      }
+    ],
+    "content-domain": {
+      "domain": [
+        "cell.com",
+        "elsevier.com",
+        "sciencedirect.com"
+      ],
+      "crossmark-restriction": true
+    },
+    "short-container-title": [
+      "Cell Reports"
+    ],
+    "published-print": {
+      "date-parts": [
+        [
+          2022,
+          4
+        ]
+      ]
+    },
+    "DOI": "10.1016\/j.celrep.2022.110660",
+    "type": "journal-article",
+    "created": {
+      "date-parts": [
+        [
+          2022,
+          4,
+          13
+        ]
+      ],
+      "date-time": "2022-04-13T04:17:07Z",
+      "timestamp": 1649823427000
+    },
+    "page": "110660",
+    "update-policy": "http:\/\/dx.doi.org\/10.1016\/elsevier_cm_policy",
+    "source": "Crossref",
+    "is-referenced-by-count": 14,
+    "title": [
+      "SENP1-Sirt3 signaling promotes α-ketoglutarate production during M2 macrophage polarization"
+    ],
+    "prefix": "10.1016",
+    "volume": "39",
+    "author": [
+      {
+        "given": "Wei",
+        "family": "Zhou",
+        "sequence": "first",
+        "affiliation": []
+      },
+      {
+        "given": "Gaolei",
+        "family": "Hu",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Jianli",
+        "family": "He",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Tianshi",
+        "family": "Wang",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Yong",
+        "family": "Zuo",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Ying",
+        "family": "Cao",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Quan",
+        "family": "Zheng",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Jun",
+        "family": "Tu",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Jiao",
+        "family": "Ma",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Rong",
+        "family": "Cai",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Yalan",
+        "family": "Chen",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Qiuju",
+        "family": "Fan",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Baijun",
+        "family": "Dong",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Hongsheng",
+        "family": "Tan",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Qi",
+        "family": "Wang",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Wei",
+        "family": "Xue",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0002-4344-5363",
+        "authenticated-orcid": false,
+        "given": "Jinke",
+        "family": "Cheng",
+        "sequence": "additional",
+        "affiliation": []
+      }
+    ],
+    "member": "78",
+    "reference": [
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib1",
+        "doi-asserted-by": "crossref",
+        "first-page": "749",
+        "DOI": "10.1038\/nrc.2016.114",
+        "article-title": "From Krebs to clinic: glutamine metabolism to cancer therapy",
+        "volume": "16",
+        "author": "Altman",
+        "year": "2016",
+        "journal-title": "Nat. Rev. Cancer"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib2",
+        "doi-asserted-by": "crossref",
+        "first-page": "417",
+        "DOI": "10.1146\/annurev.biochem.73.011303.073651",
+        "article-title": "The Sir2 family of protein deacetylases",
+        "volume": "73",
+        "author": "Blander",
+        "year": "2004",
+        "journal-title": "Annu. Rev. Biochem."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib3",
+        "doi-asserted-by": "crossref",
+        "first-page": "78",
+        "DOI": "10.1016\/S0006-291X(75)80407-4",
+        "article-title": "Alternative substrates for glutamate dehydrogenases",
+        "volume": "62",
+        "author": "Blumenthal",
+        "year": "1975",
+        "journal-title": "Biochem. Biophys. Res. Commun."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib4",
+        "doi-asserted-by": "crossref",
+        "first-page": "497",
+        "DOI": "10.1016\/j.cmet.2018.01.016",
+        "article-title": "The mitochondrial acylome emerges: proteomics, regulation by sirtuins, and metabolic and disease implications",
+        "volume": "27",
+        "author": "Carrico",
+        "year": "2018",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib5",
+        "doi-asserted-by": "crossref",
+        "first-page": "128",
+        "DOI": "10.1016\/j.cmet.2015.10.013",
+        "article-title": "Mitochondrial SIRT3 mediates adaptive responses of neurons to exercise and metabolic and excitatory challenges",
+        "volume": "23",
+        "author": "Cheng",
+        "year": "2016",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib6",
+        "doi-asserted-by": "crossref",
+        "first-page": "834",
+        "DOI": "10.1126\/science.1175371",
+        "article-title": "Lysine acetylation targets protein complexes and Co-regulates major cellular functions",
+        "volume": "325",
+        "author": "Choudhary",
+        "year": "2009",
+        "journal-title": "Science"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib7",
+        "doi-asserted-by": "crossref",
+        "first-page": "390",
+        "DOI": "10.1126\/science.1099196",
+        "article-title": "Calorie restriction promotes mammalian cell survival by inducing the SIRT1 deacetylase",
+        "volume": "305",
+        "author": "Cohen",
+        "year": "2004",
+        "journal-title": "Science"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib8",
+        "doi-asserted-by": "crossref",
+        "first-page": "e11612",
+        "DOI": "10.7554\/eLife.11612",
+        "article-title": "Akt-mTORC1 signaling regulates Acly to integrate metabolic input to control of macrophage activation",
+        "volume": "5",
+        "author": "Covarrubias",
+        "year": "2016",
+        "journal-title": "Elife"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib9",
+        "doi-asserted-by": "crossref",
+        "first-page": "490",
+        "DOI": "10.1016\/j.cmet.2018.06.001",
+        "article-title": "Etomoxir inhibits macrophage polarization by disrupting CoA homeostasis",
+        "volume": "28",
+        "author": "Divakaruni",
+        "year": "2018",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib10",
+        "doi-asserted-by": "crossref",
+        "first-page": "490",
+        "DOI": "10.1016\/j.cmet.2018.06.001",
+        "article-title": "Etomoxir inhibits macrophage polarization by disrupting CoA homeostasis",
+        "volume": "28",
+        "author": "Divakaruni",
+        "year": "2018",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib11",
+        "doi-asserted-by": "crossref",
+        "first-page": "3847",
+        "DOI": "10.1172\/JCI82498",
+        "article-title": "Isocitrate-to-SENP1 signaling amplifies insulin secretion and rescues dysfunctional beta cells",
+        "volume": "125",
+        "author": "Ferdaoussi",
+        "year": "2015",
+        "journal-title": "J. Clin. Invest."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib12",
+        "doi-asserted-by": "crossref",
+        "first-page": "416",
+        "DOI": "10.1016\/j.ccr.2011.02.014",
+        "article-title": "SIRT3 opposes reprogramming of cancer cell metabolism through HIF1 alpha destabilization",
+        "volume": "19",
+        "author": "Finley",
+        "year": "2011",
+        "journal-title": "Cancer Cell"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib13",
+        "doi-asserted-by": "crossref",
+        "first-page": "762",
+        "DOI": "10.1038\/nature07823",
+        "article-title": "c-Myc suppression of miR-23a\/b enhances mitochondrial glutaminase expression and glutamine metabolism",
+        "volume": "458",
+        "author": "Gao",
+        "year": "2009",
+        "journal-title": "Nature"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib14",
+        "doi-asserted-by": "crossref",
+        "first-page": "1037",
+        "DOI": "10.1038\/ni.3509",
+        "article-title": "Mitochondrial respiratory-chain adaptations in macrophages contribute to antibacterial host defense",
+        "volume": "17",
+        "author": "Garaude",
+        "year": "2016",
+        "journal-title": "Nat. Immunol."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib15",
+        "doi-asserted-by": "crossref",
+        "first-page": "593",
+        "DOI": "10.1016\/j.immuni.2010.05.007",
+        "article-title": "Alternative activation of macrophages: mechanism and functions",
+        "volume": "32",
+        "author": "Gordon",
+        "year": "2010",
+        "journal-title": "Immunity"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib16",
+        "doi-asserted-by": "crossref",
+        "first-page": "139",
+        "DOI": "10.1016\/j.molcel.2011.01.002",
+        "article-title": "Sirt3 promotes the urea cycle and fatty acid oxidation during dietary restriction",
+        "volume": "41",
+        "author": "Hallows",
+        "year": "2011",
+        "journal-title": "Mol. Cell"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib17",
+        "doi-asserted-by": "crossref",
+        "first-page": "813",
+        "DOI": "10.1016\/j.cmet.2012.04.023",
+        "article-title": "The sedoheptulose kinase CARKL directs macrophage polarization through control of glucose metabolism",
+        "volume": "15",
+        "author": "Haschemi",
+        "year": "2012",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib18",
+        "doi-asserted-by": "crossref",
+        "first-page": "1099",
+        "DOI": "10.1038\/35074106",
+        "article-title": "The innate immune response to bacterial flagellin is mediated by Toll-like receptor 5",
+        "volume": "410",
+        "author": "Hayashi",
+        "year": "2001",
+        "journal-title": "Nature"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib19",
+        "doi-asserted-by": "crossref",
+        "first-page": "5657",
+        "DOI": "10.3390\/ijms21165657",
+        "article-title": "SUMOylation-mediated response to mitochondrial stress",
+        "volume": "21",
+        "author": "He",
+        "year": "2020",
+        "journal-title": "Int. J. Mol. Sci."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib20",
+        "doi-asserted-by": "crossref",
+        "first-page": "4371",
+        "DOI": "10.1038\/s41467-021-24619-2",
+        "article-title": "Glucose limitation activates AMPK coupled SENP1-Sirt3 signalling in mitochondria for T cell memory development",
+        "volume": "12",
+        "author": "He",
+        "year": "2021",
+        "journal-title": "Nat. Commun."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib21",
+        "doi-asserted-by": "crossref",
+        "first-page": "177",
+        "DOI": "10.1016\/j.molcel.2011.07.019",
+        "article-title": "SIRT3 deficiency and mitochondrial protein hyperacetylation accelerate the development of the metabolic syndrome",
+        "volume": "44",
+        "author": "Hirschey",
+        "year": "2011",
+        "journal-title": "Mol. Cell"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib22",
+        "doi-asserted-by": "crossref",
+        "first-page": "846",
+        "DOI": "10.1038\/ni.2956",
+        "article-title": "Cell-intrinsic lysosomal lipolysis is essential for alternative activation of macrophages",
+        "volume": "15",
+        "author": "Huang",
+        "year": "2014",
+        "journal-title": "Nat. Immunol."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib23",
+        "doi-asserted-by": "crossref",
+        "first-page": "817",
+        "DOI": "10.1016\/j.immuni.2016.09.016",
+        "article-title": "Metabolic reprogramming mediated by the mTORC2-IRF4 signaling Axis is essential for macrophage alternative activation",
+        "volume": "45",
+        "author": "Huang",
+        "year": "2016",
+        "journal-title": "Immunity"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib24",
+        "doi-asserted-by": "crossref",
+        "first-page": "817",
+        "DOI": "10.1016\/j.immuni.2016.09.016",
+        "article-title": "Metabolic reprogramming mediated by the mTORC2-IRF4 signaling Axis is essential for macrophage alternative activation",
+        "volume": "45",
+        "author": "Huang",
+        "year": "2016",
+        "journal-title": "Immunity"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib25",
+        "doi-asserted-by": "crossref",
+        "first-page": "3891",
+        "DOI": "10.1158\/0008-5472.CAN-18-3497",
+        "article-title": "SUMO-specific protease 1 is critical for myeloid-derived suppressor cell development and function",
+        "volume": "79",
+        "author": "Huang",
+        "year": "2019",
+        "journal-title": "Cancer Res."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib26",
+        "doi-asserted-by": "crossref",
+        "first-page": "1284",
+        "DOI": "10.1126\/science.1204351",
+        "article-title": "Local macrophage proliferation, rather than recruitment from the blood, is a signature of TH2 inflammation",
+        "volume": "332",
+        "author": "Jenkins",
+        "year": "2011",
+        "journal-title": "Science"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib27",
+        "doi-asserted-by": "crossref",
+        "first-page": "419",
+        "DOI": "10.1016\/j.immuni.2015.02.005",
+        "article-title": "Network integration of parallel metabolic and transcriptional data reveals metabolic modules that regulate macrophage polarization",
+        "volume": "42",
+        "author": "Jha",
+        "year": "2015",
+        "journal-title": "Immunity"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib28",
+        "doi-asserted-by": "crossref",
+        "first-page": "7681",
+        "DOI": "10.1073\/pnas.92.17.7681",
+        "article-title": "Similarities and differences in signal transduction by interleukin 4 and interleukin 13: analysis of Janus kinase activation",
+        "volume": "92",
+        "author": "Keegan",
+        "year": "1995",
+        "journal-title": "Proc. Natl. Acad. Sci. U S A"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib29",
+        "doi-asserted-by": "crossref",
+        "first-page": "4742",
+        "DOI": "10.1182\/blood-2009-10-249540",
+        "article-title": "Toll-like receptor–induced changes in glycolytic metabolism regulate dendritic cell activation",
+        "volume": "115",
+        "author": "Krawczyk",
+        "year": "2010",
+        "journal-title": "Blood"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib30",
+        "doi-asserted-by": "crossref",
+        "first-page": "448",
+        "DOI": "10.1016\/j.coi.2007.07.002",
+        "article-title": "Alternatively activated macrophages in helminth infections",
+        "volume": "19",
+        "author": "Kreider",
+        "year": "2007",
+        "journal-title": "Curr. Opin. Immunol."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib31",
+        "doi-asserted-by": "crossref",
+        "first-page": "158",
+        "DOI": "10.1016\/j.cmet.2016.06.004",
+        "article-title": "Itaconate links inhibition of succinate dehydrogenase with macrophage metabolic remodeling and regulation of inflammation",
+        "volume": "24",
+        "author": "Lampropoulou",
+        "year": "2016",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib32",
+        "doi-asserted-by": "crossref",
+        "first-page": "997",
+        "DOI": "10.1016\/j.immuni.2019.11.009",
+        "article-title": "Toll-like receptor signaling rewires macrophage metabolism and promotes histone acetylation via ATP-citrate lyase",
+        "volume": "51",
+        "author": "Lauterbach",
+        "year": "2019",
+        "journal-title": "Immunity"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib33",
+        "doi-asserted-by": "crossref",
+        "first-page": "110",
+        "DOI": "10.1016\/j.cmet.2011.12.009",
+        "article-title": "Glucose-independent glutamine metabolism via TCA cycling for proliferation and survival in B cells",
+        "volume": "15",
+        "author": "Le",
+        "year": "2012",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib34",
+        "doi-asserted-by": "crossref",
+        "first-page": "601",
+        "DOI": "10.1016\/S0301-472X(00)00157-0",
+        "article-title": "Origins and functions of phagocytes in the embryo",
+        "volume": "28",
+        "author": "Lichanska",
+        "year": "2000",
+        "journal-title": "Exp. Hematol."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib35",
+        "doi-asserted-by": "crossref",
+        "first-page": "985",
+        "DOI": "10.1038\/ni.3796",
+        "article-title": "α-ketoglutarate orchestrates macrophage activation through metabolic and epigenetic reprogramming",
+        "volume": "18",
+        "author": "Liu",
+        "year": "2017",
+        "journal-title": "Nat. Immunol."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib36",
+        "doi-asserted-by": "crossref",
+        "first-page": "819",
+        "DOI": "10.1038\/nature06246",
+        "article-title": "Recognition of microorganisms and activation of the immune response",
+        "volume": "449",
+        "author": "Medzhitov",
+        "year": "2007",
+        "journal-title": "Nature"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib37",
+        "doi-asserted-by": "crossref",
+        "first-page": "4484",
+        "DOI": "10.1093\/bioinformatics\/btz209",
+        "article-title": "IsoCor: isotope correction for high-resolution MS labeling experiments",
+        "volume": "35",
+        "author": "Millard",
+        "year": "2019",
+        "journal-title": "Bioinformatics"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib38",
+        "doi-asserted-by": "crossref",
+        "first-page": "457",
+        "DOI": "10.1016\/j.cell.2016.08.064",
+        "article-title": "Succinate dehydrogenase supports metabolic repurposing of mitochondria to drive inflammatory macrophages",
+        "volume": "167",
+        "author": "Mills",
+        "year": "2016",
+        "journal-title": "Cell"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib39",
+        "doi-asserted-by": "crossref",
+        "first-page": "1329",
+        "DOI": "10.1016\/j.bbalip.2014.06.007",
+        "article-title": "Fatty acid oxidation is dispensable for human macrophage IL-4-induced polarization",
+        "volume": "1841",
+        "author": "Namgaladze",
+        "year": "2014",
+        "journal-title": "Biochim. Biophys. Acta"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib40",
+        "first-page": "1796",
+        "article-title": "Macrophage fatty acid oxidation and its roles in macrophage polarization and fatty acid-induced inflammation",
+        "volume": "1861",
+        "author": "Namgaladze",
+        "year": "2016",
+        "journal-title": "Biochim. Biophys. Acta (Bba) - Mol. Cell Biol. Lipids"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib41",
+        "doi-asserted-by": "crossref",
+        "first-page": "1035",
+        "DOI": "10.1101\/gad.312355.118",
+        "article-title": "PPAR gamma is a nexus controlling alternative activation of macrophages via glutamine metabolism",
+        "volume": "32",
+        "author": "Nelson",
+        "year": "2018",
+        "journal-title": "Gene Dev."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib42",
+        "doi-asserted-by": "crossref",
+        "first-page": "216",
+        "DOI": "10.1038\/ni.3366",
+        "article-title": "Fatty acid oxidation in macrophage polarization",
+        "volume": "17",
+        "author": "Nomura",
+        "year": "2016",
+        "journal-title": "Nat. Immunol."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib43",
+        "doi-asserted-by": "crossref",
+        "first-page": "346",
+        "DOI": "10.1038\/nature11862",
+        "article-title": "Metabolism of inflammation limited by AMPK and pseudo-starvation",
+        "volume": "493",
+        "author": "O'Neill",
+        "year": "2013",
+        "journal-title": "Nature"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib44",
+        "doi-asserted-by": "crossref",
+        "first-page": "393",
+        "DOI": "10.1016\/j.immuni.2015.02.017",
+        "article-title": "A broken Krebs cycle in macrophages",
+        "volume": "42",
+        "author": "O’Neill",
+        "year": "2015",
+        "journal-title": "Immunity"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib45",
+        "doi-asserted-by": "crossref",
+        "first-page": "411",
+        "DOI": "10.1182\/blood-2011-02-339911",
+        "article-title": "Role of c-MYC in alternative activation of human macrophages and tumor-associated macrophage biology",
+        "volume": "119",
+        "author": "Pello",
+        "year": "2012",
+        "journal-title": "Blood"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib46",
+        "doi-asserted-by": "crossref",
+        "first-page": "662",
+        "DOI": "10.1016\/j.cmet.2010.11.015",
+        "article-title": "Calorie restriction reduces oxidative stress by SIRT3-mediated SOD2 activation",
+        "volume": "12",
+        "author": "Qiu",
+        "year": "2010",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib47",
+        "doi-asserted-by": "crossref",
+        "first-page": "401",
+        "DOI": "10.1038\/ng1117",
+        "article-title": "A lentivirus-based system to functionally silence genes in primary mammalian cells, stem cells and transgenic mice by RNA interference",
+        "volume": "33",
+        "author": "Rubinson",
+        "year": "2003",
+        "journal-title": "Nat. Genet."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib48",
+        "doi-asserted-by": "crossref",
+        "first-page": "936",
+        "DOI": "10.1038\/ni.1920",
+        "article-title": "The Jmjd3-Irf4 axis regulates M2 macrophage polarization and host responses against helminth infection",
+        "volume": "11",
+        "author": "Satoh",
+        "year": "2010",
+        "journal-title": "Nat. Immunol."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib49",
+        "doi-asserted-by": "crossref",
+        "first-page": "104",
+        "DOI": "10.1016\/j.cmet.2007.11.006",
+        "article-title": "Conserved metabolic regulatory functions of sirtuins",
+        "volume": "7",
+        "author": "Schwer",
+        "year": "2008",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib50",
+        "doi-asserted-by": "crossref",
+        "first-page": "238",
+        "DOI": "10.1038\/nature11986",
+        "article-title": "Succinate is an inflammatory signal that induces IL-1β through HIF-1α",
+        "volume": "496",
+        "author": "Tannahill",
+        "year": "2013",
+        "journal-title": "Nature"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib51",
+        "doi-asserted-by": "crossref",
+        "first-page": "1544",
+        "DOI": "10.1126\/science.291.5508.1544",
+        "article-title": "Induction of direct antimicrobial activity through mammalian toll-like receptors",
+        "volume": "291",
+        "author": "Thoma-Uszynski",
+        "year": "2001",
+        "journal-title": "Science"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib52",
+        "doi-asserted-by": "crossref",
+        "first-page": "14459",
+        "DOI": "10.1073\/pnas.96.25.14459",
+        "article-title": "Toll-like receptor-2 mediates mycobacteria-induced proinflammatory signaling in macrophages",
+        "volume": "96",
+        "author": "Underhill",
+        "year": "1999",
+        "journal-title": "Proc. Natl. Acad. Sci. U S A"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib53",
+        "doi-asserted-by": "crossref",
+        "first-page": "13",
+        "DOI": "10.1016\/j.cmet.2006.05.011",
+        "article-title": "Oxidative metabolism and PGC-1β attenuate macrophage-mediated inflammation",
+        "volume": "4",
+        "author": "Vats",
+        "year": "2006",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib54",
+        "doi-asserted-by": "crossref",
+        "first-page": "1462",
+        "DOI": "10.3389\/fimmu.2019.01462",
+        "article-title": "The metabolic signature of macrophage responses",
+        "volume": "10",
+        "author": "Viola",
+        "year": "2019",
+        "journal-title": "Front. Immunol."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib55",
+        "doi-asserted-by": "crossref",
+        "first-page": "463",
+        "DOI": "10.1016\/j.cmet.2018.08.012",
+        "article-title": "Glycolytic stimulation is not a requirement for M2 macrophage differentiation",
+        "volume": "28",
+        "author": "Wang",
+        "year": "2018",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib56",
+        "doi-asserted-by": "crossref",
+        "first-page": "614",
+        "DOI": "10.3389\/fimmu.2014.00614",
+        "article-title": "Molecular mechanisms that influence the macrophage m1-m2 polarization balance",
+        "volume": "5",
+        "author": "Wang",
+        "year": "2014",
+        "journal-title": "Front. Immunol."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib57",
+        "doi-asserted-by": "crossref",
+        "first-page": "109",
+        "DOI": "10.1016\/j.neuroscience.2014.11.045",
+        "article-title": "Sirt3 protects cells from hypoxia via pgc-1 alpha- and mnsod-dependent pathways",
+        "volume": "286",
+        "author": "Wang",
+        "year": "2015",
+        "journal-title": "Neuroscience"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib58",
+        "doi-asserted-by": "crossref",
+        "first-page": "823",
+        "DOI": "10.1016\/j.molcel.2019.06.008",
+        "article-title": "SENP1-Sirt3 signaling controls mitochondrial protein acetylation and metabolism",
+        "volume": "75",
+        "author": "Wang",
+        "year": "2019",
+        "journal-title": "Mol. Cell"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib59",
+        "doi-asserted-by": "crossref",
+        "first-page": "662",
+        "DOI": "10.1016\/j.molcel.2014.12.023",
+        "article-title": "WT1 recruits TET2 to regulate its target gene expression and suppress leukemia cell proliferation",
+        "volume": "57",
+        "author": "Wang",
+        "year": "2015",
+        "journal-title": "Mol. Cell"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib62",
+        "doi-asserted-by": "crossref",
+        "first-page": "1582",
+        "DOI": "10.1038\/nprot.2009.151",
+        "article-title": "Isolation of mitochondria-associated membranes and mitochondria from animal tissues and cells",
+        "volume": "4",
+        "author": "Wieckowski",
+        "year": "2009",
+        "journal-title": "Nat. Protoc."
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib60",
+        "doi-asserted-by": "crossref",
+        "first-page": "18782",
+        "DOI": "10.1073\/pnas.0810199105",
+        "article-title": "Myc regulates a transcriptional program that stimulates mitochondrial glutaminolysis and leads to glutamine addiction",
+        "volume": "105",
+        "author": "Wise",
+        "year": "2008",
+        "journal-title": "Proc. Natl. Acad. Sci. U S A"
+      },
+      {
+        "key": "10.1016\/j.celrep.2022.110660_bib61",
+        "doi-asserted-by": "crossref",
+        "first-page": "258",
+        "DOI": "10.1093\/jmcb\/mjx055",
+        "article-title": "Senp2 regulates adipose lipid storage by de-SUMOylation of Setdb1",
+        "volume": "10",
+        "author": "Zheng",
+        "year": "2018",
+        "journal-title": "J. Mol. Cell Biol."
+      }
+    ],
+    "container-title": [
+      "Cell Reports"
+    ],
+    "language": "en",
+    "link": [
+      {
+        "URL": "https:\/\/api.elsevier.com\/content\/article\/PII:S2211124722004120?httpAccept=text\/xml",
+        "content-type": "text\/xml",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https:\/\/api.elsevier.com\/content\/article\/PII:S2211124722004120?httpAccept=text\/plain",
+        "content-type": "text\/plain",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      }
+    ],
+    "deposited": {
+      "date-parts": [
+        [
+          2023,
+          5,
+          17
+        ]
+      ],
+      "date-time": "2023-05-17T22:42:37Z",
+      "timestamp": 1684363357000
+    },
+    "score": 23.24382,
+    "resource": {
+      "primary": {
+        "URL": "https:\/\/linkinghub.elsevier.com\/retrieve\/pii\/S2211124722004120"
+      }
+    },
+    "issued": {
+      "date-parts": [
+        [
+          2022,
+          4
+        ]
+      ]
+    },
+    "references-count": 62,
+    "journal-issue": {
+      "issue": "2",
+      "published-print": {
+        "date-parts": [
+          [
+            2022,
+            4
+          ]
+        ]
+      }
+    },
+    "alternative-id": [
+      "S2211124722004120"
+    ],
+    "URL": "http:\/\/dx.doi.org\/10.1016\/j.celrep.2022.110660",
+    "ISSN": [
+      "2211-1247"
+    ],
+    "issn-type": [
+      {
+        "value": "2211-1247",
+        "type": "print"
+      }
+    ],
+    "subject": [
+      "General Biochemistry, Genetics and Molecular Biology"
+    ],
+    "published": {
+      "date-parts": [
+        [
+          2022,
+          4
+        ]
+      ]
+    },
+    "assertion": [
+      {
+        "value": "Elsevier",
+        "name": "publisher",
+        "label": "This article is maintained by"
+      },
+      {
+        "value": "SENP1-Sirt3 signaling promotes α-ketoglutarate production during M2 macrophage polarization",
+        "name": "articletitle",
+        "label": "Article Title"
+      },
+      {
+        "value": "Cell Reports",
+        "name": "journaltitle",
+        "label": "Journal Title"
+      },
+      {
+        "value": "https:\/\/doi.org\/10.1016\/j.celrep.2022.110660",
+        "name": "articlelink",
+        "label": "CrossRef DOI link to publisher maintained version"
+      },
+      {
+        "value": "article",
+        "name": "content_type",
+        "label": "Content Type"
+      },
+      {
+        "value": "© 2022 The Author(s).",
+        "name": "copyright",
+        "label": "Copyright"
+      }
+    ],
+    "article-number": "110660"
+  },
+  {
+    "indexed": {
+      "date-parts": [
+        [
+          2023,
+          7,
+          22
+        ]
+      ],
+      "date-time": "2023-07-22T11:29:35Z",
+      "timestamp": 1690025375837
+    },
+    "reference-count": 65,
+    "publisher": "Elsevier BV",
+    "issue": "4",
+    "license": [
+      {
+        "start": {
+          "date-parts": [
+            [
+              2019,
+              8,
+              1
+            ]
+          ],
+          "date-time": "2019-08-01T00:00:00Z",
+          "timestamp": 1564617600000
+        },
+        "content-version": "tdm",
+        "delay-in-days": 0,
+        "URL": "https:\/\/www.elsevier.com\/tdm\/userlicense\/1.0\/"
+      },
+      {
+        "start": {
+          "date-parts": [
+            [
+              2020,
+              8,
+              22
+            ]
+          ],
+          "date-time": "2020-08-22T00:00:00Z",
+          "timestamp": 1598054400000
+        },
+        "content-version": "vor",
+        "delay-in-days": 387,
+        "URL": "http:\/\/www.elsevier.com\/open-access\/userlicense\/1.0\/"
+      }
+    ],
+    "funder": [
+      {
+        "DOI": "10.13039\/501100001809",
+        "name": "National Natural Science Foundation of China",
+        "doi-asserted-by": "publisher",
+        "award": [
+          "81730082",
+          "91229202",
+          "81430069",
+          "31600664",
+          "81700701"
+        ]
+      },
+      {
+        "DOI": "10.13039\/501100012166",
+        "name": "National Basic Research Program of China",
+        "doi-asserted-by": "publisher",
+        "award": [
+          "2013CB910902"
+        ]
+      },
+      {
+        "name": "High-Level Local University Construction Project of Shanghai Jiao Tong University School of Medicine",
+        "award": [
+          "18zxy004"
+        ]
+      },
+      {
+        "name": "Shanghai Committee of Science and Technology",
+        "award": [
+          "15ZR1424500",
+          "11DZ2260200"
+        ]
+      },
+      {
+        "DOI": "10.13039\/501100003395",
+        "name": "Shanghai Municipal Education Commission",
+        "doi-asserted-by": "publisher",
+        "award": [
+          "2017-01-07-00-01-E00050",
+          "ZZjdyx15003"
+        ]
+      },
+      {
+        "name": "Shanghai Jiao Tong University School of Medicine",
+        "award": [
+          "14XJ10001"
+        ]
+      },
+      {
+        "name": "Shanghai Jiao Tong University School of Medicine",
+        "award": [
+          "BXJ201802"
+        ]
+      }
+    ],
+    "content-domain": {
+      "domain": [
+        "cell.com",
+        "elsevier.com",
+        "sciencedirect.com"
+      ],
+      "crossmark-restriction": true
+    },
+    "short-container-title": [
+      "Molecular Cell"
+    ],
+    "published-print": {
+      "date-parts": [
+        [
+          2019,
+          8
+        ]
+      ]
+    },
+    "DOI": "10.1016\/j.molcel.2019.06.008",
+    "type": "journal-article",
+    "created": {
+      "date-parts": [
+        [
+          2019,
+          7,
+          10
+        ]
+      ],
+      "date-time": "2019-07-10T14:32:49Z",
+      "timestamp": 1562769169000
+    },
+    "page": "823-834.e5",
+    "update-policy": "http:\/\/dx.doi.org\/10.1016\/elsevier_cm_policy",
+    "source": "Crossref",
+    "is-referenced-by-count": 90,
+    "title": [
+      "SENP1-Sirt3 Signaling Controls Mitochondrial Protein Acetylation and Metabolism"
+    ],
+    "prefix": "10.1016",
+    "volume": "75",
+    "author": [
+      {
+        "given": "Tianshi",
+        "family": "Wang",
+        "sequence": "first",
+        "affiliation": []
+      },
+      {
+        "given": "Ying",
+        "family": "Cao",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Quan",
+        "family": "Zheng",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Jun",
+        "family": "Tu",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Wei",
+        "family": "Zhou",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Jianli",
+        "family": "He",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Jie",
+        "family": "Zhong",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Yalan",
+        "family": "Chen",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Jiqiu",
+        "family": "Wang",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Rong",
+        "family": "Cai",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Yong",
+        "family": "Zuo",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Bo",
+        "family": "Wei",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Qiuju",
+        "family": "Fan",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Jie",
+        "family": "Yang",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Yicheng",
+        "family": "Wu",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Jing",
+        "family": "Yi",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Dali",
+        "family": "Li",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Mingyao",
+        "family": "Liu",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Chuangui",
+        "family": "Wang",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Aiwu",
+        "family": "Zhou",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Yu",
+        "family": "Li",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Xuefeng",
+        "family": "Wu",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Wen",
+        "family": "Yang",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Y. Eugene",
+        "family": "Chin",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Guoqiang",
+        "family": "Chen",
+        "sequence": "additional",
+        "affiliation": []
+      },
+      {
+        "given": "Jinke",
+        "family": "Cheng",
+        "sequence": "additional",
+        "affiliation": []
+      }
+    ],
+    "member": "78",
+    "reference": [
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib1",
+        "doi-asserted-by": "crossref",
+        "first-page": "231",
+        "DOI": "10.1016\/j.tibs.2015.12.006",
+        "article-title": "Mechanisms and Dynamics of Protein Acetylation in Mitochondria",
+        "volume": "41",
+        "author": "Baeza",
+        "year": "2016",
+        "journal-title": "Trends Biochem. Sci."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib2",
+        "doi-asserted-by": "crossref",
+        "first-page": "2986",
+        "DOI": "10.1038\/onc.2011.37",
+        "article-title": "SirT3 suppresses hypoxia inducible factor 1α and tumor growth by inhibiting mitochondrial ROS production",
+        "volume": "30",
+        "author": "Bell",
+        "year": "2011",
+        "journal-title": "Oncogene"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib3",
+        "doi-asserted-by": "crossref",
+        "first-page": "87",
+        "DOI": "10.1007\/s10059-009-0110-3",
+        "article-title": "Identification of GATA2 and AP-1 Activator elements within the enhancer VNTR occurring in intron 5 of the human SIRT3 gene",
+        "volume": "28",
+        "author": "Bellizzi",
+        "year": "2009",
+        "journal-title": "Mol. Cells"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib4",
+        "doi-asserted-by": "crossref",
+        "first-page": "524",
+        "DOI": "10.1172\/JCI36703",
+        "article-title": "Disruption of the Ang II type 1 receptor promotes longevity in mice",
+        "volume": "119",
+        "author": "Benigni",
+        "year": "2009",
+        "journal-title": "J. Clin. Invest."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib5",
+        "doi-asserted-by": "crossref",
+        "first-page": "33837",
+        "DOI": "10.1074\/jbc.M113.510354",
+        "article-title": "Sirtuin 3 (SIRT3) protein regulates long-chain acyl-CoA dehydrogenase by deacetylating conserved lysines near the active site",
+        "volume": "288",
+        "author": "Bharathi",
+        "year": "2013",
+        "journal-title": "J. Biol. Chem."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib6",
+        "doi-asserted-by": "crossref",
+        "first-page": "748",
+        "DOI": "10.1038\/embor.2009.86",
+        "article-title": "MAPL is a new mitochondrial SUMO E3 ligase that regulates mitochondrial fission",
+        "volume": "10",
+        "author": "Braschi",
+        "year": "2009",
+        "journal-title": "EMBO Rep."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib7",
+        "doi-asserted-by": "crossref",
+        "first-page": "1255",
+        "DOI": "10.1126\/science.aam9080",
+        "article-title": "Dopamine oxidation mediates mitochondrial and lysosomal dysfunction in Parkinson’s disease",
+        "volume": "357",
+        "author": "Burbulla",
+        "year": "2017",
+        "journal-title": "Science"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib8",
+        "doi-asserted-by": "crossref",
+        "first-page": "44464",
+        "DOI": "10.1074\/jbc.M112.422626",
+        "article-title": "SUMO-specific protease 1 regulates mitochondrial biogenesis through PGC-1α",
+        "volume": "287",
+        "author": "Cai",
+        "year": "2012",
+        "journal-title": "J. Biol. Chem."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib9",
+        "doi-asserted-by": "crossref",
+        "first-page": "717",
+        "DOI": "10.1074\/mcp.M116.062125",
+        "article-title": "Proteome-wide Mapping of Endogenous SUMOylation Sites in Mouse Testis",
+        "volume": "16",
+        "author": "Cai",
+        "year": "2017",
+        "journal-title": "Mol. Cell. Proteomics"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib10",
+        "doi-asserted-by": "crossref",
+        "first-page": "838",
+        "DOI": "10.1016\/j.cmet.2012.04.022",
+        "article-title": "The NAD(+) precursor nicotinamide riboside enhances oxidative metabolism and protects against high-fat diet-induced obesity",
+        "volume": "15",
+        "author": "Cantó",
+        "year": "2012",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib11",
+        "doi-asserted-by": "crossref",
+        "first-page": "497",
+        "DOI": "10.1016\/j.cmet.2018.01.016",
+        "article-title": "The Mitochondrial Acylome Emerges: Proteomics, Regulation by Sirtuins, and Metabolic and Disease Implications",
+        "volume": "27",
+        "author": "Carrico",
+        "year": "2018",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib12",
+        "doi-asserted-by": "crossref",
+        "first-page": "521",
+        "DOI": "10.1042\/BJ20110702",
+        "article-title": "PPARα-LXR as a novel metabolostatic signalling axis in skeletal muscle that acts to optimize substrate selection in response to nutrient status",
+        "volume": "437",
+        "author": "Caton",
+        "year": "2011",
+        "journal-title": "Biochem. J."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib13",
+        "doi-asserted-by": "crossref",
+        "first-page": "722",
+        "DOI": "10.1016\/j.cell.2016.09.052",
+        "article-title": "MOF Acetyl Transferase Regulates Transcription and Respiration in Mitochondria",
+        "volume": "167",
+        "author": "Chatterjee",
+        "year": "2016",
+        "journal-title": "Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib14",
+        "doi-asserted-by": "crossref",
+        "first-page": "584",
+        "DOI": "10.1016\/j.cell.2007.08.045",
+        "article-title": "SUMO-specific protease 1 is essential for stabilization of HIF1alpha during hypoxia",
+        "volume": "131",
+        "author": "Cheng",
+        "year": "2007",
+        "journal-title": "Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib15",
+        "doi-asserted-by": "crossref",
+        "first-page": "637",
+        "DOI": "10.1016\/j.cmet.2015.03.007",
+        "article-title": "SIRT3 mediates multi-tissue coupling for metabolic fuel switching",
+        "volume": "21",
+        "author": "Dittenhafer-Reed",
+        "year": "2015",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib16",
+        "doi-asserted-by": "crossref",
+        "first-page": "806",
+        "DOI": "10.1126\/science.1207861",
+        "article-title": "Sirt5 is a NAD-dependent protein lysine demalonylase and desuccinylase",
+        "volume": "334",
+        "author": "Du",
+        "year": "2011",
+        "journal-title": "Science"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib17",
+        "doi-asserted-by": "crossref",
+        "first-page": "534",
+        "DOI": "10.1016\/j.molcel.2013.12.026",
+        "article-title": "Tyr phosphorylation of PDP1 toggles recruitment between ACAT1 and SIRT3 to regulate the pyruvate dehydrogenase complex",
+        "volume": "53",
+        "author": "Fan",
+        "year": "2014",
+        "journal-title": "Mol. Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib18",
+        "doi-asserted-by": "crossref",
+        "first-page": "416",
+        "DOI": "10.1016\/j.ccr.2011.02.014",
+        "article-title": "SIRT3 opposes reprogramming of cancer cell metabolism through HIF1α destabilization",
+        "volume": "19",
+        "author": "Finley",
+        "year": "2011",
+        "journal-title": "Cancer Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib19",
+        "doi-asserted-by": "crossref",
+        "first-page": "177",
+        "DOI": "10.1016\/j.cell.2006.06.025",
+        "article-title": "OPA1 controls apoptotic cristae remodeling independently from mitochondrial fusion",
+        "volume": "126",
+        "author": "Frezza",
+        "year": "2006",
+        "journal-title": "Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib20",
+        "doi-asserted-by": "crossref",
+        "first-page": "1633",
+        "DOI": "10.1021\/pr2008384",
+        "article-title": "Mitochondrial acetylome analysis in a mouse model of alcohol-induced liver injury utilizing SIRT3 knockout mice",
+        "volume": "11",
+        "author": "Fritz",
+        "year": "2012",
+        "journal-title": "J. Proteome Res."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib21",
+        "doi-asserted-by": "crossref",
+        "first-page": "851",
+        "DOI": "10.1016\/j.molcel.2011.12.005",
+        "article-title": "The cAMP\/PKA pathway rapidly activates SIRT1 to promote fatty acid oxidation independently of changes in NAD(+)",
+        "volume": "44",
+        "author": "Gerhart-Hines",
+        "year": "2011",
+        "journal-title": "Mol. Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib22",
+        "doi-asserted-by": "crossref",
+        "first-page": "16958",
+        "DOI": "10.1074\/jbc.M110.202390",
+        "article-title": "Peroxisome proliferator-activated receptor-gamma coactivator-1alpha controls transcription of the Sirt3 gene, an essential component of the thermogenic brown adipocyte phenotype",
+        "volume": "286",
+        "author": "Giralt",
+        "year": "2011",
+        "journal-title": "J. Biol. Chem."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib23",
+        "doi-asserted-by": "crossref",
+        "first-page": "108",
+        "DOI": "10.1016\/j.tibs.2010.09.003",
+        "article-title": "Regulation of intermediary metabolism by protein acetylation",
+        "volume": "36",
+        "author": "Guan",
+        "year": "2011",
+        "journal-title": "Trends Biochem. Sci."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib24",
+        "doi-asserted-by": "crossref",
+        "first-page": "253",
+        "DOI": "10.1146\/annurev.pathol.4.110807.092250",
+        "article-title": "Mammalian sirtuins: biological insights and disease relevance",
+        "volume": "5",
+        "author": "Haigis",
+        "year": "2010",
+        "journal-title": "Annu. Rev. Pathol."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib25",
+        "doi-asserted-by": "crossref",
+        "first-page": "226",
+        "DOI": "10.1016\/j.cmet.2014.07.001",
+        "article-title": "Making proteins in the powerhouse",
+        "volume": "20",
+        "author": "Hällberg",
+        "year": "2014",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib26",
+        "doi-asserted-by": "crossref",
+        "first-page": "139",
+        "DOI": "10.1016\/j.molcel.2011.01.002",
+        "article-title": "Sirt3 promotes the urea cycle and fatty acid oxidation during dietary restriction",
+        "volume": "41",
+        "author": "Hallows",
+        "year": "2011",
+        "journal-title": "Mol. Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib27",
+        "doi-asserted-by": "crossref",
+        "first-page": "357",
+        "DOI": "10.1016\/j.cmet.2014.01.010",
+        "article-title": "The protein import machinery of mitochondria-a regulatory hub in metabolism, stress, and disease",
+        "volume": "19",
+        "author": "Harbauer",
+        "year": "2014",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib28",
+        "doi-asserted-by": "crossref",
+        "first-page": "467",
+        "DOI": "10.1016\/j.tem.2012.07.004",
+        "article-title": "Mitochondrial sirtuins: regulators of protein acylation and metabolism",
+        "volume": "23",
+        "author": "He",
+        "year": "2012",
+        "journal-title": "Trends Endocrinol. Metab."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib29",
+        "doi-asserted-by": "crossref",
+        "first-page": "186",
+        "DOI": "10.1016\/j.molcel.2012.10.024",
+        "article-title": "Calorie restriction and SIRT3 trigger global reprogramming of the mitochondrial protein acetylome",
+        "volume": "49",
+        "author": "Hebert",
+        "year": "2013",
+        "journal-title": "Mol. Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib30",
+        "doi-asserted-by": "crossref",
+        "first-page": "121",
+        "DOI": "10.1038\/nature08778",
+        "article-title": "SIRT3 regulates mitochondrial fatty-acid oxidation by reversible enzyme deacetylation",
+        "volume": "464",
+        "author": "Hirschey",
+        "year": "2010",
+        "journal-title": "Nature"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib31",
+        "doi-asserted-by": "crossref",
+        "first-page": "267",
+        "DOI": "10.1101\/sqb.2011.76.010850",
+        "article-title": "SIRT3 regulates mitochondrial protein acetylation and intermediary metabolism",
+        "volume": "76",
+        "author": "Hirschey",
+        "year": "2011",
+        "journal-title": "Cold Spring Harb. Symp. Quant. Biol."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib32",
+        "doi-asserted-by": "crossref",
+        "first-page": "177",
+        "DOI": "10.1016\/j.molcel.2011.07.019",
+        "article-title": "SIRT3 deficiency and mitochondrial protein hyperacetylation accelerate the development of the metabolic syndrome",
+        "volume": "44",
+        "author": "Hirschey",
+        "year": "2011",
+        "journal-title": "Mol. Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib33",
+        "doi-asserted-by": "crossref",
+        "first-page": "24394",
+        "DOI": "10.1074\/jbc.M109.014928",
+        "article-title": "Crystal structures of human SIRT3 displaying substrate-induced conformational changes",
+        "volume": "284",
+        "author": "Jin",
+        "year": "2009",
+        "journal-title": "J. Biol. Chem."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib34",
+        "doi-asserted-by": "crossref",
+        "first-page": "681",
+        "DOI": "10.1038\/nature21408",
+        "article-title": "LACTB is a tumour suppressor that modulates lipid metabolism and cell state",
+        "volume": "543",
+        "author": "Keckesova",
+        "year": "2017",
+        "journal-title": "Nature"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib35",
+        "doi-asserted-by": "crossref",
+        "first-page": "41",
+        "DOI": "10.1016\/j.ccr.2009.11.023",
+        "article-title": "SIRT3 is a mitochondria-localized tumor suppressor required for maintenance of mitochondrial integrity and metabolism during stress",
+        "volume": "17",
+        "author": "Kim",
+        "year": "2010",
+        "journal-title": "Cancer Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib36",
+        "doi-asserted-by": "crossref",
+        "first-page": "e11707",
+        "DOI": "10.1371\/journal.pone.0011707",
+        "article-title": "Sirtuin 3, a new target of PGC-1alpha, plays an important role in the suppression of ROS and mitochondrial biogenesis",
+        "volume": "5",
+        "author": "Kong",
+        "year": "2010",
+        "journal-title": "PLoS ONE"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib37",
+        "doi-asserted-by": "crossref",
+        "first-page": "17312",
+        "DOI": "10.1074\/jbc.M117.778720",
+        "article-title": "Obesity and aging diminish sirtuin 1 (SIRT1)-mediated deacetylation of SIRT3, leading to hyperacetylation and decreased activity and stability of SIRT3",
+        "volume": "292",
+        "author": "Kwon",
+        "year": "2017",
+        "journal-title": "J. Biol. Chem."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib38",
+        "doi-asserted-by": "crossref",
+        "first-page": "502",
+        "DOI": "10.1016\/j.cell.2018.08.040",
+        "article-title": "Acetate Production from Glucose and Coupling to Mitochondrial Metabolism in Mammals",
+        "volume": "175",
+        "author": "Liu",
+        "year": "2018",
+        "journal-title": "Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib39",
+        "doi-asserted-by": "crossref",
+        "first-page": "187",
+        "DOI": "10.1016\/j.cell.2018.04.017",
+        "article-title": "PNPT1 Release from Mitochondria during Apoptosis Triggers Decay of Poly(A) RNAs",
+        "volume": "174",
+        "author": "Liu",
+        "year": "2018",
+        "journal-title": "Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib40",
+        "doi-asserted-by": "crossref",
+        "first-page": "1615",
+        "DOI": "10.1016\/j.cell.2014.11.046",
+        "article-title": "Sirtuin 4 is a lipoamidase regulating pyruvate dehydrogenase complex activity",
+        "volume": "159",
+        "author": "Mathias",
+        "year": "2014",
+        "journal-title": "Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib41",
+        "doi-asserted-by": "crossref",
+        "first-page": "633",
+        "DOI": "10.1016\/j.celrep.2014.09.025",
+        "article-title": "Hypothalamic PGC-1α protects against high-fat diet exposure by regulating ERα",
+        "volume": "9",
+        "author": "Morselli",
+        "year": "2014",
+        "journal-title": "Cell Rep."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib42",
+        "doi-asserted-by": "crossref",
+        "first-page": "560",
+        "DOI": "10.1016\/j.cell.2009.02.026",
+        "article-title": "SIRT5 Deacetylates carbamoyl phosphate synthetase 1 and regulates the urea cycle",
+        "volume": "137",
+        "author": "Nakagawa",
+        "year": "2009",
+        "journal-title": "Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib43",
+        "doi-asserted-by": "crossref",
+        "first-page": "1375",
+        "DOI": "10.1016\/j.chembiol.2013.09.019",
+        "article-title": "Crystal structures of Sirt3 complexes with 4′-bromo-resveratrol reveal binding sites and inhibition mechanism",
+        "volume": "20",
+        "author": "Nguyen",
+        "year": "2013",
+        "journal-title": "Chem. Biol."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib44",
+        "doi-asserted-by": "crossref",
+        "first-page": "13653",
+        "DOI": "10.1073\/pnas.222538099",
+        "article-title": "SIRT3, a human SIR2 homologue, is an NAD-dependent deacetylase localized to mitochondria",
+        "volume": "99",
+        "author": "Onyango",
+        "year": "2002",
+        "journal-title": "Proc. Natl. Acad. Sci. USA"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib45",
+        "doi-asserted-by": "crossref",
+        "first-page": "662",
+        "DOI": "10.1016\/j.cmet.2010.11.015",
+        "article-title": "Calorie restriction reduces oxidative stress by SIRT3-mediated SOD2 activation",
+        "volume": "12",
+        "author": "Qiu",
+        "year": "2010",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib46",
+        "doi-asserted-by": "crossref",
+        "first-page": "920",
+        "DOI": "10.1101\/gad.1527307",
+        "article-title": "SirT3 is a nuclear NAD+-dependent histone deacetylase that translocates to the mitochondria upon cellular stress",
+        "volume": "21",
+        "author": "Scher",
+        "year": "2007",
+        "journal-title": "Genes Dev."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib47",
+        "doi-asserted-by": "crossref",
+        "first-page": "10224",
+        "DOI": "10.1073\/pnas.0603968103",
+        "article-title": "Reversible lysine acetylation controls the activity of the mitochondrial enzyme acetyl-CoA synthetase 2",
+        "volume": "103",
+        "author": "Schwer",
+        "year": "2006",
+        "journal-title": "Proc. Natl. Acad. Sci. USA"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib48",
+        "doi-asserted-by": "crossref",
+        "first-page": "604",
+        "DOI": "10.1111\/j.1474-9726.2009.00503.x",
+        "article-title": "Calorie restriction alters mitochondrial protein acetylation",
+        "volume": "8",
+        "author": "Schwer",
+        "year": "2009",
+        "journal-title": "Aging Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib49",
+        "doi-asserted-by": "crossref",
+        "first-page": "654",
+        "DOI": "10.1016\/j.cmet.2010.11.003",
+        "article-title": "SIRT3 deacetylates mitochondrial 3-hydroxy-3-methylglutaryl CoA synthase 2 and regulates ketone body production",
+        "volume": "12",
+        "author": "Shimazu",
+        "year": "2010",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib50",
+        "doi-asserted-by": "crossref",
+        "first-page": "e50545",
+        "DOI": "10.1371\/journal.pone.0050545",
+        "article-title": "Proteomic investigations of lysine acetylation identify diverse substrates of mitochondrial deacetylase sirt3",
+        "volume": "7",
+        "author": "Sol",
+        "year": "2012",
+        "journal-title": "PLoS ONE"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib51",
+        "doi-asserted-by": "crossref",
+        "first-page": "802",
+        "DOI": "10.1016\/j.cell.2010.10.002",
+        "article-title": "Sirt3 mediates reduction of oxidative damage and prevention of age-related hearing loss under caloric restriction",
+        "volume": "143",
+        "author": "Someya",
+        "year": "2010",
+        "journal-title": "Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib52",
+        "doi-asserted-by": "crossref",
+        "first-page": "745",
+        "DOI": "10.1038\/s41556-018-0124-1",
+        "article-title": "The multifaceted contributions of mitochondria to cellular metabolism",
+        "volume": "20",
+        "author": "Spinelli",
+        "year": "2018",
+        "journal-title": "Nat. Cell Biol."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib53",
+        "doi-asserted-by": "crossref",
+        "first-page": "605",
+        "DOI": "10.1016\/j.cmet.2014.03.014",
+        "article-title": "Lysine glutarylation is a protein posttranslational modification regulated by SIRT5",
+        "volume": "19",
+        "author": "Tan",
+        "year": "2014",
+        "journal-title": "Cell Metab."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib54",
+        "doi-asserted-by": "crossref",
+        "first-page": "893",
+        "DOI": "10.1016\/j.molcel.2010.12.013",
+        "article-title": "Sirt3-mediated deacetylation of evolutionarily conserved lysine 122 regulates MnSOD activity in response to stress",
+        "volume": "40",
+        "author": "Tao",
+        "year": "2010",
+        "journal-title": "Mol. Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib55",
+        "doi-asserted-by": "crossref",
+        "first-page": "12153",
+        "DOI": "10.1074\/jbc.M117.791715",
+        "article-title": "Prolonged fasting suppresses mitochondrial NLRP3 inflammasome assembly and activation via SIRT3-mediated activation of superoxide dismutase 2",
+        "volume": "292",
+        "author": "Traba",
+        "year": "2017",
+        "journal-title": "J. Biol. Chem."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib56",
+        "first-page": "164309",
+        "article-title": "Powering the immune system: mitochondria in immune function and deficiency",
+        "volume": "2014",
+        "author": "Walker",
+        "year": "2014",
+        "journal-title": "J. Immunol. Res."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib57",
+        "doi-asserted-by": "crossref",
+        "first-page": "30",
+        "DOI": "10.1038\/s41392-018-0024-7",
+        "article-title": "Metabolite sensing and signaling in cell metabolism",
+        "volume": "3",
+        "author": "Wang",
+        "year": "2018",
+        "journal-title": "Signal Transduct. Target. Ther."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib58",
+        "doi-asserted-by": "crossref",
+        "first-page": "1004",
+        "DOI": "10.1126\/science.1179687",
+        "article-title": "Acetylation of metabolic enzymes coordinates carbon source utilization and metabolic flux",
+        "volume": "327",
+        "author": "Wang",
+        "year": "2010",
+        "journal-title": "Science"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib59",
+        "doi-asserted-by": "crossref",
+        "first-page": "439",
+        "DOI": "10.1083\/jcb.200610042",
+        "article-title": "Bax\/Bak promote sumoylation of DRP1 and its stable association with mitochondria during apoptotic cell death",
+        "volume": "177",
+        "author": "Wasiak",
+        "year": "2007",
+        "journal-title": "J. Cell Biol."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib60",
+        "doi-asserted-by": "crossref",
+        "first-page": "1582",
+        "DOI": "10.1038\/nprot.2009.151",
+        "article-title": "Isolation of mitochondria-associated membranes and mitochondria from animal tissues and cells",
+        "volume": "4",
+        "author": "Wieckowski",
+        "year": "2009",
+        "journal-title": "Nat. Protoc."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib61",
+        "doi-asserted-by": "crossref",
+        "first-page": "985",
+        "DOI": "10.1016\/j.cell.2016.10.016",
+        "article-title": "Mitochondrial Sirtuin Network Reveals Dynamic SIRT3-Dependent Deacetylation in Response to Membrane Depolarization",
+        "volume": "167",
+        "author": "Yang",
+        "year": "2016",
+        "journal-title": "Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib62",
+        "doi-asserted-by": "crossref",
+        "first-page": "41",
+        "DOI": "10.1016\/S0092-8674(02)01250-3",
+        "article-title": "Molecular chaperones Hsp90 and Hsp70 deliver preproteins to the mitochondrial import receptor Tom70",
+        "volume": "112",
+        "author": "Young",
+        "year": "2003",
+        "journal-title": "Cell"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib63",
+        "doi-asserted-by": "crossref",
+        "first-page": "14078",
+        "DOI": "10.1074\/jbc.M112.355206",
+        "article-title": "SIRT3 protein deacetylates isocitrate dehydrogenase 2 (IDH2) and regulates mitochondrial redox status",
+        "volume": "287",
+        "author": "Yu",
+        "year": "2012",
+        "journal-title": "J. Biol. Chem."
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib64",
+        "doi-asserted-by": "crossref",
+        "first-page": "1000",
+        "DOI": "10.1126\/science.1179689",
+        "article-title": "Regulation of cellular metabolism by protein lysine acetylation",
+        "volume": "327",
+        "author": "Zhao",
+        "year": "2010",
+        "journal-title": "Science"
+      },
+      {
+        "key": "10.1016\/j.molcel.2019.06.008_bib65",
+        "doi-asserted-by": "crossref",
+        "first-page": "1546",
+        "DOI": "10.1016\/j.cell.2018.09.041",
+        "article-title": "Mitochondrial One-Carbon Pathway Supports Cytosolic Folate Integrity in Cancer Cells",
+        "volume": "175",
+        "author": "Zheng",
+        "year": "2018",
+        "journal-title": "Cell"
+      }
+    ],
+    "container-title": [
+      "Molecular Cell"
+    ],
+    "language": "en",
+    "link": [
+      {
+        "URL": "https:\/\/api.elsevier.com\/content\/article\/PII:S1097276519304411?httpAccept=text\/xml",
+        "content-type": "text\/xml",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https:\/\/api.elsevier.com\/content\/article\/PII:S1097276519304411?httpAccept=text\/plain",
+        "content-type": "text\/plain",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      }
+    ],
+    "deposited": {
+      "date-parts": [
+        [
+          2020,
+          9,
+          1
+        ]
+      ],
+      "date-time": "2020-09-01T04:10:16Z",
+      "timestamp": 1598933416000
+    },
+    "score": 20.154448,
+    "resource": {
+      "primary": {
+        "URL": "https:\/\/linkinghub.elsevier.com\/retrieve\/pii\/S1097276519304411"
+      }
+    },
+    "issued": {
+      "date-parts": [
+        [
+          2019,
+          8
+        ]
+      ]
+    },
+    "references-count": 65,
+    "journal-issue": {
+      "issue": "4",
+      "published-print": {
+        "date-parts": [
+          [
+            2019,
+            8
+          ]
+        ]
+      }
+    },
+    "alternative-id": [
+      "S1097276519304411"
+    ],
+    "URL": "http:\/\/dx.doi.org\/10.1016\/j.molcel.2019.06.008",
+    "ISSN": [
+      "1097-2765"
+    ],
+    "issn-type": [
+      {
+        "value": "1097-2765",
+        "type": "print"
+      }
+    ],
+    "subject": [
+      "Cell Biology",
+      "Molecular Biology"
+    ],
+    "published": {
+      "date-parts": [
+        [
+          2019,
+          8
+        ]
+      ]
+    },
+    "assertion": [
+      {
+        "value": "Elsevier",
+        "name": "publisher",
+        "label": "This article is maintained by"
+      },
+      {
+        "value": "SENP1-Sirt3 Signaling Controls Mitochondrial Protein Acetylation and Metabolism",
+        "name": "articletitle",
+        "label": "Article Title"
+      },
+      {
+        "value": "Molecular Cell",
+        "name": "journaltitle",
+        "label": "Journal Title"
+      },
+      {
+        "value": "https:\/\/doi.org\/10.1016\/j.molcel.2019.06.008",
+        "name": "articlelink",
+        "label": "CrossRef DOI link to publisher maintained version"
+      },
+      {
+        "value": "article",
+        "name": "content_type",
+        "label": "Content Type"
+      },
+      {
+        "value": "© 2019 Elsevier Inc.",
+        "name": "copyright",
+        "label": "Copyright"
+      }
+    ]
+  },
+  {
+    "indexed": {
+      "date-parts": [
+        [
+          2023,
+          3,
+          3
+        ]
+      ],
+      "date-time": "2023-03-03T18:33:44Z",
+      "timestamp": 1677868424376
+    },
+    "reference-count": 10,
+    "publisher": "Wiley",
+    "issue": "12",
+    "license": [
+      {
+        "start": {
+          "date-parts": [
+            [
+              2021,
+              12,
+              26
+            ]
+          ],
+          "date-time": "2021-12-26T00:00:00Z",
+          "timestamp": 1640476800000
+        },
+        "content-version": "vor",
+        "delay-in-days": 25,
+        "URL": "http:\/\/creativecommons.org\/licenses\/by\/4.0\/"
+      },
+      {
+        "start": {
+          "date-parts": [
+            [
+              2021,
+              12,
+              1
+            ]
+          ],
+          "date-time": "2021-12-01T00:00:00Z",
+          "timestamp": 1638316800000
+        },
+        "content-version": "tdm",
+        "delay-in-days": 0,
+        "URL": "http:\/\/doi.wiley.com\/10.1002\/tdm_license_1.1"
+      }
+    ],
+    "funder": [
+      {
+        "DOI": "10.13039\/100007108",
+        "name": "George Washington University",
+        "doi-asserted-by": "publisher"
+      }
+    ],
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "short-container-title": [
+      "Clinical &amp; Translational Med"
+    ],
+    "published-print": {
+      "date-parts": [
+        [
+          2021,
+          12
+        ]
+      ]
+    },
+    "DOI": "10.1002\/ctm2.649",
+    "type": "journal-article",
+    "created": {
+      "date-parts": [
+        [
+          2021,
+          12,
+          26
+        ]
+      ],
+      "date-time": "2021-12-26T16:24:18Z",
+      "timestamp": 1640535858000
+    },
+    "source": "Crossref",
+    "is-referenced-by-count": 5,
+    "title": [
+      "Identification of potent SENP1 inhibitors that inactivate SENP1\/JAK2\/STAT signaling pathway and overcome platinum drug resistance in ovarian cancer"
+    ],
+    "prefix": "10.1002",
+    "volume": "11",
+    "author": [
+      {
+        "given": "Yi",
+        "family": "Zhang",
+        "sequence": "first",
+        "affiliation": [
+          {
+            "name": "Department of Biochemistry and Molecular Medicine the George Washington University School of Medicine and Health Sciences  Washington District of Columbia USA"
+          },
+          {
+            "name": "GW Cancer Center the George Washington University  Washington District of Columbia USA"
+          }
+        ]
+      },
+      {
+        "given": "Huiqiang",
+        "family": "Wei",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Tianjin Key Laboratory of Radiation Medicine and Molecular Nuclear Medicine Institute of Radiation Medicine Peking Union Medical College and Chinese Academy of Medical Sciences  Tianjin China"
+          }
+        ]
+      },
+      {
+        "given": "Yuan",
+        "family": "Zhou",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Biochemistry and Molecular Medicine the George Washington University School of Medicine and Health Sciences  Washington District of Columbia USA"
+          },
+          {
+            "name": "GW Cancer Center the George Washington University  Washington District of Columbia USA"
+          }
+        ]
+      },
+      {
+        "given": "Zhuqing",
+        "family": "Li",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Biochemistry and Molecular Medicine the George Washington University School of Medicine and Health Sciences  Washington District of Columbia USA"
+          },
+          {
+            "name": "GW Cancer Center the George Washington University  Washington District of Columbia USA"
+          }
+        ]
+      },
+      {
+        "given": "Wenfeng",
+        "family": "Gou",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Tianjin Key Laboratory of Radiation Medicine and Molecular Nuclear Medicine Institute of Radiation Medicine Peking Union Medical College and Chinese Academy of Medical Sciences  Tianjin China"
+          }
+        ]
+      },
+      {
+        "given": "Yunxiao",
+        "family": "Meng",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Biochemistry and Molecular Medicine the George Washington University School of Medicine and Health Sciences  Washington District of Columbia USA"
+          },
+          {
+            "name": "GW Cancer Center the George Washington University  Washington District of Columbia USA"
+          }
+        ]
+      },
+      {
+        "given": "Wei",
+        "family": "Zheng",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "National Center for Advancing Translational Sciences National Institutes of Health  Bethesda Maryland USA"
+          }
+        ]
+      },
+      {
+        "given": "Jing",
+        "family": "Li",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Biochemistry and Molecular Medicine the George Washington University School of Medicine and Health Sciences  Washington District of Columbia USA"
+          },
+          {
+            "name": "GW Cancer Center the George Washington University  Washington District of Columbia USA"
+          }
+        ]
+      },
+      {
+        "given": "Yiliang",
+        "family": "Li",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Tianjin Key Laboratory of Radiation Medicine and Molecular Nuclear Medicine Institute of Radiation Medicine Peking Union Medical College and Chinese Academy of Medical Sciences  Tianjin China"
+          }
+        ]
+      },
+      {
+        "ORCID": "http:\/\/orcid.org\/0000-0001-9113-5020",
+        "authenticated-orcid": false,
+        "given": "Wenge",
+        "family": "Zhu",
+        "sequence": "additional",
+        "affiliation": [
+          {
+            "name": "Department of Biochemistry and Molecular Medicine the George Washington University School of Medicine and Health Sciences  Washington District of Columbia USA"
+          },
+          {
+            "name": "GW Cancer Center the George Washington University  Washington District of Columbia USA"
+          }
+        ]
+      }
+    ],
+    "member": "311",
+    "published-online": {
+      "date-parts": [
+        [
+          2021,
+          12,
+          26
+        ]
+      ]
+    },
+    "reference": [
+      {
+        "key": "e_1_2_1_5_2_1",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/s41419-021-03635-6"
+      },
+      {
+        "key": "e_1_2_1_5_3_1",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.3390\/cancers13092059"
+      },
+      {
+        "key": "e_1_2_1_5_4_1",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.csbj.2015.03.001"
+      },
+      {
+        "key": "e_1_2_1_5_5_1",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.18632\/oncotarget.10636"
+      },
+      {
+        "key": "e_1_2_1_5_6_1",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1371\/journal.pone.0037693"
+      },
+      {
+        "key": "e_1_2_1_5_7_1",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016\/j.chembiol.2016.03.008"
+      },
+      {
+        "key": "e_1_2_1_5_8_1",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1038\/s41388-018-0584-6"
+      },
+      {
+        "key": "e_1_2_1_5_9_1",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1042\/BJ20060526"
+      },
+      {
+        "key": "e_1_2_1_5_10_1",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1021\/acs.molpharmaceut.0c00443"
+      },
+      {
+        "key": "e_1_2_1_5_11_1",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1155\/2016\/4301621"
+      }
+    ],
+    "container-title": [
+      "Clinical and Translational Medicine"
+    ],
+    "language": "en",
+    "link": [
+      {
+        "URL": "https:\/\/onlinelibrary.wiley.com\/doi\/pdf\/10.1002\/ctm2.649",
+        "content-type": "application\/pdf",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https:\/\/onlinelibrary.wiley.com\/doi\/full-xml\/10.1002\/ctm2.649",
+        "content-type": "application\/xml",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "https:\/\/onlinelibrary.wiley.com\/doi\/pdf\/10.1002\/ctm2.649",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "deposited": {
+      "date-parts": [
+        [
+          2021,
+          12,
+          26
+        ]
+      ],
+      "date-time": "2021-12-26T16:33:57Z",
+      "timestamp": 1640536437000
+    },
+    "score": 20.037325,
+    "resource": {
+      "primary": {
+        "URL": "https:\/\/onlinelibrary.wiley.com\/doi\/10.1002\/ctm2.649"
+      }
+    },
+    "issued": {
+      "date-parts": [
+        [
+          2021,
+          12
+        ]
+      ]
+    },
+    "references-count": 10,
+    "journal-issue": {
+      "issue": "12",
+      "published-print": {
+        "date-parts": [
+          [
+            2021,
+            12
+          ]
+        ]
+      }
+    },
+    "alternative-id": [
+      "10.1002\/ctm2.649"
+    ],
+    "URL": "http:\/\/dx.doi.org\/10.1002\/ctm2.649",
+    "archive": [
+      "Portico"
+    ],
+    "ISSN": [
+      "2001-1326",
+      "2001-1326"
+    ],
+    "issn-type": [
+      {
+        "value": "2001-1326",
+        "type": "print"
+      },
+      {
+        "value": "2001-1326",
+        "type": "electronic"
+      }
+    ],
+    "subject": [
+      "Molecular Medicine",
+      "Medicine (miscellaneous)"
+    ],
+    "published": {
+      "date-parts": [
+        [
+          2021,
+          12
+        ]
+      ]
+    }
+  }
+]

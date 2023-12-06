@@ -40,10 +40,8 @@ export const APPSIGNAL_APP_ENV = env('APPSIGNAL_APP_ENV', 'development');
 
 // CRON jobs
 export const CRON_SCHEDULE = env('CRON_SCHEDULE', '0 * * * *');
-export const DOCUMENT_CRON_UPDATE_PERIOD_DAYS = env('DOCUMENT_CRON_UPDATE_PERIOD_DAYS', 7);
-export const DOCUMENT_CRON_CREATED_AGE_DAYS = env('DOCUMENT_CRON_CREATED_AGE_DAYS', undefined);
-export const DOCUMENT_CRON_REFRESH_ENABLED = env('DOCUMENT_CRON_REFRESH_ENABLED', true);
-export const DOCUMENT_CRON_UNEDITED_DAYS = env('DOCUMENT_CRON_UNEDITED_DAYS', 30);
+export const DOCUMENT_CRON_UPDATE_PERIOD = env('DOCUMENT_CRON_UPDATE_PERIOD', 7 * 24 * 60 * 60 * 1000);
+export const DOCUMENT_CRON_STALE_PERIOD = env('DOCUMENT_CRON_STALE_PERIOD', 30 * 24 * 60 * 60 * 1000);
 export const GRAPHDB_CRON_REFRESH_PERIOD_MINUTES = env('GRAPHDB_CRON_REFRESH_PERIOD_MINUTES', 1440);
 
 // Connect to localhost
@@ -75,6 +73,7 @@ export const INDRA_ENGLISH_ASSEMBLER_URL = env('INDRA_ENGLISH_ASSEMBLER_URL', 'h
 export const SEMANTIC_SEARCH_BASE_URL = env('SEMANTIC_SEARCH_BASE_URL', 'https://main.semanticsearch.baderlab.org/');
 export const ORCID_BASE_URL = env('ORCID_BASE_URL', 'https://orcid.org/');
 export const ORCID_PUBLIC_API_BASE_URL = env('ORCID_PUBLIC_API_BASE_URL', 'https://pub.orcid.org/v3.0/');
+export const CROSSREF_API_BASE_URL = env('CROSSREF_API_BASE_URL', 'https://api.crossref.org/');
 
 // Links
 export const UNIPROT_LINK_BASE_URL = env('UNIPROT_LINK_BASE_URL', 'http://www.uniprot.org/uniprot/');

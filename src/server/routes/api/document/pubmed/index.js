@@ -7,6 +7,7 @@ import { ArticleIDError, getPubmedCitation } from '../../../../../util/pubmed';
 import {
   DEMO_ID
 } from '../../../../../config';
+import { isDigits, isDoi } from '../../../../../util';
 
 const ID_TYPE = Object.freeze({
   DOI: 'doi',
@@ -20,13 +21,9 @@ const pubTypeToExclude = [
 ];
 
 const paperId2Type = paperId => {
-  // 99.3% of CrossRef DOIs (https://www.crossref.org/blog/dois-and-matching-regular-expressions/)
-  const doiRegex = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i;
-  const digitsRegex = /^[0-9.]+$/;
-
   let IdType = ID_TYPE.TITLE;
-  const isUidLike = digitsRegex.test( paperId );
-  const isDoiLike = doiRegex.test( paperId );
+  const isUidLike = isDigits( paperId );
+  const isDoiLike = isDoi( paperId );
 
   if( isDoiLike ) {
     IdType = ID_TYPE.DOI;
@@ -102,12 +99,12 @@ const getPubmedArticle = async paperId => {
       if( PubmedArticle ){
         return PubmedArticle;
       } else {
-        throw new Error(`Unable to retrieve a PubmedArticle for '${paperId}`);
+        throw new ArticleIDError( `Unrecognized paperId '${paperId}'`, paperId );
       }
 
     } catch( err ) {
       logger.error( `${err.name}: ${err.message}` );
-      throw new ArticleIDError( `Unrecognized paperId '${paperId}'`, paperId );
+      throw err;
     }
   }
 };

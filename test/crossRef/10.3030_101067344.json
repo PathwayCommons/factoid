@@ -1,0 +1,139 @@
+{
+  "indexed": {
+    "date-parts": [
+      [
+        2022,
+        12,
+        14
+      ]
+    ],
+    "date-time": "2022-12-14T06:29:57Z",
+    "timestamp": 1670999397146
+  },
+  "publisher": "Publications Office of the European Union",
+  "award-start": {
+    "date-parts": [
+      [
+        2022,
+        9,
+        1
+      ]
+    ]
+  },
+  "award": "101067344",
+  "DOI": "10.3030\/101067344",
+  "type": "grant",
+  "created": {
+    "date-parts": [
+      [
+        2022,
+        12,
+        12
+      ]
+    ],
+    "date-time": "2022-12-12T15:25:18Z",
+    "timestamp": 1670858718000
+  },
+  "source": "Crossref",
+  "prefix": "10.3030",
+  "member": "4854",
+  "project": [
+    {
+      "project-title": [
+        {
+          "title": "Dynamics of p53 mutant reactivation and the anti-carcinogenic action of engineered resveratrol analogues",
+          "language": "en"
+        },
+        {
+          "title": "p53-REACT",
+          "language": "en"
+        }
+      ],
+      "project-description": [
+        {
+          "description": "The project proposal aims to engineer a bacterial host to produce variants of secondary metabolite resveratrol and address the interrelationship between dynamics, structure and function of a system of high medical interest, the tumor suppressor protein p53. The study considers to elucidate the mode of action of these molecules against the p53 mutants and work on new concepts for cancer therapy. Inside the cell, the folding of a protein is a fast and robust process. Sometimes, however, sudden changes in the balance between different existing forces result in incorrect folding of the peptide chain, which ends up generating amyloid aggregates within the cell that lead to the gain of toxic function, since these aggregates can conduct to death of the cell in question. Most amyloidogenic pathologies are neurodegenerative, however the aggregation also plays an important role in cancer. The project provides a broad framework for the study of the resveratrol derivatives acting as p53 aggregation inhibitors by using cutting-edge tools of computational resources, metabolic engineering and structural biology. But could, in principal, be applied to exploit the chemical diversity of other biocompounds similarly intending to act as less cytotoxic agents in a more effective antineoplastic therapy, which represents one of the major existing scientific gaps. It is a proposal on a very important topic that will be studied from a unique perspective.",
+          "language": "en"
+        }
+      ],
+      "award-amount": {
+        "amount": 189687.36,
+        "currency": "EUR"
+      },
+      "award-start": {
+        "date-parts": [
+          [
+            2022,
+            9,
+            1
+          ]
+        ]
+      },
+      "award-end": {
+        "date-parts": [
+          [
+            2024,
+            8,
+            31
+          ]
+        ]
+      },
+      "award-planned-end": {
+        "date-parts": [
+          [
+            2024,
+            8,
+            31
+          ]
+        ]
+      },
+      "funding": [
+        {
+          "type": "grant",
+          "scheme": "HORIZON-MSCA-2021-PF-01-01",
+          "award-amount": {
+            "amount": 189687.36,
+            "currency": "EUR",
+            "percentage": 100
+          },
+          "funder": {
+            "name": "HORIZON EUROPE Marie Sklodowska-Curie Actions",
+            "id": [
+              {
+                "id": "10.13039\/100018694",
+                "id-type": "DOI",
+                "asserted-by": "publisher"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "deposited": {
+    "date-parts": [
+      [
+        2022,
+        12,
+        13
+      ]
+    ],
+    "date-time": "2022-12-13T14:20:24Z",
+    "timestamp": 1670941224000
+  },
+  "score": 11.681639,
+  "resource": {
+    "primary": {
+      "URL": "https:\/\/cordis.europa.eu\/project\/id\/101067344"
+    }
+  },
+  "issued": {
+    "date-parts": [
+      [
+        2022,
+        9,
+        1
+      ]
+    ]
+  },
+  "URL": "http:\/\/dx.doi.org\/10.3030\/101067344"
+}

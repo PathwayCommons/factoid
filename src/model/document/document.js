@@ -567,15 +567,38 @@ class Document {
   }
 
   toBiopaxTemplate( omitDbXref ){
+    const toPublication = citation => {
+      let { pmid, doi, title, reference: source, authors: { authorList }, ISODate } = citation;
+      let db, id;
+      if ( pmid ){
+        db = 'pmid';
+        id = pmid;
+      } else if( doi ) {
+        db = 'crossref';
+        id = doi;
+      }
+      const publication = { db, id, title, source };
+      if( ISODate ) {
+        const date = new Date( ISODate );
+        const year = date.getFullYear();
+        publication.year = year;
+      }
+      if( !_.isEmpty( authorList ) ) {
+        const author = authorList.map( ({ name }) => name );
+        publication.author = author;
+      }
+      return publication;
+    };
     let interactions = this.toBiopaxIntnTemplates( omitDbXref );
     let citation = this.citation();
-    let pathwayName = citation.title;
-    let pmid = citation.pmid;
+    let { pmid, doi, title } = citation;
+    const hasArticleId = pmid != null || doi != null;
     let pathwayId = this.id();
 
-    let template = { interactions, pathwayName, pathwayId };
-    if ( pmid ) {
-      template.publication = { id: pmid, db: 'pubmed' };
+    let template = { interactions, pathwayName: title, pathwayId };
+    if ( hasArticleId ) {
+      const publication = toPublication( citation );
+      template.publication = publication;
     }
 
     return template;

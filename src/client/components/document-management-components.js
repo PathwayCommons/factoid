@@ -320,9 +320,9 @@ class DocumentManagementDocumentComponent extends React.Component {
             h( 'i.material-icons.hide-by-default.invalid', {
               className: makeClassList({ 'show': hasIssues( doc ) })
             }, 'warning' ),
-            h( 'i.material-icons.hide-by-default.complete', {
-              className: makeClassList({ 'show': doc.submitted() || doc.isPublic() })
-            }, 'check_circle' ),
+            // h( 'i.material-icons.hide-by-default.complete', {
+            //   className: makeClassList({ 'show': doc.submitted() || doc.isPublic() })
+            // }, 'check_circle' ),
             h( 'i.material-icons.hide-by-default.mute', {
               className: makeClassList({ 'show': doc.trashed() })
             }, 'delete' )

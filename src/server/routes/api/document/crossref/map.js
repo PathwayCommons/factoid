@@ -89,13 +89,15 @@ const getPostedContent = record => {
     const JournalIssue = { PubDate };
     return JournalIssue;
   };
-  const { institution, 'group-title': groupTitle } = record;
+  const { institution, 'group-title': groupTitle, publisher } = record;
   let Title;
   if ( institution ) { // preprint (e.g. bioRxiv, medRxiv)
     const { name } = _.head( institution );
     Title = name;
   } else if ( groupTitle ) { // preprint (e.g. eLife)
     Title = groupTitle;
+  } else {
+    Title = publisher;
   }
   const JournalIssue = getJournalIssue( record );
   const Journal = { Title, JournalIssue };

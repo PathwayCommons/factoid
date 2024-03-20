@@ -1,0 +1,972 @@
+{
+	"_id": "28041912|None",
+	"id": "10.1016/j.molcel.2016.11.034",
+	"infons": {
+    "doi": "10.1016/j.molcel.2016.11.034",
+    "comment": "Synonym: p65; NF-κB"
+  },
+	"passages": [
+		{
+			"infons": {
+				"journal": "Mol Cell. 2017 Jan 5;65(1):154-167. doi: 10.1016/j.molcel.2016.11.034. Epub 2016 ",
+				"year": "2017",
+				"article-id_pmc": "PMC5218896",
+				"type": "title",
+				"authors": "Jeong JH, Park SJ, Dickinson SI, Luo JL"
+			},
+			"offset": 0,
+			"text": "A Constitutive Intrinsic Inflammatory Signaling Circuit Composed of miR-196b, Meis2, PPP3CC, and p65 Drives Prostate Cancer Castration Resistance.",
+			"sentences": [],
+			"annotations": [
+				{
+					"id": "5",
+					"infons": {
+						"identifier": "442920",
+						"type": "Gene",
+						"valid": true,
+						"normalized": [
+							442920
+						],
+						"database": "ncbi_gene",
+						"normalized_id": 442920,
+						"biotype": "gene",
+						"name": "MIR196B",
+						"accession": "@GENE_MIR196B"
+					},
+					"text": "miR-196b",
+					"locations": [
+						{
+							"offset": 68,
+							"length": 8
+						}
+					]
+				},
+				{
+					"id": "6",
+					"infons": {
+						"identifier": "4212",
+						"type": "Gene",
+						"ncbi_homologene": "7846",
+						"valid": true,
+						"normalized": [
+							4212
+						],
+						"database": "ncbi_gene",
+						"normalized_id": 4212,
+						"biotype": "gene",
+						"name": "MEIS2",
+						"accession": "@GENE_MEIS2"
+					},
+					"text": "Meis2",
+					"locations": [
+						{
+							"offset": 78,
+							"length": 5
+						}
+					]
+				},
+				{
+					"id": "7",
+					"infons": {
+						"identifier": "5533",
+						"type": "Gene",
+						"ncbi_homologene": "68475",
+						"valid": true,
+						"normalized": [
+							5533
+						],
+						"database": "ncbi_gene",
+						"normalized_id": 5533,
+						"biotype": "gene",
+						"name": "PPP3CC",
+						"accession": "@GENE_PPP3CC"
+					},
+					"text": "PPP3CC",
+					"locations": [
+						{
+							"offset": 85,
+							"length": 6
+						}
+					]
+				},
+				{
+					"id": "8",
+					"infons": {
+						"identifier": "5970",
+						"type": "Gene",
+						"ncbi_homologene": "32064",
+						"valid": true,
+						"normalized": [
+							5970
+						],
+						"database": "ncbi_gene",
+						"normalized_id": 5970,
+						"biotype": "gene",
+						"name": "RELA",
+						"accession": "@GENE_RELA"
+					},
+					"text": "p65",
+					"locations": [
+						{
+							"offset": 97,
+							"length": 3
+						}
+					]
+				},
+				{
+					"id": "9",
+					"infons": {
+						"identifier": "MESH:D011471",
+						"type": "Disease",
+						"valid": true,
+						"normalized": [
+							"D011471"
+						],
+						"database": "ncbi_mesh",
+						"normalized_id": "D011471",
+						"biotype": "disease",
+						"name": "Prostatic Neoplasms",
+						"accession": "@DISEASE_Prostatic_Neoplasms"
+					},
+					"text": "Prostate Cancer Castration",
+					"locations": [
+						{
+							"offset": 108,
+							"length": 26
+						}
+					]
+				}
+			],
+			"relations": []
+		},
+		{
+			"infons": {
+				"type": "abstract"
+			},
+			"offset": 147,
+			"text": "Androgen deprivation therapy is the most effective treatment for advanced prostate cancer, but almost all cancer eventually becomes castration resistant, and the underlying mechanisms are largely unknown. Here, we show that an intrinsic constitutively activated feedforward signaling circuit composed of IkappaBalpha/NF-kappaB(p65), miR-196b-3p, Meis2, and PPP3CC is formed during the emergence of castration-resistant prostate cancer (CRPC). This circuit controls the expression of stem cell transcription factors that drives the high tumorigenicity of CRPC cells. Interrupting the circuit by targeting its individual components significantly impairs the tumorigenicity and CRPC development. Notably, constitutive activation of IkappaBalpha/NF-kappaB(p65) in this circuit is not dependent on the activation of traditional IKKbeta/NF-kappaB pathways that are important in normal immune responses. Therefore, our studies present deep insight into the bona fide mechanisms underlying castration resistance and provide the foundation for the development of CRPC therapeutic strategies that would be highly efficient while avoiding indiscriminate IKK/NF-kappaB inhibition in normal cells.",
+			"sentences": [],
+			"annotations": [
+				{
+					"id": "28",
+					"infons": {
+						"identifier": "MESH:D011471",
+						"type": "Disease",
+						"valid": true,
+						"normalized": [
+							"D011471"
+						],
+						"database": "ncbi_mesh",
+						"normalized_id": "D011471",
+						"biotype": "disease",
+						"name": "Prostatic Neoplasms",
+						"accession": "@DISEASE_Prostatic_Neoplasms"
+					},
+					"text": "prostate cancer",
+					"locations": [
+						{
+							"offset": 221,
+							"length": 15
+						}
+					]
+				},
+				{
+					"id": "29",
+					"infons": {
+						"identifier": "MESH:D009369",
+						"type": "Disease",
+						"valid": true,
+						"normalized": [
+							"D009369"
+						],
+						"database": "ncbi_mesh",
+						"normalized_id": "D009369",
+						"biotype": "disease",
+						"name": "Neoplasms",
+						"accession": "@DISEASE_Neoplasms"
+					},
+					"text": "cancer",
+					"locations": [
+						{
+							"offset": 253,
+							"length": 6
+						}
+					]
+				},
+				{
+					"id": "30",
+					"infons": {
+						"identifier": "4792",
+						"type": "Gene",
+						"ncbi_homologene": "7863",
+						"valid": true,
+						"normalized": [
+							4792
+						],
+						"database": "ncbi_gene",
+						"normalized_id": 4792,
+						"biotype": "gene",
+						"name": "NFKBIA",
+						"accession": "@GENE_NFKBIA"
+					},
+					"text": "IkappaBalpha",
+					"locations": [
+						{
+							"offset": 451,
+							"length": 12
+						}
+					]
+				},
+				{
+					"id": "31",
+					"infons": {
+						"identifier": "4790",
+						"type": "Gene",
+						"ncbi_homologene": "2971",
+						"valid": true,
+						"normalized": [
+							4790
+						],
+						"database": "ncbi_gene",
+						"normalized_id": 4790,
+						"biotype": "gene",
+						"name": "NFKB1",
+						"accession": "@GENE_NFKB1"
+					},
+					"text": "NF-kappaB",
+					"locations": [
+						{
+							"offset": 464,
+							"length": 9
+						}
+					]
+				},
+				{
+					"id": "32",
+					"infons": {
+						"identifier": "5970",
+						"type": "Gene",
+						"ncbi_homologene": "32064",
+						"valid": true,
+						"normalized": [
+							5970
+						],
+						"database": "ncbi_gene",
+						"normalized_id": 5970,
+						"biotype": "gene",
+						"name": "RELA",
+						"accession": "@GENE_RELA"
+					},
+					"text": "p65",
+					"locations": [
+						{
+							"offset": 474,
+							"length": 3
+						}
+					]
+				},
+				{
+					"id": "33",
+					"infons": {
+						"identifier": "4212",
+						"type": "Gene",
+						"ncbi_homologene": "7846",
+						"valid": true,
+						"normalized": [
+							4212
+						],
+						"database": "ncbi_gene",
+						"normalized_id": 4212,
+						"biotype": "gene",
+						"name": "MEIS2",
+						"accession": "@GENE_MEIS2"
+					},
+					"text": "Meis2",
+					"locations": [
+						{
+							"offset": 493,
+							"length": 5
+						}
+					]
+				},
+				{
+					"id": "34",
+					"infons": {
+						"identifier": "5533",
+						"type": "Gene",
+						"ncbi_homologene": "68475",
+						"valid": true,
+						"normalized": [
+							5533
+						],
+						"database": "ncbi_gene",
+						"normalized_id": 5533,
+						"biotype": "gene",
+						"name": "PPP3CC",
+						"accession": "@GENE_PPP3CC"
+					},
+					"text": "PPP3CC",
+					"locations": [
+						{
+							"offset": 504,
+							"length": 6
+						}
+					]
+				},
+				{
+					"id": "35",
+					"infons": {
+						"identifier": "MESH:D064129",
+						"type": "Disease",
+						"valid": true,
+						"normalized": [
+							"D064129"
+						],
+						"database": "ncbi_mesh",
+						"normalized_id": "D064129",
+						"biotype": "disease",
+						"name": "Prostatic Neoplasms Castration-Resistant",
+						"accession": "@DISEASE_Prostatic_Neoplasms_Castration_Resistant"
+					},
+					"text": "castration-resistant prostate cancer",
+					"locations": [
+						{
+							"offset": 545,
+							"length": 36
+						}
+					]
+				},
+				{
+					"id": "36",
+					"infons": {
+						"identifier": "MESH:D064129",
+						"type": "Disease",
+						"valid": true,
+						"normalized": [
+							"D064129"
+						],
+						"database": "ncbi_mesh",
+						"normalized_id": "D064129",
+						"biotype": "disease",
+						"name": "Prostatic Neoplasms Castration-Resistant",
+						"accession": "@DISEASE_Prostatic_Neoplasms_Castration_Resistant"
+					},
+					"text": "CRPC",
+					"locations": [
+						{
+							"offset": 583,
+							"length": 4
+						}
+					]
+				},
+				{
+					"id": "37",
+					"infons": {
+						"identifier": "MESH:D064129",
+						"type": "Disease",
+						"valid": true,
+						"normalized": [
+							"D064129"
+						],
+						"database": "ncbi_mesh",
+						"normalized_id": "D064129",
+						"biotype": "disease",
+						"name": "Prostatic Neoplasms Castration-Resistant",
+						"accession": "@DISEASE_Prostatic_Neoplasms_Castration_Resistant"
+					},
+					"text": "CRPC",
+					"locations": [
+						{
+							"offset": 701,
+							"length": 4
+						}
+					]
+				},
+				{
+					"id": "38",
+					"infons": {
+						"identifier": "MESH:D064129",
+						"type": "Disease",
+						"valid": true,
+						"normalized": [
+							"D064129"
+						],
+						"database": "ncbi_mesh",
+						"normalized_id": "D064129",
+						"biotype": "disease",
+						"name": "Prostatic Neoplasms Castration-Resistant",
+						"accession": "@DISEASE_Prostatic_Neoplasms_Castration_Resistant"
+					},
+					"text": "CRPC",
+					"locations": [
+						{
+							"offset": 822,
+							"length": 4
+						}
+					]
+				},
+				{
+					"id": "39",
+					"infons": {
+						"identifier": "4792",
+						"type": "Gene",
+						"ncbi_homologene": "7863",
+						"valid": true,
+						"normalized": [
+							4792
+						],
+						"database": "ncbi_gene",
+						"normalized_id": 4792,
+						"biotype": "gene",
+						"name": "NFKBIA",
+						"accession": "@GENE_NFKBIA"
+					},
+					"text": "IkappaBalpha",
+					"locations": [
+						{
+							"offset": 876,
+							"length": 12
+						}
+					]
+				},
+				{
+					"id": "40",
+					"infons": {
+						"identifier": "4790",
+						"type": "Gene",
+						"ncbi_homologene": "2971",
+						"valid": true,
+						"normalized": [
+							4790
+						],
+						"database": "ncbi_gene",
+						"normalized_id": 4790,
+						"biotype": "gene",
+						"name": "NFKB1",
+						"accession": "@GENE_NFKB1"
+					},
+					"text": "NF-kappaB",
+					"locations": [
+						{
+							"offset": 889,
+							"length": 9
+						}
+					]
+				},
+				{
+					"id": "41",
+					"infons": {
+						"identifier": "5970",
+						"type": "Gene",
+						"ncbi_homologene": "32064",
+						"valid": true,
+						"normalized": [
+							5970
+						],
+						"database": "ncbi_gene",
+						"normalized_id": 5970,
+						"biotype": "gene",
+						"name": "RELA",
+						"accession": "@GENE_RELA"
+					},
+					"text": "p65",
+					"locations": [
+						{
+							"offset": 899,
+							"length": 3
+						}
+					]
+				},
+				{
+					"id": "42",
+					"infons": {
+						"identifier": "3551",
+						"type": "Gene",
+						"ncbi_homologene": "7782",
+						"valid": true,
+						"normalized": [
+							3551
+						],
+						"database": "ncbi_gene",
+						"normalized_id": 3551,
+						"biotype": "gene",
+						"name": "IKBKB",
+						"accession": "@GENE_IKBKB"
+					},
+					"text": "IKKbeta",
+					"locations": [
+						{
+							"offset": 970,
+							"length": 7
+						}
+					]
+				},
+				{
+					"id": "43",
+					"infons": {
+						"identifier": "4790",
+						"type": "Gene",
+						"ncbi_homologene": "2971",
+						"valid": true,
+						"normalized": [
+							4790
+						],
+						"database": "ncbi_gene",
+						"normalized_id": 4790,
+						"biotype": "gene",
+						"name": "NFKB1",
+						"accession": "@GENE_NFKB1"
+					},
+					"text": "NF-kappaB",
+					"locations": [
+						{
+							"offset": 978,
+							"length": 9
+						}
+					]
+				},
+				{
+					"id": "44",
+					"infons": {
+						"identifier": "MESH:D064129",
+						"type": "Disease",
+						"valid": true,
+						"normalized": [
+							"D064129"
+						],
+						"database": "ncbi_mesh",
+						"normalized_id": "D064129",
+						"biotype": "disease",
+						"name": "Prostatic Neoplasms Castration-Resistant",
+						"accession": "@DISEASE_Prostatic_Neoplasms_Castration_Resistant"
+					},
+					"text": "CRPC",
+					"locations": [
+						{
+							"offset": 1201,
+							"length": 4
+						}
+					]
+				},
+				{
+					"id": "45",
+					"infons": {
+						"identifier": "4790",
+						"type": "Gene",
+						"ncbi_homologene": "2971",
+						"valid": true,
+						"normalized": [
+							4790
+						],
+						"database": "ncbi_gene",
+						"normalized_id": 4790,
+						"biotype": "gene",
+						"name": "NFKB1",
+						"accession": "@GENE_NFKB1"
+					},
+					"text": "NF-kappaB",
+					"locations": [
+						{
+							"offset": 1294,
+							"length": 9
+						}
+					]
+				}
+			],
+			"relations": []
+		}
+	],
+	"relations": [
+		{
+			"id": "R1",
+			"infons": {
+				"score": "0.9996",
+				"role1": {
+					"identifier": "MESH:D064129",
+					"type": "Disease",
+					"valid": true,
+					"normalized": [
+						"D064129"
+					],
+					"database": "ncbi_mesh",
+					"normalized_id": "D064129",
+					"biotype": "disease",
+					"name": "Prostatic Neoplasms Castration-Resistant",
+					"accession": "@DISEASE_Prostatic_Neoplasms_Castration_Resistant"
+				},
+				"role2": {
+					"identifier": "4792",
+					"type": "Gene",
+					"valid": true,
+					"normalized": [
+						4792
+					],
+					"database": "ncbi_gene",
+					"normalized_id": 4792,
+					"biotype": "gene",
+					"name": "NFKBIA",
+					"accession": "@GENE_NFKBIA"
+				},
+				"type": "Association"
+			},
+			"nodes": [
+				{
+					"refid": "0",
+					"role": "12,7"
+				}
+			]
+		},
+		{
+			"id": "R2",
+			"infons": {
+				"score": "0.9163",
+				"role1": {
+					"identifier": "MESH:D011471",
+					"type": "Disease",
+					"valid": true,
+					"normalized": [
+						"D011471"
+					],
+					"database": "ncbi_mesh",
+					"normalized_id": "D011471",
+					"biotype": "disease",
+					"name": "Prostatic Neoplasms",
+					"accession": "@DISEASE_Prostatic_Neoplasms"
+				},
+				"role2": {
+					"identifier": "442920",
+					"type": "Gene",
+					"valid": true,
+					"normalized": [
+						442920
+					],
+					"database": "ncbi_gene",
+					"normalized_id": 442920,
+					"biotype": "gene",
+					"name": "MIR196B",
+					"accession": "@GENE_MIR196B"
+				},
+				"type": "Association"
+			},
+			"nodes": [
+				{
+					"refid": "1",
+					"role": "4,0"
+				}
+			]
+		},
+		{
+			"id": "R3",
+			"infons": {
+				"score": "0.9986",
+				"role1": {
+					"identifier": "MESH:D011471",
+					"type": "Disease",
+					"valid": true,
+					"normalized": [
+						"D011471"
+					],
+					"database": "ncbi_mesh",
+					"normalized_id": "D011471",
+					"biotype": "disease",
+					"name": "Prostatic Neoplasms",
+					"accession": "@DISEASE_Prostatic_Neoplasms"
+				},
+				"role2": {
+					"identifier": "5970",
+					"type": "Gene",
+					"valid": true,
+					"normalized": [
+						5970
+					],
+					"database": "ncbi_gene",
+					"normalized_id": 5970,
+					"biotype": "gene",
+					"name": "RELA",
+					"accession": "@GENE_RELA"
+				},
+				"type": "Association"
+			},
+			"nodes": [
+				{
+					"refid": "2",
+					"role": "4,3"
+				}
+			]
+		},
+		{
+			"id": "R4",
+			"infons": {
+				"score": "0.9995",
+				"role1": {
+					"identifier": "MESH:D064129",
+					"type": "Disease",
+					"valid": true,
+					"normalized": [
+						"D064129"
+					],
+					"database": "ncbi_mesh",
+					"normalized_id": "D064129",
+					"biotype": "disease",
+					"name": "Prostatic Neoplasms Castration-Resistant",
+					"accession": "@DISEASE_Prostatic_Neoplasms_Castration_Resistant"
+				},
+				"role2": {
+					"identifier": "4790",
+					"type": "Gene",
+					"valid": true,
+					"normalized": [
+						4790
+					],
+					"database": "ncbi_gene",
+					"normalized_id": 4790,
+					"biotype": "gene",
+					"name": "NFKB1",
+					"accession": "@GENE_NFKB1"
+				},
+				"type": "Association"
+			},
+			"nodes": [
+				{
+					"refid": "3",
+					"role": "12,8"
+				}
+			]
+		},
+		{
+			"id": "R5",
+			"infons": {
+				"score": "0.9995",
+				"role1": {
+					"identifier": "MESH:D064129",
+					"type": "Disease",
+					"valid": true,
+					"normalized": [
+						"D064129"
+					],
+					"database": "ncbi_mesh",
+					"normalized_id": "D064129",
+					"biotype": "disease",
+					"name": "Prostatic Neoplasms Castration-Resistant",
+					"accession": "@DISEASE_Prostatic_Neoplasms_Castration_Resistant"
+				},
+				"role2": {
+					"identifier": "4212",
+					"type": "Gene",
+					"valid": true,
+					"normalized": [
+						4212
+					],
+					"database": "ncbi_gene",
+					"normalized_id": 4212,
+					"biotype": "gene",
+					"name": "MEIS2",
+					"accession": "@GENE_MEIS2"
+				},
+				"type": "Association"
+			},
+			"nodes": [
+				{
+					"refid": "4",
+					"role": "12,10"
+				}
+			]
+		},
+		{
+			"id": "R6",
+			"infons": {
+				"score": "0.9689",
+				"role1": {
+					"identifier": "MESH:D011471",
+					"type": "Disease",
+					"valid": true,
+					"normalized": [
+						"D011471"
+					],
+					"database": "ncbi_mesh",
+					"normalized_id": "D011471",
+					"biotype": "disease",
+					"name": "Prostatic Neoplasms",
+					"accession": "@DISEASE_Prostatic_Neoplasms"
+				},
+				"role2": {
+					"identifier": "5533",
+					"type": "Gene",
+					"valid": true,
+					"normalized": [
+						5533
+					],
+					"database": "ncbi_gene",
+					"normalized_id": 5533,
+					"biotype": "gene",
+					"name": "PPP3CC",
+					"accession": "@GENE_PPP3CC"
+				},
+				"type": "Association"
+			},
+			"nodes": [
+				{
+					"refid": "5",
+					"role": "4,2"
+				}
+			]
+		},
+		{
+			"id": "R7",
+			"infons": {
+				"score": "0.9996",
+				"role1": {
+					"identifier": "MESH:D064129",
+					"type": "Disease",
+					"valid": true,
+					"normalized": [
+						"D064129"
+					],
+					"database": "ncbi_mesh",
+					"normalized_id": "D064129",
+					"biotype": "disease",
+					"name": "Prostatic Neoplasms Castration-Resistant",
+					"accession": "@DISEASE_Prostatic_Neoplasms_Castration_Resistant"
+				},
+				"role2": {
+					"identifier": "5533",
+					"type": "Gene",
+					"valid": true,
+					"normalized": [
+						5533
+					],
+					"database": "ncbi_gene",
+					"normalized_id": 5533,
+					"biotype": "gene",
+					"name": "PPP3CC",
+					"accession": "@GENE_PPP3CC"
+				},
+				"type": "Association"
+			},
+			"nodes": [
+				{
+					"refid": "6",
+					"role": "12,11"
+				}
+			]
+		},
+		{
+			"id": "R8",
+			"infons": {
+				"score": "0.9323",
+				"role1": {
+					"identifier": "MESH:D011471",
+					"type": "Disease",
+					"valid": true,
+					"normalized": [
+						"D011471"
+					],
+					"database": "ncbi_mesh",
+					"normalized_id": "D011471",
+					"biotype": "disease",
+					"name": "Prostatic Neoplasms",
+					"accession": "@DISEASE_Prostatic_Neoplasms"
+				},
+				"role2": {
+					"identifier": "4212",
+					"type": "Gene",
+					"valid": true,
+					"normalized": [
+						4212
+					],
+					"database": "ncbi_gene",
+					"normalized_id": 4212,
+					"biotype": "gene",
+					"name": "MEIS2",
+					"accession": "@GENE_MEIS2"
+				},
+				"type": "Association"
+			},
+			"nodes": [
+				{
+					"refid": "7",
+					"role": "4,1"
+				}
+			]
+		},
+		{
+			"id": "R9",
+			"infons": {
+				"score": "0.9995",
+				"role1": {
+					"identifier": "MESH:D064129",
+					"type": "Disease",
+					"valid": true,
+					"normalized": [
+						"D064129"
+					],
+					"database": "ncbi_mesh",
+					"normalized_id": "D064129",
+					"biotype": "disease",
+					"name": "Prostatic Neoplasms Castration-Resistant",
+					"accession": "@DISEASE_Prostatic_Neoplasms_Castration_Resistant"
+				},
+				"role2": {
+					"identifier": "5970",
+					"type": "Gene",
+					"valid": true,
+					"normalized": [
+						5970
+					],
+					"database": "ncbi_gene",
+					"normalized_id": 5970,
+					"biotype": "gene",
+					"name": "RELA",
+					"accession": "@GENE_RELA"
+				},
+				"type": "Association"
+			},
+			"nodes": [
+				{
+					"refid": "8",
+					"role": "12,9"
+				}
+			]
+		}
+	],
+	"pmid": 28041912,
+	"pmcid": null,
+	"meta": {},
+	"date": "2017-01-05T00:00:00Z",
+	"journal": "Mol Cell",
+	"authors": [
+		"Jeong JH",
+		"Park SJ",
+		"Dickinson SI",
+		"Luo JL"
+	],
+	"relations_display": [
+		{
+			"name": "associate|@DISEASE_Prostatic_Neoplasms_Castration_Resistant|@GENE_NFKBIA"
+		},
+		{
+			"name": "associate|@DISEASE_Prostatic_Neoplasms|@GENE_MIR196B"
+		},
+		{
+			"name": "associate|@DISEASE_Prostatic_Neoplasms|@GENE_RELA"
+		},
+		{
+			"name": "associate|@DISEASE_Prostatic_Neoplasms_Castration_Resistant|@GENE_NFKB1"
+		},
+		{
+			"name": "associate|@DISEASE_Prostatic_Neoplasms_Castration_Resistant|@GENE_MEIS2"
+		},
+		{
+			"name": "associate|@DISEASE_Prostatic_Neoplasms|@GENE_PPP3CC"
+		},
+		{
+			"name": "associate|@DISEASE_Prostatic_Neoplasms_Castration_Resistant|@GENE_PPP3CC"
+		},
+		{
+			"name": "associate|@DISEASE_Prostatic_Neoplasms|@GENE_MEIS2"
+		},
+		{
+			"name": "associate|@DISEASE_Prostatic_Neoplasms_Castration_Resistant|@GENE_RELA"
+		}
+	]
+}

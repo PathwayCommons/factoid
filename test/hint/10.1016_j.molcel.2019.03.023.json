@@ -1,0 +1,536 @@
+{
+  "_id": "31003867|None",
+  "id": "10.1016/j.molcel.2019.03.023",
+  "infons": {
+    "doi": "10.1016/j.molcel.2019.03.023",
+    "comment": "M. Musculus orthologues: ANKRD31, REC114"
+  },
+  "passages": [
+    {
+      "infons": {
+        "journal": "Mol Cell. 2019 Jun 6;74(5):1053-1068.e8. doi: 10.1016/j.molcel.2019.03.023. Epub ",
+        "year": "2019",
+        "article-id_pmc": "PMC6555648",
+        "type": "title",
+        "authors": "Boekhout M, Karasu ME, Wang J, Acquaviva L, Pratto F, Brick K, Eng DY, Xu J, Camerini-Otero RD, Patel DJ, Keeney S"
+      },
+      "offset": 0,
+      "text": "REC114 Partner ANKRD31 Controls Number, Timing, and Location of Meiotic DNA Breaks.",
+      "sentences": [],
+      "annotations": [
+        {
+          "id": "2",
+          "infons": {
+            "identifier": "73673",
+            "type": "Gene",
+            "ncbi_homologene": "83546",
+            "valid": true,
+            "normalized": [
+              73673
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 73673,
+            "biotype": "gene",
+            "name": "Rec114",
+            "accession": "@GENE_REC114"
+          },
+          "text": "REC114",
+          "locations": [
+            {
+              "offset": 0,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "infons": {
+            "identifier": "625662",
+            "type": "Gene",
+            "ncbi_homologene": "110355",
+            "valid": true,
+            "normalized": [
+              625662
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 625662,
+            "biotype": "gene",
+            "name": "Ankrd31",
+            "accession": "@GENE_ANKRD31"
+          },
+          "text": "ANKRD31",
+          "locations": [
+            {
+              "offset": 15,
+              "length": 7
+            }
+          ]
+        }
+      ],
+      "relations": []
+    },
+    {
+      "infons": {
+        "type": "abstract"
+      },
+      "offset": 84,
+      "text": "Double-strand breaks (DSBs) initiate the homologous recombination that is crucial for meiotic chromosome pairing and segregation. Here, we unveil mouse ANKRD31 as a lynchpin governing multiple aspects of DSB formation. Spermatocytes lacking ANKRD31 have altered DSB locations and fail to target DSBs to the pseudoautosomal regions (PARs) of sex chromosomes. They also have delayed and/or fewer recombination sites but, paradoxically, more DSBs, suggesting DSB dysregulation. Unrepaired DSBs and pairing failures-stochastic on autosomes, nearly absolute on X and Y-cause meiotic arrest and sterility in males. Ankrd31-deficient females have reduced oocyte reserves. A crystal structure defines a pleckstrin homology (PH) domain in REC114 and its direct intermolecular contacts with ANKRD31. In vivo, ANKRD31 stabilizes REC114 association with the PAR and elsewhere. Our findings inform a model in which ANKRD31 is a scaffold anchoring REC114 and other factors to specific genomic locations, thereby regulating DSB formation.",
+      "sentences": [],
+      "annotations": [
+        {
+          "id": "15",
+          "infons": {
+            "identifier": "10090",
+            "type": "Species",
+            "valid": true,
+            "normalized": [
+              10090
+            ],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 10090,
+            "biotype": "species",
+            "name": "10090",
+            "accession": null
+          },
+          "text": "mouse",
+          "locations": [
+            {
+              "offset": 230,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "16",
+          "infons": {
+            "identifier": "625662",
+            "type": "Gene",
+            "ncbi_homologene": "110355",
+            "valid": true,
+            "normalized": [
+              625662
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 625662,
+            "biotype": "gene",
+            "name": "Ankrd31",
+            "accession": "@GENE_ANKRD31"
+          },
+          "text": "ANKRD31",
+          "locations": [
+            {
+              "offset": 236,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "17",
+          "infons": {
+            "identifier": "625662",
+            "type": "Gene",
+            "ncbi_homologene": "110355",
+            "valid": true,
+            "normalized": [
+              625662
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 625662,
+            "biotype": "gene",
+            "name": "Ankrd31",
+            "accession": "@GENE_ANKRD31"
+          },
+          "text": "ANKRD31",
+          "locations": [
+            {
+              "offset": 325,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "18",
+          "infons": {
+            "identifier": "MESH:D007246",
+            "type": "Disease",
+            "valid": true,
+            "normalized": [
+              "D007246"
+            ],
+            "database": "ncbi_mesh",
+            "normalized_id": "D007246",
+            "biotype": "disease",
+            "name": "Infertility",
+            "accession": "@DISEASE_Infertility"
+          },
+          "text": "sterility",
+          "locations": [
+            {
+              "offset": 673,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "19",
+          "infons": {
+            "identifier": "73673",
+            "type": "Gene",
+            "ncbi_homologene": "83546",
+            "valid": true,
+            "normalized": [
+              73673
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 73673,
+            "biotype": "gene",
+            "name": "Rec114",
+            "accession": "@GENE_REC114"
+          },
+          "text": "REC114",
+          "locations": [
+            {
+              "offset": 814,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "20",
+          "infons": {
+            "identifier": "625662",
+            "type": "Gene",
+            "ncbi_homologene": "110355",
+            "valid": true,
+            "normalized": [
+              625662
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 625662,
+            "biotype": "gene",
+            "name": "Ankrd31",
+            "accession": "@GENE_ANKRD31"
+          },
+          "text": "ANKRD31",
+          "locations": [
+            {
+              "offset": 865,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "21",
+          "infons": {
+            "identifier": "625662",
+            "type": "Gene",
+            "ncbi_homologene": "110355",
+            "valid": true,
+            "normalized": [
+              625662
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 625662,
+            "biotype": "gene",
+            "name": "Ankrd31",
+            "accession": "@GENE_ANKRD31"
+          },
+          "text": "ANKRD31",
+          "locations": [
+            {
+              "offset": 883,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "22",
+          "infons": {
+            "identifier": "73673",
+            "type": "Gene",
+            "ncbi_homologene": "83546",
+            "valid": true,
+            "normalized": [
+              73673
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 73673,
+            "biotype": "gene",
+            "name": "Rec114",
+            "accession": "@GENE_REC114"
+          },
+          "text": "REC114",
+          "locations": [
+            {
+              "offset": 902,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "23",
+          "infons": {
+            "identifier": "69597",
+            "type": "Gene",
+            "ncbi_homologene": "4947",
+            "valid": true,
+            "normalized": [
+              69597
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 69597,
+            "biotype": "gene",
+            "name": "Afg3l2",
+            "accession": "@GENE_AFG3L2"
+          },
+          "text": "PAR",
+          "locations": [
+            {
+              "offset": 930,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "24",
+          "infons": {
+            "identifier": "625662",
+            "type": "Gene",
+            "ncbi_homologene": "110355",
+            "valid": true,
+            "normalized": [
+              625662
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 625662,
+            "biotype": "gene",
+            "name": "Ankrd31",
+            "accession": "@GENE_ANKRD31"
+          },
+          "text": "ANKRD31",
+          "locations": [
+            {
+              "offset": 986,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "25",
+          "infons": {
+            "identifier": "73673",
+            "type": "Gene",
+            "ncbi_homologene": "83546",
+            "valid": true,
+            "normalized": [
+              73673
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 73673,
+            "biotype": "gene",
+            "name": "Rec114",
+            "accession": "@GENE_REC114"
+          },
+          "text": "REC114",
+          "locations": [
+            {
+              "offset": 1018,
+              "length": 6
+            }
+          ]
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "relations": [
+    {
+      "id": "R1",
+      "infons": {
+        "score": "0.9995",
+        "role1": {
+          "identifier": "MESH:D007246",
+          "type": "Disease",
+          "valid": true,
+          "normalized": [
+            "D007246"
+          ],
+          "database": "ncbi_mesh",
+          "normalized_id": "D007246",
+          "biotype": "disease",
+          "name": "Infertility",
+          "accession": "@DISEASE_Infertility"
+        },
+        "role2": {
+          "identifier": "625662",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            625662
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 625662,
+          "biotype": "gene",
+          "name": "Ankrd31",
+          "accession": "@GENE_ANKRD31"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "0",
+          "role": "5,4"
+        }
+      ]
+    },
+    {
+      "id": "R2",
+      "infons": {
+        "score": "0.9555",
+        "role1": {
+          "identifier": "625662",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            625662
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 625662,
+          "biotype": "gene",
+          "name": "Ankrd31",
+          "accession": "@GENE_ANKRD31"
+        },
+        "role2": {
+          "identifier": "73673",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            73673
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 73673,
+          "biotype": "gene",
+          "name": "Rec114",
+          "accession": "@GENE_REC114"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "1",
+          "role": "1,0"
+        }
+      ]
+    },
+    {
+      "id": "R3",
+      "infons": {
+        "score": "0.4854",
+        "role1": {
+          "identifier": "69597",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            69597
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 69597,
+          "biotype": "gene",
+          "name": "Afg3l2",
+          "accession": "@GENE_AFG3L2"
+        },
+        "role2": {
+          "identifier": "73673",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            73673
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 73673,
+          "biotype": "gene",
+          "name": "Rec114",
+          "accession": "@GENE_REC114"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "2",
+          "role": "10,9"
+        }
+      ]
+    },
+    {
+      "id": "R4",
+      "infons": {
+        "score": "0.9952",
+        "role1": {
+          "identifier": "625662",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            625662
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 625662,
+          "biotype": "gene",
+          "name": "Ankrd31",
+          "accession": "@GENE_ANKRD31"
+        },
+        "role2": {
+          "identifier": "69597",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            69597
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 69597,
+          "biotype": "gene",
+          "name": "Afg3l2",
+          "accession": "@GENE_AFG3L2"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "3",
+          "role": "8,10"
+        }
+      ]
+    }
+  ],
+  "pmid": 31003867,
+  "pmcid": null,
+  "meta": {},
+  "date": "2019-06-06T00:00:00Z",
+  "journal": "Mol Cell",
+  "authors": [
+    "Boekhout M",
+    "Karasu ME",
+    "Wang J",
+    "Acquaviva L",
+    "Pratto F",
+    "Brick K",
+    "Eng DY",
+    "Xu J",
+    "Camerini-Otero RD",
+    "Patel DJ",
+    "Keeney S"
+  ],
+  "relations_display": [
+    {
+      "name": "associate|@DISEASE_Infertility|@GENE_ANKRD31"
+    },
+    {
+      "name": "associate|@GENE_ANKRD31|@GENE_REC114"
+    },
+    {
+      "name": "associate|@GENE_AFG3L2|@GENE_REC114"
+    },
+    {
+      "name": "associate|@GENE_ANKRD31|@GENE_AFG3L2"
+    }
+  ]
+}

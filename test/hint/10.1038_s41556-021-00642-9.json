@@ -1,0 +1,770 @@
+{
+  "_id": "33664495|None",
+  "id": "10.1038/s41556-021-00642-9",
+  "infons": {
+    "doi": "10.1038/s41556-021-00642-9",
+    "comment": "M. musculus orthologue: Aida, Ucp1"
+  },
+  "passages": [
+    {
+      "infons": {
+        "journal": "Nat Cell Biol. 2021 Mar;23(3):268-277. doi: 10.1038/s41556-021-00642-9. Epub 2021 ",
+        "year": "2021",
+        "type": "title",
+        "authors": "Shi M, Huang XY, Ren XY, Wei XY, Ma Y, Lin ZZ, Liu DT, Song L, Zhao TJ, Li G, Yao L, Zhu M, Zhang C, Xie C, Wu Y, Wu HM, Fan LP, Ou J, Zhan YH, Lin SY, Lin SC"
+      },
+      "offset": 0,
+      "text": "AIDA directly connects sympathetic innervation to adaptive thermogenesis by UCP1.",
+      "sentences": [],
+      "annotations": [
+        {
+          "id": "2",
+          "infons": {
+            "identifier": "108909",
+            "type": "Gene",
+            "ncbi_homologene": "11268",
+            "valid": true,
+            "normalized": [
+              108909
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 108909,
+            "biotype": "gene",
+            "name": "Aida",
+            "accession": "@GENE_AIDA"
+          },
+          "text": "AIDA",
+          "locations": [
+            {
+              "offset": 0,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "infons": {
+            "identifier": "22227",
+            "type": "Gene",
+            "ncbi_homologene": "22524",
+            "valid": true,
+            "normalized": [
+              22227
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 22227,
+            "biotype": "gene",
+            "name": "Ucp1",
+            "accession": "@GENE_UCP1"
+          },
+          "text": "UCP1",
+          "locations": [
+            {
+              "offset": 76,
+              "length": 4
+            }
+          ]
+        }
+      ],
+      "relations": []
+    },
+    {
+      "infons": {
+        "type": "abstract"
+      },
+      "offset": 82,
+      "text": "The sympathetic nervous system-catecholamine-uncoupling protein 1 (UCP1) axis plays an essential role in non-shivering adaptive thermogenesis. However, whether there exists a direct effector that physically connects catecholamine signalling to UCP1 in response to acute cold is unknown. Here we report that outer mitochondrial membrane-located AIDA is phosphorylated at S161 by the catecholamine-activated protein kinase A (PKA). Phosphorylated AIDA translocates to the intermembrane space, where it binds to and activates the uncoupling activity of UCP1 by promoting cysteine oxidation of UCP1. Adipocyte-specific depletion of AIDA abrogates UCP1-dependent thermogenesis, resulting in hypothermia during acute cold exposure. Re-expression of S161A-AIDA, unlike wild-type AIDA, fails to restore the acute cold response in Aida-knockout mice. The PKA-AIDA-UCP1 axis is highly conserved in mammals, including hibernators. Denervation of the sympathetic postganglionic fibres abolishes cold-induced AIDA-dependent thermogenesis. These findings uncover a direct mechanistic link between sympathetic input and UCP1-mediated adaptive thermogenesis.",
+      "sentences": [],
+      "annotations": [
+        {
+          "id": "25",
+          "infons": {
+            "identifier": "MESH:D002395",
+            "type": "Chemical",
+            "valid": true,
+            "normalized": [
+              "D002395"
+            ],
+            "database": "ncbi_mesh",
+            "normalized_id": "D002395",
+            "biotype": "chemical",
+            "name": "Catecholamines",
+            "accession": "@CHEMICAL_Catecholamines"
+          },
+          "text": "catecholamine",
+          "locations": [
+            {
+              "offset": 113,
+              "length": 13
+            }
+          ]
+        },
+        {
+          "id": "26",
+          "infons": {
+            "identifier": "22227",
+            "type": "Gene",
+            "ncbi_homologene": "22524",
+            "valid": true,
+            "normalized": [
+              22227
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 22227,
+            "biotype": "gene",
+            "name": "Ucp1",
+            "accession": "@GENE_UCP1"
+          },
+          "text": "UCP1",
+          "locations": [
+            {
+              "offset": 149,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "27",
+          "infons": {
+            "identifier": "MESH:D002395",
+            "type": "Chemical",
+            "valid": true,
+            "normalized": [
+              "D002395"
+            ],
+            "database": "ncbi_mesh",
+            "normalized_id": "D002395",
+            "biotype": "chemical",
+            "name": "Catecholamines",
+            "accession": "@CHEMICAL_Catecholamines"
+          },
+          "text": "catecholamine",
+          "locations": [
+            {
+              "offset": 298,
+              "length": 13
+            }
+          ]
+        },
+        {
+          "id": "28",
+          "infons": {
+            "identifier": "22227",
+            "type": "Gene",
+            "ncbi_homologene": "22524",
+            "valid": true,
+            "normalized": [
+              22227
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 22227,
+            "biotype": "gene",
+            "name": "Ucp1",
+            "accession": "@GENE_UCP1"
+          },
+          "text": "UCP1",
+          "locations": [
+            {
+              "offset": 326,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "29",
+          "infons": {
+            "identifier": "108909",
+            "type": "Gene",
+            "ncbi_homologene": "11268",
+            "valid": true,
+            "normalized": [
+              108909
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 108909,
+            "biotype": "gene",
+            "name": "Aida",
+            "accession": "@GENE_AIDA"
+          },
+          "text": "AIDA",
+          "locations": [
+            {
+              "offset": 426,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "30",
+          "infons": {
+            "identifier": "tmVar:p|Allele|S|161;VariantGroup:0;OriginalGene:108909;CorrespondingGene:64853;CorrespondingSpecies:10090",
+            "type": "Variant",
+            "valid": true,
+            "subtype": "ProteinMutation",
+            "database": "litvar",
+            "original_genes_ids": [
+              108909
+            ],
+            "original_gene_id": 108909,
+            "gene_ids": [
+              64853
+            ],
+            "gene_id": 64853,
+            "species_ids": [
+              10090
+            ],
+            "species_id": 10090,
+            "rsids": [],
+            "normalized": [
+              "#64853#",
+              "#64853#"
+            ],
+            "normalized_id": "#64853#",
+            "biotype": "variant",
+            "name": "#64853#",
+            "accession": null
+          },
+          "text": "S161",
+          "locations": [
+            {
+              "offset": 452,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "31",
+          "infons": {
+            "identifier": "108909",
+            "type": "Gene",
+            "ncbi_homologene": "11268",
+            "valid": true,
+            "normalized": [
+              108909
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 108909,
+            "biotype": "gene",
+            "name": "Aida",
+            "accession": "@GENE_AIDA"
+          },
+          "text": "AIDA",
+          "locations": [
+            {
+              "offset": 527,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "32",
+          "infons": {
+            "identifier": "22227",
+            "type": "Gene",
+            "ncbi_homologene": "22524",
+            "valid": true,
+            "normalized": [
+              22227
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 22227,
+            "biotype": "gene",
+            "name": "Ucp1",
+            "accession": "@GENE_UCP1"
+          },
+          "text": "UCP1",
+          "locations": [
+            {
+              "offset": 632,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "33",
+          "infons": {
+            "identifier": "22227",
+            "type": "Gene",
+            "ncbi_homologene": "22524",
+            "valid": true,
+            "normalized": [
+              22227
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 22227,
+            "biotype": "gene",
+            "name": "Ucp1",
+            "accession": "@GENE_UCP1"
+          },
+          "text": "UCP1",
+          "locations": [
+            {
+              "offset": 672,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "34",
+          "infons": {
+            "identifier": "108909",
+            "type": "Gene",
+            "ncbi_homologene": "11268",
+            "valid": true,
+            "normalized": [
+              108909
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 108909,
+            "biotype": "gene",
+            "name": "Aida",
+            "accession": "@GENE_AIDA"
+          },
+          "text": "AIDA",
+          "locations": [
+            {
+              "offset": 710,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "35",
+          "infons": {
+            "identifier": "22227",
+            "type": "Gene",
+            "ncbi_homologene": "22524",
+            "valid": true,
+            "normalized": [
+              22227
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 22227,
+            "biotype": "gene",
+            "name": "Ucp1",
+            "accession": "@GENE_UCP1"
+          },
+          "text": "UCP1",
+          "locations": [
+            {
+              "offset": 725,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "36",
+          "infons": {
+            "identifier": "MESH:D007035",
+            "type": "Disease",
+            "valid": true,
+            "normalized": [
+              "D007035"
+            ],
+            "database": "ncbi_mesh",
+            "normalized_id": "D007035",
+            "biotype": "disease",
+            "name": "Hypothermia",
+            "accession": "@DISEASE_Hypothermia"
+          },
+          "text": "hypothermia",
+          "locations": [
+            {
+              "offset": 768,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "id": "37",
+          "infons": {
+            "identifier": "tmVar:p|SUB|S|161|A;HGVS:p.S161A;VariantGroup:0;OriginalGene:108909;CorrespondingGene:64853;CorrespondingSpecies:10090",
+            "type": "Variant",
+            "valid": true,
+            "subtype": "ProteinMutation",
+            "database": "litvar",
+            "hgvs": "p.S161A",
+            "original_genes_ids": [
+              108909
+            ],
+            "original_gene_id": 108909,
+            "gene_ids": [
+              64853
+            ],
+            "gene_id": 64853,
+            "species_ids": [
+              10090
+            ],
+            "species_id": 10090,
+            "rsids": [],
+            "normalized": [
+              "#64853#p.S161A",
+              "#64853#"
+            ],
+            "normalized_id": "#64853#p.S161A",
+            "biotype": "variant",
+            "name": "p.S161A",
+            "accession": "@VARIANT_p.S161A_AIDA_human"
+          },
+          "text": "S161A",
+          "locations": [
+            {
+              "offset": 825,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "38",
+          "infons": {
+            "identifier": "108909",
+            "type": "Gene",
+            "ncbi_homologene": "11268",
+            "valid": true,
+            "normalized": [
+              108909
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 108909,
+            "biotype": "gene",
+            "name": "Aida",
+            "accession": "@GENE_AIDA"
+          },
+          "text": "AIDA",
+          "locations": [
+            {
+              "offset": 831,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "39",
+          "infons": {
+            "identifier": "108909",
+            "type": "Gene",
+            "ncbi_homologene": "11268",
+            "valid": true,
+            "normalized": [
+              108909
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 108909,
+            "biotype": "gene",
+            "name": "Aida",
+            "accession": "@GENE_AIDA"
+          },
+          "text": "AIDA",
+          "locations": [
+            {
+              "offset": 854,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "40",
+          "infons": {
+            "identifier": "108909",
+            "type": "Gene",
+            "ncbi_homologene": "11268",
+            "valid": true,
+            "normalized": [
+              108909
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 108909,
+            "biotype": "gene",
+            "name": "Aida",
+            "accession": "@GENE_AIDA"
+          },
+          "text": "Aida",
+          "locations": [
+            {
+              "offset": 904,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "41",
+          "infons": {
+            "identifier": "10090",
+            "type": "Species",
+            "valid": true,
+            "normalized": [
+              10090
+            ],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 10090,
+            "biotype": "species",
+            "name": "10090",
+            "accession": null
+          },
+          "text": "mice",
+          "locations": [
+            {
+              "offset": 918,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "42",
+          "infons": {
+            "identifier": "108909",
+            "type": "Gene",
+            "ncbi_homologene": "11268",
+            "valid": true,
+            "normalized": [
+              108909
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 108909,
+            "biotype": "gene",
+            "name": "Aida",
+            "accession": "@GENE_AIDA"
+          },
+          "text": "AIDA",
+          "locations": [
+            {
+              "offset": 932,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "43",
+          "infons": {
+            "identifier": "22227",
+            "type": "Gene",
+            "ncbi_homologene": "22524",
+            "valid": true,
+            "normalized": [
+              22227
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 22227,
+            "biotype": "gene",
+            "name": "Ucp1",
+            "accession": "@GENE_UCP1"
+          },
+          "text": "UCP1",
+          "locations": [
+            {
+              "offset": 937,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "44",
+          "infons": {
+            "identifier": "108909",
+            "type": "Gene",
+            "ncbi_homologene": "11268",
+            "valid": true,
+            "normalized": [
+              108909
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 108909,
+            "biotype": "gene",
+            "name": "Aida",
+            "accession": "@GENE_AIDA"
+          },
+          "text": "AIDA",
+          "locations": [
+            {
+              "offset": 1078,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "45",
+          "infons": {
+            "identifier": "22227",
+            "type": "Gene",
+            "ncbi_homologene": "22524",
+            "valid": true,
+            "normalized": [
+              22227
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 22227,
+            "biotype": "gene",
+            "name": "Ucp1",
+            "accession": "@GENE_UCP1"
+          },
+          "text": "UCP1",
+          "locations": [
+            {
+              "offset": 1187,
+              "length": 4
+            }
+          ]
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "relations": [
+    {
+      "id": "R1",
+      "infons": {
+        "score": "0.7694",
+        "role1": {
+          "identifier": "108909",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            108909
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 108909,
+          "biotype": "gene",
+          "name": "Aida",
+          "accession": "@GENE_AIDA"
+        },
+        "role2": {
+          "identifier": "22227",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            22227
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 22227,
+          "biotype": "gene",
+          "name": "Ucp1",
+          "accession": "@GENE_UCP1"
+        },
+        "type": "Positive_Correlation"
+      },
+      "nodes": [
+        {
+          "refid": "0",
+          "role": "0,1"
+        }
+      ]
+    },
+    {
+      "id": "R2",
+      "infons": {
+        "score": "0.9975",
+        "role1": {
+          "identifier": "MESH:D007035",
+          "type": "Disease",
+          "valid": true,
+          "normalized": [
+            "D007035"
+          ],
+          "database": "ncbi_mesh",
+          "normalized_id": "D007035",
+          "biotype": "disease",
+          "name": "Hypothermia",
+          "accession": "@DISEASE_Hypothermia"
+        },
+        "role2": {
+          "identifier": "108909",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            108909
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 108909,
+          "biotype": "gene",
+          "name": "Aida",
+          "accession": "@GENE_AIDA"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "1",
+          "role": "13,11"
+        }
+      ]
+    },
+    {
+      "id": "R3",
+      "infons": {
+        "score": "0.9889",
+        "role1": {
+          "identifier": "MESH:D002395",
+          "type": "Chemical",
+          "valid": true,
+          "normalized": [
+            "D002395"
+          ],
+          "database": "ncbi_mesh",
+          "normalized_id": "D002395",
+          "biotype": "chemical",
+          "name": "Catecholamines",
+          "accession": "@CHEMICAL_Catecholamines"
+        },
+        "role2": {
+          "identifier": "22227",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            22227
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 22227,
+          "biotype": "gene",
+          "name": "Ucp1",
+          "accession": "@GENE_UCP1"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "2",
+          "role": "2,3"
+        }
+      ]
+    }
+  ],
+  "pmid": 33664495,
+  "pmcid": null,
+  "meta": {},
+  "date": "2021-03-01T00:00:00Z",
+  "journal": "Nat Cell Biol",
+  "authors": [
+    "Shi M",
+    "Huang XY",
+    "Ren XY",
+    "Wei XY",
+    "Ma Y",
+    "Lin ZZ",
+    "Liu DT",
+    "Song L",
+    "Zhao TJ",
+    "Li G",
+    "Yao L",
+    "Zhu M",
+    "Zhang C",
+    "Xie C",
+    "Wu Y",
+    "Wu HM",
+    "Fan LP",
+    "Ou J",
+    "Zhan YH",
+    "Lin SY",
+    "Lin SC"
+  ],
+  "relations_display": [
+    {
+      "name": "positive_correlate|@GENE_AIDA|@GENE_UCP1"
+    },
+    {
+      "name": "associate|@DISEASE_Hypothermia|@GENE_AIDA"
+    },
+    {
+      "name": "associate|@CHEMICAL_Catecholamines|@GENE_UCP1"
+    }
+  ]
+}

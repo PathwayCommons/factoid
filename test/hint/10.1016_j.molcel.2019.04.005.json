@@ -1,0 +1,795 @@
+{
+  "_id": "31053471|None",
+  "id": "10.1016/j.molcel.2019.04.005",
+  "infons": {
+    "doi": "10.1016/j.molcel.2019.04.005",
+    "comment": "Synonym: PD-1 (chemical)"
+  },
+  "passages": [
+    {
+      "infons": {
+        "journal": "Mol Cell. 2019 Jun 20;74(6):1215-1226.e4. doi: 10.1016/j.molcel.2019.04.005. Epub ",
+        "year": "2019",
+        "article-id_pmc": "PMC6737939",
+        "type": "title",
+        "authors": "Tu X, Qin B, Zhang Y, Zhang C, Kahila M, Nowsheen S, Yin P, Yuan J, Pei H, Li H, Yu J, Song Z, Zhou Q, Zhao F, Liu J, Zhang C, Dong H, Mutter RW, Lou Z"
+      },
+      "offset": 0,
+      "text": "PD-L1 (B7-H1) Competes with the RNA Exosome to Regulate the DNA Damage Response and Can Be Targeted to Sensitize to Radiation or Chemotherapy.",
+      "sentences": [],
+      "annotations": [
+        {
+          "id": "2",
+          "infons": {
+            "identifier": "29126",
+            "type": "Gene",
+            "ncbi_homologene": "8560",
+            "valid": true,
+            "normalized": [
+              29126
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 29126,
+            "biotype": "gene",
+            "name": "CD274",
+            "accession": "@GENE_CD274"
+          },
+          "text": "PD-L1",
+          "locations": [
+            {
+              "offset": 0,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "infons": {
+            "identifier": "29126",
+            "type": "Gene",
+            "ncbi_homologene": "8560",
+            "valid": true,
+            "normalized": [
+              29126
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 29126,
+            "biotype": "gene",
+            "name": "CD274",
+            "accession": "@GENE_CD274"
+          },
+          "text": "B7-H1",
+          "locations": [
+            {
+              "offset": 7,
+              "length": 5
+            }
+          ]
+        }
+      ],
+      "relations": []
+    },
+    {
+      "infons": {
+        "type": "abstract"
+      },
+      "offset": 143,
+      "text": "Programmed death ligand 1 (PD-L1, also called B7-H1) is an immune checkpoint protein that inhibits immune function through its binding of the programmed cell death protein 1 (PD-1) receptor. Clinically approved antibodies block extracellular PD-1 and PD-L1 binding, yet the role of intracellular PD-L1 in cancer remains poorly understood. Here, we discovered that intracellular PD-L1 acts as an RNA binding protein that regulates the mRNA stability of NBS1, BRCA1, and other DNA damage-related genes. Through competition with the RNA exosome, intracellular PD-L1 protects targeted RNAs from degradation, thereby increasing cellular resistance to DNA damage. RNA immunoprecipitation and RNA-seq experiments demonstrated that PD-L1 regulates RNA stability genome-wide. Furthermore, we developed a PD-L1 antibody, H1A, which abrogates the interaction of PD-L1 with CMTM6, thereby promoting PD-L1 degradation. Intracellular PD-L1 may be a potential therapeutic target to enhance the efficacy of radiotherapy and chemotherapy in cancer through the inhibition of DNA damage response and repair.",
+      "sentences": [],
+      "annotations": [
+        {
+          "id": "24",
+          "infons": {
+            "identifier": "29126",
+            "type": "Gene",
+            "ncbi_homologene": "8560",
+            "valid": true,
+            "normalized": [
+              29126
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 29126,
+            "biotype": "gene",
+            "name": "CD274",
+            "accession": "@GENE_CD274"
+          },
+          "text": "PD-L1",
+          "locations": [
+            {
+              "offset": 170,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "25",
+          "infons": {
+            "identifier": "29126",
+            "type": "Gene",
+            "ncbi_homologene": "8560",
+            "valid": true,
+            "normalized": [
+              29126
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 29126,
+            "biotype": "gene",
+            "name": "CD274",
+            "accession": "@GENE_CD274"
+          },
+          "text": "B7-H1",
+          "locations": [
+            {
+              "offset": 189,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "26",
+          "infons": {
+            "identifier": "5133",
+            "type": "Gene",
+            "ncbi_homologene": "3681",
+            "valid": true,
+            "normalized": [
+              5133
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 5133,
+            "biotype": "gene",
+            "name": "PDCD1",
+            "accession": "@GENE_PDCD1"
+          },
+          "text": "programmed cell death protein 1",
+          "locations": [
+            {
+              "offset": 285,
+              "length": 31
+            }
+          ]
+        },
+        {
+          "id": "27",
+          "infons": {
+            "identifier": "5133",
+            "type": "Gene",
+            "ncbi_homologene": "3681",
+            "valid": true,
+            "normalized": [
+              5133
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 5133,
+            "biotype": "gene",
+            "name": "PDCD1",
+            "accession": "@GENE_PDCD1"
+          },
+          "text": "PD-1",
+          "locations": [
+            {
+              "offset": 318,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "28",
+          "infons": {
+            "identifier": "5133",
+            "type": "Gene",
+            "ncbi_homologene": "3681",
+            "valid": true,
+            "normalized": [
+              5133
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 5133,
+            "biotype": "gene",
+            "name": "PDCD1",
+            "accession": "@GENE_PDCD1"
+          },
+          "text": "PD-1",
+          "locations": [
+            {
+              "offset": 385,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "29",
+          "infons": {
+            "identifier": "29126",
+            "type": "Gene",
+            "ncbi_homologene": "8560",
+            "valid": true,
+            "normalized": [
+              29126
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 29126,
+            "biotype": "gene",
+            "name": "CD274",
+            "accession": "@GENE_CD274"
+          },
+          "text": "PD-L1",
+          "locations": [
+            {
+              "offset": 394,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "30",
+          "infons": {
+            "identifier": "29126",
+            "type": "Gene",
+            "ncbi_homologene": "8560",
+            "valid": true,
+            "normalized": [
+              29126
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 29126,
+            "biotype": "gene",
+            "name": "CD274",
+            "accession": "@GENE_CD274"
+          },
+          "text": "PD-L1",
+          "locations": [
+            {
+              "offset": 439,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "31",
+          "infons": {
+            "identifier": "MESH:D009369",
+            "type": "Disease",
+            "valid": true,
+            "normalized": [
+              "D009369"
+            ],
+            "database": "ncbi_mesh",
+            "normalized_id": "D009369",
+            "biotype": "disease",
+            "name": "Neoplasms",
+            "accession": "@DISEASE_Neoplasms"
+          },
+          "text": "cancer",
+          "locations": [
+            {
+              "offset": 448,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "32",
+          "infons": {
+            "identifier": "29126",
+            "type": "Gene",
+            "ncbi_homologene": "8560",
+            "valid": true,
+            "normalized": [
+              29126
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 29126,
+            "biotype": "gene",
+            "name": "CD274",
+            "accession": "@GENE_CD274"
+          },
+          "text": "PD-L1",
+          "locations": [
+            {
+              "offset": 521,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "33",
+          "infons": {
+            "identifier": "4683",
+            "type": "Gene",
+            "ncbi_homologene": "1858",
+            "valid": true,
+            "normalized": [
+              4683
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 4683,
+            "biotype": "gene",
+            "name": "NBN",
+            "accession": "@GENE_NBN"
+          },
+          "text": "NBS1",
+          "locations": [
+            {
+              "offset": 595,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "34",
+          "infons": {
+            "identifier": "672",
+            "type": "Gene",
+            "ncbi_homologene": "5276",
+            "valid": true,
+            "normalized": [
+              672
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 672,
+            "biotype": "gene",
+            "name": "BRCA1",
+            "accession": "@GENE_BRCA1"
+          },
+          "text": "BRCA1",
+          "locations": [
+            {
+              "offset": 601,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "35",
+          "infons": {
+            "identifier": "29126",
+            "type": "Gene",
+            "ncbi_homologene": "8560",
+            "valid": true,
+            "normalized": [
+              29126
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 29126,
+            "biotype": "gene",
+            "name": "CD274",
+            "accession": "@GENE_CD274"
+          },
+          "text": "PD-L1",
+          "locations": [
+            {
+              "offset": 700,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "36",
+          "infons": {
+            "identifier": "29126",
+            "type": "Gene",
+            "ncbi_homologene": "8560",
+            "valid": true,
+            "normalized": [
+              29126
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 29126,
+            "biotype": "gene",
+            "name": "CD274",
+            "accession": "@GENE_CD274"
+          },
+          "text": "PD-L1",
+          "locations": [
+            {
+              "offset": 867,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "37",
+          "infons": {
+            "identifier": "29126",
+            "type": "Gene",
+            "ncbi_homologene": "8560",
+            "valid": true,
+            "normalized": [
+              29126
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 29126,
+            "biotype": "gene",
+            "name": "CD274",
+            "accession": "@GENE_CD274"
+          },
+          "text": "PD-L1",
+          "locations": [
+            {
+              "offset": 938,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "38",
+          "infons": {
+            "identifier": "-",
+            "type": "Chemical",
+            "valid": false,
+            "normalized_id": null,
+            "biotype": "chemical"
+          },
+          "text": "H1A",
+          "locations": [
+            {
+              "offset": 954,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "39",
+          "infons": {
+            "identifier": "29126",
+            "type": "Gene",
+            "ncbi_homologene": "8560",
+            "valid": true,
+            "normalized": [
+              29126
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 29126,
+            "biotype": "gene",
+            "name": "CD274",
+            "accession": "@GENE_CD274"
+          },
+          "text": "PD-L1",
+          "locations": [
+            {
+              "offset": 994,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "40",
+          "infons": {
+            "identifier": "54918",
+            "type": "Gene",
+            "ncbi_homologene": "9845",
+            "valid": true,
+            "normalized": [
+              54918
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 54918,
+            "biotype": "gene",
+            "name": "CMTM6",
+            "accession": "@GENE_CMTM6"
+          },
+          "text": "CMTM6",
+          "locations": [
+            {
+              "offset": 1005,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "41",
+          "infons": {
+            "identifier": "29126",
+            "type": "Gene",
+            "ncbi_homologene": "8560",
+            "valid": true,
+            "normalized": [
+              29126
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 29126,
+            "biotype": "gene",
+            "name": "CD274",
+            "accession": "@GENE_CD274"
+          },
+          "text": "PD-L1",
+          "locations": [
+            {
+              "offset": 1030,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "42",
+          "infons": {
+            "identifier": "29126",
+            "type": "Gene",
+            "ncbi_homologene": "8560",
+            "valid": true,
+            "normalized": [
+              29126
+            ],
+            "database": "ncbi_gene",
+            "normalized_id": 29126,
+            "biotype": "gene",
+            "name": "CD274",
+            "accession": "@GENE_CD274"
+          },
+          "text": "PD-L1",
+          "locations": [
+            {
+              "offset": 1063,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "43",
+          "infons": {
+            "identifier": "MESH:D009369",
+            "type": "Disease",
+            "valid": true,
+            "normalized": [
+              "D009369"
+            ],
+            "database": "ncbi_mesh",
+            "normalized_id": "D009369",
+            "biotype": "disease",
+            "name": "Neoplasms",
+            "accession": "@DISEASE_Neoplasms"
+          },
+          "text": "cancer",
+          "locations": [
+            {
+              "offset": 1167,
+              "length": 6
+            }
+          ]
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "relations": [
+    {
+      "id": "R1",
+      "infons": {
+        "score": "0.9528",
+        "role1": {
+          "identifier": "29126",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            29126
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 29126,
+          "biotype": "gene",
+          "name": "CD274",
+          "accession": "@GENE_CD274"
+        },
+        "role2": {
+          "identifier": "54918",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            54918
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 54918,
+          "biotype": "gene",
+          "name": "CMTM6",
+          "accession": "@GENE_CMTM6"
+        },
+        "type": "Bind"
+      },
+      "nodes": [
+        {
+          "refid": "0",
+          "role": "15,18"
+        }
+      ]
+    },
+    {
+      "id": "R2",
+      "infons": {
+        "score": "0.9655",
+        "role1": {
+          "identifier": "29126",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            29126
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 29126,
+          "biotype": "gene",
+          "name": "CD274",
+          "accession": "@GENE_CD274"
+        },
+        "role2": {
+          "identifier": "5133",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            5133
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 5133,
+          "biotype": "gene",
+          "name": "PDCD1",
+          "accession": "@GENE_PDCD1"
+        },
+        "type": "Bind"
+      },
+      "nodes": [
+        {
+          "refid": "1",
+          "role": "2,4"
+        }
+      ]
+    },
+    {
+      "id": "R3",
+      "infons": {
+        "score": "0.9912",
+        "role1": {
+          "identifier": "29126",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            29126
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 29126,
+          "biotype": "gene",
+          "name": "CD274",
+          "accession": "@GENE_CD274"
+        },
+        "role2": {
+          "identifier": "4683",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            4683
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 4683,
+          "biotype": "gene",
+          "name": "NBN",
+          "accession": "@GENE_NBN"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "2",
+          "role": "10,11"
+        }
+      ]
+    },
+    {
+      "id": "R4",
+      "infons": {
+        "score": "0.999",
+        "role1": {
+          "identifier": "MESH:D009369",
+          "type": "Disease",
+          "valid": true,
+          "normalized": [
+            "D009369"
+          ],
+          "database": "ncbi_mesh",
+          "normalized_id": "D009369",
+          "biotype": "disease",
+          "name": "Neoplasms",
+          "accession": "@DISEASE_Neoplasms"
+        },
+        "role2": {
+          "identifier": "29126",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            29126
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 29126,
+          "biotype": "gene",
+          "name": "CD274",
+          "accession": "@GENE_CD274"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "3",
+          "role": "9,7"
+        }
+      ]
+    },
+    {
+      "id": "R5",
+      "infons": {
+        "score": "0.9981",
+        "role1": {
+          "identifier": "29126",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            29126
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 29126,
+          "biotype": "gene",
+          "name": "CD274",
+          "accession": "@GENE_CD274"
+        },
+        "role2": {
+          "identifier": "672",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [
+            672
+          ],
+          "database": "ncbi_gene",
+          "normalized_id": 672,
+          "biotype": "gene",
+          "name": "BRCA1",
+          "accession": "@GENE_BRCA1"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "4",
+          "role": "10,12"
+        }
+      ]
+    }
+  ],
+  "pmid": 31053471,
+  "pmcid": null,
+  "meta": {},
+  "date": "2019-06-20T00:00:00Z",
+  "journal": "Mol Cell",
+  "authors": [
+    "Tu X",
+    "Qin B",
+    "Zhang Y",
+    "Zhang C",
+    "Kahila M",
+    "Nowsheen S",
+    "Yin P",
+    "Yuan J",
+    "Pei H",
+    "Li H",
+    "Yu J",
+    "Song Z",
+    "Zhou Q",
+    "Zhao F",
+    "Liu J",
+    "Zhang C",
+    "Dong H",
+    "Mutter RW",
+    "Lou Z"
+  ],
+  "relations_display": [
+    {
+      "name": "interact|@GENE_CD274|@GENE_CMTM6"
+    },
+    {
+      "name": "interact|@GENE_CD274|@GENE_PDCD1"
+    },
+    {
+      "name": "associate|@GENE_CD274|@GENE_NBN"
+    },
+    {
+      "name": "associate|@DISEASE_Neoplasms|@GENE_CD274"
+    },
+    {
+      "name": "associate|@GENE_CD274|@GENE_BRCA1"
+    }
+  ]
+}

@@ -368,7 +368,6 @@ class EntityInfo extends DataComponent {
     let Loader = ({ loading = true }) => h('div.entity-info-matches-loading' + (loading ? '.entity-info-matches-loading-active' : ''), [
       loading ? h('i.icon.icon-spinner') : h('i.material-icons', 'remove')
     ]);
-
     let onMatchesScroll = _.debounce( div => {
       let scrollMax = div.scrollHeight;
       let scroll = div.scrollTop + div.clientHeight;

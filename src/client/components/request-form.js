@@ -217,7 +217,7 @@ class RequestForm extends Component {
       }, [
         h('input.request-form-field-title', {
           type: 'text',
-          placeholder: `Article title`,
+          placeholder: `Article title (or PMID/DOI)`,
           onChange: e => this.updateForm({ paperId: e.target.value }),
           value: this.state.paperId
         }),

@@ -1,16 +1,23 @@
 import _ from 'lodash';
+import fetch from 'node-fetch';
+import queryString from 'query-string';
 
+import logger from '../../../../logger.js';
 import {
   Hint,
   HINT_TYPE
- } from '../../../../../model/hint.js';
+} from '../../../../../model/hint.js';
+ import {
+  NCBI_BASE_URL
+ } from '../../../../../config.js';
+import { checkHTTPStatus } from '../../../../../util/fetch.js';
 
 /**
  * Map a PubTator BioCDocument to a hint
- * @param {*} bioCDocument as defined by [NLM DTD]{@link ftp://ftp.ncbi.nlm.nih.gov/pub/wilbur/BioC-PMC/BioC.dtd}
- * @returns {object} hints a set of hints
+ * @param {object} bioCDocument as defined by [NLM DTD]{@link ftp://ftp.ncbi.nlm.nih.gov/pub/wilbur/BioC-PMC/BioC.dtd}
+ * @returns {Array.<Hint>} hints a set of hints
  */
-function map (bioCDocument) {
+function map ( bioCDocument ) {
   let hints = [];
 
   // Annotation types defined within tmVar 3.0 concept recognition tool
@@ -101,8 +108,40 @@ function map (bioCDocument) {
   return hints;
 }
 
+const BIOC_FORMAT = Object.freeze({
+  BIOCXML: 'biocxml',
+  PUBTATOR: 'pubtator',
+  BIOCJSON: 'biocjson'
+});
+
+/**
+ * Get a BioCDocument from PubTator
+ * @param {string} pmid A PubMed uid
+ * @param {string} format One of the BIOC_FORMATs
+ * @returns {object} A BioC Document
+ */
+async function get ( pmids, format = BIOC_FORMAT.BIOCJSON ) {
+  const PUBTATOR_API_PATH = 'research/pubtator3-api/publications/export/';
+  const params = queryString.stringify({ pmids });
+  const url = `${NCBI_BASE_URL}${PUBTATOR_API_PATH}${format}?${params}`;
+
+  try {
+    let response = await fetch( url );
+    response = checkHTTPStatus( response ); // HTTPStatusError
+    const text = await response.text();
+    const data = text ? JSON.parse( text ) : null; // Optional body
+    return data;
+
+  } catch (e) {
+    logger.error( `Error in pubtator::get with ${pmids}` );
+    logger.error( e );
+    throw e;
+  }
+}
+
 const pubtator = {
-  map
+  map,
+  get
 };
 
 export default pubtator;

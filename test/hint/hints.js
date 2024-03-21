@@ -3,7 +3,8 @@ import _ from 'lodash';
 
 import { Hint, PASSAGE_TYPES } from '../../src/model/hint.js';
 
-import { pubtator } from '../../src/server/routes/api/document/hint/index.js';
+import pubtator from '../../src/server/routes/api/document/hint/pubtator.js';
+// import hintService from '../../src/server/routes/api/document/hint/index.js';
 
 import pubtator_1 from './10.1016_j.molcel.2016.11.034.json';
 import pubtator_2 from './10.1016_j.molcel.2019.03.023.json';
@@ -16,10 +17,25 @@ const bioCDocuments = [
   pubtator_4
 ];
 
+// describe('hintService', function(){
+//   // // NB: Live calls ( dev only )
+//   describe('find', function(){
+//     it('Should be null when hints do not exist for an article', async function(){
+//       let pmid = '38496625';
+//       let hints = await hintService.find( pmid );
+//       expect( hints ).to.be.null;
+//     });
+
+//     it('Should exist with valid PMID', async function(){
+//       let { pmid } = bioCDocuments[0];
+//       let hints = await hintService.find( pmid );
+//       expect( hints ).to.exist;
+//     });
+//   }); // find
+// }); // hintService
+
 describe('pubtator', function(){
-
-  describe('mapper', function(){
-
+  describe('map', function(){
     bioCDocuments.forEach( bioCDocument => {
       const { infons: { doi } } = bioCDocument;
 
@@ -50,10 +66,23 @@ describe('pubtator', function(){
           expect( inAbstract.length ).to.equal( uniqInAbstract.length );
         });
 
-      }); // Hints
-
+      }); // BioC Document
     });
+  }); // map
 
-  }); // mapper
+  // // NB: Live calls to PubTator ( dev only )
+  // describe('get', function(){
+  //   it('Should be null when annotations do not exist for an article', async function(){
+  //     let pmid = '38496625';
+  //     let bioCDocument = await pubtator.get( pmid );
+  //     expect( bioCDocument ).to.be.null;
+  //   });
+
+  //   it('Should exist with valid PMID', async function(){
+  //     let { pmid } = bioCDocuments[0];
+  //     let bioCDocument = await pubtator.get( pmid );
+  //     expect( bioCDocument ).to.exist;
+  //   });
+  // }); // get
 
 }); // pubtator

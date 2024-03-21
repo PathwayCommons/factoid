@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-// import _ from 'lodash';
+import _ from 'lodash';
 
-import { Hint } from '../../src/model/hint.js';
+import { Hint, PASSAGE_TYPES } from '../../src/model/hint.js';
 
 import { pubtator } from '../../src/server/routes/api/document/hint/index.js';
 
@@ -30,32 +30,25 @@ describe('pubtator', function(){
           hints = pubtator.map( bioCDocument );
         });
 
-        it('Should have the correct properties', function(){
-          const first = hints[0];
-          expect( first ).to.be.an.instanceof( Hint );
-          // expect( first ).to.have.property('text');
-          // expect( first ).to.have.property('text');
-          // expect( first ).to.have.property('type');
-          // expect( first ).to.have.property('xref');
-          // expect( first ).to.have.nested.property('xref.dbName');
-          // expect( first ).to.have.nested.property('xref.dbPrefix');
-          // expect( first ).to.have.nested.property('xref.id');
-          // expect( first ).to.have.property('section');
+        it('Should map to a list of Hints', function(){
+          hints.forEach( h => {
+            expect( h ).to.be.an.instanceof( Hint );
+          });
         });
 
-        // it('Should have valid section', function(){
-        //   const isValidSection = ({ section }) => section === 'title' || section === 'abstract';
-        //   expect( hints.every( isValidSection ) ).to.be.true;
-        // });
+        it('Should have valid section', function(){
+          const isValidSection = h => _.includes( PASSAGE_TYPES, h.section );
+          expect( hints.every( isValidSection ) ).to.be.true;
+        });
 
-        // it('Should be unique to each section', function(){
-        //   const inTitle = _.filter(hints, ['section', 'title']);
-        //   const uniqInTitle = _.uniqBy( inTitle, 'text' );
-        //   const inAbstract = _.filter(hints, ['section', 'abstract']);
-        //   const uniqInAbstract = _.uniqBy( inAbstract, 'text' );
-        //   expect( inTitle.length ).to.equal( uniqInTitle.length );
-        //   expect( inAbstract.length ).to.equal( uniqInAbstract.length );
-        // });
+        it('Should be unique to each section', function(){
+          const inTitle = _.filter(hints, ['section', 'title']);
+          const uniqInTitle = _.uniqBy( inTitle, 'text' );
+          const inAbstract = _.filter(hints, ['section', 'abstract']);
+          const uniqInAbstract = _.uniqBy( inAbstract, 'text' );
+          expect( inTitle.length ).to.equal( uniqInTitle.length );
+          expect( inAbstract.length ).to.equal( uniqInAbstract.length );
+        });
 
       }); // Hints
 

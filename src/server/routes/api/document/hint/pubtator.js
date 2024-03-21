@@ -29,7 +29,27 @@ function map (bioCDocument) {
     // ACID_CHANGE: 'AcidChange',
     // OTHER_MUTATION: 'OtherMutation'
   });
-  const PUBTATOR_ANNOTATION_TYPES = new Set( Object.values( PUBTATOR_ANNOTATION_TYPE ) );
+  const entityTypes = new Map([
+    [PUBTATOR_ANNOTATION_TYPE.GENE, HINT_TYPE.GGP ],
+    [PUBTATOR_ANNOTATION_TYPE.CHEMICAL, HINT_TYPE.CHEMICAL ],
+    [PUBTATOR_ANNOTATION_TYPE.DISEASE, HINT_TYPE.DISEASE ],
+    [PUBTATOR_ANNOTATION_TYPE.CELL_LINE, HINT_TYPE.CELL_LINE ],
+    [PUBTATOR_ANNOTATION_TYPE.SPECIES, HINT_TYPE.ORGANISM ]
+  ]);
+  const dbPrefixes = new Map([
+    [PUBTATOR_ANNOTATION_TYPE.GENE, 'NCBIGene'],
+    [PUBTATOR_ANNOTATION_TYPE.CHEMICAL, 'CHEBI'],
+    [PUBTATOR_ANNOTATION_TYPE.DISEASE, 'mesh'],
+    [PUBTATOR_ANNOTATION_TYPE.CELL_LINE, 'cellosaurus'],
+    [PUBTATOR_ANNOTATION_TYPE.SPECIES, 'taxonomy'],
+  ]);
+   const dbNames = new Map([
+    [PUBTATOR_ANNOTATION_TYPE.GENE, 'NCBI Gene'],
+    [PUBTATOR_ANNOTATION_TYPE.CHEMICAL, 'ChEBI'],
+    [PUBTATOR_ANNOTATION_TYPE.DISEASE, 'MeSH'],
+    [PUBTATOR_ANNOTATION_TYPE.CELL_LINE, 'Cellosaurus'],
+    [PUBTATOR_ANNOTATION_TYPE.SPECIES, 'NCBI Taxonomy'],
+  ]);
 
   const byText = annotation => {
     // Could do some processing here (dashes etc)
@@ -38,10 +58,10 @@ function map (bioCDocument) {
     return sanitized( text );
   };
 
-  const byAnnotation = annotation => {
+  const isValid = annotation => {
     const isValidType = annotation => {
       const { infons: { type }} = annotation;
-      return PUBTATOR_ANNOTATION_TYPES.has( type );
+      return _.includes( PUBTATOR_ANNOTATION_TYPE, type );
     };
     const hasXref = annotation => {
       const { infons } = annotation;
@@ -51,35 +71,14 @@ function map (bioCDocument) {
   };
 
   const toHint = ( annotation, section ) => {
-    const entityTypes = new Map([
-      [PUBTATOR_ANNOTATION_TYPE.GENE, HINT_TYPE.GGP ],
-      [PUBTATOR_ANNOTATION_TYPE.CHEMICAL, HINT_TYPE.CHEMICAL ],
-      [PUBTATOR_ANNOTATION_TYPE.DISEASE, HINT_TYPE.DISEASE ],
-      [PUBTATOR_ANNOTATION_TYPE.CELL_LINE, HINT_TYPE.CELL_LINE ],
-      [PUBTATOR_ANNOTATION_TYPE.SPECIES, 'Organism']
-    ]);
-    const dbPrefixes = new Map([
-      [PUBTATOR_ANNOTATION_TYPE.GENE, 'NCBIGene'],
-      [PUBTATOR_ANNOTATION_TYPE.CHEMICAL, 'CHEBI'],
-      [PUBTATOR_ANNOTATION_TYPE.DISEASE, 'mesh'],
-      [PUBTATOR_ANNOTATION_TYPE.CELL_LINE, 'cellosaurus'],
-      [PUBTATOR_ANNOTATION_TYPE.SPECIES, 'taxonomy'],
-    ]);
-     const dbNames = new Map([
-      [PUBTATOR_ANNOTATION_TYPE.GENE, 'NCBI Gene'],
-      [PUBTATOR_ANNOTATION_TYPE.CHEMICAL, 'ChEBI'],
-      [PUBTATOR_ANNOTATION_TYPE.DISEASE, 'MeSH'],
-      [PUBTATOR_ANNOTATION_TYPE.CELL_LINE, 'Cellosaurus'],
-      [PUBTATOR_ANNOTATION_TYPE.SPECIES, 'NCBI Taxonomy'],
-    ]);
     const { text, infons: { identifier: id, type } } = annotation;
 
     const hint = new Hint();
     hint.text = text;
-    hint.type = entityTypes.get(type);
+    hint.type = entityTypes.get( type );
     hint.xref = {
-      dbName: dbNames.get(type),
-      dbPrefix: dbPrefixes.get(type),
+      dbName: dbNames.get( type ),
+      dbPrefix: dbPrefixes.get( type ),
       id
     };
     hint.section = section;
@@ -91,9 +90,9 @@ function map (bioCDocument) {
   for( const passage of passages ){
     let { annotations } = passage;
     const section = passage.infons.type;
-    //unique by text
+    // Allow varying text for a given xref
     annotations = _.uniqBy( annotations, byText );
-    annotations = _.filter( annotations, byAnnotation );
+    annotations = _.filter( annotations, isValid );
     annotations.forEach( a => {
       const hint = toHint( a, section );
       hints.push( hint );

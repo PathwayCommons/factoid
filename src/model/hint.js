@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { ENTITY_TYPE } from './element/entity-type.js';
 
 const HINT_TYPE = Object.freeze(_.assign({
-  ORGANISM: 'organism',
+  ORGANISM: 'Organism',
   DISEASE: 'disease',
   CELL_LINE: 'cellLine'
 }, ENTITY_TYPE ));
@@ -59,5 +59,6 @@ class Hint {
 export {
   Hint,
   HINT_TYPE,
-  PASSAGE_TYPE
+  PASSAGE_TYPE,
+  PASSAGE_TYPES
 };

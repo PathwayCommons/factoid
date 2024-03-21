@@ -20,16 +20,16 @@ const bioCDocuments = [
 // describe('hintService', function(){
 //   // // NB: Live calls ( dev only )
 //   describe('find', function(){
-//     it('Should be null when hints do not exist for an article', async function(){
+//     it('Should be empty when hints do not exist for an article', async function(){
 //       let pmid = '38496625';
 //       let hints = await hintService.find( pmid );
-//       expect( hints ).to.be.null;
+//       expect( hints ).to.be.empty;
 //     });
 
 //     it('Should exist with valid PMID', async function(){
 //       let { pmid } = bioCDocuments[0];
 //       let hints = await hintService.find( pmid );
-//       expect( hints ).to.exist;
+//       expect( hints ).to.not.be.empty;
 //     });
 //   }); // find
 // }); // hintService
@@ -70,19 +70,19 @@ describe('pubtator', function(){
     });
   }); // map
 
-  // // NB: Live calls to PubTator ( dev only )
+  // NB: Live calls to PubTator ( dev only )
   // describe('get', function(){
-  //   it('Should be null when annotations do not exist for an article', async function(){
-  //     let pmid = '38496625';
-  //     let bioCDocument = await pubtator.get( pmid );
-  //     expect( bioCDocument ).to.be.null;
-  //   });
+    // it('Should be null when annotations do not exist for an article', async function(){
+    //   let pmid = '38496625';
+    //   let bioCDocument = await pubtator.get( pmid );
+    //   expect( bioCDocument ).to.be.null;
+    // });
 
-  //   it('Should exist with valid PMID', async function(){
-  //     let { pmid } = bioCDocuments[0];
-  //     let bioCDocument = await pubtator.get( pmid );
-  //     expect( bioCDocument ).to.exist;
-  //   });
+    // it('Should exist with valid PMID', async function(){
+    //   let { pmid } = bioCDocuments[0];
+    //   let bioCDocument = await pubtator.get( pmid );
+    //   expect( bioCDocument ).to.exist;
+    // });
   // }); // get
 
 }); // pubtator

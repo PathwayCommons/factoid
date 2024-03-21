@@ -139,9 +139,22 @@ async function get ( pmids, format = BIOC_FORMAT.BIOCJSON ) {
   }
 }
 
+/**
+ * A simple wrapper to retrieve Hints from PubTator
+ * @param {string} pmid A PubMed uid
+ * @returns {Array<Hint>} A list of Hint instances or null
+ */
+async function hints( pmids ) {
+  let hints = null;
+  const bioCDocument = await get( pmids );
+  if( bioCDocument != null ) hints = map( bioCDocument );
+  return hints;
+}
+
 const pubtator = {
   map,
-  get
+  get,
+  hints
 };
 
 export default pubtator;

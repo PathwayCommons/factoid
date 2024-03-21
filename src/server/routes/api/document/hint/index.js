@@ -1,14 +1,24 @@
+import _ from 'lodash';
+
 import logger from '../../../../logger.js';
 import pubtator from './pubtator.js';
 
+const PROVIDERS = [
+  pubtator
+];
+
 /**
- * Wrapper for bioentity hint providers
+ * Get hints from providers
+ * @param {string} pmid A PubMed uid
+ * @returns {Array<Hint>} An array of Hints.
  */
 async function find( id ) {
   try {
-    let hints = null;
-    const bioCDocument = await pubtator.get( id );
-    if( bioCDocument != null ) hints = pubtator.map( bioCDocument );
+    let hints = [];
+    for (const provider of PROVIDERS ){
+      const providerHints = await provider.hints( id );
+      if( providerHints != null ) hints = _.concat(hints, providerHints);
+    }
     return hints;
 
   } catch(e) {

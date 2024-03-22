@@ -19,6 +19,11 @@ async function find( id ) {
       const providerHints = await provider.hints( id );
       if( providerHints != null ) hints = _.concat(hints, providerHints);
     }
+    // TODOs
+    //
+    // Aggregate from providers
+    // Prioritize species based on section, etc.
+
     return hints;
 
   } catch(e) {

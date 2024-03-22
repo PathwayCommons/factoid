@@ -65,17 +65,18 @@ function map ( bioCDocument ) {
     return sanitized( text );
   };
 
-  const isValid = annotation => {
-    const isValidType = annotation => {
-      const { infons: { type }} = annotation;
-      return _.includes( PUBTATOR_ANNOTATION_TYPE, type );
-    };
-    const hasXref = annotation => {
-      const { infons } = annotation;
-      return _.has( infons, 'identifier' );
-    };
-    return isValidType( annotation ) && hasXref( annotation );
+  const isValidType = annotation => {
+    const { infons: { type }} = annotation;
+    return _.includes( PUBTATOR_ANNOTATION_TYPE, type );
   };
+
+  const hasXref = annotation => {
+    const { infons } = annotation;
+    return _.has( infons, 'identifier' );
+  };
+
+  const isSpecies = ({ infons }) => infons.type === PUBTATOR_ANNOTATION_TYPE.SPECIES;
+  const notSpecies = ({ infons }) => infons.type !== PUBTATOR_ANNOTATION_TYPE.SPECIES;
 
   const toHint = ( annotation, section ) => {
     const { text, infons: { identifier: id, type } } = annotation;
@@ -97,10 +98,12 @@ function map ( bioCDocument ) {
   for( const passage of passages ){
     let { annotations } = passage;
     const section = passage.infons.type;
-    // Allow varying text for a given xref
-    annotations = _.uniqBy( annotations, byText );
-    annotations = _.filter( annotations, isValid );
-    annotations.forEach( a => {
+    const specs = _.filter( annotations, isSpecies  );
+    let xSpecs = _.filter( annotations, notSpecies );
+    xSpecs = _.uniqBy( xSpecs, byText );
+    xSpecs = _.filter( xSpecs, isValidType );
+    xSpecs = _.filter( xSpecs, hasXref );
+    [ ...specs, ...xSpecs ].forEach( a => {
       const hint = toHint( a, section );
       hints.push( hint );
     });

@@ -2,8 +2,8 @@ import { expect } from 'chai';
 import _ from 'lodash';
 import nock from 'nock';
 
-import { HINT_TYPE, Hint, PASSAGE_TYPES } from '../../src/model/hint.js';
-import pubtator from '../../src/server/routes/api/document/hint/pubtator.js';
+import { HINT_TYPE, Hint, PASSAGE_TYPES } from '../../../src/model/hint.js';
+import pubtator from '../../../src/server/routes/api/document/hint/pubtator.js';
 
 import pubtator_1 from './10.1016_j.molcel.2016.11.034.json';
 import pubtator_2 from './10.1016_j.molcel.2019.03.023.json';
@@ -11,7 +11,7 @@ import pubtator_3 from './10.1016_j.molcel.2019.04.005.json';
 import pubtator_4 from './10.1038_s41556-021-00642-9.json';
 import pubtator_5 from './10.1126_scisignal.abf3535.json';
 import pubtator_6 from './10.1016_j.molcel.2024.01.007.json';
-import { NCBI_BASE_URL } from '../../src/config.js';
+import { NCBI_BASE_URL } from '../../../src/config.js';
 
 const bioCDocuments = [
   pubtator_1,

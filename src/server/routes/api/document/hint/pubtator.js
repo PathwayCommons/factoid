@@ -21,21 +21,21 @@ import { COLLECTIONS } from '../../../../../util/registry.js';
 function map ( bioCDocument ) {
   let hints = [];
 
-  // Annotation types defined within tmVar 3.0 concept recognition tool
-  // doi:10.1093/bioinformatics/btac537
+  // See Table 1 https://www.ncbi.nlm.nih.gov/research/pubtator3/tutorial
   const PUBTATOR_ANNOTATION_TYPE = Object.freeze({
     GENE: 'Gene',
     SPECIES: 'Species',
     CHEMICAL: 'Chemical',
     DISEASE: 'Disease',
-    CELL_LINE: 'CellLine',
-    // DNA_MUTATION: 'DNAMutation',
-    // PROTEIN_MUTATION: 'ProteinMutation',
-    // SNP: 'SNP',
-    // DNA_ALLELE: 'DNAAllele',
-    // PROTEIN_ALLELE: 'ProteinAllele',
-    // ACID_CHANGE: 'AcidChange',
-    // OTHER_MUTATION: 'OtherMutation'
+    CELL_LINE: 'CellLine'
+    // VARIANT: 'Variant'
+  });
+  const PUBTATOR_DATABASE = Object.freeze({
+    ncbi_gene: 'ncbi_gene',
+    ncbi_taxonomy: 'ncbi_taxonomy',
+    ncbi_mesh: 'ncbi_mesh',
+    cvcl: 'cvcl',
+    litvar: 'litvar'
   });
   const entityTypes = new Map([
     [PUBTATOR_ANNOTATION_TYPE.GENE, HINT_TYPE.GGP ],
@@ -44,13 +44,11 @@ function map ( bioCDocument ) {
     [PUBTATOR_ANNOTATION_TYPE.CELL_LINE, HINT_TYPE.CELL_LINE ],
     [PUBTATOR_ANNOTATION_TYPE.SPECIES, HINT_TYPE.ORGANISM ]
   ]);
-  // See Table 1 https://www.ncbi.nlm.nih.gov/research/pubtator3/tutorial
-  const type2Xref = new Map([
-    [ PUBTATOR_ANNOTATION_TYPE.GENE, COLLECTIONS.NCBI_GENE ],
-    [ PUBTATOR_ANNOTATION_TYPE.CHEMICAL, COLLECTIONS.MESH ],
-    [ PUBTATOR_ANNOTATION_TYPE.DISEASE, COLLECTIONS.MESH ],
-    [ PUBTATOR_ANNOTATION_TYPE.CELL_LINE, COLLECTIONS.CELLOSAURUS ],
-    [ PUBTATOR_ANNOTATION_TYPE.SPECIES, COLLECTIONS.NCBI_TAXONOMY ],
+  const database2Xref = new Map([
+    [ PUBTATOR_DATABASE.ncbi_gene, COLLECTIONS.NCBI_GENE ],
+    [ PUBTATOR_DATABASE.ncbi_mesh, COLLECTIONS.MESH ],
+    [ PUBTATOR_DATABASE.cvcl, COLLECTIONS.CELLOSAURUS ],
+    [ PUBTATOR_DATABASE.ncbi_taxonomy, COLLECTIONS.NCBI_TAXONOMY ]
   ]);
 
   const byText = annotation => {
@@ -89,8 +87,8 @@ function map ( bioCDocument ) {
   const notSpecies = ({ infons }) => infons.type !== PUBTATOR_ANNOTATION_TYPE.SPECIES;
 
   const toHint = ( annotation, section ) => {
-    const { text, infons: { identifier: id, type } } = annotation;
-    const xref = _.assign( { id }, type2Xref.get( type ) );
+    const { text, infons: { identifier: id, database, type } } = annotation;
+    const xref = _.assign( { id }, database2Xref.get( database ) );
     const eType = entityTypes.get( type );
 
     const hint = new Hint( text, eType, xref, section );

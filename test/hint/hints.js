@@ -1,7 +1,11 @@
-import { expect } from 'chai';
-import _ from 'lodash';
-import nock from 'nock';
+// import { expect } from 'chai';
+// import _ from 'lodash';
+// import nock from 'nock';
 
-describe('hints', function(){
+// describe('hints', function(){
+//   describe('find', function(){
 
-}); // hints
+
+
+//   }); // find
+// }); // hints

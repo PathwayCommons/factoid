@@ -5,7 +5,8 @@ import { ENTITY_TYPE } from './element/entity-type.js';
 const HINT_TYPE = Object.freeze(_.assign({
   ORGANISM: 'Organism',
   DISEASE: 'disease',
-  CELL_LINE: 'cellLine'
+  CELL_LINE: 'cellLine',
+  VARIANT: 'variant'
 }, ENTITY_TYPE ));
 const HINT_TYPES = _.flatMap( HINT_TYPE );
 

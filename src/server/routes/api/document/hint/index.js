@@ -12,11 +12,11 @@ const PROVIDERS = [
  * @param {string} pmid A PubMed uid
  * @returns {Array<Hint>} An array of Hints.
  */
-async function find( id ) {
+async function find( pmid ) {
   try {
     let hints = [];
     for (const provider of PROVIDERS ){
-      const providerHints = await provider.hints( id );
+      const providerHints = await provider.hints( pmid );
       if( providerHints != null ) hints = _.concat(hints, providerHints);
     }
     // TODOs
@@ -27,7 +27,7 @@ async function find( id ) {
     return hints;
 
   } catch(e) {
-    logger.error(`Error in hint::find - ${id}`);
+    logger.error(`Error in hint::find - ${pmid}`);
   }
 }
 

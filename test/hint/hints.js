@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import _ from 'lodash';
+import nock from 'nock';
 
 import { HINT_TYPE, Hint, PASSAGE_TYPES } from '../../src/model/hint.js';
 
@@ -12,6 +13,7 @@ import pubtator_3 from './10.1016_j.molcel.2019.04.005.json';
 import pubtator_4 from './10.1038_s41556-021-00642-9.json';
 import pubtator_5 from './10.1126_scisignal.abf3535.json';
 import pubtator_6 from './10.1016_j.molcel.2024.01.007.json';
+import { NCBI_BASE_URL } from '../../src/config.js';
 
 const bioCDocuments = [
   pubtator_1,
@@ -78,19 +80,26 @@ describe('pubtator', function(){
     });
   }); // map
 
-  // NB: Live calls to PubTator ( dev only )
-  // describe('get', function(){
-    // it('Should be null when annotations do not exist for an article', async function(){
-    //   let pmid = '38496625';
-    //   let bioCDocument = await pubtator.get( pmid );
-    //   expect( bioCDocument ).to.be.null;
-    // });
+  describe('get', function(){
+    it('Should be null when no body returned', async function(){
+      let pmid = '38496625';
+      var path = new RegExp( pmid );
+      nock( NCBI_BASE_URL )
+        .get( path )
+        .reply( 200 );
+      let bioCDocument = await pubtator.get( pmid );
+      expect( bioCDocument ).to.be.null;
+    });
 
-    // it('Should exist with valid PMID', async function(){
-    //   let { pmid } = bioCDocuments[0];
-    //   let bioCDocument = await pubtator.get( pmid );
-    //   expect( bioCDocument ).to.exist;
-    // });
-  // }); // get
+    it('Should exist when a body is returned', async function(){
+      let pmid = '28041912';
+      var path = new RegExp( pmid );
+      nock( NCBI_BASE_URL )
+        .get( path )
+        .reply( 200, { foo: 'bar' } );
+      let bioCDocument = await pubtator.get( pmid );
+      expect( bioCDocument ).to.exist;
+    });
+  }); // get
 
 }); // pubtator

@@ -119,11 +119,17 @@ const BIOC_FORMAT = Object.freeze({
 
 /**
  * Get a BioCDocument from PubTator
- * @param {string} pmid A PubMed uid
+ * @param {string} pmids PubMed uid
  * @param {string} format One of the BIOC_FORMATs
  * @returns {object} A BioC Document
  */
 async function get ( pmids, format = BIOC_FORMAT.BIOCJSON ) {
+  const toJson = async response => {
+    let data = null;
+    const text = await response.text();
+    if ( text ) data = JSON.parse( text ); // Optional body
+    return data;
+  };
   const PUBTATOR_API_PATH = 'research/pubtator3-api/publications/export/';
   const params = queryString.stringify({ pmids });
   const url = `${NCBI_BASE_URL}${PUBTATOR_API_PATH}${format}?${params}`;
@@ -131,10 +137,7 @@ async function get ( pmids, format = BIOC_FORMAT.BIOCJSON ) {
   try {
     let response = await fetch( url );
     response = checkHTTPStatus( response ); // HTTPStatusError
-    const text = await response.text();
-    const data = text ? JSON.parse( text ) : null; // Optional body
-    return data;
-
+    return toJson( response );
   } catch (e) {
     logger.error( `Error in pubtator::get with ${pmids}` );
     logger.error( e );

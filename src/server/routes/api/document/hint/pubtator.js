@@ -71,10 +71,17 @@ function map ( bioCDocument ) {
   };
 
   const isValidXref = annotation => {
+    const EMPTY_SYMBOLS = new Set(['-', '']);
     let isValid = false;
     const hasId = a => _.has( a, [ 'infons', 'identifier' ] );
-    const isNil = a => _.isNil( _.get( a, [ 'infons', 'identifier' ] ) );
-    const isEmpty = a => _.get( a, [ 'infons', 'identifier' ] ) === '-';
+    const isNil = a => {
+      const id = _.get( a, [ 'infons', 'identifier' ] );
+      return  _.isNil( id );
+    };
+    const isEmpty = a => {
+      const id = _.get( a, [ 'infons', 'identifier' ] );
+      return EMPTY_SYMBOLS.has( id );
+    };
     if( hasId( annotation )
         && !isNil( annotation )
         && !isEmpty( annotation ) ){

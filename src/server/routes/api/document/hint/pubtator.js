@@ -70,9 +70,17 @@ function map ( bioCDocument ) {
     return _.includes( PUBTATOR_ANNOTATION_TYPE, type );
   };
 
-  const hasXref = annotation => {
-    const { infons } = annotation;
-    return _.has( infons, 'identifier' );
+  const isValidXref = annotation => {
+    let isValid = false;
+    const hasId = a => _.has( a, [ 'infons', 'identifier' ] );
+    const isNil = a => _.isNil( _.get( a, [ 'infons', 'identifier' ] ) );
+    const isEmpty = a => _.get( a, [ 'infons', 'identifier' ] ) === '-';
+    if( hasId( annotation )
+        && !isNil( annotation )
+        && !isEmpty( annotation ) ){
+      isValid = true;
+    }
+    return isValid;
   };
 
   const isSpecies = ({ infons }) => infons.type === PUBTATOR_ANNOTATION_TYPE.SPECIES;
@@ -100,7 +108,7 @@ function map ( bioCDocument ) {
     let xSpecs = _.filter( annotations, notSpecies );
     xSpecs = _.uniqBy( xSpecs, byText );
     xSpecs = _.filter( xSpecs, isValidType );
-    xSpecs = _.filter( xSpecs, hasXref );
+    xSpecs = _.filter( xSpecs, isValidXref );
     [ ...specs, ...xSpecs ].forEach( a => {
       const hint = toHint( a, section );
       hints.push( hint );

@@ -80,16 +80,14 @@ function map ( bioCDocument ) {
 
   const toHint = ( annotation, section ) => {
     const { text, infons: { identifier: id, type } } = annotation;
-
-    const hint = new Hint();
-    hint.text = text;
-    hint.type = entityTypes.get( type );
-    hint.xref = {
-      dbName: dbNames.get( type ),
-      dbPrefix: dbPrefixes.get( type ),
-      id
+    const xref = {
+        dbName: dbNames.get( type ),
+        dbPrefix: dbPrefixes.get( type ),
+        id
     };
-    hint.section = section;
+    const eType = entityTypes.get( type );
+
+    const hint = new Hint( text, eType, xref, section );
     return hint;
   };
 
@@ -119,7 +117,10 @@ const BIOC_FORMAT = Object.freeze({
 
 /**
  * Get a BioCDocument from PubTator
- * @param {string} pmids PubMed uid
+ * Technically, PubTator3 API accepts a comma-delimited list of PMIDs, but the response poses
+ * several format (not pure JSON) and mapping issues (e.g. missing responses ) so don't do this.
+ *
+ * @param {string} pmids A PubMed uid
  * @param {string} format One of the BIOC_FORMATs
  * @returns {object} A BioC Document
  */
@@ -127,7 +128,9 @@ async function get ( pmids, format = BIOC_FORMAT.BIOCJSON ) {
   const toJson = async response => {
     let data = null;
     const text = await response.text();
-    if ( text ) data = JSON.parse( text ); // Optional body
+    if ( text ){ // Optional body
+      data = JSON.parse( text );
+    }
     return data;
   };
   const PUBTATOR_API_PATH = 'research/pubtator3-api/publications/export/';
@@ -150,9 +153,9 @@ async function get ( pmids, format = BIOC_FORMAT.BIOCJSON ) {
  * @param {string} pmid A PubMed uid
  * @returns {Array<Hint>} A list of Hint instances or null
  */
-async function hints( pmids ) {
+async function hints( pmid ) {
   let hints = null;
-  const bioCDocument = await get( pmids );
+  const bioCDocument = await get( pmid );
   if( bioCDocument != null ) hints = map( bioCDocument );
   return hints;
 }

@@ -20,39 +20,17 @@ const PASSAGE_TYPES = _.flatMap( PASSAGE_TYPE );
  */
 class Hint {
 
-  get text(){
-    return this._text;
-  }
+  constructor( text, type, xref, section ) {
+    this.text = text;
 
-  set text(value){
-    this._text = value;
-  }
+    if( !_.includes( HINT_TYPES, type ) ) throw new TypeError('Invalid type: ' + type );
+    this.type = type;
 
-  get type(){
-    return this._type;
-  }
+    if( !xref.dbPrefix || !xref.id ) throw new TypeError('Invalid xref: '+ JSON.stringify( xref ) );
+    this.xref = xref;
 
-  set type(value){
-    if( !_.includes( HINT_TYPES, value ) ) throw new TypeError('Invalid type: ' + value);
-    this._type = value;
-  }
-
-  get xref(){
-    return this._xref;
-  }
-
-  set xref(value){
-    if( !value.dbPrefix || !value.id ) throw new TypeError('Invalid xref: '+ JSON.stringify(value));
-    this._xref = value;
-  }
-
-  get section(){
-    return this._section;
-  }
-
-  set section(value){
-    if( !_.includes( PASSAGE_TYPES, value ) ) throw new TypeError('Invalid section: ' + value);
-    this._section = value;
+    if( !_.includes( PASSAGE_TYPES, section ) ) throw new TypeError('Invalid section: ' + section );
+    this.section = section;
   }
 }
 

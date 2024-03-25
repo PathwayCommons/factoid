@@ -45,15 +45,33 @@ describe('pubtator', function(){
           expect( hints.every( isValidSection ) ).to.be.true;
         });
 
-        describe(`Hint type not 'Organism'`, function(){
+        describe(`Hint type other than ORGANISM`, function(){
           it('Should have unique \'text\' value in a given section', function(){
-            const xOrgHints = _.filter( hints, o => o.type !== HINT_TYPE.ORGANISM );
-            const inTitle = _.filter( xOrgHints, ['section', 'title'] );
+            const hs = _.filter( hints, o => o.type !== HINT_TYPE.ORGANISM );
+            const inTitle = _.filter( hs, ['section', 'title'] );
             const uniqInTitle = _.uniqBy( inTitle, 'text' );
-            const inAbstract = _.filter( xOrgHints, ['section', 'abstract'] );
+            const inAbstract = _.filter( hs, ['section', 'abstract'] );
             const uniqInAbstract = _.uniqBy( inAbstract, 'text' );
             expect( inTitle.length ).to.equal( uniqInTitle.length );
             expect( inAbstract.length ).to.equal( uniqInAbstract.length );
+          });
+        });
+
+        describe(`Hint type GGP`, function(){
+          it('Should have xref to NCBI Gene', function(){
+            const hs = _.filter( hints, o => o.type === HINT_TYPE.GGP );
+            hs.forEach( h => {
+              expect( h.xref.id ).to.match( /^\d+$/ ); // identifier
+            });
+          });
+        });
+
+        describe(`Hint type CHEMICAL`, function(){
+          it('Should have xref to MeSH', function(){
+            const hs = _.filter( hints, o => o.type === HINT_TYPE.CHEMICAL );
+            hs.forEach( h => {
+              expect( h.xref.id ).to.match( /^mesh:(C|D)\d{6,9}$/i );
+            });
           });
         });
 

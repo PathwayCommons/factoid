@@ -11,6 +11,7 @@ import {
   NCBI_BASE_URL
  } from '../../../../../config.js';
 import { checkHTTPStatus } from '../../../../../util/fetch.js';
+import { COLLECTIONS } from '../../../../../util/registry.js';
 
 /**
  * Map a PubTator BioCDocument to a hint
@@ -43,19 +44,13 @@ function map ( bioCDocument ) {
     [PUBTATOR_ANNOTATION_TYPE.CELL_LINE, HINT_TYPE.CELL_LINE ],
     [PUBTATOR_ANNOTATION_TYPE.SPECIES, HINT_TYPE.ORGANISM ]
   ]);
-  const dbPrefixes = new Map([
-    [PUBTATOR_ANNOTATION_TYPE.GENE, 'NCBIGene'],
-    [PUBTATOR_ANNOTATION_TYPE.CHEMICAL, 'CHEBI'],
-    [PUBTATOR_ANNOTATION_TYPE.DISEASE, 'mesh'],
-    [PUBTATOR_ANNOTATION_TYPE.CELL_LINE, 'cellosaurus'],
-    [PUBTATOR_ANNOTATION_TYPE.SPECIES, 'taxonomy'],
-  ]);
-   const dbNames = new Map([
-    [PUBTATOR_ANNOTATION_TYPE.GENE, 'NCBI Gene'],
-    [PUBTATOR_ANNOTATION_TYPE.CHEMICAL, 'ChEBI'],
-    [PUBTATOR_ANNOTATION_TYPE.DISEASE, 'MeSH'],
-    [PUBTATOR_ANNOTATION_TYPE.CELL_LINE, 'Cellosaurus'],
-    [PUBTATOR_ANNOTATION_TYPE.SPECIES, 'NCBI Taxonomy'],
+  // See Table 1 https://www.ncbi.nlm.nih.gov/research/pubtator3/tutorial
+  const type2Xref = new Map([
+    [ PUBTATOR_ANNOTATION_TYPE.GENE, COLLECTIONS.NCBI_GENE ],
+    [ PUBTATOR_ANNOTATION_TYPE.CHEMICAL, COLLECTIONS.MESH ],
+    [ PUBTATOR_ANNOTATION_TYPE.DISEASE, COLLECTIONS.MESH ],
+    [ PUBTATOR_ANNOTATION_TYPE.CELL_LINE, COLLECTIONS.CELLOSAURUS ],
+    [ PUBTATOR_ANNOTATION_TYPE.SPECIES, COLLECTIONS.NCBI_TAXONOMY ],
   ]);
 
   const byText = annotation => {
@@ -95,11 +90,7 @@ function map ( bioCDocument ) {
 
   const toHint = ( annotation, section ) => {
     const { text, infons: { identifier: id, type } } = annotation;
-    const xref = {
-        dbName: dbNames.get( type ),
-        dbPrefix: dbPrefixes.get( type ),
-        id
-    };
+    const xref = _.assign( { id }, type2Xref.get( type ) );
     const eType = entityTypes.get( type );
 
     const hint = new Hint( text, eType, xref, section );

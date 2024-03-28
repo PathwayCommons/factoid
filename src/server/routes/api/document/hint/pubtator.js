@@ -161,13 +161,18 @@ async function get ( pmids, format = BIOC_FORMAT.BIOCJSON ) {
 
 /**
  * A simple wrapper to retrieve Hints from PubTator
- * @param {string} pmid A PubMed uid
+ * @param {Object} publicationXref - An identifier for a paper
+ * @param {string} publicationXref.id - The local identifier value
+ * @param {string} publicationXref.dbPrefix - The database prefix
  * @returns {Array<Hint>} A list of Hint instances or null
  */
-async function hints( pmid ) {
+async function hints({ id, dbPrefix }) {
   let hints = null;
-  const bioCDocument = await get( pmid );
-  if( bioCDocument != null ) hints = map( bioCDocument );
+  if ( dbPrefix === COLLECTIONS.PUBMED.dbPrefix ) {
+    const pmid = id;
+    const bioCDocument = await get( pmid );
+    if( bioCDocument != null ) hints = map( bioCDocument );
+  }
   return hints;
 }
 

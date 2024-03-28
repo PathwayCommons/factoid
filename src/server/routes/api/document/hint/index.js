@@ -8,26 +8,26 @@ const PROVIDERS = [
 ];
 
 /**
- * Get hints from providers
- * @param {string} pmid A PubMed uid
+ * Aggregate paper Hints from providers
+ *
+ * @param {Object} publicationXref - An identifier for a paper
+ * @param {string} publicationXref.id - The local identifier value
+ * @param {string} publicationXref.dbPrefix - The database prefix
+ * @param {string} publicationXref.title - The paper title
+ * @param {string} publicationXref.abstract - The paper abstract
  * @returns {Array<Hint>} An array of Hints.
  */
-async function find( pmid ) {
+async function find( publicationXref ) {
   try {
     let hints = [];
     for (const provider of PROVIDERS ){
-      const providerHints = await provider.hints( pmid );
-      if( providerHints != null ) hints = _.concat(hints, providerHints);
+      const providerHints = await provider.hints( publicationXref );
+      if( providerHints != null ) hints = _.concat( hints, providerHints );
     }
-    // TODOs
-    //
-    // Aggregate from providers
-    // Prioritize species based on section, etc.
-
     return hints;
 
   } catch(e) {
-    logger.error(`Error in hint::find - ${pmid}`);
+    logger.error(`Error in hint::find - ${JSON.stringify( publicationXref )}`);
   }
 }
 

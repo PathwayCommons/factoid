@@ -104,4 +104,21 @@ describe('pubtator', function(){
     });
   }); // get
 
+  describe('hints', function(){
+    it('Should be null when invalid publicationXref provided', async function(){
+      let bioCDocument = await pubtator.hints( { dbPrefix: 'bar', id: 'foo'} );
+      expect( bioCDocument ).to.be.null;
+    });
+
+    it('Should exist when a body is returned', async function(){
+      let pmid = '28041912';
+      var path = new RegExp( pmid );
+      nock( NCBI_BASE_URL )
+        .get( path )
+        .reply( 200, { foo: 'bar' } );
+      let bioCDocument = await pubtator.get( pmid );
+      expect( bioCDocument ).to.exist;
+    });
+  }); // hints
+
 }); // pubtator

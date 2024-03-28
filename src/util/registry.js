@@ -1,4 +1,8 @@
 const COLLECTIONS = Object.freeze({
+  PUBMED: {
+    dbName: 'PubMed',
+    dbPrefix: 'pubmed'
+  },
   NCBI_GENE: {
     dbName: 'NCBI Gene',
     dbPrefix: 'NCBIGene'

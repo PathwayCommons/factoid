@@ -51,11 +51,23 @@ function map ( bioCDocument ) {
     [ PUBTATOR_DATABASE.ncbi_taxonomy, COLLECTIONS.NCBI_TAXONOMY ]
   ]);
 
-  const byText = annotation => {
-    // Could do some processing here (dashes etc)
-    const sanitized = text => text.toLowerCase();
-    const { text } = annotation;
-    return sanitized( text );
+  // const byText = annotation => {
+  //   // Could do some processing here (dashes etc)
+  //   const sanitized = text => text.toLowerCase();
+  //   const { text } = annotation;
+  //   return sanitized( text );
+  // };
+
+  const groupByXref = annotations => {
+    const byXref = ({ infons }) => `${infons.database}_${infons.identifier}`;
+    let groups = _.groupBy( annotations, byXref );
+    groups = Object.values( groups ).map( group => {
+      const texts = group.map( a => a.text );
+      const first = _.first( group );
+      const core = _.pick( first, [ 'infons' ]);
+      return _.assign( core, { texts } );
+    });
+    return groups;
   };
 
   const isValidType = annotation => {
@@ -83,15 +95,12 @@ function map ( bioCDocument ) {
     return isValid;
   };
 
-  const isSpecies = ({ infons }) => infons.type === PUBTATOR_ANNOTATION_TYPE.SPECIES;
-  const notSpecies = ({ infons }) => infons.type !== PUBTATOR_ANNOTATION_TYPE.SPECIES;
-
   const toHint = ( annotation, section ) => {
-    const { text, infons: { identifier: id, database, type } } = annotation;
+    const { texts, infons: { identifier: id, database, type } } = annotation;
     const xref = _.assign( { id }, database2Xref.get( database ) );
     const eType = entityTypes.get( type );
 
-    const hint = new Hint( text, eType, xref, section );
+    const hint = new Hint( texts, eType, xref, section );
     return hint;
   };
 
@@ -100,12 +109,10 @@ function map ( bioCDocument ) {
   for( const passage of passages ){
     let { annotations } = passage;
     const section = passage.infons.type;
-    const specs = _.filter( annotations, isSpecies  );
-    let xSpecs = _.filter( annotations, notSpecies );
-    xSpecs = _.uniqBy( xSpecs, byText );
-    xSpecs = _.filter( xSpecs, isValidType );
-    xSpecs = _.filter( xSpecs, isValidXref );
-    [ ...specs, ...xSpecs ].forEach( a => {
+    annotations = _.filter( annotations, isValidType );
+    annotations = _.filter( annotations, isValidXref );
+    annotations = groupByXref( annotations );
+    annotations.forEach( a => {
       const hint = toHint( a, section );
       hints.push( hint );
     });

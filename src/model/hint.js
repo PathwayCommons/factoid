@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { ENTITY_TYPE } from './element/entity-type.js';
 
 const HINT_TYPE = Object.freeze(_.assign({
-  ORGANISM: 'Organism',
+  ORGANISM: 'organism',
   DISEASE: 'disease',
   CELL_LINE: 'cellLine',
   VARIANT: 'variant'
@@ -21,8 +21,8 @@ const PASSAGE_TYPES = _.flatMap( PASSAGE_TYPE );
  */
 class Hint {
 
-  constructor( text, type, xref, section ) {
-    this.text = text;
+  constructor( texts, type, xref, section ) {
+    this.texts = texts;
 
     if( !_.includes( HINT_TYPES, type ) ) throw new TypeError('Invalid type: ' + type );
     this.type = type;

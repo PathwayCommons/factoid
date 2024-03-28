@@ -45,16 +45,19 @@ describe('pubtator', function(){
           expect( hints.every( isValidSection ) ).to.be.true;
         });
 
-        describe(`Hint type other than ORGANISM`, function(){
-          it('Should have unique \'text\' value in a given section', function(){
-            const hs = _.filter( hints, o => o.type !== HINT_TYPE.ORGANISM );
-            const inTitle = _.filter( hs, ['section', 'title'] );
-            const uniqInTitle = _.uniqBy( inTitle, 'text' );
-            const inAbstract = _.filter( hs, ['section', 'abstract'] );
-            const uniqInAbstract = _.uniqBy( inAbstract, 'text' );
-            expect( inTitle.length ).to.equal( uniqInTitle.length );
-            expect( inAbstract.length ).to.equal( uniqInAbstract.length );
-          });
+        it('Should have valid texts field', function(){
+          const hasTexts = h => h.texts instanceof Array;
+          expect( hints.every( hasTexts ) ).to.be.true;
+        });
+
+        it('Should have unique xref in a given section', function(){
+          const bySectionXref = ({ xref, section }) => `${xref.dbPrefix}_${xref.id}_${section}`;
+          const inTitle = _.filter( hints, ['section', 'title'] );
+          const uniqInTitle = _.uniqBy( inTitle, bySectionXref );
+          const inAbstract = _.filter( hints, ['section', 'abstract'] );
+          const uniqInAbstract = _.uniqBy( inAbstract, bySectionXref );
+          expect( inTitle.length ).to.equal( uniqInTitle.length );
+          expect( inAbstract.length ).to.equal( uniqInAbstract.length );
         });
 
         describe(`Hint type GGP`, function(){

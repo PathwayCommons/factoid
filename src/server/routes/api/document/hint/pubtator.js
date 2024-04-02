@@ -51,13 +51,6 @@ function map ( bioCDocument ) {
     [ PUBTATOR_DATABASE.ncbi_taxonomy, COLLECTIONS.NCBI_TAXONOMY ]
   ]);
 
-  // const byText = annotation => {
-  //   // Could do some processing here (dashes etc)
-  //   const sanitized = text => text.toLowerCase();
-  //   const { text } = annotation;
-  //   return sanitized( text );
-  // };
-
   const groupByXref = annotations => {
     const byXref = ({ infons }) => `${infons.database}_${infons.identifier}`;
     let groups = _.groupBy( annotations, byXref );

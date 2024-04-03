@@ -1,5 +1,3 @@
-// import _ from 'lodash';
-
 import {
   HINT_TYPE,
   PASSAGE_TYPE

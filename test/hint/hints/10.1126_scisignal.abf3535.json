@@ -1,0 +1,185 @@
+[
+  {
+    "texts": [
+      "IKKbeta"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "16150",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "NF-kappaB"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "18033",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "osteoarthritis"
+    ],
+    "type": "disease",
+    "xref": {
+      "id": "MESH:D010003",
+      "dbName": "MeSH",
+      "dbPrefix": "mesh"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "mice"
+    ],
+    "type": "organism",
+    "xref": {
+      "id": "10090",
+      "dbName": "NCBI Taxonomy",
+      "dbPrefix": "NCBITaxon"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "NF-kappaB",
+      "NF-kappaB",
+      "p50",
+      "NFKB1",
+      "NF-kappaB",
+      "p50",
+      "p50",
+      "p50",
+      "p50"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "18033",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "p65",
+      "RELA",
+      "p65",
+      "p65",
+      "p65"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "19697",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "osteoarthritis",
+      "OA",
+      "OA",
+      "OA",
+      "OA"
+    ],
+    "type": "disease",
+    "xref": {
+      "id": "MESH:D010003",
+      "dbName": "MeSH",
+      "dbPrefix": "mesh"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "mice",
+      "mice",
+      "mice",
+      "mice"
+    ],
+    "type": "organism",
+    "xref": {
+      "id": "10090",
+      "dbName": "NCBI Taxonomy",
+      "dbPrefix": "NCBITaxon"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "inhibitor of kappaB kinase beta",
+      "IKKbeta",
+      "IKKbeta",
+      "IKKbeta",
+      "IKKbeta"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "16150",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "changes"
+    ],
+    "type": "disease",
+    "xref": {
+      "id": "MESH:D009402",
+      "dbName": "MeSH",
+      "dbPrefix": "mesh"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "cartilage",
+      "cartilage degeneration",
+      "cartilage degeneration"
+    ],
+    "type": "disease",
+    "xref": {
+      "id": "MESH:D002357",
+      "dbName": "MeSH",
+      "dbPrefix": "mesh"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "interleukin-1beta",
+      "IL-1beta",
+      "IL-1beta"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "16176",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "joint inflammation"
+    ],
+    "type": "disease",
+    "xref": {
+      "id": "MESH:D007249",
+      "dbName": "MeSH",
+      "dbPrefix": "mesh"
+    },
+    "section": "abstract"
+  }
+]

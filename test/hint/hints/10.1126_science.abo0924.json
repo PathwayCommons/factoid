@@ -1,0 +1,68 @@
+[
+  {
+    "texts": [
+      "mouse"
+    ],
+    "type": "organism",
+    "xref": {
+      "id": "10090",
+      "dbName": "NCBI Taxonomy",
+      "dbPrefix": "NCBITaxon"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "human"
+    ],
+    "type": "organism",
+    "xref": {
+      "id": "9606",
+      "dbName": "NCBI Taxonomy",
+      "dbPrefix": "NCBITaxon"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "human",
+      "human",
+      "humans",
+      "human",
+      "human"
+    ],
+    "type": "organism",
+    "xref": {
+      "id": "9606",
+      "dbName": "NCBI Taxonomy",
+      "dbPrefix": "NCBITaxon"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "mouse",
+      "mouse",
+      "mice"
+    ],
+    "type": "organism",
+    "xref": {
+      "id": "10090",
+      "dbName": "NCBI Taxonomy",
+      "dbPrefix": "NCBITaxon"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "macaque"
+    ],
+    "type": "organism",
+    "xref": {
+      "id": "9539",
+      "dbName": "NCBI Taxonomy",
+      "dbPrefix": "NCBITaxon"
+    },
+    "section": "abstract"
+  }
+]

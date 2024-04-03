@@ -80,9 +80,15 @@ function map ( bioCDocument ) {
       const id = _.get( a, [ 'infons', 'identifier' ] );
       return EMPTY_SYMBOLS.has( id );
     };
+    const isSemiColonDelimited = a => {
+      const id = _.get( a, [ 'infons', 'identifier' ] );
+      const ids = _.compact( id.split(';') );
+      return ids.length > 1;
+    };
     if( hasId( annotation )
         && !isNil( annotation )
-        && !isEmpty( annotation ) ){
+        && !isEmpty( annotation )
+        && !isSemiColonDelimited ){
       isValid = true;
     }
     return isValid;

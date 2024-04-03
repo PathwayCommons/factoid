@@ -1,0 +1,179 @@
+[
+  {
+    "texts": [
+      "miR-196b"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "442920",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "Meis2"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "4212",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "PPP3CC"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "5533",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "p65"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "5970",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "Prostate Cancer Castration"
+    ],
+    "type": "disease",
+    "xref": {
+      "id": "MESH:D011471",
+      "dbName": "MeSH",
+      "dbPrefix": "mesh"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "prostate cancer"
+    ],
+    "type": "disease",
+    "xref": {
+      "id": "MESH:D011471",
+      "dbName": "MeSH",
+      "dbPrefix": "mesh"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "cancer"
+    ],
+    "type": "disease",
+    "xref": {
+      "id": "MESH:D009369",
+      "dbName": "MeSH",
+      "dbPrefix": "mesh"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "IkappaBalpha",
+      "IkappaBalpha"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "4792",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "NF-kappaB",
+      "NF-kappaB",
+      "NF-kappaB",
+      "NF-kappaB"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "4790",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "p65",
+      "p65"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "5970",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "Meis2"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "4212",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "PPP3CC"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "5533",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "castration-resistant prostate cancer",
+      "CRPC",
+      "CRPC",
+      "CRPC",
+      "CRPC"
+    ],
+    "type": "disease",
+    "xref": {
+      "id": "MESH:D064129",
+      "dbName": "MeSH",
+      "dbPrefix": "mesh"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "IKKbeta"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "3551",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  }
+]

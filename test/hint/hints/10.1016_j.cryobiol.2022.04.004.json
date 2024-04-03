@@ -1,0 +1,90 @@
+[
+  {
+    "texts": [
+      "Gallus gallus gallus"
+    ],
+    "type": "organism",
+    "xref": {
+      "id": "208526",
+      "dbName": "NCBI Taxonomy",
+      "dbPrefix": "NCBITaxon"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "Gallus gallus gallus"
+    ],
+    "type": "organism",
+    "xref": {
+      "id": "208526",
+      "dbName": "NCBI Taxonomy",
+      "dbPrefix": "NCBITaxon"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "red junglefowl",
+      "hens"
+    ],
+    "type": "organism",
+    "xref": {
+      "id": "9031",
+      "dbName": "NCBI Taxonomy",
+      "dbPrefix": "NCBITaxon"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "N,N-dimethylacetamide"
+    ],
+    "type": "chemical",
+    "xref": {
+      "id": "MESH:C013959",
+      "dbName": "MeSH",
+      "dbPrefix": "mesh"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "N,N-dimethylformamide",
+      "DMF",
+      "DMF",
+      "DMF"
+    ],
+    "type": "chemical",
+    "xref": {
+      "id": "MESH:D004126",
+      "dbName": "MeSH",
+      "dbPrefix": "mesh"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "N-methyl acetamide"
+    ],
+    "type": "chemical",
+    "xref": {
+      "id": "MESH:C018595",
+      "dbName": "MeSH",
+      "dbPrefix": "mesh"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "nigrosin"
+    ],
+    "type": "chemical",
+    "xref": {
+      "id": "MESH:C002712",
+      "dbName": "MeSH",
+      "dbPrefix": "mesh"
+    },
+    "section": "abstract"
+  }
+]

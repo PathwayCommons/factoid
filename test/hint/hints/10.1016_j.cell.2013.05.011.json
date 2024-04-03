@@ -1,0 +1,177 @@
+[
+  {
+    "texts": [
+      "Drosophila"
+    ],
+    "type": "organism",
+    "xref": {
+      "id": "7227",
+      "dbName": "NCBI Taxonomy",
+      "dbPrefix": "NCBITaxon"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "cryptochrome"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "42305",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "mouse"
+    ],
+    "type": "organism",
+    "xref": {
+      "id": "10090",
+      "dbName": "NCBI Taxonomy",
+      "dbPrefix": "NCBITaxon"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "cryptochrome1"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "12952",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "title"
+  },
+  {
+    "texts": [
+      "Drosophila"
+    ],
+    "type": "organism",
+    "xref": {
+      "id": "7227",
+      "dbName": "NCBI Taxonomy",
+      "dbPrefix": "NCBITaxon"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "cryptochrome",
+      "dCRY",
+      "dCRY",
+      "dCRY",
+      "dCRY",
+      "dCRY"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "42305",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "FAD",
+      "FAD",
+      "FAD"
+    ],
+    "type": "chemical",
+    "xref": {
+      "id": "MESH:D005182",
+      "dbName": "MeSH",
+      "dbPrefix": "mesh"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "CRY1/2"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "1407;1408",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "mouse"
+    ],
+    "type": "organism",
+    "xref": {
+      "id": "10090",
+      "dbName": "NCBI Taxonomy",
+      "dbPrefix": "NCBITaxon"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "CRY1"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "12952",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "sulfur"
+    ],
+    "type": "chemical",
+    "xref": {
+      "id": "MESH:D013455",
+      "dbName": "MeSH",
+      "dbPrefix": "mesh"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "FBXL3"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "50789",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "cryptochrome1"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "1407",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  },
+  {
+    "texts": [
+      "CRY"
+    ],
+    "type": "ggp",
+    "xref": {
+      "id": "54520467",
+      "dbName": "NCBI Gene",
+      "dbPrefix": "NCBIGene"
+    },
+    "section": "abstract"
+  }
+]

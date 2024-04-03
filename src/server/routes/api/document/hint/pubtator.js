@@ -88,7 +88,7 @@ function map ( bioCDocument ) {
     if( hasId( annotation )
         && !isNil( annotation )
         && !isEmpty( annotation )
-        && !isSemiColonDelimited ){
+        && !isSemiColonDelimited( annotation ) ){
       isValid = true;
     }
     return isValid;

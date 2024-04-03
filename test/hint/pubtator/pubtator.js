@@ -36,6 +36,10 @@ describe('pubtator', function(){
           hints = pubtator.map( bioCDocument );
         });
 
+        it('Should map to a non-zero list', function(){
+          expect( hints ).to.have.length.above(0);
+        });
+
         it('Should map to a list of Hints', function(){
           hints.forEach( h => {
             expect( h ).to.be.an.instanceof( Hint );

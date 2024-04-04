@@ -3,7 +3,7 @@ import _ from 'lodash';
 import logger from '../../../../logger.js';
 import pubtator from './pubtator.js';
 import organism from './organism.js';
-import { HINT_TYPE } from '../../../../../model/hint.js';
+import { HINT_TYPE, PASSAGE_TYPE } from '../../../../../model/hint.js';
 
 const PROVIDERS = [
   pubtator
@@ -20,7 +20,7 @@ const PROVIDERS = [
  * @returns {Object} An object with organismOrdering (sorted NCBI Taxonomy uids) and Array<Hint> of entities
  */
 async function find( publicationXref ) {
-  const byXref = ({ xref }) => `${xref.dbPrefix}_${xref.id}`;
+  const bySectionXref = ({ xref, section }) => `${xref.dbPrefix}_${xref.id}_${section}`;
   let hints = [],
   entities = [],
   organismOrdering = [];
@@ -40,8 +40,7 @@ async function find( publicationXref ) {
   organismOrdering = organism.order( hints );
 
   // De-duplicate
-  // TODO: Normalize the xrefs - e.g. ATP [CHEBI:15422, MESH:68000255]
-  entities = _.uniqBy( hints, byXref );
+  entities = _.uniqBy( hints, bySectionXref );
 
   return {
     organismOrdering,

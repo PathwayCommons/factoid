@@ -8,7 +8,8 @@ import {
   HINT_TYPE
 } from '../../../../../model/hint.js';
  import {
-  NCBI_BASE_URL
+  NCBI_BASE_URL,
+  PUBTATOR_API_PATH
  } from '../../../../../config.js';
 import { checkHTTPStatus } from '../../../../../util/fetch.js';
 import { COLLECTIONS } from '../../../../../util/registry.js';
@@ -143,7 +144,6 @@ async function get ( pmids, format = BIOC_FORMAT.BIOCJSON ) {
     }
     return data;
   };
-  const PUBTATOR_API_PATH = 'research/pubtator3-api/publications/export/';
   const params = queryString.stringify({ pmids });
   const url = `${NCBI_BASE_URL}${PUBTATOR_API_PATH}${format}?${params}`;
 

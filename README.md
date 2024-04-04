@@ -88,6 +88,7 @@ Services:
 - `NO_ABSTRACT_HANDLING` : labels directing how to sort documents missing query text. 'text' (default): autogenerate text from templates; 'date': sort by date and ignore text.
 - `CROSSREF_API_BASE_URL` : url for [Crossref Unified Resource API](https://api.crossref.org/)
 - `NCBI_BASE_URL` : url for the NCBI/NLM/NIH
+- `PUBTATOR_API_PATH` : url path for the PubTator3 web service API
 
 Links:
 

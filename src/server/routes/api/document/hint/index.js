@@ -3,7 +3,6 @@ import _ from 'lodash';
 import logger from '../../../../logger.js';
 import pubtator from './pubtator.js';
 import organism from './organism.js';
-import { HINT_TYPE, PASSAGE_TYPE } from '../../../../../model/hint.js';
 
 const PROVIDERS = [
   pubtator

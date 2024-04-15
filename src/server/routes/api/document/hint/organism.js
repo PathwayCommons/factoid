@@ -1,6 +1,6 @@
 import {
   HINT_TYPE,
-  PASSAGE_TYPE
+  SECTION
  } from "../../../../../model/hint";
 
 /**
@@ -17,7 +17,7 @@ function order( hints ) {
   const organismHints = hints.filter( isOrganismHint );
   for (const organismHint of organismHints ) {
     const { texts, section, xref: { id } } = organismHint;
-    const boost = section && section === PASSAGE_TYPE.TITLE ? 2 : 1;
+    const boost = section && section === SECTION.TITLE ? 2 : 1;
     const numMentions = texts.length;
     organismCounts.set( id, boost * numMentions );
   }

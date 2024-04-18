@@ -238,8 +238,9 @@ const getPubmedCitation = PubmedArticle => {
   const doi = getArticleId( PubmedArticle, 'doi' );
   const pubTypes = _.get( Article, 'PublicationTypeList' ); //required
   const { ISODate } = getPubDate( _.get( Article, ['Journal', 'JournalIssue'] ) );
+  const relations = _.get( PubmedArticle, [ 'MedlineCitation', 'CommentsCorrectionsList'], [] );
 
-  return { title, authors, reference, abstract, pmid, doi, pubTypes, ISODate };
+  return { title, authors, reference, abstract, pmid, doi, pubTypes, ISODate, relations };
 };
 
 /**
@@ -278,6 +279,7 @@ const createPubmedArticle = ({ articleTitle = null, journalName = null, publicat
         PublicationTypeList: []
       },
       ChemicalList: [],
+      CommentsCorrectionsList: [],
       InvestigatorList: [],
       KeywordList: [],
       MeshheadingList: []

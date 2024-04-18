@@ -244,6 +244,42 @@ const getChemicalList = MedlineCitation => {
   return getElementsByName( ChemicalList, 'Chemical' ).map( getChemical );
 };
 
+
+const getCommentsCorrections = CommentsCorrections => {
+  const extractDOI = str => {
+    const doiRegex = /^doi: (?<DOI>10\.\d{4,9}\/[-._;()/:A-Z0-9]+)$/i;
+    const matches = str.match( doiRegex );
+    const DOI = _.get( matches, ['groups', 'DOI'], null );
+    return DOI;
+  };
+// <!ELEMENT	CommentsCorrections (RefSource,PMID?,Note?) >
+// <!ATTLIST	CommentsCorrections
+// 		     RefType (AssociatedDataset | AssociatedPublication |
+// 		             CommentIn | CommentOn |
+// 		             CorrectedandRepublishedIn | CorrectedandRepublishedFrom |
+// 		             ErratumIn | ErratumFor |
+// 		             ExpressionOfConcernIn | ExpressionOfConcernFor |
+// 		             RepublishedIn | RepublishedFrom |
+// 		             RetractedandRepublishedIn | RetractedandRepublishedFrom |
+// 		             RetractionIn | RetractionOf |
+// 		             UpdateIn | UpdateOf |
+// 		             SummaryForPatientsIn |
+// 		             OriginalReportIn |
+// 		             ReprintIn | ReprintOf |
+// 		             Cites)      #REQUIRED    >
+  const RefType = getElementAttribute( CommentsCorrections, 'RefType' );
+  const PMID = getElementByName( CommentsCorrections, 'PMID' ) ? getElementText( getElementByName( CommentsCorrections, 'PMID' ) ): null;
+  const RefSource = getElementText( getElementByName( CommentsCorrections, 'RefSource' ) );
+  const DOI = extractDOI( RefSource );
+  return { RefType, PMID, RefSource, DOI };
+};
+
+// <!ELEMENT	CommentsCorrectionsList (CommentsCorrections+) >
+const getCommentsCorrectionsList = MedlineCitation => {
+  const CommentsCorrectionsList = getElementByName( MedlineCitation, 'CommentsCorrectionsList' );
+  return getElementsByName( CommentsCorrectionsList, 'CommentsCorrections' ).map( getCommentsCorrections );
+};
+
 // <!ELEMENT	KeywordList (Keyword+) >
 // <!ATTLIST	KeywordList
 // 		    Owner (NLM | NLM-AUTO | NASA | PIP | KIE | NOTNLM | HHS) "NLM" >
@@ -313,6 +349,7 @@ const getMedlineCitation = PubmedArticle => {
 
   const Article = getArticle( MedlineCitation );
   const ChemicalList = getElementByName( MedlineCitation, 'ChemicalList' ) ? getChemicalList( MedlineCitation ): [];
+  const CommentsCorrectionsList = getElementByName( MedlineCitation, 'CommentsCorrectionsList' ) ? getCommentsCorrectionsList( MedlineCitation ): [];
   const KeywordList = getElementByName( MedlineCitation, 'KeywordList' ) ? getKeywordList( MedlineCitation ): [];
   const MeshheadingList = getElementByName( MedlineCitation, 'MeshHeadingList' ) ? getMeshheadingList( MedlineCitation ): [];
   const InvestigatorList = getElementByName( MedlineCitation, 'InvestigatorList' ) ? getInvestigatorList( MedlineCitation ): [];
@@ -320,6 +357,7 @@ const getMedlineCitation = PubmedArticle => {
   return {
     Article,
     ChemicalList,
+    CommentsCorrectionsList,
     KeywordList,
     MeshheadingList,
     InvestigatorList

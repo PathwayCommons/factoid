@@ -1,0 +1,1175 @@
+<?xml version="1.0" ?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2024//EN" "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_240101.dtd">
+<PubmedArticleSet>
+	<PubmedArticle>
+		<MedlineCitation Status="MEDLINE" Owner="NLM" IndexingMethod="Automated">
+			<PMID Version="1">38289659</PMID>
+			<DateCompleted>
+				<Year>2024</Year>
+				<Month>01</Month>
+				<Day>31</Day>
+			</DateCompleted>
+			<DateRevised>
+				<Year>2024</Year>
+				<Month>03</Month>
+				<Day>20</Day>
+			</DateRevised>
+			<Article PubModel="Electronic">
+				<Journal>
+					<ISSN IssnType="Electronic">2050-084X</ISSN>
+					<JournalIssue CitedMedium="Internet">
+						<Volume>12</Volume>
+						<PubDate>
+							<Year>2024</Year>
+							<Month>Jan</Month>
+							<Day>30</Day>
+						</PubDate>
+					</JournalIssue>
+					<Title>eLife</Title>
+					<ISOAbbreviation>Elife</ISOAbbreviation>
+				</Journal>
+				<ArticleTitle>Orai-mediated calcium entry determines activity of central dopaminergic neurons by regulation of gene expression.</ArticleTitle>
+				<ELocationID EIdType="pii" ValidYN="Y">RP88808</ELocationID>
+				<ELocationID EIdType="doi" ValidYN="Y">10.7554/eLife.88808</ELocationID>
+				<Abstract>
+					<AbstractText>Maturation and fine-tuning of neural circuits frequently require neuromodulatory signals that set the excitability threshold, neuronal connectivity, and synaptic strength. Here, we present a mechanistic study of how neuromodulator-stimulated intracellular Ca
+						<sup>2+</sup> signals, through the store-operated Ca
+						<sup>2+</sup> channel Orai, regulate intrinsic neuronal properties by control of developmental gene expression in flight-promoting central dopaminergic neurons (fpDANs). The fpDANs receive cholinergic inputs for release of dopamine at a central brain tripartite synapse that sustains flight (Sharma and Hasan, 2020). Cholinergic inputs act on the muscarinic acetylcholine receptor to stimulate intracellular Ca
+						<sup>2+</sup> release through the endoplasmic reticulum (ER) localised inositol 1,4,5-trisphosphate receptor followed by ER-store depletion and Orai-mediated store-operated Ca
+						<sup>2+</sup> entry (SOCE). Analysis of gene expression in fpDANs followed by genetic, cellular, and molecular studies identified Orai-mediated Ca
+						<sup>2+</sup> entry as a key regulator of excitability in fpDANs during circuit maturation. SOCE activates the transcription factor trithorax-like (Trl), which in turn drives expression of a set of genes, including
+						<i>Set2</i>, that encodes a histone 3 lysine 36 methyltransferase (H3K36me3). Set2 function establishes a positive feedback loop, essential for receiving neuromodulatory cholinergic inputs and sustaining SOCE. Chromatin-modifying activity of Set2 changes the epigenetic status of fpDANs and drives expression of key ion channel and signalling genes that determine fpDAN activity. Loss of activity reduces the axonal arborisation of fpDANs within the MB lobe and prevents dopamine release required for the maintenance of long flight.
+					</AbstractText>
+					<CopyrightInformation>&#xa9; 2023, Mitra et al.</CopyrightInformation>
+				</Abstract>
+				<AuthorList CompleteYN="Y">
+					<Author ValidYN="Y">
+						<LastName>Mitra</LastName>
+						<ForeName>Rishav</ForeName>
+						<Initials>R</Initials>
+						<Identifier Source="ORCID">0000-0001-6840-6160</Identifier>
+						<AffiliationInfo>
+							<Affiliation>National Centre for Biological Sciences, Tata Institute of Fundamental Research, Bangalore, India.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Richhariya</LastName>
+						<ForeName>Shlesha</ForeName>
+						<Initials>S</Initials>
+						<AffiliationInfo>
+							<Affiliation>National Centre for Biological Sciences, Tata Institute of Fundamental Research, Bangalore, India.</Affiliation>
+						</AffiliationInfo>
+						<AffiliationInfo>
+							<Affiliation>Department of Biology, Brandeis University, Waltham, United States.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+					<Author ValidYN="Y">
+						<LastName>Hasan</LastName>
+						<ForeName>Gaiti</ForeName>
+						<Initials>G</Initials>
+						<Identifier Source="ORCID">0000-0001-7194-383X</Identifier>
+						<AffiliationInfo>
+							<Affiliation>National Centre for Biological Sciences, Tata Institute of Fundamental Research, Bangalore, India.</Affiliation>
+						</AffiliationInfo>
+					</Author>
+				</AuthorList>
+				<Language>eng</Language>
+				<DataBankList CompleteYN="Y">
+					<DataBank>
+						<DataBankName>GEO</DataBankName>
+						<AccessionNumberList>
+							<AccessionNumber>GSE230134</AccessionNumber>
+							<AccessionNumber>GSE47280</AccessionNumber>
+							<AccessionNumber>GSE47319</AccessionNumber>
+						</AccessionNumberList>
+					</DataBank>
+				</DataBankList>
+				<GrantList CompleteYN="Y">
+					<Grant>
+						<GrantID>BT/PR28450/MED/122/2018</GrantID>
+						<Agency>Department of Biotechnology, Ministry of Science and Technology, India</Agency>
+						<Country/>
+					</Grant>
+				</GrantList>
+				<PublicationTypeList>
+					<PublicationType UI="D016428">Journal Article</PublicationType>
+				</PublicationTypeList>
+				<ArticleDate DateType="Electronic">
+					<Year>2024</Year>
+					<Month>01</Month>
+					<Day>30</Day>
+				</ArticleDate>
+			</Article>
+			<MedlineJournalInfo>
+				<Country>England</Country>
+				<MedlineTA>Elife</MedlineTA>
+				<NlmUniqueID>101579614</NlmUniqueID>
+				<ISSNLinking>2050-084X</ISSNLinking>
+			</MedlineJournalInfo>
+			<ChemicalList>
+				<Chemical>
+					<RegistryNumber>SY7Q814VUP</RegistryNumber>
+					<NameOfSubstance UI="D002118">Calcium</NameOfSubstance>
+				</Chemical>
+				<Chemical>
+					<RegistryNumber>VTD58H1Z2X</RegistryNumber>
+					<NameOfSubstance UI="D004298">Dopamine</NameOfSubstance>
+				</Chemical>
+				<Chemical>
+					<RegistryNumber>0</RegistryNumber>
+					<NameOfSubstance UI="D002136">Calcium, Dietary</NameOfSubstance>
+				</Chemical>
+				<Chemical>
+					<RegistryNumber>EC 2.1.1.43</RegistryNumber>
+					<NameOfSubstance UI="D011495">Histone-Lysine N-Methyltransferase</NameOfSubstance>
+				</Chemical>
+				<Chemical>
+					<RegistryNumber>0</RegistryNumber>
+					<NameOfSubstance UI="D018678">Cholinergic Agents</NameOfSubstance>
+				</Chemical>
+			</ChemicalList>
+			<CitationSubset>IM</CitationSubset>
+			<CommentsCorrectionsList>
+				<CommentsCorrections RefType="UpdateOf">
+					<RefSource>doi: 10.1101/2023.05.24.542083</RefSource>
+				</CommentsCorrections>
+				<CommentsCorrections RefType="UpdateOf">
+					<RefSource>doi: 10.7554/eLife.88808.1</RefSource>
+				</CommentsCorrections>
+				<CommentsCorrections RefType="UpdateOf">
+					<RefSource>doi: 10.7554/eLife.88808.2</RefSource>
+				</CommentsCorrections>
+				<CommentsCorrections RefType="UpdateOf">
+					<RefSource>doi: 10.7554/eLife.88808.3</RefSource>
+				</CommentsCorrections>
+			</CommentsCorrectionsList>
+			<MeshHeadingList>
+				<MeshHeading>
+					<DescriptorName UI="D002118" MajorTopicYN="Y">Calcium</DescriptorName>
+				</MeshHeading>
+				<MeshHeading>
+					<DescriptorName UI="D059290" MajorTopicYN="Y">Dopaminergic Neurons</DescriptorName>
+				</MeshHeading>
+				<MeshHeading>
+					<DescriptorName UI="D004298" MajorTopicYN="N">Dopamine</DescriptorName>
+				</MeshHeading>
+				<MeshHeading>
+					<DescriptorName UI="D002136" MajorTopicYN="N">Calcium, Dietary</DescriptorName>
+				</MeshHeading>
+				<MeshHeading>
+					<DescriptorName UI="D011495" MajorTopicYN="N">Histone-Lysine N-Methyltransferase</DescriptorName>
+				</MeshHeading>
+				<MeshHeading>
+					<DescriptorName UI="D018678" MajorTopicYN="N">Cholinergic Agents</DescriptorName>
+				</MeshHeading>
+			</MeshHeadingList>
+			<KeywordList Owner="NOTNLM">
+				<Keyword MajorTopicYN="N">D. melanogaster</Keyword>
+				<Keyword MajorTopicYN="N">Drosophila flight</Keyword>
+				<Keyword MajorTopicYN="N">PPL1 DANs</Keyword>
+				<Keyword MajorTopicYN="N">SOCE</Keyword>
+				<Keyword MajorTopicYN="N">genetics</Keyword>
+				<Keyword MajorTopicYN="N">genomics</Keyword>
+				<Keyword MajorTopicYN="N">histone modifications</Keyword>
+				<Keyword MajorTopicYN="N">neuromodulation</Keyword>
+				<Keyword MajorTopicYN="N">neuroscience</Keyword>
+				<Keyword MajorTopicYN="N">trithorax-like/GAF</Keyword>
+			</KeywordList>
+			<CoiStatement>RM, SR, GH No competing interests declared</CoiStatement>
+		</MedlineCitation>
+		<PubmedData>
+			<History>
+				<PubMedPubDate PubStatus="medline">
+					<Year>2024</Year>
+					<Month>1</Month>
+					<Day>31</Day>
+					<Hour>6</Hour>
+					<Minute>43</Minute>
+				</PubMedPubDate>
+				<PubMedPubDate PubStatus="pubmed">
+					<Year>2024</Year>
+					<Month>1</Month>
+					<Day>30</Day>
+					<Hour>12</Hour>
+					<Minute>44</Minute>
+				</PubMedPubDate>
+				<PubMedPubDate PubStatus="entrez">
+					<Year>2024</Year>
+					<Month>1</Month>
+					<Day>30</Day>
+					<Hour>11</Hour>
+					<Minute>54</Minute>
+				</PubMedPubDate>
+				<PubMedPubDate PubStatus="pmc-release">
+					<Year>2024</Year>
+					<Month>1</Month>
+					<Day>30</Day>
+				</PubMedPubDate>
+			</History>
+			<PublicationStatus>epublish</PublicationStatus>
+			<ArticleIdList>
+				<ArticleId IdType="pubmed">38289659</ArticleId>
+				<ArticleId IdType="pmc">PMC10945566</ArticleId>
+				<ArticleId IdType="doi">10.7554/eLife.88808</ArticleId>
+				<ArticleId IdType="pii">88808</ArticleId>
+			</ArticleIdList>
+			<ReferenceList>
+				<Reference>
+					<Citation>Agrawal N, Venkiteswaran G, Sadaf S, Padmanabhan N, Banerjee S, Hasan G. Inositol 1,4,5-trisphosphate receptor and dSTIM function in Drosophila insulin-producing neurons regulates systemic intracellular calcium homeostasis and flight. The Journal of Neuroscience. 2010;30:1301&#x2013;1313. doi: 10.1523/JNEUROSCI.3668-09.2010.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1523/JNEUROSCI.3668-09.2010</ArticleId>
+						<ArticleId IdType="pmc">PMC6633787</ArticleId>
+						<ArticleId IdType="pubmed">20107057</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Agrawal T, Sadaf S, Hasan G. A genetic RNAi screen for IP&#x2083;/Ca. PLOS Genetics. 2013;9:e1003849. doi: 10.1371/journal.pgen.1003849.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1371/journal.pgen.1003849</ArticleId>
+						<ArticleId IdType="pmc">PMC3789835</ArticleId>
+						<ArticleId IdType="pubmed">24098151</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Akin O, Zipursky SL. Activity regulates brain development in the fly. Current Opinion in Genetics &amp; Development. 2020;65:8&#x2013;13. doi: 10.1016/j.gde.2020.04.005.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.gde.2020.04.005</ArticleId>
+						<ArticleId IdType="pubmed">32593792</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ardehali MB, Mei A, Zobeck KL, Caron M, Lis JT, Kusch T. Drosophila Set1 is the major histone H3 lysine 4 trimethyltransferase with role in transcription. The EMBO Journal. 2011;30:2817&#x2013;2828. doi: 10.1038/emboj.2011.194.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/emboj.2011.194</ArticleId>
+						<ArticleId IdType="pmc">PMC3160253</ArticleId>
+						<ArticleId IdType="pubmed">21694722</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Arjun McKinney A, Petrova R, Panagiotakos G. Calcium and activity-dependent signaling in the developing cerebral cortex. Development. 2022;149:dev198853. doi: 10.1242/dev.198853.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1242/dev.198853</ArticleId>
+						<ArticleId IdType="pmc">PMC9578689</ArticleId>
+						<ArticleId IdType="pubmed">36102617</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Arrigoni E, Saper CB. What optogenetic stimulation is telling us (and failing to tell us) about fast neurotransmitters and neuromodulators in brain circuits for wake-sleep regulation. Current Opinion in Neurobiology. 2014;29:165&#x2013;171. doi: 10.1016/j.conb.2014.07.016.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.conb.2014.07.016</ArticleId>
+						<ArticleId IdType="pmc">PMC4268002</ArticleId>
+						<ArticleId IdType="pubmed">25064179</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Aso Y, Hattori D, Yu Y, Johnston RM, Iyer NA, Ngo TTB, Dionne H, Abbott LF, Axel R, Tanimoto H, Rubin GM. The neuronal architecture of the mushroom body provides a logic for associative learning. eLife. 2014;3:e04577. doi: 10.7554/eLife.04577.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.7554/eLife.04577</ArticleId>
+						<ArticleId IdType="pmc">PMC4273437</ArticleId>
+						<ArticleId IdType="pubmed">25535793</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Aso Y, Rubin GM. Dopaminergic neurons write and update memories with cell-type-specific rules. eLife. 2016;5:e16135. doi: 10.7554/eLife.16135.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.7554/eLife.16135</ArticleId>
+						<ArticleId IdType="pmc">PMC4987137</ArticleId>
+						<ArticleId IdType="pubmed">27441388</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Bannister AJ, Kouzarides T. Regulation of chromatin by histone modifications. Cell Research. 2011;21:381&#x2013;395. doi: 10.1038/cr.2011.22.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/cr.2011.22</ArticleId>
+						<ArticleId IdType="pmc">PMC3193420</ArticleId>
+						<ArticleId IdType="pubmed">21321607</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Berry JA, Cervantes-Sandoval I, Chakraborty M, Davis RL. Sleep facilitates memory by blocking dopamine neuron-mediated forgetting. Cell. 2015;161:1656&#x2013;1667. doi: 10.1016/j.cell.2015.05.027.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.cell.2015.05.027</ArticleId>
+						<ArticleId IdType="pmc">PMC4671826</ArticleId>
+						<ArticleId IdType="pubmed">26073942</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Cai Y, Zhang Y, Loh YP, Tng JQ, Lim MC, Cao Z, Raju A, Lieberman Aiden E, Li S, Manikandan L, Tergaonkar V, Tucker-Kellogg G, Fullwood MJ. H3K27me3-rich genomic regions can function as silencers to repress gene expression via chromatin interactions. Nature Communications. 2021;12:719. doi: 10.1038/s41467-021-20940-y.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41467-021-20940-y</ArticleId>
+						<ArticleId IdType="pmc">PMC7846766</ArticleId>
+						<ArticleId IdType="pubmed">33514712</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Celniker SE, Dillon LAL, Gerstein MB, Gunsalus KC, Henikoff S, Karpen GH, Kellis M, Lai EC, Lieb JD, MacAlpine DM, Micklem G, Piano F, Snyder M, Stein L, White KP, Waterston RH, modENCODE Consortium Unlocking the secrets of the genome. Nature. 2009;459:927&#x2013;930. doi: 10.1038/459927a.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/459927a</ArticleId>
+						<ArticleId IdType="pmc">PMC2843545</ArticleId>
+						<ArticleId IdType="pubmed">19536255</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Cervantes-Sandoval I, Phan A, Chakraborty M, Davis RL. Reciprocal synapses between mushroom body and dopamine neurons form a positive feedback loop required for learning. eLife. 2017;6:e23789. doi: 10.7554/eLife.23789.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.7554/eLife.23789</ArticleId>
+						<ArticleId IdType="pmc">PMC5425253</ArticleId>
+						<ArticleId IdType="pubmed">28489528</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Chakraborty S, Deb BK, Chorna T, Konieczny V, Taylor CW, Hasan G. Mutant IP3 receptors attenuate store-operated Ca2+ entry by destabilizing STIM-Orai interactions in Drosophila neurons. Journal of Cell Science. 2016;129:3903&#x2013;3910. doi: 10.1242/jcs.191585.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1242/jcs.191585</ArticleId>
+						<ArticleId IdType="pmc">PMC5087660</ArticleId>
+						<ArticleId IdType="pubmed">27591258</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Chakraborty S, Hasan G. Spontaneous Ca2+ Influx in Drosophila pupal neurons is modulated by IP3-Receptor function and influences maturation of the flight circuit. Frontiers in Molecular Neuroscience. 2017;10:111. doi: 10.3389/fnmol.2017.00111.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.3389/fnmol.2017.00111</ArticleId>
+						<ArticleId IdType="pmc">PMC5398029</ArticleId>
+						<ArticleId IdType="pubmed">28473752</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Chen TW, Wardill TJ, Sun Y, Pulver SR, Renninger SL, Baohan A, Schreiter ER, Kerr RA, Orger MB, Jayaraman V, Looger LL, Svoboda K, Kim DS. Ultrasensitive fluorescent proteins for imaging neuronal activity. Nature. 2013;499:295&#x2013;300. doi: 10.1038/nature12354.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nature12354</ArticleId>
+						<ArticleId IdType="pmc">PMC3777791</ArticleId>
+						<ArticleId IdType="pubmed">23868258</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Chopra VS, Srinivasan A, Kumar RP, Mishra K, Basquin D, Docquier M, Seum C, Pauli D, Mishra RK. Transcriptional activation by GAGA factor is through its direct interaction with dmTAF3. Developmental Biology. 2008;317:660&#x2013;670. doi: 10.1016/j.ydbio.2008.02.008.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.ydbio.2008.02.008</ArticleId>
+						<ArticleId IdType="pubmed">18367161</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ciceri G, Cho H, Kshirsagar M, Baggiolini A, Aromolaran KA, Walsh RM, Goldstein PA, Koche RP, Leslie CS, Studer L. An Epigenetic Barrier Sets the Timing of Human Neuronal Maturation. bioRxiv. 2022 doi: 10.1101/2022.06.02.490114.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1101/2022.06.02.490114</ArticleId>
+						<ArticleId IdType="pmc">PMC10881400</ArticleId>
+						<ArticleId IdType="pubmed">38297124</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Daniels RW, Gelfand MV, Collins CA, DiAntonio A. Visualizing glutamatergic cell bodies and synapses in Drosophila larval and adult CNS. The Journal of Comparative Neurology. 2008;508:131&#x2013;152. doi: 10.1002/cne.21670.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1002/cne.21670</ArticleId>
+						<ArticleId IdType="pubmed">18302156</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Depetris-Chauvin A, Berni J, Aranovich EJ, Muraro NI, Beckwith EJ, Ceriani MF. Adult-specific electrical silencing of pacemaker neurons uncouples molecular clock from circadian outputs. Current Biology. 2011;21:1783&#x2013;1793. doi: 10.1016/j.cub.2011.09.027.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.cub.2011.09.027</ArticleId>
+						<ArticleId IdType="pmc">PMC3226771</ArticleId>
+						<ArticleId IdType="pubmed">22018542</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Dillon SC, Zhang X, Trievel RC, Cheng X. The SET-domain protein superfamily: protein lysine methyltransferases. Genome Biology. 2005;6:227. doi: 10.1186/gb-2005-6-8-227.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/gb-2005-6-8-227</ArticleId>
+						<ArticleId IdType="pmc">PMC1273623</ArticleId>
+						<ArticleId IdType="pubmed">16086857</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Dorogova NV, Fedorova EV, Bolobolova EU, Ogienko AA, Baricheva EM. GAGA protein is essential for male germ cell development in Drosophila. Genesis. 2014;52:738&#x2013;751. doi: 10.1002/dvg.22789.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1002/dvg.22789</ArticleId>
+						<ArticleId IdType="pubmed">24817547</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ebihara T, Guo F, Zhang L, Kim JY, Saffen D. Muscarinic acetylcholine receptors stimulate Ca2+ influx in PC12D cells predominantly via activation of Ca2+ store-operated channels. Journal of Biochemistry. 2006;139:449&#x2013;458. doi: 10.1093/jb/mvj064.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/jb/mvj064</ArticleId>
+						<ArticleId IdType="pubmed">16567410</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Finogenova K, Bonnet J, Poepsel S, Sch&#xe4;fer IB, Finkl K, Schmid K, Litz C, Strauss M, Benda C, M&#xfc;ller J. Structural basis for PRC2 decoding of active histone methylation marks H3K36me2/3. eLife. 2020;9:e61964. doi: 10.7554/eLife.61964.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.7554/eLife.61964</ArticleId>
+						<ArticleId IdType="pmc">PMC7725500</ArticleId>
+						<ArticleId IdType="pubmed">33211010</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Gaskill MM, Gibson TJ, Larson ED, Harrison MM. GAF is essential for zygotic genome activation and chromatin accessibility in the early Drosophila embryo. eLife. 2021;10:e66668. doi: 10.7554/eLife.66668.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.7554/eLife.66668</ArticleId>
+						<ArticleId IdType="pmc">PMC8079149</ArticleId>
+						<ArticleId IdType="pubmed">33720012</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Geng H, Chen H, Wang H, Wang L. The histone modifications of neuronal plasticity. Neural Plasticity. 2021;2021:6690523. doi: 10.1155/2021/6690523.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1155/2021/6690523</ArticleId>
+						<ArticleId IdType="pmc">PMC7892255</ArticleId>
+						<ArticleId IdType="pubmed">33628222</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Gilbert LA, Larson MH, Morsut L, Liu Z, Brar GA, Torres SE, Stern-Ginossar N, Brandman O, Whitehead EH, Doudna JA, Lim WA, Weissman JS, Qi LS. CRISPR-mediated modular RNA-guided regulation of transcription in eukaryotes. Cell. 2013;154:442&#x2013;451. doi: 10.1016/j.cell.2013.06.044.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.cell.2013.06.044</ArticleId>
+						<ArticleId IdType="pmc">PMC3770145</ArticleId>
+						<ArticleId IdType="pubmed">23849981</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Goedhart J. PlotTwist: A web app for plotting and annotating continuous data. PLOS Biology. 2020;18:e3000581. doi: 10.1371/journal.pbio.3000581.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1371/journal.pbio.3000581</ArticleId>
+						<ArticleId IdType="pmc">PMC6980690</ArticleId>
+						<ArticleId IdType="pubmed">31929523</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Goedhart J, Pollard T. SuperPlotsOfData-a web app for the transparent display and quantitative comparison of continuous data from different conditions. Molecular Biology of the Cell. 2021;32:470&#x2013;474. doi: 10.1091/mbc.E20-09-0583.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1091/mbc.E20-09-0583</ArticleId>
+						<ArticleId IdType="pmc">PMC8101441</ArticleId>
+						<ArticleId IdType="pubmed">33476183</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Govorunova EG, Sineshchekov OA, Janz R, Liu X, Spudich JL. Neuroscience: natural light-gated anion channels: A family of microbial rhodopsins for advanced optogenetics. Science. 2015;349:647&#x2013;650. doi: 10.1126/science.aaa7484.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1126/science.aaa7484</ArticleId>
+						<ArticleId IdType="pmc">PMC4764398</ArticleId>
+						<ArticleId IdType="pubmed">26113638</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Greenberg AJ, Yanowitz JL, Schedl P. The Drosophila GAGA factor is required for dosage compensation in males and for the formation of the male-specific-lethal complex chromatin entry site at 12DE. Genetics. 2004;166:279&#x2013;289. doi: 10.1534/genetics.166.1.279.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1534/genetics.166.1.279</ArticleId>
+						<ArticleId IdType="pmc">PMC1470682</ArticleId>
+						<ArticleId IdType="pubmed">15020425</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Gu X, Spitzer NC. Distinct aspects of neuronal differentiation encoded by frequency of spontaneous Ca2+ transients. Nature. 1995;375:784&#x2013;787. doi: 10.1038/375784a0.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/375784a0</ArticleId>
+						<ArticleId IdType="pubmed">7596410</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Hardie RC, Peretz A, Suss-Toby E, Rom-Glas A, Bishop SA, Selinger Z, Minke B. Protein kinase C is required for light adaptation in Drosophila photoreceptors. Nature. 1993;363:634&#x2013;637. doi: 10.1038/363634a0.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/363634a0</ArticleId>
+						<ArticleId IdType="pubmed">8510756</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Hasan G, Sharma A. Regulation of neuronal physiology by Ca2+ release through the IP3R. Current Opinion in Physiology. 2020;17:1&#x2013;8. doi: 10.1016/j.cophys.2020.06.001.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.cophys.2020.06.001</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ho J, Tumkaya T, Aryal S, Choi H, Claridge-Chang A. Moving beyond P Values: Everyday Data Analysis with Estimation Plots. bioRxiv. 2018 doi: 10.1101/377978.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1101/377978</ArticleId>
+						<ArticleId IdType="pubmed">31217592</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Hogan PG, Chen L, Nardone J, Rao A. Transcriptional regulation by calcium, calcineurin, and NFAT. Genes &amp; Development. 2003;17:2205&#x2013;2232. doi: 10.1101/gad.1102703.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1101/gad.1102703</ArticleId>
+						<ArticleId IdType="pubmed">12975316</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Hu Y, Comjean A, Perrimon N, Mohr SE. The Drosophila Gene Expression Tool (DGET) for expression analyses. BMC Bioinformatics. 2017;18:98. doi: 10.1186/s12859-017-1509-z.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/s12859-017-1509-z</ArticleId>
+						<ArticleId IdType="pmc">PMC5303223</ArticleId>
+						<ArticleId IdType="pubmed">28187709</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Huang DW, Sherman BT, Lempicki RA. Systematic and integrative analysis of large gene lists using DAVID bioinformatics resources. Nature Protocols. 2009;4:44&#x2013;57. doi: 10.1038/nprot.2008.211.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nprot.2008.211</ArticleId>
+						<ArticleId IdType="pubmed">19131956</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>J&#xe4;rvilehto M, Finell N. Development of the function of visual receptor cells during the pupal life of the flyCalliphora. Journal of Comparative Physiology? A. 1983;150:529&#x2013;536. doi: 10.1007/BF00609579.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/BF00609579</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Johns DC, Marx R, Mains RE, O&#x2019;Rourke B, Marb&#xe1;n E. Inducible genetic suppression of neuronal excitability. The Journal of Neuroscience. 1999;19:1691&#x2013;1697. doi: 10.1523/JNEUROSCI.19-05-01691.1999.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1523/JNEUROSCI.19-05-01691.1999</ArticleId>
+						<ArticleId IdType="pmc">PMC6782162</ArticleId>
+						<ArticleId IdType="pubmed">10024355</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Johnson-Venkatesh EM, Khan MN, Murphy GG, Sutton MA, Umemori H. Excitability governs neural development in a hippocampal region-specific manner. Development. 2015;142:3879&#x2013;3891. doi: 10.1242/dev.121202.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1242/dev.121202</ArticleId>
+						<ArticleId IdType="pmc">PMC4712876</ArticleId>
+						<ArticleId IdType="pubmed">26417041</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Joshi R, Venkatesh K, Srinivas R, Nair S, Hasan G. Genetic dissection of itpr gene function reveals a vital requirement in aminergic cells of Drosophila larvae. Genetics. 2004;166:225&#x2013;236. doi: 10.1534/genetics.166.1.225.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1534/genetics.166.1.225</ArticleId>
+						<ArticleId IdType="pmc">PMC1470716</ArticleId>
+						<ArticleId IdType="pubmed">15020420</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kadas D, Tzortzopoulos A, Skoulakis EMC, Consoulas C. Constitutive Activation of Ca 2+ /Calmodulin-Dependent Protein Kinase II during Development Impairs Central Cholinergic Transmission in a Circuit Underlying Escape Behavior in Drosophila. The Journal of Neuroscience. 2012;32:170&#x2013;182. doi: 10.1523/JNEUROSCI.6583-10.2012.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1523/JNEUROSCI.6583-10.2012</ArticleId>
+						<ArticleId IdType="pmc">PMC6621333</ArticleId>
+						<ArticleId IdType="pubmed">22219280</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kaeser PS, Regehr WG. The readily releasable pool of synaptic vesicles. Current Opinion in Neurobiology. 2017;43:63&#x2013;70. doi: 10.1016/j.conb.2016.12.012.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.conb.2016.12.012</ArticleId>
+						<ArticleId IdType="pmc">PMC5447466</ArticleId>
+						<ArticleId IdType="pubmed">28103533</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Keyser P, Borge-Renberg K, Hultmark D. The Drosophila NFAT homolog is involved in salt stress tolerance. Insect Biochemistry and Molecular Biology. 2007;37:356&#x2013;362. doi: 10.1016/j.ibmb.2006.12.009.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.ibmb.2006.12.009</ArticleId>
+						<ArticleId IdType="pubmed">17368199</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kim D, Langmead B, Salzberg SL. HISAT: a fast spliced aligner with low memory requirements. Nature Methods. 2015;12:357&#x2013;360. doi: 10.1038/nmeth.3317.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nmeth.3317</ArticleId>
+						<ArticleId IdType="pmc">PMC4655817</ArticleId>
+						<ArticleId IdType="pubmed">25751142</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kim D, Paggi JM, Park C, Bennett C, Salzberg SL. Graph-based genome alignment and genotyping with HISAT2 and HISAT-genotype. Nature Biotechnology. 2019;37:907&#x2013;915. doi: 10.1038/s41587-019-0201-4.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41587-019-0201-4</ArticleId>
+						<ArticleId IdType="pmc">PMC7605509</ArticleId>
+						<ArticleId IdType="pubmed">31375807</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kishi Y, Gotoh Y. Regulation of chromatin structure during neural development. Frontiers in Neuroscience. 2018;12:874. doi: 10.3389/fnins.2018.00874.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.3389/fnins.2018.00874</ArticleId>
+						<ArticleId IdType="pmc">PMC6297780</ArticleId>
+						<ArticleId IdType="pubmed">30618540</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kitamoto T. Conditional modification of behavior in Drosophila by targeted expression of a temperature-sensitive shibire allele in defined neurons. Journal of Neurobiology. 2001;47:81&#x2013;92. doi: 10.1002/neu.1018.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1002/neu.1018</ArticleId>
+						<ArticleId IdType="pubmed">11291099</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Klapoetke NC, Murata Y, Kim SS, Pulver SR, Birdsey-Benson A, Cho YK, Morimoto TK, Chuong AS, Carpenter EJ, Tian Z, Wang J, Xie Y, Yan Z, Zhang Y, Chow BY, Surek B, Melkonian M, Jayaraman V, Constantine-Paton M, Wong GKS, Boyden ES. Independent optical excitation of distinct neural populations. Nature Methods. 2014;11:338&#x2013;346. doi: 10.1038/nmeth.2836.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nmeth.2836</ArticleId>
+						<ArticleId IdType="pmc">PMC3943671</ArticleId>
+						<ArticleId IdType="pubmed">24509633</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Kong EC, Woo K, Li H, Lebestky T, Mayer N, Sniffen MR, Heberlein U, Bainton RJ, Hirsh J, Wolf FW. A pair of dopamine neurons target the D1-like dopamine receptor DopR in the central complex to promote ethanol-stimulated locomotion in Drosophila. PLOS ONE. 2010;5:e9954. doi: 10.1371/journal.pone.0009954.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1371/journal.pone.0009954</ArticleId>
+						<ArticleId IdType="pmc">PMC2848596</ArticleId>
+						<ArticleId IdType="pubmed">20376353</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Krogan NJ, Kim M, Tong A, Golshani A, Cagney G, Canadien V, Richards DP, Beattie BK, Emili A, Boone C, Shilatifard A, Buratowski S, Greenblatt J. Methylation of histone H3 by Set2 in Saccharomyces cerevisiae is linked to transcriptional elongation by RNA polymerase II. Molecular and Cellular Biology. 2003;23:4207&#x2013;4218. doi: 10.1128/MCB.23.12.4207-4218.2003.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1128/MCB.23.12.4207-4218.2003</ArticleId>
+						<ArticleId IdType="pmc">PMC427527</ArticleId>
+						<ArticleId IdType="pubmed">12773564</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Larkin A, Marygold SJ, Antonazzo G, Attrill H, Dos Santos G, Garapati PV, Goodman JL, Gramates LS, Millburn G, Strelets VB, Tabone CJ, Thurmond J, FlyBase Consortium FlyBase: updates to the Drosophila melanogaster knowledge base. Nucleic Acids Research. 2021;49:D899&#x2013;D907. doi: 10.1093/nar/gkaa1026.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/nar/gkaa1026</ArticleId>
+						<ArticleId IdType="pmc">PMC7779046</ArticleId>
+						<ArticleId IdType="pubmed">33219682</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Leinwand SG, Scott K. Juvenile hormone drives the maturation of spontaneous mushroom body neural activity and learned behavior. Neuron. 2021;109:1836&#x2013;1847. doi: 10.1016/j.neuron.2021.04.006.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.neuron.2021.04.006</ArticleId>
+						<ArticleId IdType="pmc">PMC8279816</ArticleId>
+						<ArticleId IdType="pubmed">33915110</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Levine RB. Changes in neuronal circuits during insect metamorphosis. The Journal of Experimental Biology. 1984;112:27&#x2013;44. doi: 10.1242/jeb.112.1.27.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1242/jeb.112.1.27</ArticleId>
+						<ArticleId IdType="pubmed">6392469</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Li J, Liu Y, Rhee HS, Ghosh SKB, Bai L, Pugh BF, Gilmour DS. Kinetic competition between elongation rate and binding of NELF controls promoter-proximal pausing. Molecular Cell. 2013;50:711&#x2013;722. doi: 10.1016/j.molcel.2013.05.016.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.molcel.2013.05.016</ArticleId>
+						<ArticleId IdType="pmc">PMC3695833</ArticleId>
+						<ArticleId IdType="pubmed">23746353</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Liao Y, Smyth GK, Shi W. featureCounts: an efficient general purpose program for assigning sequence reads to genomic features. Bioinformatics. 2014;30:923&#x2013;930. doi: 10.1093/bioinformatics/btt656.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/bioinformatics/btt656</ArticleId>
+						<ArticleId IdType="pubmed">24227677</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Lichtinghagen R, Stocker M, Wittka R, Boheim G, St&#xfc;hmer W, Ferrus A, Pongs O. Molecular basis of altered excitability in Shaker mutants of Drosophila melanogaster. The EMBO Journal. 1990;9:4399&#x2013;4407. doi: 10.1002/j.1460-2075.1990.tb07890.x.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1002/j.1460-2075.1990.tb07890.x</ArticleId>
+						<ArticleId IdType="pmc">PMC552231</ArticleId>
+						<ArticleId IdType="pubmed">1702382</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Liu C, Pla&#xe7;ais PY, Yamagata N, Pfeiffer BD, Aso Y, Friedrich AB, Siwanowicz I, Rubin GM, Preat T, Tanimoto H. A subset of dopamine neurons signals reward for odour memory in Drosophila. Nature. 2012;488:512&#x2013;516. doi: 10.1038/nature11304.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nature11304</ArticleId>
+						<ArticleId IdType="pubmed">22810589</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Lomaev D, Mikhailova A, Erokhin M, Shaposhnikov AV, Moresco JJ, Blokhina T, Wolle D, Aoki T, Ryabykh V, Yates JR, Shidlovskii YV, Georgiev P, Schedl P, Chetverina D. The GAGA factor regulatory network: Identification of GAGA factor associated proteins. PLOS ONE. 2017;12:e0173602. doi: 10.1371/journal.pone.0173602.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1371/journal.pone.0173602</ArticleId>
+						<ArticleId IdType="pmc">PMC5351981</ArticleId>
+						<ArticleId IdType="pubmed">28296955</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Love MI, Huber W, Anders S. Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2. Genome Biology. 2014;15:550. doi: 10.1186/s13059-014-0550-8.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/s13059-014-0550-8</ArticleId>
+						<ArticleId IdType="pmc">PMC4302049</ArticleId>
+						<ArticleId IdType="pubmed">25516281</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Mahmoudi T, Zuijderduijn LMP, Mohd-Sarip A, Verrijzer CP. GAGA facilitates binding of Pleiohomeotic to a chromatinized Polycomb response element. Nucleic Acids Research. 2003;31:4147&#x2013;4156. doi: 10.1093/nar/gkg479.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/nar/gkg479</ArticleId>
+						<ArticleId IdType="pmc">PMC167640</ArticleId>
+						<ArticleId IdType="pubmed">12853632</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Malik BR, Hodge JJL. CASK and CaMKII function in Drosophila memory. Frontiers in Neuroscience. 2014;8:178. doi: 10.3389/fnins.2014.00178.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.3389/fnins.2014.00178</ArticleId>
+						<ArticleId IdType="pmc">PMC4070058</ArticleId>
+						<ArticleId IdType="pubmed">25009461</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Manjila SB, Hasan G. Flight and climbing assay for assessing motor functions in Drosophila. BIO-PROTOCOL. 2018;8:e2742. doi: 10.21769/BioProtoc.2742.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.21769/BioProtoc.2742</ArticleId>
+						<ArticleId IdType="pmc">PMC8203865</ArticleId>
+						<ArticleId IdType="pubmed">34179270</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Mao Z, Davis RL. Eight different types of dopaminergic neurons innervate the Drosophila mushroom body neuropil: anatomical and physiological heterogeneity. Frontiers in Neural Circuits. 2009;3:5. doi: 10.3389/neuro.04.005.2009.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.3389/neuro.04.005.2009</ArticleId>
+						<ArticleId IdType="pmc">PMC2708966</ArticleId>
+						<ArticleId IdType="pubmed">19597562</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Marder E. Neuromodulation of neuronal circuits: back to the future. Neuron. 2012;76:1&#x2013;11. doi: 10.1016/j.neuron.2012.09.010.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.neuron.2012.09.010</ArticleId>
+						<ArticleId IdType="pmc">PMC3482119</ArticleId>
+						<ArticleId IdType="pubmed">23040802</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Margueron R, Reinberg D. The Polycomb complex PRC2 and its mark in life. Nature. 2011;469:343&#x2013;349. doi: 10.1038/nature09784.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nature09784</ArticleId>
+						<ArticleId IdType="pmc">PMC3760771</ArticleId>
+						<ArticleId IdType="pubmed">21248841</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Mayseless O, Shapira G, Rachad EY, Fiala A, Schuldiner O. Neuronal excitability as a regulator of circuit remodeling. Current Biology. 2023;33:981&#x2013;989. doi: 10.1016/j.cub.2023.01.032.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.cub.2023.01.032</ArticleId>
+						<ArticleId IdType="pmc">PMC10017263</ArticleId>
+						<ArticleId IdType="pubmed">36758544</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>McGuire SE, Mao Z, Davis RL. Spatiotemporal gene expression targeting with the TARGET and gene-switch systems in Drosophila. Science&#x2019;s STKE. 2004;2004:l6. doi: 10.1126/stke.2202004pl6.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1126/stke.2202004pl6</ArticleId>
+						<ArticleId IdType="pubmed">14970377</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Megha O, Hasan G. IP3R mediated Ca2+ release regulates protein metabolism in Drosophila neuroendocrine cells: implications for development under nutrient stress. Development. 2017;144:1484&#x2013;1489. doi: 10.1242/dev.145235.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1242/dev.145235</ArticleId>
+						<ArticleId IdType="pmc">PMC5399668</ArticleId>
+						<ArticleId IdType="pubmed">28289132</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Mehren JE, Griffith LC. Calcium-independent calcium/calmodulin-dependent protein kinase II in the adult Drosophila CNS enhances the training of pheromonal cues. The Journal of Neuroscience. 2004;24:10584&#x2013;10593. doi: 10.1523/JNEUROSCI.3560-04.2004.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1523/JNEUROSCI.3560-04.2004</ArticleId>
+						<ArticleId IdType="pmc">PMC6730130</ArticleId>
+						<ArticleId IdType="pubmed">15564574</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Metsalu T, Vilo J. ClustVis: a web tool for visualizing clustering of multivariate data using Principal Component Analysis and heatmap. Nucleic Acids Research. 2015;43:W566&#x2013;W570. doi: 10.1093/nar/gkv468.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/nar/gkv468</ArticleId>
+						<ArticleId IdType="pmc">PMC4489295</ArticleId>
+						<ArticleId IdType="pubmed">25969447</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Mitra R, Richhariya S, Jayakumar S, Notani D, Hasan G. IP 3 /Ca 2+ Signals Regulate Larval to Pupal Transition under Nutrient Stress through the H3K36 Methyltransferase dSET2. bioRxiv. 2020 doi: 10.1101/2020.11.25.399329.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1101/2020.11.25.399329</ArticleId>
+						<ArticleId IdType="pubmed">34117888</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Mitra R, Hasan G. Store-operated Ca2+ entry regulates neuronal gene expression and function. Current Opinion in Neurobiology. 2022;73:102520. doi: 10.1016/j.conb.2022.01.005.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.conb.2022.01.005</ArticleId>
+						<ArticleId IdType="pubmed">35220059</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>modENCODE Consortium. Roy S, Ernst J, Kharchenko PV, Kheradpour P, Negre N, Eaton ML, Landolin JM, Bristow CA, Ma L, Lin MF, Washietl S, Arshinoff BI, Ay F, Meyer PE, Robine N, Washington NL, Di Stefano L, Berezikov E, Brown CD, Candeias R, Carlson JW, Carr A, Jungreis I, Marbach D, Sealfon R, Tolstorukov MY, Will S, Alekseyenko AA, Artieri C, Booth BW, Brooks AN, Dai Q, Davis CA, Duff MO, Feng X, Gorchakov AA, Gu T, Henikoff JG, Kapranov P, Li R, MacAlpine HK, Malone J, Minoda A, Nordman J, Okamura K, Perry M, Powell SK, Riddle NC, Sakai A, Samsonova A, Sandler JE, Schwartz YB, Sher N, Spokony R, Sturgill D, van Baren M, Wan KH, Yang L, Yu C, Feingold E, Good P, Guyer M, Lowdon R, Ahmad K, Andrews J, Berger B, Brenner SE, Brent MR, Cherbas L, Elgin SCR, Gingeras TR, Grossman R, Hoskins RA, Kaufman TC, Kent W, Kuroda MI, Orr-Weaver T, Perrimon N, Pirrotta V, Posakony JW, Ren B, Russell S, Cherbas P, Graveley BR, Lewis S, Micklem G, Oliver B, Park PJ, Celniker SE, Henikoff S, Karpen GH, Lai EC, MacAlpine DM, Stein LD, White KP, Kellis M. Identification of functional elements and regulatory circuits by Drosophila modENCODE. Science. 2010;330:1787&#x2013;1797. doi: 10.1126/science.1198374.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1126/science.1198374</ArticleId>
+						<ArticleId IdType="pmc">PMC3192495</ArticleId>
+						<ArticleId IdType="pubmed">21177974</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Mohana G, Dorier J, Li X, Mouginot M, Smith RC, Malek H, Leleu M, Rodriguez D, Khadka J, Rosa P, Cousin P, Iseli C, Restrepo S, Guex N, McCabe BD, Jankowski A, Levine MS, Gambetta MC. Chromosome-level organization of the regulatory genome in the Drosophila nervous system. Cell. 2023;186:3826&#x2013;3844. doi: 10.1016/j.cell.2023.07.008.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.cell.2023.07.008</ArticleId>
+						<ArticleId IdType="pmc">PMC10529364</ArticleId>
+						<ArticleId IdType="pubmed">37536338</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Nitabach MN, Wu Y, Sheeba V, Lemon WC, Strumbos J, Zelensky PK, White BH, Holmes TC. Electrical hyperexcitation of lateral ventral pacemaker neurons desynchronizes downstream circadian oscillators in the fly circadian circuit and induces multiple behavioral periods. The Journal of Neuroscience. 2006;26:479&#x2013;489. doi: 10.1523/JNEUROSCI.3915-05.2006.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1523/JNEUROSCI.3915-05.2006</ArticleId>
+						<ArticleId IdType="pmc">PMC2597197</ArticleId>
+						<ArticleId IdType="pubmed">16407545</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>O&#x2019;Hare JK, Gonzalez KC, Herrlinger SA, Hirabayashi Y, Hewitt VL, Blockus H, Szoboszlay M, Rolotti SV, Geiller TC, Negrean A, Chelur V, Polleux F, Losonczy A. Compartment-specific tuning of dendritic feature selectivity by intracellular Ca2+ release. Science. 2022;375:eabm1670. doi: 10.1126/science.abm1670.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1126/science.abm1670</ArticleId>
+						<ArticleId IdType="pmc">PMC9667905</ArticleId>
+						<ArticleId IdType="pubmed">35298275</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Owald D, Felsenberg J, Talbot CB, Das G, Perisse E, Huetteroth W, Waddell S. Activity of defined mushroom body output neurons underlies learned olfactory behavior in Drosophila. Neuron. 2015;86:417&#x2013;427. doi: 10.1016/j.neuron.2015.03.025.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.neuron.2015.03.025</ArticleId>
+						<ArticleId IdType="pmc">PMC4416108</ArticleId>
+						<ArticleId IdType="pubmed">25864636</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Pathak T, Agrawal T, Richhariya S, Sadaf S, Hasan G. Store-operated calcium entry through orai is required for transcriptional maturation of the flight circuit in Drosophila. The Journal of Neuroscience. 2015;35:13784&#x2013;13799. doi: 10.1523/JNEUROSCI.1680-15.2015.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1523/JNEUROSCI.1680-15.2015</ArticleId>
+						<ArticleId IdType="pmc">PMC6605383</ArticleId>
+						<ArticleId IdType="pubmed">26446229</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ping Y, Waro G, Licursi A, Smith S, Vo-Ba DA, Tsunoda S, McCabe BD. Shal/K(v)4 channels are required for maintaining excitability during repetitive firing and normal locomotion in Drosophila. PLOS ONE. 2011;6:e16043. doi: 10.1371/journal.pone.0016043.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1371/journal.pone.0016043</ArticleId>
+						<ArticleId IdType="pmc">PMC3022017</ArticleId>
+						<ArticleId IdType="pubmed">21264215</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Postma M, Goedhart J. PlotsOfData-A web app for visualizing data together with their summaries. PLOS Biology. 2019;17:e3000202. doi: 10.1371/journal.pbio.3000202.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1371/journal.pbio.3000202</ArticleId>
+						<ArticleId IdType="pmc">PMC6453475</ArticleId>
+						<ArticleId IdType="pubmed">30917112</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Prakriya M, Lewis RS. Store-operated calcium channels. Physiological Reviews. 2015;95:1383&#x2013;1436. doi: 10.1152/physrev.00020.2014.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1152/physrev.00020.2014</ArticleId>
+						<ArticleId IdType="pmc">PMC4600950</ArticleId>
+						<ArticleId IdType="pubmed">26400989</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ram&#xed;rez F, Ryan DP, Gr&#xfc;ning B, Bhardwaj V, Kilpert F, Richter AS, Heyne S, D&#xfc;ndar F, Manke T. deepTools2: a next generation web server for deep-sequencing data analysis. Nucleic Acids Research. 2016;44:W160&#x2013;W165. doi: 10.1093/nar/gkw257.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/nar/gkw257</ArticleId>
+						<ArticleId IdType="pmc">PMC4987876</ArticleId>
+						<ArticleId IdType="pubmed">27079975</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ravi P, Trivedi D, Hasan G, Barsh GS. FMRFa receptor stimulated Ca2+ signals alter the activity of flight modulating central dopaminergic neurons in Drosophila melanogaster. PLOS Genetics. 2018;14:e1007459. doi: 10.1371/journal.pgen.1007459.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1371/journal.pgen.1007459</ArticleId>
+						<ArticleId IdType="pmc">PMC6110513</ArticleId>
+						<ArticleId IdType="pubmed">30110323</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Richhariya S, Jayakumar S, Abruzzi K, Rosbash M, Hasan G. A pupal transcriptomic screen identifies Ral as A target of store-operated calcium entry in Drosophila neurons. Scientific Reports. 2017;7:42586. doi: 10.1038/srep42586.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/srep42586</ArticleId>
+						<ArticleId IdType="pmc">PMC5307359</ArticleId>
+						<ArticleId IdType="pubmed">28195208</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Riemensperger T, V&#xf6;ller T, Stock P, Buchner E, Fiala A. Punishment prediction by dopaminergic neurons in Drosophila. Current Biology. 2005;15:1953&#x2013;1960. doi: 10.1016/j.cub.2005.09.042.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.cub.2005.09.042</ArticleId>
+						<ArticleId IdType="pubmed">16271874</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Ritchie ME, Phipson B, Wu D, Hu Y, Law CW, Shi W, Smyth GK. limma powers differential expression analyses for RNA-sequencing and microarray studies. Nucleic Acids Research. 2015;43:e47. doi: 10.1093/nar/gkv007.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/nar/gkv007</ArticleId>
+						<ArticleId IdType="pmc">PMC4402510</ArticleId>
+						<ArticleId IdType="pubmed">25605792</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for differential expression analysis of digital gene expression data. Bioinformatic. 2010;26:139&#x2013;140. doi: 10.1093/bioinformatics/btp616.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/bioinformatics/btp616</ArticleId>
+						<ArticleId IdType="pmc">PMC2796818</ArticleId>
+						<ArticleId IdType="pubmed">19910308</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Rosenberg SS, Spitzer NC. Calcium signaling in neuronal development. Cold Spring Harbor Perspectives in Biology. 2011;3:a004259. doi: 10.1101/cshperspect.a004259.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1101/cshperspect.a004259</ArticleId>
+						<ArticleId IdType="pmc">PMC3179332</ArticleId>
+						<ArticleId IdType="pubmed">21730044</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sachse S, Rueckert E, Keller A, Okada R, Tanaka NK, Ito K, Vosshall LB. Activity-dependent plasticity in an olfactory circuit. Neuron. 2007;56:838&#x2013;850. doi: 10.1016/j.neuron.2007.10.035.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.neuron.2007.10.035</ArticleId>
+						<ArticleId IdType="pubmed">18054860</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Schindelin J, Arganda-Carreras I, Frise E, Kaynig V, Longair M, Pietzsch T, Preibisch S, Rueden C, Saalfeld S, Schmid B, Tinevez JY, White DJ, Hartenstein V, Eliceiri K, Tomancak P, Cardona A. Fiji: an open-source platform for biological-image analysis. Nature Methods. 2012;9:676&#x2013;682. doi: 10.1038/nmeth.2019.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nmeth.2019</ArticleId>
+						<ArticleId IdType="pmc">PMC3855844</ArticleId>
+						<ArticleId IdType="pubmed">22743772</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Shakiryanova D, Morimoto T, Zhou C, Chouhan AK, Sigrist SJ, Nose A, Macleod GT, Deitcher DL, Levitan ES. Differential control of presynaptic CaMKII activation and translocation to active zones. The Journal of Neuroscience. 2011;31:9093&#x2013;9100. doi: 10.1523/JNEUROSCI.0550-11.2011.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1523/JNEUROSCI.0550-11.2011</ArticleId>
+						<ArticleId IdType="pmc">PMC3123710</ArticleId>
+						<ArticleId IdType="pubmed">21697360</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sharma A, Hasan G. Modulation of flight and feeding behaviours requires presynaptic IP3Rs in dopaminergic neurons. eLife. 2020;9:e62297. doi: 10.7554/eLife.62297.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.7554/eLife.62297</ArticleId>
+						<ArticleId IdType="pmc">PMC7647402</ArticleId>
+						<ArticleId IdType="pubmed">33155978</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Shimojima T, Okada M, Nakayama T, Ueda H, Okawa K, Iwamatsu A, Handa H, Hirose S. Drosophila FACT contributes to Hox gene expression through physical and functional interactions with GAGA factor. Genes &amp; Development. 2003;17:1605&#x2013;1616. doi: 10.1101/gad.1086803.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1101/gad.1086803</ArticleId>
+						<ArticleId IdType="pmc">PMC196133</ArticleId>
+						<ArticleId IdType="pubmed">12815073</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Singh S, Wu CF. Properties of potassium currents and their role in membrane excitability in Drosophila larval muscle fibers. The Journal of Experimental Biology. 1990;152:59&#x2013;76. doi: 10.1242/jeb.152.1.59.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1242/jeb.152.1.59</ArticleId>
+						<ArticleId IdType="pubmed">2121887</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Somasundaram A, Shum AK, McBride HJ, Kessler JA, Feske S, Miller RJ, Prakriya M. Store-operated CRAC channels regulate gene expression and proliferation in neural progenitor cells. The Journal of Neuroscience. 2014;34:9107&#x2013;9123. doi: 10.1523/JNEUROSCI.0263-14.2014.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1523/JNEUROSCI.0263-14.2014</ArticleId>
+						<ArticleId IdType="pmc">PMC4078087</ArticleId>
+						<ArticleId IdType="pubmed">24990931</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Spitzer NC. Activity-dependent neurotransmitter respecification. Nature Reviews. Neuroscience. 2012;13:94&#x2013;106. doi: 10.1038/nrn3154.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nrn3154</ArticleId>
+						<ArticleId IdType="pmc">PMC4352171</ArticleId>
+						<ArticleId IdType="pubmed">22251956</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Stabell M, Larsson J, Aalen RB, Lambertsson A. Drosophila dSet2 functions in H3-K36 methylation and is required for development. Biochemical and Biophysical Research Communications. 2007;359:784&#x2013;789. doi: 10.1016/j.bbrc.2007.05.189.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.bbrc.2007.05.189</ArticleId>
+						<ArticleId IdType="pubmed">17560546</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Streb H, Bayerd&#xf6;rffer E, Haase W, Irvine RF, Schulz I. Effect of inositol-1,4,5-trisphosphate on isolated subcellular fractions of rat pancreas. The Journal of Membrane Biology. 1984;81:241&#x2013;253. doi: 10.1007/BF01868717.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1007/BF01868717</ArticleId>
+						<ArticleId IdType="pubmed">6334162</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sugie A, Marchetti G, Tavosanis G. Structural aspects of plasticity in the nervous system of Drosophila. Neural Development. 2018;13:14. doi: 10.1186/s13064-018-0111-z.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/s13064-018-0111-z</ArticleId>
+						<ArticleId IdType="pmc">PMC6026517</ArticleId>
+						<ArticleId IdType="pubmed">29960596</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sun F, Zeng J, Jing M, Zhou J, Feng J, Owen SF, Luo Y, Li F, Wang H, Yamaguchi T, Yong Z, Gao Y, Peng W, Wang L, Zhang S, Du J, Lin D, Xu M, Kreitzer AC, Cui G, Li Y. A genetically encoded fluorescent sensor enables rapid and specific detection of dopamine in flies, fish, and mice. Cell. 2018;174:481&#x2013;496. doi: 10.1016/j.cell.2018.06.042.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.cell.2018.06.042</ArticleId>
+						<ArticleId IdType="pmc">PMC6092020</ArticleId>
+						<ArticleId IdType="pubmed">30007419</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Sweeney ST, Broadie K, Keane J, Niemann H, O&#x2019;Kane CJ. Targeted expression of tetanus toxin light chain in Drosophila specifically eliminates synaptic transmission and causes behavioral defects. Neuron. 1995;14:341&#x2013;351. doi: 10.1016/0896-6273(95)90290-2.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/0896-6273(95)90290-2</ArticleId>
+						<ArticleId IdType="pubmed">7857643</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Taber KH, Hurley RA. Volume transmission in the brain: beyond the synapse. The Journal of Neuropsychiatry and Clinical Neurosciences. 2014;26:13110351. doi: 10.1176/appi.neuropsych.13110351.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1176/appi.neuropsych.13110351</ArticleId>
+						<ArticleId IdType="pubmed">24515717</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Takechi H, Eilers J, Konnerth A. A new class of synaptic response involving calcium release in dendritic spines. Nature. 1998;396:757&#x2013;760. doi: 10.1038/25547.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/25547</ArticleId>
+						<ArticleId IdType="pubmed">9874373</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Tang X, Li T, Liu S, Wisniewski J, Zheng Q, Rong Y, Lavis LD, Wu C. Kinetic principles underlying pioneer function of GAGA transcription factor in live cells. Nature Structural &amp; Molecular Biology. 2022;29:665&#x2013;676. doi: 10.1038/s41594-022-00800-z.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41594-022-00800-z</ArticleId>
+						<ArticleId IdType="pmc">PMC10177624</ArticleId>
+						<ArticleId IdType="pubmed">35835866</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Thillaiappan NB, Chakraborty P, Hasan G, Taylor CW. IP3 receptors and Ca2+ entry. Biochimica et Biophysica Acta. 2019;1866:1092&#x2013;1100. doi: 10.1016/j.bbamcr.2018.11.007.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.bbamcr.2018.11.007</ArticleId>
+						<ArticleId IdType="pubmed">30448464</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Truszkowski TLS, Aizenman CD. Neurobiology: setting the set point for neural homeostasis. Current Biology. 2015;25:R1132&#x2013;R1133. doi: 10.1016/j.cub.2015.10.021.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.cub.2015.10.021</ArticleId>
+						<ArticleId IdType="pubmed">26654372</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Tsai SY, Chang YL, Swamy KBS, Chiang RL, Huang DH. GAGA factor, a positive regulator of global gene expression, modulates transcriptional pausing and organization of upstream nucleosomes. Epigenetics &amp; Chromatin. 2016;9:32. doi: 10.1186/s13072-016-0082-4.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1186/s13072-016-0082-4</ArticleId>
+						<ArticleId IdType="pmc">PMC4962548</ArticleId>
+						<ArticleId IdType="pubmed">27468311</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Tsao CH, Chen CC, Lin CH, Yang HY, Lin S. Drosophila mushroom bodies integrate hunger and satiety signals to control innate food-seeking behavior. eLife. 2018;7:e35264. doi: 10.7554/eLife.35264.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.7554/eLife.35264</ArticleId>
+						<ArticleId IdType="pmc">PMC5910021</ArticleId>
+						<ArticleId IdType="pubmed">29547121</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Tsukiyama T, Becker PB, Wu C. ATP-dependent nucleosome disruption at a heat-shock promoter mediated by binding of GAGA transcription factor. Nature. 1994;367:525&#x2013;532. doi: 10.1038/367525a0.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/367525a0</ArticleId>
+						<ArticleId IdType="pubmed">8107823</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Venkiteswaran G, Hasan G. Intracellular Ca2+ signalling and store operated Ca2+ entry are required in Drosophila neurons for flight. Proceedings of the National Academy of Sciences.2009.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="pmc">PMC2700899</ArticleId>
+						<ArticleId IdType="pubmed">19515818</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Verma SK, Tian X, LaFrance LV, Duquenne C, Suarez DP, Newlander KA, Romeril SP, Burgess JL, Grant SW, Brackley JA, Graves AP, Scherzer DA, Shu A, Thompson C, Ott HM, Aller GSV, Machutta CA, Diaz E, Jiang Y, Johnson NW, Knight SD, Kruger RG, McCabe MT, Dhanak D, Tummino PJ, Creasy CL, Miller WH. Identification of potent, selective, cell-active inhibitors of the histone lysine methyltransferase EZH2. ACS Medicinal Chemistry Letters. 2012;3:1091&#x2013;1096. doi: 10.1021/ml3003346.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1021/ml3003346</ArticleId>
+						<ArticleId IdType="pmc">PMC4025676</ArticleId>
+						<ArticleId IdType="pubmed">24900432</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Viswanath V, Story GM, Peier AM, Petrus MJ, Lee VM, Hwang SW, Patapoutian A, Jegla T. Opposite thermosensor in fruitfly and mouse. Nature. 2003;423:822&#x2013;823. doi: 10.1038/423822a.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/423822a</ArticleId>
+						<ArticleId IdType="pubmed">12815418</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Waddell S. Neural plasticity: dopamine tunes the mushroom body output network. Current Biology. 2016;26:R109&#x2013;R112. doi: 10.1016/j.cub.2015.12.023.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1016/j.cub.2015.12.023</ArticleId>
+						<ArticleId IdType="pubmed">26859265</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Wang Y, Deng X, Gill DL. Calcium signaling by STIM and Orai: intimate coupling details revealed. Science Signaling. 2010;3:pe42. doi: 10.1126/scisignal.3148pe42.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1126/scisignal.3148pe42</ArticleId>
+						<ArticleId IdType="pmc">PMC3601893</ArticleId>
+						<ArticleId IdType="pubmed">21081752</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Weiss S, Melom JE, Ormerod KG, Zhang YV, Littleton JT. Glial Ca2+signaling links endocytosis to K+ buffering around neuronal somas to regulate excitability. eLife. 2019;8:44186. doi: 10.7554/eLife.44186.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.7554/eLife.44186</ArticleId>
+						<ArticleId IdType="pmc">PMC6510531</ArticleId>
+						<ArticleId IdType="pubmed">31025939</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Wilkins RC, Lis JT. DNA distortion and multimerization: novel functions of the glutamine-rich domain of GAGA factor. Journal of Molecular Biology. 1999;285:515&#x2013;525. doi: 10.1006/jmbi.1998.2356.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1006/jmbi.1998.2356</ArticleId>
+						<ArticleId IdType="pubmed">9878426</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Xu W, Lipscombe D. Neuronal Ca(V)1.3alpha(1) L-type channels activate at relatively hyperpolarized membrane potentials and are incompletely inhibited by dihydropyridines. The Journal of Neuroscience. 2001;21:5944&#x2013;5951. doi: 10.1523/JNEUROSCI.21-16-05944.2001.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1523/JNEUROSCI.21-16-05944.2001</ArticleId>
+						<ArticleId IdType="pmc">PMC6763157</ArticleId>
+						<ArticleId IdType="pubmed">11487617</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Yagi R, Mabuchi Y, Mizunami M, Tanaka NK. Convergence of multimodal sensory pathways to the mushroom body calyx in Drosophila melanogaster. Scientific Reports. 2016;6:29481. doi: 10.1038/srep29481.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/srep29481</ArticleId>
+						<ArticleId IdType="pmc">PMC4941532</ArticleId>
+						<ArticleId IdType="pubmed">27404960</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Yeromin AV, Zhang SL, Jiang W, Yu Y, Safrina O, Cahalan MD. Molecular identification of the CRAC channel by altered ion selectivity in a mutant of Orai. Nature. 2006;443:226&#x2013;229. doi: 10.1038/nature05108.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/nature05108</ArticleId>
+						<ArticleId IdType="pmc">PMC2756048</ArticleId>
+						<ArticleId IdType="pubmed">16921385</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Zambelli F, Pesole G, Pavesi G. Pscan: finding over-represented transcription factor binding site motifs in sequences from co-regulated or co-expressed genes. Nucleic Acids Research. 2009;37:W247&#x2013;W252. doi: 10.1093/nar/gkp464.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1093/nar/gkp464</ArticleId>
+						<ArticleId IdType="pmc">PMC2703934</ArticleId>
+						<ArticleId IdType="pubmed">19487240</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Zhai B, Vill&#xe9;n J, Beausoleil SA, Mintseris J, Gygi SP. Phosphoproteome analysis of Drosophila melanogaster embryos. Journal of Proteome Research. 2008;7:1675&#x2013;1682. doi: 10.1021/pr700696a.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1021/pr700696a</ArticleId>
+						<ArticleId IdType="pmc">PMC3063950</ArticleId>
+						<ArticleId IdType="pubmed">18327897</ArticleId>
+					</ArticleIdList>
+				</Reference>
+				<Reference>
+					<Citation>Zolin A, Cohn R, Pang R, Siliciano AF, Fairhall AL, Ruta V. Context-dependent representations of movement in Drosophila dopaminergic reinforcement pathways. Nature Neuroscience. 2021;24:1555&#x2013;1566. doi: 10.1038/s41593-021-00929-y.</Citation>
+					<ArticleIdList>
+						<ArticleId IdType="doi">10.1038/s41593-021-00929-y</ArticleId>
+						<ArticleId IdType="pmc">PMC8556349</ArticleId>
+						<ArticleId IdType="pubmed">34697455</ArticleId>
+					</ArticleIdList>
+				</Reference>
+			</ReferenceList>
+		</PubmedData>
+	</PubmedArticle>
+</PubmedArticleSet>

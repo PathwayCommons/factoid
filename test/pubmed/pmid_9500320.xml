@@ -1,0 +1,363 @@
+<?xml version="1.0" ?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2023//EN" "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_230101.dtd">
+<PubmedArticleSet>
+  <PubmedArticle>
+    <MedlineCitation Status="MEDLINE" Owner="NLM">
+      <PMID Version="1">9500320</PMID>
+      <DateCompleted>
+        <Year>1998</Year>
+        <Month>03</Month>
+        <Day>17</Day>
+      </DateCompleted>
+      <DateRevised>
+        <Year>2022</Year>
+        <Month>03</Month>
+        <Day>16</Day>
+      </DateRevised>
+      <Article PubModel="Print">
+        <Journal>
+          <ISSN IssnType="Print">0140-6736</ISSN>
+          <JournalIssue CitedMedium="Print">
+            <Volume>351</Volume>
+            <Issue>9103</Issue>
+            <PubDate>
+              <Year>1998</Year>
+              <Month>Feb</Month>
+              <Day>28</Day>
+            </PubDate>
+          </JournalIssue>
+          <Title>Lancet (London, England)</Title>
+          <ISOAbbreviation>Lancet</ISOAbbreviation>
+        </Journal>
+        <ArticleTitle>Ileal-lymphoid-nodular hyperplasia, non-specific colitis, and pervasive developmental disorder in children.</ArticleTitle>
+        <Pagination>
+          <StartPage>637</StartPage>
+          <EndPage>641</EndPage>
+          <MedlinePgn>637-41</MedlinePgn>
+        </Pagination>
+        <Abstract>
+          <AbstractText Label="BACKGROUND">We investigated a consecutive series of children with chronic enterocolitis and regressive developmental disorder.</AbstractText>
+          <AbstractText Label="METHODS">12 children (mean age 6 years [range 3-10], 11 boys) were referred to a paediatric gastroenterology unit with a history of normal development followed by loss of acquired skills, including language, together with diarrhoea and abdominal pain. Children underwent gastroenterological, neurological, and developmental assessment and review of developmental records. Ileocolonoscopy and biopsy sampling, magnetic-resonance imaging (MRI), electroencephalography (EEG), and lumbar puncture were done under sedation. Barium follow-through radiography was done where possible. Biochemical, haematological, and immunological profiles were examined.</AbstractText>
+          <AbstractText Label="FINDINGS">Onset of behavioural symptoms was associated, by the parents, with measles, mumps, and rubella vaccination in eight of the 12 children, with measles infection in one child, and otitis media in another. All 12 children had intestinal abnormalities, ranging from lymphoid nodular hyperplasia to aphthoid ulceration. Histology showed patchy chronic inflammation in the colon in 11 children and reactive ileal lymphoid hyperplasia in seven, but no granulomas. Behavioural disorders included autism (nine), disintegrative psychosis (one), and possible postviral or vaccinal encephalitis (two). There were no focal neurological abnormalities and MRI and EEG tests were normal. Abnormal laboratory results were significantly raised urinary methylmalonic acid compared with age-matched controls (p=0.003), low haemoglobin in four children, and a low serum IgA in four children.</AbstractText>
+          <AbstractText Label="INTERPRETATION">We identified associated gastrointestinal disease and developmental regression in a group of previously normal children, which was generally associated in time with possible environmental triggers.</AbstractText>
+        </Abstract>
+        <AuthorList CompleteYN="Y">
+          <Author ValidYN="Y">
+            <LastName>Wakefield</LastName>
+            <ForeName>A J</ForeName>
+            <Initials>AJ</Initials>
+            <AffiliationInfo>
+              <Affiliation>Inflammatory Bowel Disease Study Group, University Department of Medicine, Royal Free Hospital and School of Medicine, London, UK.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Murch</LastName>
+            <ForeName>S H</ForeName>
+            <Initials>SH</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Anthony</LastName>
+            <ForeName>A</ForeName>
+            <Initials>A</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Linnell</LastName>
+            <ForeName>J</ForeName>
+            <Initials>J</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Casson</LastName>
+            <ForeName>D M</ForeName>
+            <Initials>DM</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Malik</LastName>
+            <ForeName>M</ForeName>
+            <Initials>M</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Berelowitz</LastName>
+            <ForeName>M</ForeName>
+            <Initials>M</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Dhillon</LastName>
+            <ForeName>A P</ForeName>
+            <Initials>AP</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Thomson</LastName>
+            <ForeName>M A</ForeName>
+            <Initials>MA</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Harvey</LastName>
+            <ForeName>P</ForeName>
+            <Initials>P</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Valentine</LastName>
+            <ForeName>A</ForeName>
+            <Initials>A</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Davies</LastName>
+            <ForeName>S E</ForeName>
+            <Initials>SE</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Walker-Smith</LastName>
+            <ForeName>J A</ForeName>
+            <Initials>JA</Initials>
+          </Author>
+        </AuthorList>
+        <Language>eng</Language>
+        <PublicationTypeList>
+          <PublicationType UI="D016428">Journal Article</PublicationType>
+          <PublicationType UI="D013485">Research Support, Non-U.S. Gov't</PublicationType>
+          <PublicationType UI="D016441">Retracted Publication</PublicationType>
+        </PublicationTypeList>
+      </Article>
+      <MedlineJournalInfo>
+        <Country>England</Country>
+        <MedlineTA>Lancet</MedlineTA>
+        <NlmUniqueID>2985213R</NlmUniqueID>
+        <ISSNLinking>0140-6736</ISSNLinking>
+      </MedlineJournalInfo>
+      <ChemicalList>
+        <Chemical>
+          <RegistryNumber>0</RegistryNumber>
+          <NameOfSubstance UI="D008458">Measles Vaccine</NameOfSubstance>
+        </Chemical>
+        <Chemical>
+          <RegistryNumber>0</RegistryNumber>
+          <NameOfSubstance UI="D022542">Measles-Mumps-Rubella Vaccine</NameOfSubstance>
+        </Chemical>
+        <Chemical>
+          <RegistryNumber>0</RegistryNumber>
+          <NameOfSubstance UI="D009108">Mumps Vaccine</NameOfSubstance>
+        </Chemical>
+        <Chemical>
+          <RegistryNumber>0</RegistryNumber>
+          <NameOfSubstance UI="D012411">Rubella Vaccine</NameOfSubstance>
+        </Chemical>
+        <Chemical>
+          <RegistryNumber>0</RegistryNumber>
+          <NameOfSubstance UI="D017778">Vaccines, Combined</NameOfSubstance>
+        </Chemical>
+      </ChemicalList>
+      <CitationSubset>IM</CitationSubset>
+      <CommentsCorrectionsList>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 Feb 28;351(9103):611-2</RefSource>
+          <PMID Version="1">9500313</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 Mar 21;351(9106):905; author reply 908-9</RefSource>
+          <PMID Version="1">9525390</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 Mar 21;351(9106):905-6; author reply 908-9</RefSource>
+          <PMID Version="1">9525391</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 Mar 21;351(9106):906; author reply 908-9</RefSource>
+          <PMID Version="1">9525392</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 Mar 21;351(9106):906-7; author reply 908-9</RefSource>
+          <PMID Version="1">9525393</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 Mar 21;351(9106):907; author reply 908-9</RefSource>
+          <PMID Version="1">9525394</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 Mar 21;351(9106):907; author reply 908-9</RefSource>
+          <PMID Version="1">9525395</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 Mar 21;351(9106):907-8; author reply 908-9</RefSource>
+          <PMID Version="1">9525396</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 May 2;351(9112):1355; author reply 1356</RefSource>
+          <PMID Version="1">9643815</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 May 2;351(9112):1355; author reply 1356</RefSource>
+          <PMID Version="1">9643816</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 May 2;351(9112):1355-6; author reply 1356</RefSource>
+          <PMID Version="1">9643817</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 May 2;351(9112):1356</RefSource>
+          <PMID Version="1">9643818</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 May 2;351(9112):1357</RefSource>
+          <PMID Version="1">9643820</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 May 2;351(9112):1357</RefSource>
+          <PMID Version="1">9643821</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 May 2;351(9112):1357-8</RefSource>
+          <PMID Version="1">9643822</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 May 2;351(9112):1358</RefSource>
+          <PMID Version="1">9643823</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 1998 Jul 18;352(9123):234-5</RefSource>
+          <PMID Version="1">9683237</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 2000 Jul 8;356(9224):160-1</RefSource>
+          <PMID Version="1">10963264</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 2000 Jul 8;356(9224):161</RefSource>
+          <PMID Version="1">10963266</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 2000 Jul 8;356(9224):161-2</RefSource>
+          <PMID Version="1">10963267</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 2002 Jun 15;359(9323):2051-2</RefSource>
+          <PMID Version="1">12086756</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 2004 Mar 6;363(9411):747-9</RefSource>
+          <PMID Version="1">15016482</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="ErratumIn">
+          <RefSource>Lancet. 2004 Mar 6;363(9411):750</RefSource>
+          <PMID Version="1">15016483</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 2004 Mar 6;363(9411):820-1</RefSource>
+          <PMID Version="1">15022645</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 2004 Mar 6;363(9411):821-2</RefSource>
+          <PMID Version="1">15022648</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 2004 Mar 6;363(9411):822-3</RefSource>
+          <PMID Version="1">15022649</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="CommentIn">
+          <RefSource>Lancet. 2004 Mar 6;363(9411):823-4</RefSource>
+          <PMID Version="1">15022650</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="RetractionIn">
+          <RefSource>Lancet. 2010 Feb 6;375(9713):445</RefSource>
+          <PMID Version="1">20137807</PMID>
+        </CommentsCorrections>
+        <CommentsCorrections RefType="ExpressionOfConcernIn">
+          <RefSource>Eur J Gastroenterol Hepatol. 2011 Nov;23 (11):1082</RefSource>
+          <PMID Version="1">21971344</PMID>
+        </CommentsCorrections>
+      </CommentsCorrectionsList>
+      <MeshHeadingList>
+        <MeshHeading>
+          <DescriptorName UI="D002648" MajorTopicYN="N">Child</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D002675" MajorTopicYN="N">Child, Preschool</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D002658" MajorTopicYN="N">Developmental Disabilities</DescriptorName>
+          <QualifierName UI="Q000209" MajorTopicYN="Y">etiology</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D004760" MajorTopicYN="N">Enterocolitis</DescriptorName>
+          <QualifierName UI="Q000209" MajorTopicYN="Y">etiology</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D005260" MajorTopicYN="N">Female</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D006801" MajorTopicYN="N">Humans</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D006965" MajorTopicYN="N">Hyperplasia</DescriptorName>
+          <QualifierName UI="Q000473" MajorTopicYN="N">pathology</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D007082" MajorTopicYN="N">Ileum</DescriptorName>
+          <QualifierName UI="Q000473" MajorTopicYN="Y">pathology</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D008221" MajorTopicYN="N">Lymphoid Tissue</DescriptorName>
+          <QualifierName UI="Q000473" MajorTopicYN="Y">pathology</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D008297" MajorTopicYN="N">Male</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D008457" MajorTopicYN="N">Measles</DescriptorName>
+          <QualifierName UI="Q000150" MajorTopicYN="N">complications</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D008458" MajorTopicYN="N">Measles Vaccine</DescriptorName>
+          <QualifierName UI="Q000009" MajorTopicYN="Y">adverse effects</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D022542" MajorTopicYN="N">Measles-Mumps-Rubella Vaccine</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D009108" MajorTopicYN="N">Mumps Vaccine</DescriptorName>
+          <QualifierName UI="Q000009" MajorTopicYN="Y">adverse effects</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D010033" MajorTopicYN="N">Otitis Media</DescriptorName>
+          <QualifierName UI="Q000150" MajorTopicYN="N">complications</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D012411" MajorTopicYN="N">Rubella Vaccine</DescriptorName>
+          <QualifierName UI="Q000009" MajorTopicYN="Y">adverse effects</QualifierName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D017778" MajorTopicYN="N">Vaccines, Combined</DescriptorName>
+          <QualifierName UI="Q000009" MajorTopicYN="N">adverse effects</QualifierName>
+        </MeshHeading>
+      </MeshHeadingList>
+    </MedlineCitation>
+    <PubmedData>
+      <History>
+        <PubMedPubDate PubStatus="pubmed">
+          <Year>1998</Year>
+          <Month>3</Month>
+          <Day>21</Day>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="medline">
+          <Year>1998</Year>
+          <Month>3</Month>
+          <Day>21</Day>
+          <Hour>0</Hour>
+          <Minute>1</Minute>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="entrez">
+          <Year>1998</Year>
+          <Month>3</Month>
+          <Day>21</Day>
+          <Hour>0</Hour>
+          <Minute>0</Minute>
+        </PubMedPubDate>
+      </History>
+      <PublicationStatus>ppublish</PublicationStatus>
+      <ArticleIdList>
+        <ArticleId IdType="pubmed">9500320</ArticleId>
+        <ArticleId IdType="doi">10.1016/s0140-6736(97)11096-0</ArticleId>
+        <ArticleId IdType="pii">S0140673697110960</ArticleId>
+      </ArticleIdList>
+    </PubmedData>
+  </PubmedArticle>
+</PubmedArticleSet>

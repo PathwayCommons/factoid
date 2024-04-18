@@ -5,6 +5,7 @@ import { expect } from 'chai';
 import convert from 'xml-js';
 
 import { pubmedDataConverter } from '../../src/server/routes/api/document/pubmed/fetchPubmed';
+import { isDigits, isDoi } from '../../src/util';
 
 const TEST_PUBMED_DATA = new Map([
   ['151222', 'pmid_151222.xml'], // MedlineDate
@@ -12,7 +13,9 @@ const TEST_PUBMED_DATA = new Map([
   ['29440426', 'pmid_29440426.xml'], // PubMedData
   ['30078747', 'pmid_30078747.xml'], // InvestigatorList
   ['30115697', 'pmid_30115697.xml'], // Markup; Identifier
-  ['31511694', 'pmid_31511694.xml']
+  ['31511694', 'pmid_31511694.xml'],
+  ['9500320', 'pmid_9500320.xml'], //CommentsCorrections - RetractionIn etc
+  ['38289659', 'pmid_38289659.xml'] //CommentsCorrections RefSource: doi string
 ]);
 
 const xml2jsOpts = {};
@@ -215,8 +218,9 @@ describe('fetchPubmed', function(){
 
                   it('Should have item with top-level attributes', () => {
                     if( !_.isEmpty( Identifier ) ){
-                      expect( Identifier ).to.have.property( 'Identifier[0].Source' );
-                      expect( Identifier ).to.have.property( 'Identifier[0].id' );
+                      let first = _.first( Identifier );
+                      expect( first ).to.have.property( 'Source' );
+                      expect( first ).to.have.property( 'id' );
                     }
                   });
 
@@ -276,6 +280,46 @@ describe('fetchPubmed', function(){
             });
 
           });//ChemicalList
+
+          describe( 'CommentsCorrectionsList', () => {
+
+            let CommentsCorrectionsList;
+            before( () => {
+              CommentsCorrectionsList = _.get( MedlineCitation, 'CommentsCorrectionsList' );
+            });
+
+            it('Should be a list, when exists', () => {
+              if( CommentsCorrectionsList ){  // Optional
+                expect( CommentsCorrectionsList ).to.be.an.instanceof(Array);
+              }
+            });
+
+            it('Should have required attributes, when exists', () => {
+              if( CommentsCorrectionsList ){  // Optional
+                for (const CommentsCorrections of CommentsCorrectionsList) {
+                  expect( CommentsCorrections ).to.have.property( 'RefSource' );
+                  expect( CommentsCorrections ).to.have.property( 'PMID' );
+                  expect( CommentsCorrections ).to.have.property( 'DOI' );
+                  expect( CommentsCorrections ).to.have.property( 'RefType' );
+                }
+              }
+            });
+
+            it('Should have correctly formatted PMID and DOI, when not null', () => {
+              if( CommentsCorrectionsList ){  // Optional
+                for (const CommentsCorrections of CommentsCorrectionsList) {
+                  if( CommentsCorrections.PMID !== null ){
+                    expect( isDigits( CommentsCorrections.PMID ) ).to.be.true;
+                  }
+                  if( CommentsCorrections.DOI !== null ){
+                    expect( isDoi( CommentsCorrections.DOI ) ).to.be.true;
+                  }
+                }
+              }
+            });
+
+          });//CommentsCorrectionsList
+
 
           describe( 'KeywordList', () => {
 

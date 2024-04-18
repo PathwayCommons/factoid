@@ -305,4 +305,27 @@ class ArticleIDError extends Error {
   }
 }
 
-export { getPubmedCitation, createPubmedArticle, ArticleIDError, findOrcidIdentifier };
+const COMMENTSCORRECTIONS_REFTYPE = Object.freeze({
+  AssociatedDataset: 'AssociatedDataset',
+  AssociatedPublication: 'AssociatedPublication',
+  CommentOn: 'CommentOn',
+  CommentIn: 'CommentIn',
+  ErratumIn: 'ErratumIn',
+  ErratumFor: 'ErratumFor',
+  ExpressionOfConcernIn: 'ExpressionOfConcernIn',
+  ExpressionOfConcernFor: 'ExpressionOfConcernFor',
+  RepublishedFrom: 'RepublishedFrom',
+  RepublishedIn: 'RepublishedIn',
+  RetractionOf: 'RetractionOf',
+  RetractionIn: 'RetractionIn',
+  UpdateIn: 'UpdateIn',
+  UpdateOf: 'UpdateOf',
+  SummaryForPatientsIn: 'SummaryForPatientsIn',
+  OriginalReportIn: 'OriginalReportIn',
+  ReprintOf: 'ReprintOf',
+  ReprintIn: 'ReprintIn',
+  Cites: 'Cites'
+});
+
+
+export { getPubmedCitation, createPubmedArticle, ArticleIDError, findOrcidIdentifier, COMMENTSCORRECTIONS_REFTYPE };

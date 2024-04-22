@@ -184,15 +184,15 @@ const getCommentsCorrectionsList = record => {
   ]);
   const { relation } = record;
   if( relation ){
-    for (let key of Object.keys(relation)) {
-      if( CRRELATION_REFTYPE_MAP.has( key ) ){
-        const refType = CRRELATION_REFTYPE_MAP.get( key );
-        const entries = relation[key];
-        for (let entry of entries) {
-          const { id, 'id-type': idType } = entry;
+    for (let crRelationType of Object.keys(relation)) {
+      if( CRRELATION_REFTYPE_MAP.has( crRelationType ) ){
+        const RefType = CRRELATION_REFTYPE_MAP.get( crRelationType );
+        const relations = relation[crRelationType];
+        for (let rel of relations) {
+          const { id, 'id-type': idType } = rel;
           if( CRRELATION_IDTYPES.has( idType ) ){
             const CommentsCorrections = {
-              RefType: refType,
+              RefType,
               PMID: null,
               DOI: null,
               RefSource: ''

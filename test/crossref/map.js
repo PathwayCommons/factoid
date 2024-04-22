@@ -9,6 +9,7 @@ import work_doi_4 from './10.1101_2022.09.28.22280453.json';
 import work_doi_5 from './10.1016_j.molcel.2019.06.008.json';
 import work_doi_6 from './10.7554_eLife.68292.json';
 import work_doi_7 from './10.3030_101067344.json';
+import work_doi_8 from './10.7554_elife.86689.3.json';
 
 describe('map', function(){
 
@@ -97,6 +98,32 @@ describe('map', function(){
 
         }); // PublicationTypeList
 
+        describe('CommentsCorrectionsList', () => {
+
+          describe('RefType: UpdateIn', () => {
+            const RefType = 'UpdateIn';
+            const { MedlineCitation: { CommentsCorrectionsList } } = toPubMedArticle( work_doi_8 );
+
+            it('Should contain a CommentsCorrectionsList with an element', () => {
+              expect( CommentsCorrectionsList.length ).to.not.equal( 0 );
+            });
+
+            it('Should have a CommentsCorrections with attributes: RefType, RefSource, DOI', () => {
+              const commentsCorrections = _.find(CommentsCorrectionsList, ['RefType', RefType ]);
+              expect( commentsCorrections ).to.have.property( 'DOI' );
+              expect( commentsCorrections ).to.have.property( 'RefType' );
+              expect( commentsCorrections ).to.have.property( 'RefSource' );
+            });
+
+            it('Should have a CommentsCorrections with DOI-based values: RefSource, DOI', () => {
+              const commentsCorrections = _.find(CommentsCorrectionsList, ['RefType', RefType ]);
+              expect( commentsCorrections.DOI ).to.match(/^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i);
+              expect( commentsCorrections.RefSource ).to.match(/^doi: 10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i);
+            });
+          });
+
+        }); // CommentsCorrectionsList
+
       }); // Article
 
     }); // type: posted-content, subtype: preprint
@@ -170,7 +197,7 @@ describe('map', function(){
       describe('article 2', () => {
 
         describe('MedlineCitation > Article', () => {
-          const { MedlineCitation: { Article } } = toPubMedArticle( work_doi_6 );
+          const { MedlineCitation: { Article, CommentsCorrectionsList } } = toPubMedArticle( work_doi_6 );
 
           describe('Text fields (ArticleTitle, Abstract)', () => {
             it('Should correctly map Abstract and ArticleTitle', () => {
@@ -231,6 +258,31 @@ describe('map', function(){
             });
 
           }); // PublicationTypeList
+
+          describe('CommentsCorrectionsList', () => {
+
+            describe('RefType: UpdateOf', () => {
+              const RefType = 'UpdateOf';
+
+              it('Should contain a CommentsCorrectionsList with an element', () => {
+                expect( CommentsCorrectionsList.length ).to.not.equal( 0 );
+              });
+
+              it('Should have a CommentsCorrections with attributes: RefType, RefSource, DOI', () => {
+                const commentsCorrections = _.find(CommentsCorrectionsList, ['RefType', RefType ]);
+                expect( commentsCorrections ).to.have.property( 'DOI' );
+                expect( commentsCorrections ).to.have.property( 'RefType' );
+                expect( commentsCorrections ).to.have.property( 'RefSource' );
+              });
+
+              it('Should have a CommentsCorrections with DOI-based values: RefSource, DOI', () => {
+                const commentsCorrections = _.find(CommentsCorrectionsList, ['RefType', RefType ]);
+                expect( commentsCorrections.DOI ).to.match(/^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i);
+                expect( commentsCorrections.RefSource ).to.match(/^doi: 10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i);
+              });
+            });
+
+          }); // CommentsCorrectionsList
 
         }); // article 2
 

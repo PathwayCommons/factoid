@@ -1,7 +1,30 @@
 import _ from 'lodash';
 import { parse as dateParse } from 'date-fns';
+import { DOI_LINK_BASE_URL, PUBMED_LINK_BASE_URL } from '../config';
 
 const NUM_AUTHORS_SHOWING = 4;
+
+const COMMENTSCORRECTIONS_REFTYPE = Object.freeze({
+  AssociatedDataset: 'AssociatedDataset',
+  AssociatedPublication: 'AssociatedPublication',
+  CommentOn: 'CommentOn',
+  CommentIn: 'CommentIn',
+  ErratumIn: 'ErratumIn',
+  ErratumFor: 'ErratumFor',
+  ExpressionOfConcernIn: 'ExpressionOfConcernIn',
+  ExpressionOfConcernFor: 'ExpressionOfConcernFor',
+  RepublishedFrom: 'RepublishedFrom',
+  RepublishedIn: 'RepublishedIn',
+  RetractionOf: 'RetractionOf',
+  RetractionIn: 'RetractionIn',
+  UpdateIn: 'UpdateIn',
+  UpdateOf: 'UpdateOf',
+  SummaryForPatientsIn: 'SummaryForPatientsIn',
+  OriginalReportIn: 'OriginalReportIn',
+  ReprintOf: 'ReprintOf',
+  ReprintIn: 'ReprintIn',
+  Cites: 'Cites'
+});
 
 /**
  * getAuthorName
@@ -209,6 +232,31 @@ const getReferenceString = Journal => {
 
 const getArticleId = ( PubmedArticle, IdType ) => _.get( _.find( _.get( PubmedArticle, ['PubmedData', 'ArticleIdList'], [] ), [ 'IdType', IdType ] ), 'id', null );
 
+const getRelations = PubmedArticle => {
+  const REFTYPE_2_REF = new Map([
+    [COMMENTSCORRECTIONS_REFTYPE.UpdateIn, 'Update in'],
+    [COMMENTSCORRECTIONS_REFTYPE.UpdateOf, 'Update of']
+  ]);
+  const raw = _.get( PubmedArticle, [ 'MedlineCitation', 'CommentsCorrectionsList' ], [] );
+  const relations = raw.map( ({ RefType, PMID, RefSource, DOI }) => {
+    const hasPMID = !_.isNil( PMID );
+    const hasDOI = !_.isNil( DOI );
+    const hasRelation = REFTYPE_2_REF.has( RefType ) && ( hasPMID || hasDOI );
+    if ( !hasRelation ) return null;
+
+    let url, reference;
+    reference = `${REFTYPE_2_REF.get(RefType)} ${RefSource}`;
+    if( hasPMID ){
+      url = `${PUBMED_LINK_BASE_URL}${PMID}`;
+    } else if( DOI ){
+      url = `${DOI_LINK_BASE_URL}${DOI}`;
+    }
+    return ({ reference, url });
+  });
+
+  return _.compact( relations );
+};
+
 /**
  * getPubmedCitation
  *
@@ -238,7 +286,7 @@ const getPubmedCitation = PubmedArticle => {
   const doi = getArticleId( PubmedArticle, 'doi' );
   const pubTypes = _.get( Article, 'PublicationTypeList' ); //required
   const { ISODate } = getPubDate( _.get( Article, ['Journal', 'JournalIssue'] ) );
-  const relations = _.get( PubmedArticle, [ 'MedlineCitation', 'CommentsCorrectionsList'], [] );
+  const relations = getRelations( PubmedArticle );
 
   return { title, authors, reference, abstract, pmid, doi, pubTypes, ISODate, relations };
 };
@@ -304,28 +352,5 @@ class ArticleIDError extends Error {
     this.name = 'ArticleIDError';
   }
 }
-
-const COMMENTSCORRECTIONS_REFTYPE = Object.freeze({
-  AssociatedDataset: 'AssociatedDataset',
-  AssociatedPublication: 'AssociatedPublication',
-  CommentOn: 'CommentOn',
-  CommentIn: 'CommentIn',
-  ErratumIn: 'ErratumIn',
-  ErratumFor: 'ErratumFor',
-  ExpressionOfConcernIn: 'ExpressionOfConcernIn',
-  ExpressionOfConcernFor: 'ExpressionOfConcernFor',
-  RepublishedFrom: 'RepublishedFrom',
-  RepublishedIn: 'RepublishedIn',
-  RetractionOf: 'RetractionOf',
-  RetractionIn: 'RetractionIn',
-  UpdateIn: 'UpdateIn',
-  UpdateOf: 'UpdateOf',
-  SummaryForPatientsIn: 'SummaryForPatientsIn',
-  OriginalReportIn: 'OriginalReportIn',
-  ReprintOf: 'ReprintOf',
-  ReprintIn: 'ReprintIn',
-  Cites: 'Cites'
-});
-
 
 export { getPubmedCitation, createPubmedArticle, ArticleIDError, findOrcidIdentifier, COMMENTSCORRECTIONS_REFTYPE };

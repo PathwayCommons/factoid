@@ -30,4 +30,8 @@ const stripFinalPeriod = text => {
   return text;
 };
 
-export { stringDistanceMetric, longestCommonPrefixLength, truncateString, stripFinalPeriod };
+const fromCamelCase = str => {
+  return str.replace(/([a-z])([A-Z])/g, '$1 $2');
+};
+
+export { stringDistanceMetric, longestCommonPrefixLength, truncateString, stripFinalPeriod, fromCamelCase };

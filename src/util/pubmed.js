@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { parse as dateParse } from 'date-fns';
 import { DOI_LINK_BASE_URL, PUBMED_LINK_BASE_URL } from '../config';
+import { fromCamelCase } from './strings';
 
 const NUM_AUTHORS_SHOWING = 4;
 
@@ -233,25 +234,21 @@ const getReferenceString = Journal => {
 const getArticleId = ( PubmedArticle, IdType ) => _.get( _.find( _.get( PubmedArticle, ['PubmedData', 'ArticleIdList'], [] ), [ 'IdType', IdType ] ), 'id', null );
 
 const getRelations = PubmedArticle => {
-  const REFTYPE_2_REF = new Map([
-    [COMMENTSCORRECTIONS_REFTYPE.UpdateIn, 'Update in'],
-    [COMMENTSCORRECTIONS_REFTYPE.UpdateOf, 'Update of']
-  ]);
-  const raw = _.get( PubmedArticle, [ 'MedlineCitation', 'CommentsCorrectionsList' ], [] );
-  const relations = raw.map( ({ RefType, PMID, RefSource, DOI }) => {
+  const formatRefSource = refSource => _.trimEnd( refSource, ':;' );// ? _.first( refSource.split(';') ) : 'link';
+  const commentsCorrections2Link = ({ RefSource, PMID, DOI }) => {
     const hasPMID = !_.isNil( PMID );
     const hasDOI = !_.isNil( DOI );
-    const hasRelation = REFTYPE_2_REF.has( RefType ) && ( hasPMID || hasDOI );
-    if ( !hasRelation ) return null;
-
-    let url, reference;
-    reference = `${REFTYPE_2_REF.get(RefType)} ${RefSource}`;
-    if( hasPMID ){
-      url = `${PUBMED_LINK_BASE_URL}${PMID}`;
-    } else if( DOI ){
-      url = `${DOI_LINK_BASE_URL}${DOI}`;
-    }
+    if( !hasPMID && !hasDOI ) return null;
+    const reference = formatRefSource( RefSource );
+    const url = hasPMID ? `${PUBMED_LINK_BASE_URL}${PMID}` : `${DOI_LINK_BASE_URL}${DOI}`;
     return ({ reference, url });
+  };
+  const raw = _.get( PubmedArticle, [ 'MedlineCitation', 'CommentsCorrectionsList' ], [] );
+  const groups = _.groupBy( raw, 'RefType' );
+  const relations = _.toPairs( groups ).map( ( [ RefType, CommentsCorrectionsList ] ) => {
+    const type = fromCamelCase( RefType );
+    const links = CommentsCorrectionsList.map( commentsCorrections2Link );
+    return ({ type, links });
   });
 
   return _.compact( relations );

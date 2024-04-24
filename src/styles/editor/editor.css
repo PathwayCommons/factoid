@@ -317,12 +317,16 @@
   line-height: 1.4;
 }
 
-.editor-info-relations .editor-info-links {
-  margin: 0.5em 0;
+.editor-info-relations {
+  margin-bottom: 0.8em;
+}
+
+.editor-info-relation {
+  margin: 0.25em 0;
 }
 
 .editor-info-relation-type {
-  margin: 1em 0 0.25em;
+  font-style: italic;
 }
 
 .editor-info-author-spacer {

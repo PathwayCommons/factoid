@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { parse as dateParse } from 'date-fns';
 import { DOI_LINK_BASE_URL, PUBMED_LINK_BASE_URL } from '../config';
-import { fromCamelCase } from './strings';
+import { fromCamelCase, onlyCapitalizeFirst } from './strings';
 
 const NUM_AUTHORS_SHOWING = 4;
 
@@ -246,7 +246,7 @@ const getRelations = PubmedArticle => {
   const raw = _.get( PubmedArticle, [ 'MedlineCitation', 'CommentsCorrectionsList' ], [] );
   const groups = _.groupBy( raw, 'RefType' );
   const relations = _.toPairs( groups ).map( ( [ RefType, CommentsCorrectionsList ] ) => {
-    const type = fromCamelCase( RefType );
+    const type = onlyCapitalizeFirst( fromCamelCase( RefType ) );
     const links = CommentsCorrectionsList.map( commentsCorrections2Link );
     return ({ type, links });
   });

@@ -105,6 +105,13 @@ export class InfoPanel extends Component {
         pmid ? h('a.editor-info-link.plain-link', { target: '_blank', href: `${PUBMED_LINK_BASE_URL}${pmid}` }, 'PubMed') : null,
         h('a.editor-info-link.plain-link', { target: '_blank', href: `${GOOGLE_SCHOLAR_BASE_URL}${( "\u0022" + title + "\u0022") }`}, 'Google Scholar')
       ]),
+      hasRelations ?
+        h('div.editor-info-relations', relations.map( ({ type, links }, i) => [
+          h('div.editor-info-relation', { key: i.toString() }, [
+            h('span.editor-info-relation-type', `${type} `),
+            h('span.editor-info-links', links.map( ({ url, reference }, j ) =>  h('a.editor-info-link.plain-link', { key: j.toString(), target: '_blank', href: url }, reference ) ) )
+          ])
+        ])): null,
       h('div.editor-info-main-sections', [
         abstract ? h('div.editor-info-abstract-section.editor-info-main-section', [
           h('div.editor-info-section-title', abstract ? 'Abstract': 'Summary'),
@@ -115,13 +122,6 @@ export class InfoPanel extends Component {
           h('div.editor-info-related-papers', [ h(RelatedPapers, { document, source: document }) ])
         ]) : null
       ]),
-      hasRelations ?
-        h('div.editor-info-relations', relations.map( ({ type, links }) => [
-          h('div.editor-info-relation', [
-            h('h4.editor-info-relation-type', type),
-            h('div.editor-info-links', links.map( ({ url, reference }) => h('a.editor-info-link.plain-link', { target: '_blank', href: url }, reference ) ) )
-          ])
-        ])): null,
 
       !hasArticleId && !document.editable() ? h('div.editor-coming-soon-placeholder', `Biofactoid is looking for more information about this article from PubMed and pathway databases.  This information will appear here as soon as it is available.`) : null
     ]);

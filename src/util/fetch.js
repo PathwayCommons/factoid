@@ -4,11 +4,12 @@
  * Class representing a Fetch Response error
  */
 class HTTPStatusError extends Error {
-  constructor( message, status, statusText ) {
+  constructor( message, status, statusText, response ) {
     super( message );
     this.status = status;
     this.statusText = statusText;
     this.name = 'HTTPStatusError';
+    this.response = response;
   }
 }
 
@@ -24,7 +25,7 @@ class HTTPStatusError extends Error {
 const checkHTTPStatus = response => {
   const { statusText, status, ok } = response;
   if ( !ok ) {
-    throw new HTTPStatusError( `${statusText} (${status})`, status, statusText );
+    throw new HTTPStatusError( `${statusText} (${status})`, status, statusText, response );
   }
   return response;
 };

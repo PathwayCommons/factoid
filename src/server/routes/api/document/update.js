@@ -117,18 +117,16 @@ const trashDocs = async () => {
 /**
  * Update Document data
  */
-let hasUpdated = false;
 const update = async () => {
   logger.debug('update check');
-  // logger.debug(`timer.delay: ${timer.delay}`);
-  // logger.debug(`timer.last: ${timer.last}`);
-  // if ( !timer.hasElapsed() ) return;
-  if( hasUpdated ) return;
+  logger.debug(`timer.delay: ${timer.delay}`);
+  logger.debug(`timer.last: ${timer.last}`);
+  if ( !timer.hasElapsed() ) return;
+
   try {
     logger.debug('firing an update');
     await updateArticle();
     await trashDocs();
-    hasUpdated = true;
   } catch ( err ) {
     logger.error(`Error in Document update ${err}`);
   } finally {

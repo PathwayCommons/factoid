@@ -112,7 +112,7 @@ const getPubmedArticle = async paperId => {
         logger.error( headers.raw() );
 
       } else if( err instanceof ArticleIDError ){
-        logger.info( `pubmed.getPubmedArticle threw ${err.name}: ${err.message}` );
+        logger.debug( `pubmed.getPubmedArticle threw ${err.name}: ${err.message}` );
 
       } else {
         logger.error( `pubmed.getPubmedArticle threw ${err.name}: ${err.message}` );

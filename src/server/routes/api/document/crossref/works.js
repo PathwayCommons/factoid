@@ -119,7 +119,7 @@ const findPreprint = async paperId => {
       logger.error( headers.raw() );
 
     } else if( err instanceof ArticleIDError ){
-      logger.info( `crossref.findPreprint threw ${err.name}: ${err.message}` );
+      logger.debug( `crossref.findPreprint threw ${err.name}: ${err.message}` );
 
     } else {
       logger.error( `crossref.findPreprint threw ${err.name}: ${err.message}` );

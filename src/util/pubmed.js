@@ -1,7 +1,31 @@
 import _ from 'lodash';
 import { parse as dateParse } from 'date-fns';
+import { DOI_LINK_BASE_URL, PUBMED_LINK_BASE_URL } from '../config';
+import { fromCamelCase, onlyCapitalizeFirst } from './strings';
 
 const NUM_AUTHORS_SHOWING = 4;
+
+const COMMENTSCORRECTIONS_REFTYPE = Object.freeze({
+  AssociatedDataset: 'AssociatedDataset',
+  AssociatedPublication: 'AssociatedPublication',
+  CommentOn: 'CommentOn',
+  CommentIn: 'CommentIn',
+  ErratumIn: 'ErratumIn',
+  ErratumFor: 'ErratumFor',
+  ExpressionOfConcernIn: 'ExpressionOfConcernIn',
+  ExpressionOfConcernFor: 'ExpressionOfConcernFor',
+  RepublishedFrom: 'RepublishedFrom',
+  RepublishedIn: 'RepublishedIn',
+  RetractionOf: 'RetractionOf',
+  RetractionIn: 'RetractionIn',
+  UpdateIn: 'UpdateIn',
+  UpdateOf: 'UpdateOf',
+  SummaryForPatientsIn: 'SummaryForPatientsIn',
+  OriginalReportIn: 'OriginalReportIn',
+  ReprintOf: 'ReprintOf',
+  ReprintIn: 'ReprintIn',
+  Cites: 'Cites'
+});
 
 /**
  * getAuthorName
@@ -209,6 +233,27 @@ const getReferenceString = Journal => {
 
 const getArticleId = ( PubmedArticle, IdType ) => _.get( _.find( _.get( PubmedArticle, ['PubmedData', 'ArticleIdList'], [] ), [ 'IdType', IdType ] ), 'id', null );
 
+const getRelations = PubmedArticle => {
+  const formatRefSource = refSource => _.trimEnd( refSource, ':;' );// ? _.first( refSource.split(';') ) : 'link';
+  const commentsCorrections2Link = ({ RefSource, PMID, DOI }) => {
+    const hasPMID = !_.isNil( PMID );
+    const hasDOI = !_.isNil( DOI );
+    if( !hasPMID && !hasDOI ) return null;
+    const reference = formatRefSource( RefSource );
+    const url = hasPMID ? `${PUBMED_LINK_BASE_URL}${PMID}` : `${DOI_LINK_BASE_URL}${DOI}`;
+    return ({ reference, url });
+  };
+  const raw = _.get( PubmedArticle, [ 'MedlineCitation', 'CommentsCorrectionsList' ], [] );
+  const groups = _.groupBy( raw, 'RefType' );
+  const relations = _.toPairs( groups ).map( ( [ RefType, CommentsCorrectionsList ] ) => {
+    const type = onlyCapitalizeFirst( fromCamelCase( RefType ) );
+    const links = CommentsCorrectionsList.map( commentsCorrections2Link );
+    return ({ type, links });
+  });
+
+  return _.compact( relations );
+};
+
 /**
  * getPubmedCitation
  *
@@ -238,7 +283,7 @@ const getPubmedCitation = PubmedArticle => {
   const doi = getArticleId( PubmedArticle, 'doi' );
   const pubTypes = _.get( Article, 'PublicationTypeList' ); //required
   const { ISODate } = getPubDate( _.get( Article, ['Journal', 'JournalIssue'] ) );
-  const relations = _.get( PubmedArticle, [ 'MedlineCitation', 'CommentsCorrectionsList'], [] );
+  const relations = getRelations( PubmedArticle );
 
   return { title, authors, reference, abstract, pmid, doi, pubTypes, ISODate, relations };
 };
@@ -304,28 +349,5 @@ class ArticleIDError extends Error {
     this.name = 'ArticleIDError';
   }
 }
-
-const COMMENTSCORRECTIONS_REFTYPE = Object.freeze({
-  AssociatedDataset: 'AssociatedDataset',
-  AssociatedPublication: 'AssociatedPublication',
-  CommentOn: 'CommentOn',
-  CommentIn: 'CommentIn',
-  ErratumIn: 'ErratumIn',
-  ErratumFor: 'ErratumFor',
-  ExpressionOfConcernIn: 'ExpressionOfConcernIn',
-  ExpressionOfConcernFor: 'ExpressionOfConcernFor',
-  RepublishedFrom: 'RepublishedFrom',
-  RepublishedIn: 'RepublishedIn',
-  RetractionOf: 'RetractionOf',
-  RetractionIn: 'RetractionIn',
-  UpdateIn: 'UpdateIn',
-  UpdateOf: 'UpdateOf',
-  SummaryForPatientsIn: 'SummaryForPatientsIn',
-  OriginalReportIn: 'OriginalReportIn',
-  ReprintOf: 'ReprintOf',
-  ReprintIn: 'ReprintIn',
-  Cites: 'Cites'
-});
-
 
 export { getPubmedCitation, createPubmedArticle, ArticleIDError, findOrcidIdentifier, COMMENTSCORRECTIONS_REFTYPE };

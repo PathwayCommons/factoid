@@ -111,12 +111,18 @@ const findPreprint = async paperId => {
     }
 
   } catch( err ) {
-    logger.error( `crossref.findPreprint threw ${err.name}: ${err.message}` );
     if( err instanceof HTTPStatusError ){
       const { response } = err;
       const { url, headers } = response;
+      logger.error( `crossref.findPreprint threw ${err.name}: ${err.message}` );
       logger.error( `fetch URL: ${url}` );
       logger.error( headers.raw() );
+
+    } else if( err instanceof ArticleIDError ){
+      logger.info( `crossref.findPreprint threw ${err.name}: ${err.message}` );
+
+    } else {
+      logger.error( `crossref.findPreprint threw ${err.name}: ${err.message}` );
     }
     throw err;
   }

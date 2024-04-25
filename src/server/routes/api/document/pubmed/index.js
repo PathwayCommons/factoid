@@ -104,12 +104,18 @@ const getPubmedArticle = async paperId => {
       }
 
     } catch( err ) {
-      logger.error( `pubmed.getPubmedArticle threw ${err.name}: ${err.message}` );
       if( err instanceof HTTPStatusError ){
         const { response } = err;
         const { url, headers } = response;
+        logger.error( `pubmed.getPubmedArticle threw ${err.name}: ${err.message}` );
         logger.error( `fetch URL: ${url}` );
         logger.error( headers.raw() );
+
+      } else if( err instanceof ArticleIDError ){
+        logger.info( `pubmed.getPubmedArticle threw ${err.name}: ${err.message}` );
+
+      } else {
+        logger.error( `pubmed.getPubmedArticle threw ${err.name}: ${err.message}` );
       }
       throw err;
     }

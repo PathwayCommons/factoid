@@ -660,9 +660,9 @@
   }
 }
 
-.home-search-doc-top {
-  /* flex: 1 1 auto; */
-}
+/* .home-search-doc-top {
+  flex: 1 1 auto;
+} */
 
 .home-search-doc-title {
   position: relative;
@@ -886,7 +886,7 @@
     display: none;
   }
 
-  ..home-intro-figure-sm-alt-section {
+  .home-intro-figure-sm-alt-section {
     display: block;
   }
 

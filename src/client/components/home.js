@@ -7,6 +7,7 @@ import { Carousel, CAROUSEL_CONTENT } from './carousel';
 import { tryPromise } from '../../util';
 import { formatDistanceToNow } from 'date-fns';
 import DocumentSearch from '../document-search';
+import Accordion from './accordion.js';
 
 import { TWITTER_ACCOUNT_NAME, SAMPLE_DOC_ID, EMAIL_ADDRESS_INFO } from '../../config';
 import _ from 'lodash';
@@ -555,6 +556,14 @@ class Home extends Component {
               h('button.home-cta-button', 'Contact us')
             ])
           ])
+        ])
+      ]),
+      h('div.home-section.home-fluid-section.home-fluid-section-no-figure', [
+        h('div.home-fluid-section-copy', [
+          h( Accordion, { title: 'Frequently Asked Questions', items: [
+            { title: 'What is Biofactoid?', description: 'Biofactoid is a platform for creating and sharing digital profiles of scientific discoveries in articles.  Authors can create a profile of their article, and researchers can explore the profiles to find related research.' },
+            { title: 'What is Biofactoid?', description: 'Biofactoid is a platform for creating and sharing digital profiles of scientific discoveries in articles.  Authors can create a profile of their article, and researchers can explore the profiles to find related research.' }
+          ] } )
         ])
       ]),
       h('div.home-section.home-search-results', [

@@ -1,0 +1,50 @@
+.accordion {
+  position: relative;
+}
+
+.accordion-items {
+  max-width: 70%;
+}
+
+.accordion-item {
+  background: lightcoral;
+}
+
+.accordion-item-header {
+  position: relative;
+}
+
+.accordion-item-header .accordion-item-header-title {
+  font-size: large;
+}
+
+.accordion-item-header:hover {
+  cursor: pointer;
+}
+
+.accordion-item-header-icon {
+  position: absolute;
+  top: 70%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  transition: all 0.2s ease;
+}
+
+.accordion .accordion-item-content {
+  padding: 0 1em;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.accordion .accordion-item.open .accordion-item-header {
+  margin-bottom: 15px;
+}
+
+.accordion .accordion-item.open .accordion-item-content {
+  max-height: 1000px;
+  opacity: 1;
+}

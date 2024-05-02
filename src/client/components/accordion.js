@@ -52,7 +52,7 @@ export class Accordion extends Component {
   render(){
     const { title, items } = this.props;
     return h('div.accordion', [
-      h('h2.accordion-title', title ),
+      title ? h('h3.accordion-title', title ) : null,
       h('div.accordion-items', items.map( (item, key) => h( AccordionItem, { key, item } ) ) )
     ]);
   }

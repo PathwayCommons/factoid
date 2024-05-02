@@ -560,7 +560,9 @@ class Home extends Component {
       ]),
       h('div.home-section.home-fluid-section.home-fluid-section-no-figure', [
         h('div.home-fluid-section-copy', [
-          h( Accordion, { title: 'Frequently Asked Questions', items: [
+          h( Accordion, {
+            title: 'Frequently Asked Questions',
+            items: [
             { title: 'What is Biofactoid?', description: 'Biofactoid is a platform for creating and sharing digital profiles of scientific discoveries in articles.  Authors can create a profile of their article, and researchers can explore the profiles to find related research.' },
             { title: 'What is Biofactoid?', description: 'Biofactoid is a platform for creating and sharing digital profiles of scientific discoveries in articles.  Authors can create a profile of their article, and researchers can explore the profiles to find related research.' }
           ] } )

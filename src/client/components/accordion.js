@@ -27,13 +27,13 @@ export class AccordionItem extends Component {
     const { title, description } = this.props.item;
     const { isOpen } = this.state;
     const content = _.isString( description ) ? [ h('p', description) ] : description;
-    return h('div.accordion-item', {
-      className: makeClassList({
-        'open': isOpen
-      }),
-      onClick: () => this.toggleItem()
-    }, [
-      h('div.accordion-item-header', [
+    return h('div.accordion-item', [
+      h('div.accordion-item-header', {
+          className: makeClassList({
+            'open': isOpen
+          }),
+          onClick: () => this.toggleItem()
+        }, [
         h( 'p.accordion-item-header-title', title ),
         isOpen ? h('i.material-icons.accordion-item-header-icon', 'expand_less') :
         h('i.material-icons.accordion-item-header-icon', 'expand_more')

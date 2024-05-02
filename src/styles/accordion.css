@@ -48,11 +48,11 @@
   }
 }
 
-.accordion .accordion-item.open .accordion-item-header {
+.accordion .accordion-item .accordion-item-header.open {
   margin-bottom: 15px;
 }
 
-.accordion .accordion-item.open .accordion-item-content {
+.accordion .accordion-item .accordion-item-header.open + .accordion-item-content {
   max-height: 1000px;
   opacity: 1;
 }

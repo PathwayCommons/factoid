@@ -564,26 +564,36 @@ class Home extends Component {
           h( Accordion, {
             title: [ h('span', { id: 'faq' }, 'Frequently Asked Questions')],
             items: [
-              { title: 'What is Biofactoid?', description: 'A tool to map biological pathways, assembled from author-curated results in papers.'},
+              { title: 'What is Biofactoid?', description: [
+                h('p', [
+                  'A tool to map ',
+                  h('a.plain-link', { href: 'https://en.wikipedia.org/wiki/Biological_pathway', target: '_blank' }, 'biological pathways'),
+                  ' assembled from author-curated results in papers.'
+                ])
+              ]},
               { title: 'What problem does Biofactoid help solve?', description: [
                   h('p', 'Think about the last time you snapped a photo of your friends or family (or your pet). Your phone automatically identified and focused on all the faces, but, whether you were aware of it or not, it also labelled those faces (and cars, food, cute babies) so that it could organise your album by the places, people, pets and things within the images.'),
                   h('p', 'Wouldn’t it be great if all of the scientific details in a paper were readily identifiable by  computers so that information across the literature could be precisely related and combined?'),
-                  h('p', 'Despite the fact that scientific papers are distributed digitally, the content itself -- plain text and images -- remains rooted in the print era. Unfortunately, knowledge in the text and figures in papers is extremely challenging for computers to accurately extract and use. We traditionally rely on expert curators at biological resources (e.g., UniProt) to read papers and enter the information in a format that a computer can work with. However, this is expensive and there are too many papers for expert curators to handle at the same time.'),
+                  h('p', [
+                    'Despite the fact that scientific papers are distributed digitally, the content itself -- plain text and images -- remains rooted in the print era. Unfortunately, knowledge in the text and figures in papers is extremely challenging for computers to accurately extract and use. We traditionally rely on expert curators at biological resources (e.g., ',
+                    h('a.plain-link', { href: 'https://www.uniprot.org/', target: '_blank' }, 'UniProt'),
+                    ') to read papers and enter the information in a format that a computer can work with. However, this is expensive and there are too many papers for expert curators to handle at the same time.'
+                  ]),
                   h('p', 'Biofactoid rethinks the way information in papers is captured by enabling curation by authors of scientific articles, which is accurate, since authors are authoritative experts on their studies, and scales to support comprehensive, up-to-the-minute coverage of the literature.')
               ]},
               { title: 'What kind of information does Biofactoid contain?', description: 'Functional relationships (e.g., binding, transcription) between molecules and chemicals. For instance, "NAD+ binds to mouse PARP1".'},
               { title: 'Which species does Biofactoid support?', description: [
                 h('p', [
                   'Humans and major model organisms including: ',
-                  h('em', 'M. musculus'), h('span', ', '),
-                  h('em', 'R. norvegicus'), h('span', ', '),
-                  h('em', 'S. cerevisiae'), h('span', ', '),
-                  h('em', 'D. melanogaster'), h('span', ', '),
-                  h('em', 'E. coli'), h('span', ', '),
-                  h('em', 'C. elegans'), h('span', ', '),
-                  h('em', 'D. rerio'), h('span', ', '),
-                  h('em', 'A. thaliana'), h('span', ', as well as '),
-                  h('em', 'SARS-CoV-2'), h('span', '.')
+                  h('em', 'M. musculus'), ', ',
+                  h('em', 'R. norvegicus'), ', ',
+                  h('em', 'S. cerevisiae'), ', ',
+                  h('em', 'D. melanogaster'), ', ',
+                  h('em', 'E. coli'), ', ',
+                  h('em', 'C. elegans'), ', ',
+                  h('em', 'D. rerio'), ', ',
+                  h('em', 'A. thaliana'), ', as well as ',
+                  h('em', 'SARS-CoV-2.')
                 ])
               ]},
               { title: 'Can anyone submit an article?', description: [

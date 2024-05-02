@@ -1,6 +1,7 @@
 import h from 'react-hyperscript';
 import { Component } from 'react';
 import { makeClassList } from '../dom';
+import _ from 'lodash';
 
 
 export const ACCORDION_ITEM_FIELDS = {
@@ -25,6 +26,7 @@ export class AccordionItem extends Component {
   render(){
     const { title, description } = this.props.item;
     const { isOpen } = this.state;
+    const content = _.isString( description ) ? [ h('p', description) ] : description;
     return h('div.accordion-item', {
       className: makeClassList({
         'open': isOpen
@@ -32,11 +34,11 @@ export class AccordionItem extends Component {
       onClick: () => this.toggleItem()
     }, [
       h('div.accordion-item-header', [
-        h( 'div.accordion-item-header-title', title ),
+        h( 'p.accordion-item-header-title', title ),
         isOpen ? h('i.material-icons.accordion-item-header-icon', 'expand_less') :
         h('i.material-icons.accordion-item-header-icon', 'expand_more')
       ]),
-      h('p.accordion-item-content', description )
+      h('div.accordion-item-content', content )
     ]);
   }
 }

@@ -1,6 +1,7 @@
 .accordion {
-  position: relative;
-  max-width: 75%;
+  margin: auto;
+  width: 75%;
+  padding: 10px;
 }
 
 .accordion-item {
@@ -8,12 +9,13 @@
   border-bottom: 1px solid rgb(234, 234, 234);
 }
 
-.accordion p {
-  margin: 0;
-}
-
 .accordion-item-header {
   position: relative;
+}
+
+.accordion-item-header .accordion-item-header-title {
+  margin: 0;
+  max-width: 90%;
 }
 
 .accordion-item-header:hover {
@@ -32,6 +34,18 @@
   opacity: 0;
   max-height: 0;
   overflow: hidden;
+
+  & p {
+    color: #000;
+  }
+
+  & ul {
+    margin-top: 0;
+  }
+
+  & li {
+    margin: 0;
+  }
 }
 
 .accordion .accordion-item.open .accordion-item-header {

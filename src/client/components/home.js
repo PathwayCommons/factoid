@@ -378,7 +378,8 @@ class Home extends Component {
             h('a.home-nav-link', [
               h(ContactPopover)
             ]),
-            h('a.home-nav-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}`, target: '_blank' }, 'Twitter')
+            h('a.home-nav-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}`, target: '_blank' }, 'Twitter'),
+            h('a.home-nav-link', { href: '#faq' }, 'FAQ')
           ])
         ]),
         h('div.home-intro', [
@@ -561,7 +562,7 @@ class Home extends Component {
       h('div.home-section.home-fluid-section.home-fluid-section-no-figure', [
         h('div.home-fluid-section-copy', [
           h( Accordion, {
-            title: 'Frequently Asked Questions',
+            title: [ h('span', { id: 'faq' }, 'Frequently Asked Questions')],
             items: [
               { title: 'What is Biofactoid?', description: 'A tool to map biological pathways, assembled from author-curated results in papers.'},
               { title: 'What problem does Biofactoid help solve?', description: [
@@ -571,9 +572,9 @@ class Home extends Component {
                   h('p', 'Biofactoid rethinks the way information in papers is captured by enabling curation by authors of scientific articles, which is accurate, since authors are authoritative experts on their studies, and scales to support comprehensive, up-to-the-minute coverage of the literature.')
               ]},
               { title: 'What kind of information does Biofactoid contain?', description: 'Functional relationships (e.g., binding, transcription) between molecules and chemicals. For instance, "NAD+ binds to mouse PARP1".'},
-              { title: 'What species does Biofactoid support?', description: [
+              { title: 'Which species does Biofactoid support?', description: [
                 h('p', [
-                  'Biofactoid supports entries about human biology and major model organisms including: ',
+                  'Humans and major model organisms including: ',
                   h('em', 'M. musculus'), h('span', ', '),
                   h('em', 'R. norvegicus'), h('span', ', '),
                   h('em', 'S. cerevisiae'), h('span', ', '),
@@ -585,10 +586,16 @@ class Home extends Component {
                   h('em', 'SARS-CoV-2'), h('span', '.')
                 ])
               ]},
-              { title: 'Can anyone submit an article?', description: 'Any author of a primary research article is welcome to submit content to Biofactoid. Authors access the curation tool via a private web link. Author names and emails are associated with Biofactoid records and matched against corresponding author and ORCID information (when available) for each article. The Biofactoid website displays the name of the author who created the record, linked to their ORCID.' },
-              { title: 'How long will it take to create an entry for my article?', description: 'A typical author spends a total of 6 minutes (median time) to add information from a paper; this usually involves 3 interactions. More than a quarter of users finish in less than 3 minutes.' },
+              { title: 'Can anyone submit an article?', description: [
+                h('p', [
+                  h('span', 'Any author of a primary research article is welcome to submit content to Biofactoid. Authors access the curation tool via a private web link. Author names and emails are associated with Biofactoid records and matched against corresponding author and '),
+                  h('a.plain-link', { href: 'https://orcid.org/', target: '_blank' }, 'Open Researcher and Contributor ID (ORCID)'),
+                  h('span', ' information (when available) for each article. The Biofactoid website displays the name of the author who created the record, linked to their ORCID.')
+                ])
+              ]},
+              { title: 'How long does it take?', description: 'A typical author spends a total of 6 minutes to add information from a paper; this usually involves 3 interactions. More than a quarter of users finish in less than 3 minutes.' },
               { title: 'Do I need to create an account?', description: 'No. All Biofactoid data is freely and openly available for all to use, download and redistribute without restriction. Authors curate their paper by following a private web link. Email addresses remain private and are never shared.' },
-              { title: 'How does Biofactoid compare to pathway databases like Reactome or STRING?', description: [
+              { title: 'How does Biofactoid compare to other pathway databases like Reactome or STRING?', description: [
                 h('p', 'Biofactoid collects pathway and network data and makes it available as a resource to support many different uses. Biofactoid data can be searched as is, as a knowledge resource. It can also provide input data for pathway and network analyses, such as the following:'),
                 h('ul', [
                   h('li', [
@@ -598,7 +605,7 @@ class Home extends Component {
                   h('li', 'Reactome curates a defined set of human pathways from select papers, focusing on a consensus (i.e. "textbook") interpretation of biological processes; Biofactoid supports author-curation of all papers with pathway results')
                 ])
               ]},
-              { title: 'What are examples of how Biofactoid data is used?', description: [
+              { title: 'How is Biofactoid data is used?', description: [
                 h('p', 'Biofactoid collects pathway and network data and makes it available as a resource to support many different uses. Biofactoid data can be searched as is, as a knowledge resource. It can also provide input data for pathway and network analyses, such as the following:'),
                 h('ul', [
                   h('li', [

@@ -7,6 +7,7 @@ import { Carousel, CAROUSEL_CONTENT } from './carousel';
 import { tryPromise } from '../../util';
 import { formatDistanceToNow } from 'date-fns';
 import DocumentSearch from '../document-search';
+import Accordion from './accordion.js';
 
 import { TWITTER_ACCOUNT_NAME, SAMPLE_DOC_ID, EMAIL_ADDRESS_INFO } from '../../config';
 import _ from 'lodash';
@@ -377,7 +378,8 @@ class Home extends Component {
             h('a.home-nav-link', [
               h(ContactPopover)
             ]),
-            h('a.home-nav-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}`, target: '_blank' }, 'Twitter')
+            h('a.home-nav-link', { href: `https://twitter.com/${TWITTER_ACCOUNT_NAME}`, target: '_blank' }, 'Twitter'),
+            h('a.home-nav-link', { href: '#faq' }, 'FAQ')
           ])
         ]),
         h('div.home-intro', [
@@ -555,6 +557,136 @@ class Home extends Component {
               h('button.home-cta-button', 'Contact us')
             ])
           ])
+        ])
+      ]),
+      h('div.home-section.home-fluid-section.home-fluid-section-no-figure', [
+        h('div.home-fluid-section-copy', [
+          h( Accordion, {
+            title: [ h('span', { id: 'faq' }, 'Frequently Asked Questions')],
+            items: [
+              { title: 'What is Biofactoid?', description: [
+                h('p', [
+                  'A tool to map ',
+                  h('a.plain-link', { href: 'https://en.wikipedia.org/wiki/Biological_pathway', target: '_blank' }, 'biological pathways'),
+                  ' assembled from author-curated results in papers.'
+                ])
+              ]},
+              { title: 'What problem does Biofactoid help solve?', description: [
+                  h('p', 'Think about the last time you snapped a photo of your friends or family (or your pet). Your phone automatically identified and focused on all the faces, but, whether you were aware of it or not, it also labelled those faces (and cars, food, cute babies) so that it could organise your album by the places, people, pets and things within the images.'),
+                  h('p', 'Wouldn’t it be great if all of the scientific details in a paper were readily identifiable by  computers so that information across the literature could be precisely related and combined?'),
+                  h('p', [
+                    'Despite the fact that scientific papers are distributed digitally, the content itself -- plain text and images -- remains rooted in the print era. Unfortunately, knowledge in the text and figures in papers is extremely challenging for computers to accurately extract and use. We traditionally rely on expert curators at biological resources (e.g., ',
+                    h('a.plain-link', { href: 'https://www.uniprot.org/', target: '_blank' }, 'UniProt'),
+                    ') to read papers and enter the information in a format that a computer can work with. However, this is expensive and there are too many papers for expert curators to handle at the same time.'
+                  ]),
+                  h('p', 'Biofactoid rethinks the way information in papers is captured by enabling curation by authors of scientific articles, which is accurate, since authors are authoritative experts on their studies, and scales to support comprehensive, up-to-the-minute coverage of the literature.')
+              ]},
+              { title: 'What kind of information does Biofactoid contain?', description: 'Functional relationships (e.g., binding, transcription) between molecules and chemicals. For instance, "NAD+ binds to mouse PARP1".'},
+              { title: 'Which species does Biofactoid support?', description: [
+                h('p', [
+                  'Humans and major model organisms including: ',
+                  h('em', 'M. musculus'), ', ',
+                  h('em', 'R. norvegicus'), ', ',
+                  h('em', 'S. cerevisiae'), ', ',
+                  h('em', 'D. melanogaster'), ', ',
+                  h('em', 'E. coli'), ', ',
+                  h('em', 'C. elegans'), ', ',
+                  h('em', 'D. rerio'), ', ',
+                  h('em', 'A. thaliana'), ', as well as ',
+                  h('em', 'SARS-CoV-2.')
+                ])
+              ]},
+              { title: 'Can anyone submit an article?', description: [
+                h('p', [
+                  h('span', 'Any author of a primary research article is welcome to submit content to Biofactoid. Authors access the curation tool via a private web link. Author names and emails are associated with Biofactoid records and matched against corresponding author and '),
+                  h('a.plain-link', { href: 'https://orcid.org/', target: '_blank' }, 'Open Researcher and Contributor ID (ORCID)'),
+                  h('span', ' information (when available) for each article. The Biofactoid website displays the name of the author who created the record, linked to their ORCID.')
+                ])
+              ]},
+              { title: 'How long does it take?', description: 'A typical author spends a total of 6 minutes to add information from a paper; this usually involves 3 interactions. More than a quarter of users finish in less than 3 minutes.' },
+              { title: 'Do I need to create an account?', description: 'No. All Biofactoid data is freely and openly available for all to use, download and redistribute without restriction. Authors curate their paper by following a private web link. Email addresses remain private and are never shared.' },
+              { title: 'How does Biofactoid compare to other pathway databases like Reactome or STRING?', description: [
+                h('p', 'Biofactoid collects pathway and network data and makes it available as a resource to support many different uses. Biofactoid data can be searched as is, as a knowledge resource. It can also provide input data for pathway and network analyses, such as the following:'),
+                h('ul', [
+                  h('li', [
+                    'STRING collects data from other sources, such as Biocarta, BioCyc, Gene Ontology, KEGG, and Reactome; ',
+                    h('u', 'Biofactoid is a primary source of curated data')
+                  ]),
+                  h('li', 'Reactome curates a defined set of human pathways from select papers, focusing on a consensus (i.e. "textbook") interpretation of biological processes; Biofactoid supports author-curation of all papers with pathway results')
+                ])
+              ]},
+              { title: 'How is Biofactoid data is used?', description: [
+                h('p', 'Biofactoid collects pathway and network data and makes it available as a resource to support many different uses. Biofactoid data can be searched as is, as a knowledge resource. It can also provide input data for pathway and network analyses, such as the following:'),
+                h('ul', [
+                  h('li', [
+                    h('b', 'Interpreting long lists of genes from large-scale experiments'),
+                    h('ul', [
+                      h('p', 'Comprehensive quantification of DNA, RNA and proteins in biological samples yields long lists of measured entities (e.g. differentially expressed genes) which are difficult to interpret. Pathway enrichment analysis summarises gene lists as a smaller, more easily interpretable list of affected pathways. Pathway data is obtained from manually curated resources.'),
+                      h('li', [
+                        h('a.plain-link', { href: 'https://www.science.org/doi/full/10.1126/scisignal.aan3580', target: '_blank' }, 'Integrated in vivo multiomics analysis identifies p21-activated kinase signaling as a driver of colitis.'),
+                        ' Sci. Signal 11 (2018)'
+                      ]),
+                      h('li', [
+                        h('a.plain-link', { href: 'https://www.nature.com/articles/nature13108', target: '_blank' }, 'Epigenomic alterations define lethal CIMP-positive ependymomas of infancy.'),
+                        ' Nature 506 (2014)'
+                      ]),
+                      h('li', [
+                        h('a.plain-link', { href: 'https://www.nature.com/articles/nature13483', target: '_blank' }, 'DNA-damage-induced differentiation of leukaemic cells as an anti-cancer barrier.'),
+                        ' Nature 514 (2014)'
+                      ])
+                    ])
+                  ]),
+                  h('li', [
+                    h('b', 'Exploring the mechanistic neighbourhood of a gene or drug'),
+                    h('ul', [
+                      h('p', 'Functional screens (e.g., RNAi) and genetic screens can implicate one or a few genes in a phenotype. However, complex cellular networks of gene products and chemicals underlie most genotype-to-phenotype relationships. An integrated resource of curated biological relationships enables researchers to explore a  neighbourhood of direct and indirect mechanistic interactions for a protein (or drug) of interest.'),
+                      h('li', [
+                          'Search engines: ',
+                          h('a.plain-link', { href: 'https://string-db.org/', target: '_blank' }, 'STRING'),
+                          h('span', ', '),
+                          h('a.plain-link', { href: 'https://genemania.org/', target: '_blank' }, 'GeneMANIA'),
+                          h('span', ', '),
+                          h('a.plain-link', { href: 'https://apps.pathwaycommons.org/', target: '_blank' }, 'Pathway Commons Search')
+                      ])
+                    ]),
+                  ]),
+                  h('li', [
+                    h('b', 'Network analysis'),
+                    h('ul', [
+                    h('p', 'The research community has used pathway and interaction data in a wide variety of computational analyses:'),
+                      h('li', [
+                        h('em', 'Constructing quantitative dynamical models from curated pathways'),
+                        h('ul', [
+                          h('li', [
+                            h('a.plain-link', { href: 'https://pubmed.ncbi.nlm.nih.gov/24273241/', target: '_blank' }, 'Pathway Commons at virtual cell: use of pathway data for mathematical.'),
+                            ' Bioinformatics 15:30 (2014)'
+                          ])
+                        ]),
+                      ]),
+                      h('li', [
+                        h('em', 'Using curated pathways to assemble a kinase signalling network that explains kinase data'),
+                        h('ul', [
+                          h('li', [
+                            h('a.plain-link', { href: 'https://www.nature.com/articles/nmeth.3773', target: '_blank' }, 'DREAM Challenge: Hill, S. M. et al. Inferring causal molecular networks: empirical assessment through a community-based effort.'),
+                            ' Nat. Methods 13 (2016)'
+                          ])
+                        ]),
+                      ]),
+                      h('li', [
+                        h('em', 'Using curated pathways to explain mutually exclusive mutations in cancer'),
+                        h('ul', [
+                          h('li', [
+                            h('a.plain-link', { href: 'https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0612-6', target: '_blank' }, 'Systematic identification of cancer driving signaling pathways based on mutual exclusivity of genomic alterations.'),
+                            ' Genome Biology 16:45 (2015)'
+                          ])
+                        ]),
+                      ])
+                    ])
+                  ])
+                ])
+              ]}
+            ]
+          })
         ])
       ]),
       h('div.home-section.home-search-results', [

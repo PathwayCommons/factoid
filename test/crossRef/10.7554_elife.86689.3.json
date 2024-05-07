@@ -1,0 +1,331 @@
+{
+  "indexed": {
+    "date-parts": [
+      [
+        2024,
+        3,
+        4
+      ]
+    ],
+    "date-time": "2024-03-04T21:37:09Z",
+    "timestamp": 1709588229648
+  },
+  "posted": {
+    "date-parts": [
+      [
+        2023,
+        8,
+        25
+      ]
+    ]
+  },
+  "group-title": "elife",
+  "reference-count": 0,
+  "publisher": "eLife Sciences Publications, Ltd",
+  "license": [
+    {
+      "start": {
+        "date-parts": [
+          [
+            2023,
+            8,
+            25
+          ]
+        ],
+        "date-time": "2023-08-25T00:00:00Z",
+        "timestamp": 1692921600000
+      },
+      "content-version": "unspecified",
+      "delay-in-days": 0,
+      "URL": "http:\/\/creativecommons.org\/licenses\/by\/4.0\/"
+    }
+  ],
+  "content-domain": {
+    "domain": [],
+    "crossmark-restriction": false
+  },
+  "short-container-title": [],
+  "abstract": "<jats:p>The primary cilium plays important roles in regulating cell differentiation, signal transduction, and tissue organization. Dysfunction of the primary cilium can lead to ciliopathies and cancer. The formation and organization of the primary cilium are highly associated with cell polarity proteins, such as the apical polarity protein CRB3. However, the molecular mechanisms by which CRB3 regulates ciliogenesis and the location of CRB3 remain unknown. Here, we show that CRB3, as a navigator, regulates vesicle trafficking in γ-TuRC assembly during ciliogenesis and cilium-related Hh and Wnt signaling pathways in tumorigenesis. Crb3 knockout mice display severe defects of the primary cilium in the mammary ductal lumen and renal tubule, while mammary epithelial-specific Crb3 knockout mice exhibit the promotion of ductal epithelial hyperplasia and tumorigenesis. CRB3 is essential for lumen formation and ciliary assembly in the mammary epithelium. We demonstrate that CRB3 localizes to the basal body and that CRB3 trafficking is mediated by Rab11-positive endosomes. Significantly, CRB3 interacts with Rab11 to navigate GCP6\/Rab11 trafficking vesicles to CEP290, resulting in intact γ-TuRC assembly. In addition, CRB3-depleted cells are unresponsive to the activation of the Hh signaling pathway, while CRB3 regulates the Wnt signaling pathway. Therefore, our studies reveal the molecular mechanisms by which CRB3 recognizes Rab11-positive endosomes to facilitate ciliogenesis, and regulates cilium-related signaling pathways in tumorigenesis.<\/jats:p>",
+  "DOI": "10.7554\/elife.86689.3",
+  "type": "posted-content",
+  "created": {
+    "date-parts": [
+      [
+        2023,
+        8,
+        25
+      ]
+    ],
+    "date-time": "2023-08-25T11:05:14Z",
+    "timestamp": 1692961514000
+  },
+  "source": "Crossref",
+  "is-referenced-by-count": 0,
+  "title": [
+    "CRB3 navigates Rab11 trafficking vesicles to promote γTuRC assembly during ciliogenesis"
+  ],
+  "prefix": "10.7554",
+  "author": [
+    {
+      "given": "Bo",
+      "family": "Wang",
+      "sequence": "first",
+      "affiliation": [
+        {
+          "name": "Center for Translational Medicine, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        },
+        {
+          "name": "Key Laboratory for Tumor Precision Medicine of Shaanxi Province, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        }
+      ]
+    },
+    {
+      "given": "Zheyong",
+      "family": "Liang",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Center for Translational Medicine, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        },
+        {
+          "name": "Department of Cardiovascular Surgery, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        }
+      ]
+    },
+    {
+      "given": "Tan",
+      "family": "tan",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Center for Precision Medicine, Affiliated to The First People’s Hospital of Chenzhou, University of South China, Chenzhou 423000, Hunan, P.R. China"
+        }
+      ]
+    },
+    {
+      "given": "Miao",
+      "family": "Zhang",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Center for Translational Medicine, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        },
+        {
+          "name": "Key Laboratory for Tumor Precision Medicine of Shaanxi Province, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        }
+      ]
+    },
+    {
+      "given": "Yina",
+      "family": "Jiang",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Department of Pathology, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        }
+      ]
+    },
+    {
+      "given": "Yangyang",
+      "family": "Shang",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Center for Translational Medicine, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        },
+        {
+          "name": "Key Laboratory for Tumor Precision Medicine of Shaanxi Province, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        }
+      ]
+    },
+    {
+      "given": "Xiaoqian",
+      "family": "Gao",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Center for Translational Medicine, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        },
+        {
+          "name": "Key Laboratory for Tumor Precision Medicine of Shaanxi Province, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        }
+      ]
+    },
+    {
+      "given": "Shaoran",
+      "family": "Song",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Center for Translational Medicine, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        },
+        {
+          "name": "Key Laboratory for Tumor Precision Medicine of Shaanxi Province, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        }
+      ]
+    },
+    {
+      "given": "Ruiqi",
+      "family": "Wang",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Center for Translational Medicine, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        },
+        {
+          "name": "Key Laboratory for Tumor Precision Medicine of Shaanxi Province, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        }
+      ]
+    },
+    {
+      "given": "He",
+      "family": "Chen",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Center for Translational Medicine, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        },
+        {
+          "name": "Key Laboratory for Tumor Precision Medicine of Shaanxi Province, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        }
+      ]
+    },
+    {
+      "given": "Jie",
+      "family": "Liu",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Center for Translational Medicine, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        },
+        {
+          "name": "Key Laboratory for Tumor Precision Medicine of Shaanxi Province, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        }
+      ]
+    },
+    {
+      "given": "Juan",
+      "family": "Li",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Center for Translational Medicine, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        },
+        {
+          "name": "Key Laboratory for Tumor Precision Medicine of Shaanxi Province, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        }
+      ]
+    },
+    {
+      "given": "Yu",
+      "family": "Ren",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Department of Breast Surgery, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        }
+      ]
+    },
+    {
+      "given": "Peijun",
+      "family": "Liu",
+      "sequence": "additional",
+      "affiliation": [
+        {
+          "name": "Center for Translational Medicine, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        },
+        {
+          "name": "Key Laboratory for Tumor Precision Medicine of Shaanxi Province, the First Affiliated Hospital of Xi’an Jiaotong University, Xi’an 710061, Shaanxi, P.R. China"
+        }
+      ]
+    }
+  ],
+  "member": "4374",
+  "container-title": [],
+  "original-title": [],
+  "deposited": {
+    "date-parts": [
+      [
+        2023,
+        8,
+        25
+      ]
+    ],
+    "date-time": "2023-08-25T11:05:14Z",
+    "timestamp": 1692961514000
+  },
+  "score": 1,
+  "resource": {
+    "primary": {
+      "URL": "https:\/\/elifesciences.org\/reviewed-preprints\/86689v3"
+    }
+  },
+  "subtitle": [],
+  "short-title": [],
+  "issued": {
+    "date-parts": [
+      [
+        2023,
+        8,
+        25
+      ]
+    ]
+  },
+  "references-count": 0,
+  "URL": "http:\/\/dx.doi.org\/10.7554\/elife.86689.3",
+  "relation": {
+    "has-version": [
+      {
+        "id-type": "doi",
+        "id": "10.7554\/eLife.86689.2",
+        "asserted-by": "subject"
+      },
+      {
+        "id-type": "doi",
+        "id": "10.7554\/eLife.86689.4",
+        "asserted-by": "object"
+      }
+    ],
+    "is-version-of": [
+      {
+        "id-type": "doi",
+        "id": "10.1101\/2023.02.15.528649",
+        "asserted-by": "subject"
+      }
+    ],
+    "has-review": [
+      {
+        "id-type": "doi",
+        "id": "10.7554\/eLife.86689.3.sa2",
+        "asserted-by": "object"
+      },
+      {
+        "id-type": "doi",
+        "id": "10.7554\/eLife.86689.3.sa1",
+        "asserted-by": "object"
+      },
+      {
+        "id-type": "doi",
+        "id": "10.7554\/eLife.86689.3.sa0",
+        "asserted-by": "object"
+      }
+    ],
+    "is-preprint-of": [
+      {
+        "id-type": "doi",
+        "id": "10.7554\/eLife.86689.4",
+        "asserted-by": "object"
+      }
+    ]
+  },
+  "published": {
+    "date-parts": [
+      [
+        2023,
+        8,
+        25
+      ]
+    ]
+  },
+  "subtype": "preprint"
+}

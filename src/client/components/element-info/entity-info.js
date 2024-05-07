@@ -365,11 +365,6 @@ class EntityInfo extends DataComponent {
     let doc = p.document;
     let children = [];
 
-    const citation = doc.citation();
-    const { pmid } = citation;
-
-    const hasPubmedMetadata = pmid != null;
-
     let Loader = ({ loading = true }) => h('div.entity-info-matches-loading' + (loading ? '.entity-info-matches-loading-active' : ''), [
       loading ? h('i.icon.icon-spinner') : h('i.material-icons', 'remove')
     ]);
@@ -612,6 +607,7 @@ class EntityInfo extends DataComponent {
         if( isComplex(s.element.type()) ){
           const entityNames = s.element.participants().map(ppt => ppt.name());
           children.push( h('div.entity-info-assoc', targetFromAssoc({ type, name, entityNames }, true )) );
+
           if (hasRelatedPapers) {
             children.push( h('div.entity-info-reld-papers-title', `Recommended articles`) );
 

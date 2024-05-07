@@ -67,13 +67,15 @@ export class InfoPanel extends Component {
     const citation = document.citation();
     // authorProfiles may not be existing for the older documents
     const authorProfiles = document.authorProfiles() || citation.authors.authorList;
-    const { pmid, title = 'Untitled article', reference, doi, abstract } = citation;
+    const { pmid, title = 'Untitled article', reference, doi, abstract, relations } = citation;
 
     const retractedPubType = _.find( citation.pubTypes, ['UI', 'D016441'] );
     const retractFlag = retractedPubType ? h('span.editor-info-flag.super-salient-button.danger', retractedPubType.value) : null;
 
     const hasArticleId = pmid != null || doi != null;
     const hasRelatedPapers = !_.isEmpty( document.relatedPapers() );
+
+    const hasRelations = !_.isEmpty( relations );
 
     return h('div.editor-info-panel', [
       h('div.editor-info-flags', [ retractFlag ]),
@@ -103,6 +105,13 @@ export class InfoPanel extends Component {
         pmid ? h('a.editor-info-link.plain-link', { target: '_blank', href: `${PUBMED_LINK_BASE_URL}${pmid}` }, 'PubMed') : null,
         h('a.editor-info-link.plain-link', { target: '_blank', href: `${GOOGLE_SCHOLAR_BASE_URL}${( "\u0022" + title + "\u0022") }`}, 'Google Scholar')
       ]),
+      hasRelations ?
+        h('div.editor-info-relations', relations.map( ({ type, links }, i) => [
+          h('div.editor-info-relation', { key: i.toString() }, [
+            h('span.editor-info-relation-type', `${type} `),
+            h('span.editor-info-links', links.map( ({ url, reference }, j ) =>  h('a.editor-info-link.plain-link', { key: j.toString(), target: '_blank', href: url }, reference ) ) )
+          ])
+        ])): null,
       h('div.editor-info-main-sections', [
         abstract ? h('div.editor-info-abstract-section.editor-info-main-section', [
           h('div.editor-info-section-title', abstract ? 'Abstract': 'Summary'),

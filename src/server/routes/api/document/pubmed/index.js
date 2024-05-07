@@ -7,7 +7,7 @@ import { ArticleIDError, getPubmedCitation } from '../../../../../util/pubmed';
 import {
   DEMO_ID
 } from '../../../../../config';
-import { isDigits, isDoi } from '../../../../../util';
+import { HTTPStatusError, isDigits, isDoi } from '../../../../../util';
 
 const ID_TYPE = Object.freeze({
   DOI: 'doi',
@@ -93,6 +93,7 @@ const getPubmedArticle = async paperId => {
     try {
       const IdType = paperId2Type( paperId );
       const fieldOpts = IdType === ID_TYPE.TITLE ? { field: ID_TYPE.TITLE } : {};
+      // TODO - this should fetch when PMID-like, search otherwise
       const { searchHits } = await searchPubmed( paperId, fieldOpts );
       const PubmedArticle = await findMatchingPubmedArticle( paperId, IdType, searchHits );
 
@@ -103,7 +104,19 @@ const getPubmedArticle = async paperId => {
       }
 
     } catch( err ) {
-      logger.error( `${err.name}: ${err.message}` );
+      if( err instanceof HTTPStatusError ){
+        const { response } = err;
+        const { url, headers } = response;
+        logger.error( `pubmed.getPubmedArticle threw ${err.name}: ${err.message}` );
+        logger.error( `fetch URL: ${url}` );
+        logger.error( headers.raw() );
+
+      } else if( err instanceof ArticleIDError ){
+        logger.debug( `pubmed.getPubmedArticle threw ${err.name}: ${err.message}` );
+
+      } else {
+        logger.error( `pubmed.getPubmedArticle threw ${err.name}: ${err.message}` );
+      }
       throw err;
     }
   }

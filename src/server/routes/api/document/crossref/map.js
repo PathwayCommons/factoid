@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { format } from 'date-fns';
-import { createPubmedArticle } from '../../../../../util/pubmed';
+import { COMMENTSCORRECTIONS_REFTYPE, createPubmedArticle } from '../../../../../util/pubmed';
 
 /**
  * getAbstract
@@ -169,6 +169,50 @@ const getPublicationTypeList = record => {
   return PublicationTypeList;
 };
 
+const getCommentsCorrectionsList = record => {
+  const CommentsCorrectionsList = [];
+  const CRRELATION_REFTYPE_MAP = new Map([
+    ['is-preprint-of', COMMENTSCORRECTIONS_REFTYPE.UpdateIn],
+    ['has-preprint', COMMENTSCORRECTIONS_REFTYPE.UpdateOf],
+    ['is-comment-on', COMMENTSCORRECTIONS_REFTYPE.CommentOn],
+    ['has-comment',  COMMENTSCORRECTIONS_REFTYPE.CommentIn],
+    ['isSupplementedBy',  COMMENTSCORRECTIONS_REFTYPE.AssociatedDataset]
+  ]);
+  const CRRELATION_IDTYPES = new Set([
+    'doi',
+    'pmid'
+  ]);
+  const { relation } = record;
+  if( relation ){
+    for (let crRelationType of Object.keys(relation)) {
+      if( CRRELATION_REFTYPE_MAP.has( crRelationType ) ){
+        const RefType = CRRELATION_REFTYPE_MAP.get( crRelationType );
+        const relations = relation[crRelationType];
+        for (let rel of relations) {
+          const { id, 'id-type': idType } = rel;
+          if( CRRELATION_IDTYPES.has( idType ) ){
+            const CommentsCorrections = {
+              RefType,
+              PMID: null,
+              DOI: null,
+              RefSource: ''
+            };
+            if( idType === 'doi' ){
+              _.set(CommentsCorrections, 'DOI', id);
+              _.set(CommentsCorrections, 'RefSource', `doi: ${id}`);
+            } else if( idType === 'pmid' ){
+              _.set(CommentsCorrections, 'PMID', id);
+              _.set(CommentsCorrections, 'RefSource', `pmid: ${id}`);
+            }
+            CommentsCorrectionsList.push(CommentsCorrections);
+          }
+        }
+      }
+    }
+  }
+  return CommentsCorrectionsList;
+};
+
 const getMedlineCitation = record => {
   const { abstract, title, author } = record;
   const Abstract = getAbstract( abstract );
@@ -176,7 +220,8 @@ const getMedlineCitation = record => {
   const AuthorList = asAuthorList( author );
   const Journal = getJournal( record );
   const PublicationTypeList = getPublicationTypeList( record );
-  const MedlineCitation = { Article: { Abstract, ArticleTitle, AuthorList, Journal, PublicationTypeList } };
+  const CommentsCorrectionsList = getCommentsCorrectionsList( record );
+  const MedlineCitation = { Article: { Abstract, ArticleTitle, AuthorList, Journal, PublicationTypeList }, CommentsCorrectionsList };
   return MedlineCitation;
 };
 

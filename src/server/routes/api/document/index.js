@@ -351,7 +351,7 @@ const fillDocCorrespondence = async doc => {
   }
 };
 
-const fillDocArticle = async doc => {
+const fillDocArticle = async ( doc, overwrite = false ) => {
   const isFound = ({ status }) => status === 'fulfilled';
   const notFound = ({ status, reason }) => status === 'rejected' && reason.name === ArticleIDError.name;
   const byStatusError = ({ status, reason }) => status === 'rejected' && reason.name === HTTPStatusError.name;
@@ -359,8 +359,11 @@ const fillDocArticle = async doc => {
   const byISODate = ( a, b ) => ( a.ISODate < b.ISODate ) ? -1 : ( ( a.ISODate > b.ISODate ) ? 1 : 0 );
   const { paperId } = doc.provided();
   const { pmid, doi } = doc.citation();
-  const id = pmid || doi || paperId;
-
+  let id = paperId;
+  if( !overwrite ) {
+    const pmidOrDoi = pmid || doi;
+    if( pmidOrDoi ) id = pmidOrDoi;
+  }
   const [ pm, cr, df ] = await Promise.allSettled([
     getPubmedArticle( id ),
     findPreprint( id ),
@@ -492,7 +495,7 @@ const fillDocAuthorProfiles = async doc => {
 
 const fillDoc = async doc => {
   await fillDocCorrespondence( doc );
-  await fillDocArticle( doc );
+  await fillDocArticle( doc, true );
   await fillDocAuthorProfiles( doc );
   return doc;
 };
@@ -2302,7 +2305,7 @@ http.patch('/:id/:secret', function( req, res, next ){
           break;
         case 'article':
           if( op === 'replace' ) {
-            await fillDocArticle( doc );
+            await fillDocArticle( doc, true );
             await fillDocAuthorProfiles( doc );
           }
           break;

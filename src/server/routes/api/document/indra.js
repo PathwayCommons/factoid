@@ -205,7 +205,8 @@ const getDocuments = ( templates, queryDoc ) => {
         return { semanticScores, articles };
       }
 
-      let { abstract: queryText, pmid: queryUid = uuid() } = queryDoc.citation();
+      let { abstract: queryText, pmid } = queryDoc.citation();
+      let queryUid = pmid || "0"; // semantic search: uid is parsed to Integer
 
       if ( queryText == null ) {
         queryText = handleNoQueryAbastract( queryDoc );

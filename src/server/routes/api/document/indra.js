@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import FetchRetry from 'fetch-retry';
 import _ from 'lodash';
 // import { parse as dateParse } from 'date-fns';
-import uuid from 'uuid';
+// import uuid from 'uuid';
 // import Heap from 'heap';
 
 import { INDRA_DB_BASE_URL, INDRA_ENGLISH_ASSEMBLER_URL, SEMANTIC_SEARCH_BASE_URL, NO_ABSTRACT_HANDLING,
@@ -205,7 +205,8 @@ const getDocuments = ( templates, queryDoc ) => {
         return { semanticScores, articles };
       }
 
-      let { abstract: queryText, pmid: queryUid = uuid() } = queryDoc.citation();
+      let { abstract: queryText, pmid } = queryDoc.citation();
+      let queryUid = pmid || "0"; // semantic search: uid is parsed to Integer
 
       if ( queryText == null ) {
         queryText = handleNoQueryAbastract( queryDoc );

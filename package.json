@@ -136,6 +136,12 @@
   },
   "engines": {
     "node": ">=16.19.0"
-  },
+  },  
+  "contributors": [
+      {
+        "name": "Faisal Alkulaib",
+        "email": "alkulaib03@gmail.com"
+      }
+    ],
   "version": "0.29.0"
 }

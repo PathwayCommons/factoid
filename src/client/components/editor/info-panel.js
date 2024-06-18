@@ -109,7 +109,7 @@ export class InfoPanel extends Component {
         h('div.editor-info-relations', relations.map( ({ type, links }, i) => [
           h('div.editor-info-relation', { key: i.toString() }, [
             h('span.editor-info-relation-type', `${type} `),
-            h('span.editor-info-links', links.map( ({ url, reference }, j ) =>  h('a.editor-info-link.plain-link', { key: j.toString(), target: '_blank', href: url }, reference ) ) )
+            h('span.editor-info-links', links.map( ({ url, reference }, j ) =>  h( url ? 'a.editor-info-link.plain-link' : 'span',  url ? { key: j.toString(), target: '_blank', href: url }: {}, reference ) ) )
           ])
         ])): null,
       h('div.editor-info-main-sections', [

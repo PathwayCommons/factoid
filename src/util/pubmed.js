@@ -238,9 +238,13 @@ const getRelations = PubmedArticle => {
   const commentsCorrections2Link = ({ RefSource, PMID, DOI }) => {
     const hasPMID = !_.isNil( PMID );
     const hasDOI = !_.isNil( DOI );
-    if( !hasPMID && !hasDOI ) return null;
     const reference = formatRefSource( RefSource );
-    const url = hasPMID ? `${PUBMED_LINK_BASE_URL}${PMID}` : `${DOI_LINK_BASE_URL}${DOI}`;
+    let url = null;
+    if( hasPMID ) {
+      url = `${PUBMED_LINK_BASE_URL}${PMID}`;
+     } else if( hasDOI ){
+      url = `${DOI_LINK_BASE_URL}${DOI}`;
+    }
     return ({ reference, url });
   };
   const raw = _.get( PubmedArticle, [ 'MedlineCitation', 'CommentsCorrectionsList' ], [] );

@@ -334,50 +334,38 @@ class DocumentManagementDocumentComponent extends React.Component {
 
     // Article
     const getDocumentArticle = doc => {
-      let items = null;
-      if( hasIssue( doc, 'paperId' ) ){
-        const { paperId: paperIdIssue } = doc.issues();
-        const paperId = _.get( doc.provided(), 'paperId' );
-        items = [
+      const { authors: { contacts, abbreviation }, title, reference, pmid, doi } = doc.citation();
+      const contactList = _.isArray( contacts ) && contacts.map( contact => `${contact.email} <${contact.name}>` ).join(', ');
+      const { paperId } = doc.provided();
+
+      let items =  [
+          h( 'strong', [
+            pmid ? h( 'a.plain-link.section-item-emphasize', { href: PUBMED_LINK_BASE_URL + pmid, target: '_blank' }, title ) : title
+          ]),
+          abbreviation && reference ? h('small.mute', `${abbreviation}. ${reference}` ) : null,
+          doi ? h( 'small.mute', [
+            h( 'a.plain-link', {
+              href: DOI_LINK_BASE_URL + doi,
+              target: '_blank'
+            }, `DOI: ${doi}` )
+          ]) : null,
+          contactList ? h('small.mute', contactList) : null,
           h( TextEditableComponent, {
-            className: 'full-width',
+            fullWidth: true,
             doc,
             fieldName: 'paperId',
             value: paperId,
-            label: h( 'span', `${paperIdIssue.message}` ),
+            label: h('small.mute', `${paperId} `),
             params: [ { op: 'replace', path: 'article' } ]
           })
-        ];
+      ];
 
-      } else {
-        const { authors: { contacts, abbreviation }, title, reference, pmid, doi } = doc.citation();
-        const contactList = _.isArray( contacts ) && contacts.map( contact => `${contact.email} <${contact.name}>` ).join(', ');
-        const { paperId } = doc.provided();
-
-        items =  [
-            h( 'strong', [
-              h( 'a.plain-link.section-item-emphasize', {
-                href: PUBMED_LINK_BASE_URL + pmid,
-                target: '_blank'
-              }, title )
-            ]),
-            h('small.mute', `${abbreviation}. ${reference}` ),
-            h( 'small.mute', [
-              h( 'a.plain-link', {
-                href: DOI_LINK_BASE_URL + doi,
-                target: '_blank'
-              }, `DOI: ${doi}` )
-            ]),
-            h('small.mute', contactList),
-            h( TextEditableComponent, {
-              fullWidth: true,
-              doc,
-              fieldName: 'paperId',
-              value: paperId,
-              label: h('small.mute', `${paperId} `),
-              params: [ { op: 'replace', path: 'article' } ]
-            })
-          ];
+      if( hasIssue( doc, 'paperId' ) ){
+        const { paperId: paperIdIssue } = doc.issues();
+        const err = h( 'div', {
+          className: makeClassList({ 'issue': true })
+        }, `${paperIdIssue.error.name}: ${paperIdIssue.message}` );
+        items.push( err );
       }
 
       return h( 'div.document-management-document-section', [

@@ -25,6 +25,7 @@
   & .complete {
     color: var(--completeColor);
   }
+
   & .issue {
     color: var(--invalidColor);
   }
@@ -101,7 +102,6 @@
   margin: 0;
   color: var(--fadedColor);
 }
-
 
 .document-management-document-section-items {
   display: flex;

@@ -400,9 +400,12 @@ const fillDocArticle = async ( doc, overwrite = false ) => {
   } else {
     let error;
     const withHttpErr = [ pm, cr ].find( byStatusError );
-    if( withHttpErr ){
-      // HTTPStatusError occurred
+    if( withHttpErr ){ // HTTPStatusError occurred
       error = withHttpErr.reason;
+      if( doc.article() != null ){
+        // Fallback to existing record
+        record = doc.article();
+      }
     } else {
       // Not found
       error = pm.reason || cr.reason;

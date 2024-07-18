@@ -1,12 +1,9 @@
 import _ from 'lodash';
 
-//import { ENTITY_TYPE } from './entity-type.js';
-
 const HINT_TYPE = Object.freeze({
     ORGANISM: 'organism'
 });
 const HINT_TYPES = _.flatMap(HINT_TYPE);
-
 
 const HINT_PASSAGE = Object.freeze({
     TITLE: 'title',
@@ -14,8 +11,29 @@ const HINT_PASSAGE = Object.freeze({
 });
 const HINT_PASSAGES = _.flatMap(HINT_PASSAGE);
 
+/**
+ * Class representing a Hint.
+ */
 class Hint{
 
+    /**
+     * Create a Hint.
+     * @param {string} text - The hint text.
+     * @param {string} type - The hint type.
+     * @param {Object} xref - The hint xref.
+     * @param {string} section - The hint section.
+     */
+    constructor(text, type, xref, section){
+        this._text = text;
+        this._type = type;
+        this._xref = xref;
+        this._section = section;
+    }
+
+    /**
+     * Get the hint text.
+     * @returns {string} The hint text.
+     */
     get text(){
         return this._text;
     }
@@ -56,8 +74,6 @@ class Hint{
         }
         this._section = value;
     }
-
-
 }
 export { 
     Hint, 

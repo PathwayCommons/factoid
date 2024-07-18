@@ -11,9 +11,11 @@ const HINT_PASSAGE = Object.freeze({
 });
 const HINT_PASSAGES = _.flatMap(HINT_PASSAGE);
 
-/**
- * Class representing a Hint.
- */
+/*
+* Class representing a Hint.
+* A hint is a piece of information that is extracted from sections of articles, such as the title or abstract.
+* It can be about the organism being studied in the article or a gene name under investigation.
+*/
 class Hint{
 
     /**
@@ -32,6 +34,7 @@ class Hint{
 
     /**
      * Get the hint text.
+     * The text is a single sentence extracted from the article section.
      * @returns {string} The hint text.
      */
     get text(){

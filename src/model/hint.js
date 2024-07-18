@@ -34,7 +34,7 @@ class Hint{
 
     /**
      * Get the hint text.
-     * The text is a single sentence extracted from the article section.
+     * The text is a single mention extracted from the article section.
      * @returns {string} The hint text.
      */
     get text(){

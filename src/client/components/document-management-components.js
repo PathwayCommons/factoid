@@ -315,20 +315,9 @@ class DocumentManagementDocumentComponent extends React.Component {
     // Document Header & Footer
     const getDocumentHeader = doc => {
       return h( 'div.document-management-document-section.meta', [
-        h( 'div.document-management-document-section-items', [
-          h( 'div', [
-            h( 'i.material-icons.hide-by-default.invalid', {
-              className: makeClassList({ 'show': hasIssues( doc ) })
-            }, 'warning' ),
-            // h( 'i.material-icons.hide-by-default.complete', {
-            //   className: makeClassList({ 'show': doc.submitted() || doc.isPublic() })
-            // }, 'check_circle' ),
-            h( 'i.material-icons.hide-by-default.mute', {
-              className: makeClassList({ 'show': doc.trashed() })
-            }, 'delete' )
-          ]),
-
-        ])
+        h( 'i.material-icons.hide-by-default.invalid', {
+          className: makeClassList({ 'show': hasIssues( doc ) })
+        }, 'warning' )
       ]);
     };
 

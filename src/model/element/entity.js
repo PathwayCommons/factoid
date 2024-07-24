@@ -167,7 +167,7 @@ class Entity extends Element {
 
   normalized(){
     // normalized := has a name and is associated
-    const name = this.syncher.get('name');
+    const name = this.name();
     return name && this.associated() && this.completed();
   }
 

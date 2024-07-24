@@ -19,8 +19,11 @@ import {
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
 
-const hasIssues = doc => _.values( doc.issues() ).some( i => !_.isNull( i ) );
-const hasIssue = ( doc, key ) => _.has( doc.issues(), key ) && !_.isNull( _.get( doc.issues(), key ) );
+const issuesPresent = e => _.values( e.issues() ).some( i => !_.isNull( i ) );
+const hasEntityIssues = doc => doc.entities().some( issuesPresent );
+const hasDocIssues = doc => issuesPresent( doc );
+const hasIssues = doc => hasEntityIssues( doc ) || hasDocIssues( doc );
+const hasIssue = ( e, key ) => _.has( e.issues(), key ) && !_.isNull( _.get( e.issues(), key ) );
 
 /**
  * sendMail
@@ -351,9 +354,7 @@ class DocumentManagementDocumentComponent extends React.Component {
 
       if( hasIssue( doc, 'paperId' ) ){
         const { paperId: paperIdIssue } = doc.issues();
-        const err = h( 'div', {
-          className: makeClassList({ 'issue': true })
-        }, `${paperIdIssue.error.name}: ${paperIdIssue.message}` );
+        const err = h( 'div', `${paperIdIssue.error.name}: ${paperIdIssue.message}` );
         items.push( err );
       }
 
@@ -388,6 +389,34 @@ class DocumentManagementDocumentComponent extends React.Component {
             ])
           ])
         ]);
+    };
+
+    // Entities
+    const getEntityInfo = doc => {
+      const numEntities = doc.entities().length;
+      let items = [ h('div', { key: 'total' }, `Total: ${numEntities}`)];
+      const mixedOrganisms = doc.organisms().length > 1;
+      const hasIssue = hasEntityIssues( doc );
+      const hasWarning = mixedOrganisms; // orphaned nodes
+
+      if( hasIssue ){
+        const issues = doc.entities().filter( issuesPresent ).map( e =>  e.issues() );
+        const errors = _.flatten( issues ).map( i => i.error.name );
+        const errorTypes = _.toPairs( _.countBy( errors ) ).map( ([ error, count ], key) => h('div', { key }, `${error}: ${count}`) );
+        items.push( errorTypes );
+      }
+      if( hasWarning ){
+        if( mixedOrganisms ) items.push( h('div', { key: 'organism' }, 'Mixed organisms' ) );
+      }
+
+      return h( 'div.document-management-document-section', [
+        h( 'div.document-management-document-section-label', {
+          className: makeClassList({'issue': hasIssue, 'warning': hasWarning})
+        },[
+          h( 'div.document-management-document-section-label-text', 'Entities')
+        ]),
+        h( 'div.document-management-document-section-items', items )
+      ]);
     };
 
     // Correspondence
@@ -466,7 +495,7 @@ class DocumentManagementDocumentComponent extends React.Component {
       return h( 'div.document-management-document-section', [
         h( 'div.document-management-document-section-label', {
           className: makeClassList({ 'issue': hasIssue( doc, 'authorEmail' ) })
-        }, 'Correspondence:' ),
+        }, 'Correspondence' ),
         content
       ]);
     };
@@ -529,6 +558,7 @@ class DocumentManagementDocumentComponent extends React.Component {
       getDocumentHeader( doc ),
       getDocumentArticle( doc ),
       getDocumentInfo( doc ),
+      getEntityInfo( doc ),
       getDocumentCorrespondence( doc ),
       getDocumentStats( doc )
     ]);

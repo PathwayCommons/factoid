@@ -165,6 +165,25 @@ class Entity extends Element {
     return update;
   }
 
+  normalized(){
+    // normalized := has a name and is associated
+    const name = this.name();
+    return name && this.associated() && this.completed();
+  }
+
+  issues(){
+    const items = [];
+    if( !this.normalized() ){
+      items.push({
+        error: {
+          name: 'Normalization'
+        },
+        message: `Entity with name "${this.name()}" is not normalized`
+      });
+    }
+    return items;
+  }
+
   organism(){
     const assoc = this.association();
 

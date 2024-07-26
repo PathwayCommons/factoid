@@ -92,6 +92,10 @@ class Complex extends Entity {
     return this.remove( ele, opts );
   }
 
+  normalized(){
+    return true;
+  }
+
   json(){
     return _.assign( {}, super.json(), _.pick( this.syncher.get(), _.keys(DEFAULTS) ) );
   }

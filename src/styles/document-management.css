@@ -29,6 +29,10 @@
   & .issue {
     color: var(--invalidColor);
   }
+
+  & .warning {
+    color: var(--brandColorDark);
+  }
 }
 
 .document-management-hidden {

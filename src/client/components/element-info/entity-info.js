@@ -724,7 +724,8 @@ class EntityInfo extends DataComponent {
         );
       } else if( !s.loadingMatches && s.name && !s.updateDirty ){
         children.push( h('div.entity-info-match-empty', [
-        `We couldn't find  "${s.name}".  Please try renaming "${s.name}" to a clearer, perhaps more standard name.`
+          h('p', `The name "${s.name}" did not match any gene or chemical. Please try another name.`),
+          h('p', `Biofactoid accepts gene names from humans, M. musculus, R. norvegicus, S. cervisiae, D. melanogaster, E. coli, C. elegans, D. rerio, A. thaliana and SARS-CoV-2.`)
         ] ) );
       }
     }

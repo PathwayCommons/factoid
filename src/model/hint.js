@@ -5,11 +5,11 @@ const HINT_TYPE = Object.freeze({
 });
 const HINT_TYPES = _.flatMap(HINT_TYPE);
 
-const HINT_PASSAGE = Object.freeze({
+const PASSAGE_TYPE = Object.freeze({
     TITLE: 'title',
     ABSTRACT: 'abstract'
 });
-const HINT_PASSAGES = _.flatMap(HINT_PASSAGE);
+const PASSAGE_TYPES = _.flatMap(PASSAGE_TYPE);
 
 /*
 * Class representing a Hint.
@@ -51,7 +51,7 @@ class Hint{
 
     set type(value){
         if( value != HINT_TYPES.ORGANISM){
-            throw new Error('Invalid type' + value);
+            throw new TypeError('Invalid type' + value);
         }
         this._type = value;
     }
@@ -62,7 +62,7 @@ class Hint{
 
     set xref(value){
         if (!value.dbPrefix || !value.id){
-            throw new Error('Invalid xref' + JSON.stringify(value));
+            throw new TypeError('Invalid xref' + JSON.stringify(value));
         }
         this._xref = value;
     }
@@ -72,14 +72,14 @@ class Hint{
     }
 
     set section(value){
-        if( value != HINT_PASSAGES.TITLE && value != HINT_PASSAGES.ABSTRACT){
-            throw new Error('Invalid section' + value);
+        if( ! _.includes(PASSAGE_TYPES, value) ) {
+            throw new TypeError('Invalid section' + value);
         }
         this._section = value;
     }
 }
 export { 
     Hint, 
-    HINT_TYPES, 
-    HINT_PASSAGES 
+    HINT_TYPE,
+    PASSAGE_TYPE
 };

@@ -9,7 +9,6 @@ import pubtator_5 from './10.1038_s41556-021-00642-9.json';
 import pubtator_6 from './10.1126_scisignal.abf3535.json';
 import pubtator_7 from './10.15252_embj.2023113616.json';
 import pubtator_8 from './pubtator_8.json';
-import h from 'hyperscript';
 
 /**
  * bioCDocuments
@@ -45,6 +44,7 @@ describe('pubtator', function () {
 
         before(() => {
           hints = map(bioCDocument);
+          console.log(JSON.stringify(hints, null, 2));
         });
 
         it('Should map to a non-zero list', function () {

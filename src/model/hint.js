@@ -1,9 +1,18 @@
 import _ from 'lodash';
+import { ENTITY_TYPE } from './element/entity-type.js';
 
 // Define constants for Hint types, combining ORGANISM with ENTITY_TYPE
-const HINT_TYPE = Object.freeze({
-  ORGANISM: 'organism',
-});
+const HINT_TYPE = Object.freeze(
+  _.assign(
+    {
+      ORGANISM: 'organism',
+      DISEASE: 'disease',
+      CELL_LINE: 'cell_line',
+      VARIANT: 'variant',
+    },
+    ENTITY_TYPE,
+  ),
+);
 
 // Flatten the HINT_TYPE object to create an array of all hint types
 const HINT_TYPES = _.flatMap(HINT_TYPE);

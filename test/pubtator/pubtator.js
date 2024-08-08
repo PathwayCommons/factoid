@@ -4,9 +4,12 @@ import _ from 'lodash';
 import { Hint, HINT_TYPE, SECTION } from '../../src/model/hint.js';
 import map from '../../src/server/routes/api/document/hint/pubtator.js';
 
+import pubtator_1 from './10.1016_j.molcel.2016.11.034.json';
 import pubtator_2 from './10.1016_j.molcel.2019.03.023.json';
-import pubtator_5 from './10.1038_s41556-021-00642-9.json';
-import pubtator_6 from './10.1126_scisignal.abf3535.json';
+import pubtator_3 from './10.1016_j.molcel.2019.04.005.json';
+import pubtator_4 from './10.1038_s41556-021-00642-9.json';
+import pubtator_5 from './10.1126_scisignal.abf3535.json';
+import pubtator_6 from './10.1016_j.molcel.2024.01.007.json';
 import pubtator_7 from './10.15252_embj.2023113616.json';
 import pubtator_8 from './pubtator_8.json';
 
@@ -20,16 +23,14 @@ import pubtator_8 from './pubtator_8.json';
  * In the comments below, There is a field at the end of each bioCDocument object called "text" , which is an array devided into 2 arrays, the first array is hints from title, and the second array is hints from abstract.
  */
 const bioCDocuments = [
-  // 0..1 (one organism hint in abstract)
-  pubtator_2, // pmid: 31003867 | 0 organism hints in title { } | 1 organism hints in abstract: { 10090 aka (Mus musculus): 1 } | text: [ [] , ["mouse"] ]
-  //0..1 (one organism hint in abstract)
-  pubtator_5, // pmid: 33664495 | 0 organism hints in title { } | 1 organism hints in abstract: { 10090 aka (Mus musculus): 1 } | text: [ [] , ["mice"] ]
-  //1..* (one organism hint in title and multiple organism hints in abstract)
-  pubtator_6, // pmid: 34546791 | 1 organism hints in title { 10090 aka (Mus musculus): 1 } | 4 organism hints in abstract: { 10090 aka (Mus musculus): 4 } | text: [ ["mice"] , ["mice" , "mice" , "mice" , "mice"] ]
-  //1..* (one organism hint in title and multiple organism hints in abstract)
-  pubtator_7, // pmid: 37317646 | 1 organism hints in title { 7227 aka (Drosophila melanogaster): 1 } | 2 organism hints in abstract: { 9606 aka (Homo sapiens): 1 , 7227 aka (Drosophila melanogaster): 1 } | text: [ [ "Drosophila" ] , [ "human" , "Drosophila" ] ]
-  //*..* (multiple organisms in title, and multiple organism hints in abstract)
-  pubtator_8, // pmid: 24633240 | 2 organism hints in title { 9606 aka (Homo sapiens): 1 , 10090 aka (Mus musculus): 1} | 2 organism hints in title { 9606 aka (Homo sapiens): 12 , 10090 aka (Mus musculus): 7} | text [ [ "human" , "mouse"] , [ "Mice", "human" , "human" , "mouse" , "human" , "mouse" , "human" , "mouse" , "human" , "human" , "mice" , "Human" , "human" , "mice" , "human" , "patients" , "mouse" , "human" , "human" ] ]
+  pubtator_1,
+  pubtator_2,
+  pubtator_3,
+  pubtator_4,
+  pubtator_5,
+  pubtator_6,
+  pubtator_7,
+  pubtator_8,
 ];
 
 describe('pubtator', function () {
@@ -44,6 +45,7 @@ describe('pubtator', function () {
 
         before(() => {
           hints = map(bioCDocument);
+          console.log(JSON.stringify(hints, null, 2));
         });
 
         it('Should map to a non-zero list', function () {
@@ -77,11 +79,6 @@ describe('pubtator', function () {
           expect(inAbstract.length).to.equal(uniqInAbstract.length);
         });
 
-        it(`Should be all an ORGANISM hint`, function () {
-          const isOrganism = (h) => h.type === HINT_TYPE.ORGANISM;
-          expect(hints.every(isOrganism)).to.be.true;
-        });
-
         it('Should aggregate organism hints correctly', function () {
           const aggregateCounts = hints.reduce((acc, hint) => {
             const key = `${hint._xref.id}_${hint.section}`;
@@ -89,27 +86,93 @@ describe('pubtator', function () {
             return acc;
           }, {});
 
-          if (pubtator_2 === bioCDocument) {
+          if (pubtator_1 === bioCDocument) {
+            const expectedCounts = {
+              '3551_abstract': 1,
+              '4212_abstract': 1,
+              '4212_title': 1,
+              '442920_title': 1,
+              '4790_abstract': 4,
+              '4792_abstract': 2,
+              '5533_abstract': 1,
+              '5533_title': 1,
+              '5970_abstract': 2,
+              '5970_title': 1,
+              'MESH:D009369_abstract': 1,
+              'MESH:D011471_abstract': 1,
+              'MESH:D011471_title': 1,
+              'MESH:D064129_abstract': 5,
+            };
+            expect(aggregateCounts).to.deep.equal(expectedCounts);
+          } else if (pubtator_2 === bioCDocument) {
             const expectedCounts = {
               '10090_abstract': 1,
+              '625662_abstract': 5,
+              '625662_title': 1,
+              '69597_abstract': 1,
+              '73673_abstract': 3,
+              '73673_title': 1,
+              'MESH:D007246_abstract': 1,
+            };
+            expect(aggregateCounts).to.deep.equal(expectedCounts);
+          } else if (pubtator_3 === bioCDocument) {
+            const expectedCounts = {
+              '29126_abstract': 11,
+              '29126_title': 2,
+              '4683_abstract': 1,
+              '5133_abstract': 3,
+              '54918_abstract': 1,
+              '672_abstract': 1,
+              'MESH:D009369_abstract': 2,
+            };
+            expect(aggregateCounts).to.deep.equal(expectedCounts);
+          } else if (pubtator_4 === bioCDocument) {
+            const expectedCounts = {
+              '10090_abstract': 1,
+              '108909_abstract': 8,
+              '108909_title': 1,
+              '22227_abstract': 7,
+              '22227_title': 1,
+              'MESH:D002395_abstract': 2,
+              'MESH:D007035_abstract': 1,
             };
             expect(aggregateCounts).to.deep.equal(expectedCounts);
           } else if (pubtator_5 === bioCDocument) {
             const expectedCounts = {
-              '10090_abstract': 1,
+              '10090_abstract': 4,
+              '10090_title': 1,
+              '16150_abstract': 5,
+              '16150_title': 1,
+              '16176_abstract': 3,
+              '18033_abstract': 9,
+              '18033_title': 1,
+              '19697_abstract': 5,
+              'MESH:D002357_abstract': 3,
+              'MESH:D007249_abstract': 1,
+              'MESH:D009402_abstract': 1,
+              'MESH:D010003_abstract': 5,
+              'MESH:D010003_title': 1,
             };
             expect(aggregateCounts).to.deep.equal(expectedCounts);
           } else if (pubtator_6 === bioCDocument) {
             const expectedCounts = {
-              '10090_title': 1,
-              '10090_abstract': 4,
+              '4790_abstract': 4,
+              '4790_title': 1,
+              '5450_abstract': 1,
+              '5452_abstract': 1,
+              '64332_abstract': 6,
+              '64332_title': 1,
+              'MESH:D008223_abstract': 1,
             };
             expect(aggregateCounts).to.deep.equal(expectedCounts);
           } else if (pubtator_7 === bioCDocument) {
             const expectedCounts = {
+              '39647_abstract': 1,
+              '7227_abstract': 1,
               '7227_title': 1,
               '9606_abstract': 1,
-              '7227_abstract': 1,
+              '9662_abstract': 1,
+              'MESH:D002925_abstract': 1,
             };
             expect(aggregateCounts).to.deep.equal(expectedCounts);
           } else if (pubtator_8 === bioCDocument) {
@@ -118,9 +181,38 @@ describe('pubtator', function () {
               '10090_title': 1,
               '9606_abstract': 12,
               '10090_abstract': 7,
+              '947_abstract': 1,
+              'MESH:D009369_abstract': 2,
             };
             expect(aggregateCounts).to.deep.equal(expectedCounts);
           }
+        });
+
+        describe(`Hint type ORGANISM`, function () {
+          it('Should have xref to NCBI Taxonomy', function () {
+            const hs = _.filter(hints, (o) => o.type === HINT_TYPE.ORGANISM);
+            hs.forEach((h) => {
+              expect(h.xref.id).to.match(/^\d+$/); // identifier
+            });
+          });
+        });
+
+        describe(`Hint type GGP`, function () {
+          it('Should have xref to NCBI Gene', function () {
+            const hs = _.filter(hints, (o) => o.type === HINT_TYPE.GGP);
+            hs.forEach((h) => {
+              expect(h.xref.id).to.match(/^\d+$/); // identifier
+            });
+          });
+        });
+
+        describe(`Hint type CHEMICAL`, function () {
+          it('Should have xref to MeSH', function () {
+            const hs = _.filter(hints, (o) => o.type === HINT_TYPE.CHEMICAL);
+            hs.forEach((h) => {
+              expect(h.xref.id).to.match(/^mesh:(C|D)\d{6,9}$/i);
+            });
+          });
         });
       }); // BioC Document
     }); // forEach

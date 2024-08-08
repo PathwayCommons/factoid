@@ -45,7 +45,6 @@ describe('pubtator', function () {
 
         before(() => {
           hints = map(bioCDocument);
-          console.log(JSON.stringify(hints, null, 2));
         });
 
         it('Should map to a non-zero list', function () {

@@ -1,85 +1,84 @@
 import _ from 'lodash';
 
+// Define constants for Hint types, combining ORGANISM with ENTITY_TYPE
 const HINT_TYPE = Object.freeze({
-    ORGANISM: 'organism'
+  ORGANISM: 'organism',
 });
+
+// Flatten the HINT_TYPE object to create an array of all hint types
 const HINT_TYPES = _.flatMap(HINT_TYPE);
 
-const PASSAGE_TYPE = Object.freeze({
-    TITLE: 'title',
-    ABSTRACT: 'abstract'
+// Define constants for sections of a document
+const SECTION = Object.freeze({
+  TITLE: 'title',
+  ABSTRACT: 'abstract',
 });
-const PASSAGE_TYPES = _.flatMap(PASSAGE_TYPE);
 
-/*
-* Class representing a Hint.
-* A hint is a piece of information that is extracted from sections of articles, such as the title or abstract.
-* It can be about the organism being studied in the article or a gene name under investigation.
-*/
-class Hint{
+// Flatten the SECTION object to create an array of all sections
+const SECTIONS = _.flatMap(SECTION);
 
-    /**
-     * Create a Hint.
-     * @param {string} text - The hint text.
-     * @param {string} type - The hint type.
-     * @param {Object} xref - The hint xref.
-     * @param {string} section - The hint section.
-     */
-    constructor(text, type, xref, section){
-        this._text = text;
-        this._type = type;
-        this._xref = xref;
-        this._section = section;
-    }
+/**
+ * Representing a bioentity mention and ground
+ */
+class Hint {
+  /**
+   * Creates an instance of Hint.
+   * @param {Array} param.texts - The texts associated with the hint.
+   * @param {string} param.type - The type of the hint.
+   * @param {Object} param.xref - The cross-reference (xref) object.
+   * @param {string} param.section - The section of the document where the hint was found.
+   */
+  constructor(texts, type, xref, section) {
+    // Initialize the properties using the setters to enforce validation
+    this._texts = texts;
+    this._type = type;
+    this._xref = xref;
+    this._section = section;
+  }
 
-    /**
-     * Get the hint text.
-     * The text is a single mention extracted from the article section.
-     * @returns {string} The hint text.
-     */
-    get text(){
-        return this._text;
-    }
+  // Getter and setter for texts
+  get texts() {
+    return this._texts;
+  }
 
-    set text(value){
-        this._text = value;
-    }
+  set texts(val) {
+    // Validate that texts is not empty
+    if (!val || _.isEmpty(val)) throw new TypeError('Invalid texts');
+    this._texts = val;
+  }
 
-    get type(){
-        return this._type;
-    }
+  // Getter and setter for type
+  get type() {
+    return this._type;
+  }
 
-    set type(value){
-        if( value != HINT_TYPES.ORGANISM){
-            throw new TypeError('Invalid type' + value);
-        }
-        this._type = value;
-    }
+  set type(val) {
+    // Validate that type is one of the predefined HINT_TYPES
+    if (!_.includes(HINT_TYPES, val)) throw new TypeError('Invalid type');
+    this._type = val;
+  }
 
-    get xref(){
-        return this._xref;
-    }
+  // Getter and setter for xref
+  get xref() {
+    return this._xref;
+  }
 
-    set xref(value){
-        if (!value.dbPrefix || !value.id){
-            throw new TypeError('Invalid xref' + JSON.stringify(value));
-        }
-        this._xref = value;
-    }
+  set xref(val) {
+    // Validate that xref has dbPrefix and id properties
+    if (!val.dbPrefix || !val.id) throw new TypeError('Invalid xref');
+    this._xref = val;
+  }
 
-    get section(){
-        return this._section;
-    }
+  // Getter and setter for section
+  get section() {
+    return this._section;
+  }
 
-    set section(value){
-        if( ! _.includes(PASSAGE_TYPES, value) ) {
-            throw new TypeError('Invalid section' + value);
-        }
-        this._section = value;
-    }
+  set section(val) {
+    // Validate that section is one of the predefined SECTIONS
+    if (!_.includes(SECTIONS, val)) throw new TypeError('Invalid section');
+    this._section = val;
+  }
 }
-export { 
-    Hint, 
-    HINT_TYPE,
-    PASSAGE_TYPE
-};
+
+export { Hint, HINT_TYPE, SECTION };

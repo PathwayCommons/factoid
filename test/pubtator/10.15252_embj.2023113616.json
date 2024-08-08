@@ -1,236 +1,220 @@
 {
-	"_id": "37317646|None",
-	"id": "10.15252/embj.2023113616",
-	"infons": {
+  "_id": "37317646|None",
+  "id": "10.15252/embj.2023113616",
+  "infons": {
     "doi": "10.15252/embj.2023113616",
     "comment": "Human, fly and worm (multiple, erroneous IDs) where human is not priority and others are equal"
   },
-	"passages": [
-		{
-			"infons": {
-				"journal": "EMBO J;2023Jun15 113616. doi:10.15252/embj.2023113616",
-				"year": "2023",
-				"article-id_pmc": "PMC10425847",
-				"type": "title",
-				"authors": "Dobbelaere J, Su TY, Erdi B, Schleiffer A, Dammermann A, "
-			},
-			"offset": 0,
-			"text": "A phylogenetic profiling approach identifies novel ciliogenesis genes in Drosophila and C. elegans.",
-			"sentences": [],
-			"annotations": [
-				{
-					"id": "2",
-					"infons": {
-						"identifier": "7227",
-						"type": "Species",
-						"valid": true,
-						"normalized": [
-							7227
-						],
-						"database": "ncbi_taxonomy",
-						"normalized_id": 7227,
-						"biotype": "species",
-						"name": "7227",
-						"accession": null
-					},
-					"text": "Drosophila",
-					"locations": [
-						{
-							"offset": 73,
-							"length": 10
-						}
-					]
-				},
-				{
-					"id": "3",
-					"infons": {
-						"identifier": "6239;252961;314391;316080",
-						"type": "Species",
-						"valid": true,
-						"normalized": [
-							6239
-						],
-						"database": "ncbi_taxonomy",
-						"normalized_id": 6239,
-						"biotype": "species",
-						"name": "6239",
-						"accession": null
-					},
-					"text": "C. elegans",
-					"locations": [
-						{
-							"offset": 88,
-							"length": 10
-						}
-					]
-				}
-			],
-			"relations": []
-		},
-		{
-			"infons": {
-				"type": "abstract"
-			},
-			"offset": 100,
-			"text": "Cilia are cellular projections that perform sensory and motile functions in eukaryotic cells. A defining feature of cilia is that they are evolutionarily ancient, yet not universally conserved. In this study, we have used the resulting presence and absence pattern in the genomes of diverse eukaryotes to identify a set of 386 human genes associated with cilium assembly or motility. Comprehensive tissue-specific RNAi in Drosophila and mutant analysis in C. elegans revealed signature ciliary defects for 70-80% of novel genes, a percentage similar to that for known genes within the cluster. Further characterization identified different phenotypic classes, including a set of genes related to the cartwheel component Bld10/CEP135 and two highly conserved regulators of cilium biogenesis. We propose this dataset defines the core set of genes required for cilium assembly and motility across eukaryotes and presents a valuable resource for future studies of cilium biology and associated disorders.",
-			"sentences": [],
-			"annotations": [
-				{
-					"id": "10",
-					"infons": {
-						"identifier": "9606",
-						"type": "Species",
-						"valid": true,
-						"normalized": [
-							9606
-						],
-						"database": "ncbi_taxonomy",
-						"normalized_id": 9606,
-						"biotype": "species",
-						"name": "9606",
-						"accession": null
-					},
-					"text": "human",
-					"locations": [
-						{
-							"offset": 427,
-							"length": 5
-						}
-					]
-				},
-				{
-					"id": "11",
-					"infons": {
-						"identifier": "7227",
-						"type": "Species",
-						"valid": true,
-						"normalized": [
-							7227
-						],
-						"database": "ncbi_taxonomy",
-						"normalized_id": 7227,
-						"biotype": "species",
-						"name": "7227",
-						"accession": null
-					},
-					"text": "Drosophila",
-					"locations": [
-						{
-							"offset": 522,
-							"length": 10
-						}
-					]
-				},
-				{
-					"id": "12",
-					"infons": {
-						"identifier": "6239;252961;314391;316080",
-						"type": "Species",
-						"valid": true,
-						"normalized": [
-							6239
-						],
-						"database": "ncbi_taxonomy",
-						"normalized_id": 6239,
-						"biotype": "species",
-						"name": "6239",
-						"accession": null
-					},
-					"text": "C. elegans",
-					"locations": [
-						{
-							"offset": 556,
-							"length": 10
-						}
-					]
-				},
-				{
-					"id": "13",
-					"infons": {
-						"identifier": "MESH:D002925",
-						"type": "Disease",
-						"valid": true,
-						"normalized": [
-							"D002925"
-						],
-						"database": "ncbi_mesh",
-						"normalized_id": "D002925",
-						"biotype": "disease",
-						"name": "Ciliary Motility Disorders",
-						"accession": "@DISEASE_Ciliary_Motility_Disorders"
-					},
-					"text": "ciliary defects",
-					"locations": [
-						{
-							"offset": 586,
-							"length": 15
-						}
-					]
-				},
-				{
-					"id": "14",
-					"infons": {
-						"identifier": "39647",
-						"type": "Gene",
-						"ncbi_homologene": "45709",
-						"valid": true,
-						"normalized": [
-							39647
-						],
-						"database": "ncbi_gene",
-						"normalized_id": 39647,
-						"biotype": "gene",
-						"name": "Cep135",
-						"accession": "@GENE_CEP135"
-					},
-					"text": "Bld10",
-					"locations": [
-						{
-							"offset": 820,
-							"length": 5
-						}
-					]
-				},
-				{
-					"id": "15",
-					"infons": {
-						"identifier": "9662",
-						"type": "Gene",
-						"ncbi_homologene": "45709",
-						"valid": true,
-						"normalized": [
-							9662
-						],
-						"database": "ncbi_gene",
-						"normalized_id": 9662,
-						"biotype": "gene",
-						"name": "CEP135",
-						"accession": "@GENE_CEP135"
-					},
-					"text": "CEP135",
-					"locations": [
-						{
-							"offset": 826,
-							"length": 6
-						}
-					]
-				}
-			],
-			"relations": []
-		}
-	],
-	"relations": [],
-	"pmid": 37317646,
-	"pmcid": null,
-	"meta": {},
-	"date": "2023-06-15T00:00:00Z",
-	"journal": "EMBO J",
-	"authors": [
-		"Dobbelaere J",
-		"Su TY",
-		"Erdi B",
-		"Schleiffer A",
-		"Dammermann A"
-	],
-	"relations_display": []
+  "passages": [
+    {
+      "infons": {
+        "journal": "EMBO J;2023Jun15 113616. doi:10.15252/embj.2023113616",
+        "year": "2023",
+        "article-id_pmc": "PMC10425847",
+        "type": "title",
+        "authors": "Dobbelaere J, Su TY, Erdi B, Schleiffer A, Dammermann A, "
+      },
+      "offset": 0,
+      "text": "A phylogenetic profiling approach identifies novel ciliogenesis genes in Drosophila and C. elegans.",
+      "sentences": [],
+      "annotations": [
+        {
+          "id": "2",
+          "infons": {
+            "identifier": "7227",
+            "type": "Species",
+            "valid": true,
+            "normalized": [7227],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 7227,
+            "biotype": "species",
+            "name": "7227",
+            "accession": null
+          },
+          "text": "Drosophila",
+          "locations": [
+            {
+              "offset": 73,
+              "length": 10
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "infons": {
+            "identifier": "6239;252961;314391;316080",
+            "type": "Species",
+            "valid": true,
+            "normalized": [6239],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 6239,
+            "biotype": "species",
+            "name": "6239",
+            "accession": null
+          },
+          "text": "C. elegans",
+          "locations": [
+            {
+              "offset": 88,
+              "length": 10
+            }
+          ]
+        }
+      ],
+      "relations": []
+    },
+    {
+      "infons": {
+        "type": "abstract"
+      },
+      "offset": 100,
+      "text": "Cilia are cellular projections that perform sensory and motile functions in eukaryotic cells. A defining feature of cilia is that they are evolutionarily ancient, yet not universally conserved. In this study, we have used the resulting presence and absence pattern in the genomes of diverse eukaryotes to identify a set of 386 human genes associated with cilium assembly or motility. Comprehensive tissue-specific RNAi in Drosophila and mutant analysis in C. elegans revealed signature ciliary defects for 70-80% of novel genes, a percentage similar to that for known genes within the cluster. Further characterization identified different phenotypic classes, including a set of genes related to the cartwheel component Bld10/CEP135 and two highly conserved regulators of cilium biogenesis. We propose this dataset defines the core set of genes required for cilium assembly and motility across eukaryotes and presents a valuable resource for future studies of cilium biology and associated disorders.",
+      "sentences": [],
+      "annotations": [
+        {
+          "id": "10",
+          "infons": {
+            "identifier": "9606",
+            "type": "Species",
+            "valid": true,
+            "normalized": [9606],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 9606,
+            "biotype": "species",
+            "name": "9606",
+            "accession": null
+          },
+          "text": "human",
+          "locations": [
+            {
+              "offset": 427,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "11",
+          "infons": {
+            "identifier": "7227",
+            "type": "Species",
+            "valid": true,
+            "normalized": [7227],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 7227,
+            "biotype": "species",
+            "name": "7227",
+            "accession": null
+          },
+          "text": "Drosophila",
+          "locations": [
+            {
+              "offset": 522,
+              "length": 10
+            }
+          ]
+        },
+        {
+          "id": "12",
+          "infons": {
+            "identifier": "6239;252961;314391;316080",
+            "type": "Species",
+            "valid": true,
+            "normalized": [6239],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 6239,
+            "biotype": "species",
+            "name": "6239",
+            "accession": null
+          },
+          "text": "C. elegans",
+          "locations": [
+            {
+              "offset": 556,
+              "length": 10
+            }
+          ]
+        },
+        {
+          "id": "13",
+          "infons": {
+            "identifier": "MESH:D002925",
+            "type": "Disease",
+            "valid": true,
+            "normalized": ["D002925"],
+            "database": "ncbi_mesh",
+            "normalized_id": "D002925",
+            "biotype": "disease",
+            "name": "Ciliary Motility Disorders",
+            "accession": "@DISEASE_Ciliary_Motility_Disorders"
+          },
+          "text": "ciliary defects",
+          "locations": [
+            {
+              "offset": 586,
+              "length": 15
+            }
+          ]
+        },
+        {
+          "id": "14",
+          "infons": {
+            "identifier": "39647",
+            "type": "Gene",
+            "ncbi_homologene": "45709",
+            "valid": true,
+            "normalized": [39647],
+            "database": "ncbi_gene",
+            "normalized_id": 39647,
+            "biotype": "gene",
+            "name": "Cep135",
+            "accession": "@GENE_CEP135"
+          },
+          "text": "Bld10",
+          "locations": [
+            {
+              "offset": 820,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "15",
+          "infons": {
+            "identifier": "9662",
+            "type": "Gene",
+            "ncbi_homologene": "45709",
+            "valid": true,
+            "normalized": [9662],
+            "database": "ncbi_gene",
+            "normalized_id": 9662,
+            "biotype": "gene",
+            "name": "CEP135",
+            "accession": "@GENE_CEP135"
+          },
+          "text": "CEP135",
+          "locations": [
+            {
+              "offset": 826,
+              "length": 6
+            }
+          ]
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "relations": [],
+  "pmid": 37317646,
+  "pmcid": null,
+  "meta": {},
+  "date": "2023-06-15T00:00:00Z",
+  "journal": "EMBO J",
+  "authors": [
+    "Dobbelaere J",
+    "Su TY",
+    "Erdi B",
+    "Schleiffer A",
+    "Dammermann A"
+  ],
+  "relations_display": []
 }

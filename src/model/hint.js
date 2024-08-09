@@ -1,9 +1,18 @@
 import _ from 'lodash';
+import { ENTITY_TYPE } from './element/entity-type.js';
 
 // Define constants for Hint types, combining ORGANISM with ENTITY_TYPE
-const HINT_TYPE = Object.freeze({
-  ORGANISM: 'organism',
-});
+const HINT_TYPE = Object.freeze(
+  _.assign(
+    {
+      ORGANISM: 'organism',
+      DISEASE: 'disease',
+      CELL_LINE: 'cell_line',
+      VARIANT: 'variant',
+    },
+    ENTITY_TYPE,
+  ),
+);
 
 // Flatten the HINT_TYPE object to create an array of all hint types
 const HINT_TYPES = _.flatMap(HINT_TYPE);
@@ -23,17 +32,17 @@ const SECTIONS = _.flatMap(SECTION);
 class Hint {
   /**
    * Creates an instance of Hint.
-   * @param {Array} param.texts - The texts associated with the hint.
-   * @param {string} param.type - The type of the hint.
-   * @param {Object} param.xref - The cross-reference (xref) object.
-   * @param {string} param.section - The section of the document where the hint was found.
+   * @param {Array} texts - The texts associated with the hint.
+   * @param {string} type - The type of the hint.
+   * @param {Object} xref - The cross-reference (xref) object.
+   * @param {string} section - The section of the document where the hint was found.
    */
   constructor(texts, type, xref, section) {
-    // Initialize the properties using the setters to enforce validation
-    this._texts = texts;
-    this._type = type;
-    this._xref = xref;
-    this._section = section;
+    // Use setters to initialize properties and enforce validation
+    this.texts = texts;
+    this.type = type;
+    this.xref = xref;
+    this.section = section;
   }
 
   // Getter and setter for texts

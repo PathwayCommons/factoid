@@ -1,0 +1,459 @@
+{
+  "_id": "38309274|None",
+  "id": "10.1016/j.molcel.2024.01.007",
+  "infons": {
+    "doi": "10.1016/j.molcel.2024.01.007",
+    "comment": "Get: Missing IκBζ; mapping greek symbol"
+  },
+  "passages": [
+    {
+      "infons": {
+        "journal": "Mol Cell;2024Jan24. doi:10.1016/j.molcel.2024.01.007",
+        "year": "2024",
+        "type": "title",
+        "authors": "Alpsoy A, Wu XS, Pal S, Klingbeil O, Kumar P, El Demerdash O, Nalbant B, Vakoc CR, "
+      },
+      "offset": 0,
+      "text": "IkappaBzeta is a dual-use coactivator of NF-kappaB and POU transcription factors.",
+      "sentences": [],
+      "annotations": [
+        {
+          "id": "2",
+          "infons": {
+            "identifier": "64332",
+            "type": "Gene",
+            "ncbi_homologene": "12734",
+            "valid": true,
+            "normalized": [64332],
+            "database": "ncbi_gene",
+            "normalized_id": 64332,
+            "biotype": "gene",
+            "name": "NFKBIZ",
+            "accession": "@GENE_NFKBIZ"
+          },
+          "text": "IkappaBzeta",
+          "locations": [
+            {
+              "offset": 0,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "infons": {
+            "identifier": "4790",
+            "type": "Gene",
+            "ncbi_homologene": "2971",
+            "valid": true,
+            "normalized": [4790],
+            "database": "ncbi_gene",
+            "normalized_id": 4790,
+            "biotype": "gene",
+            "name": "NFKB1",
+            "accession": "@GENE_NFKB1"
+          },
+          "text": "NF-kappaB",
+          "locations": [
+            {
+              "offset": 41,
+              "length": 9
+            }
+          ]
+        }
+      ],
+      "relations": []
+    },
+    {
+      "infons": {
+        "type": "abstract"
+      },
+      "offset": 82,
+      "text": "OCA-B, OCA-T1, and OCA-T2 belong to a family of coactivators that bind to POU transcription factors (TFs) to regulate gene expression in immune cells. Here, we identify IkappaBzeta (encoded by the NFKBIZ gene) as an additional coactivator of POU TFs. Although originally discovered as an inducible regulator of NF-kappaB, we show here that IkappaBzeta shares a microhomology with OCA proteins and uses this segment to bind to POU TFs and octamer-motif-containing DNA. Our functional experiments suggest that IkappaBzeta requires its interaction with POU TFs to coactivate immune-related genes. This finding is reinforced by epigenomic analysis of MYD88L265P-mutant lymphoma cells, which revealed colocalization of IkappaBzeta with the POU TF OCT2 and NF-kappaB:p50 at hundreds of DNA elements harboring octamer and kappaB motifs. These results suggest that IkappaBzeta is a transcriptional coactivator that can amplify and integrate the output of NF-kappaB and POU TFs at inducible genes in immune cells.",
+      "sentences": [],
+      "annotations": [
+        {
+          "id": "17",
+          "infons": {
+            "identifier": "5450",
+            "type": "Gene",
+            "ncbi_homologene": "4543",
+            "valid": true,
+            "normalized": [5450],
+            "database": "ncbi_gene",
+            "normalized_id": 5450,
+            "biotype": "gene",
+            "name": "POU2AF1",
+            "accession": "@GENE_POU2AF1"
+          },
+          "text": "OCA-B",
+          "locations": [
+            {
+              "offset": 82,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "18",
+          "infons": {
+            "identifier": "64332",
+            "type": "Gene",
+            "ncbi_homologene": "12734",
+            "valid": true,
+            "normalized": [64332],
+            "database": "ncbi_gene",
+            "normalized_id": 64332,
+            "biotype": "gene",
+            "name": "NFKBIZ",
+            "accession": "@GENE_NFKBIZ"
+          },
+          "text": "IkappaBzeta",
+          "locations": [
+            {
+              "offset": 251,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "id": "19",
+          "infons": {
+            "identifier": "64332",
+            "type": "Gene",
+            "ncbi_homologene": "12734",
+            "valid": true,
+            "normalized": [64332],
+            "database": "ncbi_gene",
+            "normalized_id": 64332,
+            "biotype": "gene",
+            "name": "NFKBIZ",
+            "accession": "@GENE_NFKBIZ"
+          },
+          "text": "NFKBIZ",
+          "locations": [
+            {
+              "offset": 279,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "20",
+          "infons": {
+            "identifier": "4790",
+            "type": "Gene",
+            "ncbi_homologene": "2971",
+            "valid": true,
+            "normalized": [4790],
+            "database": "ncbi_gene",
+            "normalized_id": 4790,
+            "biotype": "gene",
+            "name": "NFKB1",
+            "accession": "@GENE_NFKB1"
+          },
+          "text": "NF-kappaB",
+          "locations": [
+            {
+              "offset": 393,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "21",
+          "infons": {
+            "identifier": "64332",
+            "type": "Gene",
+            "ncbi_homologene": "12734",
+            "valid": true,
+            "normalized": [64332],
+            "database": "ncbi_gene",
+            "normalized_id": 64332,
+            "biotype": "gene",
+            "name": "NFKBIZ",
+            "accession": "@GENE_NFKBIZ"
+          },
+          "text": "IkappaBzeta",
+          "locations": [
+            {
+              "offset": 422,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "id": "22",
+          "infons": {
+            "identifier": "64332",
+            "type": "Gene",
+            "ncbi_homologene": "12734",
+            "valid": true,
+            "normalized": [64332],
+            "database": "ncbi_gene",
+            "normalized_id": 64332,
+            "biotype": "gene",
+            "name": "NFKBIZ",
+            "accession": "@GENE_NFKBIZ"
+          },
+          "text": "IkappaBzeta",
+          "locations": [
+            {
+              "offset": 590,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "id": "23",
+          "infons": {
+            "identifier": "MESH:D008223",
+            "type": "Disease",
+            "valid": true,
+            "normalized": ["D008223"],
+            "database": "ncbi_mesh",
+            "normalized_id": "D008223",
+            "biotype": "disease",
+            "name": "Lymphoma",
+            "accession": "@DISEASE_Lymphoma"
+          },
+          "text": "lymphoma",
+          "locations": [
+            {
+              "offset": 747,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "24",
+          "infons": {
+            "identifier": "64332",
+            "type": "Gene",
+            "ncbi_homologene": "12734",
+            "valid": true,
+            "normalized": [64332],
+            "database": "ncbi_gene",
+            "normalized_id": 64332,
+            "biotype": "gene",
+            "name": "NFKBIZ",
+            "accession": "@GENE_NFKBIZ"
+          },
+          "text": "IkappaBzeta",
+          "locations": [
+            {
+              "offset": 796,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "id": "25",
+          "infons": {
+            "identifier": "5452",
+            "type": "Gene",
+            "ncbi_homologene": "55674",
+            "valid": true,
+            "normalized": [5452],
+            "database": "ncbi_gene",
+            "normalized_id": 5452,
+            "biotype": "gene",
+            "name": "POU2F2",
+            "accession": "@GENE_POU2F2"
+          },
+          "text": "OCT2",
+          "locations": [
+            {
+              "offset": 824,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "26",
+          "infons": {
+            "identifier": "4790",
+            "type": "Gene",
+            "ncbi_homologene": "2971",
+            "valid": true,
+            "normalized": [4790],
+            "database": "ncbi_gene",
+            "normalized_id": 4790,
+            "biotype": "gene",
+            "name": "NFKB1",
+            "accession": "@GENE_NFKB1"
+          },
+          "text": "NF-kappaB",
+          "locations": [
+            {
+              "offset": 833,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "27",
+          "infons": {
+            "identifier": "4790",
+            "type": "Gene",
+            "ncbi_homologene": "2971",
+            "valid": true,
+            "normalized": [4790],
+            "database": "ncbi_gene",
+            "normalized_id": 4790,
+            "biotype": "gene",
+            "name": "NFKB1",
+            "accession": "@GENE_NFKB1"
+          },
+          "text": "p50",
+          "locations": [
+            {
+              "offset": 843,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "28",
+          "infons": {
+            "identifier": "64332",
+            "type": "Gene",
+            "ncbi_homologene": "12734",
+            "valid": true,
+            "normalized": [64332],
+            "database": "ncbi_gene",
+            "normalized_id": 64332,
+            "biotype": "gene",
+            "name": "NFKBIZ",
+            "accession": "@GENE_NFKBIZ"
+          },
+          "text": "IkappaBzeta",
+          "locations": [
+            {
+              "offset": 939,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "id": "29",
+          "infons": {
+            "identifier": "4790",
+            "type": "Gene",
+            "ncbi_homologene": "2971",
+            "valid": true,
+            "normalized": [4790],
+            "database": "ncbi_gene",
+            "normalized_id": 4790,
+            "biotype": "gene",
+            "name": "NFKB1",
+            "accession": "@GENE_NFKB1"
+          },
+          "text": "NF-kappaB",
+          "locations": [
+            {
+              "offset": 1029,
+              "length": 9
+            }
+          ]
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "relations": [
+    {
+      "id": "R1",
+      "infons": {
+        "score": "0.9989",
+        "role1": {
+          "identifier": "5452",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [5452],
+          "database": "ncbi_gene",
+          "normalized_id": 5452,
+          "biotype": "gene",
+          "name": "POU2F2",
+          "accession": "@GENE_POU2F2"
+        },
+        "role2": {
+          "identifier": "64332",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [64332],
+          "database": "ncbi_gene",
+          "normalized_id": 64332,
+          "biotype": "gene",
+          "name": "NFKBIZ",
+          "accession": "@GENE_NFKBIZ"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "0",
+          "role": "10,9"
+        }
+      ]
+    },
+    {
+      "id": "R2",
+      "infons": {
+        "score": "0.9979",
+        "role1": {
+          "identifier": "4790",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [4790],
+          "database": "ncbi_gene",
+          "normalized_id": 4790,
+          "biotype": "gene",
+          "name": "NFKB1",
+          "accession": "@GENE_NFKB1"
+        },
+        "role2": {
+          "identifier": "64332",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [64332],
+          "database": "ncbi_gene",
+          "normalized_id": 64332,
+          "biotype": "gene",
+          "name": "NFKBIZ",
+          "accession": "@GENE_NFKBIZ"
+        },
+        "type": "Positive_Correlation"
+      },
+      "nodes": [
+        {
+          "refid": "1",
+          "role": "1,0"
+        }
+      ]
+    }
+  ],
+  "pmid": 38309274,
+  "pmcid": null,
+  "meta": {},
+  "date": "2024-01-24T00:00:00Z",
+  "journal": "Mol Cell",
+  "authors": [
+    "Alpsoy A",
+    "Wu XS",
+    "Pal S",
+    "Klingbeil O",
+    "Kumar P",
+    "El Demerdash O",
+    "Nalbant B",
+    "Vakoc CR"
+  ],
+  "relations_display": [
+    {
+      "name": "associate|@GENE_POU2F2|@GENE_NFKBIZ"
+    },
+    {
+      "name": "positive_correlate|@GENE_NFKB1|@GENE_NFKBIZ"
+    }
+  ]
+}

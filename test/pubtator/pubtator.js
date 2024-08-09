@@ -80,8 +80,8 @@ describe('pubtator', function () {
 
         it('Should aggregate organism hints correctly', function () {
           const aggregateCounts = hints.reduce((acc, hint) => {
-            const key = `${hint._xref.id}_${hint.section}`;
-            acc[key] = (acc[key] || 0) + hint._texts.length;
+            const key = `${hint.xref.id}_${hint.section}`;
+            acc[key] = (acc[key] || 0) + hint.texts.length;
             return acc;
           }, {});
 

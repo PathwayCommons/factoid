@@ -14,6 +14,7 @@ import pubtator_6 from './10.1016_j.molcel.2024.01.007.json';
 import pubtator_7 from './10.15252_embj.2023113616.json';
 import pubtator_8 from './pubtator_8.json';
 import { NCBI_BASE_URL } from '../../src/config.js';
+import { HTTPStatusError } from '../../src/util/fetch.js';
 
 /**
  * bioCDocuments
@@ -218,26 +219,35 @@ describe('pubtator', function () {
       }); // BioC Document
     }); // forEach
   }); // map
-  
+
   describe('get', function(){
-    it('Should be null when no body returned', async function(){
-      let pmid = '38496625';
-      var path = new RegExp( pmid );
+    it('Should reject if bad request', async function(){
+      const pmid = '39131402';
+      const path = new RegExp( pmid );
       nock( NCBI_BASE_URL )
         .get( path )
-        .reply( 200 );
-      let bioCDocument = await pubtator.get( pmid );
-      expect( bioCDocument ).to.be.null;
+        .reply( 400, {
+          "detail": "Could not retrieve publications"
+        });
+
+      return pubtator.get( pmid )
+        .catch( error => {
+          expect( error ).to.be.an.instanceof( HTTPStatusError );
+          expect( error.response.status ).to.equal( 400 );
+        });
     });
 
-    it('Should exist when a body is returned', async function(){
+    it('Should return data when valid request', async function(){
       let pmid = '28041912';
       var path = new RegExp( pmid );
       nock( NCBI_BASE_URL )
         .get( path )
         .reply( 200, { foo: 'bar' } );
-      let bioCDocument = await pubtator.get( pmid );
-      expect( bioCDocument ).to.exist;
+
+      return pubtator.get( pmid )
+        .then( data => {
+          expect( data ).to.exist;
+        });
     });
   }); // get
 
@@ -245,16 +255,6 @@ describe('pubtator', function () {
     it('Should be null when invalid publicationXref provided', async function(){
       let bioCDocument = await pubtator.hints( { dbPrefix: 'bar', id: 'foo'} );
       expect( bioCDocument ).to.be.null;
-    });
-
-    it('Should exist when a body is returned', async function(){
-      let pmid = '28041912';
-      var path = new RegExp( pmid );
-      nock( NCBI_BASE_URL )
-        .get( path )
-        .reply( 200, { foo: 'bar' } );
-      let bioCDocument = await pubtator.get( pmid );
-      expect( bioCDocument ).to.exist;
     });
   }); // hints
 }); // pubtator

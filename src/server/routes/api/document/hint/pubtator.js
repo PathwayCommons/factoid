@@ -1,6 +1,12 @@
 import _ from 'lodash';
+import fetch from 'node-fetch';
+import queryString from 'query-string';
+
+import logger from '../../../../logger.js';
 import { Hint, HINT_TYPE } from '../../../../../model/hint.js';
 import { COLLECTIONS } from '../../../../../util/registry.js';
+import { NCBI_BASE_URL, PUBTATOR_API_PATH } from '../../../../../config.js';
+import { checkHTTPStatus } from '../../../../../util/fetch.js';
 
 /**
  * Map a PubTator BioCDocument to a hint
@@ -173,5 +179,65 @@ function map(bioCDocument) {
   }
   return hints;
 }
+const BIOC_FORMAT = Object.freeze({
+  BIOCXML: 'biocxml',
+  PUBTATOR: 'pubtator',
+  BIOCJSON: 'biocjson'
+});
 
-export default map;
+/**
+ * Get a BioCDocument from PubTator
+ * Technically, PubTator3 API accepts a comma-delimited list of PMIDs, but the response poses
+ * several format (not pure JSON) and mapping issues (e.g. missing responses ) so don't do this.
+ *
+ * @param {string} pmids A PubMed uid
+ * @param {string} format One of the BIOC_FORMATs
+ * @returns {object} A BioC Document
+ */
+async function get ( pmids, format = BIOC_FORMAT.BIOCJSON ) {
+  const toJson = async response => {
+    let data = null;
+    const text = await response.text();
+    if ( text ){ // Optional body
+      data = JSON.parse( text );
+    }
+    return data;
+  };
+  const params = queryString.stringify({ pmids });
+  const url = `${NCBI_BASE_URL}${PUBTATOR_API_PATH}${format}?${params}`;
+
+  try {
+    let response = await fetch( url );
+    response = checkHTTPStatus( response ); // HTTPStatusError
+    return toJson( response );
+  } catch (e) {
+    logger.error( `Error in pubtator::get with ${pmids}` );
+    logger.error( e );
+    throw e;
+  }
+}
+
+/**
+ * A simple wrapper to retrieve Hints from PubTator
+ * @param {Object} publicationXref - An identifier for a paper
+ * @param {string} publicationXref.id - The local identifier value
+ * @param {string} publicationXref.dbPrefix - The database prefix
+ * @returns {Array<Hint>} A list of Hint instances or null
+ */
+async function hints({ id, dbPrefix }) {
+  let hints = null;
+  if ( dbPrefix === COLLECTIONS.PUBMED.dbPrefix ) {
+    const pmid = id;
+    const bioCDocument = await get( pmid );
+    if( bioCDocument != null ) hints = map( bioCDocument );
+  }
+  return hints;
+}
+
+const pubtator = {
+  map,
+  get,
+  hints
+};
+
+export default pubtator;

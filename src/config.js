@@ -74,6 +74,8 @@ export const SEMANTIC_SEARCH_BASE_URL = env('SEMANTIC_SEARCH_BASE_URL', 'https:/
 export const ORCID_BASE_URL = env('ORCID_BASE_URL', 'https://orcid.org/');
 export const ORCID_PUBLIC_API_BASE_URL = env('ORCID_PUBLIC_API_BASE_URL', 'https://pub.orcid.org/v3.0/');
 export const CROSSREF_API_BASE_URL = env('CROSSREF_API_BASE_URL', 'https://api.crossref.org/');
+export const NCBI_BASE_URL = env('NCBI_NLM_NIH_BASE_URL', 'https://www.ncbi.nlm.nih.gov/');
+export const PUBTATOR_API_PATH = env('PUBTATOR_API_PATH', 'research/pubtator3-api/publications/export/');
 
 // Links
 export const UNIPROT_LINK_BASE_URL = env('UNIPROT_LINK_BASE_URL', 'http://www.uniprot.org/uniprot/');

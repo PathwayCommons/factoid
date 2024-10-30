@@ -92,6 +92,7 @@
     "soap": "^0.25.0",
     "socket.io": "^2.4.0",
     "socket.io-client": "^2.1.1",
+    "striptags": "^3.2.0",
     "swagger-jsdoc": "^4.0.0",
     "swagger-ui-express": "^4.1.4",
     "tippy.js": "^2.6.0",

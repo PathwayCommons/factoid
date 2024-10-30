@@ -64,12 +64,30 @@ describe('article', function () {
 
       it('Should be true with varying dashes', function () {
         const title = 'Neurons enhance blood-–brain barrier function via upregulating claudin-5 and VE-cadherin expression due to glial cell line-derived neurotrophic factor secretion';
-        const other = 'Neurons enhance blood-brain barrier function via upregulating claudin-5 and VE-cadherin expression due to GDNF secretion';
+        const other = 'Neurons enhance blood brain barrier function via upregulating claudin 5 and VE cadherin expression due to glial cell line derived neurotrophic factor secretion';
         const isSame = testTitle(title, other);
         expect( isSame ).to.be.true;
       });
 
-    });
+      it('Should be true with dash related to microRNA', function () {
+        const title = 'Circular RNA HMGCS1 sponges MIR4521 to aggravate type 2 diabetes-induced vascular endothelial dysfunction';
+        const other = 'Circular RNA HMGCS1 sponges miR-4521 to aggravate type 2 diabetes-induced vascular endothelial dysfunction';
+        const isSame = testTitle(title, other);
+        expect( isSame ).to.be.true;
+      });
+
+    }); // Punctuation
+
+    describe('Markup', function () {
+
+      it('Should drop HTML tags ', function () {
+        const title = '<i>Trans</i>regulation of an odorant binding protein by a proto-Y chromosome affects male courtship in house fly';
+        const other = 'Transregulation of an odorant binding protein by a proto-Y chromosome affects male courtship in house fly';
+        const isSame = testTitle(title, other);
+        expect( isSame ).to.be.true;
+      });
+
+    }); // Markup
 
   }); // testTitle
 

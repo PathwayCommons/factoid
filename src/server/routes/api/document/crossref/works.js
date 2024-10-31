@@ -5,6 +5,7 @@ import { search, get } from './api.js';
 import { toPubMedArticle } from './map';
 import { HTTPStatusError, isDoi } from '../../../../../util';
 import { ArticleIDError } from '../../../../../util/pubmed';
+import { testTitle } from '../../../../../util/article.js';
 
 const ID_TYPE = Object.freeze({
   DOI: 'doi',
@@ -23,15 +24,9 @@ const ID_TYPE = Object.freeze({
  */
 const match = ( paperId, IdType, hits ) => {
   const byCreated = ( a, b ) => b.created.timestamp - a.created.timestamp;
-  const sanitize = raw => {
-    const trimmed = _.trim( raw , ' .');
-    const lower = _.toLower( trimmed );
-    const clean = lower.replace(/[\W_]+/g, ' ');
-    return clean;
-  };
-
   const workMatchesPaperId = work => {
-    const { DOI, title } = work;
+    let { DOI, title } = work;
+    title = title.join(' '); // array of titles
     let hasMatch = false;
     switch ( IdType ) {
       case ID_TYPE.DOI:
@@ -40,9 +35,7 @@ const match = ( paperId, IdType, hits ) => {
         }
         break;
       case ID_TYPE.TERM:
-        if( sanitize(title.join(' ')).includes( sanitize(paperId) ) ){
-          hasMatch = true;
-        }
+        hasMatch = testTitle( title, paperId );
         break;
     }
 

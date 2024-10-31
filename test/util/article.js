@@ -89,6 +89,30 @@ describe('article', function () {
 
     }); // Markup
 
+    describe('Includes', function () {
+
+      it('Should be true when other includes title and vice versa', function () {
+        const title = 'eLife 2024: Defining cell type-specific immune responses in a mouse model of allergic contact dermatitis by single-cell transcriptomics';
+        const other = 'Defining cell type-specific immune responses in a mouse model of allergic contact dermatitis by single-cell transcriptomics';
+        let isSame = testTitle(title, other);
+        expect( isSame ).to.be.true;
+        isSame = testTitle(other, title);
+        expect( isSame ).to.be.true;
+      });
+
+    }); // Includes
+
+    describe('Extended characters', function () {
+
+      it('Should be true when other includes title and vice versa', function () {
+        const title = '[Clinical Study of Ibrutinib Combined with Venetoclax Regimen in the Treatment of Relapsed/Refractory Diffuse Large B-Cell Lymphoma]';
+        const other = '[Clinical Study of Ibrutinib Combined with Venetoclax Regimen in the Treatment of Relapsed/Refractory Diffuse Large B-Cell Lymphoma]';
+        let isSame = testTitle(title, other);
+        expect( isSame ).to.be.true;
+      });
+
+    }); // Includes
+
   }); // testTitle
 
 }); // article

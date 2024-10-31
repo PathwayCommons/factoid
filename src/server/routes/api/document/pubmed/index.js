@@ -8,6 +8,7 @@ import {
   DEMO_ID
 } from '../../../../../config';
 import { HTTPStatusError, isDigits, isDoi } from '../../../../../util';
+import { testTitle } from '../../../../../util/article.js';
 
 const ID_TYPE = Object.freeze({
   DOI: 'doi',
@@ -36,15 +37,7 @@ const paperId2Type = paperId => {
 
 const findMatchingPubmedArticle = async ( paperId, IdType, uids ) => {
   let PubmedArticle;
-  // Pubmed EFETCH returns lower-cased title, adds trailing period
-  const santitize = raw => {
-    const trimmed = _.trim( raw , ' .');
-    const lower = _.toLower( trimmed );
-    const clean = lower.replace(/[\W_]+/g, ' ');
-    return clean;
-  };
-
-  // Try to match: Could be responsibility of user in future
+    // Try to match: Could be responsibility of user in future
   const articleMatchesPaperId = article => {
     const { title, pmid, doi, pubTypes } = getPubmedCitation( article );
     let hasMatch = false;
@@ -60,7 +53,7 @@ const findMatchingPubmedArticle = async ( paperId, IdType, uids ) => {
           if( pmid === paperId ) hasMatch = true;
           break;
         case ID_TYPE.TITLE:
-          if( santitize( title ).includes( santitize( paperId ) ) ) hasMatch = true;
+          hasMatch = testTitle( title, paperId );
           break;
       }
     }

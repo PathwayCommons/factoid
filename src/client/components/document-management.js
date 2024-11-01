@@ -11,13 +11,10 @@ import DirtyComponent from './dirty-component';
 import Document from '../../model/document';
 import { tryPromise } from '../../util';
 import { makeClassList } from '../dom';
-import Popover from './popover/popover';
 import { checkHTTPStatus } from '../../util';
-import { RequestBiopaxForm } from './home';
-import RequestForm from './request-form';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
-const DEFAULT_STATUS_FIELDS = _.pull( _.values( DOCUMENT_STATUS_FIELDS ), DOCUMENT_STATUS_FIELDS.TRASHED );
+const DEFAULT_STATUS_FIELDS = _.pull( _.values( DOCUMENT_STATUS_FIELDS ), DOCUMENT_STATUS_FIELDS.TRASHED, DOCUMENT_STATUS_FIELDS.INITIATED );
 
 const orderByCreatedDate = docs => _.orderBy( docs, [ doc => doc.createdDate() ], ['desc'] );
 
@@ -52,34 +49,37 @@ class DocumentManagement extends DirtyComponent {
     docSocket.on('error', logSocketErr);
     eleSocket.on('error', logSocketErr);
 
-    // API Key
-    const query = queryString.parse( this.props.history.location.search );
-    const page = parseInt( _.get( query, 'page', 1 ) );
-    const limit =  parseInt( _.get( query, 'limit', 10 ) );
-    const apiKey =  _.get( query, 'apiKey', '' );
-    const status =  _.get( query, 'status' ) ? _.get( query, 'status' ).split(/\s*,\s*/) : DEFAULT_STATUS_FIELDS;
-    let offset = limit * ( page - 1 );
-    const ids = _.get( query, 'ids' );
+    // Retrieve url query param values
+    const getUrlQueryValues = () => {
+      const asInt = str => str ? parseInt( str ) : undefined;
+      const query = queryString.parse( this.props.history.location.search );
+      const page = asInt( _.get( query, 'page' ) );
+      const limit = asInt( _.get( query, 'limit' ) );
+      const apiKey = _.get( query, 'apiKey', '' );
+      const status = _.has( query, 'status' ) ? _.get( query, 'status' ).split(/\s*,\s*/): undefined;
+      const ids = _.get( query, 'ids' );
+      return { apiKey, page, limit, status, ids };
+    };
+    // const { apiKey, page, limit, status, ids } = getUrlQueryValues();
+    const urlValues = getUrlQueryValues();
 
-    this.state = {
-      apiKey,
+    this.state = _.assign({
       validApiKey: false,
       apiKeyError: null,
       docs: [],
-      status,
       pageCount: 0,
-      limit,
-      offset,
-      ids,
-      page,
       isLoading: false
-    };
+    }, urlValues );
 
     this.bus = new EventEmitter();
 
-    this.checkApiKey( apiKey )
+    this.checkApiKey( this.state.apiKey )
       .then( () => this.getDocs() )
-      .catch( () => {} ); //swallow
+      .catch( e => logger.error( 'Failed to load documents', e ) );
+  }
+
+  isRange(){
+    return this.state.ids ? true : false;
   }
 
   checkApiKey( apiKey ){
@@ -95,14 +95,28 @@ class DocumentManagement extends DirtyComponent {
       });
   }
 
-  updateUrlParams( params ){
+  getQueryParams(){
+    const calcOffset = ( page, limit ) => limit * ( page - 1 );
+    let { apiKey, ids } = this.state;
+    const opts = { apiKey };
+
+    if( ids ){
+      _.assign( opts, { ids } );
+    } else {
+      const { page = 1, limit = 10, status = DEFAULT_STATUS_FIELDS } = this.state;
+      const offset = calcOffset( page, limit );
+      _.defaults( opts, { offset, status: status.join(','), limit } );
+    }
+    return queryString.stringify( opts );
+  }
+
+  updateUrlParams(params){
     this.props.history.push(`/document?${params}`);
   }
 
   getDocs(){
     const url = '/api/document';
-    const { apiKey, status, limit, offset, page, ids } = this.state;
-    const queryParams = queryString.stringify( { apiKey, status: status.join(','), limit, offset, ids } );
+    const queryParams = this.getQueryParams();
 
     this.setState({ isLoading: true });
 
@@ -118,10 +132,7 @@ class DocumentManagement extends DirtyComponent {
         return docs;
       })
       .then( docs => new Promise( resolve => this.setState( { docs }, resolve ) ) )
-      .then( () => {
-        const urlParams = queryString.stringify( { apiKey, status: status.join(','), limit, page, ids } );
-        this.updateUrlParams( urlParams );
-      })
+      .then( () => this.updateUrlParams( queryParams ) )
       .finally( () => {
         new Promise( resolve => this.setState( { isLoading: false }, resolve ) );
       });
@@ -167,46 +178,9 @@ class DocumentManagement extends DirtyComponent {
   render(){
     let { docs, apiKey, status, validApiKey, isLoading, page } = this.state;
     const header = h('div.page-content-title', [
-      h('h1', 'Document management panel')
+      h('h1', 'Administration')
     ]);
     let initialPage = page - 1;
-    const getAddButtons = () => {
-      return h('small', [getAddDoc(), getAddBiopax()]);
-    };
-
-    const getAddDoc = () => {
-      return h( Popover, {
-        tippy: {
-          html: h( RequestForm, {
-            apiKey,
-            doneMsg: 'Request submitted.',
-            bus: this.bus,
-            submitBtnText: 'Create my article profile',
-            checkIncomplete: false
-          }),
-          onHidden: () => this.bus.emit( 'closecta' ),
-          placement: 'top'
-        }
-      }, [
-        h('button', [ h( 'i.material-icons', 'add' ) ])
-      ]);
-    };
-
-    const getAddBiopax = () => {
-      return h( Popover, {
-        tippy: {
-          html: h( RequestBiopaxForm, {
-            apiKey,
-            doneMsg: 'Request submitted.',
-            bus: this.bus
-          }),
-          onHidden: () => this.bus.emit( 'closecta' ),
-          placement: 'top'
-        }
-      }, [
-        h('button', [ h( 'i.material-icons', 'attach_file' ) ])
-      ]);
-    };
 
     // Authorization
     const apiKeyForm =
@@ -249,8 +223,7 @@ class DocumentManagement extends DirtyComponent {
 
 
     const documentMenu = h('div.document-management-document-control-menu', [
-      h( 'div.document-management-document-control-menu-item', [getDocStatusFilter()]),
-      h( 'div.document-management-document-control-menu-item', [getAddButtons()] )
+      h( 'div.document-management-document-control-menu-item', [getDocStatusFilter()])
     ]);
 
     const documentList = h( 'ul', orderByCreatedDate( docs ).map( doc => {
@@ -278,7 +251,9 @@ class DocumentManagement extends DirtyComponent {
     let body = validApiKey ? documentContainer: apiKeyForm;
 
     const footer = h('div.document-management-footer', {
-      className: makeClassList({ 'document-management-hidden': isLoading })
+      className: makeClassList({
+        'document-management-hidden': isLoading || this.state.ids
+       })
     }, [
       h( 'div.document-management-paginator', [
         h( ReactPaginate, {

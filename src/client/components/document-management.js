@@ -49,6 +49,10 @@ class DocumentManagement extends DirtyComponent {
     docSocket.on('error', logSocketErr);
     eleSocket.on('error', logSocketErr);
 
+    this.getDocsDebounced = _.debounce(() => {
+      this.getDocs();
+    }, 1000);
+
     // Retrieve url query param values
     const getUrlQueryValues = () => {
       const asInt = str => str ? parseInt( str ) : undefined;
@@ -78,8 +82,9 @@ class DocumentManagement extends DirtyComponent {
       .catch( e => logger.error( 'Failed to load documents', e ) );
   }
 
-  isRange(){
-    return this.state.ids ? true : false;
+  // Range mode means retrieve Docs wrt: limit, offset, and status
+  isRangeMode(){
+    return this.state.ids ? false : true;
   }
 
   checkApiKey( apiKey ){
@@ -105,7 +110,7 @@ class DocumentManagement extends DirtyComponent {
     } else {
       const { page = 1, limit = 10, status = DEFAULT_STATUS_FIELDS } = this.state;
       const offset = calcOffset( page, limit );
-      _.defaults( opts, { offset, status: status.join(','), limit } );
+      _.defaults( opts, { offset, status: status.join(','), limit, page } );
     }
     return queryString.stringify( opts );
   }
@@ -153,7 +158,7 @@ class DocumentManagement extends DirtyComponent {
     const { value, checked } = e.target;
     const status = this.state.status.slice();
     checked ? status.push( value ) : _.pull( status, value );
-    this.setState({ status }, () => this.getDocs() );
+    this.setState({ status }, () => this.getDocsDebounced() );
   }
 
   componentDidMount(){
@@ -178,7 +183,7 @@ class DocumentManagement extends DirtyComponent {
   render(){
     let { docs, apiKey, status, validApiKey, isLoading, page } = this.state;
     const header = h('div.page-content-title', [
-      h('h1', 'Administration')
+      h('h1', 'Biofactoid Administration')
     ]);
     let initialPage = page - 1;
 
@@ -218,12 +223,14 @@ class DocumentManagement extends DirtyComponent {
       };
 
       _.values( DOCUMENT_STATUS_FIELDS ).forEach( status => addCheckbox( status, _.capitalize( status ) ) );
-      return h( 'small.mute.checkboxSet', checkboxes );
+      return h( 'p.mute.checkboxSet', checkboxes );
     };
 
 
     const documentMenu = h('div.document-management-document-control-menu', [
-      h( 'div.document-management-document-control-menu-item', [getDocStatusFilter()])
+      h( 'div.document-management-document-control-menu-item', {
+        className: makeClassList({ 'document-management-hidden': !this.isRangeMode() })
+      }, [getDocStatusFilter()])
     ]);
 
     const documentList = h( 'ul', orderByCreatedDate( docs ).map( doc => {
@@ -238,28 +245,21 @@ class DocumentManagement extends DirtyComponent {
     );
 
     const documentContainer = h( 'div.document-management-document-container',
-      [
-        h('i.icon.icon-spinner.document-management-spinner', {
-          className: makeClassList({ 'document-management-hidden': !isLoading })
-        }),
-        h('div', {
-          className: makeClassList({ 'document-management-hidden': isLoading })
-        }, [documentMenu, documentList])
-      ]
+      isLoading ? [  h('i.icon.icon-spinner.document-management-spinner') ] : [ documentMenu, documentList ]
     );
 
     let body = validApiKey ? documentContainer: apiKeyForm;
 
     const footer = h('div.document-management-footer', {
       className: makeClassList({
-        'document-management-hidden': isLoading || this.state.ids
+        'document-management-hidden': isLoading || !this.isRangeMode()
        })
     }, [
       h( 'div.document-management-paginator', [
         h( ReactPaginate, {
           pageCount: this.state.pageCount,
-          marginPagesDisplayed: 1,
-          pageRangeDisplayed: 2,
+          marginPagesDisplayed: 2,
+          pageRangeDisplayed: 5,
           disableInitialCallback: true,
           initialPage,
           onPageChange: data => this.handlePageClick( data )

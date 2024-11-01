@@ -59,6 +59,7 @@ class DocumentManagement extends DirtyComponent {
     const apiKey =  _.get( query, 'apiKey', '' );
     const status =  _.get( query, 'status' ) ? _.get( query, 'status' ).split(/\s*,\s*/) : DEFAULT_STATUS_FIELDS;
     let offset = limit * ( page - 1 );
+    const ids = _.get( query, 'ids' );
 
     this.state = {
       apiKey,
@@ -69,6 +70,7 @@ class DocumentManagement extends DirtyComponent {
       pageCount: 0,
       limit,
       offset,
+      ids,
       page,
       isLoading: false
     };
@@ -99,8 +101,8 @@ class DocumentManagement extends DirtyComponent {
 
   getDocs(){
     const url = '/api/document';
-    const { apiKey, status, limit, offset, page } = this.state;
-    const queryParams = queryString.stringify( { apiKey, status: status.join(','), limit, offset } );
+    const { apiKey, status, limit, offset, page, ids } = this.state;
+    const queryParams = queryString.stringify( { apiKey, status: status.join(','), limit, offset, ids } );
 
     this.setState({ isLoading: true });
 
@@ -117,7 +119,7 @@ class DocumentManagement extends DirtyComponent {
       })
       .then( docs => new Promise( resolve => this.setState( { docs }, resolve ) ) )
       .then( () => {
-        const urlParams = queryString.stringify( { apiKey, status: status.join(','), limit, page } );
+        const urlParams = queryString.stringify( { apiKey, status: status.join(','), limit, page, ids } );
         this.updateUrlParams( urlParams );
       })
       .finally( () => {

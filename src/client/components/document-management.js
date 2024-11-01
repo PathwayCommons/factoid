@@ -53,27 +53,15 @@ class DocumentManagement extends DirtyComponent {
       this.getDocs();
     }, 1000);
 
-    // Retrieve url query param values
-    const getUrlQueryValues = () => {
-      const asInt = str => str ? parseInt( str ) : undefined;
-      const query = queryString.parse( this.props.history.location.search );
-      const page = asInt( _.get( query, 'page' ) );
-      const limit = asInt( _.get( query, 'limit' ) );
-      const apiKey = _.get( query, 'apiKey', '' );
-      const status = _.has( query, 'status' ) ? _.get( query, 'status' ).split(/\s*,\s*/): undefined;
-      const ids = _.get( query, 'ids' );
-      return { apiKey, page, limit, status, ids };
-    };
-    // const { apiKey, page, limit, status, ids } = getUrlQueryValues();
-    const urlValues = getUrlQueryValues();
-
+    const urlParams = this.props.history.location.search;
+    const queryValues = this.parseQueryValues( urlParams );
     this.state = _.assign({
       validApiKey: false,
       apiKeyError: null,
       docs: [],
       pageCount: 0,
       isLoading: false
-    }, urlValues );
+    }, queryValues );
 
     this.bus = new EventEmitter();
 
@@ -100,6 +88,17 @@ class DocumentManagement extends DirtyComponent {
       });
   }
 
+  parseQueryValues( search ){
+    const query = queryString.parse( search );
+    const asInt = str => str ? parseInt( str ) : undefined;
+    const page = asInt( _.get( query, 'page' ) );
+    const limit = asInt( _.get( query, 'limit' ) );
+    const apiKey = _.get( query, 'apiKey', '' );
+    const status = _.has( query, 'status' ) ? _.get( query, 'status' ).split(/\s*,\s*/): undefined;
+    const ids = _.get( query, 'ids' );
+    return { apiKey, page, limit, status, ids };
+  }
+
   getQueryParams(){
     const calcOffset = ( page, limit ) => limit * ( page - 1 );
     let { apiKey, ids } = this.state;
@@ -123,20 +122,21 @@ class DocumentManagement extends DirtyComponent {
     const url = '/api/document';
     const queryParams = this.getQueryParams();
 
-    this.setState({ isLoading: true });
-
-    return fetch(`${url}?${queryParams}`)
+    return tryPromise( () => new Promise( resolve => this.setState( { isLoading: true }, resolve ) ) )
+      .then( () => fetch(`${url}?${queryParams}`) )
       .then( res => {
+        const queryValues = this.parseQueryValues( queryParams );
+        const { limit } = queryValues;
         const total = res.headers.get('X-Document-Count');
-        const pageCount = Math.ceil( total / this.state.limit );
-        return new Promise( resolve => this.setState( { pageCount }, resolve( res.json() ) ) );
+        const pageCount = Math.ceil( total / limit );
+        const update = _.assign({ pageCount }, queryValues );
+        return new Promise( resolve => this.setState( update, resolve( res.json() ) ) );
       })
       .then( docJSON => toDocs( docJSON, this.docSocket, this.eleSocket ) )
       .then( docs => {
         docs.forEach( doc => doc.on( 'update', () => this.dirty() ) );
-        return docs;
+        return new Promise( resolve => this.setState( { docs }, resolve ) );
       })
-      .then( docs => new Promise( resolve => this.setState( { docs }, resolve ) ) )
       .then( () => this.updateUrlParams( queryParams ) )
       .finally( () => {
         new Promise( resolve => this.setState( { isLoading: false }, resolve ) );

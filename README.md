@@ -20,6 +20,8 @@ Our data is licensed under [CC0](https://creativecommons.org/publicdomain/zero/1
 
 - [Node.js](https://nodejs.org/en/) >=10
 - [RethinkDB](http://rethinkdb.com/) ^2.3.0
+- [factoid-converters](https://github.com/PathwayCommons/factoid-converters) - See also [docker](https://hub.docker.com/repository/docker/pathwaycommons/factoid-converters/)
+  - The config variable `BIOPAX_CONVERTER_URL` must be set for this instance when `NODE_ENV` = `production`
 
 ## Required software for Graph Database if Docker not used
 - [Neo4j](https://neo4j.com/docs/operations-manual/current/installation/) ^5.4.0
@@ -77,7 +79,7 @@ Services:
 - `DEFAULT_CACHE_SIZE` : default max number of entries in each cache
 - `REACH_URL` : full url of the reach textmining endpoint
 - `PC_URL` : base url for pathway commons apps, to search or link
-- `BIOPAX_CONVERTER_URL` : url for the factoid to biopax/sbgn converter
+- `BIOPAX_CONVERTER_URL` : url for the factoid to biopax/sbgn converter (**REQUIRED**)
 - `GROUNDING_SEARCH_BASE_URL`: url for the [grounding service](https://github.com/PathwayCommons/grounding-search)
 - `NCBI_EUTILS_BASE_URL` : url for the NCBI E-utilities
 - `NCBI_EUTILS_API_KEY` : API key for the NCBI E-utilities

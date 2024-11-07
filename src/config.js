@@ -65,7 +65,7 @@ export const EXPORT_BULK_DELAY_HOURS = env('EXPORT_BULK_DELAY_HOURS', 0.25);
 // Services
 export const PC_URL = env('PC_URL', 'https://apps.pathwaycommons.org/');
 export const REACH_URL = env('REACH_URL', 'http://reach.baderlab.org/api/uploadFile');
-export const BIOPAX_CONVERTER_URL = env('BIOPAX_CONVERTER_URL', 'https://biopax.baderlab.org/convert/v2/');
+export const BIOPAX_CONVERTER_URL = env('BIOPAX_CONVERTER_URL', undefined);
 export const GROUNDING_SEARCH_BASE_URL = env('GROUNDING_SEARCH_BASE_URL', 'https://grounding.baderlab.org');
 export const NCBI_EUTILS_BASE_URL = env('NCBI_EUTILS_BASE_URL', 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/');
 export const NCBI_EUTILS_API_KEY = env('NCBI_EUTILS_API_KEY', 'b99e10ebe0f90d815a7a99f18403aab08008');

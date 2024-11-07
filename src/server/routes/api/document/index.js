@@ -539,7 +539,13 @@ let handleResponseError = response => {
   return response;
 };
 
+
+
 let getBiopaxFromTemplates = templates => {
+  if( !BIOPAX_CONVERTER_URL ){
+    logger.error( 'BIOPAX_CONVERTER_URL is not set' );
+    throw new Error( 'BIOPAX_CONVERTER_URL is not set' );
+  }
   return fetch( BIOPAX_CONVERTER_URL + 'json-to-biopax', {
     method: 'POST',
     body: JSON.stringify(templates),
@@ -636,6 +642,10 @@ let searchByXref = ( xref ) => {
 };
 
 let getJsonFromBiopaxUrl = url => {
+  if( !BIOPAX_CONVERTER_URL ){
+    logger.error( 'BIOPAX_CONVERTER_URL is not set' );
+    throw new Error( 'BIOPAX_CONVERTER_URL is not set' );
+  }
   return fetch( BIOPAX_CONVERTER_URL + 'biopax-url-to-json', {
     method: 'POST',
     body: url,
@@ -647,6 +657,10 @@ let getJsonFromBiopaxUrl = url => {
 };
 
 let getSbgnFromTemplates = templates => {
+  if( !BIOPAX_CONVERTER_URL ){
+    logger.error( 'BIOPAX_CONVERTER_URL is not set' );
+    throw new Error( 'BIOPAX_CONVERTER_URL is not set' );
+  }
   return fetch( BIOPAX_CONVERTER_URL + 'json-to-sbgn', {
     method: 'POST',
     body: JSON.stringify(templates),

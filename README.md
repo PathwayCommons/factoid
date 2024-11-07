@@ -51,6 +51,7 @@ General:
 CRON:
 
 - `CRON_SCHEDULE` : second (optional), minute, hour, day of month, month, day of week
+- `CRON_SCHEDULE_DOCCACHE_UPDATE` : Schedule a Document cache refresh
 - `DOCUMENT_CRON_UPDATE_PERIOD` : Milliseconds between successive Document cron update calls
 - `DOCUMENT_CRON_STALE_PERIOD` : Milliseconds since Documemt was last edited; criteria for trashing
 - `GRAPHDB_CRON_REFRESH_PERIOD_MINUTES` : Minimum time (minutes) between refreshes of graph DB data

@@ -57,6 +57,7 @@ let docCache = {
 
 cron.schedule( CRON_SCHEDULE_DOCCACHE_UPDATE, async () => {
   logger.debug( `Running Document cache update cron job` );
+  await docCache.update( DOCCACHE_KEY.LATEST, {} );
   await docCache.update( DOCCACHE_KEY.SEARCH, { limit: null } );
 });
 

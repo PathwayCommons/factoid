@@ -4,6 +4,7 @@ import queryString from 'query-string';
 import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
 import ReactPaginate from 'react-paginate';
+import React from 'react';
 
 import { DocumentManagementDocumentComponent } from './document-management-components';
 import logger from '../logger';
@@ -39,6 +40,7 @@ const toDocs = ( docJSON, docSocket, eleSocket ) => {
 class DocumentManagement extends DirtyComponent {
   constructor( props ){
     super( props );
+    this.idInput = React.createRef();
 
     // Live Sync
     let docSocket = io.connect('/document');
@@ -59,8 +61,10 @@ class DocumentManagement extends DirtyComponent {
       validApiKey: false,
       apiKeyError: null,
       docs: [],
+      id: '',
       pageCount: 0,
-      isLoading: false
+      isLoading: false,
+      searchMode: false
     }, queryValues );
 
     this.bus = new EventEmitter();
@@ -68,11 +72,6 @@ class DocumentManagement extends DirtyComponent {
     this.checkApiKey( this.state.apiKey )
       .then( () => this.getDocs() )
       .catch( e => logger.error( 'Failed to load documents', e ) );
-  }
-
-  // Range mode means retrieve Docs wrt: limit, offset, and status
-  isRangeMode(){
-    return this.state.ids ? false : true;
   }
 
   checkApiKey( apiKey ){
@@ -180,6 +179,48 @@ class DocumentManagement extends DirtyComponent {
     new Promise( resolve => this.setState( { offset, page }, () => this.getDocs().then( resolve ) ) );
   }
 
+  updateIdSearch( id ){
+    this.setState({ id });
+  }
+
+  clearIdSearch() {
+    this.setState({ id: '', searchMode: false });
+  }
+
+  handleSubmit( e ){
+    alert('Submit!');
+    e.preventDefault();
+  }
+
+  activateSearchMode() {
+    this.setState({ searchMode: true });
+  }
+
+  deactivateSearchMode() {
+    if (this.state.ids) {
+      // keep in query mode
+    } else {
+      this.setState({ searchMode: false, ids: '' });
+    }
+  }
+
+  reset() {
+    const { submittedText } = this.state;
+    this.setState({
+      editText: submittedText
+    });
+  }
+
+  handleKeyDown ( e ) {
+    if ( e.key === 'Escape' ) {
+      this.reset();
+      this.idInput.current.blur();
+    } else if ( e.key === 'Enter' ) {
+      this.idInput.current.blur();
+      this.handleSubmit( e );
+    }
+  }
+
   render(){
     let { docs, apiKey, status, validApiKey, isLoading, page } = this.state;
     const header = h('div.page-content-title', [
@@ -223,14 +264,34 @@ class DocumentManagement extends DirtyComponent {
       };
 
       _.values( DOCUMENT_STATUS_FIELDS ).forEach( status => addCheckbox( status, _.capitalize( status ) ) );
-      return h( 'p.mute.checkboxSet', checkboxes );
+      return h( 'div.mute.checkboxSet', checkboxes );
     };
 
+    const getIdForm = () => {
+      return h('span.id-filter-box-area', [
+        h('input.input-round.id-input', {
+          value: this.state.id,
+          onChange: e => this.updateIdSearch( e.target.value ),
+          type: 'text',
+          ref: this.idInput,
+          placeholder: `Document IDs`,
+          onKeyDown: e => this.handleKeyDown( e ),
+        }),
+        h('button', {
+          onClick: () => this.clearIdSearch()
+        }, [
+          h('i.material-icons', 'clear')
+        ])
+      ]);
+    };
 
     const documentMenu = h('div.document-management-document-control-menu', [
       h( 'div.document-management-document-control-menu-item', {
-        className: makeClassList({ 'document-management-hidden': !this.isRangeMode() })
-      }, [getDocStatusFilter()])
+        className: makeClassList({ 'document-management-hidden': this.state.searchMode })
+      }, [getDocStatusFilter()]),
+      h( 'div.document-management-document-control-menu-item',
+        [getIdForm()]
+      )
     ]);
 
     const documentList = h( 'ul', orderByCreatedDate( docs ).map( doc => {
@@ -252,7 +313,7 @@ class DocumentManagement extends DirtyComponent {
 
     const footer = h('div.document-management-footer', {
       className: makeClassList({
-        'document-management-hidden': isLoading || !this.isRangeMode()
+        'document-management-hidden': isLoading || this.state.searchMode
        })
     }, [
       h( 'div.document-management-paginator', [

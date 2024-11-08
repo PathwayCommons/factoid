@@ -55,17 +55,23 @@ class DocumentManagement extends DirtyComponent {
       this.getDocs();
     }, 1000);
 
-    const urlParams = this.props.history.location.search;
-    const queryValues = this.parseQueryValues( urlParams );
-    this.state = _.assign({
-      validApiKey: false,
-      apiKeyError: null,
-      docs: [],
-      id: '',
-      pageCount: 0,
-      isLoading: false,
-      searchMode: false
-    }, queryValues );
+    const urlParams = this.parseUrlParams();
+    this.state = _.defaults(
+      urlParams,
+      {
+        validApiKey: false,
+        apiKeyError: null,
+        docs: [],
+        pageCount: 0,
+        isLoading: false,
+        searchMode: false,
+        page: 1,
+        limit: 10,
+        apiKey: '',
+        status: DEFAULT_STATUS_FIELDS,
+        ids: ''
+      }
+    );
 
     this.bus = new EventEmitter();
 
@@ -87,48 +93,48 @@ class DocumentManagement extends DirtyComponent {
       });
   }
 
-  parseQueryValues( search ){
-    const query = queryString.parse( search );
+  parseUrlParams(){
+    const params = _.get( this.props, ['history,', 'location', 'search' ] );
     const asInt = str => str ? parseInt( str ) : undefined;
-    const page = asInt( _.get( query, 'page' ) );
-    const limit = asInt( _.get( query, 'limit' ) );
-    const apiKey = _.get( query, 'apiKey', '' );
-    const status = _.has( query, 'status' ) ? _.get( query, 'status' ).split(/\s*,\s*/): undefined;
-    const ids = _.get( query, 'ids' );
+    const page = asInt( _.get( params, 'page' ) );
+    const limit = asInt( _.get( params, 'limit' ) );
+    const apiKey = _.get( params, 'apiKey' );
+    const status = _.has( params, 'status' ) ? _.get( params, 'status' ).split(/\s*,\s*/): undefined;
+    const ids = _.get( params, 'ids' );
     return { apiKey, page, limit, status, ids };
   }
 
-  getQueryParams(){
+  getQueryString(){
     const calcOffset = ( page, limit ) => limit * ( page - 1 );
-    let { apiKey, ids } = this.state;
+    const { apiKey, searchMode } = this.state;
     const opts = { apiKey };
 
-    if( ids ){
+    if( searchMode ){
+      const { ids } = this.state;
       _.assign( opts, { ids } );
     } else {
-      const { page = 1, limit = 10, status = DEFAULT_STATUS_FIELDS } = this.state;
+      const { page, limit, status } = this.state;
       const offset = calcOffset( page, limit );
       _.defaults( opts, { offset, status: status.join(','), limit, page } );
     }
     return queryString.stringify( opts );
   }
 
-  updateUrlParams(params){
+  setUrlParams(params){
     this.props.history.push(`/document?${params}`);
   }
 
   getDocs(){
-    const url = '/api/document';
-    const queryParams = this.getQueryParams();
+    const DOCUMENT_BASE_PATH = '/api/document/';
+    const queryString = this.getQueryString();
+    const url = `${DOCUMENT_BASE_PATH}?${queryString}`;
 
     return tryPromise( () => new Promise( resolve => this.setState( { isLoading: true }, resolve ) ) )
-      .then( () => fetch(`${url}?${queryParams}`) )
+      .then( () => fetch( url ) )
       .then( res => {
-        const queryValues = this.parseQueryValues( queryParams );
-        const { limit } = queryValues;
         const total = res.headers.get('X-Document-Count');
-        const pageCount = Math.ceil( total / limit );
-        const update = _.assign({ pageCount }, queryValues );
+        const pageCount = Math.ceil( total / this.state.limit );
+        const update = _.assign({ pageCount });
         return new Promise( resolve => this.setState( update, resolve( res.json() ) ) );
       })
       .then( docJSON => toDocs( docJSON, this.docSocket, this.eleSocket ) )
@@ -136,7 +142,7 @@ class DocumentManagement extends DirtyComponent {
         docs.forEach( doc => doc.on( 'update', () => this.dirty() ) );
         return new Promise( resolve => this.setState( { docs }, resolve ) );
       })
-      .then( () => this.updateUrlParams( queryParams ) )
+      .then( () => this.setUrlParams( queryString ) )
       .finally( () => {
         new Promise( resolve => this.setState( { isLoading: false }, resolve ) );
       });
@@ -179,50 +185,37 @@ class DocumentManagement extends DirtyComponent {
     new Promise( resolve => this.setState( { offset, page }, () => this.getDocs().then( resolve ) ) );
   }
 
-  updateIdSearch( id ){
-    this.setState({ id });
+  updateIdSearch( ids ){
+    this.setState({ ids });
+  }
+
+  doIdSearch( e ){
+    e.preventDefault();
+    const sanitize = str => str.trim().replace(/[\s,]+/g,',');
+    let ids = sanitize( e.target.value );
+    this.setState( { searchMode: true, ids }, () => this.getDocs() );
   }
 
   clearIdSearch() {
-    this.setState({ id: '', searchMode: false });
+    this.setState( { searchMode: false, ids: '' }, () => this.getDocs() );
   }
 
-  handleSubmit( e ){
-    alert('Submit!');
-    e.preventDefault();
+  sanitizeIds( ids ){
+    return ids.trim().replace(/\s+/g, ',');
   }
 
-  activateSearchMode() {
-    this.setState({ searchMode: true });
-  }
-
-  deactivateSearchMode() {
-    if (this.state.ids) {
-      // keep in query mode
-    } else {
-      this.setState({ searchMode: false, ids: '' });
-    }
-  }
-
-  reset() {
-    const { submittedText } = this.state;
-    this.setState({
-      editText: submittedText
-    });
-  }
-
-  handleKeyDown ( e ) {
+  handleIdSearchKeyDown ( e ) {
     if ( e.key === 'Escape' ) {
-      this.reset();
       this.idInput.current.blur();
     } else if ( e.key === 'Enter' ) {
       this.idInput.current.blur();
-      this.handleSubmit( e );
+      this.doIdSearch( e );
     }
   }
 
   render(){
     let { docs, apiKey, status, validApiKey, isLoading, page } = this.state;
+    const noDocs = docs.length === 0;
     const header = h('div.page-content-title', [
       h('h1', 'Biofactoid Administration')
     ]);
@@ -267,15 +260,15 @@ class DocumentManagement extends DirtyComponent {
       return h( 'div.mute.checkboxSet', checkboxes );
     };
 
-    const getIdForm = () => {
-      return h('span.id-filter-box-area', [
-        h('input.input-round.id-input', {
-          value: this.state.id,
+    const IdSearch = () => {
+      return h('span.id-search-box-area', [
+        h('input.input-round.id-search', {
+          value: this.state.ids,
           onChange: e => this.updateIdSearch( e.target.value ),
           type: 'text',
           ref: this.idInput,
           placeholder: `Document IDs`,
-          onKeyDown: e => this.handleKeyDown( e ),
+          onKeyDown: e => this.handleIdSearchKeyDown( e ),
         }),
         h('button', {
           onClick: () => this.clearIdSearch()
@@ -290,11 +283,12 @@ class DocumentManagement extends DirtyComponent {
         className: makeClassList({ 'document-management-hidden': this.state.searchMode })
       }, [getDocStatusFilter()]),
       h( 'div.document-management-document-control-menu-item',
-        [getIdForm()]
+        [IdSearch()]
       )
     ]);
 
-    const documentList = h( 'ul', orderByCreatedDate( docs ).map( doc => {
+    const documentList = noDocs ? h('div.document-management-no-docs', 'No documents found') :
+      h( 'ul', orderByCreatedDate( docs ).map( doc => {
       return h( 'li', {
           key: doc.id()
         },

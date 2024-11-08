@@ -71,8 +71,19 @@
   transform: translate(-50%, -50%);
 }
 
+.document-management-document-control-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .document-management-document-control-menu-item {
   margin-bottom: 5px;
+  width: 100%;
+}
+
+.document-management-document-control-menu-item input {
+  min-width: 90%;
 }
 
 .document-management-submit-spinner {

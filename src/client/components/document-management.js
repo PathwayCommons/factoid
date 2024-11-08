@@ -193,6 +193,7 @@ class DocumentManagement extends DirtyComponent {
     e.preventDefault();
     const sanitize = str => str.trim().replace(/[\s,]+/g,',');
     let ids = sanitize( e.target.value );
+    if( ids === '' ) return;
     this.setState( { searchMode: true, ids }, () => this.getDocs() );
   }
 
@@ -261,20 +262,21 @@ class DocumentManagement extends DirtyComponent {
     };
 
     const IdSearch = () => {
+      const { ids } = this.state;
       return h('span.id-search-box-area', [
         h('input.input-round.id-search', {
-          value: this.state.ids,
+          value: ids,
           onChange: e => this.updateIdSearch( e.target.value ),
           type: 'text',
           ref: this.idInput,
           placeholder: `Document IDs`,
           onKeyDown: e => this.handleIdSearchKeyDown( e ),
         }),
-        h('button', {
+        ids !== '' ? h('button', {
           onClick: () => this.clearIdSearch()
         }, [
           h('i.material-icons', 'clear')
-        ])
+        ]) : null
       ]);
     };
 

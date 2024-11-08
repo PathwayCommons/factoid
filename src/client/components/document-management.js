@@ -94,7 +94,7 @@ class DocumentManagement extends DirtyComponent {
   }
 
   parseUrlParams(){
-    const params = _.get( this.props, ['history,', 'location', 'search' ] );
+    const params = queryString.parse( this.props.history.location.search );
     const asInt = str => str ? parseInt( str ) : undefined;
     const page = asInt( _.get( params, 'page' ) );
     const limit = asInt( _.get( params, 'limit' ) );
@@ -217,18 +217,15 @@ class DocumentManagement extends DirtyComponent {
   render(){
     let { docs, apiKey, status, validApiKey, isLoading, page } = this.state;
     const noDocs = docs.length === 0;
-    const header = h('div.page-content-title', [
-      h('h1', 'Biofactoid Administration')
-    ]);
     let initialPage = page - 1;
 
     // Authorization
     const apiKeyForm =
-      h('form', [
-        h('label.document-management-text-label', 'API key'),
+      h('span.apiKey-box-area', [
         h('input', {
           type: 'text',
           value: apiKey,
+          placeholder: 'Enter the API Key',
           onChange: e => this.handleApiKeyFormChange( e.target.value )
         }),
         this.state.apiKeyError ? h('div.error', 'Unable to authorize' ): null,
@@ -305,12 +302,19 @@ class DocumentManagement extends DirtyComponent {
       isLoading ? [  h('i.icon.icon-spinner.document-management-spinner') ] : [ documentMenu, documentList ]
     );
 
-    let body = validApiKey ? documentContainer: apiKeyForm;
+    const header = h('div.document-management-header', [
+      h('h1', 'Biofactoid Administration')
+    ]);
+
+    // let body = validApiKey ? documentContainer: apiKeyForm;
+    const body = h('div.document-management-body', [
+      validApiKey ? documentContainer : apiKeyForm
+    ]);
 
     const footer = h('div.document-management-footer', {
       className: makeClassList({
-        'document-management-hidden': isLoading || this.state.searchMode
-       })
+        'document-management-hidden': isLoading || this.state.searchMode || !validApiKey
+      })
     }, [
       h( 'div.document-management-paginator', [
         h( ReactPaginate, {

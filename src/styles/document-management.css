@@ -39,7 +39,7 @@
   display: none;
 }
 
-.document-management-document-container {
+.document-management-body {
   width: 100%;
 
   & ul {
@@ -63,12 +63,17 @@
 }
 
 .document-management-spinner {
-  margin: 0;
+  font-size: 2em;
   position: absolute;
-  top: 50%;
   left: 50%;
-  margin-right: -50%;
-  transform: translate(-50%, -50%);
+  top: 50%;
+  margin-left: -0.5em;
+  margin-top: -0.5em;
+  display: none;
+}
+
+.document-management-spinner-shown {
+  display: block;
 }
 
 .document-management-document-control-menu {
@@ -82,12 +87,8 @@
   width: 100%;
 }
 
-.document-management-document-control-menu-item input {
+.id-search-box input {
   min-width: 90%;
-}
-
-.document-management-submit-spinner {
-  vertical-align: middle;
 }
 
 .document-management-document-section {

@@ -1,0 +1,1358 @@
+{
+  "_id": "34546791|None",
+  "id": "10.1126/scisignal.abf3535",
+  "infons": {
+    "doi": "10.1126/scisignal.abf3535",
+    "comment": "Synonym + ortholog: p50, p65; red-herring: NF-kappaB; title organism; IL-1beta totally buried"
+  },
+  "passages": [
+    {
+      "infons": {
+        "journal": "Sci Signal. 2021 Sep 21;14(701):eabf3535. doi: 10.1126/scisignal.abf3535. Epub ",
+        "year": "2021",
+        "article-id_pmc": "PMC8734558",
+        "type": "title",
+        "authors": "Catheline SE, Bell RD, Oluoch LS, James MN, Escalera-Rivera K, Maynard RD, Chang ME, Dean C, Botto E, Ketz JP, Boyce BF, Zuscik MJ, Jonason JH"
+      },
+      "offset": 0,
+      "text": "IKKbeta-NF-kappaB signaling in adult chondrocytes promotes the onset of age-related osteoarthritis in mice.",
+      "sentences": [],
+      "annotations": [
+        {
+          "id": "4",
+          "infons": {
+            "identifier": "16150",
+            "type": "Gene",
+            "ncbi_homologene": "7782",
+            "valid": true,
+            "normalized": [16150],
+            "database": "ncbi_gene",
+            "normalized_id": 16150,
+            "biotype": "gene",
+            "name": "Ikbkb",
+            "accession": "@GENE_IKBKB"
+          },
+          "text": "IKKbeta",
+          "locations": [
+            {
+              "offset": 0,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "5",
+          "infons": {
+            "identifier": "18033",
+            "type": "Gene",
+            "ncbi_homologene": "2971",
+            "valid": true,
+            "normalized": [18033],
+            "database": "ncbi_gene",
+            "normalized_id": 18033,
+            "biotype": "gene",
+            "name": "Nfkb1",
+            "accession": "@GENE_NFKB1"
+          },
+          "text": "NF-kappaB",
+          "locations": [
+            {
+              "offset": 8,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "6",
+          "infons": {
+            "identifier": "MESH:D010003",
+            "type": "Disease",
+            "valid": true,
+            "normalized": ["D010003"],
+            "database": "ncbi_mesh",
+            "normalized_id": "D010003",
+            "biotype": "disease",
+            "name": "Osteoarthritis",
+            "accession": "@DISEASE_Osteoarthritis"
+          },
+          "text": "osteoarthritis",
+          "locations": [
+            {
+              "offset": 84,
+              "length": 14
+            }
+          ]
+        },
+        {
+          "id": "7",
+          "infons": {
+            "identifier": "10090",
+            "type": "Species",
+            "valid": true,
+            "normalized": [10090],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 10090,
+            "biotype": "species",
+            "name": "10090",
+            "accession": null
+          },
+          "text": "mice",
+          "locations": [
+            {
+              "offset": 102,
+              "length": 4
+            }
+          ]
+        }
+      ],
+      "relations": []
+    },
+    {
+      "infons": {
+        "type": "abstract"
+      },
+      "offset": 108,
+      "text": "Canonical nuclear factor kappaB (NF-kappaB) signaling mediated by homo- and heterodimers of the NF-kappaB subunits p65 (RELA) and p50 (NFKB1) is associated with age-related pathologies and with disease progression in posttraumatic models of osteoarthritis (OA). Here, we established that NF-kappaB signaling in articular chondrocytes increased with age, concomitant with the onset of spontaneous OA in wild-type mice. Chondrocyte-specific expression of a constitutively active form of inhibitor of kappaB kinase beta (IKKbeta) in young adult mice accelerated the onset of the OA-like phenotype observed in aging wild-type mice, including degenerative changes in the articular cartilage, synovium, and menisci. Both in vitro and in vivo, chondrocytes expressing activated IKKbeta had a proinflammatory secretory phenotype characterized by markers typically associated with the senescence-associated secretory phenotype (SASP). Expression of these factors was differentially regulated by p65, which contains a transactivation domain, and p50, which does not. Whereas the loss of p65 blocked the induction of genes encoding SASP factors in chondrogenic cells treated with interleukin-1beta (IL-1beta) in vitro, the loss of p50 enhanced the IL-1beta-induced expression of some SASP factors. The loss of p50 further exacerbated cartilage degeneration in mice with chondrocyte-specific IKKbeta activation. Overall, our data reveal that IKKbeta-mediated activation of p65 can promote OA onset and that p50 may limit cartilage degeneration in settings of joint inflammation including advanced age.",
+      "sentences": [],
+      "annotations": [
+        {
+          "id": "45",
+          "infons": {
+            "identifier": "18033",
+            "type": "Gene",
+            "ncbi_homologene": "2971",
+            "valid": true,
+            "normalized": [18033],
+            "database": "ncbi_gene",
+            "normalized_id": 18033,
+            "biotype": "gene",
+            "name": "Nfkb1",
+            "accession": "@GENE_NFKB1"
+          },
+          "text": "NF-kappaB",
+          "locations": [
+            {
+              "offset": 141,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "46",
+          "infons": {
+            "identifier": "18033",
+            "type": "Gene",
+            "ncbi_homologene": "2971",
+            "valid": true,
+            "normalized": [18033],
+            "database": "ncbi_gene",
+            "normalized_id": 18033,
+            "biotype": "gene",
+            "name": "Nfkb1",
+            "accession": "@GENE_NFKB1"
+          },
+          "text": "NF-kappaB",
+          "locations": [
+            {
+              "offset": 204,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "47",
+          "infons": {
+            "identifier": "19697",
+            "type": "Gene",
+            "ncbi_homologene": "32064",
+            "valid": true,
+            "normalized": [19697],
+            "database": "ncbi_gene",
+            "normalized_id": 19697,
+            "biotype": "gene",
+            "name": "Rela",
+            "accession": "@GENE_RELA"
+          },
+          "text": "p65",
+          "locations": [
+            {
+              "offset": 223,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "48",
+          "infons": {
+            "identifier": "19697",
+            "type": "Gene",
+            "ncbi_homologene": "32064",
+            "valid": true,
+            "normalized": [19697],
+            "database": "ncbi_gene",
+            "normalized_id": 19697,
+            "biotype": "gene",
+            "name": "Rela",
+            "accession": "@GENE_RELA"
+          },
+          "text": "RELA",
+          "locations": [
+            {
+              "offset": 228,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "49",
+          "infons": {
+            "identifier": "18033",
+            "type": "Gene",
+            "ncbi_homologene": "2971",
+            "valid": true,
+            "normalized": [18033],
+            "database": "ncbi_gene",
+            "normalized_id": 18033,
+            "biotype": "gene",
+            "name": "Nfkb1",
+            "accession": "@GENE_NFKB1"
+          },
+          "text": "p50",
+          "locations": [
+            {
+              "offset": 238,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "50",
+          "infons": {
+            "identifier": "18033",
+            "type": "Gene",
+            "ncbi_homologene": "2971",
+            "valid": true,
+            "normalized": [18033],
+            "database": "ncbi_gene",
+            "normalized_id": 18033,
+            "biotype": "gene",
+            "name": "Nfkb1",
+            "accession": "@GENE_NFKB1"
+          },
+          "text": "NFKB1",
+          "locations": [
+            {
+              "offset": 243,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "51",
+          "infons": {
+            "identifier": "MESH:D010003",
+            "type": "Disease",
+            "valid": true,
+            "normalized": ["D010003"],
+            "database": "ncbi_mesh",
+            "normalized_id": "D010003",
+            "biotype": "disease",
+            "name": "Osteoarthritis",
+            "accession": "@DISEASE_Osteoarthritis"
+          },
+          "text": "osteoarthritis",
+          "locations": [
+            {
+              "offset": 349,
+              "length": 14
+            }
+          ]
+        },
+        {
+          "id": "52",
+          "infons": {
+            "identifier": "MESH:D010003",
+            "type": "Disease",
+            "valid": true,
+            "normalized": ["D010003"],
+            "database": "ncbi_mesh",
+            "normalized_id": "D010003",
+            "biotype": "disease",
+            "name": "Osteoarthritis",
+            "accession": "@DISEASE_Osteoarthritis"
+          },
+          "text": "OA",
+          "locations": [
+            {
+              "offset": 365,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "53",
+          "infons": {
+            "identifier": "18033",
+            "type": "Gene",
+            "ncbi_homologene": "2971",
+            "valid": true,
+            "normalized": [18033],
+            "database": "ncbi_gene",
+            "normalized_id": 18033,
+            "biotype": "gene",
+            "name": "Nfkb1",
+            "accession": "@GENE_NFKB1"
+          },
+          "text": "NF-kappaB",
+          "locations": [
+            {
+              "offset": 396,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "54",
+          "infons": {
+            "identifier": "MESH:D010003",
+            "type": "Disease",
+            "valid": true,
+            "normalized": ["D010003"],
+            "database": "ncbi_mesh",
+            "normalized_id": "D010003",
+            "biotype": "disease",
+            "name": "Osteoarthritis",
+            "accession": "@DISEASE_Osteoarthritis"
+          },
+          "text": "OA",
+          "locations": [
+            {
+              "offset": 504,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "55",
+          "infons": {
+            "identifier": "10090",
+            "type": "Species",
+            "valid": true,
+            "normalized": [10090],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 10090,
+            "biotype": "species",
+            "name": "10090",
+            "accession": null
+          },
+          "text": "mice",
+          "locations": [
+            {
+              "offset": 520,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "56",
+          "infons": {
+            "identifier": "16150",
+            "type": "Gene",
+            "ncbi_homologene": "7782",
+            "valid": true,
+            "normalized": [16150],
+            "database": "ncbi_gene",
+            "normalized_id": 16150,
+            "biotype": "gene",
+            "name": "Ikbkb",
+            "accession": "@GENE_IKBKB"
+          },
+          "text": "inhibitor of kappaB kinase beta",
+          "locations": [
+            {
+              "offset": 593,
+              "length": 31
+            }
+          ]
+        },
+        {
+          "id": "57",
+          "infons": {
+            "identifier": "16150",
+            "type": "Gene",
+            "ncbi_homologene": "7782",
+            "valid": true,
+            "normalized": [16150],
+            "database": "ncbi_gene",
+            "normalized_id": 16150,
+            "biotype": "gene",
+            "name": "Ikbkb",
+            "accession": "@GENE_IKBKB"
+          },
+          "text": "IKKbeta",
+          "locations": [
+            {
+              "offset": 626,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "58",
+          "infons": {
+            "identifier": "10090",
+            "type": "Species",
+            "valid": true,
+            "normalized": [10090],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 10090,
+            "biotype": "species",
+            "name": "10090",
+            "accession": null
+          },
+          "text": "mice",
+          "locations": [
+            {
+              "offset": 650,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "59",
+          "infons": {
+            "identifier": "MESH:D010003",
+            "type": "Disease",
+            "valid": true,
+            "normalized": ["D010003"],
+            "database": "ncbi_mesh",
+            "normalized_id": "D010003",
+            "biotype": "disease",
+            "name": "Osteoarthritis",
+            "accession": "@DISEASE_Osteoarthritis"
+          },
+          "text": "OA",
+          "locations": [
+            {
+              "offset": 684,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "60",
+          "infons": {
+            "identifier": "10090",
+            "type": "Species",
+            "valid": true,
+            "normalized": [10090],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 10090,
+            "biotype": "species",
+            "name": "10090",
+            "accession": null
+          },
+          "text": "mice",
+          "locations": [
+            {
+              "offset": 730,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "61",
+          "infons": {
+            "identifier": "MESH:D009402",
+            "type": "Disease",
+            "valid": true,
+            "normalized": ["D009402"],
+            "database": "ncbi_mesh",
+            "normalized_id": "D009402",
+            "biotype": "disease",
+            "name": "Nephrosis Lipoid",
+            "accession": "@DISEASE_Nephrosis_Lipoid"
+          },
+          "text": "changes",
+          "locations": [
+            {
+              "offset": 759,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "62",
+          "infons": {
+            "identifier": "MESH:D002357",
+            "type": "Disease",
+            "valid": true,
+            "normalized": ["D002357"],
+            "database": "ncbi_mesh",
+            "normalized_id": "D002357",
+            "biotype": "disease",
+            "name": "Cartilage Diseases",
+            "accession": "@DISEASE_Cartilage_Diseases"
+          },
+          "text": "cartilage",
+          "locations": [
+            {
+              "offset": 784,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "63",
+          "infons": {
+            "identifier": "16150",
+            "type": "Gene",
+            "ncbi_homologene": "7782",
+            "valid": true,
+            "normalized": [16150],
+            "database": "ncbi_gene",
+            "normalized_id": 16150,
+            "biotype": "gene",
+            "name": "Ikbkb",
+            "accession": "@GENE_IKBKB"
+          },
+          "text": "IKKbeta",
+          "locations": [
+            {
+              "offset": 879,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "64",
+          "infons": {
+            "type": "Disease",
+            "valid": false,
+            "normalized_id": null,
+            "biotype": "disease"
+          },
+          "text": "proinflammatory",
+          "locations": [
+            {
+              "offset": 893,
+              "length": 15
+            }
+          ]
+        },
+        {
+          "id": "65",
+          "infons": {
+            "identifier": "19697",
+            "type": "Gene",
+            "ncbi_homologene": "32064",
+            "valid": true,
+            "normalized": [19697],
+            "database": "ncbi_gene",
+            "normalized_id": 19697,
+            "biotype": "gene",
+            "name": "Rela",
+            "accession": "@GENE_RELA"
+          },
+          "text": "p65",
+          "locations": [
+            {
+              "offset": 1094,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "66",
+          "infons": {
+            "identifier": "18033",
+            "type": "Gene",
+            "ncbi_homologene": "2971",
+            "valid": true,
+            "normalized": [18033],
+            "database": "ncbi_gene",
+            "normalized_id": 18033,
+            "biotype": "gene",
+            "name": "Nfkb1",
+            "accession": "@GENE_NFKB1"
+          },
+          "text": "p50",
+          "locations": [
+            {
+              "offset": 1144,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "67",
+          "infons": {
+            "identifier": "19697",
+            "type": "Gene",
+            "ncbi_homologene": "32064",
+            "valid": true,
+            "normalized": [19697],
+            "database": "ncbi_gene",
+            "normalized_id": 19697,
+            "biotype": "gene",
+            "name": "Rela",
+            "accession": "@GENE_RELA"
+          },
+          "text": "p65",
+          "locations": [
+            {
+              "offset": 1185,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "68",
+          "infons": {
+            "identifier": "16176",
+            "type": "Gene",
+            "ncbi_homologene": "481",
+            "valid": true,
+            "normalized": [16176],
+            "database": "ncbi_gene",
+            "normalized_id": 16176,
+            "biotype": "gene",
+            "name": "Il1b",
+            "accession": "@GENE_IL1B"
+          },
+          "text": "interleukin-1beta",
+          "locations": [
+            {
+              "offset": 1277,
+              "length": 17
+            }
+          ]
+        },
+        {
+          "id": "69",
+          "infons": {
+            "identifier": "16176",
+            "type": "Gene",
+            "ncbi_homologene": "481",
+            "valid": true,
+            "normalized": [16176],
+            "database": "ncbi_gene",
+            "normalized_id": 16176,
+            "biotype": "gene",
+            "name": "Il1b",
+            "accession": "@GENE_IL1B"
+          },
+          "text": "IL-1beta",
+          "locations": [
+            {
+              "offset": 1296,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "70",
+          "infons": {
+            "identifier": "18033",
+            "type": "Gene",
+            "ncbi_homologene": "2971",
+            "valid": true,
+            "normalized": [18033],
+            "database": "ncbi_gene",
+            "normalized_id": 18033,
+            "biotype": "gene",
+            "name": "Nfkb1",
+            "accession": "@GENE_NFKB1"
+          },
+          "text": "p50",
+          "locations": [
+            {
+              "offset": 1328,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "71",
+          "infons": {
+            "identifier": "16176",
+            "type": "Gene",
+            "ncbi_homologene": "481",
+            "valid": true,
+            "normalized": [16176],
+            "database": "ncbi_gene",
+            "normalized_id": 16176,
+            "biotype": "gene",
+            "name": "Il1b",
+            "accession": "@GENE_IL1B"
+          },
+          "text": "IL-1beta",
+          "locations": [
+            {
+              "offset": 1345,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "72",
+          "infons": {
+            "identifier": "18033",
+            "type": "Gene",
+            "ncbi_homologene": "2971",
+            "valid": true,
+            "normalized": [18033],
+            "database": "ncbi_gene",
+            "normalized_id": 18033,
+            "biotype": "gene",
+            "name": "Nfkb1",
+            "accession": "@GENE_NFKB1"
+          },
+          "text": "p50",
+          "locations": [
+            {
+              "offset": 1407,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "73",
+          "infons": {
+            "identifier": "MESH:D002357",
+            "type": "Disease",
+            "valid": true,
+            "normalized": ["D002357"],
+            "database": "ncbi_mesh",
+            "normalized_id": "D002357",
+            "biotype": "disease",
+            "name": "Cartilage Diseases",
+            "accession": "@DISEASE_Cartilage_Diseases"
+          },
+          "text": "cartilage degeneration",
+          "locations": [
+            {
+              "offset": 1431,
+              "length": 22
+            }
+          ]
+        },
+        {
+          "id": "74",
+          "infons": {
+            "identifier": "10090",
+            "type": "Species",
+            "valid": true,
+            "normalized": [10090],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 10090,
+            "biotype": "species",
+            "name": "10090",
+            "accession": null
+          },
+          "text": "mice",
+          "locations": [
+            {
+              "offset": 1457,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "75",
+          "infons": {
+            "identifier": "16150",
+            "type": "Gene",
+            "ncbi_homologene": "7782",
+            "valid": true,
+            "normalized": [16150],
+            "database": "ncbi_gene",
+            "normalized_id": 16150,
+            "biotype": "gene",
+            "name": "Ikbkb",
+            "accession": "@GENE_IKBKB"
+          },
+          "text": "IKKbeta",
+          "locations": [
+            {
+              "offset": 1488,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "76",
+          "infons": {
+            "identifier": "16150",
+            "type": "Gene",
+            "ncbi_homologene": "7782",
+            "valid": true,
+            "normalized": [16150],
+            "database": "ncbi_gene",
+            "normalized_id": 16150,
+            "biotype": "gene",
+            "name": "Ikbkb",
+            "accession": "@GENE_IKBKB"
+          },
+          "text": "IKKbeta",
+          "locations": [
+            {
+              "offset": 1538,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "77",
+          "infons": {
+            "identifier": "19697",
+            "type": "Gene",
+            "ncbi_homologene": "32064",
+            "valid": true,
+            "normalized": [19697],
+            "database": "ncbi_gene",
+            "normalized_id": 19697,
+            "biotype": "gene",
+            "name": "Rela",
+            "accession": "@GENE_RELA"
+          },
+          "text": "p65",
+          "locations": [
+            {
+              "offset": 1569,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "78",
+          "infons": {
+            "identifier": "MESH:D010003",
+            "type": "Disease",
+            "valid": true,
+            "normalized": ["D010003"],
+            "database": "ncbi_mesh",
+            "normalized_id": "D010003",
+            "biotype": "disease",
+            "name": "Osteoarthritis",
+            "accession": "@DISEASE_Osteoarthritis"
+          },
+          "text": "OA",
+          "locations": [
+            {
+              "offset": 1585,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "79",
+          "infons": {
+            "identifier": "18033",
+            "type": "Gene",
+            "ncbi_homologene": "2971",
+            "valid": true,
+            "normalized": [18033],
+            "database": "ncbi_gene",
+            "normalized_id": 18033,
+            "biotype": "gene",
+            "name": "Nfkb1",
+            "accession": "@GENE_NFKB1"
+          },
+          "text": "p50",
+          "locations": [
+            {
+              "offset": 1603,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "80",
+          "infons": {
+            "identifier": "MESH:D002357",
+            "type": "Disease",
+            "valid": true,
+            "normalized": ["D002357"],
+            "database": "ncbi_mesh",
+            "normalized_id": "D002357",
+            "biotype": "disease",
+            "name": "Cartilage Diseases",
+            "accession": "@DISEASE_Cartilage_Diseases"
+          },
+          "text": "cartilage degeneration",
+          "locations": [
+            {
+              "offset": 1617,
+              "length": 22
+            }
+          ]
+        },
+        {
+          "id": "81",
+          "infons": {
+            "identifier": "MESH:D007249",
+            "type": "Disease",
+            "valid": true,
+            "normalized": ["D007249"],
+            "database": "ncbi_mesh",
+            "normalized_id": "D007249",
+            "biotype": "disease",
+            "name": "Inflammation",
+            "accession": "@DISEASE_Inflammation"
+          },
+          "text": "joint inflammation",
+          "locations": [
+            {
+              "offset": 1655,
+              "length": 18
+            }
+          ]
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "relations": [
+    {
+      "id": "R1",
+      "infons": {
+        "score": "0.9995",
+        "role1": {
+          "identifier": "MESH:D010003",
+          "type": "Disease",
+          "valid": true,
+          "normalized": ["D010003"],
+          "database": "ncbi_mesh",
+          "normalized_id": "D010003",
+          "biotype": "disease",
+          "name": "Osteoarthritis",
+          "accession": "@DISEASE_Osteoarthritis"
+        },
+        "role2": {
+          "identifier": "18033",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [18033],
+          "database": "ncbi_gene",
+          "normalized_id": 18033,
+          "biotype": "gene",
+          "name": "Nfkb1",
+          "accession": "@GENE_NFKB1"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "0",
+          "role": "2,1"
+        }
+      ]
+    },
+    {
+      "id": "R2",
+      "infons": {
+        "score": "0.9992",
+        "role1": {
+          "identifier": "MESH:D002357",
+          "type": "Disease",
+          "valid": true,
+          "normalized": ["D002357"],
+          "database": "ncbi_mesh",
+          "normalized_id": "D002357",
+          "biotype": "disease",
+          "name": "Cartilage Diseases",
+          "accession": "@DISEASE_Cartilage_Diseases"
+        },
+        "role2": {
+          "identifier": "16150",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [16150],
+          "database": "ncbi_gene",
+          "normalized_id": 16150,
+          "biotype": "gene",
+          "name": "Ikbkb",
+          "accession": "@GENE_IKBKB"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "1",
+          "role": "21,15"
+        }
+      ]
+    },
+    {
+      "id": "R3",
+      "infons": {
+        "score": "0.9993",
+        "role1": {
+          "identifier": "16150",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [16150],
+          "database": "ncbi_gene",
+          "normalized_id": 16150,
+          "biotype": "gene",
+          "name": "Ikbkb",
+          "accession": "@GENE_IKBKB"
+        },
+        "role2": {
+          "identifier": "19697",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [19697],
+          "database": "ncbi_gene",
+          "normalized_id": 19697,
+          "biotype": "gene",
+          "name": "Rela",
+          "accession": "@GENE_RELA"
+        },
+        "type": "Positive_Correlation"
+      },
+      "nodes": [
+        {
+          "refid": "2",
+          "role": "35,36"
+        }
+      ]
+    },
+    {
+      "id": "R4",
+      "infons": {
+        "score": "0.9279",
+        "role1": {
+          "identifier": "18033",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [18033],
+          "database": "ncbi_gene",
+          "normalized_id": 18033,
+          "biotype": "gene",
+          "name": "Nfkb1",
+          "accession": "@GENE_NFKB1"
+        },
+        "role2": {
+          "identifier": "19697",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [19697],
+          "database": "ncbi_gene",
+          "normalized_id": 19697,
+          "biotype": "gene",
+          "name": "Rela",
+          "accession": "@GENE_RELA"
+        },
+        "type": "Bind"
+      },
+      "nodes": [
+        {
+          "refid": "3",
+          "role": "4,6"
+        }
+      ]
+    },
+    {
+      "id": "R5",
+      "infons": {
+        "score": "0.997",
+        "role1": {
+          "identifier": "MESH:D002357",
+          "type": "Disease",
+          "valid": true,
+          "normalized": ["D002357"],
+          "database": "ncbi_mesh",
+          "normalized_id": "D002357",
+          "biotype": "disease",
+          "name": "Cartilage Diseases",
+          "accession": "@DISEASE_Cartilage_Diseases"
+        },
+        "role2": {
+          "identifier": "18033",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [18033],
+          "database": "ncbi_gene",
+          "normalized_id": 18033,
+          "biotype": "gene",
+          "name": "Nfkb1",
+          "accession": "@GENE_NFKB1"
+        },
+        "type": "Negative_Correlation"
+      },
+      "nodes": [
+        {
+          "refid": "4",
+          "role": "32,31"
+        }
+      ]
+    },
+    {
+      "id": "R6",
+      "infons": {
+        "score": "0.9272",
+        "role1": {
+          "identifier": "16150",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [16150],
+          "database": "ncbi_gene",
+          "normalized_id": 16150,
+          "biotype": "gene",
+          "name": "Ikbkb",
+          "accession": "@GENE_IKBKB"
+        },
+        "role2": {
+          "identifier": "18033",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [18033],
+          "database": "ncbi_gene",
+          "normalized_id": 18033,
+          "biotype": "gene",
+          "name": "Nfkb1",
+          "accession": "@GENE_NFKB1"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "5",
+          "role": "0,1"
+        }
+      ]
+    },
+    {
+      "id": "R7",
+      "infons": {
+        "score": "0.9059",
+        "role1": {
+          "identifier": "16176",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [16176],
+          "database": "ncbi_gene",
+          "normalized_id": 16176,
+          "biotype": "gene",
+          "name": "Il1b",
+          "accession": "@GENE_IL1B"
+        },
+        "role2": {
+          "identifier": "18033",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [18033],
+          "database": "ncbi_gene",
+          "normalized_id": 18033,
+          "biotype": "gene",
+          "name": "Nfkb1",
+          "accession": "@GENE_NFKB1"
+        },
+        "type": "Negative_Correlation"
+      },
+      "nodes": [
+        {
+          "refid": "6",
+          "role": "27,29"
+        }
+      ]
+    },
+    {
+      "id": "R8",
+      "infons": {
+        "score": "0.9978",
+        "role1": {
+          "identifier": "MESH:D010003",
+          "type": "Disease",
+          "valid": true,
+          "normalized": ["D010003"],
+          "database": "ncbi_mesh",
+          "normalized_id": "D010003",
+          "biotype": "disease",
+          "name": "Osteoarthritis",
+          "accession": "@DISEASE_Osteoarthritis"
+        },
+        "role2": {
+          "identifier": "16150",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [16150],
+          "database": "ncbi_gene",
+          "normalized_id": 16150,
+          "biotype": "gene",
+          "name": "Ikbkb",
+          "accession": "@GENE_IKBKB"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "7",
+          "role": "2,0"
+        }
+      ]
+    },
+    {
+      "id": "R9",
+      "infons": {
+        "score": "0.9995",
+        "role1": {
+          "identifier": "MESH:D010003",
+          "type": "Disease",
+          "valid": true,
+          "normalized": ["D010003"],
+          "database": "ncbi_mesh",
+          "normalized_id": "D010003",
+          "biotype": "disease",
+          "name": "Osteoarthritis",
+          "accession": "@DISEASE_Osteoarthritis"
+        },
+        "role2": {
+          "identifier": "19697",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [19697],
+          "database": "ncbi_gene",
+          "normalized_id": 19697,
+          "biotype": "gene",
+          "name": "Rela",
+          "accession": "@GENE_RELA"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "8",
+          "role": "10,6"
+        }
+      ]
+    },
+    {
+      "id": "R10",
+      "infons": {
+        "score": "0.9199",
+        "role1": {
+          "identifier": "MESH:D007249",
+          "type": "Disease",
+          "valid": true,
+          "normalized": ["D007249"],
+          "database": "ncbi_mesh",
+          "normalized_id": "D007249",
+          "biotype": "disease",
+          "name": "Inflammation",
+          "accession": "@DISEASE_Inflammation"
+        },
+        "role2": {
+          "identifier": "18033",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [18033],
+          "database": "ncbi_gene",
+          "normalized_id": 18033,
+          "biotype": "gene",
+          "name": "Nfkb1",
+          "accession": "@GENE_NFKB1"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "9",
+          "role": "40,38"
+        }
+      ]
+    },
+    {
+      "id": "R11",
+      "infons": {
+        "score": "0.986",
+        "role1": {
+          "identifier": "MESH:D009402",
+          "type": "Disease",
+          "valid": true,
+          "normalized": ["D009402"],
+          "database": "ncbi_mesh",
+          "normalized_id": "D009402",
+          "biotype": "disease",
+          "name": "Nephrosis Lipoid",
+          "accession": "@DISEASE_Nephrosis_Lipoid"
+        },
+        "role2": {
+          "identifier": "16150",
+          "type": "Gene",
+          "valid": true,
+          "normalized": [16150],
+          "database": "ncbi_gene",
+          "normalized_id": 16150,
+          "biotype": "gene",
+          "name": "Ikbkb",
+          "accession": "@GENE_IKBKB"
+        },
+        "type": "Association"
+      },
+      "nodes": [
+        {
+          "refid": "10",
+          "role": "20,15"
+        }
+      ]
+    }
+  ],
+  "pmid": 34546791,
+  "pmcid": null,
+  "meta": {},
+  "date": "2021-09-21T00:00:00Z",
+  "journal": "Sci Signal",
+  "authors": [
+    "Catheline SE",
+    "Bell RD",
+    "Oluoch LS",
+    "James MN",
+    "Escalera-Rivera K",
+    "Maynard RD",
+    "Chang ME",
+    "Dean C",
+    "Botto E",
+    "Ketz JP",
+    "Boyce BF",
+    "Zuscik MJ",
+    "Jonason JH"
+  ],
+  "relations_display": [
+    {
+      "name": "associate|@DISEASE_Osteoarthritis|@GENE_NFKB1"
+    },
+    {
+      "name": "associate|@DISEASE_Cartilage_Diseases|@GENE_IKBKB"
+    },
+    {
+      "name": "positive_correlate|@GENE_IKBKB|@GENE_RELA"
+    },
+    {
+      "name": "interact|@GENE_NFKB1|@GENE_RELA"
+    },
+    {
+      "name": "inhibit|@DISEASE_Cartilage_Diseases|@GENE_NFKB1"
+    },
+    {
+      "name": "associate|@GENE_IKBKB|@GENE_NFKB1"
+    },
+    {
+      "name": "negative_correlate|@GENE_IL1B|@GENE_NFKB1"
+    },
+    {
+      "name": "associate|@DISEASE_Osteoarthritis|@GENE_IKBKB"
+    },
+    {
+      "name": "associate|@DISEASE_Osteoarthritis|@GENE_RELA"
+    },
+    {
+      "name": "associate|@DISEASE_Inflammation|@GENE_NFKB1"
+    },
+    {
+      "name": "associate|@DISEASE_Nephrosis_Lipoid|@GENE_IKBKB"
+    }
+  ]
+}

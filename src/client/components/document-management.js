@@ -4,6 +4,7 @@ import queryString from 'query-string';
 import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
 import ReactPaginate from 'react-paginate';
+import React from 'react';
 
 import { DocumentManagementDocumentComponent } from './document-management-components';
 import logger from '../logger';
@@ -11,13 +12,10 @@ import DirtyComponent from './dirty-component';
 import Document from '../../model/document';
 import { tryPromise } from '../../util';
 import { makeClassList } from '../dom';
-import Popover from './popover/popover';
 import { checkHTTPStatus } from '../../util';
-import { RequestBiopaxForm } from './home';
-import RequestForm from './request-form';
 
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
-const DEFAULT_STATUS_FIELDS = _.pull( _.values( DOCUMENT_STATUS_FIELDS ), DOCUMENT_STATUS_FIELDS.TRASHED );
+const DEFAULT_STATUS_FIELDS = _.pull( _.values( DOCUMENT_STATUS_FIELDS ), DOCUMENT_STATUS_FIELDS.TRASHED, DOCUMENT_STATUS_FIELDS.INITIATED );
 
 const orderByCreatedDate = docs => _.orderBy( docs, [ doc => doc.createdDate() ], ['desc'] );
 
@@ -42,6 +40,7 @@ const toDocs = ( docJSON, docSocket, eleSocket ) => {
 class DocumentManagement extends DirtyComponent {
   constructor( props ){
     super( props );
+    this.idInput = React.createRef();
 
     // Live Sync
     let docSocket = io.connect('/document');
@@ -52,32 +51,33 @@ class DocumentManagement extends DirtyComponent {
     docSocket.on('error', logSocketErr);
     eleSocket.on('error', logSocketErr);
 
-    // API Key
-    const query = queryString.parse( this.props.history.location.search );
-    const page = parseInt( _.get( query, 'page', 1 ) );
-    const limit =  parseInt( _.get( query, 'limit', 10 ) );
-    const apiKey =  _.get( query, 'apiKey', '' );
-    const status =  _.get( query, 'status' ) ? _.get( query, 'status' ).split(/\s*,\s*/) : DEFAULT_STATUS_FIELDS;
-    let offset = limit * ( page - 1 );
+    this.getDocsDebounced = _.debounce(() => {
+      this.getDocs();
+    }, 1000);
 
-    this.state = {
-      apiKey,
-      validApiKey: false,
-      apiKeyError: null,
-      docs: [],
-      status,
-      pageCount: 0,
-      limit,
-      offset,
-      page,
-      isLoading: false
-    };
+    const urlParams = this.parseUrlParams();
+    this.state = _.defaults(
+      urlParams,
+      {
+        validApiKey: false,
+        apiKeyError: null,
+        docs: [],
+        pageCount: 0,
+        loading: false,
+        searchMode: false,
+        page: 1,
+        limit: 10,
+        apiKey: '',
+        status: DEFAULT_STATUS_FIELDS,
+        ids: ''
+      }
+    );
 
     this.bus = new EventEmitter();
 
-    this.checkApiKey( apiKey )
+    this.checkApiKey( this.state.apiKey )
       .then( () => this.getDocs() )
-      .catch( () => {} ); //swallow
+      .catch( e => logger.error( 'Failed to load documents', e ) );
   }
 
   checkApiKey( apiKey ){
@@ -93,35 +93,58 @@ class DocumentManagement extends DirtyComponent {
       });
   }
 
-  updateUrlParams( params ){
+  parseUrlParams(){
+    const params = queryString.parse( this.props.history.location.search );
+    const asInt = str => str ? parseInt( str ) : undefined;
+    const page = asInt( _.get( params, 'page' ) );
+    const limit = asInt( _.get( params, 'limit' ) );
+    const apiKey = _.get( params, 'apiKey' );
+    const status = _.has( params, 'status' ) ? _.get( params, 'status' ).split(/\s*,\s*/): undefined;
+    const ids = _.get( params, 'ids' );
+    return { apiKey, page, limit, status, ids };
+  }
+
+  getQueryString(){
+    const calcOffset = ( page, limit ) => limit * ( page - 1 );
+    const { apiKey, searchMode } = this.state;
+    const opts = { apiKey };
+
+    if( searchMode ){
+      const { ids } = this.state;
+      _.assign( opts, { ids } );
+    } else {
+      const { page, limit, status } = this.state;
+      const offset = calcOffset( page, limit );
+      _.defaults( opts, { offset, status: status.join(','), limit, page } );
+    }
+    return queryString.stringify( opts );
+  }
+
+  setUrlParams(params){
     this.props.history.push(`/document?${params}`);
   }
 
   getDocs(){
-    const url = '/api/document';
-    const { apiKey, status, limit, offset, page } = this.state;
-    const queryParams = queryString.stringify( { apiKey, status: status.join(','), limit, offset } );
+    const DOCUMENT_BASE_PATH = '/api/document/';
+    const queryString = this.getQueryString();
+    const url = `${DOCUMENT_BASE_PATH}?${queryString}`;
 
-    this.setState({ isLoading: true });
-
-    return fetch(`${url}?${queryParams}`)
+    return tryPromise( () => new Promise( resolve => this.setState( { loading: true }, resolve ) ) )
+      .then( () => fetch( url ) )
       .then( res => {
         const total = res.headers.get('X-Document-Count');
         const pageCount = Math.ceil( total / this.state.limit );
-        return new Promise( resolve => this.setState( { pageCount }, resolve( res.json() ) ) );
+        const update = _.assign({ pageCount });
+        return new Promise( resolve => this.setState( update, resolve( res.json() ) ) );
       })
       .then( docJSON => toDocs( docJSON, this.docSocket, this.eleSocket ) )
       .then( docs => {
         docs.forEach( doc => doc.on( 'update', () => this.dirty() ) );
-        return docs;
+        return new Promise( resolve => this.setState( { docs }, resolve ) );
       })
-      .then( docs => new Promise( resolve => this.setState( { docs }, resolve ) ) )
-      .then( () => {
-        const urlParams = queryString.stringify( { apiKey, status: status.join(','), limit, page } );
-        this.updateUrlParams( urlParams );
-      })
+      .then( () => this.setUrlParams( queryString ) )
       .finally( () => {
-        new Promise( resolve => this.setState( { isLoading: false }, resolve ) );
+        new Promise( resolve => this.setState( { loading: false }, resolve ) );
       });
   }
 
@@ -140,7 +163,7 @@ class DocumentManagement extends DirtyComponent {
     const { value, checked } = e.target;
     const status = this.state.status.slice();
     checked ? status.push( value ) : _.pull( status, value );
-    this.setState({ status }, () => this.getDocs() );
+    this.setState({ status }, () => this.getDocsDebounced() );
   }
 
   componentDidMount(){
@@ -162,65 +185,39 @@ class DocumentManagement extends DirtyComponent {
     new Promise( resolve => this.setState( { offset, page }, () => this.getDocs().then( resolve ) ) );
   }
 
+  updateIdSearch( ids ){
+    this.setState({ ids });
+  }
+
+  doIdSearch( e ){
+    e.preventDefault();
+    const sanitize = str => str.trim().replace(/[\s,]+/g,',');
+    let ids = sanitize( e.target.value );
+    if( ids === '' ) return;
+    this.setState( { searchMode: true, ids }, () => this.getDocs() );
+  }
+
+  clearIdSearch() {
+    this.setState( { searchMode: false, ids: '' }, () => this.getDocs() );
+  }
+
+  sanitizeIds( ids ){
+    return ids.trim().replace(/\s+/g, ',');
+  }
+
+  handleIdSearchKeyDown ( e ) {
+    if ( e.key === 'Escape' ) {
+      this.idInput.current.blur();
+    } else if ( e.key === 'Enter' ) {
+      this.idInput.current.blur();
+      this.doIdSearch( e );
+    }
+  }
+
   render(){
-    let { docs, apiKey, status, validApiKey, isLoading, page } = this.state;
-    const header = h('div.page-content-title', [
-      h('h1', 'Document management panel')
-    ]);
+    let { docs, apiKey, status, validApiKey, apiKeyError, loading, page } = this.state;
+    const hasDocs = docs && docs.length > 0;
     let initialPage = page - 1;
-    const getAddButtons = () => {
-      return h('small', [getAddDoc(), getAddBiopax()]);
-    };
-
-    const getAddDoc = () => {
-      return h( Popover, {
-        tippy: {
-          html: h( RequestForm, {
-            apiKey,
-            doneMsg: 'Request submitted.',
-            bus: this.bus,
-            submitBtnText: 'Create my article profile',
-            checkIncomplete: false
-          }),
-          onHidden: () => this.bus.emit( 'closecta' ),
-          placement: 'top'
-        }
-      }, [
-        h('button', [ h( 'i.material-icons', 'add' ) ])
-      ]);
-    };
-
-    const getAddBiopax = () => {
-      return h( Popover, {
-        tippy: {
-          html: h( RequestBiopaxForm, {
-            apiKey,
-            doneMsg: 'Request submitted.',
-            bus: this.bus
-          }),
-          onHidden: () => this.bus.emit( 'closecta' ),
-          placement: 'top'
-        }
-      }, [
-        h('button', [ h( 'i.material-icons', 'attach_file' ) ])
-      ]);
-    };
-
-    // Authorization
-    const apiKeyForm =
-      h('form', [
-        h('label.document-management-text-label', 'API key'),
-        h('input', {
-          type: 'text',
-          value: apiKey,
-          onChange: e => this.handleApiKeyFormChange( e.target.value )
-        }),
-        this.state.apiKeyError ? h('div.error', 'Unable to authorize' ): null,
-        h('button', {
-          value: apiKey,
-          onClick: e => this.handleApiKeySubmit( e )
-        }, 'Submit' )
-      ]);
 
     const getDocStatusFilter = () => {
       let checkboxes = [];
@@ -242,60 +239,99 @@ class DocumentManagement extends DirtyComponent {
       };
 
       _.values( DOCUMENT_STATUS_FIELDS ).forEach( status => addCheckbox( status, _.capitalize( status ) ) );
-      return h( 'small.mute.checkboxSet', checkboxes );
+      return h( 'div.mute.checkboxSet', checkboxes );
     };
 
-
-    const documentMenu = h('div.document-management-document-control-menu', [
-      h( 'div.document-management-document-control-menu-item', [getDocStatusFilter()]),
-      h( 'div.document-management-document-control-menu-item', [getAddButtons()] )
-    ]);
-
-    const documentList = h( 'ul', orderByCreatedDate( docs ).map( doc => {
-      return h( 'li', {
-          key: doc.id()
-        },
-        [
-          h( DocumentManagementDocumentComponent, { doc, apiKey } ),
-          h( 'hr' )
-        ]);
-      })
-    );
-
-    const documentContainer = h( 'div.document-management-document-container',
-      [
-        h('i.icon.icon-spinner.document-management-spinner', {
-          className: makeClassList({ 'document-management-hidden': !isLoading })
+    const IdSearch = () => {
+      const { ids } = this.state;
+      return h('div.id-search-box', [
+        h('input.input-round.id-search', {
+          value: ids,
+          onChange: e => this.updateIdSearch( e.target.value ),
+          type: 'text',
+          ref: this.idInput,
+          placeholder: `Document IDs`,
+          onKeyDown: e => this.handleIdSearchKeyDown( e ),
         }),
-        h('div', {
-          className: makeClassList({ 'document-management-hidden': isLoading })
-        }, [documentMenu, documentList])
-      ]
-    );
-
-    let body = validApiKey ? documentContainer: apiKeyForm;
-
-    const footer = h('div.document-management-footer', {
-      className: makeClassList({ 'document-management-hidden': isLoading })
-    }, [
-      h( 'div.document-management-paginator', [
-        h( ReactPaginate, {
-          pageCount: this.state.pageCount,
-          marginPagesDisplayed: 1,
-          pageRangeDisplayed: 2,
-          disableInitialCallback: true,
-          initialPage,
-          onPageChange: data => this.handlePageClick( data )
-        })
-      ])
-    ]);
-
+        ids !== '' ? h('button', {
+          onClick: () => this.clearIdSearch()
+        }, [
+          h('i.material-icons', 'clear')
+        ]) : null
+      ]);
+    };
 
     return h('div.document-management.page-content', [
       h('div.document-management-content', [
-        header,
-        body,
-        footer
+        h('h1.document-management-header', 'Biofactoid Administration' ),
+        h('i.icon.icon-spinner.document-management-spinner', {
+          className: makeClassList({ 'document-management-spinner-shown': this.state.loading })
+        }),
+        h('div.document-management-apiKey', {
+          className: makeClassList({ 'document-management-hidden': validApiKey })
+        }, [
+          h('input', {
+            type: 'text',
+            value: apiKey,
+            placeholder: 'Enter the API Key',
+            onChange: e => this.handleApiKeyFormChange( e.target.value )
+          }),
+          h('div.error', {
+            className: makeClassList({ 'document-management-hidden': !apiKeyError })
+          }, 'Unable to authorize' ),
+          h('button', {
+            value: apiKey,
+            onClick: e => this.handleApiKeySubmit( e )
+          }, 'Submit' )
+        ]),
+        h('div.document-management-body', {
+          className: makeClassList({'document-management-hidden': loading || !validApiKey })
+        }, [
+          h('div.document-management-document-control-menu', [
+            h( 'div.document-management-document-control-menu-item', {
+              className: makeClassList({ 'document-management-hidden': this.state.searchMode })
+            }, [
+              getDocStatusFilter()
+            ]),
+            h( 'div.document-management-document-control-menu-item', [
+              IdSearch()
+            ])
+          ]),
+          h('div.document-management-document-list', [
+            h( 'ul', {
+              className: makeClassList({
+                'document-management-hidden': !hasDocs
+              })
+            },orderByCreatedDate( docs ).map( doc => {
+              return h( 'li', { key: doc.id() },
+                [
+                  h( DocumentManagementDocumentComponent, { doc, apiKey } ),
+                  h( 'hr' )
+                ]);
+            })),
+            h('div.document-management-no-docs', {
+              className: makeClassList({
+                'document-management-hidden': hasDocs
+              })
+            }, 'No documents found')
+          ])
+        ]),
+        h('div.document-management-footer', {
+          className: makeClassList({
+            'document-management-hidden': loading || this.state.searchMode || !validApiKey || !hasDocs
+          })
+        }, [
+          h( 'div.document-management-paginator', [
+            h( ReactPaginate, {
+              pageCount: this.state.pageCount,
+              marginPagesDisplayed: 2,
+              pageRangeDisplayed: 5,
+              disableInitialCallback: true,
+              initialPage,
+              onPageChange: data => this.handlePageClick( data )
+            })
+          ])
+        ])
       ])
     ]);
   }

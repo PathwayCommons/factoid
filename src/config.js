@@ -40,6 +40,7 @@ export const APPSIGNAL_APP_ENV = env('APPSIGNAL_APP_ENV', 'development');
 
 // CRON jobs
 export const CRON_SCHEDULE = env('CRON_SCHEDULE', '0 * * * *');
+export const CRON_SCHEDULE_DOCCACHE_UPDATE = env('CRON_SCHEDULE_DOCCACHE_UPDATE', '0 0 * * *');
 export const DOCUMENT_CRON_UPDATE_PERIOD = env('DOCUMENT_CRON_UPDATE_PERIOD', 7 * 24 * 60 * 60 * 1000);
 export const DOCUMENT_CRON_STALE_PERIOD = env('DOCUMENT_CRON_STALE_PERIOD', 30 * 24 * 60 * 60 * 1000);
 export const GRAPHDB_CRON_REFRESH_PERIOD_MINUTES = env('GRAPHDB_CRON_REFRESH_PERIOD_MINUTES', 1440);
@@ -64,7 +65,7 @@ export const EXPORT_BULK_DELAY_HOURS = env('EXPORT_BULK_DELAY_HOURS', 0.25);
 // Services
 export const PC_URL = env('PC_URL', 'https://apps.pathwaycommons.org/');
 export const REACH_URL = env('REACH_URL', 'http://reach.baderlab.org/api/uploadFile');
-export const BIOPAX_CONVERTER_URL = env('BIOPAX_CONVERTER_URL', 'https://biopax.baderlab.org/convert/v2/');
+export const BIOPAX_CONVERTER_URL = env('BIOPAX_CONVERTER_URL', undefined);
 export const GROUNDING_SEARCH_BASE_URL = env('GROUNDING_SEARCH_BASE_URL', 'https://grounding.baderlab.org');
 export const NCBI_EUTILS_BASE_URL = env('NCBI_EUTILS_BASE_URL', 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/');
 export const NCBI_EUTILS_API_KEY = env('NCBI_EUTILS_API_KEY', 'b99e10ebe0f90d815a7a99f18403aab08008');
@@ -74,6 +75,8 @@ export const SEMANTIC_SEARCH_BASE_URL = env('SEMANTIC_SEARCH_BASE_URL', 'https:/
 export const ORCID_BASE_URL = env('ORCID_BASE_URL', 'https://orcid.org/');
 export const ORCID_PUBLIC_API_BASE_URL = env('ORCID_PUBLIC_API_BASE_URL', 'https://pub.orcid.org/v3.0/');
 export const CROSSREF_API_BASE_URL = env('CROSSREF_API_BASE_URL', 'https://api.crossref.org/');
+export const NCBI_BASE_URL = env('NCBI_NLM_NIH_BASE_URL', 'https://www.ncbi.nlm.nih.gov/');
+export const PUBTATOR_API_PATH = env('PUBTATOR_API_PATH', 'research/pubtator3-api/publications/export/');
 
 // Links
 export const UNIPROT_LINK_BASE_URL = env('UNIPROT_LINK_BASE_URL', 'http://www.uniprot.org/uniprot/');

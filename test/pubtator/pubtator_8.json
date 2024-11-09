@@ -1,0 +1,578 @@
+{
+  "_id": "24633240|None",
+  "id": "24633240",
+  "infons": {
+    "doi": "24633240 from pubtator",
+    "comment": "Human, mouse, CD34, MITRG, MISTRG, tumor, patients"
+  },
+  "passages": [
+    {
+      "infons": {
+        "journal": "Nat Biotechnol. 2014 Apr;32(4):364-72. doi: 10.1038/nbt.2858. Epub 2014 Mar 16.",
+        "year": "2014",
+        "article-id_pmc": "PMC4017589",
+        "type": "title",
+        "authors": "Rongvaux A, Willinger T, Martinek J, Strowig T, Gearty SV, Teichmann LL, Saito Y, Marches F, Halene S, Palucka AK, Manz MG, Flavell RA"
+      },
+      "offset": 0,
+      "text": "Development and function of human innate immune cells in a humanized mouse model.",
+      "sentences": [],
+      "annotations": [
+        {
+          "id": "2",
+          "infons": {
+            "identifier": "9606",
+            "type": "Species",
+            "valid": true,
+            "normalized": [9606],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 9606,
+            "biotype": "species",
+            "name": "9606",
+            "accession": null
+          },
+          "text": "human",
+          "locations": [
+            {
+              "offset": 28,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "infons": {
+            "identifier": "10090",
+            "type": "Species",
+            "valid": true,
+            "normalized": [10090],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 10090,
+            "biotype": "species",
+            "name": "10090",
+            "accession": null
+          },
+          "text": "mouse",
+          "locations": [
+            {
+              "offset": 69,
+              "length": 5
+            }
+          ]
+        }
+      ],
+      "relations": []
+    },
+    {
+      "infons": {
+        "type": "abstract"
+      },
+      "offset": 82,
+      "text": "Mice repopulated with human hematopoietic cells are a powerful tool for the study of human hematopoiesis and immune function in vivo. However, existing humanized mouse models cannot support development of human innate immune cells, including myeloid cells and natural killer (NK) cells. Here we describe two mouse strains called MITRG and MISTRG, in which human versions of four genes encoding cytokines important for innate immune cell development are knocked into their respective mouse loci. The human cytokines support the development and function of monocytes, macrophages and NK cells derived from human fetal liver or adult CD34(+) progenitor cells injected into the mice. Human macrophages infiltrated a human tumor xenograft in MITRG and MISTRG mice in a manner resembling that observed in tumors obtained from human patients. This humanized mouse model may be used to model the human immune system in scenarios of health and pathology, and may enable evaluation of therapeutic candidates in an in vivo setting relevant to human physiology. ",
+      "sentences": [],
+      "annotations": [
+        {
+          "id": "27",
+          "infons": {
+            "identifier": "10090",
+            "type": "Species",
+            "valid": true,
+            "normalized": [10090],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 10090,
+            "biotype": "species",
+            "name": "10090",
+            "accession": null
+          },
+          "text": "Mice",
+          "locations": [
+            {
+              "offset": 82,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "28",
+          "infons": {
+            "identifier": "9606",
+            "type": "Species",
+            "valid": true,
+            "normalized": [9606],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 9606,
+            "biotype": "species",
+            "name": "9606",
+            "accession": null
+          },
+          "text": "human",
+          "locations": [
+            {
+              "offset": 104,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "29",
+          "infons": {
+            "identifier": "9606",
+            "type": "Species",
+            "valid": true,
+            "normalized": [9606],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 9606,
+            "biotype": "species",
+            "name": "9606",
+            "accession": null
+          },
+          "text": "human",
+          "locations": [
+            {
+              "offset": 167,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "30",
+          "infons": {
+            "identifier": "10090",
+            "type": "Species",
+            "valid": true,
+            "normalized": [10090],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 10090,
+            "biotype": "species",
+            "name": "10090",
+            "accession": null
+          },
+          "text": "mouse",
+          "locations": [
+            {
+              "offset": 244,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "31",
+          "infons": {
+            "identifier": "9606",
+            "type": "Species",
+            "valid": true,
+            "normalized": [9606],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 9606,
+            "biotype": "species",
+            "name": "9606",
+            "accession": null
+          },
+          "text": "human",
+          "locations": [
+            {
+              "offset": 287,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "32",
+          "infons": {
+            "identifier": "10090",
+            "type": "Species",
+            "valid": true,
+            "normalized": [10090],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 10090,
+            "biotype": "species",
+            "name": "10090",
+            "accession": null
+          },
+          "text": "mouse",
+          "locations": [
+            {
+              "offset": 390,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "33",
+          "infons": {
+            "identifier": "9606",
+            "type": "Species",
+            "valid": true,
+            "normalized": [9606],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 9606,
+            "biotype": "species",
+            "name": "9606",
+            "accession": null
+          },
+          "text": "human",
+          "locations": [
+            {
+              "offset": 438,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "34",
+          "infons": {
+            "identifier": "10090",
+            "type": "Species",
+            "valid": true,
+            "normalized": [10090],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 10090,
+            "biotype": "species",
+            "name": "10090",
+            "accession": null
+          },
+          "text": "mouse",
+          "locations": [
+            {
+              "offset": 565,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "35",
+          "infons": {
+            "identifier": "9606",
+            "type": "Species",
+            "valid": true,
+            "normalized": [9606],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 9606,
+            "biotype": "species",
+            "name": "9606",
+            "accession": null
+          },
+          "text": "human",
+          "locations": [
+            {
+              "offset": 581,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "36",
+          "infons": {
+            "identifier": "9606",
+            "type": "Species",
+            "valid": true,
+            "normalized": [9606],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 9606,
+            "biotype": "species",
+            "name": "9606",
+            "accession": null
+          },
+          "text": "human",
+          "locations": [
+            {
+              "offset": 686,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "37",
+          "infons": {
+            "identifier": "947",
+            "type": "Gene",
+            "ncbi_homologene": "1343",
+            "valid": true,
+            "normalized": [947],
+            "database": "ncbi_gene",
+            "normalized_id": 947,
+            "biotype": "gene",
+            "name": "CD34",
+            "accession": "@GENE_CD34"
+          },
+          "text": "CD34",
+          "locations": [
+            {
+              "offset": 713,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "38",
+          "infons": {
+            "identifier": "10090",
+            "type": "Species",
+            "valid": true,
+            "normalized": [10090],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 10090,
+            "biotype": "species",
+            "name": "10090",
+            "accession": null
+          },
+          "text": "mice",
+          "locations": [
+            {
+              "offset": 756,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "39",
+          "infons": {
+            "identifier": "9606",
+            "type": "Species",
+            "valid": true,
+            "normalized": [9606],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 9606,
+            "biotype": "species",
+            "name": "9606",
+            "accession": null
+          },
+          "text": "Human",
+          "locations": [
+            {
+              "offset": 762,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "40",
+          "infons": {
+            "identifier": "9606",
+            "type": "Species",
+            "valid": true,
+            "normalized": [9606],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 9606,
+            "biotype": "species",
+            "name": "9606",
+            "accession": null
+          },
+          "text": "human",
+          "locations": [
+            {
+              "offset": 794,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "41",
+          "infons": {
+            "identifier": "MESH:D009369",
+            "type": "Disease",
+            "valid": true,
+            "normalized": ["D009369"],
+            "database": "ncbi_mesh",
+            "normalized_id": "D009369",
+            "biotype": "disease",
+            "name": "Neoplasms",
+            "accession": "@DISEASE_Neoplasms"
+          },
+          "text": "tumor",
+          "locations": [
+            {
+              "offset": 800,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "42",
+          "infons": {
+            "type": "CellLine",
+            "valid": false,
+            "normalized_id": null,
+            "biotype": "cellline"
+          },
+          "text": "MITRG",
+          "locations": [
+            {
+              "offset": 819,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "43",
+          "infons": {
+            "identifier": "10090",
+            "type": "Species",
+            "valid": true,
+            "normalized": [10090],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 10090,
+            "biotype": "species",
+            "name": "10090",
+            "accession": null
+          },
+          "text": "mice",
+          "locations": [
+            {
+              "offset": 836,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "44",
+          "infons": {
+            "identifier": "MESH:D009369",
+            "type": "Disease",
+            "valid": true,
+            "normalized": ["D009369"],
+            "database": "ncbi_mesh",
+            "normalized_id": "D009369",
+            "biotype": "disease",
+            "name": "Neoplasms",
+            "accession": "@DISEASE_Neoplasms"
+          },
+          "text": "tumors",
+          "locations": [
+            {
+              "offset": 881,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "45",
+          "infons": {
+            "identifier": "9606",
+            "type": "Species",
+            "valid": true,
+            "normalized": [9606],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 9606,
+            "biotype": "species",
+            "name": "9606",
+            "accession": null
+          },
+          "text": "human",
+          "locations": [
+            {
+              "offset": 902,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "46",
+          "infons": {
+            "identifier": "9606",
+            "type": "Species",
+            "valid": true,
+            "normalized": [9606],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 9606,
+            "biotype": "species",
+            "name": "9606",
+            "accession": null
+          },
+          "text": "patients",
+          "locations": [
+            {
+              "offset": 908,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "47",
+          "infons": {
+            "identifier": "10090",
+            "type": "Species",
+            "valid": true,
+            "normalized": [10090],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 10090,
+            "biotype": "species",
+            "name": "10090",
+            "accession": null
+          },
+          "text": "mouse",
+          "locations": [
+            {
+              "offset": 933,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "48",
+          "infons": {
+            "identifier": "9606",
+            "type": "Species",
+            "valid": true,
+            "normalized": [9606],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 9606,
+            "biotype": "species",
+            "name": "9606",
+            "accession": null
+          },
+          "text": "human",
+          "locations": [
+            {
+              "offset": 970,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "49",
+          "infons": {
+            "identifier": "9606",
+            "type": "Species",
+            "valid": true,
+            "normalized": [9606],
+            "database": "ncbi_taxonomy",
+            "normalized_id": 9606,
+            "biotype": "species",
+            "name": "9606",
+            "accession": null
+          },
+          "text": "human",
+          "locations": [
+            {
+              "offset": 1114,
+              "length": 5
+            }
+          ]
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "relations": [],
+  "pmid": 24633240,
+  "pmcid": null,
+  "meta": {},
+  "date": "2014-04-01T00:00:00Z",
+  "journal": "Nat Biotechnol",
+  "authors": [
+    "Rongvaux A",
+    "Willinger T",
+    "Martinek J",
+    "Strowig T",
+    "Gearty SV",
+    "Teichmann LL",
+    "Saito Y",
+    "Marches F",
+    "Halene S",
+    "Palucka AK",
+    "Manz MG",
+    "Flavell RA"
+  ],
+  "relations_display": []
+}

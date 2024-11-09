@@ -10,7 +10,7 @@ import LRUCache from 'lru-cache';
 import emailRegex from 'email-regex';
 import url from 'url';
 import { URLSearchParams } from  'url';
-import NodeCache from 'node-cache';
+import { docCache, DOCCACHE_KEY } from './cache.js';
 import pLimit from './p-limit';
 
 import { tryPromise, makeStaticStylesheet, makeCyEles, truncateString, HTTPStatusError } from '../../../../util';
@@ -67,8 +67,6 @@ import { fetchPubmed } from './pubmed/fetchPubmed';
 import { docs2Sitemap } from '../../../sitemap';
 import { findPreprint } from './crossref/index.js';
 const DOCUMENT_STATUS_FIELDS = Document.statusFields();
-const DOC_CACHE_KEY = 'documents';
-const SEARCH_CACHE_KEY = 'search';
 
 const http = Express.Router();
 
@@ -541,7 +539,13 @@ let handleResponseError = response => {
   return response;
 };
 
+
+
 let getBiopaxFromTemplates = templates => {
+  if( !BIOPAX_CONVERTER_URL ){
+    logger.error( 'BIOPAX_CONVERTER_URL is not set' );
+    throw new Error( 'BIOPAX_CONVERTER_URL is not set' );
+  }
   return fetch( BIOPAX_CONVERTER_URL + 'json-to-biopax', {
     method: 'POST',
     body: JSON.stringify(templates),
@@ -638,6 +642,10 @@ let searchByXref = ( xref ) => {
 };
 
 let getJsonFromBiopaxUrl = url => {
+  if( !BIOPAX_CONVERTER_URL ){
+    logger.error( 'BIOPAX_CONVERTER_URL is not set' );
+    throw new Error( 'BIOPAX_CONVERTER_URL is not set' );
+  }
   return fetch( BIOPAX_CONVERTER_URL + 'biopax-url-to-json', {
     method: 'POST',
     body: url,
@@ -649,6 +657,10 @@ let getJsonFromBiopaxUrl = url => {
 };
 
 let getSbgnFromTemplates = templates => {
+  if( !BIOPAX_CONVERTER_URL ){
+    logger.error( 'BIOPAX_CONVERTER_URL is not set' );
+    throw new Error( 'BIOPAX_CONVERTER_URL is not set' );
+  }
   return fetch( BIOPAX_CONVERTER_URL + 'json-to-sbgn', {
     method: 'POST',
     body: JSON.stringify(templates),
@@ -1327,8 +1339,6 @@ function getDocuments({ limit = 20, offset, status = [ DOCUMENT_STATUS_FIELDS.PU
   );
 }
 
-const docCache = new NodeCache();
-
 /**
  * @swagger
  *
@@ -1381,7 +1391,6 @@ const docCache = new NodeCache();
  */
 http.get('/', async function( req, res, next ){
   let docJSON, count;
-  const TTL = 60 * 60 * 24;
   const csv2Array = par => _.uniq( _.compact( par.split(/\s*,\s*/) ) );
   const noValues = array => array.every( p => _.isUndefined( p ) );
 
@@ -1393,14 +1402,7 @@ http.get('/', async function( req, res, next ){
     const hasQueryParams = !noValues( [ limit, offset, apiKey, status, ids ] );
 
     if ( limitOnly && limitIsInfinity ) {
-      // Case: special limit 'Infinity' - get all public docs
-      _.set( opts, 'limit', null );
-      let hasValues = docCache.has( SEARCH_CACHE_KEY );
-      if( !hasValues ){
-        let { total, results } = await getDocuments( opts );
-        docCache.set( SEARCH_CACHE_KEY, { total, results }, TTL );
-      }
-      let { total, results } = docCache.get( SEARCH_CACHE_KEY );
+      let { total, results } = await docCache.get( DOCCACHE_KEY.SEARCH );
       count = total;
       docJSON = results;
 
@@ -1416,13 +1418,7 @@ http.get('/', async function( req, res, next ){
       docJSON = results;
 
     } else {
-      // Case: no params, default
-      let hasValues = docCache.has( DOC_CACHE_KEY );
-      if( !hasValues ){
-        let { total, results } = await getDocuments( opts );
-        docCache.set( DOC_CACHE_KEY, { total, results }, TTL );
-      }
-      let { total, results } = docCache.get( DOC_CACHE_KEY );
+      let { total, results } = await docCache.get( DOCCACHE_KEY.LATEST );
       count = total;
       docJSON = results;
     }
@@ -2281,8 +2277,7 @@ http.patch('/:id/:secret', function( req, res, next ){
   };
 
   const onDocPublic = async doc => {
-    docCache.del( DOC_CACHE_KEY );
-    docCache.del( SEARCH_CACHE_KEY );
+    docCache.delete( DOCCACHE_KEY.LATEST ); // Break the latest cache
     await AdminPapersQueue.addJob( async () => {
       await updateRelatedPapers( doc );
       await sendFollowUpNotification( doc );

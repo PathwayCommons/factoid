@@ -63,7 +63,7 @@ class DocumentManagement extends DirtyComponent {
         apiKeyError: null,
         docs: [],
         pageCount: 0,
-        isLoading: false,
+        loading: false,
         searchMode: false,
         page: 1,
         limit: 10,
@@ -94,7 +94,7 @@ class DocumentManagement extends DirtyComponent {
   }
 
   parseUrlParams(){
-    const params = _.get( this.props, ['history,', 'location', 'search' ] );
+    const params = queryString.parse( this.props.history.location.search );
     const asInt = str => str ? parseInt( str ) : undefined;
     const page = asInt( _.get( params, 'page' ) );
     const limit = asInt( _.get( params, 'limit' ) );
@@ -129,7 +129,7 @@ class DocumentManagement extends DirtyComponent {
     const queryString = this.getQueryString();
     const url = `${DOCUMENT_BASE_PATH}?${queryString}`;
 
-    return tryPromise( () => new Promise( resolve => this.setState( { isLoading: true }, resolve ) ) )
+    return tryPromise( () => new Promise( resolve => this.setState( { loading: true }, resolve ) ) )
       .then( () => fetch( url ) )
       .then( res => {
         const total = res.headers.get('X-Document-Count');
@@ -144,7 +144,7 @@ class DocumentManagement extends DirtyComponent {
       })
       .then( () => this.setUrlParams( queryString ) )
       .finally( () => {
-        new Promise( resolve => this.setState( { isLoading: false }, resolve ) );
+        new Promise( resolve => this.setState( { loading: false }, resolve ) );
       });
   }
 
@@ -215,28 +215,9 @@ class DocumentManagement extends DirtyComponent {
   }
 
   render(){
-    let { docs, apiKey, status, validApiKey, isLoading, page } = this.state;
-    const noDocs = docs.length === 0;
-    const header = h('div.page-content-title', [
-      h('h1', 'Biofactoid Administration')
-    ]);
+    let { docs, apiKey, status, validApiKey, apiKeyError, loading, page } = this.state;
+    const hasDocs = docs && docs.length > 0;
     let initialPage = page - 1;
-
-    // Authorization
-    const apiKeyForm =
-      h('form', [
-        h('label.document-management-text-label', 'API key'),
-        h('input', {
-          type: 'text',
-          value: apiKey,
-          onChange: e => this.handleApiKeyFormChange( e.target.value )
-        }),
-        this.state.apiKeyError ? h('div.error', 'Unable to authorize' ): null,
-        h('button', {
-          value: apiKey,
-          onClick: e => this.handleApiKeySubmit( e )
-        }, 'Submit' )
-      ]);
 
     const getDocStatusFilter = () => {
       let checkboxes = [];
@@ -263,7 +244,7 @@ class DocumentManagement extends DirtyComponent {
 
     const IdSearch = () => {
       const { ids } = this.state;
-      return h('span.id-search-box-area', [
+      return h('div.id-search-box', [
         h('input.input-round.id-search', {
           value: ids,
           onChange: e => this.updateIdSearch( e.target.value ),
@@ -280,56 +261,77 @@ class DocumentManagement extends DirtyComponent {
       ]);
     };
 
-    const documentMenu = h('div.document-management-document-control-menu', [
-      h( 'div.document-management-document-control-menu-item', {
-        className: makeClassList({ 'document-management-hidden': this.state.searchMode })
-      }, [getDocStatusFilter()]),
-      h( 'div.document-management-document-control-menu-item',
-        [IdSearch()]
-      )
-    ]);
-
-    const documentList = noDocs ? h('div.document-management-no-docs', 'No documents found') :
-      h( 'ul', orderByCreatedDate( docs ).map( doc => {
-      return h( 'li', {
-          key: doc.id()
-        },
-        [
-          h( DocumentManagementDocumentComponent, { doc, apiKey } ),
-          h( 'hr' )
-        ]);
-      })
-    );
-
-    const documentContainer = h( 'div.document-management-document-container',
-      isLoading ? [  h('i.icon.icon-spinner.document-management-spinner') ] : [ documentMenu, documentList ]
-    );
-
-    let body = validApiKey ? documentContainer: apiKeyForm;
-
-    const footer = h('div.document-management-footer', {
-      className: makeClassList({
-        'document-management-hidden': isLoading || this.state.searchMode
-       })
-    }, [
-      h( 'div.document-management-paginator', [
-        h( ReactPaginate, {
-          pageCount: this.state.pageCount,
-          marginPagesDisplayed: 2,
-          pageRangeDisplayed: 5,
-          disableInitialCallback: true,
-          initialPage,
-          onPageChange: data => this.handlePageClick( data )
-        })
-      ])
-    ]);
-
-
     return h('div.document-management.page-content', [
       h('div.document-management-content', [
-        header,
-        body,
-        footer
+        h('h1.document-management-header', 'Biofactoid Administration' ),
+        h('i.icon.icon-spinner.document-management-spinner', {
+          className: makeClassList({ 'document-management-spinner-shown': this.state.loading })
+        }),
+        h('div.document-management-apiKey', {
+          className: makeClassList({ 'document-management-hidden': validApiKey })
+        }, [
+          h('input', {
+            type: 'text',
+            value: apiKey,
+            placeholder: 'Enter the API Key',
+            onChange: e => this.handleApiKeyFormChange( e.target.value )
+          }),
+          h('div.error', {
+            className: makeClassList({ 'document-management-hidden': !apiKeyError })
+          }, 'Unable to authorize' ),
+          h('button', {
+            value: apiKey,
+            onClick: e => this.handleApiKeySubmit( e )
+          }, 'Submit' )
+        ]),
+        h('div.document-management-body', {
+          className: makeClassList({'document-management-hidden': loading || !validApiKey })
+        }, [
+          h('div.document-management-document-control-menu', [
+            h( 'div.document-management-document-control-menu-item', {
+              className: makeClassList({ 'document-management-hidden': this.state.searchMode })
+            }, [
+              getDocStatusFilter()
+            ]),
+            h( 'div.document-management-document-control-menu-item', [
+              IdSearch()
+            ])
+          ]),
+          h('div.document-management-document-list', [
+            h( 'ul', {
+              className: makeClassList({
+                'document-management-hidden': !hasDocs
+              })
+            },orderByCreatedDate( docs ).map( doc => {
+              return h( 'li', { key: doc.id() },
+                [
+                  h( DocumentManagementDocumentComponent, { doc, apiKey } ),
+                  h( 'hr' )
+                ]);
+            })),
+            h('div.document-management-no-docs', {
+              className: makeClassList({
+                'document-management-hidden': hasDocs
+              })
+            }, 'No documents found')
+          ])
+        ]),
+        h('div.document-management-footer', {
+          className: makeClassList({
+            'document-management-hidden': loading || this.state.searchMode || !validApiKey || !hasDocs
+          })
+        }, [
+          h( 'div.document-management-paginator', [
+            h( ReactPaginate, {
+              pageCount: this.state.pageCount,
+              marginPagesDisplayed: 2,
+              pageRangeDisplayed: 5,
+              disableInitialCallback: true,
+              initialPage,
+              onPageChange: data => this.handlePageClick( data )
+            })
+          ])
+        ])
       ])
     ]);
   }

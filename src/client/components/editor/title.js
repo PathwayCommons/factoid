@@ -1,10 +1,11 @@
 import h from 'react-hyperscript';
 import { Component } from 'react';
-import _ from 'lodash';
+import _, { compact } from 'lodash';
 
 import Popover from '../popover/popover';
 import RequestForm from '../request-form';
 import { DOI_LINK_BASE_URL } from '../../../config';
+import Citation from '../citation';
 
 class EditorTitle extends Component {
   constructor(props){
@@ -75,15 +76,16 @@ class EditorTitle extends Component {
 
     return h('div.editor-title', [
       h('div.editor-title-content', [
-        h(doi ? 'a' : 'div', (doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` } : {}), [
-          h('div.editor-title-name', [
-            getTitleContent()
-          ]),
-          h('div.editor-title-info', [
-            h('div', abbreviation ),
-            h('div', reference )
-          ])
-        ])
+        h(Citation, { document, compact: true })
+        // h(doi ? 'a' : 'div', (doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` } : {}), [
+        //   h('div.editor-title-name', [
+        //     getTitleContent()
+        //   ]),
+        //   h('div.editor-title-info', [
+        //     h('div', abbreviation ),
+        //     h('div', reference )
+        //   ])
+        // ])
       ])
     ]);
   }

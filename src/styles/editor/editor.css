@@ -97,37 +97,16 @@
   z-index: 1;
   position: absolute;
   top: 0;
-  text-align: center;
+  /* text-align: center; */
   width: 100%;
   pointer-events: none;
 }
 
 .editor-title-content {
-  display: block;
-  background: rgba(255, 255, 255, 0.5);
-  padding: 0.375em 0.5em;
-  border-bottom-left-radius: 0.25em;
-  border-bottom-right-radius: 0.25em;
-  max-width: calc(100% - 10.5em);
+  padding: 0.5375em 0.5em 0.5375em 5em;
+  max-width: 100%;
   pointer-events: all;
-  line-height: 1.5;
   margin: 0 auto;
-}
-
-.editor-title-name,
-.editor-title-info > div {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-}
-
-.editor-title-info {
-  font-size: var(--smallFontSize);
-
-  & div {
-    display: block;
-  }
 }
 
 .editor-task-list-active {
@@ -286,62 +265,8 @@
   }
 }
 
-.editor-info-flag {
-  padding: 0.2em 0.6em;
-  line-height: 2em;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.editor-info-flag.danger {
-  color: #000;
-  background-color: rgba(255, 0, 0, 0.3);
-}
-
 .editor-info-main-section + .editor-info-main-section {
   margin-top: 2em;
-}
-
-.editor-info-title {
-  font-size: 1.5em;
-}
-
-.editor-info-authors {
-  margin: 0.5em 0;
-  line-height: 1.4;
-}
-
-.editor-info-links {
-  margin: 1.5em 0;
-  line-height: 1.4;
-}
-
-.editor-info-relations {
-  margin-bottom: 0.8em;
-}
-
-.editor-info-relation {
-  margin: 0.25em 0;
-}
-
-.editor-info-relation-type {
-  font-style: italic;
-}
-
-.editor-info-author-spacer {
-  margin-right: 0.333em;
-}
-
-.editor-info-author-orcid {
-  margin-left: 0.25em;
-  font-size: 0.8em;
-  opacity: 0.66;
-}
-
-.editor-info-link {
-  display: inline-block;
-  margin-right: 1em;
 }
 
 .editor-info-abstract-content {
@@ -365,12 +290,6 @@
 
 .editor-info-panel-close-icon {
   font-size: 3em;
-}
-
-.editor-credits {
-  & .icon {
-    font-size: 0.8em;
-  }
 }
 
 .editor-request-form-container {
@@ -452,7 +371,8 @@
     padding-right: 2em;
   }
 
-  /* .editor-info-related-papers-section {
-    flex: 1 1;
-  } */
+  .editor-title-content {
+    max-width: 80%;
+    padding-left: 0.5em;
+  }
 }

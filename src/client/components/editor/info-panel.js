@@ -1,13 +1,10 @@
 import h from 'react-hyperscript';
 import { Component } from 'react';
-import { DOI_LINK_BASE_URL, PUBMED_LINK_BASE_URL, GOOGLE_SCHOLAR_BASE_URL, ORCID_BASE_URL } from '../../../config';
-// import { Carousel, CAROUSEL_CONTENT } from '../carousel';
 import { makeClassList } from '../../dom';
 import ElementInfo from '../element-info/element-info';
 import RelatedPapers from '../related-papers';
 import _ from 'lodash';
-import Credits from './credits';
-import { findOrcidIdentifier } from '../../../util/pubmed';
+import Citation from '../citation.js';
 
 export class InfoPanel extends Component {
   constructor(props){
@@ -64,54 +61,12 @@ export class InfoPanel extends Component {
       ]);
     }
 
-    const citation = document.citation();
-    // authorProfiles may not be existing for the older documents
-    const authorProfiles = document.authorProfiles() || citation.authors.authorList;
-    const { pmid, title = 'Untitled article', reference, doi, abstract, relations } = citation;
-
-    const retractedPubType = _.find( citation.pubTypes, ['UI', 'D016441'] );
-    const retractFlag = retractedPubType ? h('span.editor-info-flag.super-salient-button.danger', retractedPubType.value) : null;
-
+    const { pmid, doi, abstract } = document.citation();
     const hasArticleId = pmid != null || doi != null;
     const hasRelatedPapers = !_.isEmpty( document.relatedPapers() );
 
-    const hasRelations = !_.isEmpty( relations );
-
     return h('div.editor-info-panel', [
-      h('div.editor-info-flags', [ retractFlag ]),
-
-      h('div.editor-info-title', title),
-
-      h('div.editor-info-authors', _.flatten(authorProfiles.map((a, i) => {
-        let orcid = findOrcidIdentifier( a.orcid ); // Backwards compatible with URI
-        if ( orcid ) {
-          return [
-            h('a.editor-info-author.plain-link', { target: '_blank', href: `${ORCID_BASE_URL}${orcid}` }, a.name),
-            h('i.icon.icon-orcid.editor-info-author-orcid'),
-            i !== authorProfiles.length - 1 ? h('span.editor-info-author-spacer', ', ') : null
-          ];
-        }
-
-        return [
-          h('span.editor-info-author', a.name),
-          i !== authorProfiles.length - 1 ? h('span.editor-info-author-spacer', ', ') : null
-        ];
-      }))),
-
-      h(Credits, { controller, bus, document }),
-
-      h('div.editor-info-links', [
-        reference ? h( doi ? 'a.editor-info-link.plain-link': 'div.editor-info-link', doi ? { target: '_blank', href: `${DOI_LINK_BASE_URL}${doi}` }: {}, reference) : null,
-        pmid ? h('a.editor-info-link.plain-link', { target: '_blank', href: `${PUBMED_LINK_BASE_URL}${pmid}` }, 'PubMed') : null,
-        h('a.editor-info-link.plain-link', { target: '_blank', href: `${GOOGLE_SCHOLAR_BASE_URL}${( "\u0022" + title + "\u0022") }`}, 'Google Scholar')
-      ]),
-      hasRelations ?
-        h('div.editor-info-relations', relations.map( ({ type, links }, i) => [
-          h('div.editor-info-relation', { key: i.toString() }, [
-            h('span.editor-info-relation-type', `${type} `),
-            h('span.editor-info-links', links.map( ({ url, reference }, j ) =>  h( url ? 'a.editor-info-link.plain-link' : 'span',  url ? { key: j.toString(), target: '_blank', href: url }: {}, reference ) ) )
-          ])
-        ])): null,
+      h(Citation, { document }),
       h('div.editor-info-main-sections', [
         abstract ? h('div.editor-info-abstract-section.editor-info-main-section', [
           h('div.editor-info-section-title', abstract ? 'Abstract': 'Summary'),

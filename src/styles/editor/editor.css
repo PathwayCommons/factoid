@@ -97,7 +97,6 @@
   z-index: 1;
   position: absolute;
   top: 0;
-  /* text-align: center; */
   width: 100%;
   pointer-events: none;
 }
@@ -107,6 +106,10 @@
   max-width: 100%;
   pointer-events: all;
   margin: 0 auto;
+}
+
+.editor-title-content .editor-title-cta {
+  text-align: center;
 }
 
 .editor-task-list-active {

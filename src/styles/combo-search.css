@@ -1,0 +1,72 @@
+.combo-search {
+  width: 50%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 100px;
+}
+
+.combo-search input {
+  width: 100%;
+  padding: 0.5em 1.25em;
+  height: 100%;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin: auto 0;
+}
+
+.combo-search ul {
+  box-shadow:
+    0 4px 8px 0 rgba(0, 0, 0, 0.2),
+    0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  list-style-type: none;
+  padding: 0 0 0 0;
+  margin: 0;
+  text-align: left;
+}
+
+.combo-search li {
+  margin: 0;
+  padding: 0.5em 1.25em;
+  cursor: pointer;
+}
+
+.combo-search .active {
+  font-weight: bold;
+  color: black;
+}
+
+.combo-search .active:hover {
+  background-color: lightgrey;
+}
+
+.combo-search li:hover {
+  background-color: lightgrey;
+}
+
+/* .card-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.user-card {
+  border: 1px solid gray;
+  padding: 10px;
+  margin: 10px;
+  width: 300px;
+  border-radius: 16px;
+  box-shadow:
+    0 4px 8px 0 rgba(0, 0, 0, 0.2),
+    0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.card-title {
+  font-weight: bold;
+}
+
+.card-text {
+  font-style: italic;
+} */

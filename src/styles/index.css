@@ -13,6 +13,7 @@
 @import "./app.css";
 @import "./highlighter.css";
 @import "./editor";
+@import "./citation.css";
 @import "./help";
 @import "./home.css";
 @import "./request-form.css";

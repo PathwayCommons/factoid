@@ -1,6 +1,7 @@
 import Express from 'express';
 import ElementAssociation from './element-association';
 import Document from './document';
+import Journal from './journal';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
@@ -33,5 +34,6 @@ http.get('/', swaggerUi.setup( swaggerDocument ));
 
 http.use('/element-association', ElementAssociation);
 http.use('/document', Document);
+http.use('/journal', Journal);
 
 export default http;

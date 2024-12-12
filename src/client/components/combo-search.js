@@ -17,7 +17,7 @@ class ComboSearch extends Component {
 
     this.debouncedSearch = _.debounce(() => {
       this.search();
-    }, 500);
+    }, 250);
 
   }
 
@@ -27,11 +27,10 @@ class ComboSearch extends Component {
    * @return {object} a list of search hits
    */
   search(){
-    const url = '/api/element-association/search';
+    const { url } = this.props;
+    const { q } =this.state;
     const body = JSON.stringify({
-      name: this.state.q,
-      namespace: 'medline',
-      offset: 0,
+      q,
       limit: 10
     });
     const opts = {
@@ -53,35 +52,15 @@ class ComboSearch extends Component {
       });
   }
 
-  // /**
-  //  * Load documents into the index and stash locally
-  //  * @param {object} documents List of raw documents to index
-  //  */
-  // index( documents ){
-  //   this._engine.addAll( documents );
-  //   this._documents = documents;
-  //   this._documents.forEach( doc => this._docMap.set( doc.id, doc ) );
-  // }
-
-  // /**
-  //  * Getter for list of raw documents indexed
-  //  */
-  // get documents() {
-  //   return this._documents;
-  // }
-
   setSearch( q ){
-    console.log( `set search: ${q}` );
     this.setState({ q });
   }
 
   setTopMatching( topMatching ){
-    console.log( `topMatching: ${topMatching.length}` );
     this.setState({ topMatching });
   }
 
   handleChange( e ){
-    console.log('handleChange');
     this.setSearch( e.target.value );
     if (e.target.value.length > 0) {
       return this.debouncedSearch();
@@ -91,28 +70,11 @@ class ComboSearch extends Component {
     }
   }
 
-  handleBlur() {
-    console.log('handleBlur');
-  }
-
   handleClick( item ){
-    console.log('onClick');
-    this.setSearch( item.name );
+    this.setSearch( item.title );
     this.dropDownList.blur();
     this.setTopMatching([]);
   }
-
-  // /**
-  //  * Search the index
-  //  * @param {string} q search query
-  //  * @param {number} limit maximum number of hits to return (default 10)
-  //  * @return {object} a list of search hits (raw document)
-  //  */
-  // search( q, limit = 10 ){
-  //   let searchHits = this._engine.search( q );
-  //   searchHits = searchHits.slice( 0, limit );
-  //   return searchHits.map( ({ id }) => this._docMap.get( id ) );
-  // }
 
   render(){
 
@@ -138,10 +100,10 @@ class ComboSearch extends Component {
               key: index,
               onClick:() => this.handleClick( item ),
               className: makeClassList({
-                'active': q === item.name
+                'active': q === item.title
               })
             }, [
-              item.name
+              item.title
             ])
           ))
       ),

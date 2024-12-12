@@ -8,6 +8,7 @@ import Home from './components/home';
 import DocumentManagement from './components/document-management';
 
 import { DEMO_ID, DEMO_SECRET } from '../config';
+import Test from './components/test';
 
 
 let routes = [
@@ -15,6 +16,12 @@ let routes = [
     path: '/',
     render: (props) => {
       return h(Home, { history: props.history });
+    }
+  },
+  {
+    path: '/test',
+    render: (props) => {
+      return h(Test, { history: props.history });
     }
   },
   {

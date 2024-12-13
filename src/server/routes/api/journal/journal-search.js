@@ -1,14 +1,12 @@
-import MiniSearch from 'minisearch';
-import _ from 'lodash';
+import lunr from 'lunr';
 
-// import logger from '../../../logger.js';
 import data from './scimago_2023.json';
 
 /** Class for  searching an index. */
 class JournalSearch {
 
-  constructor( opts = {} ){
-    this._engine = new MiniSearch( _.assign( {}, opts, { storeFields: [ 'id' ] } ) );
+  constructor(){
+    this._engine;
     this._documents = [];
     this._docMap = new Map();
   }
@@ -18,7 +16,14 @@ class JournalSearch {
    * @param {object} documents List of raw documents to index
    */
   index( documents ){
-    this._engine.addAll( documents );
+    this._engine = lunr(function () {
+      this.ref('id');
+      this.field('title');
+
+      documents.forEach(function (doc) {
+        this.add(doc);
+      }, this);
+    });
     this._documents = documents;
     this._documents.forEach( doc => this._docMap.set( doc.id, doc ) );
   }
@@ -37,17 +42,17 @@ class JournalSearch {
    * @return {object} a list of search hits (raw document)
    */
   search( q, limit = 10 ){
+    const qTransform = q => {
+      return `${q}~1`; // fuzzy
+    };
+    q = qTransform( q );
     let searchHits = this._engine.search( q );
     searchHits = searchHits.slice( 0, limit );
-    return searchHits.map( ({ id }) => this._docMap.get( id ) );
+    return searchHits.map( ({ ref: id }) => this._docMap.get( parseInt( id ) ) );
   }
 }
 
-const opts = {
-  fields: ['title'],
-  fuzzy: true
-};
-const journalSearch = new JournalSearch(opts);
+const journalSearch = new JournalSearch();
 journalSearch.index( data );
 
 export default journalSearch;

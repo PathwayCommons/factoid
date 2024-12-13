@@ -1,24 +1,25 @@
 import h from 'react-hyperscript';
 import { Component } from 'react';
-import { makeClassList } from '../dom';
 import _ from 'lodash';
-// import logger from './logger';
 
-/** Class for  searching a journal. */
+import { makeClassList } from '../dom';
+import logger from '../logger.js';
+
+/** Class for previewing search results. */
 class ComboSearch extends Component {
 
   constructor( props ){
     super( props );
+    const { searchDelay = 100 } = props;
 
     this.state = {
       q: '',
-      topMatching: []
+      hits: []
     };
 
-    this.debouncedSearch = _.debounce(() => {
+    this.debouncedSearch = _.debounce( () => {
       this.search();
-    }, 250);
-
+    }, searchDelay );
   }
 
   /**
@@ -27,11 +28,11 @@ class ComboSearch extends Component {
    * @return {object} a list of search hits
    */
   search(){
-    const { url } = this.props;
+    const { url, limit = 10 } = this.props;
     const { q } =this.state;
     const body = JSON.stringify({
       q,
-      limit: 10
+      limit
     });
     const opts = {
       method: 'post',
@@ -44,11 +45,11 @@ class ComboSearch extends Component {
         return res.json();
       })
       .then( results => {
-        this.setTopMatching( results );
+        this.setHits( results );
         return results;
       })
       .catch( err => {
-        console.error( `Unable to search journas: ${err}` );
+        logger.error( `ComboSearch fetch error: ${err}` );
       });
   }
 
@@ -56,8 +57,8 @@ class ComboSearch extends Component {
     this.setState({ q });
   }
 
-  setTopMatching( topMatching ){
-    this.setState({ topMatching });
+  setHits( hits ){
+    this.setState({ hits });
   }
 
   handleChange( e ){
@@ -66,19 +67,21 @@ class ComboSearch extends Component {
       return this.debouncedSearch();
     } else {
       // if search value is empty, reset the first 6 matching colors
-      this.setTopMatching([]);
+      this.setHits([]);
     }
   }
 
   handleClick( item ){
     this.setSearch( item.title );
     this.dropDownList.blur();
-    this.setTopMatching([]);
+    this.setHits([]);
   }
 
   render(){
 
-    const { topMatching, q } = this.state;
+    const { hits, q } = this.state;
+    const { displayKey } = this.props;
+    const hasHits = hits && hits.length > 0;
 
     return h('div.combo-search', [
       h('input', {
@@ -88,25 +91,19 @@ class ComboSearch extends Component {
         ref: el => this.dropDownList = el,
         onChange: e => this.handleChange( e )
       }),
-      h('ul', {
-        className: makeClassList({
-          'expanded': true
-        })
-      },
-        // Displaying the filter based on search as dropDown
-        topMatching &&
-          topMatching.map((item, index) => (
-            h('li',{
-              key: index,
-              onClick:() => this.handleClick( item ),
-              className: makeClassList({
-                'active': q === item.title
-              })
-            }, [
-              item.title
-            ])
-          ))
-      ),
+      hasHits ?
+      h('ul', hits.map((item, index) => (
+        h('li', {
+          key: index,
+          onClick:() => this.handleClick( item ),
+          className: makeClassList({
+            'active': q === item.title
+          })
+        }, [
+          h('span.display-value', item[displayKey] )
+        ])
+      ))
+    ) : null,
       h('div', `q: ${q}`)
     ]);
   }

@@ -13,7 +13,7 @@ class Test extends Component {
       // className: makeClassList({})
     }, [
       h(ComboSearch, {
-        placeholder: 'Search for a journal',
+        placeholder: 'Find your journal',
         url: '/api/journal/search',
         displayKey: 'title',
         searchDelay: 100

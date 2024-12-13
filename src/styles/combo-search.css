@@ -7,7 +7,23 @@
   margin-top: 100px;
 }
 
-.combo-search input {
+.combo-search .hidden {
+  display: none;
+}
+
+.combo-search .search-box-area {
+  position: relative;
+}
+
+.combo-search .search-box-area button {
+  position: absolute;
+  border: none;
+  right: 5px;
+  top: 0;
+  height: 100%;
+}
+
+.combo-search .search-box-area input {
   width: 100%;
   padding: 0.5em 1.25em;
   height: 100%;

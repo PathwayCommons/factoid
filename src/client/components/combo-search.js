@@ -5,7 +5,16 @@ import _ from 'lodash';
 import { makeClassList } from '../dom';
 import logger from '../logger.js';
 
-/** Class for previewing search results. */
+/**
+ * Component that previews input element values from search
+ *
+ * @typedef {object} ComboSearchProps
+ * @property {string} placeholder input placeholder text
+ * @property {string} url search endpoint
+ * @property {string} displayKey search results object key displayed in preview
+ * @property {number} searchDelay debounce delay in ms
+ * @property {number} limit max search results to retrieve/display
+ */
 class ComboSearch extends Component {
 
   constructor( props ){
@@ -28,26 +37,18 @@ class ComboSearch extends Component {
    * @return {object} a list of search hits
    */
   search(){
+    const toJson = res => res.json();
+    const { q } = this.state;
     const { url, limit = 10 } = this.props;
-    const { q } =this.state;
-    const body = JSON.stringify({
-      q,
-      limit
-    });
     const opts = {
       method: 'post',
-      body,
+      body: JSON.stringify({ q, limit }),
       headers: {'Content-Type': 'application/json'}
     };
 
     return fetch( url, opts )
-      .then( res => {
-        return res.json();
-      })
-      .then( results => {
-        this.setHits( results );
-        return results;
-      })
+      .then( toJson )
+      .then( hits => this.setHits( hits ) )
       .catch( err => {
         logger.error( `ComboSearch fetch error: ${err}` );
       });
@@ -61,36 +62,51 @@ class ComboSearch extends Component {
     this.setState({ hits });
   }
 
-  handleChange( e ){
-    this.setSearch( e.target.value );
-    if (e.target.value.length > 0) {
+  updateSearchQuery( e ){
+    const hasQuery = q => !!q && !!q.trim();
+    let value = e.target.value;
+    this.setSearch( value );
+    if ( hasQuery( value ) ) {
       return this.debouncedSearch();
     } else {
-      // if search value is empty, reset the first 6 matching colors
       this.setHits([]);
     }
   }
 
+  clearSearchQuery() {
+    this.setState({ q: '', hits: [] });
+  }
+
   handleClick( item ){
     this.setSearch( item.title );
-    this.dropDownList.blur();
+    this.hitList.blur();
     this.setHits([]);
   }
 
   render(){
-
     const { hits, q } = this.state;
     const { displayKey } = this.props;
     const hasHits = hits && hits.length > 0;
 
     return h('div.combo-search', [
-      h('input', {
-        type: 'text',
-        placeholder: this.props.placeholder,
-        value: q,
-        ref: el => this.dropDownList = el,
-        onChange: e => this.handleChange( e )
-      }),
+      h('div', `Stored: ${q}`),
+      h('div.search-box-area', [
+        h('input', {
+          type: 'text',
+          placeholder: this.props.placeholder,
+          value: q,
+          ref: el => this.hitList = el,
+          onChange: e => this.updateSearchQuery( e )
+        }),
+        h('button', {
+          className: makeClassList({
+            'hidden': !q
+          }),
+          onClick: () => this.clearSearchQuery()
+        }, [
+          h('i.material-icons', 'clear')
+        ])
+      ]),
       hasHits ?
       h('ul', hits.map((item, index) => (
         h('li', {
@@ -103,11 +119,9 @@ class ComboSearch extends Component {
           h('span.display-value', item[displayKey] )
         ])
       ))
-    ) : null,
-      h('div', `q: ${q}`)
+    ) : null
     ]);
   }
 }
-
 
 export default ComboSearch;

@@ -18,8 +18,9 @@
 .combo-search .search-box-area button {
   position: absolute;
   border: none;
-  right: 5px;
+  right: 0;
   top: 0;
+  width: 2em;
   height: 100%;
 }
 

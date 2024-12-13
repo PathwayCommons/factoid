@@ -3,7 +3,7 @@ import { Component } from 'react';
 import _ from 'lodash';
 
 import { makeClassList } from '../dom';
-import logger from '../logger.js';
+import { checkHTTPStatus } from '../../util/fetch.js';
 
 /**
  * Component that previews input element values from search
@@ -23,12 +23,17 @@ class ComboSearch extends Component {
 
     this.state = {
       q: '',
-      hits: []
+      hits: [],
+      error: null
     };
 
     this.debouncedSearch = _.debounce( () => {
       this.search();
     }, searchDelay );
+  }
+
+  setError( error ){
+    this.setState({ error });
   }
 
   /**
@@ -47,10 +52,11 @@ class ComboSearch extends Component {
     };
 
     return fetch( url, opts )
+      .then( checkHTTPStatus )
       .then( toJson )
       .then( hits => this.setHits( hits ) )
       .catch( err => {
-        logger.error( `ComboSearch fetch error: ${err}` );
+        this.setError( err );
       });
   }
 
@@ -89,7 +95,7 @@ class ComboSearch extends Component {
     const hasHits = hits && hits.length > 0;
 
     return h('div.combo-search', [
-      h('div', `Stored: ${q}`),
+      h('div', `Stored: ${q}`), // TODO - remove
       h('div.search-box-area', [
         h('input', {
           type: 'text',
@@ -113,7 +119,7 @@ class ComboSearch extends Component {
           key: index,
           onClick:() => this.handleClick( item ),
           className: makeClassList({
-            'active': q === item.title
+            'active': _.lowerCase( q ) === _.lowerCase( item[displayKey] )
           })
         }, [
           h('span.display-value', item[displayKey] )

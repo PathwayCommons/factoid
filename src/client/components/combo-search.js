@@ -24,6 +24,7 @@ class ComboSearch extends Component {
     this.state = {
       q: '',
       hits: [],
+      index: 0,
       error: null
     };
 
@@ -84,13 +85,50 @@ class ComboSearch extends Component {
   }
 
   handleClick( item ){
-    this.setSearch( item.title );
-    this.hitList.blur();
+    const { displayKey } = this.props;
+    this.setSearch( item[displayKey] );
     this.setHits([]);
   }
 
+  setIndex( index ){
+    this.setState({ index });
+  }
+
+  handleKeyDown( e ){
+    const { hits, index, q } = this.state;
+    const { displayKey } = this.props;
+    const { key } = e;
+
+    // if( q === '' ) {
+    //   console.log(`q === ''; index: ${index}`);
+    //   this.setIndex(0);
+    // }
+
+    // console.log(`ArrowDown; index: ${index}`);
+    // console.log(`ArrowDown; hits[index][displayKey]: ${hits[index][displayKey]}`);
+
+    if ( key === 'Enter' ) {
+      const item = hits[index];
+      this.handleClick( item );
+
+    } else if ( key === 'Escape' ) {
+      this.clearSearchQuery();
+
+    } else if ( key === 'ArrowDown' ) {
+      // Update the index if there's an exact match
+      // this.setSearch( hits[index][displayKey] );
+      this.setIndex( index + 1 );
+      if( index >= hits.length - 1 ) {
+        this.setIndex( 0 );
+      }
+    }
+
+    // return;
+  }
+
+
   render(){
-    const { hits, q } = this.state;
+    const { hits, q, index } = this.state;
     const { displayKey } = this.props;
     const hasHits = hits && hits.length > 0;
 
@@ -102,7 +140,8 @@ class ComboSearch extends Component {
           placeholder: this.props.placeholder,
           value: q,
           ref: el => this.hitList = el,
-          onChange: e => this.updateSearchQuery( e )
+          onChange: e => this.updateSearchQuery( e ),
+          onKeyDown: e => this.handleKeyDown( e )
         }),
         h('button', {
           className: makeClassList({
@@ -114,12 +153,12 @@ class ComboSearch extends Component {
         ])
       ]),
       hasHits ?
-      h('ul', hits.map((item, index) => (
+      h('ul', hits.map((item, i) => (
         h('li', {
-          key: index,
+          key: i,
           onClick:() => this.handleClick( item ),
           className: makeClassList({
-            'active': _.lowerCase( q ) === _.lowerCase( item[displayKey] )
+            'active': i === index,
           })
         }, [
           h('span.display-value', item[displayKey] )

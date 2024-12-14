@@ -98,6 +98,7 @@ class ComboSearch extends Component {
     const { hits, index, q } = this.state;
     const { displayKey } = this.props;
     const { key } = e;
+    const lastIndex = hits.length - 1;
 
     // if( q === '' ) {
     //   console.log(`q === ''; index: ${index}`);
@@ -115,11 +116,17 @@ class ComboSearch extends Component {
       this.clearSearchQuery();
 
     } else if ( key === 'ArrowDown' ) {
-      // Update the index if there's an exact match
-      // this.setSearch( hits[index][displayKey] );
-      this.setIndex( index + 1 );
-      if( index >= hits.length - 1 ) {
+      if( index >= lastIndex ) {
         this.setIndex( 0 );
+      } else {
+        this.setIndex( index + 1 );
+      }
+
+    } else if ( key === 'ArrowUp' ) {
+      if( index <= 0 ) {
+        this.setIndex( lastIndex );
+      } else {
+        this.setIndex( index - 1 );
       }
     }
 

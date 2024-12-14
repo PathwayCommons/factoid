@@ -77,18 +77,19 @@ class ComboSearch extends Component {
       });
   }
 
-  setSearch( q ){
-    this.setState({ q });
-  }
-
   setHits( hits ){
     this.setState({ hits });
   }
 
+  clearHits( ){
+    this.setState({ hits: [], index: 0 });
+  }
+
   updateSearchQuery( e ){
+    this.setIndex( 0 );
     const hasQuery = q => !!q && !!q.trim();
     let value = e.target.value;
-    this.setSearch( value );
+    this.setSearchQuery( value );
     if ( hasQuery( value ) ) {
       return this.debouncedSearch();
     } else {
@@ -96,13 +97,17 @@ class ComboSearch extends Component {
     }
   }
 
+  setSearchQuery( q ){
+    this.setState({ q });
+  }
+
   clearSearchQuery() {
     this.setState({ q: '', hits: [], index: 0 });
   }
 
-  itemClicked( item ){
+  handleListItemClicked( item ){
     const { displayKey } = this.props;
-    this.setSearch( item[displayKey] );
+    this.setSearchQuery( item[displayKey] );
     this.setListMode( false );
   }
 
@@ -125,8 +130,9 @@ class ComboSearch extends Component {
 
     if ( key === 'Enter' ) {
       let current = index;
-      this.setSearch( hits[current][displayKey] );
+      this.setSearchQuery( hits[current][displayKey] );
       this.setListMode( false );
+      this.clearHits( );
 
     } else if ( key === 'Escape' ) {
       this.clearSearchQuery();
@@ -134,18 +140,22 @@ class ComboSearch extends Component {
     } else if ( key === 'ArrowDown' ) {
       let current = index + 1;
       if( index >= lastIndex ) current = 0;
-      this.setSearch( hits[current][displayKey] );
+      this.setSearchQuery( hits[current][displayKey] );
       this.setIndex( current );
 
     } else if ( key === 'ArrowUp' ) {
       let current = index - 1;
       if( index <= 0 ) current = lastIndex;
-      this.setSearch( hits[current][displayKey] );
+      this.setSearchQuery( hits[current][displayKey] );
       this.setIndex( current );
     }
 
     // return;
   }
+
+  // todo case:
+  //  search, arrow to selection, enter to select
+  // what is expected arrow behaviour?
 
 
   render(){
@@ -165,6 +175,7 @@ class ComboSearch extends Component {
           value: q,
           ref: el => this.inputBox = el,
           onFocus: () => this.setListMode( true ),
+          onClick: () => this.setListMode( true ),
           onBlur: () => this.setListMode( false ),
           onChange: e => this.updateSearchQuery( e ),
           onKeyDown: e => this.handleKeyDown( e )
@@ -186,12 +197,12 @@ class ComboSearch extends Component {
       }, hits.map((item, i) => (
         h('li', {
           key: i,
-          onClick:() => this.itemClicked( item ),
+          onClick:() => this.handleListItemClicked( item ),
           className: makeClassList({
             'active': i === index,
           })
         }, [
-          h('span.display-value', `${i}: ${item[displayKey]}` )
+          h('span.display-value', `${item[displayKey]}` )
         ])
       ))
     ) : null

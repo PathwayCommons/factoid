@@ -24,6 +24,7 @@ class ComboSearch extends Component {
 
     this.state = {
       q: '',
+      item: null,
       hits: [],
       index: 0,
       error: null,
@@ -102,12 +103,18 @@ class ComboSearch extends Component {
   }
 
   clearSearchQuery() {
-    this.setState({ q: '', hits: [], index: 0 });
+    this.setState({ q: '', hits: [], index: 0, item: null });
   }
 
-  handleListItemClicked( item ){
+  setItem( item ){
+    this.setState({ item });
+  }
+
+  selectHit( hit ){
     const { displayKey } = this.props;
-    this.setSearchQuery( item[displayKey] );
+    this.setSearchQuery( hit[displayKey] );
+    this.setItem( hit );
+    this.clearHits();
     this.setListMode( false );
   }
 
@@ -121,18 +128,10 @@ class ComboSearch extends Component {
     const { key } = e;
     const lastIndex = hits.length - 1;
 
-    // if( q === '' ) {
-    //   console.log(`q === ''; index: ${index}`);
-    //   this.setIndex(0);
-    // }
-
-    // console.log(`ArrowDown; hits[index][displayKey]: ${hits[index][displayKey]}`);
-
     if ( key === 'Enter' ) {
       let current = index;
-      this.setSearchQuery( hits[current][displayKey] );
-      this.setListMode( false );
-      this.clearHits( );
+      const item = hits[current];
+      this.selectHit( item );
 
     } else if ( key === 'Escape' ) {
       this.clearSearchQuery();
@@ -149,23 +148,26 @@ class ComboSearch extends Component {
       this.setSearchQuery( hits[current][displayKey] );
       this.setIndex( current );
     }
-
-    // return;
   }
 
-  // todo case:
-  //  search, arrow to selection, enter to select
-  // what is expected arrow behaviour?
+
+  // todo cases:
+  // 1. Clash between mouseover list and arrow key selection
+  // 2. Exact match between hit and input value
+  //     e.g. input: 'Nature', list: ['Acta Natura', 'Nature', 'Nature Medicine']
+  //     - 'Nature' from search should be set as item on Enter
+  //     But can allow user backdoor out.
 
 
   render(){
-    const { hits, q, index, listMode } = this.state;
+    const { hits, q, item, index, listMode } = this.state;
     const { displayKey } = this.props;
     const hasHits = hits && hits.length > 0;
 
     return h('div.combo-search', [
       h('ul.state', [
         h('li', `q: ${q}`),
+        h('li', `item: ${JSON.stringify(item)}`),
         h('li', `index: ${index}`)
       ]), // TODO - remove
       h('div.search-box-area', [
@@ -176,7 +178,7 @@ class ComboSearch extends Component {
           ref: el => this.inputBox = el,
           onFocus: () => this.setListMode( true ),
           onClick: () => this.setListMode( true ),
-          onBlur: () => this.setListMode( false ),
+          onBlur: () => this.setListMode( false), // overrides click on list item
           onChange: e => this.updateSearchQuery( e ),
           onKeyDown: e => this.handleKeyDown( e )
         }),
@@ -194,17 +196,21 @@ class ComboSearch extends Component {
         className: makeClassList({
           'hidden': !listMode
         })
-      }, hits.map((item, i) => (
-        h('li', {
+      }, hits.map((hit, i) => {
+        if( i === 0 ) return null;
+        return h('li', {
           key: i,
-          onClick:() => this.handleListItemClicked( item ),
+          onMouseDown: () => this.selectHit( hit ),
+          onMouseOver: () => this.setIndex( i ),
+          onMouseOut: () => this.setIndex( 0 ),
           className: makeClassList({
             'active': i === index,
+            'match': _.lowerCase( q ) === _.lowerCase( hit[displayKey] )
           })
         }, [
-          h('span.display-value', `${item[displayKey]}` )
-        ])
-      ))
+          h('span.display-value', `${hit[displayKey]}` )
+        ]);
+      })
     ) : null
     ]);
   }

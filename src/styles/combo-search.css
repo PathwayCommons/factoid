@@ -7,10 +7,6 @@
   margin-top: 100px;
 }
 
-.combo-search .hidden {
-  display: none;
-}
-
 .combo-search .search-box-area {
   position: relative;
 }
@@ -36,6 +32,7 @@
 }
 
 .combo-search ul {
+  display: block;
   box-shadow:
     0 4px 8px 0 rgba(0, 0, 0, 0.2),
     0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -45,6 +42,10 @@
   text-align: left;
 }
 
+.combo-search ul.hidden {
+  display: none;
+}
+
 .combo-search li {
   margin: 0;
   padding: 0.5em 1.25em;
@@ -52,8 +53,9 @@
 }
 
 .combo-search .active {
-  font-weight: bold;
-  color: black;
+  /* font-weight: bold;
+  color: black; */
+  background-color: lightgrey;
 }
 
 .combo-search .active:hover {
@@ -87,3 +89,7 @@
 .card-text {
   font-style: italic;
 } */
+
+.combo-search ul.state {
+ margin: 2em;
+}

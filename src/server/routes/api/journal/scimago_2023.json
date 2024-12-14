@@ -5,14 +5,14 @@
     "issn": [
       "2693-5015"
     ],
-    "h_index": -1,
+    "h_index": null,
     "publisher": "Research Square Platform LLC",
     "categories": "Multidisciplinary (Q1)"
   },
   {
     "id": -2,
     "title": "medRxiv",
-    "h_index": -1,
+    "h_index": null,
     "publisher": "Cold Spring Harbor Laborator",
     "categories": "Medicine (miscellaneous) (Q1)"
   },
@@ -22,7 +22,7 @@
     "issn": [
       "2692-8205"
     ],
-    "h_index": -1,
+    "h_index": null,
     "publisher": "Cold Spring Harbor Laborator",
     "categories": "Multidisciplinary (Q1)"
   },

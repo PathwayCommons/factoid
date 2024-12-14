@@ -4,6 +4,7 @@ import _ from 'lodash';
 
 import { makeClassList } from '../dom';
 import { checkHTTPStatus } from '../../util/fetch.js';
+import { list } from 'postcss';
 
 /**
  * Component that previews input element values from search
@@ -25,7 +26,8 @@ class ComboSearch extends Component {
       q: '',
       hits: [],
       index: 0,
-      error: null
+      error: null,
+      listMode: false
     };
 
     this.debouncedSearch = _.debounce( () => {
@@ -35,6 +37,10 @@ class ComboSearch extends Component {
 
   setError( error ){
     this.setState({ error });
+  }
+
+  setListMode( listMode ){
+    this.setState({ listMode });
   }
 
   /**
@@ -52,10 +58,20 @@ class ComboSearch extends Component {
       headers: {'Content-Type': 'application/json'}
     };
 
+    const current = {
+      id: null,
+      title: q,
+      issn: [],
+      h_index: null,
+      publisher: null,
+      categories: null
+    };
+
     return fetch( url, opts )
       .then( checkHTTPStatus )
       .then( toJson )
-      .then( hits => this.setHits( hits ) )
+      .then( hits => this.setHits( [ current, ...hits ] ) )
+      .then( () => this.setListMode( true ) )
       .catch( err => {
         this.setError( err );
       });
@@ -81,13 +97,13 @@ class ComboSearch extends Component {
   }
 
   clearSearchQuery() {
-    this.setState({ q: '', hits: [] });
+    this.setState({ q: '', hits: [], index: 0 });
   }
 
-  handleClick( item ){
+  itemClicked( item ){
     const { displayKey } = this.props;
     this.setSearch( item[displayKey] );
-    this.setHits([]);
+    this.setListMode( false );
   }
 
   setIndex( index ){
@@ -105,29 +121,27 @@ class ComboSearch extends Component {
     //   this.setIndex(0);
     // }
 
-    // console.log(`ArrowDown; index: ${index}`);
     // console.log(`ArrowDown; hits[index][displayKey]: ${hits[index][displayKey]}`);
 
     if ( key === 'Enter' ) {
-      const item = hits[index];
-      this.handleClick( item );
+      let current = index;
+      this.setSearch( hits[current][displayKey] );
+      this.setListMode( false );
 
     } else if ( key === 'Escape' ) {
       this.clearSearchQuery();
 
     } else if ( key === 'ArrowDown' ) {
-      if( index >= lastIndex ) {
-        this.setIndex( 0 );
-      } else {
-        this.setIndex( index + 1 );
-      }
+      let current = index + 1;
+      if( index >= lastIndex ) current = 0;
+      this.setSearch( hits[current][displayKey] );
+      this.setIndex( current );
 
     } else if ( key === 'ArrowUp' ) {
-      if( index <= 0 ) {
-        this.setIndex( lastIndex );
-      } else {
-        this.setIndex( index - 1 );
-      }
+      let current = index - 1;
+      if( index <= 0 ) current = lastIndex;
+      this.setSearch( hits[current][displayKey] );
+      this.setIndex( current );
     }
 
     // return;
@@ -135,18 +149,23 @@ class ComboSearch extends Component {
 
 
   render(){
-    const { hits, q, index } = this.state;
+    const { hits, q, index, listMode } = this.state;
     const { displayKey } = this.props;
     const hasHits = hits && hits.length > 0;
 
     return h('div.combo-search', [
-      h('div', `Stored: ${q}`), // TODO - remove
+      h('ul.state', [
+        h('li', `q: ${q}`),
+        h('li', `index: ${index}`)
+      ]), // TODO - remove
       h('div.search-box-area', [
         h('input', {
           type: 'text',
           placeholder: this.props.placeholder,
           value: q,
-          ref: el => this.hitList = el,
+          ref: el => this.inputBox = el,
+          onFocus: () => this.setListMode( true ),
+          onBlur: () => this.setListMode( false ),
           onChange: e => this.updateSearchQuery( e ),
           onKeyDown: e => this.handleKeyDown( e )
         }),
@@ -160,15 +179,19 @@ class ComboSearch extends Component {
         ])
       ]),
       hasHits ?
-      h('ul', hits.map((item, i) => (
+      h('ul', {
+        className: makeClassList({
+          'hidden': !listMode
+        })
+      }, hits.map((item, i) => (
         h('li', {
           key: i,
-          onClick:() => this.handleClick( item ),
+          onClick:() => this.itemClicked( item ),
           className: makeClassList({
             'active': i === index,
           })
         }, [
-          h('span.display-value', item[displayKey] )
+          h('span.display-value', `${i}: ${item[displayKey]}` )
         ])
       ))
     ) : null

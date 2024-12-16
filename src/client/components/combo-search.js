@@ -4,7 +4,6 @@ import _ from 'lodash';
 
 import { makeClassList } from '../dom';
 import { checkHTTPStatus } from '../../util/fetch.js';
-import { list } from 'postcss';
 
 /**
  * Component that previews input element values from search
@@ -23,8 +22,8 @@ class ComboSearch extends Component {
     const { searchDelay = 100 } = props;
 
     this.state = {
-      q: '',
-      item: null,
+      query: '',
+      selection: null,
       hits: [],
       index: 0,
       error: null,
@@ -34,6 +33,10 @@ class ComboSearch extends Component {
     this.debouncedSearch = _.debounce( () => {
       this.search();
     }, searchDelay );
+
+    this.isSameAsStr = ( a, b ) => {
+      return _.isString( a ) && _.isString( b ) && _.lowerCase( _.trim( a ) ) === _.lowerCase( _.trim( b ) );
+    };
   }
 
   setError( error ){
@@ -46,22 +49,22 @@ class ComboSearch extends Component {
 
   /**
    * Fetch documents from source
-   * @param {string} q the query string
+   * @param {string} query the query string
    * @return {object} a list of search hits
    */
   search(){
     const toJson = res => res.json();
-    const { q } = this.state;
+    const { query } = this.state;
     const { url, limit = 10 } = this.props;
     const opts = {
       method: 'post',
-      body: JSON.stringify({ q, limit }),
+      body: JSON.stringify({ q: query, limit }),
       headers: {'Content-Type': 'application/json'}
     };
 
     const current = {
       id: null,
-      title: q,
+      title: query,
       issn: [],
       h_index: null,
       publisher: null,
@@ -88,7 +91,7 @@ class ComboSearch extends Component {
 
   updateSearchQuery( e ){
     this.setIndex( 0 );
-    const hasQuery = q => !!q && !!q.trim();
+    const hasQuery = query => !!query && !!query.trim();
     let value = e.target.value;
     this.setSearchQuery( value );
     if ( hasQuery( value ) ) {
@@ -98,21 +101,32 @@ class ComboSearch extends Component {
     }
   }
 
-  setSearchQuery( q ){
-    this.setState({ q });
+  setSearchQuery( query ){
+    this.setState({ query });
   }
 
   clearSearchQuery() {
-    this.setState({ q: '', hits: [], index: 0, item: null });
+    this.setState({ query: '', hits: [], index: 0, selection: null });
   }
 
-  setItem( item ){
-    this.setState({ item });
+  setItem( selection ){
+    this.setState({ selection });
   }
 
   selectHit( hit ){
     const { displayKey } = this.props;
     this.setSearchQuery( hit[displayKey] );
+
+    // Automatically match the query if it exactly matches title in hits
+    const unassociated = _.isNull( hit.id );
+    if ( unassociated ) {
+      const startIndex = 1; // Skip the query at 0
+      const matchesHit = o => this.isSameAsStr( hit[displayKey], o[displayKey] );
+      const { hits } = this.state;
+      const hitMatch = _.find( hits, matchesHit, startIndex );
+      if ( hitMatch ) hit = hitMatch;
+    }
+
     this.setItem( hit );
     this.clearHits();
     this.setListMode( false );
@@ -123,15 +137,15 @@ class ComboSearch extends Component {
   }
 
   handleKeyDown( e ){
-    const { hits, index, q } = this.state;
+    const { hits, index } = this.state;
     const { displayKey } = this.props;
     const { key } = e;
     const lastIndex = hits.length - 1;
 
     if ( key === 'Enter' ) {
       let current = index;
-      const item = hits[current];
-      this.selectHit( item );
+      const selection = hits[current];
+      this.selectHit( selection );
 
     } else if ( key === 'Escape' ) {
       this.clearSearchQuery();
@@ -155,36 +169,35 @@ class ComboSearch extends Component {
   // 1. Clash between mouseover list and arrow key selection
   // 2. Exact match between hit and input value
   //     e.g. input: 'Nature', list: ['Acta Natura', 'Nature', 'Nature Medicine']
-  //     - 'Nature' from search should be set as item on Enter
+  //     - 'Nature' from search should be set as selection on Enter
   //     But can allow user backdoor out.
 
 
   render(){
-    const { hits, q, item, index, listMode } = this.state;
+    const { hits, query, selection, index, listMode } = this.state;
     const { displayKey } = this.props;
     const hasHits = hits && hits.length > 0;
 
     return h('div.combo-search', [
       h('ul.state', [
-        h('li', `q: ${q}`),
-        h('li', `item: ${JSON.stringify(item)}`),
-        h('li', `index: ${index}`)
+        h('li', `query: ${query}`),
+        h('li', `selection: ${selection ? selection.title + ' [' + selection.id + ']' : null }`)
       ]), // TODO - remove
       h('div.search-box-area', [
         h('input', {
           type: 'text',
           placeholder: this.props.placeholder,
-          value: q,
+          value: query,
           ref: el => this.inputBox = el,
           onFocus: () => this.setListMode( true ),
           onClick: () => this.setListMode( true ),
-          onBlur: () => this.setListMode( false), // overrides click on list item
+          onBlur: () => this.setListMode( false ),
           onChange: e => this.updateSearchQuery( e ),
           onKeyDown: e => this.handleKeyDown( e )
         }),
         h('button', {
           className: makeClassList({
-            'hidden': !q
+            'hidden': !query
           }),
           onClick: () => this.clearSearchQuery()
         }, [
@@ -205,7 +218,7 @@ class ComboSearch extends Component {
           onMouseOut: () => this.setIndex( 0 ),
           className: makeClassList({
             'active': i === index,
-            'match': _.lowerCase( q ) === _.lowerCase( hit[displayKey] )
+            'match': this.isSameAsStr( query, hit[displayKey] )
           })
         }, [
           h('span.display-value', `${hit[displayKey]}` )

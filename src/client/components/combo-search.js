@@ -164,15 +164,6 @@ class ComboSearch extends Component {
     }
   }
 
-
-  // todo cases:
-  // 1. Clash between mouseover list and arrow key selection
-  // 2. Exact match between hit and input value
-  //     e.g. input: 'Nature', list: ['Acta Natura', 'Nature', 'Nature Medicine']
-  //     - 'Nature' from search should be set as selection on Enter
-  //     But can allow user backdoor out.
-
-
   render(){
     const { hits, query, selection, index, listMode } = this.state;
     const { displayKey } = this.props;

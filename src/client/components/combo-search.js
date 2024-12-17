@@ -6,20 +6,19 @@ import { makeClassList } from '../dom';
 import { checkHTTPStatus } from '../../util/fetch.js';
 
 /**
- * Component that previews input element values from search
+ * Input element that previews search hits
  *
  * @typedef {object} ComboSearchProps
  * @property {string} placeholder input placeholder text
- * @property {string} url search endpoint
- * @property {string} displayKey search results object key displayed in preview
- * @property {number} searchDelay debounce delay in ms
- * @property {number} limit max search results to retrieve/display
+ * @property {string} url search engine endpoint
+ * @property {number} limit max search hits to retrieve/display (default: 10)
+ * @property {string} queryKey search hit key corresponding to query
+ * @property {number} delay search delay after keystroke (default: 100 [ms])
  */
 class ComboSearch extends Component {
 
   constructor( props ){
     super( props );
-    const { searchDelay = 100 } = props;
 
     this.state = {
       query: '',
@@ -30,9 +29,10 @@ class ComboSearch extends Component {
       listMode: false
     };
 
+    const { limit = 10, url, delay = 100 } = props;
     this.debouncedSearch = _.debounce( () => {
-      this.search();
-    }, searchDelay );
+      this.search( url, { limit } );
+    }, delay );
 
     this.isSameAsStr = ( a, b ) => {
       return _.isString( a ) && _.isString( b ) && _.lowerCase( _.trim( a ) ) === _.lowerCase( _.trim( b ) );
@@ -49,22 +49,21 @@ class ComboSearch extends Component {
 
   /**
    * Fetch documents from source
-   * @param {string} query the query string
+   * @param {object} query the query string
    * @return {object} a list of search hits
    */
-  search(){
+  search( url, searchOpts ){
     const toJson = res => res.json();
-    const { query } = this.state;
-    const { url, limit = 10 } = this.props;
+    const { query: q } = this.state;
     const opts = {
       method: 'post',
-      body: JSON.stringify({ q: query, limit }),
+      body: JSON.stringify( _.assign( { q }, searchOpts ) ),
       headers: {'Content-Type': 'application/json'}
     };
 
     const current = {
       id: null,
-      title: query,
+      title: q,
       issn: [],
       h_index: null,
       publisher: null,
@@ -114,14 +113,14 @@ class ComboSearch extends Component {
   }
 
   selectHit( hit ){
-    const { displayKey } = this.props;
-    this.setSearchQuery( hit[displayKey] );
+    const { queryKey } = this.props;
+    this.setSearchQuery( hit[queryKey] );
 
     // Automatically match the query if it exactly matches title in hits
     const unassociated = _.isNull( hit.id );
     if ( unassociated ) {
       const startIndex = 1; // Skip the query at 0
-      const matchesHit = o => this.isSameAsStr( hit[displayKey], o[displayKey] );
+      const matchesHit = o => this.isSameAsStr( hit[queryKey], o[queryKey] );
       const { hits } = this.state;
       const hitMatch = _.find( hits, matchesHit, startIndex );
       if ( hitMatch ) hit = hitMatch;
@@ -138,7 +137,7 @@ class ComboSearch extends Component {
 
   handleKeyDown( e ){
     const { hits, index } = this.state;
-    const { displayKey } = this.props;
+    const { queryKey } = this.props;
     const { key } = e;
     const lastIndex = hits.length - 1;
 
@@ -153,24 +152,24 @@ class ComboSearch extends Component {
     } else if ( key === 'ArrowDown' ) {
       let current = index + 1;
       if( index >= lastIndex ) current = 0;
-      this.setSearchQuery( hits[current][displayKey] );
+      this.setSearchQuery( hits[current][queryKey] );
       this.setIndex( current );
 
     } else if ( key === 'ArrowUp' ) {
       let current = index - 1;
       if( index <= 0 ) current = lastIndex;
-      this.setSearchQuery( hits[current][displayKey] );
+      this.setSearchQuery( hits[current][queryKey] );
       this.setIndex( current );
     }
   }
 
   render(){
     const { hits, query, selection, index, listMode } = this.state;
-    const { displayKey } = this.props;
+    const { queryKey } = this.props;
     const hasHits = hits && hits.length > 0;
 
     return h('div.combo-search', [
-      h('ul.state', [
+      h('ul.debug-state', [
         h('li', `query: ${query}`),
         h('li', `selection: ${selection ? selection.title + ' [' + selection.id + ']' : null }`)
       ]), // TODO - remove
@@ -209,10 +208,10 @@ class ComboSearch extends Component {
           onMouseOut: () => this.setIndex( 0 ),
           className: makeClassList({
             'active': i === index,
-            'match': this.isSameAsStr( query, hit[displayKey] )
+            'match': this.isSameAsStr( query, hit[queryKey] )
           })
         }, [
-          h('span.display-value', `${hit[displayKey]}` )
+          h('span.display-value', `${hit[queryKey]}` )
         ]);
       })
     ) : null

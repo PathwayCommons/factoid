@@ -60,7 +60,13 @@
   font-weight: bold;
 }
 
-/* delete */
-.combo-search ul.state {
- margin: 2em;
+/* START debugging - to delete */
+.test {
+  display: flex;
+  justify-content: center;
 }
+
+.test .combo-search ul.debug-state {
+  margin-bottom: 1em;
+}
+/* END debugging - to delete */

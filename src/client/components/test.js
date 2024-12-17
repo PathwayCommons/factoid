@@ -15,8 +15,8 @@ class Test extends Component {
       h(ComboSearch, {
         placeholder: 'Select your journal',
         url: '/api/journal/search',
-        displayKey: 'title',
-        searchDelay: 100
+        queryKey: 'title',
+        delay: 100
       })
     ]);
   }

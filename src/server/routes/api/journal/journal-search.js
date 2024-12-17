@@ -1,6 +1,6 @@
 import lunr from 'lunr';
 
-import data from './scimago_2023.json';
+import data from './journal-list.json';
 
 /** Class for  searching an index. */
 class JournalSearch {

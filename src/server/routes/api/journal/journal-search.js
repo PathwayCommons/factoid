@@ -1,12 +1,12 @@
-import lunr from 'lunr';
-
+import MiniSearch from 'minisearch';
+import _ from 'lodash';
 import data from './journal-list.json';
 
 /** Class for  searching an index. */
 class JournalSearch {
 
-  constructor(){
-    this._engine;
+  constructor( opts = {} ){
+    this._engine = new MiniSearch( _.assign( {}, opts, { storeFields: [ 'id' ] } ) );
     this._documents = [];
     this._docMap = new Map();
   }
@@ -16,14 +16,7 @@ class JournalSearch {
    * @param {object} documents List of raw documents to index
    */
   index( documents ){
-    this._engine = lunr(function () {
-      this.ref('id');
-      this.field('title');
-
-      documents.forEach(function (doc) {
-        this.add(doc);
-      }, this);
-    });
+    this._engine.addAll( documents );
     this._documents = documents;
     this._documents.forEach( doc => this._docMap.set( doc.id, doc ) );
   }
@@ -42,17 +35,21 @@ class JournalSearch {
    * @return {object} a list of search hits (raw document)
    */
   search( q, limit = 10 ){
-    const qTransform = q => {
-      return `${q}~1`; // fuzzy
-    };
-    q = qTransform( q );
     let searchHits = this._engine.search( q );
     searchHits = searchHits.slice( 0, limit );
-    return searchHits.map( ({ ref: id }) => this._docMap.get( parseInt( id ) ) );
+    return searchHits.map( ({ id }) => this._docMap.get( id ) );
   }
 }
 
-const journalSearch = new JournalSearch();
+const opts = {
+  fields: ['title', 'synonyms'],
+  searchOptions: {
+    boost: { title: 2 },
+    fuzzy: 0.2
+  }
+};
+
+const journalSearch = new JournalSearch( opts );
 journalSearch.index( data );
 
 export default journalSearch;

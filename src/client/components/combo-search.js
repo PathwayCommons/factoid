@@ -35,7 +35,11 @@ class ComboSearch extends Component {
     }, delay );
 
     this.isSameAsStr = ( a, b ) => {
-      return _.isString( a ) && _.isString( b ) && _.lowerCase( _.trim( a ) ) === _.lowerCase( _.trim( b ) );
+      const isString = _.isString( a ) && _.isString( b );
+      const cleana = a.trim().toLowerCase();
+      const cleanb = b.trim().toLowerCase();
+      const isSame = cleana === cleanb;
+      return isSame && isString;
     };
   }
 

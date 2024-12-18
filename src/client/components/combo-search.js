@@ -39,7 +39,7 @@ class ComboSearch extends Component {
       const cleana = a.trim().toLowerCase();
       const cleanb = b.trim().toLowerCase();
       const isSame = cleana === cleanb;
-      return isSame && isString;
+      return isString && isSame;
     };
   }
 

@@ -1,26 +1,8 @@
 .combo-search {
-  width: 50%;
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  margin-top: 100px;
-}
-
-.combo-search .search-box-area {
   position: relative;
 }
 
-.combo-search .search-box-area button {
-  position: absolute;
-  border: none;
-  right: 0;
-  top: 0;
-  width: 2em;
-  height: 100%;
-}
-
-.combo-search .search-box-area input {
+.combo-search input {
   width: 100%;
   padding: 0.5em 1.25em;
   height: 100%;
@@ -29,6 +11,15 @@
   border-radius: 4px;
   box-sizing: border-box;
   margin: auto 0;
+}
+
+.combo-search button {
+  position: absolute;
+  border: none;
+  right: 0;
+  top: 0;
+  width: 2.5em;
+  height: 2.5em;
 }
 
 .combo-search ul {
@@ -42,7 +33,7 @@
   text-align: left;
 }
 
-.combo-search ul.hidden {
+.combo-search .hidden {
   display: none;
 }
 
@@ -66,7 +57,12 @@
   justify-content: center;
 }
 
-.test .combo-search ul.debug-state {
-  margin-bottom: 1em;
+.test form {
+  width: 50%;
+  margin: 5em 0;
 }
+
+/* .test .combo-search ul.debug-state {
+  margin-bottom: 1em;
+} */
 /* END debugging - to delete */

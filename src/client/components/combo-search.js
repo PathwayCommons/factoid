@@ -14,6 +14,8 @@ import { checkHTTPStatus } from '../../util/fetch.js';
  * @property {number} limit max search hits to retrieve/display (default: 10)
  * @property {string} queryKey search hit key corresponding to query
  * @property {number} delay search delay after keystroke (default: 100 [ms])
+ * @property {object} setValue set the selection (parent component)
+ * @property {object} setError set the error (parent component)
  */
 class ComboSearch extends Component {
 
@@ -146,6 +148,7 @@ class ComboSearch extends Component {
     const lastIndex = hits.length - 1;
 
     if ( key === 'Enter' ) {
+      e.preventDefault();
       let current = index;
       const selection = hits[current];
       this.selectHit( selection );
@@ -168,16 +171,11 @@ class ComboSearch extends Component {
   }
 
   render(){
-    const { hits, query, selection, index, listMode } = this.state;
+    const { hits, query, index, listMode } = this.state;
     const { queryKey } = this.props;
-    const hasHits = hits && hits.length > 0;
 
-    return h('div.combo-search', [
-      h('ul.debug-state', [
-        h('li', `query: ${query}`),
-        h('li', `selection: ${selection ? selection.title + ' [' + selection.id + ']' : null }`)
-      ]), // TODO - remove
-      h('div.search-box-area', [
+    return (
+      h('div.combo-search', [
         h('input', {
           type: 'text',
           placeholder: this.props.placeholder,
@@ -190,36 +188,35 @@ class ComboSearch extends Component {
           onKeyDown: e => this.handleKeyDown( e )
         }),
         h('button', {
+          type: 'button',
           className: makeClassList({
             'hidden': !query
           }),
           onClick: () => this.clearSearchQuery()
         }, [
           h('i.material-icons', 'clear')
-        ])
-      ]),
-      hasHits ?
-      h('ul', {
-        className: makeClassList({
-          'hidden': !listMode
-        })
-      }, hits.map((hit, i) => {
-        if( i === 0 ) return null;
-        return h('li', {
-          key: i,
-          onMouseDown: () => this.selectHit( hit ),
-          onMouseOver: () => this.setIndex( i ),
-          onMouseOut: () => this.setIndex( 0 ),
+        ]),
+        h('ul', {
           className: makeClassList({
-            'active': i === index,
-            'match': this.isSameAsStr( query, hit[queryKey] )
+            'hidden': !listMode
           })
-        }, [
-          h('span.display-value', `${hit[queryKey]}` )
-        ]);
-      })
-    ) : null
-    ]);
+        }, hits.map((hit, i) => {
+          if( i === 0 ) return null;
+          return h('li', {
+            key: i,
+            onMouseDown: () => this.selectHit( hit ),
+            onMouseOver: () => this.setIndex( i ),
+            onMouseOut: () => this.setIndex( 0 ),
+            className: makeClassList({
+              'active': i === index,
+              'match': this.isSameAsStr( query, hit[queryKey] )
+            })
+          }, [
+            h('span.display-value', `${hit[queryKey]}` )
+          ]);
+        }))
+      ])
+    );
   }
 }
 

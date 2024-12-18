@@ -12,12 +12,23 @@ class Test extends Component {
     return h('div.test', {
       // className: makeClassList({})
     }, [
-      h(ComboSearch, {
-        placeholder: 'Select your journal',
-        url: '/api/journal/search',
-        queryKey: 'title',
-        delay: 100
-      })
+      h('form', {
+        // className: makeClassList({})
+      }, [
+        h(ComboSearch, {
+          placeholder: 'Select your journal',
+          url: '/api/journal/search',
+          queryKey: 'title',
+          delay: 100
+        }),
+        h('button', {
+          // className: makeClassList({})
+          type: 'submit',
+          onSubmit: (e) => {
+            e.preventDefault();
+          }
+        }, 'Submit')
+      ])
     ]);
   }
 }

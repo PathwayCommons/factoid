@@ -87,7 +87,9 @@ class ComboSearch extends Component {
   }
 
   setHits( hits ){
-    this.setState({ hits });
+    this.setState({ hits }, () => {
+      this.setValue( this.state.query );
+    });
   }
 
   clearHits( ){
@@ -100,17 +102,18 @@ class ComboSearch extends Component {
    *
    * @param {*} item The item to make available to the parent component
    */
-  setValue( item ){
+  setValue( item ){ // todo - buggy - this is triggering before the search results are available
     let value = item;
     const { hits } = this.state;
     const { queryKey } = this.props;
 
     if ( _.isString( value ) ) {
       value = this.asHit( value );
-      if( hits.length > 0 ) {
+      if( hits.length > 1 ) {
         // See if it matches any hits
+        const startIndex = 1; // Skip the query at 0
         const matchesHit = o => this.isSameAsStr( item, o[queryKey] );
-        const hit = _.find( hits, matchesHit );
+        const hit = _.find( hits, matchesHit, startIndex );
         if ( hit ) value = hit;
       }
     }
@@ -118,8 +121,12 @@ class ComboSearch extends Component {
     this.props.setValue( value );
   }
 
+  clearValue(){
+    this.setValue( null );
+  }
+
   setSearchQuery( query ){
-    this.setValue( query );
+    // this.setValue( query ); // this can fire before the search results are available
     this.setState({ query });
   }
 
@@ -130,12 +137,11 @@ class ComboSearch extends Component {
     this.setSearchQuery( value );
     if ( hasQuery( value ) ) {
       return this.debouncedSearch();
-    } else {
-      this.setHits([]);
     }
   }
 
   clearSearchQuery() {
+    this.clearValue();
     this.setState({ query: '', hits: [], index: 0, selection: null });
   }
 

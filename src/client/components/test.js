@@ -26,7 +26,7 @@ class Test extends Component {
     }, [
       h('h1', 'ComboBox Demo'),
       h('div.selection', [
-        h('h3', 'alue'),
+        h('h3', 'Input value'),
         value ? h('ul', [
           h('li', `title: ${value.title}`),
           h('li', `publisher: ${value.publisher}`),

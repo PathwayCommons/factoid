@@ -5,28 +5,48 @@ import ComboSearch from './combo-search.js';
 class Test extends Component {
   constructor(props){
     super(props);
-    this.state = {};
+    this.state = {
+      selection: ''
+    };
+  }
+
+  setSelection (selection) {
+    this.setState({ selection });
+  }
+
+  handleSubmit (e) {
+    e.preventDefault();
+    this.setState({
+      selection: e.target.elements[0].value
+    });
   }
 
   render(){
+    const { selection } = this.state;
+
     return h('div.test', {
-      // className: makeClassList({})
     }, [
+      h('h1', 'ComboBox Demo'),
+      h('div.selection', [
+        h('h3', 'Selection'),
+        selection ? h('ul', [
+          h('li', `title: ${selection.title}`),
+          h('li', `publisher: ${selection.publisher}`),
+          h('li', `issn: ${selection.issn.join(', ')}`),
+        ]) : null
+      ]),
       h('form', {
-        // className: makeClassList({})
+        onSubmit: e => this.handleSubmit(e)
       }, [
         h(ComboSearch, {
           placeholder: 'Select your journal',
           url: '/api/journal/search',
           queryKey: 'title',
-          delay: 100
+          delay: 100,
+          setValue: this.setSelection.bind(this)
         }),
         h('button', {
-          // className: makeClassList({})
-          type: 'submit',
-          onSubmit: (e) => {
-            e.preventDefault();
-          }
+          type: 'submit'
         }, 'Submit')
       ])
     ]);

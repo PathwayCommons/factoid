@@ -23,7 +23,9 @@
 }
 
 .combo-search ul {
+  position: absolute;
   display: block;
+  background-color: #fff;
   box-shadow:
     0 4px 8px 0 rgba(0, 0, 0, 0.2),
     0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -53,16 +55,24 @@
 
 /* START debugging - to delete */
 .test {
-  display: flex;
-  justify-content: center;
+  padding: 1em;
+  border: 1px solid #ccc;
 }
 
-.test form {
+.test {
   width: 50%;
-  margin: 5em 0;
 }
 
-/* .test .combo-search ul.debug-state {
-  margin-bottom: 1em;
-} */
+.test button {
+  margin: 1em 0;
+}
+
+.test .selection {
+  margin: 2em 0;
+}
+
+.test li {
+  margin: 0;
+}
+
 /* END debugging - to delete */

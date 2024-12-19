@@ -114,7 +114,8 @@ class ComboSearch extends Component {
     this.setState({ query: '', hits: [], index: 0, selection: null });
   }
 
-  setItem( selection ){
+  setSelection( selection ){
+    this.props.setValue( selection );
     this.setState({ selection });
   }
 
@@ -132,7 +133,7 @@ class ComboSearch extends Component {
       if ( hitMatch ) hit = hitMatch;
     }
 
-    this.setItem( hit );
+    this.setSelection( hit );
     this.clearHits();
     this.setListMode( false );
   }

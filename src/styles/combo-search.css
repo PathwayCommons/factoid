@@ -63,7 +63,7 @@
   width: 50%;
 }
 
-.test button {
+.test form > button {
   margin: 1em 0;
 }
 

@@ -16,9 +16,7 @@ class Test extends Component {
 
   handleSubmit (e) {
     e.preventDefault();
-    this.setState({
-      selection: e.target.elements[0].value
-    });
+    alert(`You selected: ${this.state.selection.title}`);
   }
 
   render(){

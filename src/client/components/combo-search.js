@@ -119,7 +119,7 @@ class ComboSearch extends Component {
     this.setState({ selection });
   }
 
-  selectHit( hit ){
+  selectHit( hit ){ // errors - (1) hit enter to accept (2) hit enter again, hit is undefined.
     const { queryKey } = this.props;
     this.setSearchQuery( hit[queryKey] );
 
@@ -144,8 +144,10 @@ class ComboSearch extends Component {
 
   handleKeyDown( e ){
     const { hits, index } = this.state;
-    const { queryKey } = this.props;
+    if(!hits.length) return;
+
     const { key } = e;
+    const { queryKey } = this.props;
     const lastIndex = hits.length - 1;
 
     if ( key === 'Enter' ) {

@@ -102,7 +102,7 @@ class ComboSearch extends Component {
    *
    * @param {*} item The item to make available to the parent component
    */
-  setValue( item ){ // todo - buggy - this is triggering before the search results are available
+  setValue( item ){
     let value = item;
     const { hits } = this.state;
     const { queryKey } = this.props;

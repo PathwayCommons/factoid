@@ -43,6 +43,15 @@ class ComboSearch extends Component {
       const isSame = cleana === cleanb;
       return isString && isSame;
     };
+
+    this.asHit = q => ({
+      id: null,
+      title: q,
+      issn: [],
+      h_index: null,
+      publisher: null,
+      categories: null
+    });
   }
 
   setError( error ){
@@ -67,19 +76,10 @@ class ComboSearch extends Component {
       headers: {'Content-Type': 'application/json'}
     };
 
-    const current = {
-      id: null,
-      title: q,
-      issn: [],
-      h_index: null,
-      publisher: null,
-      categories: null
-    };
-
     return fetch( url, opts )
       .then( checkHTTPStatus )
       .then( toJson )
-      .then( hits => this.setHits( [ current, ...hits ] ) )
+      .then( hits => this.setHits( [ this.asHit( q ), ...hits ] ) )
       .then( () => this.setListMode( true ) )
       .catch( err => {
         this.setError( err );
@@ -94,7 +94,36 @@ class ComboSearch extends Component {
     this.setState({ hits: [], index: 0 });
   }
 
-  updateSearchQuery( e ){
+  /**
+   * Should always be available to the parent component
+   * i.e. anything typed in input or selected.
+   *
+   * @param {*} item The item to make available to the parent component
+   */
+  setValue( item ){
+    let value = item;
+    const { hits } = this.state;
+    const { queryKey } = this.props;
+
+    if ( _.isString( value ) ) {
+      value = this.asHit( value );
+      if( hits.length > 0 ) {
+        // See if it matches any hits
+        const matchesHit = o => this.isSameAsStr( item, o[queryKey] );
+        const hit = _.find( hits, matchesHit );
+        if ( hit ) value = hit;
+      }
+    }
+
+    this.props.setValue( value );
+  }
+
+  setSearchQuery( query ){
+    this.setValue( query );
+    this.setState({ query });
+  }
+
+  updateSearch( e ){
     this.setIndex( 0 );
     const hasQuery = query => !!query && !!query.trim();
     let value = e.target.value;
@@ -106,20 +135,16 @@ class ComboSearch extends Component {
     }
   }
 
-  setSearchQuery( query ){
-    this.setState({ query });
-  }
-
   clearSearchQuery() {
     this.setState({ query: '', hits: [], index: 0, selection: null });
   }
 
   setSelection( selection ){
-    this.props.setValue( selection );
+    this.setValue( selection );
     this.setState({ selection });
   }
 
-  selectHit( hit ){ // errors - (1) hit enter to accept (2) hit enter again, hit is undefined.
+  selectHit( hit ){
     const { queryKey } = this.props;
     this.setSearchQuery( hit[queryKey] );
 
@@ -187,7 +212,7 @@ class ComboSearch extends Component {
           onFocus: () => this.setListMode( true ),
           onClick: () => this.setListMode( true ),
           onBlur: () => this.setListMode( false ),
-          onChange: e => this.updateSearchQuery( e ),
+          onChange: e => this.updateSearch( e ),
           onKeyDown: e => this.handleKeyDown( e )
         }),
         h('button', {

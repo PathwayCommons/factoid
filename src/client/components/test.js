@@ -6,31 +6,31 @@ class Test extends Component {
   constructor(props){
     super(props);
     this.state = {
-      selection: ''
+      value: ''
     };
   }
 
-  setSelection (selection) {
-    this.setState({ selection });
+  setValue ( value ) {
+    this.setState({ value });
   }
 
   handleSubmit (e) {
     e.preventDefault();
-    alert(`You selected: ${this.state.selection.title}`);
+    alert(`You selected: ${this.state.value.title}`);
   }
 
   render(){
-    const { selection } = this.state;
+    const { value } = this.state;
 
     return h('div.test', {
     }, [
       h('h1', 'ComboBox Demo'),
       h('div.selection', [
-        h('h3', 'Selection'),
-        selection ? h('ul', [
-          h('li', `title: ${selection.title}`),
-          h('li', `publisher: ${selection.publisher}`),
-          h('li', `issn: ${selection.issn.join(', ')}`),
+        h('h3', 'alue'),
+        value ? h('ul', [
+          h('li', `title: ${value.title}`),
+          h('li', `publisher: ${value.publisher}`),
+          h('li', `issn: ${value.issn.join(', ')}`),
         ]) : null
       ]),
       h('form', {
@@ -41,7 +41,7 @@ class Test extends Component {
           url: '/api/journal/search',
           queryKey: 'title',
           delay: 100,
-          setValue: this.setSelection.bind(this)
+          setValue: this.setValue.bind(this)
         }),
         h('button', {
           type: 'submit'

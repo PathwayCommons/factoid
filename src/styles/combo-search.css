@@ -1,0 +1,54 @@
+.combo-search {
+  position: relative;
+}
+
+.combo-search input {
+  width: 100%;
+  padding: 0.5em 1.25em;
+  height: 100%;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin: auto 0;
+}
+
+.combo-search button {
+  position: absolute;
+  border: none;
+  right: 0;
+  top: 0;
+  width: 2.5em;
+  height: 2.5em;
+}
+
+.combo-search ul {
+  position: absolute;
+  display: block;
+  background-color: #fff;
+  box-shadow:
+    0 4px 8px 0 rgba(0, 0, 0, 0.2),
+    0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  list-style-type: none;
+  padding: 0 0 0 0;
+  margin: 0;
+  text-align: left;
+}
+
+.combo-search li {
+  margin: 0;
+  padding: 0.5em 1.25em;
+  cursor: pointer;
+}
+
+.combo-search .active, .combo-search li:hover {
+  background-color: #ECECEC;
+}
+
+.combo-search .hidden {
+  display: none;
+}
+
+.combo-search .match {
+  font-weight: bold;
+}

@@ -25,6 +25,10 @@ const doesMatch = ( title, other ) => {
   return title === other || _.includes( title, other ) || _.includes( other, title );
 };
 
+// PubMed appears to transform LEFT (U+2018) and RIGHT (U+2019) SINGLE QUOTATION MARKs to APOSTROPHE (U+0027)
+// Crossref does not apoear to do this
+const apostrophize = str => str.replace(/[\u2018|\u2019]/g, '\'');
+
 /**
  * Match a title string against a candidate
  *
@@ -38,7 +42,8 @@ function testTitle( title, other ) {
     .map( lowerCase )
     .map( undash )
     .map( unformat )
-    .map( deburr );
+    .map( deburr )
+    .map( apostrophize );
   return doesMatch( title, other );
 }
 

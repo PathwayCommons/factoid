@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-// import _ from 'lodash';
 
 import { testTitle } from '../../src/util/article.js';
 
@@ -94,9 +93,16 @@ describe('article', function () {
 
     describe('Markup', function () {
 
-      it('Should drop HTML tags ', function () {
+      it('Should drop HTML tags', function () {
         const title = '<i>Trans</i>regulation of an odorant binding protein by a proto-Y chromosome affects male courtship in house fly';
         const other = 'Transregulation of an odorant binding protein by a proto-Y chromosome affects male courtship in house fly';
+        const isSimilar = testTitle(title, other);
+        expect( isSimilar ).to.be.true;
+      });
+
+      it('Should drop escaped HTML tags', function () {
+        const title = 'Yerba mate (Ilex paraguariensis) genome provides new insights into convergent evolution of caffeine biosynthesis';
+        const other = 'Yerba mate (<i>Ilex paraguariensis<\/i>) genome provides new insights into convergent evolution of caffeine biosynthesis';
         const isSimilar = testTitle(title, other);
         expect( isSimilar ).to.be.true;
       });
@@ -121,6 +127,18 @@ describe('article', function () {
       it('Should be true when other includes title and vice versa', function () {
         const title = '[Clinical Study of Ibrutinib Combined with Venetoclax Regimen in the Treatment of Relapsed/Refractory Diffuse Large B-Cell Lymphoma]';
         const other = '[Clinical Study of Ibrutinib Combined with Venetoclax Regimen in the Treatment of Relapsed/Refractory Diffuse Large B-Cell Lymphoma]';
+        let isSimilar = testTitle(title, other);
+        expect( isSimilar ).to.be.true;
+      });
+
+    }); // Includes
+
+    describe('Incorrect replacement of apostrophe', function () {
+
+      it('Should be true when apostrophes are misused', function () {
+        const title = 'Saccharomyces cerevisiae Rev7 promotes non-homologous end-joining by blocking Mre11 nuclease and Rad50’s ATPase activities and homologous recombination';
+        const other = 'Saccharomyces cerevisiae Rev7 promotes non-homologous end-joining by blocking Mre11 nuclease and Rad50\'s ATPase activities and homologous recombination';
+
         let isSimilar = testTitle(title, other);
         expect( isSimilar ).to.be.true;
       });

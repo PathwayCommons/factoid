@@ -133,12 +133,18 @@ describe('article', function () {
 
     }); // Includes
 
-    describe('Incorrect replacement of apostrophe', function () {
+    describe('Single quatation and apostrophe', function () {
 
-      it('Should be true when apostrophes are misused', function () {
+      it('Should be true when right single quotations are replaced by apostrophes', function () {
         const title = 'Saccharomyces cerevisiae Rev7 promotes non-homologous end-joining by blocking Mre11 nuclease and Rad50’s ATPase activities and homologous recombination';
         const other = 'Saccharomyces cerevisiae Rev7 promotes non-homologous end-joining by blocking Mre11 nuclease and Rad50\'s ATPase activities and homologous recombination';
+        let isSimilar = testTitle(title, other);
+        expect( isSimilar ).to.be.true;
+      });
 
+      it('Should be true when nested right single quotations are replaced by apostrophes', function () {
+        const title = 'Just say ‘I don’t know’: Understanding information stagnation during a highly ambiguous visual search task';
+        const other = 'Just say \'I don\'t know\': Understanding information stagnation during a highly ambiguous visual search task';
         let isSimilar = testTitle(title, other);
         expect( isSimilar ).to.be.true;
       });

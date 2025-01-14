@@ -17,14 +17,14 @@
     }
   }
 
-  & li:after {
+  & li::after {
     content: '\00b7';
     margin: 0 0.5em;
   }
-  li:last-child:after { content: none; }
+  li:last-child::after { content: none; }
 }
 
-.citation  .citation-flags {
+.citation .citation-flags {
   margin: 0.5em 0;
 
   & .citation-flag {

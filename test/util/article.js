@@ -104,7 +104,7 @@ describe('article', function () {
 
         it('Should be true with varying dashes', function () {
           const title = 'Neurons enhance blood-–brain barrier function via upregulating claudin-5 and VE-cadherin expression due to glial cell line-derived neurotrophic factor secretion';
-          const other = 'Neurons enhance blood brain barrier function via upregulating claudin 5 and VE cadherin expression due to glial cell line derived neurotrophic factor secretion';
+          const other = 'Neurons enhance blood-brain barrier function via upregulating claudin-5 and VE-cadherin expression due to glial cell line-derived neurotrophic factor secretion';
           const isSimilar = testTitle(title, other);
           expect( isSimilar ).to.be.true;
         });

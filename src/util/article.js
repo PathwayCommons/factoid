@@ -1,8 +1,13 @@
 import _ from 'lodash';
 import striptags from 'striptags';
 
-// Remove surrounding white space, periods, quotations
-const trimPlus = str => str.replace(/^[\s."']+|[\s."']+$/g, '');
+// Remove surrounding whitespace, periods, quotations
+const trimPlus = str => {
+  return str
+    .replace(/[\s]+/g, ' ') // runs of whitespace
+    .replace(/^[\s."']+|[\s."']+$/g, '');
+};
+
 const lowerCase = str => str.toLowerCase();
 // https://www.nlm.nih.gov/databases/dtd/medline_characters.html
 // https://www.nlm.nih.gov/archive/20110906/databases/dtd/medline_character_database.html
@@ -14,11 +19,12 @@ const unformat = str => striptags( str, [
 ]);
 
 
-// Remove U+002D : HYPHEN-MINUS; U+2013 : EN DASH
-const undash = str => {
+// Replace variations with HYPHEN-MINUS U+002D
+const normalizeDash = str => {
   return str
-    .replace(/(mir)-(\d+)/i, '$1$2') // Normalize micro RNA names
-    .replace(/[\u002D|\u2013]+/g, ' ');
+    .replace(/[\u2011|\u2013|\u2014]+/g, '\u002D') // everything else to hyphen-minus
+    .replace(/[\u002D]+/g, '\u002D') // runs
+    .replace(/(mir)-(\d+)/i, '$1$2'); // Normalize micro RNA names
 };
 
 const doesMatch = ( title, other ) => {
@@ -40,7 +46,7 @@ function testTitle( title, other ) {
   [ title, other ] = [title, other]
     .map( trimPlus )
     .map( lowerCase )
-    .map( undash )
+    .map( normalizeDash )
     .map( unformat )
     .map( deburr )
     .map( apostrophize );

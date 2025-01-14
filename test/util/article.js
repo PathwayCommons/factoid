@@ -22,27 +22,6 @@ describe('article', function () {
         expect( isSimilar ).to.be.true;
       });
 
-      it('Should ignore surrounding whitespace', function () {
-        const title = 'Hierarchical and scaffolded phosphorylation of two degrons controls PER2 stability   ';
-        const other = '   Hierarchical and scaffolded phosphorylation of two degrons controls PER2 stability';
-        const isSimilar = testTitle(title, other);
-        expect( isSimilar ).to.be.true;
-      });
-
-      it('Should ignore surrounding periods', function () {
-        const title = 'Hierarchical and scaffolded phosphorylation of two degrons controls PER2 stability  .';
-        const other = 'Hierarchical and scaffolded phosphorylation of two degrons controls PER2 stability';
-        const isSimilar = testTitle(title, other);
-        expect( isSimilar ).to.be.true;
-      });
-
-      it('Should ignore surrounding quotations', function () {
-        const title = '"Hierarchical and scaffolded phosphorylation of two degrons controls PER2 stability"';
-        const other = 'Hierarchical and scaffolded phosphorylation of two degrons controls PER2 stability';
-        const isSimilar = testTitle(title, other);
-        expect( isSimilar ).to.be.true;
-      });
-
       it('Should be false when non-identical', function () {
         const title = 'Hierarchical and scaffolded phosphorylation of two degrons controls PER2 stability';
         const other = 'Stanniocalcin 2 governs cancer cell adaptation to nutrient insufficiency through alleviation of oxidative stress.';
@@ -64,30 +43,111 @@ describe('article', function () {
         expect( isSimilar ).to.be.false;
       });
 
+      describe('Whitespace', function () {
+
+        it('Should ignore surrounding whitespace', function () {
+          const title = 'Hierarchical and scaffolded phosphorylation of two degrons controls PER2 stability   ';
+          const other = '   Hierarchical and scaffolded phosphorylation of two degrons controls PER2 stability';
+          const isSimilar = testTitle(title, other);
+          expect( isSimilar ).to.be.true;
+        });
+
+        it('Should ignore internal variation in whitespace (1)', function () {
+          const title = 'Comparative interactome analysis  of α-arrestin families in human  and Drosophila';
+          const other = 'Comparative interactome analysis of α-arrestin families in human and Drosophila';
+          const isSimilar = testTitle(title, other);
+          expect( isSimilar ).to.be.true;
+        });
+
+        it('Should ignore internal variation in whitespace (2)', function () {
+          const title = 'Cyclic di-GMP as an Antitoxin Regulates Bacterial Genome Stability and  Antibiotic Persistence in Biofilms';
+          const other = 'Cyclic di-GMP as an Antitoxin Regulates Bacterial Genome Stability and Antibiotic Persistence in Biofilms';
+          const isSimilar = testTitle(title, other);
+          expect( isSimilar ).to.be.true;
+        });
+
+        it('Should ignore internal variation in whitespace (3)', function () {
+          const title = 'Ebola virus sequesters IRF3 in viral  inclusion bodies to evade host  antiviral immunity';
+          const other = 'Ebola virus sequesters IRF3 in viral inclusion bodies to evade host antiviral immunity';
+          const isSimilar = testTitle(title, other);
+          expect( isSimilar ).to.be.true;
+        });
+
+      }); // Whitespace
+
     }); // Alphabet
 
     describe('Punctuation', function () {
 
-      it('Should be true when identical', function () {
-        const title = 'A 2-hydroxybutyrate-mediated feedback loop regulates muscular fatigue.';
-        const other = 'A 2-hydroxybutyrate-mediated feedback loop regulates muscular fatigue';
+      it('Should ignore surrounding periods', function () {
+        const title = 'Hierarchical and scaffolded phosphorylation of two degrons controls PER2 stability  .';
+        const other = 'Hierarchical and scaffolded phosphorylation of two degrons controls PER2 stability';
         const isSimilar = testTitle(title, other);
         expect( isSimilar ).to.be.true;
       });
 
-      it('Should be true with varying dashes', function () {
-        const title = 'Neurons enhance blood-–brain barrier function via upregulating claudin-5 and VE-cadherin expression due to glial cell line-derived neurotrophic factor secretion';
-        const other = 'Neurons enhance blood brain barrier function via upregulating claudin 5 and VE cadherin expression due to glial cell line derived neurotrophic factor secretion';
+      it('Should ignore surrounding quotations', function () {
+        const title = '"Hierarchical and scaffolded phosphorylation of two degrons controls PER2 stability"';
+        const other = 'Hierarchical and scaffolded phosphorylation of two degrons controls PER2 stability';
         const isSimilar = testTitle(title, other);
         expect( isSimilar ).to.be.true;
       });
 
-      it('Should be true with dash related to microRNA', function () {
-        const title = 'Circular RNA HMGCS1 sponges MIR4521 to aggravate type 2 diabetes-induced vascular endothelial dysfunction';
-        const other = 'Circular RNA HMGCS1 sponges miR-4521 to aggravate type 2 diabetes-induced vascular endothelial dysfunction';
-        const isSimilar = testTitle(title, other);
-        expect( isSimilar ).to.be.true;
-      });
+      describe('Hyphen; Minus; Dash', function () {
+
+        it('Should be true when identical', function () {
+          const title = 'A 2-hydroxybutyrate-mediated feedback loop regulates muscular fatigue.';
+          const other = 'A 2-hydroxybutyrate-mediated feedback loop regulates muscular fatigue';
+          const isSimilar = testTitle(title, other);
+          expect( isSimilar ).to.be.true;
+        });
+
+        it('Should be true with varying dashes', function () {
+          const title = 'Neurons enhance blood-–brain barrier function via upregulating claudin-5 and VE-cadherin expression due to glial cell line-derived neurotrophic factor secretion';
+          const other = 'Neurons enhance blood brain barrier function via upregulating claudin 5 and VE cadherin expression due to glial cell line derived neurotrophic factor secretion';
+          const isSimilar = testTitle(title, other);
+          expect( isSimilar ).to.be.true;
+        });
+
+        it('Should be true with dash related to microRNA', function () {
+          const title = 'Circular RNA HMGCS1 sponges MIR4521 to aggravate type 2 diabetes-induced vascular endothelial dysfunction';
+          const other = 'Circular RNA HMGCS1 sponges miR-4521 to aggravate type 2 diabetes-induced vascular endothelial dysfunction';
+          const isSimilar = testTitle(title, other);
+          expect( isSimilar ).to.be.true;
+        });
+
+        it('Should be true with variations on a dash (EN DASH U+2013; EM DASH U+2014; NON-BREAKING HYPHEN U+2011)', function () {
+          const nonBreakingHyphen = 'Mouse SAS‑6 is required for centriole formation in embryos and integrity in embryonic stem cells';
+          const emDash = 'Mouse SAS—6 is required for centriole formation in embryos and integrity in embryonic stem cells';
+          const enDash = 'Mouse SAS–6 is required for centriole formation in embryos and integrity in embryonic stem cells';
+          const other = 'Mouse SAS-6 is required for centriole formation in embryos and integrity in embryonic stem cells';
+          const hyphenIsSimilar = testTitle(nonBreakingHyphen, other);
+          const emDashIsSimilar = testTitle(emDash, other);
+          const enDashIsSimilar = testTitle(enDash, other);
+          expect( hyphenIsSimilar ).to.be.true;
+          expect( emDashIsSimilar ).to.be.true;
+          expect( enDashIsSimilar ).to.be.true;
+        });
+
+      }); // Hyphen; Minus; Dash
+
+      describe('Quotation; Apostrophe', function () {
+
+        it('Should be true when right single quotations are replaced by apostrophes', function () {
+          const title = 'Saccharomyces cerevisiae Rev7 promotes non-homologous end-joining by blocking Mre11 nuclease and Rad50’s ATPase activities and homologous recombination';
+          const other = 'Saccharomyces cerevisiae Rev7 promotes non-homologous end-joining by blocking Mre11 nuclease and Rad50\'s ATPase activities and homologous recombination';
+          let isSimilar = testTitle(title, other);
+          expect( isSimilar ).to.be.true;
+        });
+
+        it('Should be true when nested right single quotations are replaced by apostrophes', function () {
+          const title = 'Just say ‘I don’t know’: Understanding information stagnation during a highly ambiguous visual search task';
+          const other = 'Just say \'I don\'t know\': Understanding information stagnation during a highly ambiguous visual search task';
+          let isSimilar = testTitle(title, other);
+          expect( isSimilar ).to.be.true;
+        });
+
+      }); // Quotation; Apostrophe
 
     }); // Punctuation
 
@@ -102,7 +162,7 @@ describe('article', function () {
 
       it('Should drop escaped HTML tags', function () {
         const title = 'Yerba mate (Ilex paraguariensis) genome provides new insights into convergent evolution of caffeine biosynthesis';
-        const other = 'Yerba mate (<i>Ilex paraguariensis<\/i>) genome provides new insights into convergent evolution of caffeine biosynthesis';
+        const other = 'Yerba mate (<i>Ilex paraguariensis<\/i>) genome provides new insights into convergent evolution of caffeine biosynthesis'; // eslint-disable-line no-useless-escape
         const isSimilar = testTitle(title, other);
         expect( isSimilar ).to.be.true;
       });
@@ -124,32 +184,14 @@ describe('article', function () {
 
     describe('Extended characters', function () {
 
-      it('Should be true when other includes title and vice versa', function () {
+      it('Should be true when greek characters', function () {
         const title = '[Clinical Study of Ibrutinib Combined with Venetoclax Regimen in the Treatment of Relapsed/Refractory Diffuse Large B-Cell Lymphoma]';
         const other = '[Clinical Study of Ibrutinib Combined with Venetoclax Regimen in the Treatment of Relapsed/Refractory Diffuse Large B-Cell Lymphoma]';
         let isSimilar = testTitle(title, other);
         expect( isSimilar ).to.be.true;
       });
 
-    }); // Includes
-
-    describe('Single quatation and apostrophe', function () {
-
-      it('Should be true when right single quotations are replaced by apostrophes', function () {
-        const title = 'Saccharomyces cerevisiae Rev7 promotes non-homologous end-joining by blocking Mre11 nuclease and Rad50’s ATPase activities and homologous recombination';
-        const other = 'Saccharomyces cerevisiae Rev7 promotes non-homologous end-joining by blocking Mre11 nuclease and Rad50\'s ATPase activities and homologous recombination';
-        let isSimilar = testTitle(title, other);
-        expect( isSimilar ).to.be.true;
-      });
-
-      it('Should be true when nested right single quotations are replaced by apostrophes', function () {
-        const title = 'Just say ‘I don’t know’: Understanding information stagnation during a highly ambiguous visual search task';
-        const other = 'Just say \'I don\'t know\': Understanding information stagnation during a highly ambiguous visual search task';
-        let isSimilar = testTitle(title, other);
-        expect( isSimilar ).to.be.true;
-      });
-
-    }); // Includes
+    }); // Extended characters
 
   }); // testTitle
 

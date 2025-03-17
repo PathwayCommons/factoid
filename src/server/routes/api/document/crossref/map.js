@@ -91,7 +91,7 @@ const getPostedContent = record => {
   };
   const { institution, 'group-title': groupTitle, publisher } = record;
   let Title;
-  if ( institution ) { // preprint (e.g. bioRxiv, medRxiv)
+  if ( institution ) { // preprint (e.g. bioRxiv, medRxiv, Research Square)
     const { name } = _.head( institution );
     Title = name;
   } else if ( groupTitle ) { // preprint (e.g. eLife)

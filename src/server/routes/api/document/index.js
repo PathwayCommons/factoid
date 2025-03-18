@@ -396,18 +396,24 @@ const fillDocArticle = async ( doc, overwrite = false ) => {
     await doc.issues({ paperId: null });
 
   } else {
-    let error;
-    const withHttpErr = [ pm, cr ].find( byStatusError );
-    if( withHttpErr ){ // HTTPStatusError occurred
-      error = withHttpErr.reason;
-      if( doc.article() != null ){
-        // Fallback to existing record
-        record = doc.article();
-      }
-    } else {
-      // Not found
-      error = pm.reason || cr.reason;
+
+    //TODO - case where a manual update of the title occurs
+    // In this case, we DO want to override an existing article.
+    // this is unlike cron update, where we don't want to break existing articles
+
+    // Fallback to an existing article
+    const article = doc.article();
+    if( article ){
+      record = article;
     }
+
+    // Prioritize HTTPStatusError
+    let error = pm.reason || cr.reason;
+    const withHttpErr = [ pm, cr ].find( byStatusError );
+    if( withHttpErr ){
+      error = withHttpErr.reason;
+    }
+
     await doc.issues({ paperId: { error, message: error.message } });
   }
 

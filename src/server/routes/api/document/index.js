@@ -349,7 +349,7 @@ const fillDocCorrespondence = async doc => {
   }
 };
 
-const fillDocArticle = async ( doc, overwrite = true ) => {
+const fillDocArticle = async ( doc, fallback = false ) => {
   const isFound = ({ status }) => status === 'fulfilled';
   const notFound = ({ status, reason }) => status === 'rejected' && reason.name === ArticleIDError.name;
   const byStatusError = ({ status, reason }) => status === 'rejected' && reason.name === HTTPStatusError.name;
@@ -393,20 +393,18 @@ const fillDocArticle = async ( doc, overwrite = true ) => {
 
   } else {
 
+    // Prioritize an HTTP error when one exists
     let error = pm.reason || cr.reason;
-
-    // Check for an HTTP error
     const withHttpErr = [ pm, cr ].find( byStatusError );
-    const hasHttpErr = !_.isNil( withHttpErr );
-    if( hasHttpErr ){
+    if( withHttpErr ){
       error = withHttpErr.reason;
     }
 
-    // Fallback to an existing article under certain conditions
+    // Fallback to an existing article when explicitly instructed
     const article = doc.article();
     const hasArticle = !_.isNil( article );
-    const shouldReplace = overwrite && hasArticle && !hasHttpErr;
-    if( shouldReplace ){
+    const useExisting = fallback && hasArticle;
+    if( useExisting ){
       record = article;
     }
 

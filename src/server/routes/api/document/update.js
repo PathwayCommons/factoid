@@ -43,7 +43,7 @@ const docsToUpdate = async () => {
  *
  */
 const updateArticle = async () => {
-  const overwrite = false;
+  const fallback = true;
   const chunkify = ( arr, chunkSize = 3 ) => {
     const res = [];
     for (let i = 0; i < arr.length; i += chunkSize) {
@@ -58,7 +58,7 @@ const updateArticle = async () => {
     logger.info( `Updating data for ${docs.length} documents`);
     let chunks = chunkify( docs );
     for( const chunk of chunks ){
-      await Promise.all( chunk.map( doc => fillDocArticle( doc, overwrite ) ) );
+      await Promise.all( chunk.map( doc => fillDocArticle( doc, fallback ) ) );
       await Promise.all( chunk.map( fillDocAuthorProfiles ) );
     }
 

@@ -400,6 +400,7 @@ const fillDocArticle = async ( doc, overwrite = false ) => {
     //TODO - case where a manual update of the title occurs
     // In this case, we DO want to override an existing article.
     // this is unlike cron update, where we don't want to break existing articles
+    // e.g. preprint, version vs publication.
 
     // Fallback to an existing article
     const article = doc.article();

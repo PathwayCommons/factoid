@@ -349,19 +349,15 @@ const fillDocCorrespondence = async doc => {
   }
 };
 
-const fillDocArticle = async ( doc, overwrite = false ) => {
+const fillDocArticle = async ( doc, overwrite = true ) => {
   const isFound = ({ status }) => status === 'fulfilled';
   const notFound = ({ status, reason }) => status === 'rejected' && reason.name === ArticleIDError.name;
   const byStatusError = ({ status, reason }) => status === 'rejected' && reason.name === HTTPStatusError.name;
   const hasPmid = r => r.pmid;
   const byISODate = ( a, b ) => ( a.ISODate < b.ISODate ) ? -1 : ( ( a.ISODate > b.ISODate ) ? 1 : 0 );
   const { paperId } = doc.provided();
-  const { pmid, doi } = doc.citation();
   let id = paperId;
-  if( !overwrite ) {
-    const pmidOrDoi = pmid || doi;
-    if( pmidOrDoi ) id = pmidOrDoi;
-  }
+
   const [ pm, cr, df ] = await Promise.allSettled([
     getPubmedArticle( id ),
     findPreprint( id ),
@@ -397,22 +393,21 @@ const fillDocArticle = async ( doc, overwrite = false ) => {
 
   } else {
 
-    //TODO - case where a manual update of the title occurs
-    // In this case, we DO want to override an existing article.
-    // this is unlike cron update, where we don't want to break existing articles
-    // e.g. preprint, version vs publication.
+    let error = pm.reason || cr.reason;
 
-    // Fallback to an existing article
-    const article = doc.article();
-    if( article ){
-      record = article;
+    // Check for an HTTP error
+    const withHttpErr = [ pm, cr ].find( byStatusError );
+    const hasHttpErr = !_.isNil( withHttpErr );
+    if( hasHttpErr ){
+      error = withHttpErr.reason;
     }
 
-    // Prioritize HTTPStatusError
-    let error = pm.reason || cr.reason;
-    const withHttpErr = [ pm, cr ].find( byStatusError );
-    if( withHttpErr ){
-      error = withHttpErr.reason;
+    // Fallback to an existing article under certain conditions
+    const article = doc.article();
+    const hasArticle = !_.isNil( article );
+    const shouldReplace = overwrite && hasArticle && !hasHttpErr;
+    if( shouldReplace ){
+      record = article;
     }
 
     await doc.issues({ paperId: { error, message: error.message } });
@@ -503,7 +498,7 @@ const fillDocAuthorProfiles = async doc => {
 
 const fillDoc = async doc => {
   await fillDocCorrespondence( doc );
-  await fillDocArticle( doc, true );
+  await fillDocArticle( doc );
   await fillDocAuthorProfiles( doc );
   return doc;
 };
@@ -2310,7 +2305,7 @@ http.patch('/:id/:secret', function( req, res, next ){
           break;
         case 'article':
           if( op === 'replace' ) {
-            await fillDocArticle( doc, true );
+            await fillDocArticle( doc );
             await fillDocAuthorProfiles( doc );
           }
           break;

@@ -43,7 +43,7 @@ const docsToUpdate = async () => {
  *
  */
 const updateArticle = async () => {
-  const overwrite = true;
+  const overwrite = false;
   const chunkify = ( arr, chunkSize = 3 ) => {
     const res = [];
     for (let i = 0; i < arr.length; i += chunkSize) {

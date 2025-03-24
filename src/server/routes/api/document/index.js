@@ -349,19 +349,15 @@ const fillDocCorrespondence = async doc => {
   }
 };
 
-const fillDocArticle = async ( doc, overwrite = false ) => {
+const fillDocArticle = async ( doc, fallback = false ) => {
   const isFound = ({ status }) => status === 'fulfilled';
   const notFound = ({ status, reason }) => status === 'rejected' && reason.name === ArticleIDError.name;
   const byStatusError = ({ status, reason }) => status === 'rejected' && reason.name === HTTPStatusError.name;
   const hasPmid = r => r.pmid;
   const byISODate = ( a, b ) => ( a.ISODate < b.ISODate ) ? -1 : ( ( a.ISODate > b.ISODate ) ? 1 : 0 );
   const { paperId } = doc.provided();
-  const { pmid, doi } = doc.citation();
   let id = paperId;
-  if( !overwrite ) {
-    const pmidOrDoi = pmid || doi;
-    if( pmidOrDoi ) id = pmidOrDoi;
-  }
+
   const [ pm, cr, df ] = await Promise.allSettled([
     getPubmedArticle( id ),
     findPreprint( id ),
@@ -396,18 +392,22 @@ const fillDocArticle = async ( doc, overwrite = false ) => {
     await doc.issues({ paperId: null });
 
   } else {
-    let error;
+
+    // Prioritize an HTTP error when one exists
+    let error = pm.reason || cr.reason;
     const withHttpErr = [ pm, cr ].find( byStatusError );
-    if( withHttpErr ){ // HTTPStatusError occurred
+    if( withHttpErr ){
       error = withHttpErr.reason;
-      if( doc.article() != null ){
-        // Fallback to existing record
-        record = doc.article();
-      }
-    } else {
-      // Not found
-      error = pm.reason || cr.reason;
     }
+
+    // Fallback to an existing article when explicitly instructed
+    const article = doc.article();
+    const hasArticle = !_.isNil( article );
+    const useExisting = fallback && hasArticle;
+    if( useExisting ){
+      record = article;
+    }
+
     await doc.issues({ paperId: { error, message: error.message } });
   }
 
@@ -496,7 +496,7 @@ const fillDocAuthorProfiles = async doc => {
 
 const fillDoc = async doc => {
   await fillDocCorrespondence( doc );
-  await fillDocArticle( doc, true );
+  await fillDocArticle( doc );
   await fillDocAuthorProfiles( doc );
   return doc;
 };
@@ -2303,7 +2303,7 @@ http.patch('/:id/:secret', function( req, res, next ){
           break;
         case 'article':
           if( op === 'replace' ) {
-            await fillDocArticle( doc, true );
+            await fillDocArticle( doc );
             await fillDocAuthorProfiles( doc );
           }
           break;

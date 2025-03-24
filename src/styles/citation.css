@@ -1,0 +1,38 @@
+.citation .citation-title {
+  font-size: 1.5em;
+}
+
+.citation ul {
+  margin: 0.25em 0;
+  padding: 0;
+
+  & li {
+    display: inline-block;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+
+    & i {
+      margin-left: 0.15em;
+    }
+  }
+
+  & li::after {
+    content: '\00b7';
+    margin: 0 0.5em;
+  }
+  li:last-child::after { content: none; }
+}
+
+.citation .citation-flags {
+  margin: 0.5em 0;
+
+  & .citation-flag {
+    padding: 0.2em 0.5em;
+
+    &.danger {
+      color: #000;
+      background-color: rgba(255, 0, 0, 0.3);
+    }
+  }
+}

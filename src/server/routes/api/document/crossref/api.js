@@ -34,7 +34,7 @@ const checkResultStatus = json => {
 const search = (q, opts) => {
   const DEFAULT_WORKS_PARAMS = {
     'query.bibliographic': undefined, //query field for: citation look up, includes titles, authors, ISSNs and publication years
-    'rows': 5
+    'rows': 10
   };
   const formatSearchHits = json => {
     const searchHits =  _.get( json, ['message', 'items'] );

@@ -67,7 +67,8 @@ const findPreprint = async paperId => {
   const VALID_PUBLISHERS = new Set([
     'Cold Spring Harbor Laboratory',
     'eLife Sciences Publications, Ltd',
-    'Research Square Platform LLC'
+    'Research Square Platform LLC',
+    'Springer Science and Business Media LLC'
   ]);
   const isPreprint = ({ type, subtype }) => VALID_SUBTYPES.has( subtype ) && VALID_TYPES.has( type );
   const isRecognizedPublisher = ({ publisher }) => VALID_PUBLISHERS.has( publisher );
